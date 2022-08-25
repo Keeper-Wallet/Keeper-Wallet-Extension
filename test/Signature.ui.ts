@@ -527,61 +527,61 @@ describe('Signature', function () {
       ).to.equal(fee);
     }
 
-    async function checkIssueType(this: mocha.Context, type: string) {
-      expect(
-        await this.driver
-          .findElement(By.css('[data-testid="issueType"]'))
-          .getText()
-      ).to.equal(type);
-    }
-
-    async function checkIssueAmount(this: mocha.Context, amount: string) {
-      expect(
-        await this.driver
-          .findElement(By.css('[data-testid="issueAmount"]'))
-          .getText()
-      ).to.equal(amount);
-    }
-
-    async function checkIssueDescription(
-      this: mocha.Context,
-      description: string
-    ) {
-      expect(
-        await this.driver
-          .findElement(By.css('[data-testid="issueDescription"]'))
-          .getText()
-      ).to.equal(description);
-    }
-
-    async function checkIssueDecimals(this: mocha.Context, decimals: number) {
-      expect(
-        await this.driver
-          .findElement(By.css('[data-testid="issueDecimals"]'))
-          .getText()
-      ).to.equal(String(decimals));
-    }
-
-    async function checkIssueReissuable(
-      this: mocha.Context,
-      reissuableText: string
-    ) {
-      expect(
-        await this.driver
-          .findElement(By.css('[data-testid="issueReissuable"]'))
-          .getText()
-      ).to.equal(reissuableText);
-    }
-
-    async function checkIssueScript(this: mocha.Context, script: string) {
-      expect(
-        await this.driver
-          .findElement(By.css('[class^="script-codeScript"]'))
-          .getText()
-      ).to.equal(script);
-    }
-
     describe('Issue', function () {
+      async function checkIssueType(this: mocha.Context, type: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueType"]'))
+            .getText()
+        ).to.equal(type);
+      }
+
+      async function checkIssueAmount(this: mocha.Context, amount: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueAmount"]'))
+            .getText()
+        ).to.equal(amount);
+      }
+
+      async function checkIssueDescription(
+        this: mocha.Context,
+        description: string
+      ) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueDescription"]'))
+            .getText()
+        ).to.equal(description);
+      }
+
+      async function checkIssueDecimals(this: mocha.Context, decimals: number) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueDecimals"]'))
+            .getText()
+        ).to.equal(String(decimals));
+      }
+
+      async function checkIssueReissuable(
+        this: mocha.Context,
+        reissuableText: string
+      ) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueReissuable"]'))
+            .getText()
+        ).to.equal(reissuableText);
+      }
+
+      async function checkIssueScript(this: mocha.Context, script: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[class^="script-codeScript"]'))
+            .getText()
+        ).to.equal(script);
+      }
+
       before(async function () {
         await App.restartServiceWorker.call(this);
       });
@@ -658,150 +658,158 @@ describe('Signature', function () {
       });
 
       it('Copying script to the clipboard');
-    });
 
-    describe('Issue without script', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, ISSUE_WITHOUT_SCRIPT);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('without script', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, ISSUE_WITHOUT_SCRIPT);
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await checkIssueType.call(this, 'Issue Token');
-        await checkIssueAmount.call(this, '92233720368.54775807 ShortToken');
-        await checkIssueDescription.call(this, ISSUE.data.description);
-        await checkIssueDecimals.call(this, ISSUE.data.precision);
-        await checkIssueReissuable.call(this, 'Reissuable');
+          await checkIssueType.call(this, 'Issue Token');
+          await checkIssueAmount.call(this, '92233720368.54775807 ShortToken');
+          await checkIssueDescription.call(this, ISSUE.data.description);
+          await checkIssueDecimals.call(this, ISSUE.data.precision);
+          await checkIssueReissuable.call(this, 'Reissuable');
 
-        await checkTxFee.call(this, '1.004 WAVES');
+          await checkTxFee.call(this, '1.004 WAVES');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
 
-        expect(status).to.equal('REJECTED');
+          expect(status).to.equal('REJECTED');
 
-        expect(approveResult).to.deep.equal({
-          code: '10',
-          data: 'rejected',
-          message: 'User denied message',
+          expect(approveResult).to.deep.equal({
+            code: '10',
+            data: 'rejected',
+            message: 'User denied message',
+          });
+        });
+
+        it('Approved', async function () {
+          await performSignTransaction.call(this, ISSUE_WITHOUT_SCRIPT);
+          await approveMessage.call(this);
+          await closeMessage.call(this);
+
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: ISSUE_WITHOUT_SCRIPT.type,
+            version: 3,
+            senderPublicKey,
+            name: ISSUE_WITHOUT_SCRIPT.data.name,
+            description: ISSUE_WITHOUT_SCRIPT.data.description,
+            quantity: ISSUE_WITHOUT_SCRIPT.data.quantity,
+            decimals: ISSUE_WITHOUT_SCRIPT.data.precision,
+            reissuable: ISSUE_WITHOUT_SCRIPT.data.reissuable,
+            fee: 100400000,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.script).to.not.exist;
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         });
       });
 
-      it('Approved', async function () {
-        await performSignTransaction.call(this, ISSUE_WITHOUT_SCRIPT);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+      describe('with legacy serialization', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, setTxVersion(ISSUE, 2));
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
+          await checkIssueType.call(this, 'Issue Smart Token');
+          await checkIssueAmount.call(this, '92233720368.54775807 ShortToken');
+          await checkIssueDescription.call(this, ISSUE.data.description);
+          await checkIssueDecimals.call(this, ISSUE.data.precision);
+          await checkIssueReissuable.call(this, 'Reissuable');
+          await checkIssueScript.call(this, 'base64:BQbtKNoM');
 
-        expect(status).to.equal('RESOLVED');
+          await checkTxFee.call(this, '1.004 WAVES');
 
-        const parsedApproveResult = parse(approveResult);
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
 
-        const expectedApproveResult = {
-          type: ISSUE_WITHOUT_SCRIPT.type,
-          version: 3,
-          senderPublicKey,
-          name: ISSUE_WITHOUT_SCRIPT.data.name,
-          description: ISSUE_WITHOUT_SCRIPT.data.description,
-          quantity: ISSUE_WITHOUT_SCRIPT.data.quantity,
-          decimals: ISSUE_WITHOUT_SCRIPT.data.precision,
-          reissuable: ISSUE_WITHOUT_SCRIPT.data.reissuable,
-          fee: 100400000,
-          chainId: 84,
-        };
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
 
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          expect(status).to.equal('REJECTED');
+
+          expect(approveResult).to.deep.equal({
+            code: '10',
+            data: 'rejected',
+            message: 'User denied message',
+          });
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.script).to.not.exist;
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, setTxVersion(ISSUE, 2));
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
-      });
-    });
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
 
-    describe('Issue with legacy serialization', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, setTxVersion(ISSUE, 2));
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+          expect(status).to.equal('RESOLVED');
 
-        await checkIssueType.call(this, 'Issue Smart Token');
-        await checkIssueAmount.call(this, '92233720368.54775807 ShortToken');
-        await checkIssueDescription.call(this, ISSUE.data.description);
-        await checkIssueDecimals.call(this, ISSUE.data.precision);
-        await checkIssueReissuable.call(this, 'Reissuable');
-        await checkIssueScript.call(this, 'base64:BQbtKNoM');
+          const parsedApproveResult = parse(approveResult);
 
-        await checkTxFee.call(this, '1.004 WAVES');
+          const expectedApproveResult = {
+            type: ISSUE.type,
+            version: 2,
+            senderPublicKey,
+            name: ISSUE.data.name,
+            description: ISSUE.data.description,
+            quantity: ISSUE.data.quantity,
+            script: ISSUE.data.script,
+            decimals: ISSUE.data.precision,
+            reissuable: ISSUE.data.reissuable,
+            fee: 100400000,
+            chainId: 84,
+          };
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
-        expect(status).to.equal('REJECTED');
-
-        expect(approveResult).to.deep.equal({
-          code: '10',
-          data: 'rejected',
-          message: 'User denied message',
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         });
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, setTxVersion(ISSUE, 2));
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: ISSUE.type,
-          version: 2,
-          senderPublicKey,
-          name: ISSUE.data.name,
-          description: ISSUE.data.description,
-          quantity: ISSUE.data.quantity,
-          script: ISSUE.data.script,
-          decimals: ISSUE.data.precision,
-          reissuable: ISSUE.data.reissuable,
-          fee: 100400000,
-          chainId: 84,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
-        });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
       });
     });
 
@@ -861,107 +869,115 @@ describe('Signature', function () {
       it('Waves / asset / smart asset');
       it('Attachment');
       it('Transfers to Gateways');
-    });
 
-    describe('Transfer without attachment', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, TRANSFER_WITHOUT_ATTACHMENT);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('without attachment', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, TRANSFER_WITHOUT_ATTACHMENT);
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, TRANSFER_WITHOUT_ATTACHMENT);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: TRANSFER_WITHOUT_ATTACHMENT.type,
-          version: 3,
-          senderPublicKey,
-          assetId: TRANSFER_WITHOUT_ATTACHMENT.data.amount.assetId,
-          recipient: 'alias:T:alice',
-          amount: TRANSFER_WITHOUT_ATTACHMENT.data.amount.amount,
-          attachment: '',
-          fee: 500000,
-          feeAssetId: null,
-          chainId: 84,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, TRANSFER_WITHOUT_ATTACHMENT);
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: TRANSFER_WITHOUT_ATTACHMENT.type,
+            version: 3,
+            senderPublicKey,
+            assetId: TRANSFER_WITHOUT_ATTACHMENT.data.amount.assetId,
+            recipient: 'alias:T:alice',
+            amount: TRANSFER_WITHOUT_ATTACHMENT.data.amount.amount,
+            attachment: '',
+            fee: 500000,
+            feeAssetId: null,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
-    });
 
-    describe('Transfer with legacy serialization', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, setTxVersion(TRANSFER, 2));
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with legacy serialization', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, setTxVersion(TRANSFER, 2));
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, setTxVersion(TRANSFER, 2));
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: TRANSFER.type,
-          version: 2,
-          senderPublicKey,
-          assetId: TRANSFER.data.amount.assetId,
-          recipient: TRANSFER.data.recipient,
-          amount: TRANSFER.data.amount.amount,
-          attachment: '3ke2ct1rnYr52Y1jQvzNG',
-          fee: 500000,
-          feeAssetId: null,
-          chainId: 84,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, setTxVersion(TRANSFER, 2));
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: TRANSFER.type,
+            version: 2,
+            senderPublicKey,
+            assetId: TRANSFER.data.amount.assetId,
+            recipient: TRANSFER.data.recipient,
+            amount: TRANSFER.data.amount.amount,
+            attachment: '3ke2ct1rnYr52Y1jQvzNG',
+            fee: 500000,
+            feeAssetId: null,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
     });
 
@@ -1012,103 +1028,111 @@ describe('Signature', function () {
           verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
         ).to.be.true;
       });
-    });
 
-    describe('Reissue with money-like', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, REISSUE_WITH_MONEY_LIKE);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with money-like', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, REISSUE_WITH_MONEY_LIKE);
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, REISSUE_WITH_MONEY_LIKE);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: REISSUE_WITH_MONEY_LIKE.type,
-          version: 3,
-          senderPublicKey,
-          assetId: REISSUE_WITH_MONEY_LIKE.data.amount.assetId,
-          quantity: REISSUE_WITH_MONEY_LIKE.data.amount.amount,
-          reissuable: REISSUE_WITH_MONEY_LIKE.data.reissuable,
-          chainId: 84,
-          fee: 500000,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, REISSUE_WITH_MONEY_LIKE);
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: REISSUE_WITH_MONEY_LIKE.type,
+            version: 3,
+            senderPublicKey,
+            assetId: REISSUE_WITH_MONEY_LIKE.data.amount.assetId,
+            quantity: REISSUE_WITH_MONEY_LIKE.data.amount.amount,
+            reissuable: REISSUE_WITH_MONEY_LIKE.data.reissuable,
+            chainId: 84,
+            fee: 500000,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
-    });
 
-    describe('Reissue with legacy serialization', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, setTxVersion(REISSUE, 2));
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with legacy serialization', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, setTxVersion(REISSUE, 2));
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, setTxVersion(REISSUE, 2));
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: REISSUE.type,
-          version: 2,
-          senderPublicKey,
-          assetId: REISSUE.data.assetId,
-          quantity: REISSUE.data.quantity,
-          reissuable: REISSUE.data.reissuable,
-          chainId: 84,
-          fee: 500000,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, setTxVersion(REISSUE, 2));
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: REISSUE.type,
+            version: 2,
+            senderPublicKey,
+            assetId: REISSUE.data.assetId,
+            quantity: REISSUE.data.quantity,
+            reissuable: REISSUE.data.reissuable,
+            chainId: 84,
+            fee: 500000,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
     });
 
@@ -1158,101 +1182,109 @@ describe('Signature', function () {
           verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
         ).to.be.true;
       });
-    });
 
-    describe('Burn with quantity instead of amount', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, BURN_WITH_QUANTITY);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with quantity instead of amount', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, BURN_WITH_QUANTITY);
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, BURN_WITH_QUANTITY);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: BURN_WITH_QUANTITY.type,
-          version: 3,
-          senderPublicKey,
-          assetId: BURN_WITH_QUANTITY.data.assetId,
-          amount: BURN_WITH_QUANTITY.data.quantity,
-          chainId: 84,
-          fee: 500000,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, BURN_WITH_QUANTITY);
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: BURN_WITH_QUANTITY.type,
+            version: 3,
+            senderPublicKey,
+            assetId: BURN_WITH_QUANTITY.data.assetId,
+            amount: BURN_WITH_QUANTITY.data.quantity,
+            chainId: 84,
+            fee: 500000,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
-    });
 
-    describe('Burn with legacy serialization', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, setTxVersion(BURN, 2));
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with legacy serialization', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, setTxVersion(BURN, 2));
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, setTxVersion(BURN, 2));
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: BURN.type,
-          version: 2,
-          senderPublicKey,
-          assetId: BURN.data.assetId,
-          amount: BURN.data.amount,
-          chainId: 84,
-          fee: 500000,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, setTxVersion(BURN, 2));
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: BURN.type,
+            version: 2,
+            senderPublicKey,
+            assetId: BURN.data.assetId,
+            amount: BURN.data.amount,
+            chainId: 84,
+            fee: 500000,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
     });
 
@@ -1306,149 +1338,161 @@ describe('Signature', function () {
           verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
         ).to.be.true;
       });
-    });
 
-    describe('Lease with alias', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, LEASE_WITH_ALIAS);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with alias', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, LEASE_WITH_ALIAS);
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, LEASE_WITH_ALIAS);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: LEASE_WITH_ALIAS.type,
-          version: 3,
-          senderPublicKey,
-          amount: LEASE_WITH_ALIAS.data.amount,
-          recipient: 'alias:T:bobby',
-          fee: 500000,
-          chainId: 84,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, LEASE_WITH_ALIAS);
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: LEASE_WITH_ALIAS.type,
+            version: 3,
+            senderPublicKey,
+            amount: LEASE_WITH_ALIAS.data.amount,
+            recipient: 'alias:T:bobby',
+            fee: 500000,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
-    });
 
-    describe('Lease with money-like', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, LEASE_WITH_MONEY_LIKE);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with money-like', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, LEASE_WITH_MONEY_LIKE);
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, LEASE_WITH_MONEY_LIKE);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: LEASE_WITH_MONEY_LIKE.type,
-          version: 3,
-          senderPublicKey,
-          amount: LEASE_WITH_MONEY_LIKE.data.amount.amount,
-          recipient: LEASE_WITH_MONEY_LIKE.data.recipient,
-          fee: 500000,
-          chainId: 84,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, LEASE_WITH_MONEY_LIKE);
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: LEASE_WITH_MONEY_LIKE.type,
+            version: 3,
+            senderPublicKey,
+            amount: LEASE_WITH_MONEY_LIKE.data.amount.amount,
+            recipient: LEASE_WITH_MONEY_LIKE.data.recipient,
+            fee: 500000,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
-    });
 
-    describe('Lease with legacy serialization', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, setTxVersion(LEASE, 2));
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with legacy serialization', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, setTxVersion(LEASE, 2));
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, setTxVersion(LEASE, 2));
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: LEASE.type,
-          version: 2,
-          senderPublicKey,
-          amount: LEASE.data.amount,
-          recipient: LEASE.data.recipient,
-          fee: 500000,
-          chainId: 84,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, setTxVersion(LEASE, 2));
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: LEASE.type,
+            version: 2,
+            senderPublicKey,
+            amount: LEASE.data.amount,
+            recipient: LEASE.data.recipient,
+            fee: 500000,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
     });
 
@@ -1497,52 +1541,62 @@ describe('Signature', function () {
           verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
         ).to.be.true;
       });
-    });
 
-    describe('Cancel lease with legacy serialization', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, setTxVersion(CANCEL_LEASE, 2));
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with legacy serialization', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(
+            this,
+            setTxVersion(CANCEL_LEASE, 2)
+          );
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, setTxVersion(CANCEL_LEASE, 2));
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: CANCEL_LEASE.type,
-          version: 2,
-          senderPublicKey,
-          leaseId: CANCEL_LEASE.data.leaseId,
-          fee: 500000,
-          chainId: 84,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(
+            this,
+            setTxVersion(CANCEL_LEASE, 2)
+          );
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: CANCEL_LEASE.type,
+            version: 2,
+            senderPublicKey,
+            leaseId: CANCEL_LEASE.data.leaseId,
+            fee: 500000,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
     });
 
@@ -1595,55 +1649,59 @@ describe('Signature', function () {
       // TODO this checks should be into unittests
       it('Minimum alias length');
       it('Maximum alias length');
-    });
 
-    describe('Alias with legacy serialization', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, setTxVersion(ALIAS, 2));
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with legacy serialization', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, setTxVersion(ALIAS, 2));
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, setTxVersion(ALIAS, 2));
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: ALIAS.type,
-          version: 2,
-          senderPublicKey,
-          alias: ALIAS.data.alias,
-          fee: 500000,
-          chainId: 84,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+        it('Approved', async function () {
+          await performSignTransaction.call(this, setTxVersion(ALIAS, 2));
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(parsedApproveResult.id).to.equal(
-          base58Encode(blake2b([bytes[0], ...bytes.slice(36, -16)]))
-        );
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: ALIAS.type,
+            version: 2,
+            senderPublicKey,
+            alias: ALIAS.data.alias,
+            fee: 500000,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+
+          expect(parsedApproveResult.id).to.equal(
+            base58Encode(blake2b([bytes[0], ...bytes.slice(36, -16)]))
+          );
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
     });
 
@@ -1697,117 +1755,131 @@ describe('Signature', function () {
           verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
         ).to.be.true;
       });
-    });
 
-    describe('MassTransfer without attachment', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(
-          this,
-          MASS_TRANSFER_WITHOUT_ATTACHMENT
-        );
+      describe('without attachment', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(
+            this,
+            MASS_TRANSFER_WITHOUT_ATTACHMENT
+          );
 
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(
-          this,
-          MASS_TRANSFER_WITHOUT_ATTACHMENT
-        );
-
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: MASS_TRANSFER_WITHOUT_ATTACHMENT.type,
-          version: 2,
-          senderPublicKey,
-          assetId: MASS_TRANSFER_WITHOUT_ATTACHMENT.data.totalAmount.assetId,
-          transfers: [
-            { amount: 1, recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD' },
-            { amount: 1, recipient: 'alias:T:merry' },
-          ],
-          fee: 600000,
-          attachment: '',
-          chainId: 84,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(
+            this,
+            MASS_TRANSFER_WITHOUT_ATTACHMENT
+          );
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          await approveMessage.call(this);
+          await closeMessage.call(this);
+
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: MASS_TRANSFER_WITHOUT_ATTACHMENT.type,
+            version: 2,
+            senderPublicKey,
+            assetId: MASS_TRANSFER_WITHOUT_ATTACHMENT.data.totalAmount.assetId,
+            transfers: [
+              { amount: 1, recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD' },
+              { amount: 1, recipient: 'alias:T:merry' },
+            ],
+            fee: 600000,
+            attachment: '',
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
-    });
 
-    describe('MassTransfer with legacy serialization', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, setTxVersion(MASS_TRANSFER, 1));
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with legacy serialization', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(
+            this,
+            setTxVersion(MASS_TRANSFER, 1)
+          );
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, setTxVersion(MASS_TRANSFER, 1));
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: MASS_TRANSFER.type,
-          version: 1,
-          senderPublicKey,
-          assetId: MASS_TRANSFER.data.totalAmount.assetId,
-          transfers: [
-            { amount: 1, recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD' },
-            { amount: 1, recipient: 'alias:T:merry' },
-          ],
-          fee: 600000,
-          attachment: '3ke2ct1rnYr52Y1jQvzNG',
-          chainId: 84,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(
+            this,
+            setTxVersion(MASS_TRANSFER, 1)
+          );
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: MASS_TRANSFER.type,
+            version: 1,
+            senderPublicKey,
+            assetId: MASS_TRANSFER.data.totalAmount.assetId,
+            transfers: [
+              { amount: 1, recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD' },
+              { amount: 1, recipient: 'alias:T:merry' },
+            ],
+            fee: 600000,
+            attachment: '3ke2ct1rnYr52Y1jQvzNG',
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
     });
 
@@ -1856,52 +1928,56 @@ describe('Signature', function () {
           verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
         ).to.be.true;
       });
-    });
 
-    describe('Data with legacy serialization', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, setTxVersion(DATA, 1));
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with legacy serialization', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, setTxVersion(DATA, 1));
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, setTxVersion(DATA, 1));
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: DATA.type,
-          version: 1,
-          senderPublicKey,
-          fee: 500000,
-          chainId: 84,
-          data: DATA.data.data,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, setTxVersion(DATA, 1));
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: DATA.type,
+            version: 1,
+            senderPublicKey,
+            fee: 500000,
+            chainId: 84,
+            data: DATA.data.data,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
     });
 
@@ -1958,100 +2034,108 @@ describe('Signature', function () {
       it('Copying script to the clipboard');
       it('Set');
       it('Cancel');
-    });
 
-    describe('SetScript without script', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, SET_SCRIPT_WITHOUT_SCRIPT);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('without script', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, SET_SCRIPT_WITHOUT_SCRIPT);
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, SET_SCRIPT_WITHOUT_SCRIPT);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: SET_SCRIPT_WITHOUT_SCRIPT.type,
-          version: 2,
-          senderPublicKey,
-          chainId: 84,
-          fee: 500000,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          script: null,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.script).to.not.exist;
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, SET_SCRIPT_WITHOUT_SCRIPT);
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: SET_SCRIPT_WITHOUT_SCRIPT.type,
+            version: 2,
+            senderPublicKey,
+            chainId: 84,
+            fee: 500000,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            script: null,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.script).to.not.exist;
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
-    });
 
-    describe('SetScript with legacy serialization', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, setTxVersion(SET_SCRIPT, 1));
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with legacy serialization', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, setTxVersion(SET_SCRIPT, 1));
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, setTxVersion(SET_SCRIPT, 1));
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: SET_SCRIPT.type,
-          version: 1,
-          senderPublicKey,
-          chainId: 84,
-          fee: 500000,
-          script: SET_SCRIPT.data.script,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, setTxVersion(SET_SCRIPT, 1));
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: SET_SCRIPT.type,
+            version: 1,
+            senderPublicKey,
+            chainId: 84,
+            fee: 500000,
+            script: SET_SCRIPT.data.script,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
     });
 
@@ -2101,102 +2185,110 @@ describe('Signature', function () {
           verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
         ).to.be.true;
       });
-    });
 
-    describe('Sponsorship removal', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, SPONSORSHIP_REMOVAL);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('removal', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, SPONSORSHIP_REMOVAL);
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, SPONSORSHIP_REMOVAL);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: SPONSORSHIP_REMOVAL.type,
-          version: 2,
-          senderPublicKey,
-          minSponsoredAssetFee:
-            SPONSORSHIP_REMOVAL.data.minSponsoredAssetFee.amount,
-          assetId: SPONSORSHIP_REMOVAL.data.minSponsoredAssetFee.assetId,
-          fee: 500000,
-          chainId: 84,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, SPONSORSHIP_REMOVAL);
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: SPONSORSHIP_REMOVAL.type,
+            version: 2,
+            senderPublicKey,
+            minSponsoredAssetFee:
+              SPONSORSHIP_REMOVAL.data.minSponsoredAssetFee.amount,
+            assetId: SPONSORSHIP_REMOVAL.data.minSponsoredAssetFee.assetId,
+            fee: 500000,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
-    });
 
-    describe('Sponsorship with legacy serialization', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, setTxVersion(SPONSORSHIP, 1));
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with legacy serialization', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, setTxVersion(SPONSORSHIP, 1));
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, setTxVersion(SPONSORSHIP, 1));
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: SPONSORSHIP.type,
-          version: 1,
-          senderPublicKey,
-          minSponsoredAssetFee: SPONSORSHIP.data.minSponsoredAssetFee.amount,
-          assetId: SPONSORSHIP.data.minSponsoredAssetFee.assetId,
-          fee: 500000,
-          chainId: 84,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, setTxVersion(SPONSORSHIP, 1));
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: SPONSORSHIP.type,
+            version: 1,
+            senderPublicKey,
+            minSponsoredAssetFee: SPONSORSHIP.data.minSponsoredAssetFee.amount,
+            assetId: SPONSORSHIP.data.minSponsoredAssetFee.assetId,
+            fee: 500000,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
     });
 
@@ -2248,60 +2340,64 @@ describe('Signature', function () {
       });
 
       it('Copying script to the clipboard');
-    });
 
-    describe('SetAssetScript with legacy serialization', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(
-          this,
-          setTxVersion(SET_ASSET_SCRIPT, 1)
-        );
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with legacy serialization', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(
+            this,
+            setTxVersion(SET_ASSET_SCRIPT, 1)
+          );
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(
-          this,
-          setTxVersion(SET_ASSET_SCRIPT, 1)
-        );
-
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: SET_ASSET_SCRIPT.type,
-          version: 1,
-          senderPublicKey,
-          assetId: SET_ASSET_SCRIPT.data.assetId,
-          chainId: 84,
-          fee: 100400000,
-          script: SET_ASSET_SCRIPT.data.script,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(
+            this,
+            setTxVersion(SET_ASSET_SCRIPT, 1)
+          );
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          await approveMessage.call(this);
+          await closeMessage.call(this);
+
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: SET_ASSET_SCRIPT.type,
+            version: 1,
+            senderPublicKey,
+            assetId: SET_ASSET_SCRIPT.data.assetId,
+            chainId: 84,
+            fee: 100400000,
+            script: SET_ASSET_SCRIPT.data.script,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
     });
 
@@ -2365,113 +2461,121 @@ describe('Signature', function () {
         it('Maximum count');
         it('Waves / asset / smart asset');
       });
-    });
 
-    describe('InvokeScript without call', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(this, INVOKE_SCRIPT_WITHOUT_CALL);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('without call', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(this, INVOKE_SCRIPT_WITHOUT_CALL);
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(this, INVOKE_SCRIPT_WITHOUT_CALL);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: INVOKE_SCRIPT_WITHOUT_CALL.type,
-          version: 2,
-          senderPublicKey,
-          dApp: 'alias:T:chris',
-          payment: INVOKE_SCRIPT_WITHOUT_CALL.data.payment,
-          fee: 500000,
-          feeAssetId: null,
-          chainId: 84,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(this, INVOKE_SCRIPT_WITHOUT_CALL);
+          await approveMessage.call(this);
+          await closeMessage.call(this);
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: INVOKE_SCRIPT_WITHOUT_CALL.type,
+            version: 2,
+            senderPublicKey,
+            dApp: 'alias:T:chris',
+            payment: INVOKE_SCRIPT_WITHOUT_CALL.data.payment,
+            fee: 500000,
+            feeAssetId: null,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
-    });
 
-    describe('InvokeScript with legacy serialization', function () {
-      it('Rejected', async function () {
-        await performSignTransaction.call(
-          this,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          setTxVersion(INVOKE_SCRIPT as any, 1)
-        );
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with legacy serialization', function () {
+        it('Rejected', async function () {
+          await performSignTransaction.call(
+            this,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            setTxVersion(INVOKE_SCRIPT as any, 1)
+          );
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignTransaction.call(
-          this,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          setTxVersion(INVOKE_SCRIPT as any, 1)
-        );
-
-        await approveMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          type: INVOKE_SCRIPT.type,
-          version: 1,
-          senderPublicKey,
-          dApp: INVOKE_SCRIPT.data.dApp,
-          call: INVOKE_SCRIPT.data.call,
-          payment: INVOKE_SCRIPT.data.payment,
-          fee: 500000,
-          feeAssetId: null,
-          chainId: 84,
-        };
-
-        const bytes = makeTxBytes({
-          ...expectedApproveResult,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignTransaction.call(
+            this,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            setTxVersion(INVOKE_SCRIPT as any, 1)
+          );
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          await approveMessage.call(this);
+          await closeMessage.call(this);
+
+          const [status, approveResult] = await getSignTransactionResult.call(
+            this
+          );
+
+          expect(status).to.equal('RESOLVED');
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: INVOKE_SCRIPT.type,
+            version: 1,
+            senderPublicKey,
+            dApp: INVOKE_SCRIPT.data.dApp,
+            call: INVOKE_SCRIPT.data.call,
+            payment: INVOKE_SCRIPT.data.payment,
+            fee: 500000,
+            feeAssetId: null,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
     });
 
@@ -2622,70 +2726,76 @@ describe('Signature', function () {
           verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
         ).to.be.true;
       });
-    });
 
-    describe('Create with price precision conversion', function () {
-      it('Rejected', async function () {
-        await performSignOrder.call(
-          this,
-          createOrder,
-          CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION
-        );
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+      describe('with price precision conversion', function () {
+        it('Rejected', async function () {
+          await performSignOrder.call(
+            this,
+            createOrder,
+            CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION
+          );
+          await checkOrigin.call(this, WHITELIST[3]);
+          await checkAccountName.call(this, 'rich');
+          await checkNetworkName.call(this, 'Testnet');
 
-        await rejectMessage.call(this, 60 * 1000);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignOrder.call(
-          this,
-          createOrder,
-          CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION
-        );
-
-        await approveMessage.call(this, 60 * 1000);
-        await closeMessage.call(this);
-
-        const approveResult = await this.driver.executeScript(
-          () => window.result
-        );
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          orderType:
-            CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data.orderType,
-          version: 3,
-          assetPair: {
-            amountAsset:
-              CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data.amount.assetId,
-            priceAsset:
-              CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data.price.assetId,
-          },
-          price: 101400200,
-          amount: 1000000,
-          matcherFee: 4077612,
-          matcherPublicKey:
-            CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data.matcherPublicKey,
-          senderPublicKey,
-          matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
-        };
-
-        const bytes = binary.serializeOrder({
-          ...expectedApproveResult,
-          expiration: parsedApproveResult.expiration,
-          timestamp: parsedApproveResult.timestamp,
+          await rejectMessage.call(this, 60 * 1000);
+          await closeMessage.call(this);
         });
 
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+        it('Approved', async function () {
+          await performSignOrder.call(
+            this,
+            createOrder,
+            CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION
+          );
 
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
+          await approveMessage.call(this, 60 * 1000);
+          await closeMessage.call(this);
+
+          const approveResult = await this.driver.executeScript(
+            () => window.result
+          );
+
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            orderType:
+              CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data.orderType,
+            version: 3,
+            assetPair: {
+              amountAsset:
+                CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data.amount
+                  .assetId,
+              priceAsset:
+                CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data.price.assetId,
+            },
+            price: 101400200,
+            amount: 1000000,
+            matcherFee: 4077612,
+            matcherPublicKey:
+              CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data
+                .matcherPublicKey,
+            senderPublicKey,
+            matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
+          };
+
+          const bytes = binary.serializeOrder({
+            ...expectedApproveResult,
+            expiration: parsedApproveResult.expiration,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        });
       });
     });
 
