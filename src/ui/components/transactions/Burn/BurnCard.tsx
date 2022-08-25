@@ -33,6 +33,7 @@ class BurnCardComponent extends React.PureComponent<
             </div>
             <h1 className="headline1">
               <Balance
+                data-testid="burnAmount"
                 split={true}
                 addSign="-"
                 showAsset={true}

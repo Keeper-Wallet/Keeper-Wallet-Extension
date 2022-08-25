@@ -1221,11 +1221,23 @@ describe('Signature', function () {
     });
 
     describe('Burn', function () {
+      async function checkBurnAmount(this: mocha.Context, amount: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="burnAmount"]'))
+            .getText()
+        ).to.equal(amount);
+      }
+
       it('Rejected', async function () {
         await performSignTransaction.call(this, BURN);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkBurnAmount.call(this, '-123456790 NonScriptToken');
+
+        await checkTxFee.call(this, '0.005 WAVES');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -1273,6 +1285,10 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkBurnAmount.call(this, '-123456790 NonScriptToken');
+
+          await checkTxFee.call(this, '0.005 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);
@@ -1325,6 +1341,10 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkBurnAmount.call(this, '-123456790 NonScriptToken');
+
+          await checkTxFee.call(this, '0.005 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);
