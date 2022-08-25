@@ -27,7 +27,9 @@ class AliasCardComponent extends React.PureComponent<
             <div className="basic500 body3 margin-min">
               {t('transactions.createAlias')}
             </div>
-            <h1 className="headline1">{tx.data.alias}</h1>
+            <h1 className="headline1" data-testid="aliasValue">
+              {tx.data.alias}
+            </h1>
           </div>
         </div>
 
