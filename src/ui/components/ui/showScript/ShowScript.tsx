@@ -18,7 +18,11 @@ const ContentScript = ({
   script: any;
   getScriptRef: (node: HTMLPreElement | null) => unknown;
 }) => (
-  <pre ref={getScriptRef} className={cn(styles.codeScript, 'body3')}>
+  <pre
+    ref={getScriptRef}
+    className={cn(styles.codeScript, 'body3')}
+    data-testid="contentScript"
+  >
     {script}
   </pre>
 );

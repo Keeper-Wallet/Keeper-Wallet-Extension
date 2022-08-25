@@ -577,7 +577,7 @@ describe('Signature', function () {
       async function checkIssueScript(this: mocha.Context, script: string) {
         expect(
           await this.driver
-            .findElement(By.css('[class^="script-codeScript"]'))
+            .findElement(By.css('[data-testid="contentScript"]'))
             .getText()
         ).to.equal(script);
       }
@@ -2358,6 +2358,22 @@ describe('Signature', function () {
     });
 
     describe('SetScript', function () {
+      async function checkScript(this: mocha.Context, script: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="contentScript"]'))
+            .getText()
+        ).to.equal(script);
+      }
+
+      async function checkSetScriptTitle(this: mocha.Context, title: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="setScriptTitle"]'))
+            .getText()
+        ).to.equal(title);
+      }
+
       before(async function () {
         await App.restartServiceWorker.call(this);
       });
@@ -2367,6 +2383,11 @@ describe('Signature', function () {
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkSetScriptTitle.call(this, 'Set Script');
+        await checkScript.call(this, 'base64:BQbtKNoM');
+
+        await checkTxFee.call(this, '0.005 WAVES');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -2417,6 +2438,10 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkSetScriptTitle.call(this, 'Remove Account Script');
+
+          await checkTxFee.call(this, '0.005 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);
@@ -2469,6 +2494,11 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkSetScriptTitle.call(this, 'Set Script');
+          await checkScript.call(this, 'base64:BQbtKNoM');
+
+          await checkTxFee.call(this, '0.005 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);
