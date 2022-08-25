@@ -4090,11 +4090,21 @@ describe('Signature', function () {
     }
 
     describe('Version 1', function () {
+      async function checkData(this: mocha.Context, script: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="contentScript"]'))
+            .getText()
+        ).to.equal(script);
+      }
+
       it('Rejected', async function () {
         await performSignCustomData.call(this, CUSTOM_DATA_V1);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkData.call(this, 'base64:AADDEE==');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -4131,11 +4141,67 @@ describe('Signature', function () {
     });
 
     describe('Version 2', function () {
+      async function checkDataEntries(
+        this: mocha.Context,
+        entries: Array<{ key: string; type: string; value: string }>
+      ) {
+        const dataRows = await this.driver.findElements(
+          By.css('[data-testid="dataRow"]')
+        );
+
+        const actualItems = await Promise.all(
+          dataRows.map(async entryEl => {
+            const [key, type, value] = await Promise.all([
+              entryEl
+                .findElement(By.css('[data-testid="dataRowKey"]'))
+                .getText(),
+              entryEl
+                .findElement(By.css('[data-testid="dataRowType"]'))
+                .getText(),
+              entryEl
+                .findElement(By.css('[data-testid="dataRowValue"]'))
+                .getText(),
+            ]);
+
+            return {
+              key,
+              type,
+              value,
+            };
+          })
+        );
+
+        expect(actualItems).to.deep.equal(entries);
+      }
+
       it('Rejected', async function () {
         await performSignCustomData.call(this, CUSTOM_DATA_V2);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkDataEntries.call(this, [
+          {
+            key: 'stringValue',
+            type: 'string',
+            value: 'Lorem ipsum dolor sit amet',
+          },
+          {
+            key: 'longMaxValue',
+            type: 'integer',
+            value: '9223372036854775807',
+          },
+          {
+            key: 'flagValue',
+            type: 'boolean',
+            value: 'true',
+          },
+          {
+            key: 'base64',
+            type: 'binary',
+            value: 'base64:BQbtKNoM',
+          },
+        ]);
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
