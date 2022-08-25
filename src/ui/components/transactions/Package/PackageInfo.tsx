@@ -66,7 +66,10 @@ class PackageInfoComponent extends React.PureComponent<Props, State> {
                 type: 'transaction',
               };
               return (
-                <div key={`${index}${config.messageType}`}>
+                <div
+                  key={`${index}${config.messageType}`}
+                  data-testid="packageItem"
+                >
                   <MessageItem
                     config={config}
                     assets={assets}
@@ -77,7 +80,11 @@ class PackageInfoComponent extends React.PureComponent<Props, State> {
             })
           : null}
 
-        <div className={styles.toggleList} onClick={this.toggleHandler}>
+        <div
+          className={styles.toggleList}
+          data-testid="packageDetailsToggle"
+          onClick={this.toggleHandler}
+        >
           <div className={styles.icons}>
             {txs.map(({ config }, index) => (
               <TxIcon

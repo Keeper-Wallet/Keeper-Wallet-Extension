@@ -3597,6 +3597,36 @@ describe('Signature', function () {
       await this.driver.navigate().refresh();
     }
 
+    async function checkPackageCountTitle(this: mocha.Context, title: string) {
+      expect(
+        await this.driver
+          .findElement(By.css('[data-testid="packageCountTitle"]'))
+          .getText()
+      ).to.equal(title);
+    }
+
+    async function checkPackageAmounts(this: mocha.Context, amounts: string[]) {
+      const amountItems = await this.driver.findElements(
+        By.css('[data-testid="packageAmountItem"]')
+      );
+
+      const actualAmounts = await Promise.all(
+        amountItems.map(el => el.getText())
+      );
+
+      expect(actualAmounts).to.deep.equal(amounts);
+    }
+
+    async function checkPackageFees(this: mocha.Context, fees: string[]) {
+      const feeItems = await this.driver.findElements(
+        By.css('[data-testid="packageFeeItem"]')
+      );
+
+      const actualFees = await Promise.all(feeItems.map(el => el.getText()));
+
+      expect(actualFees).to.deep.equal(fees);
+    }
+
     it('Rejected', async function () {
       await performSignTransactionPackage.call(
         this,
@@ -3607,6 +3637,215 @@ describe('Signature', function () {
       await checkOrigin.call(this, WHITELIST[3]);
       await checkAccountName.call(this, 'rich');
       await checkNetworkName.call(this, 'Testnet');
+
+      await checkPackageCountTitle.call(this, '7 Transactions');
+
+      await checkPackageAmounts.call(this, [
+        '+92233720368.54775807 ShortToken',
+        '-123456790 NonScriptToken',
+        '+123456790 NonScriptToken',
+        '-123456790 NonScriptToken',
+        '-1.23456790 WAVES',
+        '+0.00000001 WAVES',
+        '-0.00000001 WAVES',
+        '-1 NonScriptToken',
+      ]);
+
+      await checkPackageFees.call(this, ['1.029 WAVES', '0.005 WAVES']);
+
+      await this.driver
+        .findElement(By.css('[data-testid="packageDetailsToggle"]'))
+        .click();
+
+      const packageElements = await this.driver.wait(
+        until.elementsLocated(By.css('[data-testid="packageItem"]')),
+        this.wait
+      );
+
+      expect(packageElements).to.have.length(7);
+
+      const [issue, transfer, reissue, burn, lease, cancelLease, invokeScript] =
+        packageElements;
+
+      expect(
+        await issue.findElement(By.css('[data-testid="issueType"]')).getText()
+      ).to.equal('Issue Smart Token');
+
+      expect(
+        await issue.findElement(By.css('[data-testid="issueAmount"]')).getText()
+      ).to.equal('92233720368.54775807 ShortToken');
+
+      expect(
+        await issue
+          .findElement(By.css('[data-testid="issueDescription"]'))
+          .getText()
+      ).to.equal('Full description of ShortToken');
+
+      expect(
+        await issue
+          .findElement(By.css('[data-testid="issueDecimals"]'))
+          .getText()
+      ).to.equal('8');
+
+      expect(
+        await issue
+          .findElement(By.css('[data-testid="issueReissuable"]'))
+          .getText()
+      ).to.equal('Reissuable');
+
+      expect(
+        await issue
+          .findElement(By.css('[data-testid="contentScript"]'))
+          .getText()
+      ).to.equal('base64:BQbtKNoM');
+
+      expect(
+        await issue.findElement(By.css('[data-testid="txFee"]')).getText()
+      ).to.equal('1.004 WAVES');
+
+      expect(
+        await transfer
+          .findElement(By.css('[data-testid="transferAmount"]'))
+          .getText()
+      ).to.equal('-123456790 NonScriptToken');
+
+      expect(
+        await transfer
+          .findElement(By.css('[data-testid="recipient"]'))
+          .getText()
+      ).to.equal('3N5HNJz5otiU...BVv5HhYLdhiD');
+
+      expect(
+        await transfer
+          .findElement(By.css('[data-testid="attachmentContent"]'))
+          .getText()
+      ).to.equal('base64:BQbtKNoM');
+
+      expect(
+        await transfer.findElement(By.css('[data-testid="txFee"]')).getText()
+      ).to.equal('0.005 WAVES');
+
+      expect(
+        await reissue
+          .findElement(By.css('[data-testid="reissueAmount"]'))
+          .getText()
+      ).to.equal('+123456790 NonScriptToken');
+
+      expect(
+        await reissue.findElement(By.css('[data-testid="txFee"]')).getText()
+      ).to.equal('0.005 WAVES');
+
+      expect(
+        await burn.findElement(By.css('[data-testid="burnAmount"]')).getText()
+      ).to.equal('-123456790 NonScriptToken');
+
+      expect(
+        await burn.findElement(By.css('[data-testid="txFee"]')).getText()
+      ).to.equal('0.005 WAVES');
+
+      expect(
+        await lease.findElement(By.css('[data-testid="leaseAmount"]')).getText()
+      ).to.equal('1.23456790 WAVES');
+
+      expect(
+        await lease
+          .findElement(By.css('[data-testid="leaseRecipient"]'))
+          .getText()
+      ).to.equal('3N5HNJz5otiU...BVv5HhYLdhiD');
+
+      expect(
+        await lease.findElement(By.css('[data-testid="txFee"]')).getText()
+      ).to.equal('0.005 WAVES');
+
+      expect(
+        await cancelLease
+          .findElement(By.css('[data-testid="cancelLeaseAmount"]'))
+          .getText()
+      ).to.equal('0.00000001 WAVES');
+
+      expect(
+        await cancelLease
+          .findElement(By.css('[data-testid="cancelLeaseRecipient"]'))
+          .getText()
+      ).to.equal('alias:T:merry');
+
+      expect(
+        await cancelLease.findElement(By.css('[data-testid="txFee"]')).getText()
+      ).to.equal('0.005 WAVES');
+
+      expect(
+        await invokeScript
+          .findElement(By.css('[data-testid="invokeScriptPaymentsTitle"]'))
+          .getText()
+      ).to.equal('2 Payments');
+
+      expect(
+        await invokeScript
+          .findElement(By.css('[data-testid="invokeScriptDApp"]'))
+          .getText()
+      ).to.equal(INVOKE_SCRIPT.data.dApp);
+
+      expect(
+        await invokeScript
+          .findElement(By.css('[data-testid="invokeScriptFunction"]'))
+          .getText()
+      ).to.equal(INVOKE_SCRIPT.data.call.function);
+
+      const argElements = await invokeScript.findElements(
+        By.css('[data-testid="invokeArgument"]')
+      );
+
+      const actualArgs = await Promise.all(
+        argElements.map(async el => {
+          const [type, value] = await Promise.all([
+            el
+              .findElement(By.css('[data-testid="invokeArgumentType"]'))
+              .getText(),
+            el
+              .findElement(By.css('[data-testid="invokeArgumentValue"]'))
+              .getText(),
+          ]);
+
+          return {
+            type,
+            value,
+          };
+        })
+      );
+
+      expect(actualArgs).to.deep.equal([
+        {
+          type: 'integer',
+          value: '42',
+        },
+        {
+          type: 'boolean',
+          value: 'false',
+        },
+        {
+          type: 'string',
+          value: '"hello"',
+        },
+      ]);
+
+      const paymentElements = await this.driver.findElements(
+        By.css('[data-testid="invokeScriptPaymentItem"]')
+      );
+
+      const actualPayments = await Promise.all(
+        paymentElements.map(el => el.getText())
+      );
+
+      expect(actualPayments).to.deep.equal([
+        '0.00000001 WAVES',
+        '1 NonScriptToken',
+      ]);
+
+      expect(
+        await invokeScript
+          .findElement(By.css('[data-testid="txFee"]'))
+          .getText()
+      ).to.equal('0.005 WAVES');
 
       await rejectMessage.call(this);
       await closeMessage.call(this);
