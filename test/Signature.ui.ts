@@ -814,11 +814,50 @@ describe('Signature', function () {
     });
 
     describe('Transfer', function () {
+      async function checkTransferAmount(this: mocha.Context, amount: string) {
+        expect(
+          await this.driver
+            .wait(
+              until.elementLocated(By.css('[data-testid="transferAmount"]')),
+              this.wait
+            )
+            .getText()
+        ).to.equal(amount);
+      }
+
+      async function checkRecipient(this: mocha.Context, recipient: string) {
+        expect(
+          await this.driver
+            .wait(
+              until.elementLocated(By.css('[data-testid="recipient"]')),
+              this.wait
+            )
+            .getText()
+        ).to.equal(recipient);
+      }
+
+      async function checkAttachment(this: mocha.Context, attachment: string) {
+        expect(
+          await this.driver
+            .wait(
+              until.elementLocated(By.css('[data-testid="attachmentContent"]')),
+              this.wait
+            )
+            .getText()
+        ).to.equal(attachment);
+      }
+
       it('Rejected', async function () {
         await performSignTransaction.call(this, TRANSFER);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkTransferAmount.call(this, '-123456790 NonScriptToken');
+        await checkRecipient.call(this, '3N5HNJz5otiU...BVv5HhYLdhiD');
+        await checkAttachment.call(this, 'base64:BQbtKNoM');
+
+        await checkTxFee.call(this, '0.005 WAVES');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -877,6 +916,11 @@ describe('Signature', function () {
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
 
+          await checkTransferAmount.call(this, '-123456790 NonScriptToken');
+          await checkRecipient.call(this, 'alias:T:alice');
+
+          await checkTxFee.call(this, '0.005 WAVES');
+
           await rejectMessage.call(this);
           await closeMessage.call(this);
         });
@@ -931,6 +975,12 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkTransferAmount.call(this, '-123456790 NonScriptToken');
+          await checkRecipient.call(this, '3N5HNJz5otiU...BVv5HhYLdhiD');
+          await checkAttachment.call(this, 'base64:BQbtKNoM');
+
+          await checkTxFee.call(this, '0.005 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);
