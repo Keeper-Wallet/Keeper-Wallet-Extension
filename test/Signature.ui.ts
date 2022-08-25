@@ -2876,11 +2876,102 @@ describe('Signature', function () {
     });
 
     describe('InvokeScript', function () {
+      async function checkPaymentsTitle(this: mocha.Context, title: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="invokeScriptPaymentsTitle"]'))
+            .getText()
+        ).to.equal(title);
+      }
+
+      async function checkDApp(this: mocha.Context, dApp: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="invokeScriptDApp"]'))
+            .getText()
+        ).to.equal(dApp);
+      }
+
+      async function checkFunction(this: mocha.Context, fn: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="invokeScriptFunction"]'))
+            .getText()
+        ).to.equal(fn);
+      }
+
+      async function checkArgs(
+        this: mocha.Context,
+        args: Array<{ type: string; value: string }>
+      ) {
+        const argElements = await this.driver.findElements(
+          By.css('[data-testid="invokeArgument"]')
+        );
+
+        const actualArgs = await Promise.all(
+          argElements.map(async el => {
+            const [type, value] = await Promise.all([
+              el
+                .findElement(By.css('[data-testid="invokeArgumentType"]'))
+                .getText(),
+              el
+                .findElement(By.css('[data-testid="invokeArgumentValue"]'))
+                .getText(),
+            ]);
+
+            return {
+              type,
+              value,
+            };
+          })
+        );
+
+        expect(actualArgs).to.deep.equal(args);
+      }
+
+      async function checkPayments(this: mocha.Context, payments: string[]) {
+        const paymentElements = await this.driver.findElements(
+          By.css('[data-testid="invokeScriptPaymentItem"]')
+        );
+
+        const actualPayments = await Promise.all(
+          paymentElements.map(el => el.getText())
+        );
+
+        expect(actualPayments).to.deep.equal(payments);
+      }
+
       it('Rejected', async function () {
         await performSignTransaction.call(this, INVOKE_SCRIPT);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkPaymentsTitle.call(this, '2 Payments');
+        await checkDApp.call(this, INVOKE_SCRIPT.data.dApp);
+        await checkFunction.call(this, INVOKE_SCRIPT.data.call.function);
+
+        await checkArgs.call(this, [
+          {
+            type: 'integer',
+            value: '42',
+          },
+          {
+            type: 'boolean',
+            value: 'false',
+          },
+          {
+            type: 'string',
+            value: '"hello"',
+          },
+        ]);
+
+        await checkPayments.call(this, [
+          '0.00000001 WAVES',
+          '1 NonScriptToken',
+        ]);
+
+        await checkTxFee.call(this, '0.005 WAVES');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -2943,6 +3034,13 @@ describe('Signature', function () {
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
 
+          await checkPaymentsTitle.call(this, 'No Payments');
+          await checkDApp.call(this, INVOKE_SCRIPT_WITHOUT_CALL.data.dApp);
+          await checkFunction.call(this, 'default');
+          await checkArgs.call(this, []);
+          await checkPayments.call(this, []);
+          await checkTxFee.call(this, '0.005 WAVES');
+
           await rejectMessage.call(this);
           await closeMessage.call(this);
         });
@@ -2999,6 +3097,32 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkPaymentsTitle.call(this, '2 Payments');
+          await checkDApp.call(this, INVOKE_SCRIPT.data.dApp);
+          await checkFunction.call(this, INVOKE_SCRIPT.data.call.function);
+
+          await checkArgs.call(this, [
+            {
+              type: 'integer',
+              value: '42',
+            },
+            {
+              type: 'boolean',
+              value: 'false',
+            },
+            {
+              type: 'string',
+              value: '"hello"',
+            },
+          ]);
+
+          await checkPayments.call(this, [
+            '0.00000001 WAVES',
+            '1 NonScriptToken',
+          ]);
+
+          await checkTxFee.call(this, '0.005 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);

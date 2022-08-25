@@ -208,7 +208,20 @@ export const INVOKE_SCRIPT = {
     dApp: '3My2kBJaGfeM2koiZroaYdd3y8rAgfV2EAx',
     call: {
       function: 'someFunctionToCall',
-      args: [],
+      args: [
+        {
+          type: 'integer' as const,
+          value: 42,
+        },
+        {
+          type: 'boolean' as const,
+          value: false,
+        },
+        {
+          type: 'string' as const,
+          value: 'hello',
+        },
+      ],
     },
     payment: [
       { assetId: null, amount: 1 },

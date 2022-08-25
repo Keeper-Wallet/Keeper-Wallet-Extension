@@ -37,7 +37,7 @@ class ScriptInvocationCardComponent extends React.PureComponent<
             <div className="basic500 body3 margin-min">
               {t('transactions.scriptInvocation')}
             </div>
-            <h1 className="headline1">
+            <h1 className="headline1" data-testid="invokeScriptPaymentsTitle">
               {t(
                 hasPayment
                   ? 'transactions.paymentsCount'
@@ -53,14 +53,18 @@ class ScriptInvocationCardComponent extends React.PureComponent<
             <div className="tx-title tag1 basic500">
               {t('transactions.dApp')}
             </div>
-            <div className={styles.txValue}>{tx.dApp}</div>
+            <div className={styles.txValue} data-testid="invokeScriptDApp">
+              {tx.dApp}
+            </div>
           </div>
 
           <div className={styles.txRow}>
             <div className="tx-title tag1 basic500">
               {t('transactions.scriptInvocationFunction')}
             </div>
-            <div className={styles.txValue}>{functionName}</div>
+            <div className={styles.txValue} data-testid="invokeScriptFunction">
+              {functionName}
+            </div>
           </div>
 
           <div className={styles.txRow}>
@@ -94,6 +98,7 @@ class ScriptInvocationCardComponent extends React.PureComponent<
                     {amounts.map((amount, index) => (
                       <div className={styles.balance} key={index}>
                         <Balance
+                          data-testid="invokeScriptPaymentItem"
                           isShortFormat
                           balance={amount}
                           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

@@ -129,10 +129,19 @@ const DataNoKey = ({
           const length = Array.isArray(itemValue) ? itemValue.length : 0;
           return (
             <tbody key={index}>
-              <tr className={cn(styles.dataRow)}>
-                <td className={styles.dataItemData}>{item.type}</td>
+              <tr className={cn(styles.dataRow)} data-testid="invokeArgument">
+                <td
+                  className={styles.dataItemData}
+                  data-testid="invokeArgumentType"
+                >
+                  {item.type}
+                </td>
                 {length ? (
-                  <td title={itemValueJson} className={styles.dataItemDataLast}>
+                  <td
+                    title={itemValueJson}
+                    className={styles.dataItemDataLast}
+                    data-testid="invokeArgumentValue"
+                  >
                     [
                     {(itemValue as unknown[]).map((item, index) =>
                       index === length - 1 ? (
@@ -147,7 +156,11 @@ const DataNoKey = ({
                     )}
                   </td>
                 ) : (
-                  <td title={itemValueJson} className={styles.dataItemDataLast}>
+                  <td
+                    title={itemValueJson}
+                    className={styles.dataItemDataLast}
+                    data-testid="invokeArgumentValue"
+                  >
                     {itemValueJson}
                   </td>
                 )}
