@@ -98,6 +98,7 @@ describe('Signature', function () {
     await this.driver.switchTo().window(tabAccounts);
     await this.driver.close();
     await this.driver.switchTo().window(tabOrigin);
+    await this.driver.get(`https://${WHITELIST[3]}`);
   });
 
   after(async function () {
@@ -206,6 +207,10 @@ describe('Signature', function () {
         })
       );
     }
+
+    after(async function () {
+      await this.driver.get(`https://${WHITELIST[3]}`);
+    });
 
     it('Rejected', async function () {
       await this.driver.get(`https://${CUSTOMLIST[0]}`);
@@ -350,8 +355,6 @@ describe('Signature', function () {
     }
 
     it('Rejected', async function () {
-      await this.driver.get(`https://${WHITELIST[3]}`);
-
       await performAuthRequest.call(this);
       await checkOrigin.call(this, WHITELIST[3]);
       await checkAccountName.call(this, 'rich');
