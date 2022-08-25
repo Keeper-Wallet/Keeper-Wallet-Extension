@@ -1393,6 +1393,25 @@ describe('Signature', function () {
     });
 
     describe('Lease', function () {
+      async function checkLeaseAmount(this: mocha.Context, amount: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="leaseAmount"]'))
+            .getText()
+        ).to.equal(amount);
+      }
+
+      async function checkLeaseRecipient(
+        this: mocha.Context,
+        recipient: string
+      ) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="leaseRecipient"]'))
+            .getText()
+        ).to.equal(recipient);
+      }
+
       before(async function () {
         await App.restartServiceWorker.call(this);
       });
@@ -1402,6 +1421,11 @@ describe('Signature', function () {
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkLeaseAmount.call(this, '1.23456790 WAVES');
+        await checkLeaseRecipient.call(this, '3N5HNJz5otiU...BVv5HhYLdhiD');
+
+        await checkTxFee.call(this, '0.005 WAVES');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -1449,6 +1473,11 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkLeaseAmount.call(this, '1.23456790 WAVES');
+          await checkLeaseRecipient.call(this, 'alias:T:bobby');
+
+          await checkTxFee.call(this, '0.005 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);
@@ -1502,6 +1531,11 @@ describe('Signature', function () {
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
 
+          await checkLeaseAmount.call(this, '1.23456790 WAVES');
+          await checkLeaseRecipient.call(this, '3N5HNJz5otiU...BVv5HhYLdhiD');
+
+          await checkTxFee.call(this, '0.005 WAVES');
+
           await rejectMessage.call(this);
           await closeMessage.call(this);
         });
@@ -1553,6 +1587,11 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkLeaseAmount.call(this, '1.23456790 WAVES');
+          await checkLeaseRecipient.call(this, '3N5HNJz5otiU...BVv5HhYLdhiD');
+
+          await checkTxFee.call(this, '0.005 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);
