@@ -7,7 +7,7 @@ import { useAppSelector } from '../../../store';
 import { useTranslation } from 'react-i18next';
 import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
-import { Long, TransactionFromNode, TRANSACTION_TYPE } from '@waves/ts-types';
+import { Long, TRANSACTION_TYPE, TransactionFromNode } from '@waves/ts-types';
 import { Tooltip } from '../../ui/tooltip';
 import { AddressRecipient } from '../../ui/Address/Recipient';
 import { getTxDetailLink } from '../../../urls';
@@ -351,7 +351,15 @@ export function HistoryItem({ tx, className }: Props) {
           tx.call?.function === 'swap') ||
         (tx.dApp === '3P5UKXpQbom7GB2WGdPG5yGQPeQQuM3hFmw' &&
           tx.call &&
-          ['testSeq', 'swap', 'swopfiSwap'].includes(tx.call.function)) ||
+          [
+            'testSeq',
+            'swap',
+            'swapWithRefferer',
+            'swopfiSwap',
+            'swopfiSwapWithReferrer',
+            'puzzleSwap',
+            'puzzleSwapWithReferrer',
+          ].includes(tx.call.function)) ||
         (tx.dApp === '3PGFHzVGT4NTigwCKP1NcwoXkodVZwvBuuU' &&
           tx.call?.function === 'swapWithReferral')
       ) {
