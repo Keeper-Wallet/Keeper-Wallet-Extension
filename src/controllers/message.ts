@@ -36,8 +36,6 @@ import { MessageInput, MessageStoreItem } from 'messages/types';
 
 const { stringify } = create({ BigNumber });
 
-// msg statuses: unapproved, signed, published, rejected, failed
-
 export class MessageController extends EventEmitter {
   private messages;
   private store;
