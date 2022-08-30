@@ -115,7 +115,7 @@ export type MessageStoreItem = {
   lease?: unknown;
   origin?: string;
   priceAsset?: string;
-  result: string;
+  result?: string;
   status: MsgStatus;
   successPath?: string | null;
   timestamp: number;
