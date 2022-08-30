@@ -817,10 +817,19 @@ export class MessageController extends EventEmitter {
         );
         return result;
       }
-      case 'cancelOrder':
+      case 'cancelOrder': {
         result.amountAsset = message.data.amountAsset;
         result.priceAsset = message.data.priceAsset;
-      // falls through
+        const requestDefaults = {
+          timestamp: Date.now(),
+          senderPublicKey: message.account.publicKey,
+        };
+        result.data.data = { ...requestDefaults, ...result.data.data };
+        result.messageHash = getHash.request(
+          makeBytes.request(convertFromSa.request(result.data))
+        );
+        return result;
+      }
       case 'request': {
         const requestDefaults = {
           timestamp: Date.now(),
