@@ -284,10 +284,13 @@ export class MessageController extends EventEmitter {
   }
 
   async updateTransactionFee(id: string, fee: IMoneyLike) {
-    const message = this._getMessageById(id);
+    const message = this._getMessageById(id) as Extract<
+      MessageStoreItem,
+      { type: 'transaction' }
+    >;
+
     message.data.data.fee = fee;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updatedMsg = await this._generateMessage(message as any);
+    const updatedMsg = await this._generateMessage(message);
     updatedMsg.id = id;
     this._updateMessage(updatedMsg);
     return updatedMsg;
