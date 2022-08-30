@@ -626,22 +626,28 @@ export class MessageController extends EventEmitter {
 
     switch (message.type) {
       case 'wavesAuth': {
-        const result = { ...message } as unknown as MessageStoreItem;
+        const result = {
+          ...message,
+          successPath: message.data.successPath || undefined,
+          data: {
+            ...message.data,
+            publicKey: message.data.publicKey || message.account.publicKey,
+          },
+        };
 
-        if (message.data.successPath) {
-          result.successPath = message.data.successPath;
-        }
+        let messageHash: string;
 
-        result.data = message.data;
-        result.data.publicKey = message.data.publicKey =
-          message.data.publicKey || message.account.publicKey;
         try {
-          result.messageHash = wavesAuth(message.data, 'fake user').hash;
+          messageHash = wavesAuth(message.data, 'fake user').hash;
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, message);
         }
-        return result;
+
+        return {
+          ...result,
+          messageHash,
+        };
       }
       case 'auth': {
         const result = { ...message } as unknown as MessageStoreItem;

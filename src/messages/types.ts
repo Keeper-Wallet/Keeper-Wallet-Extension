@@ -22,7 +22,7 @@ export type MessageInput = {
   broadcast?: boolean;
   options?: MessageOptions;
   origin?: string;
-  successPath?: unknown;
+  successPath?: string | null;
   title?: string | null;
 } & (
   | {
@@ -83,7 +83,11 @@ export type MessageInput = {
     }
   | {
       type: 'wavesAuth';
-      data: MessageInputData & IWavesAuthParams;
+      data: IWavesAuthParams & {
+        isRequest?: boolean;
+        successPath?: string;
+        type?: never;
+      };
     }
 );
 
@@ -119,7 +123,7 @@ export type MessageStoreItem = {
   status: MsgStatus;
   successPath?: string | null;
   timestamp: number;
-  title?: string;
+  title?: string | null;
 } & (
   | {
       type: 'transaction';
@@ -133,9 +137,12 @@ export type MessageStoreItem = {
     }
   | {
       type: 'wavesAuth';
-      messageHash?: string | string[];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: any;
+      messageHash: string;
+      data: {
+        publicKey: string;
+        timestamp?: number;
+        type?: never;
+      };
     }
   | {
       type: 'auth';
