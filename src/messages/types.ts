@@ -17,6 +17,17 @@ interface MessageInputData {
   type?: number;
 }
 
+export type MessageInputOrderData = {
+  isRequest?: never;
+  successPath?: string;
+  type: 1002;
+  data: {
+    amount: IMoneyLike;
+    matcherFee?: IMoneyLike;
+    price: IMoneyLike;
+  };
+};
+
 export type MessageInput = {
   account: PreferencesAccount;
   broadcast?: boolean;
@@ -55,11 +66,7 @@ export type MessageInput = {
     }
   | {
       type: 'order';
-      data: MessageInputData & {
-        data?: {
-          matcherFee?: unknown;
-        };
-      };
+      data: MessageInputOrderData;
     }
   | {
       type: 'request';
@@ -162,9 +169,17 @@ export type MessageStoreItem = {
     }
   | {
       type: 'order';
-      messageHash?: string | string[];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: any;
+      messageHash: string;
+      data: {
+        type: 1002;
+        data: {
+          chainId: number;
+          matcherFee: IMoneyLike;
+          matcherPublicKey: string;
+          senderPublicKey: string;
+          timestamp: number;
+        };
+      };
     }
   | {
       type: 'cancelOrder';

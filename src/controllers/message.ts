@@ -32,7 +32,11 @@ import { TxInfoController } from './txInfo';
 import { CurrentAccountController } from './currentAccount';
 import { PERMISSIONS } from 'permissions/constants';
 import { PreferencesAccount } from 'preferences/types';
-import { MessageInput, MessageStoreItem } from 'messages/types';
+import {
+  MessageInput,
+  MessageInputOrderData,
+  MessageStoreItem,
+} from 'messages/types';
 
 const { stringify } = create({ BigNumber });
 
@@ -756,30 +760,36 @@ export class MessageController extends EventEmitter {
         return result;
       }
       case 'order': {
-        const result = { ...message } as unknown as MessageStoreItem;
+        this._validateOrder(message.data);
 
-        if (message.data.successPath) {
-          result.successPath = message.data.successPath;
-        }
+        const data = {
+          ...message.data,
+          data: {
+            timestamp: Date.now(),
+            senderPublicKey: message.account.publicKey,
+            chainId: networkByteFromAddress(message.account.address).charCodeAt(
+              0
+            ),
+            matcherPublicKey: await this.getMatcherPublicKey(),
+            matcherFee: Money.fromCoins(
+              0,
+              new Asset(this.assetInfoController.getWavesAsset())
+            ).toJSON(),
+            ...message.data.data,
+          },
+        };
 
-        this._validateOrder(result.data);
-
-        result.data.data = await this._prepareOrder(
-          result.data.data,
-          message.account
-        );
-
-        const matcherFee =
-          message.data.data?.matcherFee ||
-          (await this._getFee(message, result.data));
+        const result = {
+          ...message,
+          successPath: message.data.successPath || undefined,
+          data,
+        };
 
         const filledMessage = await this._fillSignableData(clone(result));
         const convertedData = convertFromSa.order(filledMessage.data);
+        const messageHash = getHash.order(makeBytes.order(convertedData));
 
-        result.data.data = { ...result.data.data, matcherFee };
-        result.messageHash = getHash.order(makeBytes.order(convertedData));
-
-        result.json = stringify(
+        const json = stringify(
           {
             ...convertedData,
             sender: address(
@@ -790,7 +800,21 @@ export class MessageController extends EventEmitter {
           null,
           2
         );
-        return result;
+
+        return {
+          ...result,
+          messageHash,
+          json,
+          data: {
+            ...data,
+            data: {
+              ...data.data,
+              matcherFee:
+                message.data.data?.matcherFee ||
+                (await this._getFee(message, data)),
+            },
+          },
+        };
       }
       case 'transaction': {
         const result = { ...message } as unknown as MessageStoreItem;
@@ -919,7 +943,7 @@ export class MessageController extends EventEmitter {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async _getFee(message: any, signData: any) {
+  async _getFee(message: any, signData: any): Promise<IMoneyLike> {
     const signableData = await this._transformData({ ...signData });
     const chainId = this.networkController.getNetworkCode().charCodeAt(0);
 
@@ -1117,8 +1141,7 @@ export class MessageController extends EventEmitter {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _validateOrder(order: any) {
+  _validateOrder(order: MessageInputOrderData) {
     if (order.type !== 1002) {
       throw ERRORS.REQUEST_ERROR('unexpected type', order);
     }
@@ -1134,22 +1157,5 @@ export class MessageController extends EventEmitter {
     if (!this._isMoneyLikeValuePositive(order.data.matcherFee)) {
       throw ERRORS.REQUEST_ERROR('matcherFee is not valid', order);
     }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async _prepareOrder(orderParams: any, account: any) {
-    const defaultFee = Money.fromCoins(
-      0,
-      new Asset(this.assetInfoController.getWavesAsset())
-    );
-
-    const orderDefaults = {
-      timestamp: Date.now(),
-      senderPublicKey: account.publicKey,
-      chainId: networkByteFromAddress(account.address).charCodeAt(0),
-      matcherPublicKey: await this.getMatcherPublicKey(),
-      matcherFee: defaultFee,
-    };
-    return { ...orderDefaults, ...orderParams };
   }
 }
