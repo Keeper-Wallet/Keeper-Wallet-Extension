@@ -113,7 +113,6 @@ export type MessageStoreItem = {
   id: string;
   json?: string;
   lease?: unknown;
-  messageHash?: string | string[];
   origin?: string;
   priceAsset?: string;
   result: string;
@@ -124,44 +123,53 @@ export type MessageStoreItem = {
 } & (
   | {
       type: 'transaction';
+      messageHash?: string | string[];
       data: TxData;
     }
   | {
       type: 'transactionPackage';
+      messageHash?: string | string[];
       data: TxData[] & { type?: unknown };
     }
   | {
       type: 'wavesAuth';
+      messageHash?: string | string[];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: any;
     }
   | {
       type: 'auth';
+      messageHash?: string | string[];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: any;
     }
   | {
       type: 'order';
+      messageHash?: string | string[];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: any;
     }
   | {
       type: 'cancelOrder';
+      messageHash?: string | string[];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: any;
     }
   | {
       type: 'request';
+      messageHash?: string | string[];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: any;
     }
   | {
       type: 'authOrigin';
+      messageHash?: string | string[];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: any;
     }
   | {
       type: 'customData';
+      messageHash?: string | string[];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: any;
     }
