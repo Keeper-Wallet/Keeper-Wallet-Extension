@@ -641,7 +641,7 @@ export class MessageController extends EventEmitter {
         } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, message);
         }
-        break;
+        return result;
       case 'auth':
         try {
           result.successPath = result.successPath
@@ -671,7 +671,7 @@ export class MessageController extends EventEmitter {
         result.messageHash = getHash.auth(
           makeBytes.auth(convertFromSa.auth(result.data))
         );
-        break;
+        return result;
       case 'transactionPackage': {
         const { max, allow_tx } = this.getPackConfig();
 
@@ -735,7 +735,7 @@ export class MessageController extends EventEmitter {
         );
         result.data = await Promise.all(dataPromises);
         result.messageHash = ids;
-        break;
+        return result;
       }
       case 'order': {
         this._validateOrder(result.data);
@@ -766,7 +766,7 @@ export class MessageController extends EventEmitter {
           null,
           2
         );
-        break;
+        return result;
       }
       case 'transaction': {
         if (!result.data.type || result.data.type >= 1000) {
@@ -815,7 +815,7 @@ export class MessageController extends EventEmitter {
           null,
           2
         );
-        break;
+        return result;
       }
       case 'cancelOrder':
         result.amountAsset = message.data.amountAsset;
@@ -830,10 +830,10 @@ export class MessageController extends EventEmitter {
         result.messageHash = getHash.request(
           makeBytes.request(convertFromSa.request(result.data))
         );
-        break;
+        return result;
       }
       case 'authOrigin':
-        break;
+        return result;
       case 'customData':
         result.data.publicKey = message.data.publicKey =
           message.data.publicKey || message.account.publicKey;
@@ -843,7 +843,7 @@ export class MessageController extends EventEmitter {
         } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, message);
         }
-        break;
+        return result;
       default:
         throw ERRORS.REQUEST_ERROR(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -851,8 +851,6 @@ export class MessageController extends EventEmitter {
           message
         );
     }
-
-    return result;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
