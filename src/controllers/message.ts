@@ -611,7 +611,7 @@ export class MessageController extends EventEmitter {
     return message;
   }
 
-  async _generateMessage(messageData: MessageInput) {
+  async _generateMessage(messageData: MessageInput): Promise<MessageStoreItem> {
     const message = {
       ...messageData,
       id: uuidv4(),
