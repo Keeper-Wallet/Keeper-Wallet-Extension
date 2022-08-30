@@ -624,14 +624,14 @@ export class MessageController extends EventEmitter {
       throw ERRORS.REQUEST_ERROR('should contain a data field', message);
     }
 
-    const result = { ...message } as unknown as MessageStoreItem;
-
-    if (message.data.successPath) {
-      result.successPath = message.data.successPath;
-    }
-
     switch (message.type) {
-      case 'wavesAuth':
+      case 'wavesAuth': {
+        const result = { ...message } as unknown as MessageStoreItem;
+
+        if (message.data.successPath) {
+          result.successPath = message.data.successPath;
+        }
+
         result.data = message.data;
         result.data.publicKey = message.data.publicKey =
           message.data.publicKey || message.account.publicKey;
@@ -642,7 +642,14 @@ export class MessageController extends EventEmitter {
           throw ERRORS.REQUEST_ERROR(e.message, message);
         }
         return result;
-      case 'auth':
+      }
+      case 'auth': {
+        const result = { ...message } as unknown as MessageStoreItem;
+
+        if (message.data.successPath) {
+          result.successPath = message.data.successPath;
+        }
+
         try {
           result.successPath = result.successPath
             ? new URL(
@@ -672,7 +679,14 @@ export class MessageController extends EventEmitter {
           makeBytes.auth(convertFromSa.auth(result.data))
         );
         return result;
+      }
       case 'transactionPackage': {
+        const result = { ...message } as unknown as MessageStoreItem;
+
+        if (message.data.successPath) {
+          result.successPath = message.data.successPath;
+        }
+
         const { max, allow_tx } = this.getPackConfig();
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -738,6 +752,12 @@ export class MessageController extends EventEmitter {
         return result;
       }
       case 'order': {
+        const result = { ...message } as unknown as MessageStoreItem;
+
+        if (message.data.successPath) {
+          result.successPath = message.data.successPath;
+        }
+
         this._validateOrder(result.data);
 
         result.data.data = await this._prepareOrder(
@@ -769,6 +789,12 @@ export class MessageController extends EventEmitter {
         return result;
       }
       case 'transaction': {
+        const result = { ...message } as unknown as MessageStoreItem;
+
+        if (message.data.successPath) {
+          result.successPath = message.data.successPath;
+        }
+
         if (!result.data.type || result.data.type >= 1000) {
           throw ERRORS.REQUEST_ERROR('invalid transaction type', message);
         }
@@ -818,6 +844,12 @@ export class MessageController extends EventEmitter {
         return result;
       }
       case 'cancelOrder': {
+        const result = { ...message } as unknown as MessageStoreItem;
+
+        if (message.data.successPath) {
+          result.successPath = message.data.successPath;
+        }
+
         result.amountAsset = message.data.amountAsset;
         result.priceAsset = message.data.priceAsset;
         const requestDefaults = {
@@ -831,6 +863,12 @@ export class MessageController extends EventEmitter {
         return result;
       }
       case 'request': {
+        const result = { ...message } as unknown as MessageStoreItem;
+
+        if (message.data.successPath) {
+          result.successPath = message.data.successPath;
+        }
+
         const requestDefaults = {
           timestamp: Date.now(),
           senderPublicKey: message.account.publicKey,
@@ -841,9 +879,22 @@ export class MessageController extends EventEmitter {
         );
         return result;
       }
-      case 'authOrigin':
+      case 'authOrigin': {
+        const result = { ...message } as unknown as MessageStoreItem;
+
+        if (message.data.successPath) {
+          result.successPath = message.data.successPath;
+        }
+
         return result;
-      case 'customData':
+      }
+      case 'customData': {
+        const result = { ...message } as unknown as MessageStoreItem;
+
+        if (message.data.successPath) {
+          result.successPath = message.data.successPath;
+        }
+
         result.data.publicKey = message.data.publicKey =
           message.data.publicKey || message.account.publicKey;
         try {
@@ -853,6 +904,7 @@ export class MessageController extends EventEmitter {
           throw ERRORS.REQUEST_ERROR(e.message, message);
         }
         return result;
+      }
       default:
         throw ERRORS.REQUEST_ERROR(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
