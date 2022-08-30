@@ -650,25 +650,21 @@ export class MessageController extends EventEmitter {
         };
       }
       case 'auth': {
-        const result = { ...message } as unknown as MessageStoreItem;
-
-        if (message.data.successPath) {
-          result.successPath = message.data.successPath;
-        }
+        let successPath: string | null = null;
 
         try {
-          result.successPath = result.successPath
+          successPath = message.data.successPath
             ? new URL(
-                result.successPath,
+                message.data.successPath,
                 message.data.referrer || 'https://' + message.origin
               ).href
             : null;
-        } catch (e) {
-          result.successPath = null;
+        } catch {
+          // ignore
         }
 
-        result.data = {
-          type: 1000,
+        const data = {
+          type: 1000 as const,
           referrer: message.data.referrer,
           isRequest: message.data.isRequest,
           data: {
@@ -681,10 +677,12 @@ export class MessageController extends EventEmitter {
           },
         };
 
-        result.messageHash = getHash.auth(
-          makeBytes.auth(convertFromSa.auth(result.data))
-        );
-        return result;
+        return {
+          ...message,
+          successPath,
+          messageHash: getHash.auth(makeBytes.auth(convertFromSa.auth(data))),
+          data,
+        };
       }
       case 'transactionPackage': {
         const result = { ...message } as unknown as MessageStoreItem;

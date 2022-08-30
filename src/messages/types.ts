@@ -28,11 +28,11 @@ export type MessageInput = {
   | {
       type: 'auth';
       data: MessageInputData & {
-        data?: unknown;
-        host?: unknown;
-        icon?: unknown;
-        isRequest?: unknown;
-        name?: unknown;
+        data: string;
+        host?: string;
+        icon?: string;
+        isRequest?: boolean;
+        name?: string;
         referrer?: string;
       };
     }
@@ -147,8 +147,18 @@ export type MessageStoreItem = {
   | {
       type: 'auth';
       messageHash?: string | string[];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: any;
+      data: {
+        type: 1000;
+        referrer: string | undefined;
+        isRequest: boolean | undefined;
+        data: {
+          data: string;
+          prefix: string;
+          host: string;
+          name: string | undefined;
+          icon: string | undefined;
+        };
+      };
     }
   | {
       type: 'order';
