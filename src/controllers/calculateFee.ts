@@ -155,7 +155,7 @@ function isNFT(tx: any) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getIssueFee(tx: any, accountFee: any, config: FeeConfig) {
+function getIssueFee(tx: any, accountFee: BigNumber, config: FeeConfig) {
   const minFee = accountFee.add(getConfigProperty(tx.type, 'fee', config));
   if (isNFT(tx)) {
     return accountFee.add(getConfigProperty(tx.type, 'nftFee', config));
@@ -276,7 +276,7 @@ export const calculateFeeFabric =
     const { type } = signData;
 
     if (!FEE_TYPES.includes(type)) {
-      return Object.create(null);
+      return Object.create(null) as Record<string, never>;
     }
     const node = networkController.getNode();
     const assetIds = getAssetIds(signData, chainId, account.type);
