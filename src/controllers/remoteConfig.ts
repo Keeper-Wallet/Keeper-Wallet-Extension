@@ -111,7 +111,7 @@ export class RemoteConfigController extends EventEmitter {
     });
   }
 
-  getPackConfig() {
+  getPackConfig(): typeof DEFAULT_CONFIG.PACK_CONFIG {
     try {
       const { pack_config } = this.store.getState().config;
       return extendValues(DEFAULT_CONFIG.PACK_CONFIG, pack_config);
