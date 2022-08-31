@@ -166,7 +166,7 @@ export type MessageStoreItem = {
     }
   | {
       type: 'transactionPackage';
-      messageHash?: string | string[];
+      messageHash: string[];
       data: TxData[] & { type?: never; data?: never };
     }
   | {
