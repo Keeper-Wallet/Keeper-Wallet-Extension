@@ -1047,7 +1047,7 @@ export class MessageController extends EventEmitter {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _validateTx(tx: any, account: any) {
+  _validateTx(tx: any, account: PreferencesAccount) {
     if ('fee' in tx.data && !this._isMoneyLikeValuePositive(tx.data.fee)) {
       throw ERRORS.REQUEST_ERROR('fee is not valid', tx);
     }
@@ -1138,7 +1138,7 @@ export class MessageController extends EventEmitter {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _prepareTx(txParams: any, account: any) {
+  _prepareTx(txParams: any, account: PreferencesAccount) {
     return {
       timestamp: Date.now(),
       senderPublicKey: account.publicKey,
