@@ -9,14 +9,6 @@ interface MessageOptions {
   uid?: unknown;
 }
 
-interface MessageInputData {
-  data?: unknown;
-  isRequest?: boolean;
-  origin?: unknown;
-  successPath?: string;
-  type?: number;
-}
-
 type MessageInputOrderData = {
   isRequest?: never;
   successPath?: string;
@@ -38,30 +30,49 @@ export type MessageInput = {
 } & (
   | {
       type: 'auth';
-      data: MessageInputData & {
+      data: {
         data: string;
         host?: string;
         icon?: string;
         isRequest?: boolean;
         name?: string;
+        origin?: unknown;
         referrer?: string;
+        successPath?: string;
+        type?: number;
       };
     }
   | {
       type: 'authOrigin';
-      data: MessageInputData;
+      data: {
+        data?: unknown;
+        isRequest?: boolean;
+        origin?: unknown;
+        successPath?: string;
+        type?: number;
+      };
     }
   | {
       type: 'cancelOrder';
-      data: MessageInputData & {
+      data: {
         amountAsset?: string;
+        data?: unknown;
+        isRequest?: boolean;
+        origin?: unknown;
         priceAsset?: string;
+        successPath?: string;
+        type?: number;
       };
     }
   | {
       type: 'customData';
-      data: MessageInputData & {
+      data: {
+        data?: unknown;
+        isRequest?: boolean;
+        origin?: unknown;
         publicKey?: unknown;
+        successPath?: string;
+        type?: number;
       };
     }
   | {
@@ -70,23 +81,38 @@ export type MessageInput = {
     }
   | {
       type: 'request';
-      data: MessageInputData;
+      data: {
+        data?: unknown;
+        isRequest?: boolean;
+        origin?: unknown;
+        successPath?: string;
+        type?: number;
+      };
     }
   | {
       type: 'transaction';
-      data: MessageInputData & {
+      data: {
+        isRequest?: boolean;
+        origin?: unknown;
+        successPath?: string;
         type: typeof TRANSACTION_TYPE[keyof typeof TRANSACTION_TYPE];
         data: {
           amount: IMoneyLike;
+          attachment: string;
           fee?: unknown;
           recipient: string;
-          attachment: string;
         };
       };
     }
   | {
       type: 'transactionPackage';
-      data: MessageInputData;
+      data: {
+        data?: unknown;
+        isRequest?: boolean;
+        origin?: unknown;
+        successPath?: string;
+        type?: number;
+      };
     }
   | {
       type: 'wavesAuth';
