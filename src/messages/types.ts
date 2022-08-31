@@ -36,7 +36,7 @@ export type MessageInput = {
         isRequest?: boolean;
         origin?: unknown;
         successPath?: string;
-        type?: number;
+        type?: never;
       };
     }
   | {
@@ -234,8 +234,10 @@ export type MessageStoreItem = {
   | {
       type: 'authOrigin';
       messageHash?: string | string[];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: any;
+      data: {
+        type?: never;
+        data?: unknown;
+      };
     }
   | {
       type: 'customData';

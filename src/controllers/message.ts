@@ -912,15 +912,11 @@ export class MessageController extends EventEmitter {
           ),
         };
       }
-      case 'authOrigin': {
-        const result = { ...message } as unknown as MessageStoreItem;
-
-        if (message.data.successPath) {
-          result.successPath = message.data.successPath;
-        }
-
-        return result;
-      }
+      case 'authOrigin':
+        return {
+          ...message,
+          successPath: message.data.successPath || undefined,
+        };
       case 'customData': {
         const result = { ...message } as unknown as MessageStoreItem;
 
