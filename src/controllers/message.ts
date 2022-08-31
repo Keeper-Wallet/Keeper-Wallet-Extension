@@ -811,15 +811,6 @@ export class MessageController extends EventEmitter {
           ...result,
           messageHash,
           json,
-          data: {
-            ...data,
-            data: {
-              ...data.data,
-              matcherFee:
-                message.data.data?.matcherFee ||
-                (await this._getFee(message, data)),
-            },
-          },
         };
       }
       case 'transaction': {
