@@ -180,7 +180,7 @@ export type MessageStoreItem = {
     }
   | {
       type: 'auth';
-      messageHash?: string | string[];
+      messageHash: string;
       data: {
         type: 1000;
         referrer: string | undefined;
