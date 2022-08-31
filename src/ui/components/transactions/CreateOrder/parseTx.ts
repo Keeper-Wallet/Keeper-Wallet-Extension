@@ -39,7 +39,7 @@ export function getFee(tx: { matcherFee?: IMoneyLike | string }) {
     : { coins: tx.matcherFee, assetId: 'WAVES' };
 }
 
-export function getAmount(tx: { amount?: IMoneyLike | string }) {
+export function getAmount(tx: { amount?: IMoneyLike | string | number }) {
   return typeof tx.amount === 'object'
     ? tx.amount
     : { coins: tx.amount, assetId: 'WAVES' };
@@ -49,20 +49,20 @@ export function getAmountSign(tx: { orderType?: unknown }) {
   return tx.orderType === 'sell' ? '-' : '+';
 }
 
-export function getPrice(tx: { price: IMoneyLike | string }) {
+export function getPrice(tx: { price?: IMoneyLike | string | number }) {
   return typeof tx.price === 'object'
     ? tx.price
     : { coins: tx.price, assetId: 'WAVES' };
 }
 
-export function getPriceSign(tx: { orderType: string }) {
+export function getPriceSign(tx: { orderType?: string }) {
   return tx.orderType === 'buy' ? '-' : '+';
 }
 
 export function getPriceAmount(
   tx: {
-    amount: IMoneyLike | string;
-    price: IMoneyLike | string;
+    amount?: IMoneyLike | string | number;
+    price?: IMoneyLike | string | number;
   },
   assets: Record<string, AssetDetail>
 ) {

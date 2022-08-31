@@ -11,10 +11,15 @@ class CreateOrderInfoComponent extends React.PureComponent<
 > {
   render() {
     const { t, message, assets } = this.props;
-    const { messageHash, data = {} } = message;
-    const tx = { type: data.type, ...data.data };
 
+    const { messageHash, data } = message as Extract<
+      typeof message,
+      { type: 'order' }
+    >;
+
+    const tx = { type: data?.type, ...data?.data };
     const fee = getMoney(getFee(tx), assets);
+
     return (
       <div>
         <div className={styles.txRow}>

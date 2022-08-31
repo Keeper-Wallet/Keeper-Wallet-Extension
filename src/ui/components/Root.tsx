@@ -102,15 +102,13 @@ class RootComponent extends React.Component<Props, State> {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const { msg } = activePopup!;
 
-        const data: Record<string, string> = {
+        const data: Record<string, string | number> = {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           type: msg!.type,
         };
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        if (msg!.type === 'transaction') {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          data.transactionType = msg!.data.type;
+        if (msg?.type === 'transaction') {
+          data.transactionType = msg.data.type;
         }
 
         Sentry.addBreadcrumb({

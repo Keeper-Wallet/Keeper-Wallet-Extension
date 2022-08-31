@@ -17,8 +17,13 @@ class ReissueCardComponent extends React.PureComponent<
     });
 
     const { t, message, assets } = this.props;
-    const { data = {} } = message;
-    const tx = { type: data.type, ...data.data };
+
+    const { data } = message as Extract<
+      typeof message,
+      { type: 'transaction' }
+    >;
+
+    const tx = { type: data?.type, ...data?.data };
     const amount = getMoney(getAmount(tx), assets);
 
     return (

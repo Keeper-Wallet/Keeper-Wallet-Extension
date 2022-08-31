@@ -138,7 +138,7 @@ class MessageListComponent extends React.Component<Props, State> {
   ) {
     const assets = messages.reduce((acc, message) => {
       const { data } = message;
-      const tx = data.data || data;
+      const tx = ('data' in data && data.data) || data;
       const config = getConfigByTransaction(message);
       const assetIds = config.getAssetsId(tx);
       assetIds.forEach(item => {

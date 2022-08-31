@@ -44,7 +44,8 @@ export type MessageInput = {
       type: 'cancelOrder';
       data: {
         amountAsset?: string;
-        data?: {
+        data: {
+          id: string;
           senderPublicKey?: string;
           timestamp?: number;
         };
@@ -72,6 +73,7 @@ export type MessageInput = {
         type: 1002;
         data: {
           amount: IMoneyLike;
+          expiration: number;
           matcherFee: IMoneyLike;
           price: IMoneyLike;
         };
@@ -165,7 +167,7 @@ export type MessageStoreItem = {
   | {
       type: 'transactionPackage';
       messageHash?: string | string[];
-      data: TxData[] & { type?: unknown };
+      data: TxData[] & { type?: never; data?: never };
     }
   | {
       type: 'wavesAuth';
@@ -198,9 +200,13 @@ export type MessageStoreItem = {
       data: {
         type: 1002;
         data: {
+          amount?: IMoneyLike | string | number;
           chainId: number;
+          expiration: number;
           matcherFee: IMoneyLike;
           matcherPublicKey: string;
+          orderType?: string;
+          price?: IMoneyLike | string | number;
           senderPublicKey: string;
           timestamp: number;
         };
@@ -214,6 +220,7 @@ export type MessageStoreItem = {
       data: {
         type?: never;
         data: {
+          id: string;
           senderPublicKey: string;
           timestamp: number;
         };

@@ -15,7 +15,11 @@ class AliasCardComponent extends React.PureComponent<
     });
 
     const { t, message } = this.props;
-    const { data: tx } = message;
+
+    const { data: tx } = message as Extract<
+      typeof message,
+      { type: 'transaction' }
+    >;
 
     return (
       <div className={className}>

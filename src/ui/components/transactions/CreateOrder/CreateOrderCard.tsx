@@ -28,7 +28,9 @@ class CreateOrderCardComponent extends React.PureComponent<
     );
 
     const { t, message, assets } = this.props;
-    const { data } = message;
+
+    const { data } = message as Extract<typeof message, { type: 'order' }>;
+
     const tx = { type: data?.type, ...data?.data };
     const isSell = tx?.orderType === 'sell';
     const amount = getMoney(getAmount(tx), assets);

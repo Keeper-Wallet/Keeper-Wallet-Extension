@@ -44,12 +44,18 @@ class AuthCardComponent extends React.PureComponent<
 
   componentDidMount(): void {
     const { message } = this.props;
-    const { data, origin } = message;
+
+    const { data, origin } = message as Extract<
+      typeof message,
+      { type: 'auth' }
+    >;
+
     const tx = data.data;
     let icon: string | null;
 
     try {
-      icon = new URL(tx.icon, data.referrer || `https://${origin}`).href;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      icon = new URL(tx.icon!, data.referrer || `https://${origin}`).href;
     } catch (e) {
       icon = null;
     }
@@ -63,7 +69,12 @@ class AuthCardComponent extends React.PureComponent<
   render() {
     const { canUseIcon, icon } = this.state;
     const { t, message, collapsed } = this.props;
-    const { data, origin } = message;
+
+    const { data, origin } = message as Extract<
+      typeof message,
+      { type: 'auth' }
+    >;
+
     const tx = { type: data.type, ...data.data };
     const { name } = tx;
     const className = cn(styles.authTransactionCard, this.props.className, {

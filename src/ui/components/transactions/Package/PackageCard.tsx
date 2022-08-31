@@ -34,7 +34,12 @@ class PackageCardComponent extends React.PureComponent<
 > {
   render() {
     const { t, message, assets, collapsed, className } = this.props;
-    const { data = [], title = '' } = message;
+
+    const { data = [], title = '' } = message as Extract<
+      typeof message,
+      { type: 'transactionPackage' }
+    >;
+
     const tx = [...data];
     const fees = getFees(tx, assets);
     const amounts = getPackageAmounts(tx, assets);

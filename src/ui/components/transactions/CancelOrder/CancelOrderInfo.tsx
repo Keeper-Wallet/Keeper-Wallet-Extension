@@ -9,8 +9,11 @@ class CancelOrderInfoComponent extends React.PureComponent<
 > {
   render() {
     const { t, message } = this.props;
-    const { messageHash, data = {} } = message;
-    const tx = { type: data.type, ...data.data };
+
+    const { messageHash, data } = message as Extract<
+      typeof message,
+      { type: 'cancelOrder' }
+    >;
 
     return (
       <div>
@@ -24,7 +27,7 @@ class CancelOrderInfoComponent extends React.PureComponent<
             {t('transactions.txTime')}
           </div>
           <div className={styles.txValue}>
-            <DateFormat date={tx.timestamp} />
+            <DateFormat date={data?.data.timestamp} />
           </div>
         </div>
       </div>
