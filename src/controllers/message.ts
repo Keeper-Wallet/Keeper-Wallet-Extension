@@ -151,7 +151,7 @@ export class MessageController extends EventEmitter {
       `New message ${messageData.type}: ${JSON.stringify(messageData.data)}`
     );
 
-    let message;
+    let message: MessageStoreItem;
     try {
       message = await this._generateMessage(messageData);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
