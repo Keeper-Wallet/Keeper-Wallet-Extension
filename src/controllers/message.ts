@@ -814,7 +814,10 @@ export class MessageController extends EventEmitter {
         };
       }
       case 'transaction': {
-        const result = { ...message } as unknown as MessageStoreItem;
+        const result = { ...message } as unknown as Extract<
+          MessageStoreItem,
+          { type: 'transaction' }
+        >;
 
         if (message.data.successPath) {
           result.successPath = message.data.successPath;
@@ -918,21 +921,28 @@ export class MessageController extends EventEmitter {
           successPath: message.data.successPath || undefined,
         };
       case 'customData': {
-        const result = { ...message } as unknown as MessageStoreItem;
+        const result = {
+          ...message,
+          successPath: message.data.successPath || undefined,
+          data: {
+            ...message.data,
+            publicKey: message.data.publicKey || message.account.publicKey,
+          },
+        };
 
-        if (message.data.successPath) {
-          result.successPath = message.data.successPath;
-        }
+        let messageHash: string;
 
-        result.data.publicKey = message.data.publicKey =
-          message.data.publicKey || message.account.publicKey;
         try {
-          result.messageHash = customData(result.data, 'fake user').hash;
+          messageHash = customData(result.data, 'fake user').hash;
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, message);
         }
-        return result;
+
+        return {
+          ...result,
+          messageHash,
+        };
       }
       default:
         throw ERRORS.REQUEST_ERROR(

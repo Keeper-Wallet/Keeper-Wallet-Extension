@@ -3,6 +3,7 @@ import { PreferencesAccount } from 'preferences/types';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
 import { IMoneyLike } from 'ui/utils/converters';
+import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
 
 export type MessageInput = {
   account: PreferencesAccount;
@@ -23,7 +24,7 @@ export type MessageInput = {
         icon?: string;
         isRequest?: boolean;
         name?: string;
-        origin?: unknown;
+        origin?: string;
         referrer?: string;
         successPath?: string;
         type?: number;
@@ -34,7 +35,7 @@ export type MessageInput = {
       data: {
         data?: unknown;
         isRequest?: boolean;
-        origin?: unknown;
+        origin?: string;
         successPath?: string;
         type?: never;
       };
@@ -48,7 +49,7 @@ export type MessageInput = {
           timestamp?: number;
         };
         isRequest?: boolean;
-        origin?: unknown;
+        origin?: string;
         priceAsset?: string;
         successPath?: string;
         type?: never;
@@ -56,13 +57,11 @@ export type MessageInput = {
     }
   | {
       type: 'customData';
-      data: {
-        data?: unknown;
+      data: TCustomData & {
         isRequest?: boolean;
-        origin?: unknown;
-        publicKey?: unknown;
+        origin?: string;
         successPath?: string;
-        type?: number;
+        type?: never;
       };
     }
   | {
@@ -86,7 +85,7 @@ export type MessageInput = {
           timestamp?: number;
         };
         isRequest?: boolean;
-        origin?: unknown;
+        origin?: string;
         successPath?: string;
         type?: never;
       };
@@ -95,13 +94,13 @@ export type MessageInput = {
       type: 'transaction';
       data: {
         isRequest?: boolean;
-        origin?: unknown;
+        origin?: string;
         successPath?: string;
         type: typeof TRANSACTION_TYPE[keyof typeof TRANSACTION_TYPE];
         data: {
           amount: IMoneyLike;
           attachment: string;
-          fee?: unknown;
+          fee?: IMoneyLike;
           recipient: string;
         };
       };
@@ -111,7 +110,7 @@ export type MessageInput = {
       data: {
         data?: unknown;
         isRequest?: boolean;
-        origin?: unknown;
+        origin?: string;
         successPath?: string;
         type?: number;
       };
@@ -241,8 +240,12 @@ export type MessageStoreItem = {
     }
   | {
       type: 'customData';
-      messageHash?: string | string[];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: any;
+      messageHash: string;
+      data: TCustomData & {
+        isRequest?: boolean;
+        origin?: string;
+        successPath?: string;
+        type?: never;
+      };
     }
 );
