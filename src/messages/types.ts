@@ -17,13 +17,13 @@ interface MessageInputData {
   type?: number;
 }
 
-export type MessageInputOrderData = {
+type MessageInputOrderData = {
   isRequest?: never;
   successPath?: string;
   type: 1002;
   data: {
     amount: IMoneyLike;
-    matcherFee?: IMoneyLike;
+    matcherFee: IMoneyLike;
     price: IMoneyLike;
   };
 };

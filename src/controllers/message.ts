@@ -4,7 +4,7 @@ import { MsgStatus, MSG_STATUSES } from '../constants';
 import { v4 as uuidv4 } from 'uuid';
 import log from 'loglevel';
 import EventEmitter from 'events';
-import { Asset, Money } from '@waves/data-entities';
+import { Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
 import { address } from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
@@ -32,11 +32,7 @@ import { TxInfoController } from './txInfo';
 import { CurrentAccountController } from './currentAccount';
 import { PERMISSIONS } from 'permissions/constants';
 import { PreferencesAccount } from 'preferences/types';
-import {
-  MessageInput,
-  MessageInputOrderData,
-  MessageStoreItem,
-} from 'messages/types';
+import { MessageInput, MessageStoreItem } from 'messages/types';
 
 const { stringify } = create({ BigNumber });
 
@@ -760,7 +756,21 @@ export class MessageController extends EventEmitter {
         return result;
       }
       case 'order': {
-        this._validateOrder(message.data);
+        if (message.data.type !== 1002) {
+          throw ERRORS.REQUEST_ERROR('unexpected type', message.data);
+        }
+
+        if (!this._isMoneyLikeValuePositive(message.data.data.amount)) {
+          throw ERRORS.REQUEST_ERROR('amount is not valid', message.data);
+        }
+
+        if (!this._isMoneyLikeValuePositive(message.data.data.price)) {
+          throw ERRORS.REQUEST_ERROR('price is not valid', message.data);
+        }
+
+        if (!this._isMoneyLikeValuePositive(message.data.data.matcherFee)) {
+          throw ERRORS.REQUEST_ERROR('matcherFee is not valid', message.data);
+        }
 
         const data = {
           ...message.data,
@@ -771,10 +781,6 @@ export class MessageController extends EventEmitter {
               0
             ),
             matcherPublicKey: await this.getMatcherPublicKey(),
-            matcherFee: Money.fromCoins(
-              0,
-              new Asset(this.assetInfoController.getWavesAsset())
-            ).toJSON(),
             ...message.data.data,
           },
         };
@@ -1139,23 +1145,5 @@ export class MessageController extends EventEmitter {
       chainId: networkByteFromAddress(account.address).charCodeAt(0),
       ...txParams,
     };
-  }
-
-  _validateOrder(order: MessageInputOrderData) {
-    if (order.type !== 1002) {
-      throw ERRORS.REQUEST_ERROR('unexpected type', order);
-    }
-
-    if (!this._isMoneyLikeValuePositive(order.data.amount)) {
-      throw ERRORS.REQUEST_ERROR('amount is not valid', order);
-    }
-
-    if (!this._isMoneyLikeValuePositive(order.data.price)) {
-      throw ERRORS.REQUEST_ERROR('price is not valid', order);
-    }
-
-    if (!this._isMoneyLikeValuePositive(order.data.matcherFee)) {
-      throw ERRORS.REQUEST_ERROR('matcherFee is not valid', order);
-    }
   }
 }
