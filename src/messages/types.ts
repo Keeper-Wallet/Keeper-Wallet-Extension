@@ -43,12 +43,15 @@ export type MessageInput = {
       type: 'cancelOrder';
       data: {
         amountAsset?: string;
-        data?: unknown;
+        data?: {
+          senderPublicKey?: string;
+          timestamp?: number;
+        };
         isRequest?: boolean;
         origin?: unknown;
         priceAsset?: string;
         successPath?: string;
-        type?: number;
+        type?: never;
       };
     }
   | {
@@ -138,7 +141,6 @@ interface TxData {
 
 export type MessageStoreItem = {
   account: PreferencesAccount;
-  amountAsset?: string;
   broadcast?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   err?: any;
@@ -147,7 +149,6 @@ export type MessageStoreItem = {
   json?: string;
   lease?: unknown;
   origin?: string;
-  priceAsset?: string;
   result?: string;
   status: MsgStatus;
   successPath?: string | null;
@@ -205,9 +206,16 @@ export type MessageStoreItem = {
     }
   | {
       type: 'cancelOrder';
-      messageHash?: string | string[];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: any;
+      amountAsset?: string;
+      messageHash: string;
+      priceAsset?: string;
+      data: {
+        type?: never;
+        data: {
+          senderPublicKey: string;
+          timestamp: number;
+        };
+      };
     }
   | {
       type: 'request';

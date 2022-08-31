@@ -869,23 +869,27 @@ export class MessageController extends EventEmitter {
         return result;
       }
       case 'cancelOrder': {
-        const result = { ...message } as unknown as MessageStoreItem;
-
-        if (message.data.successPath) {
-          result.successPath = message.data.successPath;
-        }
-
-        result.amountAsset = message.data.amountAsset;
-        result.priceAsset = message.data.priceAsset;
-        const requestDefaults = {
-          timestamp: Date.now(),
-          senderPublicKey: message.account.publicKey,
+        const result = {
+          ...message,
+          successPath: message.data.successPath || undefined,
+          amountAsset: message.data.amountAsset,
+          priceAsset: message.data.priceAsset,
+          data: {
+            ...message.data,
+            data: {
+              timestamp: Date.now(),
+              senderPublicKey: message.account.publicKey,
+              ...message.data.data,
+            },
+          },
         };
-        result.data.data = { ...requestDefaults, ...result.data.data };
-        result.messageHash = getHash.request(
-          makeBytes.request(convertFromSa.request(result.data))
-        );
-        return result;
+
+        return {
+          ...result,
+          messageHash: getHash.request(
+            makeBytes.request(convertFromSa.request(result.data))
+          ),
+        };
       }
       case 'request': {
         const result = { ...message } as unknown as MessageStoreItem;
