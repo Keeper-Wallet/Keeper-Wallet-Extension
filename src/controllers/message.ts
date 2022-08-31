@@ -940,11 +940,12 @@ export class MessageController extends EventEmitter {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async _getFee(message: any, signData: any): Promise<IMoneyLike> {
+  async _getDefaultTxFee(message: any, signData: any) {
     const signableData = await this._transformData({ ...signData });
     const chainId = this.networkController.getNetworkCode().charCodeAt(0);
 
-    return {
+    let fee: IMoneyLike = {
+      assetId: 'WAVES',
       coins: (
         await this.getFee(
           signableData,
@@ -953,13 +954,7 @@ export class MessageController extends EventEmitter {
           this.getFeeConfig()
         )
       ).toString(),
-      assetId: 'WAVES',
     };
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async _getDefaultTxFee(message: any, signData: any) {
-    let fee: IMoneyLike = await this._getFee(message, signData);
 
     const assets = this.assetInfoController.getAssets();
     const balance = this.getAccountBalance();
