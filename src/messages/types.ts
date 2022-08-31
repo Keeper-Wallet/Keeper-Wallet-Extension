@@ -9,17 +9,6 @@ interface MessageOptions {
   uid?: unknown;
 }
 
-type MessageInputOrderData = {
-  isRequest?: never;
-  successPath?: string;
-  type: 1002;
-  data: {
-    amount: IMoneyLike;
-    matcherFee: IMoneyLike;
-    price: IMoneyLike;
-  };
-};
-
 export type MessageInput = {
   account: PreferencesAccount;
   broadcast?: boolean;
@@ -77,7 +66,16 @@ export type MessageInput = {
     }
   | {
       type: 'order';
-      data: MessageInputOrderData;
+      data: {
+        isRequest?: never;
+        successPath?: string;
+        type: 1002;
+        data: {
+          amount: IMoneyLike;
+          matcherFee: IMoneyLike;
+          price: IMoneyLike;
+        };
+      };
     }
   | {
       type: 'request';
