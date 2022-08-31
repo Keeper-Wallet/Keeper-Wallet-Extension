@@ -81,11 +81,14 @@ export type MessageInput = {
   | {
       type: 'request';
       data: {
-        data?: unknown;
+        data?: {
+          senderPublicKey?: string;
+          timestamp?: number;
+        };
         isRequest?: boolean;
         origin?: unknown;
         successPath?: string;
-        type?: number;
+        type?: never;
       };
     }
   | {
@@ -219,9 +222,14 @@ export type MessageStoreItem = {
     }
   | {
       type: 'request';
-      messageHash?: string | string[];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: any;
+      messageHash: string;
+      data: {
+        type?: never;
+        data: {
+          senderPublicKey: string;
+          timestamp: number;
+        };
+      };
     }
   | {
       type: 'authOrigin';

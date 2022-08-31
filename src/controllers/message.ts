@@ -892,21 +892,25 @@ export class MessageController extends EventEmitter {
         };
       }
       case 'request': {
-        const result = { ...message } as unknown as MessageStoreItem;
-
-        if (message.data.successPath) {
-          result.successPath = message.data.successPath;
-        }
-
-        const requestDefaults = {
-          timestamp: Date.now(),
-          senderPublicKey: message.account.publicKey,
+        const result = {
+          ...message,
+          successPath: message.data.successPath || undefined,
+          data: {
+            ...message.data,
+            data: {
+              timestamp: Date.now(),
+              senderPublicKey: message.account.publicKey,
+              ...message.data.data,
+            },
+          },
         };
-        result.data.data = { ...requestDefaults, ...result.data.data };
-        result.messageHash = getHash.request(
-          makeBytes.request(convertFromSa.request(result.data))
-        );
-        return result;
+
+        return {
+          ...result,
+          messageHash: getHash.request(
+            makeBytes.request(convertFromSa.request(result.data))
+          ),
+        };
       }
       case 'authOrigin': {
         const result = { ...message } as unknown as MessageStoreItem;
