@@ -4,15 +4,13 @@ import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
 import { IMoneyLike } from 'ui/utils/converters';
 
-interface MessageOptions {
-  getMeta?: unknown;
-  uid?: unknown;
-}
-
 export type MessageInput = {
   account: PreferencesAccount;
   broadcast?: boolean;
-  options?: MessageOptions;
+  options?: {
+    getMeta?: unknown;
+    uid?: unknown;
+  };
   origin?: string;
   successPath?: string | null;
   title?: string | null;
