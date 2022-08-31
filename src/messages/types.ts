@@ -239,7 +239,7 @@ export type MessageStoreItem = {
     }
   | {
       type: 'authOrigin';
-      messageHash?: string | string[];
+      messageHash?: never;
       data: {
         type?: never;
         data?: unknown;
