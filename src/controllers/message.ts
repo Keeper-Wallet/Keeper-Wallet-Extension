@@ -492,8 +492,7 @@ export class MessageController extends EventEmitter {
         break;
       case 'transactionPackage':
         message.data = await Promise.all(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          message.data.map(async (data: any) => await this._transformData(data))
+          message.data.map(async data => await this._transformData(data))
         );
 
         message.result = await Promise.all(
