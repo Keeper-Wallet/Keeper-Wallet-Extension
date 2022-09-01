@@ -492,7 +492,7 @@ export class MessageController extends EventEmitter {
         break;
       case 'transactionPackage':
         message.data = await Promise.all(
-          message.data.map(async data => await this._transformData(data))
+          message.data.map(data => this._transformData(data))
         );
 
         message.result = await Promise.all(
