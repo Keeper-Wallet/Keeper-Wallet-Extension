@@ -1,9 +1,15 @@
 import { MsgStatus } from '../constants';
 import { PreferencesAccount } from 'preferences/types';
 import { TransactionFromNode, TRANSACTION_TYPE } from '@waves/ts-types';
-import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
+import {
+  IWavesAuth,
+  IWavesAuthParams,
+} from '@waves/waves-transactions/dist/transactions';
 import { IMoneyLike } from 'ui/utils/converters';
-import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
+import {
+  TCustomData,
+  TSignedData,
+} from '@waves/waves-transactions/dist/requests/custom-data';
 
 export type MessageInput = {
   account: PreferencesAccount;
@@ -12,12 +18,12 @@ export type MessageInput = {
     getMeta?: unknown;
     uid?: unknown;
   };
-  origin?: string;
   successPath?: string | null;
   title?: string | null;
 } & (
   | {
       type: 'auth';
+      origin?: string;
       data: {
         data: string;
         host?: string;
@@ -32,16 +38,18 @@ export type MessageInput = {
     }
   | {
       type: 'authOrigin';
+      origin: string;
       data: {
         data?: unknown;
         isRequest?: boolean;
-        origin?: string;
+        origin: string;
         successPath?: string;
         type?: never;
       };
     }
   | {
       type: 'cancelOrder';
+      origin?: string;
       data: {
         amountAsset?: string;
         data: {
@@ -58,6 +66,7 @@ export type MessageInput = {
     }
   | {
       type: 'customData';
+      origin?: string;
       data: TCustomData & {
         isRequest?: boolean;
         origin?: string;
@@ -67,6 +76,7 @@ export type MessageInput = {
     }
   | {
       type: 'order';
+      origin?: string;
       data: {
         isRequest?: never;
         successPath?: string;
@@ -81,6 +91,7 @@ export type MessageInput = {
     }
   | {
       type: 'request';
+      origin?: string;
       data: {
         data?: {
           senderPublicKey?: string;
@@ -94,6 +105,7 @@ export type MessageInput = {
     }
   | {
       type: 'transaction';
+      origin?: string;
       data: {
         isRequest?: boolean;
         origin?: string;
@@ -109,6 +121,7 @@ export type MessageInput = {
     }
   | {
       type: 'transactionPackage';
+      origin?: string;
       data: Array<{
         type: typeof TRANSACTION_TYPE[keyof typeof TRANSACTION_TYPE];
         data: {
@@ -126,6 +139,7 @@ export type MessageInput = {
     }
   | {
       type: 'wavesAuth';
+      origin?: string;
       data: IWavesAuthParams & {
         isRequest?: boolean;
         successPath?: string;
@@ -159,8 +173,6 @@ export type MessageStoreItem = {
   id: string;
   json?: string;
   lease?: unknown;
-  origin?: string;
-  result?: string;
   status: MsgStatus;
   successPath?: string | null;
   timestamp: number;
@@ -168,16 +180,22 @@ export type MessageStoreItem = {
 } & (
   | {
       type: 'transaction';
-      messageHash?: string | string[];
+      origin?: string;
+      result?: string;
+      messageHash: string;
       data: TxData;
     }
   | {
       type: 'transactionPackage';
+      origin?: string;
+      result?: string[];
       messageHash: string[];
       data: TxData[] & { type?: never; data?: never };
     }
   | {
       type: 'wavesAuth';
+      origin?: string;
+      result?: IWavesAuth;
       messageHash: string;
       data: {
         publicKey: string;
@@ -187,6 +205,18 @@ export type MessageStoreItem = {
     }
   | {
       type: 'auth';
+      origin?: string;
+      result?:
+        | string
+        | {
+            host: string;
+            name: unknown;
+            prefix: string;
+            address: string;
+            publicKey: string;
+            signature: string;
+            version: number | undefined;
+          };
       messageHash: string;
       data: {
         type: 1000;
@@ -203,6 +233,8 @@ export type MessageStoreItem = {
     }
   | {
       type: 'order';
+      origin?: string;
+      result?: string;
       messageHash: string;
       data: {
         type: 1002;
@@ -221,6 +253,8 @@ export type MessageStoreItem = {
     }
   | {
       type: 'cancelOrder';
+      origin?: string;
+      result?: string;
       amountAsset?: string;
       messageHash: string;
       priceAsset?: string;
@@ -235,6 +269,8 @@ export type MessageStoreItem = {
     }
   | {
       type: 'request';
+      origin?: string;
+      result?: string;
       messageHash: string;
       data: {
         type?: never;
@@ -246,6 +282,8 @@ export type MessageStoreItem = {
     }
   | {
       type: 'authOrigin';
+      origin: string;
+      result?: { approved: 'OK' };
       messageHash?: never;
       data: {
         type?: never;
@@ -254,6 +292,8 @@ export type MessageStoreItem = {
     }
   | {
       type: 'customData';
+      origin?: string;
+      result?: TSignedData;
       messageHash: string;
       data: TCustomData & {
         isRequest?: boolean;

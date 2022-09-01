@@ -208,7 +208,8 @@ export class StatisticsController {
     try {
       if (message.type === 'transactionPackage') {
         (message.data || []).forEach(data => {
-          this.sendTxEvent({ ...message, type: 'transaction', data });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          this.sendTxEvent({ ...message, type: 'transaction', data } as any);
         });
       } else {
         this.addEvent('approve', {

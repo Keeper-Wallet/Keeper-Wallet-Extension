@@ -479,11 +479,11 @@ export class MessageController extends EventEmitter {
   }
 
   async _signMessage(message: MessageStoreItem) {
-    let signedData;
     switch (message.type) {
       case 'transaction':
         message.data.data = await this._transformData({ ...message.data.data });
-        signedData = await this.signTx(
+
+        message.result = await this.signTx(
           message.account.address,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           message.data as any,
@@ -496,12 +496,12 @@ export class MessageController extends EventEmitter {
           message.data.map(async (data: any) => await this._transformData(data))
         );
 
-        signedData = await Promise.all(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          message.data.map((txParams: any) => {
+        message.result = await Promise.all(
+          message.data.map(txParams => {
             return this.signTx(
               message.account.address,
-              txParams,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              txParams as any,
               message.account.network
             );
           })
@@ -510,7 +510,7 @@ export class MessageController extends EventEmitter {
       case 'order':
         message.data.data = await this._transformData({ ...message.data.data });
 
-        signedData = await this.signOrder(
+        message.result = await this.signOrder(
           message.account.address,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           message.data as any,
@@ -520,62 +520,67 @@ export class MessageController extends EventEmitter {
       case 'cancelOrder':
         message.data.data = await this._transformData({ ...message.data.data });
 
-        signedData = await this.signCancelOrder(
+        message.result = await this.signCancelOrder(
           message.account.address,
           message.data,
           message.account.network
         );
         break;
-      case 'auth':
-        signedData = await this.auth(
+      case 'auth': {
+        const signedData = await this.auth(
           message.account.address,
           message.data,
           message.account.network
         );
-        signedData = message.data.isRequest ? signedData.signature : signedData;
+        message.result = message.data.isRequest
+          ? signedData.signature
+          : signedData;
         break;
+      }
       case 'wavesAuth':
-        signedData = await this.signWavesAuth(
+        message.result = await this.signWavesAuth(
           message.data,
           message.account.address,
           message.account.network
         );
         break;
       case 'request':
-        signedData = await this.signRequest(
+        message.result = await this.signRequest(
           message.account.address,
           message.data,
           message.account.network
         );
         break;
       case 'customData':
-        signedData = await this.signCustomData(
+        message.result = await this.signCustomData(
           message.data,
           message.account.address,
           message.account.network
         );
         break;
       case 'authOrigin':
-        signedData = { approved: 'OK' };
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.setPermission(message.origin!, PERMISSIONS.APPROVED);
+        message.result = { approved: 'OK' };
+        this.setPermission(message.origin, PERMISSIONS.APPROVED);
         break;
       default:
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         throw new Error(`Unknown message type ${(message as any).type}`);
     }
     message.status = MSG_STATUSES.SIGNED;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    message.result = signedData as any;
     return message;
   }
 
   async _broadcastMessage(message: MessageStoreItem) {
-    if (
-      !message.broadcast ||
-      ['transaction', 'order', 'cancelOrder'].indexOf(message.type) === -1
-    ) {
+    if (!message.broadcast) {
       return message;
+    }
+
+    if (
+      message.type !== 'transaction' &&
+      message.type !== 'order' &&
+      message.type !== 'cancelOrder'
+    ) {
+      return;
     }
 
     const broadcastResp = await this.broadcast(message);
