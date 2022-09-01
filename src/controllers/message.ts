@@ -254,25 +254,42 @@ export class MessageController extends EventEmitter {
 
     return new Promise<[null, MessageStoreItem]>((resolve, reject) => {
       this._signMessage(message)
-        .then(this._broadcastMessage.bind(this))
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .then((message: any) => {
-          if (message.successPath) {
-            const url = new URL(message.successPath);
-            switch (message.type) {
-              case 'transaction':
-                url.searchParams.append('txId', message.messageHash);
-                this.emit('Open new tab', url.href);
-                break;
-              case 'auth':
+        .then(async message => {
+          if (
+            !message.broadcast ||
+            (message.type !== 'transaction' &&
+              message.type !== 'order' &&
+              message.type !== 'cancelOrder')
+          ) {
+            return message;
+          }
+
+          message.result = await this.broadcast(message);
+          message.status = MSG_STATUSES.PUBLISHED;
+
+          return message;
+        })
+        .then(message => {
+          if (!message.successPath) {
+            return;
+          }
+
+          const url = new URL(message.successPath);
+
+          switch (message.type) {
+            case 'transaction':
+              url.searchParams.append('txId', message.messageHash);
+              this.emit('Open new tab', url.href);
+              break;
+            case 'auth':
+              if (message.result && typeof message.result !== 'string') {
                 url.searchParams.append('p', message.result.publicKey);
                 url.searchParams.append('s', message.result.signature);
                 url.searchParams.append('a', message.result.address);
                 this.emit('Open new tab', url.href);
-                break;
-            }
+              }
+              break;
           }
-          return message;
         })
         .catch(e => {
           message.status = MSG_STATUSES.FAILED;
@@ -585,25 +602,6 @@ export class MessageController extends EventEmitter {
         throw new Error(`Unknown message type ${(message as any).type}`);
     }
     message.status = MSG_STATUSES.SIGNED;
-    return message;
-  }
-
-  async _broadcastMessage(message: MessageStoreItem) {
-    if (!message.broadcast) {
-      return message;
-    }
-
-    if (
-      message.type !== 'transaction' &&
-      message.type !== 'order' &&
-      message.type !== 'cancelOrder'
-    ) {
-      return;
-    }
-
-    const broadcastResp = await this.broadcast(message);
-    message.status = MSG_STATUSES.PUBLISHED;
-    message.result = broadcastResp;
     return message;
   }
 
