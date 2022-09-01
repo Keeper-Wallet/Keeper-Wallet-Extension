@@ -253,8 +253,7 @@ export class MessageController extends EventEmitter {
       ]);
 
     return new Promise<[null, MessageStoreItem]>((resolve, reject) => {
-      this._fillSignableData(message)
-        .then(this._signMessage.bind(this))
+      this._signMessage(message)
         .then(this._broadcastMessage.bind(this))
         .then(this._processSuccessPath.bind(this))
         .catch(e => {
@@ -479,37 +478,24 @@ export class MessageController extends EventEmitter {
     return data;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async _fillSignableData(message: any) {
+  async _signMessage(message: MessageStoreItem) {
+    let signedData;
     switch (message.type) {
-      case 'order':
-      case 'cancelOrder':
       case 'transaction':
         message.data.data = await this._transformData({ ...message.data.data });
-        return message;
+        signedData = await this.signTx(
+          message.account.address,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          message.data as any,
+          message.account.network
+        );
+        break;
       case 'transactionPackage':
         message.data = await Promise.all(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           message.data.map(async (data: any) => await this._transformData(data))
         );
-        return message;
-      default:
-        return message;
-    }
-  }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async _signMessage(message: any) {
-    let signedData;
-    switch (message.type) {
-      case 'transaction':
-        signedData = await this.signTx(
-          message.account.address,
-          message.data,
-          message.account.network
-        );
-        break;
-      case 'transactionPackage':
         signedData = await Promise.all(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           message.data.map((txParams: any) => {
@@ -522,13 +508,18 @@ export class MessageController extends EventEmitter {
         );
         break;
       case 'order':
+        message.data.data = await this._transformData({ ...message.data.data });
+
         signedData = await this.signOrder(
           message.account.address,
-          message.data,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          message.data as any,
           message.account.network
         );
         break;
       case 'cancelOrder':
+        message.data.data = await this._transformData({ ...message.data.data });
+
         signedData = await this.signCancelOrder(
           message.account.address,
           message.data,
@@ -566,13 +557,16 @@ export class MessageController extends EventEmitter {
         break;
       case 'authOrigin':
         signedData = { approved: 'OK' };
-        this.setPermission(message.origin, PERMISSIONS.APPROVED);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.setPermission(message.origin!, PERMISSIONS.APPROVED);
         break;
       default:
-        throw new Error(`Unknown message type ${message.type}`);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        throw new Error(`Unknown message type ${(message as any).type}`);
     }
     message.status = MSG_STATUSES.SIGNED;
-    message.result = signedData;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    message.result = signedData as any;
     return message;
   }
 
