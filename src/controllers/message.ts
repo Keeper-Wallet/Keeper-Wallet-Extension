@@ -255,7 +255,25 @@ export class MessageController extends EventEmitter {
     return new Promise<[null, MessageStoreItem]>((resolve, reject) => {
       this._signMessage(message)
         .then(this._broadcastMessage.bind(this))
-        .then(this._processSuccessPath.bind(this))
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .then((message: any) => {
+          if (message.successPath) {
+            const url = new URL(message.successPath);
+            switch (message.type) {
+              case 'transaction':
+                url.searchParams.append('txId', message.messageHash);
+                this.emit('Open new tab', url.href);
+                break;
+              case 'auth':
+                url.searchParams.append('p', message.result.publicKey);
+                url.searchParams.append('s', message.result.signature);
+                url.searchParams.append('a', message.result.address);
+                this.emit('Open new tab', url.href);
+                break;
+            }
+          }
+          return message;
+        })
         .catch(e => {
           message.status = MSG_STATUSES.FAILED;
           message.err = {
@@ -586,27 +604,6 @@ export class MessageController extends EventEmitter {
     const broadcastResp = await this.broadcast(message);
     message.status = MSG_STATUSES.PUBLISHED;
     message.result = broadcastResp;
-    return message;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async _processSuccessPath(message: any) {
-    if (message.successPath) {
-      const url = new URL(message.successPath);
-      switch (message.type) {
-        case 'transaction':
-          url.searchParams.append('txId', message.messageHash);
-          this.emit('Open new tab', url.href);
-          break;
-        case 'auth':
-          //url.searchParams.append('d', message.data.data);
-          url.searchParams.append('p', message.result.publicKey);
-          url.searchParams.append('s', message.result.signature);
-          url.searchParams.append('a', message.result.address);
-          this.emit('Open new tab', url.href);
-          break;
-      }
-    }
     return message;
   }
 
