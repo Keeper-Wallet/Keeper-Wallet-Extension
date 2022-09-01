@@ -64,6 +64,7 @@ export interface MessageConfig {
   card: ComponentType<MessageCardComponentProps>;
   final: ComponentType<MessageFinalComponentProps>;
   isMe: (tx: { type?: unknown }, type: string | null) => boolean;
+  txType: string | null;
   messageType: string;
   getAmount?: (
     tx: AssetDetail & {
