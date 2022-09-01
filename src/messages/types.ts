@@ -1,6 +1,6 @@
 import { MsgStatus } from '../constants';
 import { PreferencesAccount } from 'preferences/types';
-import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { TransactionFromNode, TRANSACTION_TYPE } from '@waves/ts-types';
 import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
 import { IMoneyLike } from 'ui/utils/converters';
 import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
@@ -109,12 +109,19 @@ export type MessageInput = {
     }
   | {
       type: 'transactionPackage';
-      data: {
-        data?: unknown;
-        isRequest?: boolean;
-        origin?: string;
-        successPath?: string;
-        type?: number;
+      data: Array<{
+        type: typeof TRANSACTION_TYPE[keyof typeof TRANSACTION_TYPE];
+        data: {
+          fee?: IMoneyLike;
+          leaseId?: string;
+          lease?: TransactionFromNode;
+        };
+      }> & {
+        data?: never;
+        isRequest?: never;
+        origin?: never;
+        successPath?: never;
+        type?: never;
       };
     }
   | {

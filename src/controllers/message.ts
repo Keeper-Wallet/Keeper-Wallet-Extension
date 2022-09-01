@@ -685,16 +685,9 @@ export class MessageController extends EventEmitter {
         };
       }
       case 'transactionPackage': {
-        const result = { ...message } as unknown as MessageStoreItem;
-
-        if (message.data.successPath) {
-          result.successPath = message.data.successPath;
-        }
-
         const { max, allow_tx } = this.getPackConfig();
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const msgs = (message.data as any).length;
+        const msgs = message.data.length;
 
         if (!msgs || msgs > max) {
           throw ERRORS.REQUEST_ERROR(
@@ -703,10 +696,8 @@ export class MessageController extends EventEmitter {
           );
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const unavailableTx = (message.data as any).filter(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ({ type }: any) => !allow_tx.includes(type)
+        const unavailableTx = message.data.filter(
+          ({ type }) => !allow_tx.includes(type)
         );
 
         if (unavailableTx.length) {
@@ -716,20 +707,28 @@ export class MessageController extends EventEmitter {
           );
         }
 
-        const ids: string[] = [];
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const dataPromises = (message.data as any).map(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          async (txParams: any) => {
+        const data = await Promise.all(
+          message.data.map(async txParams => {
             this._validateTx(txParams, message.account);
-            const data = this._prepareTx(txParams.data, message.account);
 
-            const fee =
-              txParams.data.fee ||
-              (await this._getDefaultTxFee(message, { ...txParams, data }));
+            const data = {
+              timestamp: Date.now(),
+              senderPublicKey: message.account.publicKey,
+              chainId: networkByteFromAddress(
+                message.account.address
+              ).charCodeAt(0),
+              ...txParams.data,
+            };
 
-            const readyData = { ...txParams, data: { ...data, fee } };
+            const readyData = {
+              ...txParams,
+              data: {
+                ...data,
+                fee:
+                  txParams.data.fee ||
+                  (await this._getDefaultTxFee(message, { ...txParams, data })),
+              },
+            };
 
             const id = getHash.transaction(
               makeBytes.transaction(
@@ -741,19 +740,26 @@ export class MessageController extends EventEmitter {
               )
             );
 
-            ids.push(id);
-            readyData.id = id;
-
-            if (txParams.type === 9 && txParams.data.leaseId) {
+            if (
+              txParams.type === TRANSACTION_TYPE.CANCEL_LEASE &&
+              txParams.data.leaseId
+            ) {
               readyData.data.lease = await this.txInfo(txParams.data.leaseId);
             }
 
-            return readyData;
-          }
+            return {
+              ...readyData,
+              id,
+            };
+          })
         );
-        result.data = await Promise.all(dataPromises);
-        result.messageHash = ids;
-        return result;
+
+        return {
+          ...message,
+          successPath: message.data.successPath || undefined,
+          data,
+          messageHash: data.map(tx => tx.id),
+        };
       }
       case 'order': {
         if (message.data.type !== 1002) {
@@ -814,62 +820,65 @@ export class MessageController extends EventEmitter {
         };
       }
       case 'transaction': {
-        const result = { ...message } as unknown as Extract<
-          MessageStoreItem,
-          { type: 'transaction' }
-        >;
-
-        if (message.data.successPath) {
-          result.successPath = message.data.successPath;
-        }
-
-        if (!result.data.type || result.data.type >= 1000) {
+        if (!message.data.type || message.data.type >= 1000) {
           throw ERRORS.REQUEST_ERROR('invalid transaction type', message);
         }
 
-        this._validateTx(result.data, message.account);
-        result.data.data = this._prepareTx(result.data.data, message.account);
+        this._validateTx(message.data, message.account);
 
-        const fee =
-          message.data.data?.fee ||
+        const result = {
+          ...message,
+          successPath: message.data.successPath || undefined,
+          data: {
+            ...message.data,
+            data: {
+              timestamp: Date.now(),
+              senderPublicKey: message.account.publicKey,
+              chainId: networkByteFromAddress(
+                message.account.address
+              ).charCodeAt(0),
+              ...message.data.data,
+            },
+          },
+        } as unknown as Extract<MessageStoreItem, { type: 'transaction' }>;
+
+        result.data.data.fee =
+          message.data.data.fee ||
           (await this._getDefaultTxFee(message, result.data));
 
-        result.data.data = { ...result.data.data, fee };
         result.data.data.initialFee = result.data.data.initialFee || {
           ...result.data.data.fee,
         };
 
-        const [lease, filledMessage] = await Promise.all([
-          result.data.type === 9 && this.txInfo(result.data.data.leaseId),
-          this._fillSignableData(clone(result)),
-        ]);
+        if (result.data.type === TRANSACTION_TYPE.CANCEL_LEASE) {
+          result.data.data.lease = await this.txInfo(result.data.data.leaseId);
+        }
 
-        result.data.data.lease = lease;
-
-        const chainId = this.networkController.getNetworkCode().charCodeAt(0);
+        const filledMessage = await this._fillSignableData(clone(result));
 
         const convertedData = convertFromSa.transaction(
           filledMessage.data,
-          chainId,
+          result.data.data.chainId,
           message.account.type
         );
 
-        result.messageHash = getHash.transaction(
-          makeBytes.transaction(convertedData)
-        );
-
-        result.json = stringify(
-          {
-            ...convertedData,
-            sender: address(
-              { publicKey: convertedData.senderPublicKey },
-              chainId
-            ),
-          },
-          null,
-          2
-        );
-        return result;
+        return {
+          ...result,
+          messageHash: getHash.transaction(
+            makeBytes.transaction(convertedData)
+          ),
+          json: stringify(
+            {
+              ...convertedData,
+              sender: address(
+                { publicKey: convertedData.senderPublicKey },
+                result.data.data.chainId
+              ),
+            },
+            null,
+            2
+          ),
+        };
       }
       case 'cancelOrder': {
         const result = {
@@ -1135,15 +1144,5 @@ export class MessageController extends EventEmitter {
         }
         break;
     }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _prepareTx(txParams: any, account: PreferencesAccount) {
-    return {
-      timestamp: Date.now(),
-      senderPublicKey: account.publicKey,
-      chainId: networkByteFromAddress(account.address).charCodeAt(0),
-      ...txParams,
-    };
   }
 }
