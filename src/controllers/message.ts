@@ -797,8 +797,14 @@ export class MessageController extends EventEmitter {
           data,
         };
 
-        const filledMessage = await this._fillSignableData(clone(result));
-        const convertedData = convertFromSa.order(filledMessage.data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const filledMessageData: any = clone(result.data);
+
+        const convertedData = convertFromSa.order({
+          ...filledMessageData,
+          data: await this._transformData(filledMessageData.data),
+        });
+
         const messageHash = getHash.order(makeBytes.order(convertedData));
 
         const json = stringify(
@@ -854,10 +860,14 @@ export class MessageController extends EventEmitter {
           result.data.data.lease = await this.txInfo(result.data.data.leaseId);
         }
 
-        const filledMessage = await this._fillSignableData(clone(result));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const filledMessageData: any = clone(result.data);
 
         const convertedData = convertFromSa.transaction(
-          filledMessage.data,
+          {
+            ...filledMessageData,
+            data: await this._transformData(filledMessageData.data),
+          },
           result.data.data.chainId,
           message.account.type
         );
