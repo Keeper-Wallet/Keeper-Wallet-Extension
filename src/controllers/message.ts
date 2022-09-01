@@ -194,45 +194,35 @@ export class MessageController extends EventEmitter {
     return { id: message.id };
   }
 
-  getMessageResult(id: string) {
-    let message: MessageStoreItem;
-
-    try {
-      message = this._getMessageById(id);
-    } catch (e) {
-      return Promise.reject(e);
-    }
+  async getMessageResult(id: string) {
+    const message = this._getMessageById(id);
 
     switch (message.status) {
       case MSG_STATUSES.SIGNED:
       case MSG_STATUSES.PUBLISHED:
-        return Promise.resolve(message.result);
+        return message.result;
       case MSG_STATUSES.REJECTED:
       case MSG_STATUSES.REJECTED_FOREVER:
-        return Promise.reject(ERRORS.USER_DENIED(undefined, message.status));
+        throw ERRORS.USER_DENIED(undefined, message.status);
       case MSG_STATUSES.FAILED:
-        return Promise.reject(
-          ERRORS.FAILED_MSG(undefined, message.err.message)
-        );
+        throw ERRORS.FAILED_MSG(undefined, message.err.message);
+    }
+
+    const finishedMessage = await new Promise<MessageStoreItem>(resolve => {
+      this.once(`${id}:finished`, resolve);
+    });
+
+    switch (finishedMessage.status) {
+      case MSG_STATUSES.SIGNED:
+      case MSG_STATUSES.PUBLISHED:
+        return finishedMessage.result;
+      case MSG_STATUSES.REJECTED:
+      case MSG_STATUSES.REJECTED_FOREVER:
+        throw ERRORS.USER_DENIED(undefined, message.status);
+      case MSG_STATUSES.FAILED:
+        throw ERRORS.FAILED_MSG(undefined, finishedMessage.err.message);
       default:
-        return new Promise((resolve, reject) => {
-          this.once(`${id}:finished`, finishedMessage => {
-            switch (finishedMessage.status) {
-              case MSG_STATUSES.SIGNED:
-              case MSG_STATUSES.PUBLISHED:
-                return resolve(finishedMessage.result);
-              case MSG_STATUSES.REJECTED:
-              case MSG_STATUSES.REJECTED_FOREVER:
-                return reject(ERRORS.USER_DENIED(undefined, message.status));
-              case MSG_STATUSES.FAILED:
-                return reject(
-                  ERRORS.FAILED_MSG(undefined, finishedMessage.err.message)
-                );
-              default:
-                return reject(ERRORS.UNKNOWN());
-            }
-          });
-        });
+        throw ERRORS.UNKNOWN();
     }
   }
 
