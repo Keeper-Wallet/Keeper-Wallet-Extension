@@ -244,7 +244,7 @@ export class MessageController extends EventEmitter {
     return this._deleteMessage(id);
   }
 
-  approve(id: string, account?: PreferencesAccount) {
+  approve(id: string, account?: PreferencesAccount): Promise<MessageStoreItem> {
     const message = this._getMessageById(id);
     message.account = account || message.account;
     if (!message.account)
@@ -252,60 +252,58 @@ export class MessageController extends EventEmitter {
         'Message has empty account filed and no address is provided'
       );
 
-    return new Promise<MessageStoreItem>((resolve, reject) => {
-      this._signMessage(message)
-        .then(async message => {
-          if (
-            !message.broadcast ||
-            (message.type !== 'transaction' &&
-              message.type !== 'order' &&
-              message.type !== 'cancelOrder')
-          ) {
-            return message;
-          }
-
-          message.result = await this.broadcast(message);
-          message.status = MSG_STATUSES.PUBLISHED;
-
+    return this._signMessage(message)
+      .then(async message => {
+        if (
+          !message.broadcast ||
+          (message.type !== 'transaction' &&
+            message.type !== 'order' &&
+            message.type !== 'cancelOrder')
+        ) {
           return message;
-        })
-        .then(message => {
-          if (!message.successPath) {
-            return;
-          }
+        }
 
-          const url = new URL(message.successPath);
+        message.result = await this.broadcast(message);
+        message.status = MSG_STATUSES.PUBLISHED;
 
-          switch (message.type) {
-            case 'transaction':
-              url.searchParams.append('txId', message.messageHash);
+        return message;
+      })
+      .then(message => {
+        if (!message.successPath) {
+          return;
+        }
+
+        const url = new URL(message.successPath);
+
+        switch (message.type) {
+          case 'transaction':
+            url.searchParams.append('txId', message.messageHash);
+            this.emit('Open new tab', url.href);
+            break;
+          case 'auth':
+            if (message.result && typeof message.result !== 'string') {
+              url.searchParams.append('p', message.result.publicKey);
+              url.searchParams.append('s', message.result.signature);
+              url.searchParams.append('a', message.result.address);
               this.emit('Open new tab', url.href);
-              break;
-            case 'auth':
-              if (message.result && typeof message.result !== 'string') {
-                url.searchParams.append('p', message.result.publicKey);
-                url.searchParams.append('s', message.result.signature);
-                url.searchParams.append('a', message.result.address);
-                this.emit('Open new tab', url.href);
-              }
-              break;
-          }
-        })
-        .catch(e => {
-          message.status = MSG_STATUSES.FAILED;
-          message.err = {
-            message: e.toString(),
-            stack: e.stack,
-          };
-        })
-        .finally(() => {
-          this._updateMessage(message);
-          this.emit(`${message.id}:finished`, message);
-          message.status === MSG_STATUSES.FAILED
-            ? reject(message.err.message)
-            : resolve(message);
-        });
-    });
+            }
+            break;
+        }
+      })
+      .catch(e => {
+        message.status = MSG_STATUSES.FAILED;
+        message.err = {
+          message: e.toString(),
+          stack: e.stack,
+        };
+      })
+      .then(() => {
+        this._updateMessage(message);
+        this.emit(`${message.id}:finished`, message);
+        return message.status === MSG_STATUSES.FAILED
+          ? Promise.reject(message.err.message)
+          : message;
+      });
   }
 
   reject(id: string, forever?: boolean) {
