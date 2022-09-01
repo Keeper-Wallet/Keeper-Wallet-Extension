@@ -6,13 +6,12 @@ import { PackageCard } from './PackageCard';
 import { PackageInfo } from './PackageInfo';
 import { TxFooter, TxHeader } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
-import { SignClass } from '../SignClass';
 
 interface State {
   needScroll: boolean;
 }
 
-class PackageComponent extends SignClass<
+class PackageComponent extends React.PureComponent<
   MessageComponentProps & WithTranslation
 > {
   readonly state: State = { needScroll: false };

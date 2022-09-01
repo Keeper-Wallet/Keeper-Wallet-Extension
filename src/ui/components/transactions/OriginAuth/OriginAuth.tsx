@@ -17,17 +17,18 @@ import { TxHeader } from '../BaseTransaction';
 import { AppState } from 'ui/store';
 import { TAutoAuth } from 'ui/components/pages/PermissionsSettings/components';
 import { MessageComponentProps } from '../types';
-import { SignClass } from '../SignClass';
 
 interface State extends Partial<TAutoAuth> {
   el?: HTMLDivElement | null;
   showNotify?: boolean | null;
 }
 
-class OriginAuthComponent extends SignClass<
+class OriginAuthComponent extends React.PureComponent<
   MessageComponentProps & WithTranslation,
   State
 > {
+  state: State = {};
+
   getRef = (el: HTMLDivElement | null) => this.setState({ el });
 
   render() {
