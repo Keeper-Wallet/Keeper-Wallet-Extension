@@ -47,8 +47,6 @@ const MESSAGES = [
   wavesAuth,
 ];
 
-export { FinalTransaction } from './FinalTransaction';
-
 export function getConfigByTransaction({
   data: tx,
   type = null,
