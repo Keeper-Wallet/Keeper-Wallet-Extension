@@ -244,35 +244,30 @@ export class MessageController extends EventEmitter {
     return this._deleteMessage(id);
   }
 
-  approve(id: string, account?: PreferencesAccount): Promise<MessageStoreItem> {
+  async approve(id: string, account?: PreferencesAccount) {
     const message = this._getMessageById(id);
     message.account = account || message.account;
-    if (!message.account)
-      return Promise.reject(
-        'Message has empty account filed and no address is provided'
+
+    if (!message.account) {
+      throw new Error(
+        'Message has empty account filled and no address is provided'
       );
+    }
 
-    return this._signMessage(message)
-      .then(async message => {
-        if (
-          !message.broadcast ||
-          (message.type !== 'transaction' &&
-            message.type !== 'order' &&
-            message.type !== 'cancelOrder')
-        ) {
-          return message;
-        }
+    try {
+      await this._signMessage(message);
 
+      if (
+        message.broadcast &&
+        (message.type === 'transaction' ||
+          message.type === 'order' ||
+          message.type === 'cancelOrder')
+      ) {
         message.result = await this.broadcast(message);
         message.status = MSG_STATUSES.PUBLISHED;
+      }
 
-        return message;
-      })
-      .then(message => {
-        if (!message.successPath) {
-          return;
-        }
-
+      if (message.successPath) {
         const url = new URL(message.successPath);
 
         switch (message.type) {
@@ -289,21 +284,24 @@ export class MessageController extends EventEmitter {
             }
             break;
         }
-      })
-      .catch(e => {
-        message.status = MSG_STATUSES.FAILED;
-        message.err = {
-          message: e.toString(),
-          stack: e.stack,
-        };
-      })
-      .then(() => {
-        this._updateMessage(message);
-        this.emit(`${message.id}:finished`, message);
-        return message.status === MSG_STATUSES.FAILED
-          ? Promise.reject(message.err.message)
-          : message;
-      });
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
+      message.status = MSG_STATUSES.FAILED;
+      message.err = {
+        message: e.toString(),
+        stack: e.stack,
+      };
+    }
+
+    this._updateMessage(message);
+    this.emit(`${message.id}:finished`, message);
+
+    if (message.status === MSG_STATUSES.FAILED) {
+      throw new Error(message.err.message);
+    }
+
+    return message;
   }
 
   reject(id: string, forever?: boolean) {
@@ -600,7 +598,6 @@ export class MessageController extends EventEmitter {
         throw new Error(`Unknown message type ${(message as any).type}`);
     }
     message.status = MSG_STATUSES.SIGNED;
-    return message;
   }
 
   async _generateMessage(messageData: MessageInput): Promise<MessageStoreItem> {
