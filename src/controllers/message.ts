@@ -481,47 +481,47 @@ export class MessageController extends EventEmitter {
   async _signMessage(message: MessageStoreItem) {
     switch (message.type) {
       case 'transaction':
-        message.data.data = await this._transformData({ ...message.data.data });
-
         message.result = await this.signTx(
           message.account.address,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          message.data as any,
+          {
+            ...message.data,
+            data: await this._transformData(message.data.data),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any,
           message.account.network
         );
         break;
       case 'transactionPackage':
-        message.data = await Promise.all(
-          message.data.map(data => this._transformData(data))
-        );
-
         message.result = await Promise.all(
-          message.data.map(txParams => {
+          message.data.map(async data => {
+            const txParams = await this._transformData(data);
+
             return this.signTx(
               message.account.address,
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              txParams as any,
+              txParams,
               message.account.network
             );
           })
         );
         break;
       case 'order':
-        message.data.data = await this._transformData({ ...message.data.data });
-
         message.result = await this.signOrder(
           message.account.address,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          message.data as any,
+          {
+            ...message.data,
+            data: await this._transformData(message.data.data),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any,
           message.account.network
         );
         break;
       case 'cancelOrder':
-        message.data.data = await this._transformData({ ...message.data.data });
-
         message.result = await this.signCancelOrder(
           message.account.address,
-          message.data,
+          {
+            ...message.data,
+            data: await this._transformData(message.data.data),
+          },
           message.account.network
         );
         break;
@@ -531,6 +531,7 @@ export class MessageController extends EventEmitter {
           message.data,
           message.account.network
         );
+
         message.result = message.data.isRequest
           ? signedData.signature
           : signedData;
