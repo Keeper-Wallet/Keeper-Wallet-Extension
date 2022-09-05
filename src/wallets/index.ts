@@ -106,7 +106,7 @@ export function getTxVersions(
         [TRANSACTION_TYPE.ETHEREUM]: [1],
         1000: [1],
         1001: [1],
-        1002: [3, 2, 1],
+        1002: [4, 3, 2, 1],
         1003: [1],
       };
     default:
@@ -128,7 +128,7 @@ export function getTxVersions(
         [TRANSACTION_TYPE.ETHEREUM]: [1],
         1000: [1],
         1001: [1],
-        1002: [3, 2, 1],
+        1002: [4, 3, 2, 1],
         1003: [1, 0],
       };
   }

@@ -40,6 +40,7 @@ import Long from 'long';
 import { getTxVersions } from 'wallets';
 import { InvokeScriptCallArgument } from '@waves/ts-types/dist/src/parts';
 import { PreferencesAccount } from 'preferences/types';
+import { orderToProtoBytes } from '@waves/waves-transactions/dist/proto-serialize';
 
 type RawStringIn = string | number[];
 
@@ -296,12 +297,14 @@ export interface SaOrder {
     version?: 1 | 2 | 3 | 4;
     amount: Money;
     price: Money;
+    priceMode?: 'assetDecimals' | 'fixedDecimals';
     timestamp: number;
     expiration: number;
     matcherFee: Money;
     matcherPublicKey: string;
     senderPublicKey?: string;
     proofs?: string[];
+    eip712Signature?: string;
   };
 }
 
@@ -768,32 +771,43 @@ export const convertFromSa = {
     senderPublicKey: request.data.senderPublicKey,
     timestamp: request.data.timestamp,
   }),
-  order: (input: SaOrder) =>
-    order({
-      orderType: input.data.orderType,
-      version: input.data.version || 3,
-      assetPair: {
-        amountAsset: input.data.amount.asset.id,
-        priceAsset: input.data.price.asset.id,
-      },
-      price: input.data.price
-        .getTokens()
-        .mul(
-          new BigNumber(10).pow(
-            8 +
-              input.data.price.asset.precision -
-              input.data.amount.asset.precision
-          )
-        ),
-      amount: input.data.amount.getCoins(),
-      timestamp: input.data.timestamp,
-      expiration: input.data.expiration,
-      matcherFee: input.data.matcherFee.getCoins(),
-      matcherPublicKey: input.data.matcherPublicKey,
-      senderPublicKey: input.data.senderPublicKey,
-      proofs: input.data.proofs || [],
-      matcherFeeAssetId: input.data.matcherFee.asset.id,
-    } as never),
+  order: (input: SaOrder) => {
+    const version = input.data.version || 3;
+
+    return convertLongToBigNumber(
+      order(
+        convertBigNumberToLong({
+          orderType: input.data.orderType,
+          version,
+          assetPair: {
+            amountAsset: input.data.amount.asset.id,
+            priceAsset: input.data.price.asset.id,
+          },
+          price: input.data.price
+            .getTokens()
+            .mul(
+              new BigNumber(10).pow(
+                version < 4 || input.data.priceMode === 'assetDecimals'
+                  ? 8 +
+                      input.data.price.asset.precision -
+                      input.data.amount.asset.precision
+                  : 8
+              )
+            ),
+          priceMode: input.data.priceMode ?? 'fixedDecimals',
+          amount: input.data.amount.getCoins(),
+          timestamp: input.data.timestamp,
+          expiration: input.data.expiration,
+          matcherFee: input.data.matcherFee.getCoins(),
+          matcherPublicKey: input.data.matcherPublicKey,
+          senderPublicKey: input.data.senderPublicKey,
+          proofs: input.data.proofs || [],
+          matcherFeeAssetId: input.data.matcherFee.asset.id,
+          eip712Signature: input.data.eip712Signature,
+        })
+      )
+    );
+  },
   cancelOrder: (input: SaCancelOrder) =>
     cancelOrder({
       orderId: input.data.id,
@@ -811,7 +825,10 @@ export const makeBytes = {
       serializePrimitives.BASE58_STRING(input.senderPublicKey),
       serializePrimitives.LONG(input.timestamp)
     ),
-  order: binary.serializeOrder,
+  order: (arg: ReturnType<typeof convertFromSa['order']>) =>
+    arg.version < 4
+      ? binary.serializeOrder(arg)
+      : orderToProtoBytes(convertBigNumberToLong(arg)),
   cancelOrder: cancelOrderParamsToBytes,
 };
 
