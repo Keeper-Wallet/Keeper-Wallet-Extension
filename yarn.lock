@@ -1527,9 +1527,9 @@
   integrity sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==
 
 "@types/long@^4.0.0", "@types/long@^4.0.1":
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.1.tgz#459c65fa1867dafe6a8f322c4c51695663cc55e9"
-  integrity sha512-5tXH6Bx/kNGd3MgffdmP4dy2Z+G4eaXw0SE81Tq3BNadtnMR5/ySMzX4SLEzHJzSmPNn4HIdpQsBvXMUykr58w==
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.2.tgz#b74129719fc8d11c01868010082d483b7545591a"
+  integrity sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==
 
 "@types/minimatch@*":
   version "3.0.5"
@@ -1554,15 +1554,15 @@
     "@types/node" "*"
     form-data "^3.0.0"
 
-"@types/node@*", "@types/node@^12.0.12":
+"@types/node@*", "@types/node@>=13.7.0":
+  version "18.7.15"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.7.15.tgz#20ae1ec80c57ee844b469f968a1cd511d4088b29"
+  integrity sha512-XnjpaI8Bgc3eBag2Aw4t2Uj/49lLBSStHWfqKvIuXD7FIrZyMLWp8KuAFHAqxMZYTF9l08N1ctUn9YNybZJVmQ==
+
+"@types/node@^12.0.12":
   version "12.12.69"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.69.tgz#7cb6a3aa0d16664bf2dcd1450ccb8477464fbd79"
   integrity sha512-2F2VQRSFmzqgUEXw75L51MgnnZqc6bKWVSUPfrDPzp6mzGGibeVwyQcpvZvBr5RnsoMRHmC8EcBQiobSeqeJxg==
-
-"@types/node@>=13.7.0":
-  version "17.0.38"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.38.tgz#f8bb07c371ccb1903f3752872c89f44006132947"
-  integrity sha512-5jY9RhV7c0Z4Jy09G+NIDTsCZ5G0L5n+Z+p+Y7t5VJHM30bgwzSjVtlcBxqAj+6L/swIlvtOSzr8rBk/aNyV2g==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.1"
@@ -1870,14 +1870,25 @@
     base64-js "^1.3.0"
     long "^4.0.0"
 
-"@waves/node-api-js@^1.2.3":
-  version "1.2.8"
-  resolved "https://registry.yarnpkg.com/@waves/node-api-js/-/node-api-js-1.2.8.tgz#c6bdc6076b3abeacbf13246fc23ec95cb2f079e0"
-  integrity sha512-3Z38epbO5W+9z1++gFo5VBDIx7rTYc7p5J3IbIwkzyFecnoBGumWUtR1LYhgmjYZ+V9dc3njQO05KYXiGZDWoQ==
+"@waves/marshall@^0.15.0-beta.1":
+  version "0.15.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@waves/marshall/-/marshall-0.15.0-beta.1.tgz#8006d21fa75fc0b81f80807a0c7944aa08018e0b"
+  integrity sha512-3OoyDJ6tSAkEwSVIIO4wjtGUDMz0Jfs+PpSX41Gzp5+9PL5Q5xCR06idBDMhTBdqgm/xzndY++l4d8SMSFjGKw==
+  dependencies:
+    "@types/base64-js" "^1.2.5"
+    "@types/long" "^4.0.0"
+    "@waves/parse-json-bignumber" "^1.0.1"
+    base64-js "^1.3.0"
+    long "^4.0.0"
+
+"@waves/node-api-js@^1.2.10":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@waves/node-api-js/-/node-api-js-1.3.0.tgz#975fe608011d1fd2646c15c8a962a76dfac12e51"
+  integrity sha512-FEI42KM1C6hE541kexV/eqWDeBrVxeMswZbHQ9kRlFdso/kKmouhhjV73NI/zFCSwMzbFI4YDe2ElOSim0DyEA==
   dependencies:
     "@types/node-fetch" "^2.5.4"
     "@waves/bignumber" "^1.1.1"
-    "@waves/ts-types" "^1.0.11"
+    "@waves/ts-types" "^1.0.12"
     node-fetch "^2.6.7"
     typed-ts-events "^1.1.1"
 
@@ -1886,10 +1897,10 @@
   resolved "https://registry.yarnpkg.com/@waves/parse-json-bignumber/-/parse-json-bignumber-1.0.3.tgz#9d68519abef080019e86433f3840996ebaa48eb3"
   integrity sha512-zBHIQUjjMYMQXNQcwJwzNShUZnoTM6JfVJDwa0eDGUVk+JAKVGiXxv/k29Ng9TsIDi97hwVravlPPwfZcy4XXQ==
 
-"@waves/protobuf-serialization@1.4.1-beta.1":
-  version "1.4.1-beta.1"
-  resolved "https://registry.yarnpkg.com/@waves/protobuf-serialization/-/protobuf-serialization-1.4.1-beta.1.tgz#4d562c97c87eaa8a13d893cf5ac7ed908a2b26c6"
-  integrity sha512-IjEwyWmjyesjURvhvB2DK/QZ8mKFuBg7zz5SvgG6q8/ofnC4oplSOsWsgT2DjOG4OzGaMUv7Kkv/ZV1qTQxO9g==
+"@waves/protobuf-serialization@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@waves/protobuf-serialization/-/protobuf-serialization-1.4.3.tgz#bfb04d80e76a50b5355e7d0d25dd41d432628c88"
+  integrity sha512-qloPEDn9FsiZWLX8y7CWQXXxX+RGq1zPN5AaYmOBrrZ5Z8EA4hoTVINkQFpl2VbfSpRjI5XpwsxbkL3QhgCodw==
   dependencies:
     "@types/long" "^4.0.0"
     protobufjs "^6.8.8"
@@ -1910,26 +1921,26 @@
     js-sha3 "^0.8.0"
     node-forge "^0.10.0"
 
-"@waves/ts-types@1.0.6-beta.4":
-  version "1.0.6-beta.4"
-  resolved "https://registry.yarnpkg.com/@waves/ts-types/-/ts-types-1.0.6-beta.4.tgz#3cc7a3530a071b4102c3d5f91577bac85faefbc1"
-  integrity sha512-TyFzgYiWkJ5PF7F3XxAE1dudti5a9MVh2BgtGhYKIrSanXNPXhT9KYYRkQRIemYP+HQ4y89rEBf/CUszTdnaag==
+"@waves/ts-types@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@waves/ts-types/-/ts-types-1.1.0.tgz#717783919ec6d8e8ab33a38fc06e4da30e449c29"
+  integrity sha512-SGHj4cIIvMAhDPiDhbpEzP2UqNF3VgTssGf6UaJ7vwzxq0W1pqz2lKMDe9pZup9p9rEETGW4Yy3+K1G7OGOLxA==
 
-"@waves/ts-types@^1.0.11", "@waves/ts-types@^1.0.12":
+"@waves/ts-types@^1.0.12":
   version "1.0.12"
   resolved "https://registry.yarnpkg.com/@waves/ts-types/-/ts-types-1.0.12.tgz#29dd8d847df69079e9e2b7e2d50056a2e3b23fe5"
   integrity sha512-1CxNGbPbBBzprJHcrLT6ToSe1vwHHeDAQEeljk1w4rJorJ75f5ZnNogpMrYVyAnmBGdr1AgInJyarpyt8F+rJg==
 
 "@waves/waves-transactions@^4.2.5-beta.3":
-  version "4.2.5-beta.3"
-  resolved "https://registry.yarnpkg.com/@waves/waves-transactions/-/waves-transactions-4.2.5-beta.3.tgz#78df8b9c2a5f44c57401b5cb2e2c258b101defdc"
-  integrity sha512-LiEya9gV0KAaxEVusKEPiXb6fZYuVOUePUfC9YjasODjGT4KLOFp5Po3u746Rt7T04S/3cUaxk19WhdfbpGBtQ==
+  version "4.2.10"
+  resolved "https://registry.yarnpkg.com/@waves/waves-transactions/-/waves-transactions-4.2.10.tgz#4f0dacb26e76bdd42b3528b406afde232907b3cc"
+  integrity sha512-sXhZ9XLPK21SAW0s8d92hIh9YwcZy2jMD3wGIbnrmZzLjowPWsFZ0CA1x6fCSMIA9O8jFgq0TUHDvZEgg98Bng==
   dependencies:
-    "@waves/marshall" "^0.14.0"
-    "@waves/node-api-js" "^1.2.3"
-    "@waves/protobuf-serialization" "1.4.1-beta.1"
+    "@waves/marshall" "^0.15.0-beta.1"
+    "@waves/node-api-js" "^1.2.10"
+    "@waves/protobuf-serialization" "1.4.3"
     "@waves/ts-lib-crypto" "1.4.3"
-    "@waves/ts-types" "1.0.6-beta.4"
+    "@waves/ts-types" "1.1.0"
     axios "^0.19.0"
     long "^4.0.0"
 
@@ -2977,9 +2988,9 @@ bignumber.js@^8.1.1:
   integrity sha512-QD46ppGintwPGuL1KqmwhR0O+N2cZUg8JG/VzwI2e28sM9TqHjQB10lI4QAaMHVbLzwVLLAwEglpKPViWX+5NQ==
 
 bignumber.js@^9.0.1:
-  version "9.0.2"
-  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.0.2.tgz#71c6c6bed38de64e24a65ebe16cfcf23ae693673"
-  integrity sha512-GAcQvbpsM0pUb0zw1EI0KhQEZ+lRwR5fYaAp3vPOYuP7aDvGy6cVN6XHLauvF8SOga2y0dcLcjt3iQDTSEliyw==
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.0.tgz#8d340146107fe3a6cb8d40699643c302e8773b62"
+  integrity sha512-4LwHK4nfDOraBCtst+wOWIHbu1vhvAPJK8g8nROd4iuc3PSEjWif/qwbkh8jwCJz6yDBvtU4KPynETgrfh7y3A==
 
 binary-extensions@^2.0.0:
   version "2.1.0"
