@@ -50,8 +50,7 @@ function getAssetIds(
   if (signData.type === 1002) {
     const order = convertFromSa.order(signData);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    hash[normalizeAssetId((order as any).matcherFeeAssetId)] = true;
+    hash[normalizeAssetId(order.matcherFeeAssetId)] = true;
     hash[normalizeAssetId(order.assetPair.amountAsset)] = true;
     hash[normalizeAssetId(order.assetPair.priceAsset)] = true;
   } else {
