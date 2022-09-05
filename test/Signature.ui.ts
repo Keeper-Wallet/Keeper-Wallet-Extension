@@ -3633,6 +3633,7 @@ describe('Signature', function () {
             const parsedApproveResult = parse(approveResult);
 
             const expectedApproveResult = {
+              chainId: 84,
               orderType: INPUT.data.orderType,
               version: 4 as const,
               assetPair: {
@@ -3735,6 +3736,7 @@ describe('Signature', function () {
             const parsedApproveResult = parse(approveResult);
 
             const expectedApproveResult = {
+              chainId: 84,
               orderType: INPUT.data.orderType,
               version: 4 as const,
               assetPair: {
@@ -3836,6 +3838,7 @@ describe('Signature', function () {
             const parsedApproveResult = parse(approveResult);
 
             const expectedApproveResult = {
+              chainId: 84,
               orderType: INPUT.data.orderType,
               version: 4 as const,
               assetPair: {

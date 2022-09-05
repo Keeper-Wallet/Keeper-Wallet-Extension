@@ -293,6 +293,7 @@ export type SaTransaction =
 
 export interface SaOrder {
   data: {
+    chainId?: number;
     orderType: 'buy' | 'sell';
     version?: 1 | 2 | 3 | 4;
     amount: Money;
@@ -771,12 +772,13 @@ export const convertFromSa = {
     senderPublicKey: request.data.senderPublicKey,
     timestamp: request.data.timestamp,
   }),
-  order: (input: SaOrder) => {
+  order: (input: SaOrder, defaultChainId: number) => {
     const version = input.data.version || 3;
 
     return convertLongToBigNumber(
       order(
         convertBigNumberToLong({
+          chainId: input.data.chainId || defaultChainId,
           orderType: input.data.orderType,
           version,
           assetPair: {

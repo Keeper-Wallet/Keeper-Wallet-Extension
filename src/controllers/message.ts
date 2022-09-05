@@ -779,10 +779,13 @@ export class MessageController extends EventEmitter {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const filledMessageData: any = clone(result.data);
 
-        const convertedData = convertFromSa.order({
-          ...filledMessageData,
-          data: await this._transformData(filledMessageData.data),
-        });
+        const convertedData = convertFromSa.order(
+          {
+            ...filledMessageData,
+            data: await this._transformData(filledMessageData.data),
+          },
+          this.networkController.getNetworkCode().charCodeAt(0)
+        );
 
         const messageHash = getHash.order(makeBytes.order(convertedData));
 

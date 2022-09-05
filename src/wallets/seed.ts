@@ -88,7 +88,10 @@ export class SeedWallet extends Wallet<WalletPrivateDataOfType<'seed'>> {
   }
 
   async signOrder(order: SaOrder) {
-    const result = convertFromSa.order(order);
+    const result = convertFromSa.order(
+      order,
+      this.data.networkCode.charCodeAt(0)
+    );
 
     result.proofs.push(this.signBytes(makeBytes.order(result)));
 
