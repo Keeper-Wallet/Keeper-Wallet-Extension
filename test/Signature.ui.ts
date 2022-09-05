@@ -3255,7 +3255,6 @@ describe('Signature', function () {
           description: UPDATE_ASSET_INFO.data.description,
           assetId: UPDATE_ASSET_INFO.data.assetId,
           fee: 100000,
-          feeAssetId: null,
           chainId: 84,
         };
 

@@ -738,7 +738,6 @@ export const convertFromSa = {
           description: input.data.description,
           assetId: input.data.assetId,
           fee: input.data.fee?.getCoins().toNumber(),
-          feeAssetId: input.data.fee?.asset.id,
           timestamp: input.data.timestamp,
           proofs: input.data.proofs || [],
           chainId: input.data.chainId || defaultChainId,
