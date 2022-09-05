@@ -652,10 +652,14 @@ export const convertFromSa = {
         }
       }
       case TRANSACTION_TYPE.SPONSORSHIP: {
+        const minSponsoredAssetFee = input.data.minSponsoredAssetFee.getCoins();
+
         const tx = {
           version: input.data.version || fallbackVersion,
           senderPublicKey: input.data.senderPublicKey,
-          minSponsoredAssetFee: input.data.minSponsoredAssetFee.getCoins(),
+          minSponsoredAssetFee: minSponsoredAssetFee.eq(0)
+            ? null
+            : minSponsoredAssetFee,
           assetId: input.data.minSponsoredAssetFee.asset.id,
           fee: input.data.fee?.getCoins(),
           timestamp: input.data.timestamp,

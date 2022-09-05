@@ -2632,7 +2632,7 @@ describe('Signature', function () {
           await checkNetworkName.call(this, 'Testnet');
 
           await checkSponsorshipTitle.call(this, 'Disable Sponsorship');
-          await checkSponsorshipAsset.call(this, 'WAVES');
+          await checkSponsorshipAsset.call(this, 'NonScriptToken');
 
           await checkTxFee.call(this, '0.005 WAVES');
 
@@ -2657,8 +2657,7 @@ describe('Signature', function () {
             type: SPONSORSHIP_REMOVAL.type,
             version: 2,
             senderPublicKey,
-            minSponsoredAssetFee:
-              SPONSORSHIP_REMOVAL.data.minSponsoredAssetFee.amount,
+            minSponsoredAssetFee: null,
             assetId: SPONSORSHIP_REMOVAL.data.minSponsoredAssetFee.assetId,
             fee: 500000,
             chainId: 84,
