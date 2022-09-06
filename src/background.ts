@@ -49,7 +49,6 @@ import {
   MessageStoreItem,
 } from 'messages/types';
 import { CreateWalletInput } from 'wallets/types';
-import pump from 'pump';
 import { collectBalances } from 'balances/utils';
 import { BalancesItem } from 'balances/types';
 
@@ -101,23 +100,17 @@ Sentry.init({
 
 extension.runtime.onConnect.addListener(async remotePort => {
   const bgService = await bgPromise;
-  const portStream = new PortStream(remotePort);
 
   if (remotePort.name === 'contentscript') {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const origin = new URL(remotePort.sender!.url!).hostname;
-    bgService.setupPageConnection(portStream, origin);
+    bgService.setupPageConnection(remotePort);
   } else {
-    bgService.setupUiConnection(portStream);
+    bgService.setupUiConnection(remotePort);
   }
 });
 
 extension.runtime.onConnectExternal.addListener(async remotePort => {
   const bgService = await bgPromise;
-  const portStream = new PortStream(remotePort);
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const origin = new URL(remotePort.sender!.url!).hostname;
-  bgService.setupPageConnection(portStream, origin);
+  bgService.setupPageConnection(remotePort);
 });
 
 extension.runtime.onUpdateAvailable.addListener(async () => {
@@ -1126,9 +1119,8 @@ class BackgroundService extends EventEmitter {
     };
   }
 
-  setupUiConnection(connectionStream: pump.Stream) {
-    const api = this.getApi();
-    const dnode = setupDnode(connectionStream, api, 'api');
+  setupUiConnection(remotePort: chrome.runtime.Port) {
+    const dnode = setupDnode(new PortStream(remotePort), this.getApi(), 'api');
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const remoteHandler = (remote: any) => {
@@ -1149,9 +1141,17 @@ class BackgroundService extends EventEmitter {
     dnode.on('remote', remoteHandler);
   }
 
-  setupPageConnection(connectionStream: pump.Stream, origin: string) {
+  setupPageConnection(remotePort: chrome.runtime.Port) {
+    const { sender } = remotePort;
+
+    if (!sender || !sender.url) {
+      return;
+    }
+
+    const origin = new URL(sender.url).hostname;
+
     const inpageApi = this.getInpageApi(origin);
-    setupDnode(connectionStream, inpageApi, 'inpageApi');
+    setupDnode(new PortStream(remotePort), inpageApi, 'inpageApi');
   }
 
   _getCurrentNetwork(account: PreferencesAccount | undefined) {
