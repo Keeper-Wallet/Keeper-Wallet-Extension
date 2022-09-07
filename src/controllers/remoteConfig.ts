@@ -222,7 +222,7 @@ export class RemoteConfigController extends EventEmitter {
     } catch (e) {
       this.updateState({ status: STATUS.ERROR });
 
-      throw new Error(`Could not fetch waves_keeper_blacklist.json: ${e}`);
+      //throw new Error(`Could not fetch waves_keeper_blacklist.json: ${e}`);
     }
 
     extension.alarms.create('updateConfig', {
