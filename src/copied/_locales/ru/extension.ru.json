@@ -684,6 +684,7 @@
     "reissue": "Перевыпустить",
     "transfer": "Перевести",
     "txid": "ID транзакции",
+    "hash": "TXID",
     "txTime": "Время транзакции",
     "unknown": "Неизвестно",
     "wavesAuthTimeStamp": "Временная метка"

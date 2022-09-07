@@ -705,6 +705,7 @@
     "reissue": "Reissue",
     "transfer": "Transfer",
     "txid": "TXID",
+    "hash": "TXID",
     "txTime": "TX Time",
     "unknown": "Unknown",
     "wavesAuthTimeStamp": "Time Stamp"
