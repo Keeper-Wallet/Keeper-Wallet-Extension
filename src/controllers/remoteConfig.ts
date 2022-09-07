@@ -369,7 +369,7 @@ export class RemoteConfigController extends EventEmitter {
         throw new Error(await response.text());
       }
     } catch (err) {
-      throw new Error(`Could not fetch nft.json: ${err}`);
+      //throw new Error(`Could not fetch nft.json: ${err}`);
     } finally {
       extension.alarms.create('fetchNftConfig', {
         delayInMinutes: NFT_CONFIG_UPDATE_INTERVAL,
