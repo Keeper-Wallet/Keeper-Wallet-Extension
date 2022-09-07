@@ -248,7 +248,7 @@ export class RemoteConfigController extends EventEmitter {
         throw new Error(await response.text());
       }
     } catch (err) {
-      throw new Error(`Could not fetch keeper-ignore-errors.json: ${err}`);
+      //throw new Error(`Could not fetch keeper-ignore-errors.json: ${err}`);
     } finally {
       extension.alarms.create('updateIgnoreErrorsConfig', {
         delayInMinutes: IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL,
