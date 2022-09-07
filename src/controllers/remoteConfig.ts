@@ -351,7 +351,7 @@ export class RemoteConfigController extends EventEmitter {
         throw new Error(await response.text());
       }
     } catch (err) {
-      throw new Error(`Could not fetch fee.json: ${err}`);
+      //throw new Error(`Could not fetch fee.json: ${err}`);
     } finally {
       extension.alarms.create('fetchFeeConfig', {
         delayInMinutes: FEE_CONFIG_UPDATE_INTERVAL,
