@@ -81,7 +81,8 @@ export class SwapController {
     }
   }
 
-  getSwappableAssetsFromVendor = () => this.store.getState().swappableAssetsFromVendor;
+  getSwappableAssetsFromVendor = () =>
+    this.store.getState().swappableAssetsFromVendor;
 
   async swapAssets({
     feeCoins,

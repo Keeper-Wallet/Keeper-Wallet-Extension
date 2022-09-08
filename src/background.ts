@@ -728,7 +728,10 @@ class BackgroundService extends EventEmitter {
       updateBalances: this.currentAccountController.updateBalances.bind(
         this.currentAccountController
       ),
-      getSwappableAssetsFromVendor: this.swapController.getSwappableAssetsFromVendor.bind(this.swapController),
+      getSwappableAssetsFromVendor:
+        this.swapController.getSwappableAssetsFromVendor.bind(
+          this.swapController
+        ),
       swapAssets: this.swapController.swapAssets.bind(this.swapController),
       signAndPublishTransaction: (
         data: MessageInputOfType<'transaction'>['data']

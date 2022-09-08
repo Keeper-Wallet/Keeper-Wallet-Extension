@@ -7,17 +7,23 @@ import { NetworkName } from 'networks/types';
 export type SwappableAssetIdRecord = Record<NetworkName.Mainnet, string[]>;
 
 export const useSwappableAssetTickersByVendor = (): {
-  swappableAssetTickersByVendor: Record<SwapVendor, Set<string>> | Record<string, unknown>;
+  swappableAssetTickersByVendor:
+    | Record<SwapVendor, Set<string>>
+    | Record<string, unknown>;
   swappableAssetTickers: string[];
-  swappableAssetIds: Record<NetworkName.Mainnet, string[]> | Record<string, unknown>;
+  swappableAssetIds:
+    | Record<NetworkName.Mainnet, string[]>
+    | Record<string, unknown>;
 } => {
   const data = useAppSelector(state => state.swappableAssetsFromVendor);
 
   const swappableAssetTickers = useMemo(
-    () => 
+    () =>
       Array.from(
         new Set(
-          Object.values(data).flatMap(tickersSet => (tickersSet instanceof Set) ? Array.from(tickersSet) : [])
+          Object.values(data).flatMap(tickersSet =>
+            tickersSet instanceof Set ? Array.from(tickersSet) : []
+          )
         )
       ),
     [data]

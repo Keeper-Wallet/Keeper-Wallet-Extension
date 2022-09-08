@@ -410,8 +410,12 @@ export function SwapForm({
     const availableTickers = new Set(
       Object.values(swappableAssetTickersByVendor)
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        .filter(tickersSet => ((tickersSet instanceof Set) ? tickersSet.has(toAsset.ticker!) : false))
-        .flatMap(tickersSet => (tickersSet instanceof Set) ?  Array.from(tickersSet) : [])
+        .filter(tickersSet =>
+          tickersSet instanceof Set ? tickersSet.has(toAsset.ticker!) : false
+        )
+        .flatMap(tickersSet =>
+          tickersSet instanceof Set ? Array.from(tickersSet) : []
+        )
     );
 
     return swappableAssets
