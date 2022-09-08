@@ -118,7 +118,10 @@ export class WxWallet extends Wallet<WalletPrivateDataOfType<'wx'>> {
   }
 
   async signOrder(order: SaOrder): Promise<string> {
-    const result = convertFromSa.order(order);
+    const result = convertFromSa.order(
+      order,
+      this.data.networkCode.charCodeAt(0)
+    );
 
     result.proofs.push(await this.signBytes(makeBytes.order(result)));
 

@@ -48,10 +48,9 @@ function getAssetIds(
   hash[WAVES_ID] = true;
 
   if (signData.type === 1002) {
-    const order = convertFromSa.order(signData);
+    const order = convertFromSa.order(signData, chainId);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    hash[normalizeAssetId((order as any).matcherFeeAssetId)] = true;
+    hash[normalizeAssetId(order.matcherFeeAssetId)] = true;
     hash[normalizeAssetId(order.assetPair.amountAsset)] = true;
     hash[normalizeAssetId(order.assetPair.priceAsset)] = true;
   } else {
@@ -236,11 +235,12 @@ function getOrderFee(
   config: FeeConfig,
   minOrderFee: BigNumber,
   hasMatcherScript: boolean,
-  smartAssetIdList: string[]
+  smartAssetIdList: string[],
+  chainId: number
 ) {
   const currentFee = currentCreateOrderFactory(config, minOrderFee);
   return currentFee(
-    convertFromSa.order(signData),
+    convertFromSa.order(signData, chainId),
     hasMatcherScript,
     smartAssetIdList
   );
@@ -300,7 +300,8 @@ export const calculateFeeFabric =
         feeConfig,
         minOrderFee,
         extraFee,
-        smartAssets
+        smartAssets,
+        chainId
       );
     }
 

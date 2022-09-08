@@ -184,7 +184,7 @@ export const SPONSORSHIP_REMOVAL = {
   type: TRANSACTION_TYPE.SPONSORSHIP,
   data: {
     minSponsoredAssetFee: {
-      assetId: 'WAVES',
+      assetId: '7sP5abE9nGRwZxkgaEXgkQDZ3ERBcm9PLHixaUE5SYoT',
       amount: 0,
     },
   },

@@ -47,12 +47,8 @@ import {
   TRANSFER_WITHOUT_ATTACHMENT,
   UPDATE_ASSET_INFO,
 } from './utils/transactions';
-import {
-  CANCEL_ORDER,
-  CREATE_ORDER,
-  CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION,
-} from './utils/orders';
 import { CUSTOM_DATA_V1, CUSTOM_DATA_V2 } from './utils/customData';
+import { orderToProtoBytes } from '@waves/waves-transactions/dist/proto-serialize';
 
 const { parse } = create();
 
@@ -318,7 +314,7 @@ describe('Signature', function () {
         '18': [1],
         '1000': [1],
         '1001': [1],
-        '1002': [3, 2, 1],
+        '1002': [4, 3, 2, 1],
         '1003': [1, 0],
       });
     });
@@ -2632,7 +2628,7 @@ describe('Signature', function () {
           await checkNetworkName.call(this, 'Testnet');
 
           await checkSponsorshipTitle.call(this, 'Disable Sponsorship');
-          await checkSponsorshipAsset.call(this, 'WAVES');
+          await checkSponsorshipAsset.call(this, 'NonScriptToken');
 
           await checkTxFee.call(this, '0.005 WAVES');
 
@@ -2657,8 +2653,7 @@ describe('Signature', function () {
             type: SPONSORSHIP_REMOVAL.type,
             version: 2,
             senderPublicKey,
-            minSponsoredAssetFee:
-              SPONSORSHIP_REMOVAL.data.minSponsoredAssetFee.amount,
+            minSponsoredAssetFee: null,
             assetId: SPONSORSHIP_REMOVAL.data.minSponsoredAssetFee.assetId,
             fee: 500000,
             chainId: 84,
@@ -3256,7 +3251,6 @@ describe('Signature', function () {
           description: UPDATE_ASSET_INFO.data.description,
           assetId: UPDATE_ASSET_INFO.data.assetId,
           fee: 100000,
-          feeAssetId: null,
           chainId: 84,
         };
 
@@ -3379,149 +3373,518 @@ describe('Signature', function () {
         ).to.equal(fee);
       }
 
-      it('Rejected', async function () {
-        await performSignOrder.call(this, createOrder, CREATE_ORDER);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
-
-        await checkCreateOrderTitle.call(this, 'Sell: WAVES/NonScriptToken');
-        await checkCreateOrderTitleAmount.call(this, '-100.00000000 WAVES');
-        await checkCreateOrderTitlePrice.call(this, '+0 NonScriptToken');
-        await checkCreateOrderPrice.call(this, '0 NonScriptToken');
-        await checkCreateOrderMatcherPublicKey.call(
-          this,
-          CREATE_ORDER.data.matcherPublicKey
-        );
-        await checkCreateOrderFee.call(this, '0.03 WAVES');
-
-        await rejectMessage.call(this, 60 * 1000);
-        await closeMessage.call(this);
-      });
-
-      it('Approved', async function () {
-        await performSignOrder.call(this, createOrder, CREATE_ORDER);
-        await approveMessage.call(this, 60 * 1000);
-        await closeMessage.call(this);
-
-        const approveResult = await this.driver.executeScript(
-          () => window.result
-        );
-
-        const parsedApproveResult = parse(approveResult);
-
-        const expectedApproveResult = {
-          orderType: CREATE_ORDER.data.orderType,
-          version: 3,
-          assetPair: {
-            amountAsset: CREATE_ORDER.data.amount.assetId,
-            priceAsset: CREATE_ORDER.data.price.assetId,
-          },
-          price: 0,
-          amount: 10000000000,
-          matcherFee: 3000000,
-          matcherPublicKey: CREATE_ORDER.data.matcherPublicKey,
-          senderPublicKey,
-          matcherFeeAssetId: null,
-        };
-
-        const bytes = binary.serializeOrder({
-          ...expectedApproveResult,
-          expiration: parsedApproveResult.expiration,
-          timestamp: parsedApproveResult.timestamp,
-        });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
-        expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
-        ).to.be.true;
-      });
-
-      describe('with price precision conversion', function () {
-        it('Rejected', async function () {
-          await performSignOrder.call(
-            this,
-            createOrder,
-            CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION
-          );
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
-
-          await checkCreateOrderTitle.call(this, 'Buy: Tether USD/USD-Nea272c');
-          await checkCreateOrderTitleAmount.call(this, '+1.000000 Tether USD');
-          await checkCreateOrderTitlePrice.call(this, '-1.014002 USD-Nea272c');
-          await checkCreateOrderPrice.call(this, '1.014002 USD-Nea272c');
-          await checkCreateOrderMatcherPublicKey.call(
-            this,
-            CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data.matcherPublicKey
-          );
-          await checkCreateOrderFee.call(this, '0.04077612 TXW-DEVa4f6df');
-
-          await rejectMessage.call(this, 60 * 1000);
-          await closeMessage.call(this);
-        });
-
-        it('Approved', async function () {
-          await performSignOrder.call(
-            this,
-            createOrder,
-            CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION
-          );
-
-          await approveMessage.call(this, 60 * 1000);
-          await closeMessage.call(this);
-
-          const approveResult = await this.driver.executeScript(
-            () => window.result
-          );
-
-          const parsedApproveResult = parse(approveResult);
-
-          const expectedApproveResult = {
-            orderType:
-              CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data.orderType,
-            version: 3,
-            assetPair: {
-              amountAsset:
-                CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data.amount
-                  .assetId,
-              priceAsset:
-                CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data.price.assetId,
+      describe('version 3', () => {
+        describe('basic', () => {
+          const INPUT = {
+            type: 1002,
+            data: {
+              matcherPublicKey: '7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy',
+              orderType: 'sell',
+              expiration: Date.now() + 100000,
+              amount: {
+                tokens: '100',
+                assetId: 'WAVES',
+              },
+              price: {
+                tokens: '0.01',
+                assetId: '7sP5abE9nGRwZxkgaEXgkQDZ3ERBcm9PLHixaUE5SYoT',
+              },
+              matcherFee: {
+                tokens: '0.03',
+                assetId: 'WAVES',
+              },
             },
-            price: 101400200,
-            amount: 1000000,
-            matcherFee: 4077612,
-            matcherPublicKey:
-              CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data
-                .matcherPublicKey,
-            senderPublicKey,
-            matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
           };
 
-          const bytes = binary.serializeOrder({
-            ...expectedApproveResult,
-            expiration: parsedApproveResult.expiration,
-            timestamp: parsedApproveResult.timestamp,
+          it('Rejected', async function () {
+            await performSignOrder.call(this, createOrder, INPUT);
+            await checkOrigin.call(this, WHITELIST[3]);
+            await checkAccountName.call(this, 'rich');
+            await checkNetworkName.call(this, 'Testnet');
+
+            await checkCreateOrderTitle.call(
+              this,
+              'Sell: WAVES/NonScriptToken'
+            );
+            await checkCreateOrderTitleAmount.call(this, '-100.00000000 WAVES');
+            await checkCreateOrderTitlePrice.call(this, '+0 NonScriptToken');
+            await checkCreateOrderPrice.call(this, '0 NonScriptToken');
+            await checkCreateOrderMatcherPublicKey.call(
+              this,
+              INPUT.data.matcherPublicKey
+            );
+            await checkCreateOrderFee.call(this, '0.03 WAVES');
+
+            await rejectMessage.call(this, 60 * 1000);
+            await closeMessage.call(this);
           });
 
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+          it('Approved', async function () {
+            await performSignOrder.call(this, createOrder, INPUT);
+            await approveMessage.call(this, 60 * 1000);
+            await closeMessage.call(this);
 
-          expect(
-            verifySignature(
+            const approveResult = await this.driver.executeScript(
+              () => window.result
+            );
+
+            const parsedApproveResult = parse(approveResult);
+
+            const expectedApproveResult = {
+              orderType: INPUT.data.orderType,
+              version: 3,
+              assetPair: {
+                amountAsset: INPUT.data.amount.assetId,
+                priceAsset: INPUT.data.price.assetId,
+              },
+              price: 0,
+              amount: 10000000000,
+              matcherFee: 3000000,
+              matcherPublicKey: INPUT.data.matcherPublicKey,
               senderPublicKey,
-              bytes,
-              parsedApproveResult.proofs[0]
-            )
-          ).to.be.true;
+              matcherFeeAssetId: null,
+            };
+
+            const bytes = binary.serializeOrder({
+              ...expectedApproveResult,
+              expiration: parsedApproveResult.expiration,
+              timestamp: parsedApproveResult.timestamp,
+            });
+
+            expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+            expect(parsedApproveResult.id).to.equal(
+              base58Encode(blake2b(bytes))
+            );
+
+            expect(
+              verifySignature(
+                senderPublicKey,
+                bytes,
+                parsedApproveResult.proofs[0]
+              )
+            ).to.be.true;
+          });
+        });
+
+        describe('with price precision conversion', function () {
+          const INPUT = {
+            type: 1002,
+            data: {
+              matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
+              orderType: 'buy',
+              expiration: Date.now() + 100000,
+              amount: {
+                tokens: '1.000000',
+                assetId: '5Sh9KghfkZyhjwuodovDhB6PghDUGBHiAPZ4MkrPgKtX',
+              },
+              price: {
+                tokens: '1.014002',
+                assetId: '25FEqEjRkqK6yCkiT7Lz6SAYz7gUFCtxfCChnrVFD5AT',
+              },
+              matcherFee: {
+                tokens: '0.04077612',
+                assetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
+              },
+            },
+          };
+
+          it('Rejected', async function () {
+            await performSignOrder.call(this, createOrder, INPUT);
+            await checkOrigin.call(this, WHITELIST[3]);
+            await checkAccountName.call(this, 'rich');
+            await checkNetworkName.call(this, 'Testnet');
+
+            await checkCreateOrderTitle.call(
+              this,
+              'Buy: Tether USD/USD-Nea272c'
+            );
+            await checkCreateOrderTitleAmount.call(
+              this,
+              '+1.000000 Tether USD'
+            );
+            await checkCreateOrderTitlePrice.call(
+              this,
+              '-1.014002 USD-Nea272c'
+            );
+            await checkCreateOrderPrice.call(this, '1.014002 USD-Nea272c');
+            await checkCreateOrderMatcherPublicKey.call(
+              this,
+              INPUT.data.matcherPublicKey
+            );
+            await checkCreateOrderFee.call(this, '0.04077612 TXW-DEVa4f6df');
+
+            await rejectMessage.call(this, 60 * 1000);
+            await closeMessage.call(this);
+          });
+
+          it('Approved', async function () {
+            await performSignOrder.call(this, createOrder, INPUT);
+
+            await approveMessage.call(this, 60 * 1000);
+            await closeMessage.call(this);
+
+            const approveResult = await this.driver.executeScript(
+              () => window.result
+            );
+
+            const parsedApproveResult = parse(approveResult);
+
+            const expectedApproveResult = {
+              orderType: INPUT.data.orderType,
+              version: 3,
+              assetPair: {
+                amountAsset: INPUT.data.amount.assetId,
+                priceAsset: INPUT.data.price.assetId,
+              },
+              price: 101400200,
+              amount: 1000000,
+              matcherFee: 4077612,
+              matcherPublicKey: INPUT.data.matcherPublicKey,
+              senderPublicKey,
+              matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
+            };
+
+            const bytes = binary.serializeOrder({
+              ...expectedApproveResult,
+              expiration: parsedApproveResult.expiration,
+              timestamp: parsedApproveResult.timestamp,
+            });
+
+            expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+            expect(parsedApproveResult.id).to.equal(
+              base58Encode(blake2b(bytes))
+            );
+
+            expect(
+              verifySignature(
+                senderPublicKey,
+                bytes,
+                parsedApproveResult.proofs[0]
+              )
+            ).to.be.true;
+          });
+        });
+      });
+
+      describe('version 4', () => {
+        describe('with assetDecimals priceMode', function () {
+          const INPUT = {
+            type: 1002,
+            data: {
+              version: 4,
+              matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
+              orderType: 'buy' as const,
+              expiration: Date.now() + 100000,
+              priceMode: 'assetDecimals',
+              amount: {
+                tokens: '1.000000',
+                assetId: '5Sh9KghfkZyhjwuodovDhB6PghDUGBHiAPZ4MkrPgKtX',
+              },
+              price: {
+                tokens: '1.014002',
+                assetId: '25FEqEjRkqK6yCkiT7Lz6SAYz7gUFCtxfCChnrVFD5AT',
+              },
+              matcherFee: {
+                tokens: '0.04077612',
+                assetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
+              },
+            },
+          };
+
+          it('Rejected', async function () {
+            await performSignOrder.call(this, createOrder, INPUT);
+            await checkOrigin.call(this, WHITELIST[3]);
+            await checkAccountName.call(this, 'rich');
+            await checkNetworkName.call(this, 'Testnet');
+
+            await checkCreateOrderTitle.call(
+              this,
+              'Buy: Tether USD/USD-Nea272c'
+            );
+            await checkCreateOrderTitleAmount.call(
+              this,
+              '+1.000000 Tether USD'
+            );
+            await checkCreateOrderTitlePrice.call(
+              this,
+              '-1.014002 USD-Nea272c'
+            );
+            await checkCreateOrderPrice.call(this, '1.014002 USD-Nea272c');
+            await checkCreateOrderMatcherPublicKey.call(
+              this,
+              INPUT.data.matcherPublicKey
+            );
+            await checkCreateOrderFee.call(this, '0.04077612 TXW-DEVa4f6df');
+
+            await rejectMessage.call(this, 60 * 1000);
+            await closeMessage.call(this);
+          });
+
+          it('Approved', async function () {
+            await performSignOrder.call(this, createOrder, INPUT);
+
+            await approveMessage.call(this, 60 * 1000);
+            await closeMessage.call(this);
+
+            const approveResult = await this.driver.executeScript(
+              () => window.result
+            );
+
+            const parsedApproveResult = parse(approveResult);
+
+            const expectedApproveResult = {
+              chainId: 84,
+              orderType: INPUT.data.orderType,
+              version: 4 as const,
+              assetPair: {
+                amountAsset: INPUT.data.amount.assetId,
+                priceAsset: INPUT.data.price.assetId,
+              },
+              price: 101400200,
+              priceMode: 'assetDecimals' as const,
+              amount: 1000000,
+              matcherFee: 4077612,
+              matcherPublicKey: INPUT.data.matcherPublicKey,
+              senderPublicKey,
+              matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
+            };
+
+            const bytes = orderToProtoBytes({
+              ...expectedApproveResult,
+              expiration: parsedApproveResult.expiration,
+              timestamp: parsedApproveResult.timestamp,
+            });
+
+            expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+            expect(parsedApproveResult.id).to.equal(
+              base58Encode(blake2b(bytes))
+            );
+
+            expect(
+              verifySignature(
+                senderPublicKey,
+                bytes,
+                parsedApproveResult.proofs[0]
+              )
+            ).to.be.true;
+          });
+        });
+
+        describe('with fixedDecimals priceMode', function () {
+          const INPUT = {
+            type: 1002,
+            data: {
+              version: 4,
+              matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
+              orderType: 'buy' as const,
+              expiration: Date.now() + 100000,
+              priceMode: 'fixedDecimals',
+              amount: {
+                tokens: '1.000000',
+                assetId: '5Sh9KghfkZyhjwuodovDhB6PghDUGBHiAPZ4MkrPgKtX',
+              },
+              price: {
+                tokens: '1.014002',
+                assetId: '25FEqEjRkqK6yCkiT7Lz6SAYz7gUFCtxfCChnrVFD5AT',
+              },
+              matcherFee: {
+                tokens: '0.04077612',
+                assetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
+              },
+            },
+          };
+
+          it('Rejected', async function () {
+            await performSignOrder.call(this, createOrder, INPUT);
+            await checkOrigin.call(this, WHITELIST[3]);
+            await checkAccountName.call(this, 'rich');
+            await checkNetworkName.call(this, 'Testnet');
+
+            await checkCreateOrderTitle.call(
+              this,
+              'Buy: Tether USD/USD-Nea272c'
+            );
+            await checkCreateOrderTitleAmount.call(
+              this,
+              '+1.000000 Tether USD'
+            );
+            await checkCreateOrderTitlePrice.call(
+              this,
+              '-1.014002 USD-Nea272c'
+            );
+            await checkCreateOrderPrice.call(this, '1.014002 USD-Nea272c');
+            await checkCreateOrderMatcherPublicKey.call(
+              this,
+              INPUT.data.matcherPublicKey
+            );
+            await checkCreateOrderFee.call(this, '0.04077612 TXW-DEVa4f6df');
+
+            await rejectMessage.call(this, 60 * 1000);
+            await closeMessage.call(this);
+          });
+
+          it('Approved', async function () {
+            await performSignOrder.call(this, createOrder, INPUT);
+
+            await approveMessage.call(this, 60 * 1000);
+            await closeMessage.call(this);
+
+            const approveResult = await this.driver.executeScript(
+              () => window.result
+            );
+
+            const parsedApproveResult = parse(approveResult);
+
+            const expectedApproveResult = {
+              chainId: 84,
+              orderType: INPUT.data.orderType,
+              version: 4 as const,
+              assetPair: {
+                amountAsset: INPUT.data.amount.assetId,
+                priceAsset: INPUT.data.price.assetId,
+              },
+              price: 101400200,
+              priceMode: 'fixedDecimals' as const,
+              amount: 1000000,
+              matcherFee: 4077612,
+              matcherPublicKey: INPUT.data.matcherPublicKey,
+              senderPublicKey,
+              matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
+            };
+
+            const bytes = orderToProtoBytes({
+              ...expectedApproveResult,
+              expiration: parsedApproveResult.expiration,
+              timestamp: parsedApproveResult.timestamp,
+            });
+
+            expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+            expect(parsedApproveResult.id).to.equal(
+              base58Encode(blake2b(bytes))
+            );
+
+            expect(
+              verifySignature(
+                senderPublicKey,
+                bytes,
+                parsedApproveResult.proofs[0]
+              )
+            ).to.be.true;
+          });
+        });
+
+        describe('without priceMode', function () {
+          const INPUT = {
+            type: 1002,
+            data: {
+              version: 4,
+              matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
+              orderType: 'buy' as const,
+              expiration: Date.now() + 100000,
+              amount: {
+                tokens: '1.000000',
+                assetId: '5Sh9KghfkZyhjwuodovDhB6PghDUGBHiAPZ4MkrPgKtX',
+              },
+              price: {
+                tokens: '1.014002',
+                assetId: '25FEqEjRkqK6yCkiT7Lz6SAYz7gUFCtxfCChnrVFD5AT',
+              },
+              matcherFee: {
+                tokens: '0.04077612',
+                assetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
+              },
+            },
+          };
+
+          it('Rejected', async function () {
+            await performSignOrder.call(this, createOrder, INPUT);
+            await checkOrigin.call(this, WHITELIST[3]);
+            await checkAccountName.call(this, 'rich');
+            await checkNetworkName.call(this, 'Testnet');
+
+            await checkCreateOrderTitle.call(
+              this,
+              'Buy: Tether USD/USD-Nea272c'
+            );
+            await checkCreateOrderTitleAmount.call(
+              this,
+              '+1.000000 Tether USD'
+            );
+            await checkCreateOrderTitlePrice.call(
+              this,
+              '-1.014002 USD-Nea272c'
+            );
+            await checkCreateOrderPrice.call(this, '1.014002 USD-Nea272c');
+            await checkCreateOrderMatcherPublicKey.call(
+              this,
+              INPUT.data.matcherPublicKey
+            );
+            await checkCreateOrderFee.call(this, '0.04077612 TXW-DEVa4f6df');
+
+            await rejectMessage.call(this, 60 * 1000);
+            await closeMessage.call(this);
+          });
+
+          it('Approved', async function () {
+            await performSignOrder.call(this, createOrder, INPUT);
+
+            await approveMessage.call(this, 60 * 1000);
+            await closeMessage.call(this);
+
+            const approveResult = await this.driver.executeScript(
+              () => window.result
+            );
+
+            const parsedApproveResult = parse(approveResult);
+
+            const expectedApproveResult = {
+              chainId: 84,
+              orderType: INPUT.data.orderType,
+              version: 4 as const,
+              assetPair: {
+                amountAsset: INPUT.data.amount.assetId,
+                priceAsset: INPUT.data.price.assetId,
+              },
+              price: 101400200,
+              priceMode: 'fixedDecimals' as const,
+              amount: 1000000,
+              matcherFee: 4077612,
+              matcherPublicKey: INPUT.data.matcherPublicKey,
+              senderPublicKey,
+              matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
+            };
+
+            const bytes = orderToProtoBytes({
+              ...expectedApproveResult,
+              expiration: parsedApproveResult.expiration,
+              timestamp: parsedApproveResult.timestamp,
+            });
+
+            expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+            expect(parsedApproveResult.id).to.equal(
+              base58Encode(blake2b(bytes))
+            );
+
+            expect(
+              verifySignature(
+                senderPublicKey,
+                bytes,
+                parsedApproveResult.proofs[0]
+              )
+            ).to.be.true;
+          });
         });
       });
     });
 
     describe('Cancel', function () {
+      const INPUT = {
+        type: 1003,
+        data: {
+          id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap',
+        },
+      };
+
       async function checkOrderId(this: mocha.Context, orderId: string) {
         expect(
           await this.driver
@@ -3531,19 +3894,19 @@ describe('Signature', function () {
       }
 
       it('Rejected', async function () {
-        await performSignOrder.call(this, cancelOrder, CANCEL_ORDER);
+        await performSignOrder.call(this, cancelOrder, INPUT);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
 
-        await checkOrderId.call(this, CANCEL_ORDER.data.id);
+        await checkOrderId.call(this, INPUT.data.id);
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
 
       it('Approved', async function () {
-        await performSignOrder.call(this, cancelOrder, CANCEL_ORDER);
+        await performSignOrder.call(this, cancelOrder, INPUT);
         await approveMessage.call(this);
         await closeMessage.call(this);
 
@@ -3554,7 +3917,7 @@ describe('Signature', function () {
         const parsedApproveResult = parse(approveResult);
 
         const expectedApproveResult = {
-          orderId: CANCEL_ORDER.data.id,
+          orderId: INPUT.data.id,
           sender: senderPublicKey,
         };
 
