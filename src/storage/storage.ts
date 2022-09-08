@@ -351,7 +351,7 @@ export class ExtensionStorage {
       await this._set(storageState, {
         migrationVersion: CURRENT_MIGRATION_VERSION,
       });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       if (err.message.includes('FILE_ERROR_NO_SPACE')) return;
 
