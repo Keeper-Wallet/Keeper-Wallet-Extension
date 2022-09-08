@@ -6,6 +6,9 @@ import { AssetInfoController } from './assetInfo';
 import { NetworkController } from './network';
 import { PreferencesController } from './preferences';
 import { WalletController } from './wallet';
+import ObservableStore from 'obs-store';
+import { ExtensionStorage } from 'storage/storage';
+import { extension } from 'lib/extension';
 
 export interface SwapAssetsParams {
   feeCoins: string;
@@ -17,28 +20,68 @@ export interface SwapAssetsResult {
   transactionId: string;
 }
 
+const SWAPPABLE_ASSETS_FROM_VENDOR_URL =
+  'https://swap-api.keeper-wallet.app/assets';
+const SWAPPABLE_ASSETS_FROM_VENDOR_PERIOD_IN_MINUTES = 240;
+
 export class SwapController {
   private assetInfoController;
   private networkController;
   private preferencesController;
   private walletController;
+  private store;
 
   constructor({
     assetInfoController,
     networkController,
     preferencesController,
     walletController,
+    extensionStorage,
   }: {
     assetInfoController: AssetInfoController;
     networkController: NetworkController;
     preferencesController: PreferencesController;
     walletController: WalletController;
+    extensionStorage: ExtensionStorage;
   }) {
     this.assetInfoController = assetInfoController;
     this.networkController = networkController;
     this.preferencesController = preferencesController;
     this.walletController = walletController;
+
+    const initState = extensionStorage.getInitState({
+      swappableAssetsFromVendor: {},
+    });
+
+    this.store = new ObservableStore(initState);
+    extensionStorage.subscribe(this.store);
+
+    extension.alarms.create('updateSwappableAssetsFromVendor', {
+      periodInMinutes: SWAPPABLE_ASSETS_FROM_VENDOR_PERIOD_IN_MINUTES,
+    });
+
+    extension.alarms.onAlarm.addListener(({ name }) => {
+      switch (name) {
+        case 'updateSwappableAssetsFromVendor':
+          this.updateSwappableAssetsFromVendor();
+          break;
+        default:
+          break;
+      }
+    });
   }
+
+  async updateSwappableAssetsFromVendor() {
+    console.log('updateSwappableAssetsFromVendor');
+    const resp = await fetch(new URL(SWAPPABLE_ASSETS_FROM_VENDOR_URL));
+
+    if (resp.ok) {
+      const swappableAssetsFromVendor = await resp.json();
+      this.store.updateState({ swappableAssetsFromVendor });
+    }
+  }
+
+  getSwappableAssetsFromVendor = () => this.store.getState().swappableAssetsFromVendor;
 
   async swapAssets({
     feeCoins,

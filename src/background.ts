@@ -502,6 +502,7 @@ class BackgroundService extends EventEmitter {
       networkController: this.networkController,
       preferencesController: this.preferencesController,
       walletController: this.walletController,
+      extensionStorage: this.extensionStorage,
     });
 
     this.idleController = new IdleController({
@@ -727,6 +728,7 @@ class BackgroundService extends EventEmitter {
       updateBalances: this.currentAccountController.updateBalances.bind(
         this.currentAccountController
       ),
+      getSwappableAssetsFromVendor: this.swapController.getSwappableAssetsFromVendor.bind(this.swapController),
       swapAssets: this.swapController.swapAssets.bind(this.swapController),
       signAndPublishTransaction: (
         data: MessageInputOfType<'transaction'>['data']

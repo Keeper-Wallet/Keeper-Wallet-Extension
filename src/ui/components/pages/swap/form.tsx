@@ -8,7 +8,6 @@ import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { AssetAmountInput } from 'assets/amountInput';
 import { AssetSelect, AssetSelectOption } from 'assets/assetSelect';
-import { swappableAssetTickersByVendor } from 'assets/constants';
 import { AssetDetail } from 'assets/types';
 import { BalancesItem } from 'balances/types';
 import cn from 'classnames';
@@ -27,6 +26,7 @@ import { Select } from 'ui/components/ui/select/Select';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { UsdAmount } from 'ui/components/ui/UsdAmount';
 import { useAppDispatch, useAppSelector } from 'ui/store';
+import { useSwappableAssetTickersByVendor } from './hooks/useSwappableAssetTickersByVendor';
 import * as styles from './form.module.css';
 import { SwapLayout } from './layout';
 
@@ -404,12 +404,14 @@ export function SwapForm({
     }
   }, [swapVendorTouched, profitVendor]);
 
+  const { swappableAssetTickersByVendor } = useSwappableAssetTickersByVendor();
+
   const fromSwappableAssets = React.useMemo(() => {
     const availableTickers = new Set(
       Object.values(swappableAssetTickersByVendor)
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        .filter(tickersSet => tickersSet.has(toAsset.ticker!))
-        .flatMap(tickersSet => Array.from(tickersSet))
+        .filter(tickersSet => ((tickersSet instanceof Set) ? tickersSet.has(toAsset.ticker!) : false))
+        .flatMap(tickersSet => (tickersSet instanceof Set) ?  Array.from(tickersSet) : [])
     );
 
     return swappableAssets
@@ -429,11 +431,11 @@ export function SwapForm({
               }),
         };
       });
-  }, [swappableAssets, toAsset, t]);
+  }, [swappableAssets, toAsset, t, swappableAssetTickersByVendor]);
 
   const toSwappableAssets = React.useMemo(() => {
     const availableTickers = new Set(
-      Object.values(swappableAssetTickersByVendor)
+      Object.values(useSwappableAssetTickersByVendor)
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         .filter(tickersSet => tickersSet.has(fromAsset.ticker!))
         .flatMap(tickersSet => Array.from(tickersSet))

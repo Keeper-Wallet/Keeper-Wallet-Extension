@@ -10,6 +10,7 @@ import { favoriteAsset } from '../../../actions';
 import { Tooltip } from '../../ui/tooltip';
 import { MoreActions } from './moreActions';
 import { isSwappableAsset } from 'assets/utils';
+import { useSwappableAssetTickersByVendor } from '../swap/hooks/useSwappableAssetTickersByVendor';
 
 interface Props {
   balance: Money;
@@ -32,6 +33,7 @@ export function AssetItem({
   const dispatch = useAppDispatch();
   const assets = useAppSelector(state => state.assets);
   const currentNetwork = useAppSelector(state => state.currentNetwork);
+  const { swappableAssetIds } = useSwappableAssetTickersByVendor();
   const asset = assets[assetId];
 
   const displayName = asset?.displayName;
@@ -171,7 +173,7 @@ export function AssetItem({
           </Tooltip>
 
           {currentNetwork === 'mainnet' &&
-            isSwappableAsset(currentNetwork, assetId) && (
+            isSwappableAsset(swappableAssetIds, currentNetwork, assetId) && (
               <Tooltip content={t('assetInfo.swapAssetTooltip')}>
                 {props => (
                   <button

@@ -121,6 +121,7 @@ export const messages = (
 
 export const assets = createSimpleReducer({}, ACTION.SET_ASSETS);
 export const usdPrices = createSimpleReducer({}, ACTION.SET_USD_PRICES);
+export const swappableAssetsFromVendor = createSimpleReducer({}, ACTION.SET_SWAPPABLE_ASSETS_FROM_VENDOR);
 export const assetLogos = createSimpleReducer({}, ACTION.SET_ASSET_LOGOS);
 export const assetTickers = createSimpleReducer({}, ACTION.SET_ASSET_TICKERS);
 export const addresses = createSimpleReducer({}, ACTION.UPDATE_ADDRESSES);

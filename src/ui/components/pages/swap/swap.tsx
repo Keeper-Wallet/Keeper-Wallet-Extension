@@ -2,7 +2,6 @@ import * as Sentry from '@sentry/react';
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { swappableAssetIds } from 'assets/constants';
 import { AssetDetail } from 'assets/types';
 import { useAssetIdByTicker } from 'assets/utils';
 import { convertFeeToAsset } from 'fee/utils';
@@ -15,6 +14,7 @@ import { PageComponentProps, PAGES } from 'ui/pageConfig';
 import background from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { SwapForm, OnSwapParams } from './form';
+import { useSwappableAssetTickersByVendor } from './hooks/useSwappableAssetTickersByVendor';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
 
@@ -25,6 +25,8 @@ export function Swap({ setTab }: PageComponentProps) {
   const selectedAccount = useAppSelector(state => state.selectedAccount);
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const feeConfig = useAppSelector(state => state.feeConfig);
+
+  const { swappableAssetIds } = useSwappableAssetTickersByVendor();
 
   const initialStateFromRedux = useAppSelector(
     state => state.localState.swapScreenInitialState
@@ -86,7 +88,7 @@ export function Swap({ setTab }: PageComponentProps) {
         assetId,
         assets[assetId],
       ]),
-    [assets]
+    [assets, swappableAssetIds.mainnet]
   );
 
   React.useEffect(() => {

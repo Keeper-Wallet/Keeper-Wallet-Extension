@@ -263,6 +263,14 @@ export function createUpdateState(store: UiStore) {
       });
     }
 
+    const swappableAssetsFromVendor = getParam(state.swappableAssetsFromVendor, {});
+    if (swappableAssetsFromVendor && !equals(swappableAssetsFromVendor, currentState.swappableAssetsFromVendor)) {
+      store.dispatch({
+        type: ACTION.SET_SWAPPABLE_ASSETS_FROM_VENDOR,
+        payload: swappableAssetsFromVendor,
+      });
+    }
+
     const assetLogos = getParam(state.assetLogos, {});
     if (assetLogos && !equals(assetLogos, currentState.assetLogos)) {
       store.dispatch({

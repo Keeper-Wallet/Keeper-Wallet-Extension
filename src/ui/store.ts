@@ -33,6 +33,7 @@ import { IMoneyLike } from './utils/converters';
 import { NetworkName } from 'networks/types';
 import { MessageInputOfType, MessageStoreItem } from 'messages/types';
 import { AssetDetail } from 'assets/types';
+import { SwapVendor } from 'swap/constants';
 
 const middlewares = Object.values(middleware);
 
@@ -176,6 +177,12 @@ export type UiAction =
   | {
       type: typeof ACTION.SET_USD_PRICES;
       payload: Record<string, string>;
+      meta?: never;
+    }
+  |
+    {
+      type: typeof ACTION.SET_SWAPPABLE_ASSETS_FROM_VENDOR;
+      payload: Record<SwapVendor, Set<string>> | Record<string, unknown>;
       meta?: never;
     }
   | {
