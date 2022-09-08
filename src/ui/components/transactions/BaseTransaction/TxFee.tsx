@@ -12,7 +12,7 @@ import { Balance, Select, SelectItem } from '../../ui';
 import { getFee } from './parseTx';
 
 interface Props {
-  message?: MessageStoreItem | null;
+  message?: Extract<MessageStoreItem, { type: 'transaction' }> | null;
 }
 
 export function TxFee({ message: messageProp }: Props) {
@@ -24,7 +24,9 @@ export function TxFee({ message: messageProp }: Props) {
     state => state.balances[state.selectedAccount.address!]
   );
 
-  const messageFromState = useAppSelector(state => state.activePopup?.msg);
+  const messageFromState = useAppSelector(
+    state => state.activePopup?.msg
+  ) as Extract<MessageStoreItem, { type: 'transaction' }>;
 
   const message = messageProp || messageFromState;
   const initialFee = getMoney(message?.data?.data?.initialFee, assets);
@@ -62,7 +64,7 @@ export function TxFee({ message: messageProp }: Props) {
   }
 
   return (
-    <div>
+    <div data-testid="txFee">
       {feeOptions.length <= 1 ? (
         <Balance isShortFormat={true} balance={fee} showAsset={true} />
       ) : (

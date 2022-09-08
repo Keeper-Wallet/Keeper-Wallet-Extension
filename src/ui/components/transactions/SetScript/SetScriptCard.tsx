@@ -19,8 +19,13 @@ class SetScriptCardComponent extends React.PureComponent<
     );
 
     const { t, message, collapsed } = this.props;
-    const { data = {} } = message;
-    const tx = { type: data.type, ...data.data };
+
+    const { data } = message as Extract<
+      typeof message,
+      { type: 'transaction' }
+    >;
+
+    const tx = { type: data?.type, ...data?.data };
     const script = tx.script;
     return (
       <>

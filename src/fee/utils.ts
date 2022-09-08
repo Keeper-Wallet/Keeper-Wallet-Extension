@@ -8,6 +8,7 @@ import { FeeConfig } from '../constants';
 import { SPONSORED_FEE_TX_TYPES } from './constants';
 import { AssetBalance, BalancesItem } from 'balances/types';
 import { AssetDetail } from 'assets/types';
+import { MessageStoreItem } from 'messages/types';
 
 export function convertFeeToAsset(
   fee: Money,
@@ -108,8 +109,7 @@ export function getSpendingAmountsForSponsorableTx({
   message,
 }: {
   assets: Record<string, AssetDetail>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  message: any;
+  message: MessageStoreItem;
 }): Money[] {
   switch (message.data.type) {
     case TRANSACTION_TYPE.TRANSFER:

@@ -17,8 +17,13 @@ class ReissueCardComponent extends React.PureComponent<
     });
 
     const { t, message, assets } = this.props;
-    const { data = {} } = message;
-    const tx = { type: data.type, ...data.data };
+
+    const { data } = message as Extract<
+      typeof message,
+      { type: 'transaction' }
+    >;
+
+    const tx = { type: data?.type, ...data?.data };
     const amount = getMoney(getAmount(tx), assets);
 
     return (
@@ -33,6 +38,7 @@ class ReissueCardComponent extends React.PureComponent<
             </div>
             <h1 className="headline1">
               <Balance
+                data-testid="reissueAmount"
                 split={true}
                 addSign="+"
                 showAsset={true}
@@ -48,7 +54,7 @@ class ReissueCardComponent extends React.PureComponent<
             <div className="tx-title tag1 basic500">
               {t('transactions.issueType')}
             </div>
-            <div className={styles.txValue}>
+            <div className={styles.txValue} data-testid="reissueReissuable">
               {t(
                 tx.reissuable
                   ? 'transactions.reissuable'

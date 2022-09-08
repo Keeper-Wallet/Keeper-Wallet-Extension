@@ -1,6 +1,5 @@
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import * as chrome from 'selenium-webdriver/chrome';
-import * as net from 'net';
 import * as mocha from 'mocha';
 import * as path from 'path';
 import {
@@ -13,7 +12,6 @@ import { App } from './actions';
 declare global {
   interface Window {
     result: unknown;
-    approveResult: unknown;
   }
 }
 
@@ -40,8 +38,6 @@ interface GlobalFixturesContext {
 }
 
 export async function mochaGlobalSetup(this: GlobalFixturesContext) {
-  const exposedPorts = [4444, 5900];
-
   const host = await new Network().start();
 
   this.node = await new GenericContainer('wavesplatform/waves-private-node')
@@ -61,34 +57,18 @@ export async function mochaGlobalSetup(this: GlobalFixturesContext) {
       '/app/test/fixtures',
       'ro'
     )
-    .withExposedPorts(...exposedPorts)
+    .withExposedPorts(
+      {
+        container: 4444,
+        host: 4444,
+      },
+      {
+        container: 5900,
+        host: 5900,
+      }
+    )
     .withNetworkMode(host.getName())
     .start();
-
-  await Promise.all(
-    exposedPorts.map(
-      (port: number) =>
-        new Promise((resolve, reject) => {
-          net
-            .createServer(from => {
-              const to = net.createConnection({
-                port: this.selenium.getMappedPort(port),
-              });
-
-              from.pipe(to);
-              to.pipe(from);
-
-              to.once('error', () => {
-                from.destroy();
-              });
-            })
-            .once('listening', resolve)
-            .once('error', reject)
-            .listen(port)
-            .unref();
-        })
-    )
-  );
 }
 
 export async function mochaGlobalTeardown(this: GlobalFixturesContext) {
@@ -132,11 +112,11 @@ export const mochaHooks = () => ({
     // this helps extension to be ready
     await this.driver.get('chrome://new-tab-page');
     await App.openServiceWorkerTab.call(this);
-    await App.open.call(this);
   },
 
-  afterAll(this: mocha.Context, done: mocha.Done) {
-    this.driver && this.driver.quit();
-    done();
+  async afterAll(this: mocha.Context) {
+    if (this.driver) {
+      await this.driver.quit();
+    }
   },
 });

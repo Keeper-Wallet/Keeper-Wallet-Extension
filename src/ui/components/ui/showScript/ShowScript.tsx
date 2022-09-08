@@ -18,7 +18,11 @@ const ContentScript = ({
   script: any;
   getScriptRef: (node: HTMLPreElement | null) => unknown;
 }) => (
-  <pre ref={getScriptRef} className={cn(styles.codeScript, 'body3')}>
+  <pre
+    ref={getScriptRef}
+    className={cn(styles.codeScript, 'body3')}
+    data-testid="contentScript"
+  >
     {script}
   </pre>
 );
@@ -57,19 +61,30 @@ const Data = ({
         {(data || []).map((item, index) => {
           return (
             <tbody key={index}>
-              <tr className={cn(styles.dataRow)}>
-                <td title={item.key} className={styles.dataItemData}>
+              <tr className={cn(styles.dataRow)} data-testid="dataRow">
+                <td
+                  title={item.key}
+                  className={styles.dataItemData}
+                  data-testid="dataRowKey"
+                >
                   {item.key}
                 </td>
-                <td title={item.type} className={styles.dataItemData}>
+                <td
+                  title={item.type}
+                  className={styles.dataItemData}
+                  data-testid="dataRowType"
+                >
                   {item.type}
                 </td>
                 <td
                   title={String(item.value)}
                   className={styles.dataItemDataLast}
+                  data-testid="dataRowValue"
                 >
                   {item.type === null && item.value === null
                     ? 'Key Deletion'
+                    : typeof item.value === 'boolean'
+                    ? String(item.value)
                     : item.value}
                 </td>
               </tr>
@@ -114,10 +129,19 @@ const DataNoKey = ({
           const length = Array.isArray(itemValue) ? itemValue.length : 0;
           return (
             <tbody key={index}>
-              <tr className={cn(styles.dataRow)}>
-                <td className={styles.dataItemData}>{item.type}</td>
+              <tr className={cn(styles.dataRow)} data-testid="invokeArgument">
+                <td
+                  className={styles.dataItemData}
+                  data-testid="invokeArgumentType"
+                >
+                  {item.type}
+                </td>
                 {length ? (
-                  <td title={itemValueJson} className={styles.dataItemDataLast}>
+                  <td
+                    title={itemValueJson}
+                    className={styles.dataItemDataLast}
+                    data-testid="invokeArgumentValue"
+                  >
                     [
                     {(itemValue as unknown[]).map((item, index) =>
                       index === length - 1 ? (
@@ -132,7 +156,11 @@ const DataNoKey = ({
                     )}
                   </td>
                 ) : (
-                  <td title={itemValueJson} className={styles.dataItemDataLast}>
+                  <td
+                    title={itemValueJson}
+                    className={styles.dataItemDataLast}
+                    data-testid="invokeArgumentValue"
+                  >
                     {itemValueJson}
                   </td>
                 )}

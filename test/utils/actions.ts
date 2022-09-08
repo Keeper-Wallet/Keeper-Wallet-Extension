@@ -25,20 +25,14 @@ export const App = {
     this: mocha.Context,
     password: string = DEFAULT_PASSWORD
   ) {
-    await App.open.call(this);
+    const tabKeeper = await this.driver.getWindowHandle();
 
-    const [tabKeeper] = await this.driver.getAllWindowHandles();
-    await this.driver.wait(
-      async () => (await this.driver.getAllWindowHandles()).length === 3,
-      this.wait
-    );
-    for (const handle of await this.driver.getAllWindowHandles()) {
-      if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
-        await this.driver.switchTo().window(handle);
-        await this.driver.navigate().refresh();
-        break;
-      }
-    }
+    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    await App.open.call(this);
+    const [tabAccounts] = await waitForNewWindows(1);
+
+    await this.driver.switchTo().window(tabAccounts);
+    await this.driver.navigate().refresh();
 
     await this.driver
       .wait(
@@ -506,5 +500,42 @@ export const Network = {
   switchToAndCheck: async function (this: mocha.Context, network: string) {
     await Network.switchTo.call(this, network);
     await Network.checkNetwork.call(this, network);
+  },
+};
+
+export const Windows = {
+  async captureNewWindows(this: mocha.Context) {
+    const prevHandlesSet = new Set(await this.driver.getAllWindowHandles());
+
+    return {
+      waitForNewWindows: async (count: number) => {
+        let newHandles: string[] = [];
+
+        await this.driver.wait(
+          async () => {
+            const handles = await this.driver.getAllWindowHandles();
+
+            newHandles = handles.filter(handle => !prevHandlesSet.has(handle));
+
+            return newHandles.length >= count;
+          },
+          this.wait,
+          'waiting for new windows to appear'
+        );
+
+        return newHandles;
+      },
+    };
+  },
+  async waitForWindowToClose(this: mocha.Context, windowHandle: string) {
+    await this.driver.wait(
+      async () => {
+        const handles = await this.driver.getAllWindowHandles();
+
+        return !handles.includes(windowHandle);
+      },
+      this.wait,
+      'waiting for window to close'
+    );
   },
 };

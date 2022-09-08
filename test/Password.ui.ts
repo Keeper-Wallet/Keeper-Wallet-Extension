@@ -2,7 +2,7 @@ import * as mocha from 'mocha';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { clear } from './utils';
-import { App, CreateNewAccount } from './utils/actions';
+import { App, CreateNewAccount, Windows } from './utils/actions';
 import { DEFAULT_PAGE_LOAD_DELAY } from './utils/constants';
 
 describe('Password management', () => {
@@ -26,22 +26,14 @@ describe('Password management', () => {
       secondPasswordErrorDiv: WebElement;
 
     before(async function () {
+      tabKeeper = await this.driver.getWindowHandle();
+
+      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await App.open.call(this);
+      [tabAccounts] = await waitForNewWindows(1);
 
-      const handles = await this.driver.getAllWindowHandles();
-      tabKeeper = handles[0];
-
-      await this.driver.wait(
-        async () => (await this.driver.getAllWindowHandles()).length === 3,
-        this.wait
-      );
-      for (const handle of await this.driver.getAllWindowHandles()) {
-        if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
-          tabAccounts = handle;
-          await this.driver.switchTo().window(tabAccounts);
-          break;
-        }
-      }
+      await this.driver.switchTo().window(tabAccounts);
+      await this.driver.navigate().refresh();
 
       await this.driver
         .wait(

@@ -16,8 +16,14 @@ class DataCardComponent extends React.PureComponent<
     });
 
     const { t, message } = this.props;
-    const { data = {} } = message;
-    const tx = { type: data.type, ...data.data };
+
+    const { data } = message as Extract<
+      typeof message,
+      { type: 'transaction' }
+    >;
+
+    const tx = { type: data?.type, ...data?.data };
+
     return (
       <div className={className}>
         <div className={styles.cardHeader}>

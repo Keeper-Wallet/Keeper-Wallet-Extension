@@ -9,7 +9,11 @@ class WavesAuthInfoComponent extends React.PureComponent<
 > {
   render() {
     const { t, message } = this.props;
-    const { messageHash, data } = message;
+
+    const { messageHash, data } = message as Extract<
+      typeof message,
+      { type: 'wavesAuth' }
+    >;
 
     return (
       <div>
@@ -19,7 +23,8 @@ class WavesAuthInfoComponent extends React.PureComponent<
           </div>
           <div className={'fullwidth'}>
             <DateFormat
-              date={data.timestamp}
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              date={data.timestamp!}
               showRaw={true}
               className={'fullwidth'}
             />

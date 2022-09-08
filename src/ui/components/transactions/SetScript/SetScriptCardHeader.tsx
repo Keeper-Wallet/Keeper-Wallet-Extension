@@ -16,7 +16,7 @@ export const SetScriptCardHeader = ({ script }: Props) => {
       <TxIcon className={styles.icon} txType="set-script" />
       <div>
         <div className={styles.data}>{t('transactions.dataTransaction')}</div>
-        <h1 className={styles.title}>
+        <h1 className={styles.title} data-testid="setScriptTitle">
           {t('transactions.setScriptTransaction')}
         </h1>
       </div>
@@ -24,7 +24,7 @@ export const SetScriptCardHeader = ({ script }: Props) => {
   ) : (
     <div className={styles.header}>
       <TxIcon className={styles.icon} txType="set-script-cancel" />
-      <h1 className={styles.title}>
+      <h1 className={styles.title} data-testid="setScriptTitle">
         {t('transactions.setScriptTransactionCancel')}
       </h1>
     </div>

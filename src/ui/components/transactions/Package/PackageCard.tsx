@@ -16,7 +16,12 @@ const Fees = ({ fees }: { fees: Record<string, Money> }) => {
       {moneys.map((fee: Money) => {
         return (
           <div key={fee.asset.id}>
-            <Balance balance={fee} isShortFormat={true} showAsset={true} />
+            <Balance
+              data-testid="packageFeeItem"
+              balance={fee}
+              isShortFormat={true}
+              showAsset={true}
+            />
           </div>
         );
       })}
@@ -29,7 +34,12 @@ class PackageCardComponent extends React.PureComponent<
 > {
   render() {
     const { t, message, assets, collapsed, className } = this.props;
-    const { data = [], title = '' } = message;
+
+    const { data = [], title = '' } = message as Extract<
+      typeof message,
+      { type: 'transactionPackage' }
+    >;
+
     const tx = [...data];
     const fees = getFees(tx, assets);
     const amounts = getPackageAmounts(tx, assets);
@@ -54,7 +64,10 @@ class PackageCardComponent extends React.PureComponent<
                   ? title
                   : t('transactions.packTransactionGroup')}
               </div>
-              <h1 className="headline1 margin-main">
+              <h1
+                className="headline1 margin-main"
+                data-testid="packageCountTitle"
+              >
                 {tx.length} {t('transactions.packTransactions')}
               </h1>
 
@@ -62,6 +75,7 @@ class PackageCardComponent extends React.PureComponent<
                 {amounts.map(({ amount, sign }, index) => (
                   <div key={`${index}${amount.asset.id}`}>
                     <Balance
+                      data-testid="packageAmountItem"
                       balance={amount}
                       split
                       showAsset

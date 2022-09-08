@@ -139,7 +139,7 @@ export class NetworkController {
     amountAsset?: string;
     priceAsset?: string;
     type: string;
-    result: string;
+    result?: string;
   }) {
     const { result, type } = message;
     let API_BASE, url;

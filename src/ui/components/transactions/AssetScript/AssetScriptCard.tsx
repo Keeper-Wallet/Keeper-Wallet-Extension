@@ -20,9 +20,15 @@ class AssetScriptCardComponent extends React.PureComponent<
     );
 
     const { t, message, collapsed } = this.props;
-    const { data = {} } = message;
-    const tx = { type: data.type, ...data.data };
+
+    const { data } = message as Extract<
+      typeof message,
+      { type: 'transaction' }
+    >;
+
+    const tx = { type: data?.type, ...data?.data };
     const script = tx.script;
+
     return (
       <>
         <div className={className}>
@@ -35,7 +41,7 @@ class AssetScriptCardComponent extends React.PureComponent<
                 {t('transactions.assetScriptTransaction')}
               </div>
               <h1 className="headline1">
-                <Asset assetId={tx.assetId} />
+                <Asset assetId={tx.assetId} data-testid="setAssetScriptAsset" />
               </h1>
             </div>
           </div>

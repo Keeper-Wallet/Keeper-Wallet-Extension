@@ -3,7 +3,7 @@ import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { EntryNoKey, EntryWithKey, ShowScript } from '../../ui';
+import { ShowScript } from '../../ui';
 import { MessageCardComponentProps } from '../types';
 
 class CustomDataCardComponent extends React.PureComponent<
@@ -15,8 +15,9 @@ class CustomDataCardComponent extends React.PureComponent<
     });
 
     const { t, message } = this.props;
-    const { data = {} } = message;
-    const { data: dataToShow, binary } = data;
+
+    const { data } = message as Extract<typeof message, { type: 'customData' }>;
+
     return (
       <div className={className}>
         <div className={styles.cardHeader}>
@@ -34,11 +35,9 @@ class CustomDataCardComponent extends React.PureComponent<
         <div className={`${styles.cardContent} marginTop1`}>
           <ShowScript
             className={styles.dataScript}
-            data={
-              (dataToShow as unknown as EntryWithKey[] | EntryNoKey[]) || []
-            }
-            script={binary || ''}
-            isData={!!dataToShow}
+            data={(data.version === 2 && data.data) || []}
+            script={(data.version === 1 && data.binary) || ''}
+            isData={data.version === 2 && !!data.data}
             optional={true}
             showNotify={true}
             hideScript={this.props.collapsed}

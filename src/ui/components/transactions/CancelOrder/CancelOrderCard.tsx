@@ -10,17 +10,19 @@ class CancelOrderCardComponent extends React.PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
-    const { t } = this.props;
-    const className = cn(
-      styles.cancelOrderTransactionCard,
-      this.props.className,
-      {
-        [styles.cancelOrderCardCollapsed]: this.props.collapsed,
-      }
-    );
+    const { className, collapsed, message, t } = this.props;
+
+    const { data } = message as Extract<
+      typeof message,
+      { type: 'cancelOrder' }
+    >;
 
     return (
-      <div className={className}>
+      <div
+        className={cn(styles.cancelOrderTransactionCard, className, {
+          [styles.cancelOrderCardCollapsed]: collapsed,
+        })}
+      >
         <div className={styles.cardHeader}>
           <div className={styles.cancelOrderTxIcon}>
             <TxIcon txType={messageType} />
@@ -38,8 +40,8 @@ class CancelOrderCardComponent extends React.PureComponent<
             <div className="tx-title tag1 basic500">
               {t('transactions.orderId')}
             </div>
-            <div className={styles.txValue}>
-              {this.props.message?.data?.data?.id}
+            <div className={styles.txValue} data-testid="cancelOrderOrderId">
+              {data?.data?.id}
             </div>
           </div>
         </div>

@@ -1,3 +1,4 @@
+import { TransactionFromNode } from '@waves/ts-types';
 import { NetworkController } from './network';
 
 export class TxInfoController {
@@ -7,7 +8,7 @@ export class TxInfoController {
     this.getNode = options.getNode;
   }
 
-  async txInfo(txId: string) {
+  async txInfo(txId: string): Promise<TransactionFromNode> {
     const API_BASE = this.getNode();
     const url = new URL(`transactions/info/${txId}`, API_BASE).toString();
 

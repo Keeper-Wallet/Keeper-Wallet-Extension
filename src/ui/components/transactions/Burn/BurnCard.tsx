@@ -17,8 +17,13 @@ class BurnCardComponent extends React.PureComponent<
     });
 
     const { t, message, assets } = this.props;
-    const { data = {} } = message;
-    const tx = { type: data.type, ...data.data };
+
+    const { data } = message as Extract<
+      typeof message,
+      { type: 'transaction' }
+    >;
+
+    const tx = { type: data?.type, ...data?.data };
     const amount = getMoney(getAmount(tx), assets);
 
     return (
@@ -33,6 +38,7 @@ class BurnCardComponent extends React.PureComponent<
             </div>
             <h1 className="headline1">
               <Balance
+                data-testid="burnAmount"
                 split={true}
                 addSign="-"
                 showAsset={true}

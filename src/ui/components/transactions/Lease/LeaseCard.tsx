@@ -18,8 +18,13 @@ class LeaseCardComponent extends React.PureComponent<
     });
 
     const { t, message, assets } = this.props;
-    const { data = {} } = message;
-    const tx = { type: data.type, ...data.data };
+
+    const { data } = message as Extract<
+      typeof message,
+      { type: 'transaction' }
+    >;
+
+    const tx = { type: data?.type, ...data?.data };
     const amount = getMoney(getAmount(tx), assets);
 
     return (
@@ -34,6 +39,7 @@ class LeaseCardComponent extends React.PureComponent<
             </div>
             <h1 className="headline1">
               <Balance
+                data-testid="leaseAmount"
                 split={true}
                 showAsset={true}
                 balance={amount}
@@ -49,7 +55,11 @@ class LeaseCardComponent extends React.PureComponent<
               {t('transactions.recipient')}
             </div>
             <div className={styles.txValue}>
-              <AddressRecipient recipient={tx.recipient} chainId={tx.chainId} />
+              <AddressRecipient
+                recipient={tx.recipient}
+                chainId={tx.chainId}
+                testid="leaseRecipient"
+              />
             </div>
           </div>
         </div>

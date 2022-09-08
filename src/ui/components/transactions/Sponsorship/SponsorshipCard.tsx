@@ -21,8 +21,13 @@ class SponsorshipCardComponent extends React.PureComponent<
     );
 
     const { t, message, assets, collapsed } = this.props;
-    const { data = {} } = message;
-    const tx = { type: data.type, ...data.data };
+
+    const { data } = message as Extract<
+      typeof message,
+      { type: 'transaction' }
+    >;
+
+    const tx = { type: data?.type, ...data?.data };
     const assetFee = getMoney(getAssetFee(tx), assets);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const isSetSponsored = assetFee!.getTokens().gt(0);
@@ -39,7 +44,10 @@ class SponsorshipCardComponent extends React.PureComponent<
               />
             </div>
             <div>
-              <div className="basic500 body3 margin-min">
+              <div
+                className="basic500 body3 margin-min"
+                data-testid="sponsorshipTitle"
+              >
                 {t(
                   isSetSponsored
                     ? 'transactions.setSponsored'
@@ -49,14 +57,18 @@ class SponsorshipCardComponent extends React.PureComponent<
               <h1 className="headline1">
                 {isSetSponsored ? (
                   <Balance
+                    data-testid="sponsorshipAmount"
                     split={true}
                     showAsset={true}
                     balance={assetFee}
                     showUsdAmount
                   />
                 ) : (
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  <Asset assetId={assetFee!.asset.id} />
+                  <Asset
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    assetId={assetFee!.asset.id}
+                    data-testid="sponsorshipAsset"
+                  />
                 )}
               </h1>
             </div>

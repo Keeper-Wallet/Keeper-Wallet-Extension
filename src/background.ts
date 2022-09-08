@@ -604,12 +604,10 @@ class BackgroundService extends EventEmitter {
       deleteMessage: async (id: string) =>
         this.messageController.deleteMessage(id),
       approve: async (messageId: string, account: PreferencesAccount) => {
-        const [error, message] = await this.messageController.approve(
+        const message = await this.messageController.approve(
           messageId,
           account
         );
-
-        if (error) return error;
 
         this.statisticsController.sendTxEvent(message);
         return message.result;

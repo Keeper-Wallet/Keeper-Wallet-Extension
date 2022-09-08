@@ -11,10 +11,15 @@ class CreateOrderInfoComponent extends React.PureComponent<
 > {
   render() {
     const { t, message, assets } = this.props;
-    const { messageHash, data = {} } = message;
-    const tx = { type: data.type, ...data.data };
 
+    const { messageHash, data } = message as Extract<
+      typeof message,
+      { type: 'order' }
+    >;
+
+    const tx = { type: data?.type, ...data?.data };
     const fee = getMoney(getFee(tx), assets);
+
     return (
       <div>
         <div className={styles.txRow}>
@@ -25,7 +30,12 @@ class CreateOrderInfoComponent extends React.PureComponent<
         <div className={styles.txRow}>
           <div className="tx-title tag1 basic500">{t('transactions.fee')}</div>
           <div className={styles.txValue}>
-            <Balance isShortFormat={true} balance={fee} showAsset={true} />
+            <Balance
+              data-testid="createOrderFee"
+              isShortFormat={true}
+              balance={fee}
+              showAsset={true}
+            />
           </div>
         </div>
 

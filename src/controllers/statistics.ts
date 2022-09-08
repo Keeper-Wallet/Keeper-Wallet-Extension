@@ -8,6 +8,7 @@ import { KEEPERWALLET_ENV } from '../constants';
 import { NetworkController } from './network';
 import { ExtensionStorage } from '../storage/storage';
 import { MessageStoreItem } from 'messages/types';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 
 interface StatistictsEvent {
   user_id: unknown;
@@ -207,15 +208,18 @@ export class StatisticsController {
     try {
       if (message.type === 'transactionPackage') {
         (message.data || []).forEach(data => {
-          this.sendTxEvent({ ...message, type: 'transaction', data });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          this.sendTxEvent({ ...message, type: 'transaction', data } as any);
         });
       } else {
-        const isDApp = message.data.type === 16;
         this.addEvent('approve', {
           type: message.data.type,
           msgType: message.type,
           origin: message.origin,
-          dApp: isDApp ? message.data.data.dApp : undefined,
+          dApp:
+            message.data.type === TRANSACTION_TYPE.INVOKE_SCRIPT
+              ? message.data.data.dApp
+              : undefined,
         });
       }
     } catch (e) {

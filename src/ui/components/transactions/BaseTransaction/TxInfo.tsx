@@ -24,13 +24,17 @@ export interface BalanceAsset {
 }
 
 interface Props {
-  message?: MessageStoreItem;
+  message?: Extract<MessageStoreItem, { type: 'transaction' }>;
   sponsoredBalance?: BalanceAssets;
 }
 
 export function TxInfo({ message: messageProp }: Props) {
   const { t } = useTranslation();
-  const messageFromState = useAppSelector(state => state.activePopup?.msg);
+
+  const messageFromState = useAppSelector(
+    state => state.activePopup?.msg
+  ) as Extract<MessageStoreItem, { type: 'transaction' }>;
+
   const message = messageProp || messageFromState;
 
   return (

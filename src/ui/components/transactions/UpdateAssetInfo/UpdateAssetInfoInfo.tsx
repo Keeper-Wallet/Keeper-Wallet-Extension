@@ -11,8 +11,13 @@ class UpdateAssetInfoInfoComponent extends React.PureComponent<
 > {
   render() {
     const { t, message, assets } = this.props;
-    const { messageHash, data = {} } = message;
-    const tx = { type: data.type, ...data.data };
+
+    const { messageHash, data } = message as Extract<
+      typeof message,
+      { type: 'transaction' }
+    >;
+
+    const tx = { type: data?.type, ...data?.data };
 
     const fee = getMoney(getFee(tx), assets);
     return (
@@ -21,12 +26,19 @@ class UpdateAssetInfoInfoComponent extends React.PureComponent<
           <div className="tx-title tag1 basic500">
             {t('transactions.assetId')}
           </div>
-          <div className={styles.txValue}>{tx.assetId}</div>
+          <div className={styles.txValue} data-testid="updateAssetInfoAssetId">
+            {tx.assetId}
+          </div>
         </div>
 
         <div className={styles.txRow}>
           <div className="tx-title tag1 basic500">{t('transactions.name')}</div>
-          <div className={styles.txValue}>{tx.name}</div>
+          <div
+            className={styles.txValue}
+            data-testid="updateAssetInfoAssetName"
+          >
+            {tx.name}
+          </div>
         </div>
 
         {tx.description ? (
@@ -34,7 +46,12 @@ class UpdateAssetInfoInfoComponent extends React.PureComponent<
             <div className="tx-title tag1 basic500">
               {t('transactions.description')}
             </div>
-            <div className={styles.txValue}>{tx.description}</div>
+            <div
+              className={styles.txValue}
+              data-testid="updateAssetInfoAssetDescription"
+            >
+              {tx.description}
+            </div>
           </div>
         ) : null}
 
@@ -46,7 +63,12 @@ class UpdateAssetInfoInfoComponent extends React.PureComponent<
         <div className={styles.txRow}>
           <div className="tx-title tag1 basic500">{t('transactions.fee')}</div>
           <div className={styles.txValue}>
-            <Balance isShortFormat={true} balance={fee} showAsset={true} />
+            <Balance
+              data-testid="updateAssetInfoFee"
+              isShortFormat={true}
+              balance={fee}
+              showAsset={true}
+            />
           </div>
         </div>
 

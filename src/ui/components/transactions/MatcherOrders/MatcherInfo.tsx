@@ -8,7 +8,11 @@ class MatcherInfoComponent extends React.PureComponent<
 > {
   render() {
     const { t, message } = this.props;
-    const { messageHash, data } = message;
+
+    const { messageHash, data } = message as Extract<
+      typeof message,
+      { type: 'request' }
+    >;
 
     return (
       <div>

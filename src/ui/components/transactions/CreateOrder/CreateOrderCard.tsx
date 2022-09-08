@@ -28,7 +28,9 @@ class CreateOrderCardComponent extends React.PureComponent<
     );
 
     const { t, message, assets } = this.props;
-    const { data } = message;
+
+    const { data } = message as Extract<typeof message, { type: 'order' }>;
+
     const tx = { type: data?.type, ...data?.data };
     const isSell = tx?.orderType === 'sell';
     const amount = getMoney(getAmount(tx), assets);
@@ -41,7 +43,10 @@ class CreateOrderCardComponent extends React.PureComponent<
             <TxIcon txType={messageType} />
           </div>
           <div>
-            <div className="basic500 body3 margin-min">
+            <div
+              className="basic500 body3 margin-min"
+              data-testid="createOrderTitle"
+            >
               {t(isSell ? 'transactions.orderSell' : 'transactions.orderBuy')}
               <span>
                 :{' '}
@@ -58,6 +63,7 @@ class CreateOrderCardComponent extends React.PureComponent<
             </div>
             <h1 className="headline1 margin-min">
               <Balance
+                data-testid="createOrderTitleAmount"
                 split={true}
                 addSign={getAmountSign(tx)}
                 showAsset={true}
@@ -67,6 +73,7 @@ class CreateOrderCardComponent extends React.PureComponent<
             </h1>
             <h1 className="headline1">
               <Balance
+                data-testid="createOrderTitlePrice"
                 split={true}
                 addSign={getPriceSign(tx)}
                 showAsset={true}
@@ -84,6 +91,7 @@ class CreateOrderCardComponent extends React.PureComponent<
             </div>
             <div className={styles.txValue}>
               <Balance
+                data-testid="createOrderPrice"
                 isShortFormat={true}
                 balance={price}
                 showAsset={true}
@@ -105,7 +113,12 @@ class CreateOrderCardComponent extends React.PureComponent<
             <div className="tx-title tag1 basic500">
               {t('transactions.matcherPublicKey')}
             </div>
-            <div className={styles.txValue}>{tx.matcherPublicKey}</div>
+            <div
+              className={styles.txValue}
+              data-testid="createOrderMatcherPublicKey"
+            >
+              {tx.matcherPublicKey}
+            </div>
           </div>
         </div>
       </div>

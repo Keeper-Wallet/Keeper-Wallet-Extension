@@ -48,15 +48,21 @@ const Transfers = ({
         );
 
         return (
-          <div key={recipient} className={styles.massTransferItem}>
+          <div
+            key={recipient}
+            className={styles.massTransferItem}
+            data-testId="massTransferItem"
+          >
             <AddressRecipient
               className={styles.massTransferRecipient}
+              testid="massTransferItemRecipient"
               recipient={recipient}
               chainId={chainId}
               showAliasWarning={false}
             />
             <div className="body3 submit400">
               <Balance
+                data-testid="massTransferItemAmount"
                 isShortFormat={true}
                 balance={money}
                 showAsset={false}
@@ -89,8 +95,13 @@ class MassTransferCardComponent extends React.PureComponent<
     );
 
     const { t, message, assets, collapsed } = this.props;
-    const { data = {} } = message;
-    const tx = { type: data.type, ...data.data };
+
+    const { data } = message as Extract<
+      typeof message,
+      { type: 'transaction' }
+    >;
+
+    const tx = { type: data?.type, ...data?.data };
     const amount = getMoney(getAmount(tx), assets);
 
     return (
@@ -105,6 +116,7 @@ class MassTransferCardComponent extends React.PureComponent<
             </div>
             <h1 className="headline1">
               <Balance
+                data-testid="massTransferAmount"
                 split={true}
                 addSign="-"
                 showAsset={true}
@@ -148,6 +160,7 @@ class MassTransferCardComponent extends React.PureComponent<
               </div>
               <Attachment
                 className="plate fullwidth"
+                data-testid="massTransferAttachment"
                 attachment={readAttachment(tx.attachment)}
               />
             </div>

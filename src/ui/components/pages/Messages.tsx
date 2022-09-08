@@ -18,7 +18,8 @@ import {
   setShowNotification,
 } from '../../actions';
 import { PageComponentProps, PAGES } from '../../pageConfig';
-import { FinalTransaction, getConfigByTransaction } from '../transactions';
+import { getConfigByTransaction } from '../transactions';
+import { FinalTransaction } from '../transactions/FinalTransaction/FinalTransaction';
 import { Intro } from './Intro';
 import { MessageComponentProps, MessageConfig } from '../transactions/types';
 
