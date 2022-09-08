@@ -56,6 +56,10 @@ export class SwapController {
     this.store = new ObservableStore(initState);
     extensionStorage.subscribe(this.store);
 
+    if (Object.keys(initState.swappableAssetsFromVendor).length === 0) {
+      this.updateSwappableAssetsFromVendor();
+    }
+
     extension.alarms.create('updateSwappableAssetsFromVendor', {
       periodInMinutes: SWAPPABLE_ASSETS_FROM_VENDOR_PERIOD_IN_MINUTES,
     });
@@ -72,7 +76,6 @@ export class SwapController {
   }
 
   async updateSwappableAssetsFromVendor() {
-    console.log('updateSwappableAssetsFromVendor');
     const resp = await fetch(new URL(SWAPPABLE_ASSETS_FROM_VENDOR_URL));
 
     if (resp.ok) {
