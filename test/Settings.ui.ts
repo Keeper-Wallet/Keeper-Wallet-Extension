@@ -5,8 +5,6 @@ import { expect } from 'chai';
 import {
   CUSTOMLIST,
   DEFAULT_ANIMATION_DELAY,
-  DEFAULT_PAGE_LOAD_DELAY,
-  SEND_UPDATE_DEBOUNCE_DELAY,
   DEFAULT_PASSWORD,
   WHITELIST,
 } from './utils/constants';
@@ -71,9 +69,10 @@ describe('Settings', function () {
       'test3',
       'defy credit shoe expect pair gun future slender escape visa test book tone patient vibrant'
     );
+    await this.driver.close();
+
     await this.driver.switchTo().window(tabKeeper);
 
-    await App.open.call(this);
     await this.driver
       .wait(
         until.elementLocated(
@@ -425,9 +424,7 @@ describe('Settings', function () {
         };
 
         await this.driver.get(`https://${origin}`);
-        await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
         await this.driver.executeScript(permissionRequest);
-        await this.driver.sleep(SEND_UPDATE_DEBOUNCE_DELAY);
       }
 
       after(async function () {
@@ -438,9 +435,15 @@ describe('Settings', function () {
       describe('Adding', function () {
         it('Origin added to custom list', async function () {
           const origin = CUSTOMLIST[0];
-          await publicStateFromOrigin.call(this, origin);
 
-          await App.open.call(this);
+          const { waitForNewWindows } = await Windows.captureNewWindows.call(
+            this
+          );
+          await publicStateFromOrigin.call(this, origin);
+          const [messageWindow] = await waitForNewWindows(1);
+          await this.driver.switchTo().window(messageWindow);
+          await this.driver.navigate().refresh();
+
           await this.driver.wait(
             until.elementLocated(
               By.xpath("//div[contains(@class, 'originAuth-transaction')]")
@@ -456,6 +459,9 @@ describe('Settings', function () {
             this.wait
           );
           await this.driver.findElement(By.css('button#close')).click();
+          await Windows.waitForWindowToClose.call(this, messageWindow);
+          await this.driver.switchTo().window(tabKeeper);
+          await App.open.call(this);
 
           await this.driver
             .wait(
@@ -495,26 +501,29 @@ describe('Settings', function () {
 
         it('Origin added to custom list with auto-limits', async function () {
           const origin = CUSTOMLIST[1];
-          await publicStateFromOrigin.call(this, origin);
 
-          await App.open.call(this);
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'originAuth-transaction')]")
-            ),
-            this.wait
+          const { waitForNewWindows } = await Windows.captureNewWindows.call(
+            this
           );
+          await publicStateFromOrigin.call(this, origin);
+          const [messageWindow] = await waitForNewWindows(1);
+          await this.driver.switchTo().window(messageWindow);
+          await this.driver.navigate().refresh();
+
           await this.driver
-            .findElement(
-              By.xpath(
-                "//div[contains(@class, 'originAuth-collapsed')]//div[contains(@class, 'index-title')]"
-              )
+            .wait(
+              until.elementLocated(
+                By.xpath(
+                  "//div[contains(@class, 'originAuth-collapsed')]//div[contains(@class, 'index-title')]"
+                )
+              ),
+              this.wait
             )
             .click();
 
           await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
-          this.driver
+          await this.driver
             .findElement(
               By.xpath(
                 "//div[contains(@class, 'settings-selectTime')]" +
@@ -554,6 +563,9 @@ describe('Settings', function () {
             this.wait
           );
           await this.driver.findElement(By.css('button#close')).click();
+          await Windows.waitForWindowToClose.call(this, messageWindow);
+          await this.driver.switchTo().window(tabKeeper);
+          await App.open.call(this);
 
           await this.driver
             .wait(
@@ -712,11 +724,15 @@ describe('Settings', function () {
           await this.driver
             .wait(until.elementLocated(By.css('button#delete')), this.wait)
             .click();
-          await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
+          const { waitForNewWindows } = await Windows.captureNewWindows.call(
+            this
+          );
           await publicStateFromOrigin.call(this, origin);
+          const [messageWindow] = await waitForNewWindows(1);
+          await this.driver.switchTo().window(messageWindow);
+          await this.driver.navigate().refresh();
 
-          await App.open.call(this);
           await this.driver.wait(
             until.elementLocated(
               By.xpath("//div[contains(@class, 'originAuth-transaction')]")
@@ -726,7 +742,12 @@ describe('Settings', function () {
           await this.driver
             .wait(until.elementLocated(By.css('button#reject')), this.wait)
             .click();
-          await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
+          await this.driver
+            .wait(until.elementLocated(By.css('button#close')), this.wait)
+            .click();
+
+          await Windows.waitForWindowToClose.call(this, messageWindow);
+          await this.driver.switchTo().window(tabKeeper);
         });
       });
 
