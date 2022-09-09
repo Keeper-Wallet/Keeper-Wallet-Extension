@@ -12,6 +12,7 @@ import {
 } from '@waves/waves-transactions/dist/requests/custom-data';
 
 export type MessageInput = {
+  connectionId?: string;
   account: PreferencesAccount;
   broadcast?: boolean;
   options?: {
@@ -165,6 +166,7 @@ interface TxData {
 }
 
 export type MessageStoreItem = {
+  connectionId?: string;
   account: PreferencesAccount;
   broadcast?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

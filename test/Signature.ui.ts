@@ -174,6 +174,125 @@ describe('Signature', function () {
     await this.driver.switchTo().window(tabOrigin);
   }
 
+  describe('Stale messages removal', function () {
+    it('removes messages and closes window when tab is reloaded', async function () {
+      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      await this.driver.executeScript(() => {
+        KeeperWallet.initialPromise.then(api => api.auth({ data: 'hello' }));
+      });
+      [messageWindow] = await waitForNewWindows(1);
+      await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
+
+      await checkOrigin.call(this, WHITELIST[3]);
+      await checkAccountName.call(this, 'rich');
+      await checkNetworkName.call(this, 'Testnet');
+
+      await this.driver.switchTo().window(tabOrigin);
+      await this.driver.navigate().refresh();
+
+      await Windows.waitForWindowToClose.call(this, messageWindow);
+
+      await this.driver.switchTo().newWindow('tab');
+      await App.open.call(this);
+
+      await this.driver.wait(
+        until.elementLocated(
+          By.xpath("//div[contains(@class, 'assets-assets')]")
+        ),
+        this.wait
+      );
+
+      await this.driver.close();
+      await this.driver.switchTo().window(tabOrigin);
+    });
+
+    it('removes messages and closes window when the tab is closed', async function () {
+      await this.driver.switchTo().newWindow('tab');
+      const newTabOrigin = await this.driver.getWindowHandle();
+      await this.driver.get(`https://${CUSTOMLIST[1]}`);
+
+      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      await this.driver.executeScript(() => {
+        KeeperWallet.initialPromise.then(api => api.auth({ data: 'hello' }));
+      });
+      [messageWindow] = await waitForNewWindows(1);
+      await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
+
+      await checkOrigin.call(this, CUSTOMLIST[1]);
+      await checkAccountName.call(this, 'rich');
+      await checkNetworkName.call(this, 'Testnet');
+
+      await this.driver.switchTo().window(newTabOrigin);
+      await this.driver.close();
+      await this.driver.switchTo().window(tabOrigin);
+
+      await Windows.waitForWindowToClose.call(this, messageWindow);
+
+      await this.driver.switchTo().newWindow('tab');
+      await App.open.call(this);
+
+      await this.driver.wait(
+        until.elementLocated(
+          By.xpath("//div[contains(@class, 'assets-assets')]")
+        ),
+        this.wait
+      );
+
+      await this.driver.close();
+      await this.driver.switchTo().window(tabOrigin);
+    });
+
+    it('does not close message window, if there are other messages left', async function () {
+      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      await this.driver.executeScript(() => {
+        KeeperWallet.initialPromise.then(api => api.auth({ data: 'hello' }));
+      });
+      [messageWindow] = await waitForNewWindows(1);
+      await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
+
+      await checkOrigin.call(this, WHITELIST[3]);
+      await checkAccountName.call(this, 'rich');
+      await checkNetworkName.call(this, 'Testnet');
+
+      await this.driver.switchTo().newWindow('tab');
+      const newTabOrigin = await this.driver.getWindowHandle();
+      await this.driver.get(`https://${CUSTOMLIST[1]}`);
+
+      await this.driver.executeScript(() => {
+        KeeperWallet.initialPromise.then(api => api.auth({ data: 'hello' }));
+      });
+
+      await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
+
+      await this.driver.wait(
+        until.elementLocated(
+          By.xpath("//div[contains(@class, 'messageList-messageList')]")
+        ),
+        this.wait
+      );
+
+      expect(
+        await this.driver.findElements(
+          By.xpath("//div[contains(@class, 'messageList-cardItem')]")
+        )
+      ).to.have.length(2);
+
+      await this.driver.switchTo().window(newTabOrigin);
+      await this.driver.close();
+
+      await this.driver.switchTo().window(messageWindow);
+      await checkOrigin.call(this, WHITELIST[3]);
+      await checkAccountName.call(this, 'rich');
+      await checkNetworkName.call(this, 'Testnet');
+      await rejectMessage.call(this);
+      await closeMessage.call(this);
+    });
+  });
+
   describe('Permission request from origin', function () {
     async function performPermissionRequest(this: mocha.Context) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);

@@ -344,6 +344,20 @@ export class MessageController extends EventEmitter {
     this._updateMessagesByTimeout();
   }
 
+  removeMessagesFromConnection(connectionId: string) {
+    const { messages } = this.store.getState();
+
+    messages.forEach(message => {
+      if (message.connectionId === connectionId) {
+        this.reject(message.id);
+      }
+    });
+
+    this._updateStore(
+      messages.filter(message => message.connectionId !== connectionId)
+    );
+  }
+
   clearMessages(ids?: string | string[]) {
     if (typeof ids === 'string') {
       this._deleteMessage(ids);
