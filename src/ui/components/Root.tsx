@@ -147,15 +147,6 @@ class RootComponent extends React.Component<Props, State> {
       typeof pageConf.menu.back === 'string' ? pageConf.menu.back : null;
     const currentTab = this.state.tab;
     const { backTabs } = this.props;
-    const menuProps = {
-      hasLogo: pageConf.menu.hasLogo,
-      hasSettings: pageConf.menu.hasSettings,
-      deleteAccount: pageConf.menu.deleteAccount,
-      hasClose: !!pageConf.menu.close,
-      hasBack:
-        pageConf.menu.back !== null &&
-        (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back),
-    };
 
     const setTab = (tab: string | null) => {
       this.props.addBackTab(currentTab);
@@ -173,17 +164,27 @@ class RootComponent extends React.Component<Props, State> {
       setTab(PAGES.DELETE_ACTIVE_ACCOUNT);
     };
 
-    const pageProps = { ...pageConf.props, setTab, onBack };
-
     return (
       <div className={`height ${this.props.currentLocale}`}>
         <Menu
-          {...menuProps}
+          deleteAccount={pageConf.menu.deleteAccount}
+          hasBack={
+            pageConf.menu.back !== null &&
+            (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back)
+          }
+          hasClose={!!pageConf.menu.close}
+          hasLogo={pageConf.menu.hasLogo}
+          hasSettings={pageConf.menu.hasSettings}
           setTab={setTab}
           onBack={onBack}
           onDelete={onDelete}
         />
-        <Component {...pageProps} key={tab} />
+        <Component
+          {...pageConf.props}
+          setTab={setTab}
+          onBack={onBack}
+          key={tab}
+        />
         <Bottom {...pageConf.bottom} />
       </div>
     );
