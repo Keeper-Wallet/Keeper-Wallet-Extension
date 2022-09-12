@@ -39,7 +39,7 @@ export function Root() {
       tab = PAGES.WELCOME;
     }
 
-    let canUseTab: boolean | number | null | undefined = !state.state?.locked;
+    let canUseTab = !state.state?.locked;
 
     switch (tab) {
       case PAGES.NEW:
@@ -48,10 +48,10 @@ export function Root() {
         break;
       case PAGES.LOGIN:
       case PAGES.FORGOT:
-        canUseTab = state.state?.initialized && state.state?.locked;
+        canUseTab = Boolean(state.state?.initialized && state.state?.locked);
         break;
       case PAGES.ASSETS:
-        canUseTab = !state.state?.locked && state.accounts.length;
+        canUseTab = !state.state?.locked && state.accounts.length !== 0;
         break;
     }
 
@@ -107,8 +107,6 @@ export function Root() {
 
   const pageConf = PAGES_CONF[currentTab];
   const Component = pageConf.component;
-  const backTabFromConf =
-    typeof pageConf.menu.back === 'string' ? pageConf.menu.back : null;
 
   const pushTab = (tab: string | null) => {
     dispatch(addBackTab(currentTab));
@@ -116,6 +114,9 @@ export function Root() {
   };
 
   const onBack = () => {
+    const backTabFromConf =
+      typeof pageConf.menu.back === 'string' ? pageConf.menu.back : null;
+
     const tab = backTabFromConf || backTabs[backTabs.length - 1] || PAGES.ROOT;
     dispatch(removeBackTab());
     dispatch(setTab(tab));

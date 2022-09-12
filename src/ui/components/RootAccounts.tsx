@@ -30,7 +30,7 @@ export function RootAccounts() {
       tab = PAGES.WELCOME;
     }
 
-    let canUseTab: boolean | null | undefined = !state.state?.locked;
+    let canUseTab = !state.state?.locked;
 
     switch (tab) {
       case PAGES.NEW:
@@ -39,7 +39,7 @@ export function RootAccounts() {
         break;
       case PAGES.LOGIN:
       case PAGES.FORGOT:
-        canUseTab = state.state?.initialized && state.state?.locked;
+        canUseTab = Boolean(state.state?.initialized && state.state?.locked);
         break;
     }
 
@@ -72,46 +72,47 @@ export function RootAccounts() {
 
   const pageConf = PAGES_CONF[currentTab];
   const Component = pageConf.component;
-  const backTabFromConf =
-    typeof pageConf.menu.back === 'string' ? pageConf.menu.back : null;
 
-  const onSetTab = React.useCallback(
-    tab => {
-      dispatch(addBackTab(currentTab));
-      dispatch(setTab(tab));
-    },
-    [currentTab, dispatch]
-  );
+  const pushTab = (tab: string | null) => {
+    dispatch(addBackTab(currentTab));
+    dispatch(setTab(tab));
+  };
 
-  const onBack = React.useCallback(() => {
+  const onBack = () => {
+    const backTabFromConf =
+      typeof pageConf.menu.back === 'string' ? pageConf.menu.back : null;
+
     const tab = backTabFromConf || backTabs[backTabs.length - 1] || PAGES.ROOT;
     dispatch(removeBackTab());
     dispatch(setTab(tab));
-  }, [backTabFromConf, backTabs, dispatch]);
+  };
 
-  const onDelete = React.useCallback(() => {
-    setTab(PAGES.DELETE_ACTIVE_ACCOUNT);
-  }, []);
-
-  const pageProps = { ...pageConf.props, setTab: onSetTab, onBack };
+  const onDelete = () => {
+    pushTab(PAGES.DELETE_ACTIVE_ACCOUNT);
+  };
 
   return (
     <div className={`height ${currentLocale}`}>
       <Menu
-        hasLogo={pageConf.menu.hasLogo}
-        hasSettings={pageConf.menu.hasSettings}
         deleteAccount={pageConf.menu.deleteAccount}
-        hasClose={!!pageConf.menu.close}
         hasBack={
           currentTab !== window.location.hash.split('#')[1] &&
           pageConf.menu.back !== null &&
           (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back)
         }
-        setTab={onSetTab}
+        hasClose={!!pageConf.menu.close}
+        hasLogo={pageConf.menu.hasLogo}
+        hasSettings={pageConf.menu.hasSettings}
+        setTab={pushTab}
         onBack={onBack}
         onDelete={onDelete}
       />
-      <Component {...pageProps} key={currentTab} />
+      <Component
+        {...pageConf.props}
+        setTab={pushTab}
+        onBack={onBack}
+        key={currentTab}
+      />
       <Bottom {...pageConf.bottom} />
     </div>
   );
