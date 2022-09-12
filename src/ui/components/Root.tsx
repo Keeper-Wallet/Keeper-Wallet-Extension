@@ -146,18 +146,19 @@ class RootComponent extends React.Component<Props, State> {
     const backTabFromConf =
       typeof pageConf.menu.back === 'string' ? pageConf.menu.back : null;
     const currentTab = this.state.tab;
-    const { backTabs } = this.props;
+    const { addBackTab, backTabs, currentLocale, removeBackTab, setTab } =
+      this.props;
 
     const pushTab = (tab: string | null) => {
-      this.props.addBackTab(currentTab);
-      this.props.setTab(tab);
+      addBackTab(currentTab);
+      setTab(tab);
     };
 
     const onBack = () => {
       const tab =
         backTabFromConf || backTabs[backTabs.length - 1] || PAGES.ROOT;
-      this.props.removeBackTab();
-      this.props.setTab(tab);
+      removeBackTab();
+      setTab(tab);
     };
 
     const onDelete = () => {
@@ -165,7 +166,7 @@ class RootComponent extends React.Component<Props, State> {
     };
 
     return (
-      <div className={`height ${this.props.currentLocale}`}>
+      <div className={`height ${currentLocale}`}>
         <Menu
           deleteAccount={pageConf.menu.deleteAccount}
           hasBack={
