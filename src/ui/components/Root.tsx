@@ -11,9 +11,6 @@ import { PreferencesAccount } from 'preferences/types';
 import { NotificationsStoreItem } from 'notifications/types';
 import { MessageStoreItem } from 'messages/types';
 
-const NO_USER_START_PAGE = PAGES.WELCOME;
-const USER_START_PAGE = PAGES.LOGIN;
-
 interface StateProps {
   accounts: PreferencesAccount[];
   activePopup: ActivePopupState | null;
@@ -80,7 +77,7 @@ class RootComponent extends React.Component<Props, State> {
     }
 
     if (!tab && nextProps.locked) {
-      tab = NO_USER_START_PAGE;
+      tab = PAGES.WELCOME;
     }
 
     if (!tab || (tab && !RootComponent.canUseTab(nextProps, tab))) {
@@ -125,7 +122,7 @@ class RootComponent extends React.Component<Props, State> {
 
   static getStateTab(props: Props) {
     if (props.locked) {
-      return props.initialized ? USER_START_PAGE : NO_USER_START_PAGE;
+      return props.initialized ? PAGES.LOGIN : PAGES.WELCOME;
     }
     return props.accounts.length ? PAGES.ASSETS : PAGES.IMPORT_POPUP;
   }
