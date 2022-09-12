@@ -148,7 +148,7 @@ class RootComponent extends React.Component<Props, State> {
     const currentTab = this.state.tab;
     const { backTabs } = this.props;
 
-    const setTab = (tab: string | null) => {
+    const pushTab = (tab: string | null) => {
       this.props.addBackTab(currentTab);
       this.props.setTab(tab);
     };
@@ -161,7 +161,7 @@ class RootComponent extends React.Component<Props, State> {
     };
 
     const onDelete = () => {
-      setTab(PAGES.DELETE_ACTIVE_ACCOUNT);
+      pushTab(PAGES.DELETE_ACTIVE_ACCOUNT);
     };
 
     return (
@@ -175,13 +175,13 @@ class RootComponent extends React.Component<Props, State> {
           hasClose={!!pageConf.menu.close}
           hasLogo={pageConf.menu.hasLogo}
           hasSettings={pageConf.menu.hasSettings}
-          setTab={setTab}
+          setTab={pushTab}
           onBack={onBack}
           onDelete={onDelete}
         />
         <Component
           {...pageConf.props}
-          setTab={setTab}
+          setTab={pushTab}
           onBack={onBack}
           key={tab}
         />
