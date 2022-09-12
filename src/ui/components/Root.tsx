@@ -193,18 +193,18 @@ class RootComponent extends React.Component<Props, State> {
   }
 }
 
-const mapStateToProps = function (store: AppState): StateProps {
+const mapStateToProps = function (state: AppState): StateProps {
   return {
-    currentLocale: store.currentLocale,
-    loading: store.localState.loading,
-    locked: store.state && store.state.locked,
-    initialized: store.state && store.state.initialized,
-    accounts: store.accounts || [],
-    tab: store.tab || '',
-    backTabs: store.backTabs,
-    messages: store.messages,
-    notifications: store.notifications,
-    activePopup: store.activePopup,
+    currentLocale: state.currentLocale,
+    loading: state.localState.loading,
+    locked: state.state && state.state.locked,
+    initialized: state.state && state.state.initialized,
+    accounts: state.accounts || [],
+    tab: state.tab || '',
+    backTabs: state.backTabs,
+    messages: state.messages,
+    notifications: state.notifications,
+    activePopup: state.activePopup,
   };
 };
 
