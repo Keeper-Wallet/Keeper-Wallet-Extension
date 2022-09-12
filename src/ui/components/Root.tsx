@@ -48,7 +48,7 @@ class RootComponent extends React.Component<Props, State> {
 
   static getDerivedStateFromProps(
     nextProps: Readonly<Props>,
-    state: State
+    prevState: State
   ): Partial<State> | null {
     if (nextProps.loading) {
       return { tab: PAGES.INTRO };
@@ -84,13 +84,13 @@ class RootComponent extends React.Component<Props, State> {
       tab = RootComponent.getStateTab(nextProps);
     }
 
-    if (tab !== state.tab) {
+    if (tab !== prevState.tab) {
       Sentry.addBreadcrumb({
         type: 'navigation',
         category: 'navigation',
         level: Sentry.Severity.Info,
         data: {
-          from: state.tab,
+          from: prevState.tab,
           to: tab,
         },
       });
