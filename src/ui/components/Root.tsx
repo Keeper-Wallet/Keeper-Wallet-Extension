@@ -37,6 +37,28 @@ interface State {
   tab: string | null;
 }
 
+function getStateTab(props: Props) {
+  if (props.locked) {
+    return props.initialized ? PAGES.LOGIN : PAGES.WELCOME;
+  }
+  return props.accounts.length ? PAGES.ASSETS : PAGES.IMPORT_POPUP;
+}
+
+function canUseTab(props: Props, tab: string) {
+  switch (tab) {
+    case PAGES.NEW:
+    case PAGES.INTRO:
+      return !props.initialized;
+    case PAGES.LOGIN:
+    case PAGES.FORGOT:
+      return props.initialized && props.locked;
+    case PAGES.ASSETS:
+      return !props.locked && props.accounts.length;
+    default:
+      return !props.locked;
+  }
+}
+
 class RootComponent extends React.Component<Props, State> {
   state: State = { tab: null };
 
@@ -77,8 +99,8 @@ class RootComponent extends React.Component<Props, State> {
       tab = PAGES.WELCOME;
     }
 
-    if (!tab || (tab && !RootComponent.canUseTab(nextProps, tab))) {
-      tab = RootComponent.getStateTab(nextProps);
+    if (!tab || (tab && !canUseTab(nextProps, tab))) {
+      tab = getStateTab(nextProps);
     }
 
     if (tab !== prevState.tab) {
@@ -115,28 +137,6 @@ class RootComponent extends React.Component<Props, State> {
     }
 
     return { tab };
-  }
-
-  static getStateTab(props: Props) {
-    if (props.locked) {
-      return props.initialized ? PAGES.LOGIN : PAGES.WELCOME;
-    }
-    return props.accounts.length ? PAGES.ASSETS : PAGES.IMPORT_POPUP;
-  }
-
-  static canUseTab(props: Props, tab: string) {
-    switch (tab) {
-      case PAGES.NEW:
-      case PAGES.INTRO:
-        return !props.initialized;
-      case PAGES.LOGIN:
-      case PAGES.FORGOT:
-        return props.initialized && props.locked;
-      case PAGES.ASSETS:
-        return !props.locked && props.accounts.length;
-      default:
-        return !props.locked;
-    }
   }
 
   render() {
