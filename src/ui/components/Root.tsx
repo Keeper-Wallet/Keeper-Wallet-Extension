@@ -34,12 +34,11 @@ interface DispatchProps {
 type Props = StateProps & DispatchProps;
 
 interface State {
-  loading: boolean;
   tab: string | null;
 }
 
 class RootComponent extends React.Component<Props, State> {
-  state: State = { tab: null, loading: true };
+  state: State = { tab: null };
 
   constructor(props: Props) {
     super(props);
