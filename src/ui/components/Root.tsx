@@ -60,18 +60,16 @@ class RootComponent extends React.Component<Props, State> {
       tab = PAGES.INTRO;
     }
 
-    const { messages, notifications, activePopup, accounts } = nextProps;
-
     if (
       !nextProps.locked &&
       tab !== PAGES.CHANGE_TX_ACCOUNT &&
-      accounts.length
+      nextProps.accounts.length
     ) {
-      if (activePopup && activePopup.msg) {
+      if (nextProps.activePopup && nextProps.activePopup.msg) {
         tab = PAGES.MESSAGES;
-      } else if (activePopup && activePopup.notify) {
+      } else if (nextProps.activePopup && nextProps.activePopup.notify) {
         tab = PAGES.NOTIFICATIONS;
-      } else if (messages.length + notifications.length) {
+      } else if (nextProps.messages.length + nextProps.notifications.length) {
         tab = PAGES.MESSAGES_LIST;
       }
     }
@@ -97,7 +95,7 @@ class RootComponent extends React.Component<Props, State> {
 
       if (tab === PAGES.MESSAGES) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const { msg } = activePopup!;
+        const { msg } = nextProps.activePopup!;
 
         const data: Record<string, string | number> = {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
