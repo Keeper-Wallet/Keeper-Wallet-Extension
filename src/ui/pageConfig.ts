@@ -9,7 +9,8 @@ import {
   DeleteActiveAccount,
   DeleteAllAccounts,
   ExportAndImport,
-  Import,
+  ImportPopup,
+  ImportTab,
   Info,
   Intro,
   LangsSettings,
@@ -138,14 +139,14 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
   },
   [PAGES.IMPORT_POPUP]: {
-    component: Import,
+    component: ImportPopup,
     menu: {
       hasLogo: true,
       hasSettings: true,
     },
   },
   [PAGES.IMPORT_TAB]: {
-    component: Import,
+    component: ImportTab,
     menu: {
       hasLogo: true,
     },
