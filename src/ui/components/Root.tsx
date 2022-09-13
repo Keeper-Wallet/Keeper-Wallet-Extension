@@ -124,7 +124,10 @@ export function Root() {
         onBack={onBack}
       />
       <Component onBack={onBack} key={currentTab} />
-      <Bottom {...pageConf.bottom} />
+      <Bottom
+        hide={pageConf.bottom?.hide}
+        noChangeNetwork={pageConf.bottom?.noChangeNetwork}
+      />
     </div>
   );
 }
