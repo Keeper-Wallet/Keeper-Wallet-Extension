@@ -5,7 +5,7 @@ import {
   createAccount,
   newAccountName,
   selectAccount,
-  setTab as resetTab,
+  navigate as resetTab,
 } from 'ui/actions';
 import { Button, Error, Input } from 'ui/components/ui';
 import { CONFIG } from 'ui/appConfig';

@@ -1,6 +1,6 @@
 import { ACTION } from './constants';
 
-export function setTab(tab: string | null) {
+export function navigate(tab: string | null) {
   return {
     type: ACTION.NAVIGATE,
     payload: tab,

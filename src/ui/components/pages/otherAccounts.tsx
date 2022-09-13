@@ -10,7 +10,7 @@ import { AccountCard } from '../accounts/accountCard';
 import * as styles from './otherAccounts.module.css';
 import { SearchInput } from 'ui/components/ui/searchInput/searchInput';
 import background from 'ui/services/Background';
-import { setTab as resetTab } from 'ui/actions';
+import { navigate as resetTab } from 'ui/actions';
 
 export function OtherAccountsPage({ setTab }: PageComponentProps) {
   const { t } = useTranslation();

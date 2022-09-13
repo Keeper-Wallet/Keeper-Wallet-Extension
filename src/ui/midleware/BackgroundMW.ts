@@ -4,7 +4,7 @@ import {
   notificationDelete,
   notificationSelect,
   setActiveNotification,
-  setTab,
+  navigate,
   updateActiveState,
 } from '../actions';
 import background from '../services/Background';
@@ -103,7 +103,7 @@ export const deleteActiveAccount: UiMiddleware = store => next => action => {
       store.dispatch(notificationDelete(true));
       setTimeout(() => {
         store.dispatch(notificationDelete(false));
-        store.dispatch(setTab(null));
+        store.dispatch(navigate(null));
       }, 1000);
     });
     return null;
@@ -123,7 +123,7 @@ export const deleteAccountMw: UiMiddleware = store => next => action => {
   if (action.type === ACTION.DELETE_ACCOUNT) {
     background.deleteVault().then(() => {
       store.dispatch(updateActiveState());
-      store.dispatch(setTab(null));
+      store.dispatch(navigate(null));
     });
     return null;
   }
@@ -145,7 +145,7 @@ export const uiState: UiMiddleware = store => next => action => {
     const newState = { ...ui, ...action.payload.ui };
     background.setUiState(newState).then(uiState => {
       store.dispatch({ type: ACTION.UPDATE_UI_STATE, payload: uiState });
-      store.dispatch(setTab(action.payload.tab));
+      store.dispatch(navigate(action.payload.tab));
     });
 
     return;
@@ -158,12 +158,12 @@ export const changeNetwork: UiMiddleware = store => next => action => {
   if (action.type === ACTION.CHANGE_NETWORK) {
     background
       .setNetwork(action.payload)
-      .then(() => store.dispatch(setTab(null)));
+      .then(() => store.dispatch(navigate(null)));
     return null;
   }
   if (action.type === ACTION.UPDATE_CURRENT_NETWORK) {
     if (store.getState().localState.tabMode === 'tab') {
-      store.dispatch(setTab(null));
+      store.dispatch(navigate(null));
     }
   }
 

@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react';
 import * as React from 'react';
-import { addBackTab, loading, removeBackTab, setTab } from '../actions';
+import { addBackTab, loading, removeBackTab, navigate } from '../actions';
 import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
@@ -75,7 +75,7 @@ export function RootAccounts() {
 
   const pushTab = (tab: string | null) => {
     dispatch(addBackTab(currentTab));
-    dispatch(setTab(tab));
+    dispatch(navigate(tab));
   };
 
   const onBack = () => {
@@ -84,7 +84,7 @@ export function RootAccounts() {
 
     const tab = backTabFromConf || backTabs[backTabs.length - 1] || PAGES.ROOT;
     dispatch(removeBackTab());
-    dispatch(setTab(tab));
+    dispatch(navigate(tab));
   };
 
   const onDelete = () => {

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from 'ui/store';
 import background from 'ui/services/Background';
-import { addBackTab, setTab } from '../../actions';
+import { addBackTab, navigate } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Button } from '../ui';
 import { downloadKeystore } from '../../../keystore/utils';
@@ -34,7 +34,7 @@ export function ExportAndImport() {
         view="transparent"
         onClick={() => {
           dispatch(addBackTab(PAGES.EXPORT_AND_IMPORT));
-          dispatch(setTab(PAGES.EXPORT_ACCOUNTS));
+          dispatch(navigate(PAGES.EXPORT_ACCOUNTS));
         }}
       >
         <p className="body1 left">{t('exportAndImport.exportAccounts')}</p>
@@ -48,7 +48,7 @@ export function ExportAndImport() {
             `${window.location.origin}/accounts.html#${PAGES.IMPORT_KEYSTORE}`,
             PAGES.IMPORT_KEYSTORE
           );
-          dispatch(setTab(PAGES.ROOT));
+          dispatch(navigate(PAGES.ROOT));
         }}
       >
         <p className="body1 left">{t('exportAndImport.importAccounts')}</p>
@@ -60,7 +60,7 @@ export function ExportAndImport() {
         view="transparent"
         onClick={() => {
           dispatch(addBackTab(PAGES.EXPORT_AND_IMPORT));
-          dispatch(setTab(PAGES.EXPORT_ADDRESS_BOOK));
+          dispatch(navigate(PAGES.EXPORT_ADDRESS_BOOK));
         }}
       >
         <p className="body1 left">{t('exportAndImport.exportAddressBook')}</p>
@@ -74,7 +74,7 @@ export function ExportAndImport() {
             `${window.location.origin}/accounts.html#${PAGES.IMPORT_ADDRESS_BOOK}`,
             PAGES.IMPORT_ADDRESS_BOOK
           );
-          dispatch(setTab(PAGES.ROOT));
+          dispatch(navigate(PAGES.ROOT));
         }}
       >
         <p className="body1 left">{t('exportAndImport.importAddressBook')}</p>
@@ -105,7 +105,7 @@ export function ExportAndImport() {
                 password,
                 encrypted
               );
-              dispatch(setTab(PAGES.SETTINGS));
+              dispatch(navigate(PAGES.SETTINGS));
             }}
           />
         )}

@@ -1,6 +1,6 @@
 import * as styles from './NewAccount.module.css';
 import { connect } from 'react-redux';
-import { createNew, setTab } from '../../actions';
+import { createNew, navigate } from '../../actions';
 import * as React from 'react';
 import { Button, Error, Input, LangsSelect } from '../ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -264,5 +264,5 @@ class NewAccountComponent extends React.PureComponent<
 
 export const NewAccount = connect(mapStateToProps, {
   createNew,
-  setTab,
+  setTab: navigate,
 })(withTranslation()(NewAccountComponent));

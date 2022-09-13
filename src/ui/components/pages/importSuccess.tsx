@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { PAGES } from '../../pageConfig';
 import { useAccountsSelector, useAppDispatch } from 'accounts/store';
-import { setTab } from 'ui/actions';
+import { navigate } from 'ui/actions';
 import background from 'ui/services/Background';
 
 export function ImportSuccessAddressBook() {
@@ -86,7 +86,7 @@ export function ImportSuccess() {
           data-testid="addAnotherAccountBtn"
           className={styles.button}
           type="button"
-          onClick={() => dispatch(setTab(PAGES.ROOT))}
+          onClick={() => dispatch(navigate(PAGES.ROOT))}
         >
           {t('import.addAnotherAccount')}
         </Button>
