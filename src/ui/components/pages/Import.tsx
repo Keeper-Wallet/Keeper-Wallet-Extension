@@ -9,11 +9,14 @@ import { PAGES } from '../../pageConfig';
 import { useAppDispatch, useAppSelector } from '../../store';
 import background from 'ui/services/Background';
 import { navigate } from 'ui/actions/router';
+import { generateNewWalletItems } from './NewWallet';
 
 export function Import() {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
+  const customCodes = useAppSelector(state => state.customCodes);
   const currentNetwork = useAppSelector(state => state.currentNetwork);
+  const networks = useAppSelector(state => state.networks);
   const tabMode = useAppSelector(state => state.localState?.tabMode);
 
   const [isLedgerSupported, setIsLedgerSupported] = React.useState(false);
@@ -45,6 +48,11 @@ export function Import() {
             type="submit"
             view="submit"
             onClick={() => {
+              const networkCode =
+                customCodes[currentNetwork] ||
+                (networks.find(x => x.name === currentNetwork)?.code ?? '');
+
+              generateNewWalletItems(networkCode);
               dispatch(navigate(PAGES.NEW_ACCOUNT));
             }}
           >

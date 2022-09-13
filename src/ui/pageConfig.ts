@@ -53,7 +53,6 @@ export const PAGES = {
   IMPORT_POPUP: 'import_popup',
   IMPORT_TAB: 'import_tab',
   NEW_ACCOUNT: 'new_account',
-  NEW_ACCOUNT_BACK: 'new_account_back',
   ACCOUNT_NAME: 'account_name',
   ADDRESS_BOOK: 'address_book',
   SAVE_BACKUP: 'safe_backup',
@@ -165,20 +164,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
   },
   [PAGES.NEW_ACCOUNT]: {
     component: NewWallet,
-    props: {
-      isGenerateNew: true,
-    },
-    bottom: {
-      noChangeNetwork: true,
-    },
-    menu: {
-      hasLogo: true,
-      hasSettings: false,
-      back: true,
-    },
-  },
-  [PAGES.NEW_ACCOUNT_BACK]: {
-    component: NewWallet,
     bottom: {
       noChangeNetwork: true,
     },
@@ -240,7 +225,7 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: true,
       hasSettings: false,
-      back: PAGES.NEW_ACCOUNT_BACK,
+      back: true,
     },
   },
   [PAGES.CONFIRM_BACKUP]: {

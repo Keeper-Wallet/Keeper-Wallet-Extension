@@ -9,12 +9,7 @@ import { AvatarList, Button } from '../ui';
 import * as styles from './styles/newwallet.styl';
 import { NewAccountState } from 'ui/reducers/localState';
 
-interface Network {
-  code: string;
-  name: string;
-}
-
-interface SeedAccountData {
+interface NewWalletItem {
   seed: string;
   address: string | null;
   type: 'seed';
@@ -22,76 +17,60 @@ interface SeedAccountData {
 
 interface StateProps {
   account: Extract<NewAccountState, { type: 'seed' }>;
-  customCodes: Record<string, string | null>;
-  networks: Network[];
-  currentNetwork: string;
 }
 
 interface DispatchProps {
   navigate: (page: string | null) => void;
   newAccountSelect: (
-    newAccount: SeedAccountData & { name: string; hasBackup: boolean }
+    newAccount: NewWalletItem & { name: string; hasBackup: boolean }
   ) => void;
 }
 
-type Props = PageComponentProps &
-  WithTranslation &
-  StateProps &
-  DispatchProps & {
-    isGenerateNew?: boolean;
-  };
+type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
 
 interface State {
-  list: SeedAccountData[];
+  list: NewWalletItem[];
+}
+
+let generatedWalletItems: NewWalletItem[] = [];
+
+export function generateNewWalletItems(networkCode: string) {
+  const list: NewWalletItem[] = [];
+
+  for (let i = 0; i < 5; i++) {
+    const seed = seedUtils.Seed.create().phrase;
+
+    list.push({
+      seed,
+      address: new seedUtils.Seed(seed, networkCode).address,
+      type: 'seed',
+    });
+  }
+
+  generatedWalletItems = list;
 }
 
 class NewWalletComponent extends React.Component<Props, State> {
   state: State;
 
-  static list: SeedAccountData[] = [];
-
   constructor(props: Props) {
     super(props);
 
-    const { account, isGenerateNew } = props;
-
-    const networkCode =
-      this.props.customCodes[this.props.currentNetwork] ||
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.props.networks.find(
-        ({ name }) => this.props.currentNetwork === name
-      )!.code ||
-      '';
-    if (isGenerateNew) {
-      NewWalletComponent.list = NewWalletComponent.getNewWallets(networkCode);
-    }
-
-    const list = NewWalletComponent.list;
+    const { account } = this.props;
 
     const selected =
-      list.find(item => account && item.address === account.address) || list[0];
+      generatedWalletItems.find(
+        item => account && item.address === account.address
+      ) || generatedWalletItems[0];
+
     this._onSelect(selected);
 
-    this.state = { list };
+    this.state = { list: generatedWalletItems };
   }
-
-  static getNewWallets(networkCode: string) {
-    const list: SeedAccountData[] = [];
-    for (let i = 0; i < 5; i++) {
-      const seedData = seedUtils.Seed.create();
-      const seed = seedData.phrase;
-      const address = new seedUtils.Seed(seed, networkCode).address;
-      list.push({ seed, address, type: 'seed' });
-    }
-    return list;
-  }
-
-  onSelect = (account: SeedAccountData) => this._onSelect(account);
-
-  onSubmit = (e: React.FormEvent<HTMLFormElement>) => this._onSubmit(e);
 
   render() {
     const { t } = this.props;
+
     return (
       <div className={styles.content}>
         <div>
@@ -108,7 +87,7 @@ class NewWalletComponent extends React.Component<Props, State> {
             items={this.state.list}
             selected={this.props.account}
             size={38}
-            onSelect={this.onSelect}
+            onSelect={account => this._onSelect(account)}
           />
         </div>
 
@@ -120,7 +99,13 @@ class NewWalletComponent extends React.Component<Props, State> {
           {this.props.account.address}
         </div>
 
-        <form onSubmit={this.onSubmit}>
+        <form
+          onSubmit={event => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.props.navigate(PAGES.SAVE_BACKUP);
+          }}
+        >
           <Button type="submit" view="submit" id="continue">
             {t('newWallet.continue')}
           </Button>
@@ -129,19 +114,13 @@ class NewWalletComponent extends React.Component<Props, State> {
     );
   }
 
-  _onSelect(account: SeedAccountData) {
+  _onSelect(account: NewWalletItem) {
     this.props.newAccountSelect({
       name: '',
       ...account,
       type: 'seed',
       hasBackup: false,
     });
-  }
-
-  _onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.props.navigate(PAGES.SAVE_BACKUP);
   }
 }
 
@@ -156,9 +135,6 @@ const mapStateToProps = function (store: AppState): StateProps {
       NewAccountState,
       { type: 'seed' }
     >,
-    customCodes: store.customCodes,
-    networks: store.networks,
-    currentNetwork: store.currentNetwork,
   };
 };
 
