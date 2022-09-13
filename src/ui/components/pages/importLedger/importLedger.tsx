@@ -45,7 +45,7 @@ interface LedgerUser {
   statusCode: string;
 }
 
-export function ImportLedger({ setTab }: PageComponentProps) {
+export function ImportLedger({ pushTab }: PageComponentProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
@@ -326,7 +326,7 @@ export function ImportLedger({ setTab }: PageComponentProps) {
                 })
               );
 
-              setTab(PAGES.ACCOUNT_NAME_SEED);
+              pushTab(PAGES.ACCOUNT_NAME_SEED);
             }}
           >
             {t('importLedger.continueButton')}

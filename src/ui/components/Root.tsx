@@ -143,7 +143,7 @@ export function Root() {
       />
       <Component
         {...pageConf.props}
-        setTab={pushTab}
+        pushTab={pushTab}
         onBack={onBack}
         key={currentTab}
       />

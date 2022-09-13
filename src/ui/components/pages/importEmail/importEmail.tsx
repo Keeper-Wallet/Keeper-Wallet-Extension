@@ -9,7 +9,7 @@ import { newAccountSelect } from '../../../actions';
 import { PageComponentProps, PAGES } from '../../../pageConfig';
 import { IdentityUser } from 'controllers/IdentityController';
 
-export function ImportEmail({ setTab }: PageComponentProps) {
+export function ImportEmail({ pushTab }: PageComponentProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
@@ -42,9 +42,9 @@ export function ImportEmail({ setTab }: PageComponentProps) {
         })
       );
 
-      setTab(PAGES.ACCOUNT_NAME_SEED);
+      pushTab(PAGES.ACCOUNT_NAME_SEED);
     },
-    [dispatch, setTab]
+    [dispatch, pushTab]
   );
 
   return (

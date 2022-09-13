@@ -1,6 +1,6 @@
 import * as styles from './NewAccount.module.css';
 import { connect } from 'react-redux';
-import { createNew, navigate } from '../../actions';
+import { createNew } from '../../actions';
 import * as React from 'react';
 import { Button, Error, Input, LangsSelect } from '../ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -18,7 +18,6 @@ const mapStateToProps = function (store: AppState) {
 
 interface DispatchProps {
   createNew: (pass: string) => void;
-  setTab: (tab: string | null) => void;
 }
 
 class NewAccountComponent extends React.PureComponent<
@@ -111,11 +110,6 @@ class NewAccountComponent extends React.PureComponent<
     if (!this.state.passwordError && this.state.firstValue) {
       this.props.createNew(this.state.firstValue);
     }
-  };
-
-  openTermsAndConditions = (e: React.MouseEvent): void => {
-    e.preventDefault();
-    this.props.setTab('conditions');
   };
 
   render() {
@@ -264,5 +258,4 @@ class NewAccountComponent extends React.PureComponent<
 
 export const NewAccount = connect(mapStateToProps, {
   createNew,
-  setTab: navigate,
 })(withTranslation()(NewAccountComponent));

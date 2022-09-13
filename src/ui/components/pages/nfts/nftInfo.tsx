@@ -10,7 +10,7 @@ import { Tooltip } from 'ui/components/ui/tooltip';
 import { getAccountLink, getAssetDetailLink } from 'ui/urls';
 import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 
-export function NftInfo({ setTab, onBack }: PageComponentProps) {
+export function NftInfo({ pushTab, onBack }: PageComponentProps) {
   const { t } = useTranslation();
 
   const networkCode = useAppSelector(
@@ -128,7 +128,7 @@ export function NftInfo({ setTab, onBack }: PageComponentProps) {
           view="submit"
           onClick={() => {
             setCurrentAsset(nft?.asset);
-            setTab(PAGES.SEND);
+            pushTab(PAGES.SEND);
           }}
         >
           {t('nftInfo.sendBtn')}

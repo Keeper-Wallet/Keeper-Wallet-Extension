@@ -100,7 +100,7 @@ export const PAGES = {
 };
 
 export interface PageComponentProps {
-  setTab: (tab: string | null) => void;
+  pushTab: (tab: string | null) => void;
   onBack: () => void;
 }
 

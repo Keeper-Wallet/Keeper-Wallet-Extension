@@ -245,7 +245,7 @@ class MessagesComponent extends React.Component<Props, State> {
 
   nextHandler = (e: unknown) => this.updateActiveMessages(e, true);
 
-  selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
+  selectAccountHandler = () => this.props.pushTab(PAGES.CHANGE_TX_ACCOUNT);
 
   componentDidCatch() {
     this.reject();
@@ -353,7 +353,7 @@ class MessagesComponent extends React.Component<Props, State> {
     }
 
     this.props.clearMessagesStatus(!isNext);
-    this.props.setTab(PAGES.ROOT);
+    this.props.pushTab(PAGES.ROOT);
     this.hasApproved = false;
   }
 }

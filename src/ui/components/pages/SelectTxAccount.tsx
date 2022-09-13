@@ -65,7 +65,7 @@ class SelectTxAccountComponent extends React.PureComponent<Props, State> {
       !activeNotification &&
       notifications.length === 0
     ) {
-      props.setTab(PAGES.ASSETS);
+      props.pushTab(PAGES.ASSETS);
       return { loading: false };
     }
 

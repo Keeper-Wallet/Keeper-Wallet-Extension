@@ -21,8 +21,8 @@ interface DispatchProps {
 type Props = PageComponentProps & WithTranslation & DispatchProps & StateProps;
 
 class SettingsGeneralComponent extends React.Component<Props> {
-  langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
-  passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
+  langsHandler = () => this.props.pushTab(PAGES.LANGS_SETTINGS);
+  passwordHandler = () => this.props.pushTab(PAGES.CHANGE_PASSWORD);
   setIdle = (id: string | number) => this.props.setIdle(id as string);
 
   render() {

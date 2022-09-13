@@ -24,7 +24,7 @@ const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
     } as Nft)
 );
 
-export function NftCollection({ setTab, onBack }: PageComponentProps) {
+export function NftCollection({ pushTab, onBack }: PageComponentProps) {
   const { t } = useTranslation();
 
   const currentAddress = useAppSelector(state => state.selectedAccount.address);
@@ -133,7 +133,7 @@ export function NftCollection({ setTab, onBack }: PageComponentProps) {
             nfts={creatorNfts}
             onClick={nft => {
               setCurrentAsset(nft.asset);
-              setTab(PAGES.NFT_INFO);
+              pushTab(PAGES.NFT_INFO);
             }}
           />
         )}

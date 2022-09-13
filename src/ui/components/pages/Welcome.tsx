@@ -7,7 +7,7 @@ import { PageComponentProps, PAGES } from '../../pageConfig';
 import { useAppSelector } from 'ui/store';
 import background from 'ui/services/Background';
 
-export function Welcome({ setTab }: PageComponentProps) {
+export function Welcome({ pushTab }: PageComponentProps) {
   const { t } = useTranslation();
   const tabMode = useAppSelector(state => state.localState?.tabMode);
 
@@ -19,9 +19,9 @@ export function Welcome({ setTab }: PageComponentProps) {
         null as any,
         window.location.pathname
       );
-      setTab(PAGES.NEW);
+      pushTab(PAGES.NEW);
     }
-  }, [setTab]);
+  }, [pushTab]);
 
   return (
     <div className={styles.content}>
@@ -38,7 +38,7 @@ export function Welcome({ setTab }: PageComponentProps) {
               'accounts'
             );
           }
-          setTab(PAGES.NEW);
+          pushTab(PAGES.NEW);
         }}
       >
         {t('welcome.getStarted')}

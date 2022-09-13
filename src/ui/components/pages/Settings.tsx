@@ -22,17 +22,17 @@ type Props = WithTranslation & PageComponentProps & StateProps & DispatchProps;
 
 class SettingsComponent extends React.Component<Props> {
   lock = () => {
-    this.props.setTab(null);
+    this.props.pushTab(null);
     this.props.lock();
   };
-  networkHandler = () => this.props.setTab(PAGES.NETWORK_SETTINGS);
-  exportAndImportHandler = () => this.props.setTab(PAGES.EXPORT_AND_IMPORT);
-  langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
-  permissionsHandler = () => this.props.setTab(PAGES.PERMISSIONS);
-  passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
-  deleteHandler = () => this.props.setTab(PAGES.DELETE_ACCOUNT);
-  settingsGeneral = () => this.props.setTab(PAGES.GENERAL_SETTINGS);
-  addressesHandler = () => this.props.setTab(PAGES.ADDRESS_BOOK);
+  networkHandler = () => this.props.pushTab(PAGES.NETWORK_SETTINGS);
+  exportAndImportHandler = () => this.props.pushTab(PAGES.EXPORT_AND_IMPORT);
+  langsHandler = () => this.props.pushTab(PAGES.LANGS_SETTINGS);
+  permissionsHandler = () => this.props.pushTab(PAGES.PERMISSIONS);
+  passwordHandler = () => this.props.pushTab(PAGES.CHANGE_PASSWORD);
+  deleteHandler = () => this.props.pushTab(PAGES.DELETE_ACCOUNT);
+  settingsGeneral = () => this.props.pushTab(PAGES.GENERAL_SETTINGS);
+  addressesHandler = () => this.props.pushTab(PAGES.ADDRESS_BOOK);
   toggleAutoLockHandler = () => {
     this.props.setUiState({
       autoClickProtection: !this.props.autoClickProtection,

@@ -140,7 +140,7 @@ class NewWalletComponent extends React.Component<Props, State> {
   _onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     e.stopPropagation();
-    this.props.setTab(PAGES.SAVE_BACKUP);
+    this.props.pushTab(PAGES.SAVE_BACKUP);
   }
 }
 

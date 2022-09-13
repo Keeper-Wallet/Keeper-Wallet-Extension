@@ -113,7 +113,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
 
 const suffixRe = /\((\d+)\)$/;
 
-export function ImportKeystore({ setTab }: PageComponentProps) {
+export function ImportKeystore({ pushTab }: PageComponentProps) {
   const dispatch = useAppDispatch();
   const allNetworksAccounts = useAppSelector(
     state => state.allNetworksAccounts
@@ -206,7 +206,7 @@ export function ImportKeystore({ setTab }: PageComponentProps) {
       allNetworksAccounts={allNetworksAccounts}
       profiles={profiles}
       onSkip={() => {
-        setTab(PAGES.ROOT);
+        pushTab(PAGES.ROOT);
       }}
       onSubmit={selectedAccounts => {
         dispatch(

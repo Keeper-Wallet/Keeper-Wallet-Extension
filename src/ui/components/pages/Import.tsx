@@ -9,7 +9,7 @@ import { PageComponentProps, PAGES } from '../../pageConfig';
 import { useAppSelector } from '../../store';
 import background from 'ui/services/Background';
 
-export function Import({ setTab }: PageComponentProps) {
+export function Import({ pushTab }: PageComponentProps) {
   const { t } = useTranslation();
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const tabMode = useAppSelector(state => state.localState?.tabMode);
@@ -42,7 +42,7 @@ export function Import({ setTab }: PageComponentProps) {
             data-testid="createNewAccountBtn"
             type="submit"
             view="submit"
-            onClick={() => setTab(PAGES.NEW_ACCOUNT)}
+            onClick={() => pushTab(PAGES.NEW_ACCOUNT)}
           >
             {t('import.createNew')}
           </Button>
@@ -61,7 +61,7 @@ export function Import({ setTab }: PageComponentProps) {
                   data-testid="importDebug"
                   type="button"
                   view="transparent"
-                  onClick={() => setTab(PAGES.IMPORT_DEBUG)}
+                  onClick={() => pushTab(PAGES.IMPORT_DEBUG)}
                 >
                   <svg
                     className={styles.importButtonIcon}
@@ -83,7 +83,7 @@ export function Import({ setTab }: PageComponentProps) {
                 data-testid="importSeed"
                 type="button"
                 view="transparent"
-                onClick={() => setTab(PAGES.IMPORT_SEED)}
+                onClick={() => pushTab(PAGES.IMPORT_SEED)}
               >
                 <svg
                   className={styles.importButtonIcon}
@@ -110,7 +110,7 @@ export function Import({ setTab }: PageComponentProps) {
                 disabled={!isLedgerSupported}
                 type="button"
                 view="transparent"
-                onClick={() => setTab(PAGES.IMPORT_LEDGER)}
+                onClick={() => pushTab(PAGES.IMPORT_LEDGER)}
               >
                 <svg
                   className={styles.importButtonIcon}
@@ -139,7 +139,7 @@ export function Import({ setTab }: PageComponentProps) {
                 data-testid="importKeystore"
                 type="button"
                 view="transparent"
-                onClick={() => setTab(PAGES.IMPORT_KEYSTORE)}
+                onClick={() => pushTab(PAGES.IMPORT_KEYSTORE)}
               >
                 <svg
                   className={styles.importButtonIcon}
@@ -192,7 +192,7 @@ export function Import({ setTab }: PageComponentProps) {
                   data-testid="importEmail"
                   type="button"
                   view="transparent"
-                  onClick={() => setTab(PAGES.IMPORT_EMAIL)}
+                  onClick={() => pushTab(PAGES.IMPORT_EMAIL)}
                 >
                   <svg
                     className={styles.importButtonIcon}

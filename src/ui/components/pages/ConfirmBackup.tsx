@@ -125,7 +125,7 @@ class ConfirmBackupComponent extends React.Component<Props, State> {
   private _onSubmit(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     this.setState({ disabled: true });
-    this.props.setTab(PAGES.ACCOUNT_NAME);
+    this.props.pushTab(PAGES.ACCOUNT_NAME);
   }
 
   private _onSelect({ text, id }: PillsListItem) {

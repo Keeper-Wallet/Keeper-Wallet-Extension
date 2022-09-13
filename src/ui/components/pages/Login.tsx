@@ -47,7 +47,7 @@ class LoginComponent extends React.Component<Props, State> {
 
   onSubmit = (e: React.FormEvent<HTMLFormElement>) => this._onSubmit(e);
 
-  forgotHandler = () => this.props.setTab(PAGES.FORGOT);
+  forgotHandler = () => this.props.pushTab(PAGES.FORGOT);
 
   render() {
     const { t } = this.props;

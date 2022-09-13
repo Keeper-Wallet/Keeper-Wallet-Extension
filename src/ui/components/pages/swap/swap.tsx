@@ -18,7 +18,7 @@ import { SwapForm, OnSwapParams } from './form';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
 
-export function Swap({ setTab }: PageComponentProps) {
+export function Swap({ pushTab }: PageComponentProps) {
   const { t } = useTranslation();
 
   const dispatch = useAppDispatch();
@@ -125,7 +125,7 @@ export function Swap({ setTab }: PageComponentProps) {
         fromMoney={performedSwapData.fromMoney}
         transactionId={performedSwapData.transactionId}
         onClose={() => {
-          setTab(PAGES.ROOT);
+          pushTab(PAGES.ROOT);
         }}
       />
     );

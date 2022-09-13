@@ -99,7 +99,7 @@ class NotificationsComponent extends React.Component<Props, State> {
   ): Partial<State> | null {
     const { origins, activeNotification, messages, notifications } = props;
     if (!activeNotification && notifications.length) {
-      props.setTab(PAGES.MESSAGES_LIST);
+      props.pushTab(PAGES.MESSAGES_LIST);
       return { loading: true };
     }
 
@@ -141,7 +141,7 @@ class NotificationsComponent extends React.Component<Props, State> {
 
   toListHandler = () => {
     (this._deleteMessages(null) as unknown as Promise<void>).then(() =>
-      this.props.setTab(PAGES.MESSAGES_LIST)
+      this.props.pushTab(PAGES.MESSAGES_LIST)
     );
   };
 
@@ -159,7 +159,7 @@ class NotificationsComponent extends React.Component<Props, State> {
     this._deleteMessages(nextNotification || null);
   };
 
-  selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
+  selectAccountHandler = () => this.props.pushTab(PAGES.CHANGE_TX_ACCOUNT);
 
   componentDidCatch() {
     this.toListHandler();

@@ -6,7 +6,7 @@ import { PageComponentProps, PAGES } from '../../pageConfig';
 import { useAccountsSelector } from 'accounts/store';
 import { NewAccountState } from 'ui/reducers/localState';
 
-export function BackUpSeed({ setTab }: PageComponentProps) {
+export function BackUpSeed({ pushTab }: PageComponentProps) {
   const { t } = useTranslation();
   const [showCopy, setShowCopy] = React.useState<boolean>(false);
   const newAccount = useAccountsSelector(
@@ -43,12 +43,12 @@ export function BackUpSeed({ setTab }: PageComponentProps) {
         id="continue"
         className="margin-main-big"
         type="submit"
-        onClick={() => setTab(PAGES.CONFIRM_BACKUP)}
+        onClick={() => pushTab(PAGES.CONFIRM_BACKUP)}
       >
         {t('backupSeed.continue')}
       </Button>
 
-      <Button id="cancelCreation" onClick={() => setTab(PAGES.ROOT)}>
+      <Button id="cancelCreation" onClick={() => pushTab(PAGES.ROOT)}>
         {t('backupSeed.cancel')}
       </Button>
 

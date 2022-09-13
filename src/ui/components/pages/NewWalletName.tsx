@@ -13,7 +13,7 @@ import { WalletTypes } from 'ui/services/Background';
 import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 import { PageComponentProps, PAGES } from 'ui/pageConfig';
 
-export function NewWalletName({ setTab }: PageComponentProps) {
+export function NewWalletName({ pushTab }: PageComponentProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -63,7 +63,7 @@ export function NewWalletName({ setTab }: PageComponentProps) {
 
           if (existedAccount) {
             dispatch(selectAccount(existedAccount));
-            return setTab(PAGES.IMPORT_SUCCESS);
+            return pushTab(PAGES.IMPORT_SUCCESS);
           }
 
           if (error) {

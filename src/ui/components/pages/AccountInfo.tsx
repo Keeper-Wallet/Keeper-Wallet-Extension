@@ -6,7 +6,7 @@ import { Avatar, Balance, Button, CopyText, Error, Input, Modal } from '../ui';
 import background from '../../services/Background';
 import { getAsset } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
-import { PAGES } from '../../pageConfig';
+import { PageComponentProps, PAGES } from '../../pageConfig';
 import { getAccountLink } from '../../urls';
 import { BigNumber } from '@waves/bignumber';
 import { AppState } from 'ui/store';
@@ -36,9 +36,11 @@ interface DispatchProps {
   getAsset: (assetId: string) => void;
 }
 
-interface Props extends WithTranslation, StateProps, DispatchProps {
-  setTab: (tab: string) => void;
-}
+interface Props
+  extends WithTranslation,
+    StateProps,
+    DispatchProps,
+    PageComponentProps {}
 
 interface State {
   balance?: Money | string | BigNumber | null;
@@ -102,12 +104,12 @@ class AccountInfoComponent extends React.Component<Props, State> {
   inputPassword = (event: React.ChangeEvent<HTMLInputElement>) =>
     this.setState({ password: event.target.value, passwordError: false });
 
-  editNameHandler = () => this.props.setTab(PAGES.CHANGE_ACCOUNT_NAME);
+  editNameHandler = () => this.props.pushTab(PAGES.CHANGE_ACCOUNT_NAME);
 
   onCopyHandler = () => this.setCopiedModal();
 
   onDeleteHandler = () => {
-    this.props.setTab(PAGES.DELETE_ACTIVE_ACCOUNT);
+    this.props.pushTab(PAGES.DELETE_ACTIVE_ACCOUNT);
   };
 
   render() {

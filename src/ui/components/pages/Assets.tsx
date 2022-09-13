@@ -22,7 +22,7 @@ import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 import { PreferencesAccount } from 'preferences/types';
 import { AssetDetail } from 'assets/types';
 
-export function Assets({ setTab }: PageComponentProps) {
+export function Assets({ pushTab }: PageComponentProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -56,7 +56,7 @@ export function Assets({ setTab }: PageComponentProps) {
 
   const onSelectHandler = (account: PreferencesAccount) => {
     dispatch(setActiveAccount(account));
-    setTab(PAGES.ACCOUNT_INFO);
+    pushTab(PAGES.ACCOUNT_INFO);
   };
 
   if (!activeAccount) {
@@ -101,14 +101,14 @@ export function Assets({ setTab }: PageComponentProps) {
             setTimeout(() => setShowCopy(false), 1000);
           }}
           onSwapClick={() => {
-            setTab(PAGES.SWAP);
+            pushTab(PAGES.SWAP);
           }}
           onOtherAccountsClick={() => {
-            setTab(PAGES.OTHER_ACCOUNTS);
+            pushTab(PAGES.OTHER_ACCOUNTS);
           }}
           onClick={onSelectHandler}
           onShowQr={() => {
-            setTab(PAGES.QR_CODE_SELECTED);
+            pushTab(PAGES.QR_CODE_SELECTED);
           }}
         />
       </div>
@@ -127,14 +127,14 @@ export function Assets({ setTab }: PageComponentProps) {
             }}
             onSendClick={assetId => {
               setCurrentAsset(assets[assetId]);
-              setTab(PAGES.SEND);
+              pushTab(PAGES.SEND);
             }}
             onSwapClick={assetId => {
               dispatch(setSwapScreenInitialState({ fromAssetId: assetId }));
-              setTab(PAGES.SWAP);
+              pushTab(PAGES.SWAP);
             }}
           />
-          <TabNfts nextTab={setTab} />
+          <TabNfts nextTab={pushTab} />
           <TabTxHistory />
         </TabPanels>
       </Tabs>

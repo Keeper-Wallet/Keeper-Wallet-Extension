@@ -43,7 +43,7 @@ function stripBase58Prefix(str: string) {
   return str.replace(/^base58:/, '');
 }
 
-export function ImportSeed({ isNew, setTab }: Props) {
+export function ImportSeed({ isNew, pushTab }: Props) {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const accounts = useAppSelector(state => state.accounts);
@@ -220,7 +220,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
 
           if (showValidationError && existedAccount) {
             dispatch(selectAccount(existedAccount));
-            return setTab(PAGES.IMPORT_SUCCESS);
+            return pushTab(PAGES.IMPORT_SUCCESS);
           }
 
           setShowValidationError(true);
@@ -261,7 +261,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
             );
           }
 
-          setTab(PAGES.ACCOUNT_NAME_SEED);
+          pushTab(PAGES.ACCOUNT_NAME_SEED);
         }}
       >
         <Tabs

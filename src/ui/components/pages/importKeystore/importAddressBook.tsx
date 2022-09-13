@@ -75,7 +75,7 @@ function getFormattedAddresses(
   );
 }
 
-export function ImportAddressBook({ setTab }: PageComponentProps) {
+export function ImportAddressBook({ pushTab }: PageComponentProps) {
   const dispatch = useAppDispatch();
   const addresses = useAppSelector(state => state.addresses);
   const { t } = useTranslation();
@@ -114,7 +114,7 @@ export function ImportAddressBook({ setTab }: PageComponentProps) {
           dispatch(
             setAddresses(getFormattedAddresses(addresses, keystoreAddresses))
           );
-          setTab(PAGES.IMPORT_SUCCESS_ADDRESS_BOOK);
+          pushTab(PAGES.IMPORT_SUCCESS_ADDRESS_BOOK);
         } catch (err) {
           setError(t('importKeystore.errorUnexpected'));
         }
