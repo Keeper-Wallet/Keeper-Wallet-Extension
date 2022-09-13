@@ -262,7 +262,7 @@ export function ImportSeed({ isNew }: Props) {
             );
           }
 
-          dispatch(navigate(PAGES.ACCOUNT_NAME_SEED));
+          dispatch(navigate(PAGES.ACCOUNT_NAME));
         }}
       >
         <Tabs

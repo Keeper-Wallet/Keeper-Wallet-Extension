@@ -327,7 +327,7 @@ export function ImportLedger() {
                 })
               );
 
-              dispatch(navigate(PAGES.ACCOUNT_NAME_SEED));
+              dispatch(navigate(PAGES.ACCOUNT_NAME));
             }}
           >
             {t('importLedger.continueButton')}

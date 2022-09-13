@@ -15,7 +15,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  navigate: (page: string | null) => void;
+  navigate: (page: string | null, options: { replace?: boolean }) => void;
 }
 
 type Props = WithTranslation & PageComponentProps & StateProps & DispatchProps;
@@ -130,7 +130,7 @@ class ConfirmBackupComponent extends React.Component<Props, State> {
   private _onSubmit(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     this.setState({ disabled: true });
-    this.props.navigate(PAGES.ACCOUNT_NAME);
+    this.props.navigate(PAGES.ACCOUNT_NAME, { replace: true });
   }
 
   private _onSelect({ text, id }: PillsListItem) {

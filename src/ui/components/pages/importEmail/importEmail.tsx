@@ -42,7 +42,7 @@ export function ImportEmail() {
         })
       );
 
-      dispatch(navigate(PAGES.ACCOUNT_NAME_SEED));
+      dispatch(navigate(PAGES.ACCOUNT_NAME));
     },
     [dispatch]
   );

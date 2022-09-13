@@ -55,7 +55,6 @@ export const PAGES = {
   NEW_ACCOUNT: 'new_account',
   NEW_ACCOUNT_BACK: 'new_account_back',
   ACCOUNT_NAME: 'account_name',
-  ACCOUNT_NAME_SEED: 'account_name_seed',
   ADDRESS_BOOK: 'address_book',
   SAVE_BACKUP: 'safe_backup',
   CONFIRM_BACKUP: 'confirm_backup',
@@ -190,17 +189,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
   },
   [PAGES.ACCOUNT_NAME]: {
-    component: NewWalletName,
-    bottom: {
-      noChangeNetwork: true,
-    },
-    menu: {
-      hasLogo: true,
-      hasSettings: false,
-      back: PAGES.SAVE_BACKUP,
-    },
-  },
-  [PAGES.ACCOUNT_NAME_SEED]: {
     component: NewWalletName,
     bottom: {
       noChangeNetwork: true,
