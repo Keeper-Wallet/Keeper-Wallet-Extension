@@ -607,7 +607,7 @@ export type UiAction =
     }
   | {
       type: typeof ACTION.REMOVE_BACK_TAB;
-      payload: void;
+      payload?: never;
       meta?: never;
     };
 

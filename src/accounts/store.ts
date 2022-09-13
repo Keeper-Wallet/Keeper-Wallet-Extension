@@ -3,6 +3,7 @@ import * as reducers from 'ui/reducers/updateState';
 import * as middleware from 'ui/midleware';
 import { extension } from 'lib/extension';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { UiAction } from 'ui/store';
 
 const reducer = combineReducers({
   tab: reducers.tab,
@@ -31,7 +32,12 @@ export const useAccountsSelector: TypedUseSelectorHook<AccountsState> =
   useSelector;
 
 export function createAccountsStore() {
-  return createStore(
+  return createStore<
+    AccountsState,
+    UiAction,
+    Record<never, unknown>,
+    Record<never, unknown>
+  >(
     reducer,
     { version: extension.runtime.getManifest().version },
     applyMiddleware(...Object.values(middleware))
