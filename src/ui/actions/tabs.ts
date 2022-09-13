@@ -1,9 +1,15 @@
 import { ACTION } from './constants';
 
-export function navigate(tab: string | null) {
+export function navigate(
+  page: string | null,
+  { replace = false }: { replace?: boolean } = {}
+) {
   return {
     type: ACTION.NAVIGATE,
-    payload: tab,
+    payload: {
+      page,
+      replace,
+    },
   };
 }
 

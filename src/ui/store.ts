@@ -200,7 +200,10 @@ export type UiAction =
     }
   | {
       type: typeof ACTION.NAVIGATE;
-      payload: string | null;
+      payload: {
+        page: string | null;
+        replace: boolean;
+      };
       meta?: never;
     }
   | {

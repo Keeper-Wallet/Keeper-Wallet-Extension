@@ -75,7 +75,7 @@ export function RootAccounts() {
 
   const pushTab = (tab: string | null) => {
     dispatch(addBackTab(currentTab));
-    dispatch(navigate(tab));
+    dispatch(navigate(tab, { replace: true }));
   };
 
   const onBack = () => {
@@ -84,7 +84,7 @@ export function RootAccounts() {
 
     const tab = backTabFromConf || backTabs[backTabs.length - 1] || PAGES.ROOT;
     dispatch(removeBackTab());
-    dispatch(navigate(tab));
+    dispatch(navigate(tab, { replace: true }));
   };
 
   const onDelete = () => {

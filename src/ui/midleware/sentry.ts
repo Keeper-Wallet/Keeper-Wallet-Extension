@@ -13,17 +13,17 @@ export const sentryBreadcrumbs: UiMiddleware = store => next => action => {
 
   switch (action.type) {
     case ACTION.NAVIGATE: {
-      const fromTab = store.getState().tab;
-      const toTab = action.payload;
+      const fromPage = store.getState().tab;
+      const toPage = action.payload.page;
 
-      if (toTab !== fromTab) {
+      if (toPage !== fromPage) {
         Sentry.addBreadcrumb({
           type: 'navigation',
           category: 'navigation',
           level: Sentry.Severity.Info,
           data: {
-            from: fromTab,
-            to: toTab,
+            from: fromPage,
+            to: toPage,
           },
         });
       }

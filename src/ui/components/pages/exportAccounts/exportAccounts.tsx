@@ -36,7 +36,7 @@ export function ExportAccounts() {
           onSubmit={async password => {
             await downloadKeystore(accountsToExport, undefined, password);
             dispatch(addBackTab(PAGES.ROOT));
-            dispatch(navigate(PAGES.SETTINGS));
+            dispatch(navigate(PAGES.SETTINGS, { replace: true }));
           }}
         />
       )}

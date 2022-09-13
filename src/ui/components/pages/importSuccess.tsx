@@ -86,7 +86,7 @@ export function ImportSuccess() {
           data-testid="addAnotherAccountBtn"
           className={styles.button}
           type="button"
-          onClick={() => dispatch(navigate(PAGES.ROOT))}
+          onClick={() => dispatch(navigate(PAGES.ROOT, { replace: true }))}
         >
           {t('import.addAnotherAccount')}
         </Button>

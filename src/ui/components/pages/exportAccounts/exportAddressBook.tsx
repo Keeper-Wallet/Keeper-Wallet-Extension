@@ -52,7 +52,7 @@ export function ExportAddressBook() {
               encrypted
             );
             dispatch(addBackTab(PAGES.ROOT));
-            dispatch(navigate(PAGES.SETTINGS));
+            dispatch(navigate(PAGES.SETTINGS, { replace: true }));
           }}
         />
       )}

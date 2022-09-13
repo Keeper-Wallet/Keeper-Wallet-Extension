@@ -5,7 +5,7 @@ import {
   createAccount,
   newAccountName,
   selectAccount,
-  navigate as resetTab,
+  navigate,
 } from 'ui/actions';
 import { Button, Error, Input } from 'ui/components/ui';
 import { CONFIG } from 'ui/appConfig';
@@ -123,7 +123,9 @@ export function NewWalletName({ pushTab }: PageComponentProps) {
               <Button
                 className="margin1"
                 type="button"
-                onClick={() => dispatch(resetTab(PAGES.ROOT))}
+                onClick={() =>
+                  dispatch(navigate(PAGES.ROOT, { replace: true }))
+                }
               >
                 {t('newAccountName.cancel')}
               </Button>

@@ -34,7 +34,7 @@ export function ExportAndImport() {
         view="transparent"
         onClick={() => {
           dispatch(addBackTab(PAGES.EXPORT_AND_IMPORT));
-          dispatch(navigate(PAGES.EXPORT_ACCOUNTS));
+          dispatch(navigate(PAGES.EXPORT_ACCOUNTS, { replace: true }));
         }}
       >
         <p className="body1 left">{t('exportAndImport.exportAccounts')}</p>
@@ -48,7 +48,7 @@ export function ExportAndImport() {
             `${window.location.origin}/accounts.html#${PAGES.IMPORT_KEYSTORE}`,
             PAGES.IMPORT_KEYSTORE
           );
-          dispatch(navigate(PAGES.ROOT));
+          dispatch(navigate(PAGES.ROOT, { replace: true }));
         }}
       >
         <p className="body1 left">{t('exportAndImport.importAccounts')}</p>
@@ -60,7 +60,7 @@ export function ExportAndImport() {
         view="transparent"
         onClick={() => {
           dispatch(addBackTab(PAGES.EXPORT_AND_IMPORT));
-          dispatch(navigate(PAGES.EXPORT_ADDRESS_BOOK));
+          dispatch(navigate(PAGES.EXPORT_ADDRESS_BOOK, { replace: true }));
         }}
       >
         <p className="body1 left">{t('exportAndImport.exportAddressBook')}</p>
@@ -74,7 +74,7 @@ export function ExportAndImport() {
             `${window.location.origin}/accounts.html#${PAGES.IMPORT_ADDRESS_BOOK}`,
             PAGES.IMPORT_ADDRESS_BOOK
           );
-          dispatch(navigate(PAGES.ROOT));
+          dispatch(navigate(PAGES.ROOT, { replace: true }));
         }}
       >
         <p className="body1 left">{t('exportAndImport.importAddressBook')}</p>
@@ -105,7 +105,7 @@ export function ExportAndImport() {
                 password,
                 encrypted
               );
-              dispatch(navigate(PAGES.SETTINGS));
+              dispatch(navigate(PAGES.SETTINGS, { replace: true }));
             }}
           />
         )}

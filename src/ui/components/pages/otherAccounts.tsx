@@ -87,7 +87,7 @@ export function OtherAccountsPage({ pushTab }: PageComponentProps) {
               balance={balancesMoney[account.address]}
               onClick={account => {
                 dispatch(selectAccount(account));
-                dispatch(navigate(PAGES.ASSETS));
+                dispatch(navigate(PAGES.ASSETS, { replace: true }));
               }}
               onInfoClick={account => {
                 dispatch(setActiveAccount(account));
@@ -107,7 +107,7 @@ export function OtherAccountsPage({ pushTab }: PageComponentProps) {
                 `${window.location.origin}/accounts.html`,
                 'accounts'
               );
-              dispatch(navigate(PAGES.ROOT));
+              dispatch(navigate(PAGES.ROOT, { replace: true }));
             }}
           >
             {t('otherAccounts.addAccount')}

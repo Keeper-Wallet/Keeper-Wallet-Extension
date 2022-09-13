@@ -6,7 +6,7 @@ const MAX_HISTORY = 10;
 export function tab(state: string | null = null, action: UiAction) {
   switch (action.type) {
     case ACTION.NAVIGATE:
-      return action.payload;
+      return action.payload.page;
     default:
       return state;
   }
