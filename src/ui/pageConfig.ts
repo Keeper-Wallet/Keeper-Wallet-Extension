@@ -106,7 +106,7 @@ export interface PageComponentProps {
 interface PageMenuConfig {
   hasLogo: boolean;
   hasSettings?: boolean;
-  back: string | boolean | null;
+  back?: string | boolean;
   close?: boolean;
 }
 
@@ -131,7 +131,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: false,
       hasSettings: false,
-      back: null,
     },
   },
   [PAGES.LOGIN]: {
@@ -142,7 +141,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: false,
       hasSettings: false,
-      back: null,
     },
   },
   [PAGES.NEW]: {
@@ -150,7 +148,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: true,
       hasSettings: false,
-      back: null,
     },
   },
   [PAGES.IMPORT_POPUP]: {
@@ -158,7 +155,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: true,
       hasSettings: true,
-      back: null,
     },
   },
   [PAGES.IMPORT_TAB]: {
@@ -166,7 +162,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: true,
       hasSettings: false,
-      back: null,
     },
   },
   [PAGES.NEW_ACCOUNT]: {
@@ -224,7 +219,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: true,
       hasSettings: false,
-      back: null,
     },
   },
   [PAGES.IMPORT_SUCCESS_ADDRESS_BOOK]: {
@@ -235,7 +229,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: true,
       hasSettings: false,
-      back: null,
     },
   },
 
@@ -391,7 +384,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: true,
       hasSettings: true,
-      back: null,
     },
   },
   [PAGES.OTHER_ACCOUNTS]: {
@@ -468,7 +460,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: false,
       hasSettings: false,
-      back: null,
     },
   },
   [PAGES.GENERAL_SETTINGS]: {

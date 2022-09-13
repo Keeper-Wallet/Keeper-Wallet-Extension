@@ -121,10 +121,7 @@ export function Root() {
   return (
     <div className={`height ${currentLocale}`}>
       <Menu
-        hasBack={
-          pageConf.menu.back !== null &&
-          (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back)
-        }
+        hasBack={typeof pageConf.menu.back === 'string' || pageConf.menu.back}
         hasClose={pageConf.menu.close}
         hasLogo={pageConf.menu.hasLogo}
         hasSettings={pageConf.menu.hasSettings}

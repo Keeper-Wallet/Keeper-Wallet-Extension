@@ -88,8 +88,7 @@ export function RootAccounts() {
       <Menu
         hasBack={
           currentTab !== window.location.hash.split('#')[1] &&
-          pageConf.menu.back !== null &&
-          (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back)
+          (typeof pageConf.menu.back === 'string' || pageConf.menu.back)
         }
         hasClose={pageConf.menu.close}
         hasLogo={pageConf.menu.hasLogo}

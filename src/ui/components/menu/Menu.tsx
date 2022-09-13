@@ -8,7 +8,7 @@ import { navigate } from 'ui/actions';
 interface Props {
   hasLogo: boolean;
   hasSettings: boolean | undefined;
-  hasBack: boolean;
+  hasBack: boolean | undefined;
   hasClose: boolean | undefined;
   onBack: () => void;
 }
