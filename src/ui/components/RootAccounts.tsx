@@ -84,11 +84,11 @@ export function RootAccounts() {
       <Menu
         hasBack={
           currentTab !== window.location.hash.split('#')[1] &&
-          pageConf.menu.back
+          pageConf.menu?.back
         }
-        hasClose={pageConf.menu.close}
-        hasLogo={pageConf.menu.hasLogo}
-        hasSettings={pageConf.menu.hasSettings}
+        hasClose={pageConf.menu?.close}
+        hasLogo={pageConf.menu?.hasLogo}
+        hasSettings={pageConf.menu?.hasSettings}
         onBack={onBack}
       />
       <Component {...pageConf.props} onBack={onBack} key={currentTab} />

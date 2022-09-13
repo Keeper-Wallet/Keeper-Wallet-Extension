@@ -102,21 +102,21 @@ export interface PageComponentProps {
 }
 
 interface PageMenuConfig {
-  hasLogo: boolean;
-  hasSettings?: boolean;
+  hasLogo?: true;
+  hasSettings?: true;
   back?: true;
-  close?: boolean;
+  close?: true;
 }
 
 interface PageBottomConfig {
-  hide?: boolean;
-  noChangeNetwork?: boolean;
+  hide?: true;
+  noChangeNetwork?: true;
 }
 
 interface PageConfig {
   component: React.ComponentType<PageComponentProps>;
   bottom?: PageBottomConfig;
-  menu: PageMenuConfig;
+  menu?: PageMenuConfig;
   props?: Record<never, unknown>;
 }
 
@@ -126,26 +126,17 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     bottom: {
       hide: true,
     },
-    menu: {
-      hasLogo: false,
-      hasSettings: false,
-    },
   },
   [PAGES.LOGIN]: {
     component: Login,
     bottom: {
       hide: true,
     },
-    menu: {
-      hasLogo: false,
-      hasSettings: false,
-    },
   },
   [PAGES.NEW]: {
     component: NewAccount,
     menu: {
       hasLogo: true,
-      hasSettings: false,
     },
   },
   [PAGES.IMPORT_POPUP]: {
@@ -159,7 +150,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     component: Import,
     menu: {
       hasLogo: true,
-      hasSettings: false,
     },
   },
   [PAGES.NEW_ACCOUNT]: {
@@ -169,7 +159,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -180,7 +169,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -191,7 +179,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
     },
   },
   [PAGES.IMPORT_SUCCESS_ADDRESS_BOOK]: {
@@ -201,19 +188,16 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
     },
   },
 
   [PAGES.CHANGE_ACCOUNT_NAME]: {
     component: ChangeAccountName,
-    props: {},
     bottom: {
       noChangeNetwork: true,
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -224,7 +208,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -235,7 +218,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -246,7 +228,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -257,7 +238,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -268,7 +248,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -279,7 +258,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -290,7 +268,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -301,7 +278,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -312,7 +288,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -323,7 +298,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -334,7 +308,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -362,7 +335,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       close: true,
     },
   },
@@ -372,8 +344,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       hide: true,
     },
     menu: {
-      hasLogo: false,
-      hasSettings: false,
       back: true,
     },
   },
@@ -384,7 +354,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -395,7 +364,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -406,7 +374,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -414,10 +381,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     component: Intro,
     bottom: {
       hide: true,
-    },
-    menu: {
-      hasLogo: false,
-      hasSettings: false,
     },
   },
   [PAGES.GENERAL_SETTINGS]: {
@@ -427,7 +390,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -438,7 +400,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -449,7 +410,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -460,7 +420,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -471,7 +430,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -486,7 +444,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
     },
   },
   [PAGES.CHANGE_PASSWORD]: {
@@ -496,7 +453,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -507,7 +463,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
       back: true,
     },
   },
@@ -515,10 +470,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     component: DeleteAllAccounts,
     bottom: {
       hide: true,
-    },
-    menu: {
-      hasLogo: false,
-      hasSettings: false,
     },
   },
   [PAGES.NOTIFICATIONS]: {
@@ -528,7 +479,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
     },
   },
   [PAGES.MESSAGES]: {
@@ -538,17 +488,12 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
     menu: {
       hasLogo: true,
-      hasSettings: false,
     },
   },
   [PAGES.MESSAGES_LIST]: {
     component: MessageList,
     bottom: {
       hide: true,
-    },
-    menu: {
-      hasLogo: false,
-      hasSettings: false,
     },
   },
   [PAGES.CHANGE_TX_ACCOUNT]: {
@@ -557,7 +502,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       hide: true,
     },
     menu: {
-      hasLogo: false,
       hasSettings: true,
     },
   },

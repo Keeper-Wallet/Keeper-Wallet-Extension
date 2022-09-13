@@ -117,10 +117,10 @@ export function Root() {
   return (
     <div className={`height ${currentLocale}`}>
       <Menu
-        hasBack={pageConf.menu.back}
-        hasClose={pageConf.menu.close}
-        hasLogo={pageConf.menu.hasLogo}
-        hasSettings={pageConf.menu.hasSettings}
+        hasBack={pageConf.menu?.back}
+        hasClose={pageConf.menu?.close}
+        hasLogo={pageConf.menu?.hasLogo}
+        hasSettings={pageConf.menu?.hasSettings}
         onBack={onBack}
       />
       <Component {...pageConf.props} onBack={onBack} key={currentTab} />

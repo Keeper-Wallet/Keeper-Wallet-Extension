@@ -6,7 +6,7 @@ import { useAppDispatch } from 'ui/store';
 import { navigate } from 'ui/actions';
 
 interface Props {
-  hasLogo: boolean;
+  hasLogo: boolean | undefined;
   hasSettings: boolean | undefined;
   hasBack: boolean | undefined;
   hasClose: boolean | undefined;
