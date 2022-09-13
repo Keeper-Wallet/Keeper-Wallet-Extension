@@ -81,7 +81,6 @@ export const PAGES = {
   NETWORK_SETTINGS: 'networks_select',
   GENERAL_SETTINGS: 'general_settings',
   LANGS_SETTINGS: 'langs_settings',
-  LANGS_SETTINGS_INTRO: 'langs_settings_intro',
   CHANGE_PASSWORD: 'change_password_settings',
   DELETE_ACCOUNT: 'delete_account',
   PERMISSIONS: 'origin_permisiions',
@@ -431,19 +430,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: true,
       back: true,
-    },
-  },
-  [PAGES.LANGS_SETTINGS_INTRO]: {
-    component: LangsSettings,
-    props: {
-      confirm: true,
-      hideTitle: true,
-    },
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
     },
   },
   [PAGES.CHANGE_PASSWORD]: {
