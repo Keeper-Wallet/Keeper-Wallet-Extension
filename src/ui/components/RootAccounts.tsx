@@ -10,76 +10,78 @@ export function RootAccounts() {
   const dispatch = useAppDispatch();
   const currentLocale = useAccountsSelector(state => state.currentLocale);
   const backPages = useAccountsSelector(state => state.router.backPages);
-  const currentTab = useAccountsSelector(state => {
+  const currentPage = useAccountsSelector(state => {
     if (state.localState.loading) {
       return PAGES.INTRO;
     }
 
-    let tab = state.router.currentPage;
+    let page = state.router.currentPage;
 
     if (typeof state.router.currentPage !== 'string') {
-      const page = window.location.hash.split('#')[1];
-      tab = Object.values(PAGES).includes(page) ? page : PAGES.ROOT;
+      const pageFromHash = window.location.hash.split('#')[1];
+      page = Object.values(PAGES).includes(pageFromHash)
+        ? pageFromHash
+        : PAGES.ROOT;
     }
 
-    if (!tab && state.state?.locked == null) {
-      tab = PAGES.INTRO;
+    if (!page && state.state?.locked == null) {
+      page = PAGES.INTRO;
     }
 
-    let canUseTab = !state.state?.locked;
+    let canUsePage = !state.state?.locked;
 
-    switch (tab) {
+    switch (page) {
       case PAGES.NEW:
       case PAGES.INTRO:
-        canUseTab = !state.state?.initialized;
+        canUsePage = !state.state?.initialized;
         break;
       case PAGES.LOGIN:
       case PAGES.FORGOT:
-        canUseTab = Boolean(state.state?.initialized && state.state?.locked);
+        canUsePage = Boolean(state.state?.initialized && state.state?.locked);
         break;
     }
 
-    if (!tab || !canUseTab) {
-      tab = state.state?.locked
+    if (!page || !canUsePage) {
+      page = state.state?.locked
         ? state.state?.initialized
           ? PAGES.LOGIN
           : PAGES.WELCOME
         : PAGES.IMPORT_TAB;
     }
 
-    if (tab !== state.router.currentPage) {
+    if (page !== state.router.currentPage) {
       Sentry.addBreadcrumb({
         type: 'navigation',
         category: 'navigation',
         level: Sentry.Severity.Info,
         data: {
           from: state.router.currentPage,
-          to: tab,
+          to: page,
         },
       });
     }
 
-    return tab;
+    return page;
   });
 
   React.useEffect(() => {
     setTimeout(() => dispatch(loading(false)), 200);
   }, [dispatch]);
 
-  const pageConf = PAGES_CONF[currentTab];
+  const pageConf = PAGES_CONF[currentPage];
   const Component = pageConf.component;
 
   const onBack = () => {
-    const tab = backPages[backPages.length - 1] || PAGES.ROOT;
+    const page = backPages[backPages.length - 1] || PAGES.ROOT;
     dispatch(removeBackPage());
-    dispatch(navigate(tab, { replace: true }));
+    dispatch(navigate(page, { replace: true }));
   };
 
   return (
     <div className={`height ${currentLocale}`}>
       <Menu
         hasBack={
-          currentTab !== window.location.hash.split('#')[1] &&
+          currentPage !== window.location.hash.split('#')[1] &&
           pageConf.menu?.back
         }
         hasClose={pageConf.menu?.close}

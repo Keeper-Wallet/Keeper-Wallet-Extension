@@ -10,49 +10,49 @@ export function Root() {
   const dispatch = useAppDispatch();
   const currentLocale = useAppSelector(state => state.currentLocale);
   const backPages = useAppSelector(state => state.router.backPages);
-  const currentTab = useAppSelector(state => {
+  const currentPage = useAppSelector(state => {
     if (state.localState.loading) {
       return PAGES.INTRO;
     }
 
-    let tab = state.router.currentPage;
+    let page = state.router.currentPage;
 
-    if (!tab && state.state?.locked == null) {
-      tab = PAGES.INTRO;
+    if (!page && state.state?.locked == null) {
+      page = PAGES.INTRO;
     }
 
     if (
       !state.state?.locked &&
-      tab !== PAGES.CHANGE_TX_ACCOUNT &&
+      page !== PAGES.CHANGE_TX_ACCOUNT &&
       state.accounts.length
     ) {
       if (state.activePopup && state.activePopup.msg) {
-        tab = PAGES.MESSAGES;
+        page = PAGES.MESSAGES;
       } else if (state.activePopup && state.activePopup.notify) {
-        tab = PAGES.NOTIFICATIONS;
+        page = PAGES.NOTIFICATIONS;
       } else if (state.messages.length + state.notifications.length) {
-        tab = PAGES.MESSAGES_LIST;
+        page = PAGES.MESSAGES_LIST;
       }
     }
 
-    let canUseTab = !state.state?.locked;
+    let canUsePage = !state.state?.locked;
 
-    switch (tab) {
+    switch (page) {
       case PAGES.NEW:
       case PAGES.INTRO:
-        canUseTab = !state.state?.initialized;
+        canUsePage = !state.state?.initialized;
         break;
       case PAGES.LOGIN:
       case PAGES.FORGOT:
-        canUseTab = Boolean(state.state?.initialized && state.state?.locked);
+        canUsePage = Boolean(state.state?.initialized && state.state?.locked);
         break;
       case PAGES.ASSETS:
-        canUseTab = !state.state?.locked && state.accounts.length !== 0;
+        canUsePage = !state.state?.locked && state.accounts.length !== 0;
         break;
     }
 
-    if (!tab || !canUseTab) {
-      tab = state.state?.locked
+    if (!page || !canUsePage) {
+      page = state.state?.locked
         ? state.state?.initialized
           ? PAGES.LOGIN
           : PAGES.WELCOME
@@ -61,18 +61,18 @@ export function Root() {
         : PAGES.IMPORT_POPUP;
     }
 
-    if (tab !== state.router.currentPage) {
+    if (page !== state.router.currentPage) {
       Sentry.addBreadcrumb({
         type: 'navigation',
         category: 'navigation',
         level: Sentry.Severity.Info,
         data: {
           from: state.router.currentPage,
-          to: tab,
+          to: page,
         },
       });
 
-      if (tab === PAGES.MESSAGES) {
+      if (page === PAGES.MESSAGES) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const { msg } = state.activePopup!;
 
@@ -94,20 +94,20 @@ export function Root() {
       }
     }
 
-    return tab;
+    return page;
   });
 
   React.useEffect(() => {
     setTimeout(() => dispatch(loading(false)), 200);
   }, [dispatch]);
 
-  const pageConf = PAGES_CONF[currentTab];
+  const pageConf = PAGES_CONF[currentPage];
   const Component = pageConf.component;
 
   const onBack = () => {
-    const tab = backPages[backPages.length - 1] || PAGES.ROOT;
+    const page = backPages[backPages.length - 1] || PAGES.ROOT;
     dispatch(removeBackPage());
-    dispatch(navigate(tab, { replace: true }));
+    dispatch(navigate(page, { replace: true }));
   };
 
   return (
