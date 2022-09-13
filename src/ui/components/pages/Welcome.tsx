@@ -3,11 +3,13 @@ import * as React from 'react';
 import { BigLogo } from '../head';
 import { useTranslation } from 'react-i18next';
 import { Button, LangsSelect } from '../ui';
-import { PageComponentProps, PAGES } from '../../pageConfig';
-import { useAppSelector } from 'ui/store';
+import { PAGES } from '../../pageConfig';
+import { useAppDispatch, useAppSelector } from 'ui/store';
 import background from 'ui/services/Background';
+import { navigate } from 'ui/actions/router';
 
-export function Welcome({ pushTab }: PageComponentProps) {
+export function Welcome() {
+  const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const tabMode = useAppSelector(state => state.localState?.tabMode);
 
@@ -19,9 +21,9 @@ export function Welcome({ pushTab }: PageComponentProps) {
         null as any,
         window.location.pathname
       );
-      pushTab(PAGES.NEW);
+      dispatch(navigate(PAGES.NEW));
     }
-  }, [pushTab]);
+  }, [dispatch]);
 
   return (
     <div className={styles.content}>
@@ -38,7 +40,7 @@ export function Welcome({ pushTab }: PageComponentProps) {
               'accounts'
             );
           }
-          pushTab(PAGES.NEW);
+          dispatch(navigate(PAGES.NEW));
         }}
       >
         {t('welcome.getStarted')}

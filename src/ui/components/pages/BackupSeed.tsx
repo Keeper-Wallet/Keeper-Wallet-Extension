@@ -2,11 +2,14 @@ import * as styles from './styles/backupSeed.styl';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Copy, Modal } from '../ui';
-import { PageComponentProps, PAGES } from '../../pageConfig';
+import { PAGES } from '../../pageConfig';
 import { useAccountsSelector } from 'accounts/store';
 import { NewAccountState } from 'ui/reducers/localState';
+import { useAppDispatch } from 'ui/store';
+import { navigate } from 'ui/actions/router';
 
-export function BackUpSeed({ pushTab }: PageComponentProps) {
+export function BackUpSeed() {
+  const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const [showCopy, setShowCopy] = React.useState<boolean>(false);
   const newAccount = useAccountsSelector(
@@ -43,12 +46,19 @@ export function BackUpSeed({ pushTab }: PageComponentProps) {
         id="continue"
         className="margin-main-big"
         type="submit"
-        onClick={() => pushTab(PAGES.CONFIRM_BACKUP)}
+        onClick={() => {
+          dispatch(navigate(PAGES.CONFIRM_BACKUP));
+        }}
       >
         {t('backupSeed.continue')}
       </Button>
 
-      <Button id="cancelCreation" onClick={() => pushTab(PAGES.ROOT)}>
+      <Button
+        id="cancelCreation"
+        onClick={() => {
+          dispatch(navigate(PAGES.ROOT));
+        }}
+      >
         {t('backupSeed.cancel')}
       </Button>
 

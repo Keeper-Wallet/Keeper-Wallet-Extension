@@ -8,6 +8,7 @@ import {
   clearMessagesStatus,
   closeNotificationWindow,
   deleteNotifications,
+  navigate,
   reject,
   updateActiveState,
 } from '../../actions';
@@ -29,6 +30,7 @@ interface StateProps {
 
 interface DispatchProps {
   closeNotificationWindow: () => void;
+  navigate: (page: string | null) => void;
   updateActiveState: () => void;
   deleteNotifications: (
     ids:
@@ -65,7 +67,7 @@ class SelectTxAccountComponent extends React.PureComponent<Props, State> {
       !activeNotification &&
       notifications.length === 0
     ) {
-      props.pushTab(PAGES.ASSETS);
+      props.navigate(PAGES.ASSETS);
       return { loading: false };
     }
 
@@ -139,6 +141,7 @@ const actions = {
   deleteNotifications,
   clearMessagesStatus,
   clearMessages,
+  navigate,
   reject,
 };
 

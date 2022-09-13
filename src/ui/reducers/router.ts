@@ -19,6 +19,9 @@ export function router(state = initialState, action: UiAction): RouterState {
       return {
         ...state,
         currentPage: action.payload.page,
+        backPages: action.payload.replace
+          ? state.backPages
+          : [...state.backPages, state.currentPage].slice(-MAX_HISTORY),
       };
     case ACTION.ADD_BACK_PAGE:
       return {

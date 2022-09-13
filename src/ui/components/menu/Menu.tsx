@@ -2,13 +2,14 @@ import * as React from 'react';
 import * as styles from './menu.styl';
 import { HeadLogo } from '../head';
 import { PAGES } from '../../pageConfig';
+import { useAppDispatch } from 'ui/store';
+import { navigate } from 'ui/actions';
 
 interface Props {
   hasLogo: boolean;
   hasSettings: boolean | undefined;
   hasBack: boolean;
   hasClose: boolean | undefined;
-  pushTab: (tab: string) => void;
   onBack: () => void;
 }
 
@@ -17,9 +18,10 @@ export function Menu({
   hasBack,
   hasLogo,
   hasSettings,
-  pushTab,
   onBack,
 }: Props) {
+  const dispatch = useAppDispatch();
+
   return (
     <div>
       {hasLogo && <HeadLogo />}
@@ -28,12 +30,16 @@ export function Menu({
         <>
           <div
             className={styles.settingsIcon}
-            onClick={() => pushTab(PAGES.SETTINGS)}
+            onClick={() => {
+              dispatch(navigate(PAGES.SETTINGS));
+            }}
           />
 
           <div
             className={styles.navigationIcon}
-            onClick={() => pushTab(PAGES.INFO)}
+            onClick={() => {
+              dispatch(navigate(PAGES.INFO));
+            }}
           />
         </>
       )}

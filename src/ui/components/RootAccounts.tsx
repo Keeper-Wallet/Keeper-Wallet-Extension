@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react';
 import * as React from 'react';
-import { addBackPage, loading, removeBackPage, navigate } from '../actions';
+import { loading, removeBackPage, navigate } from '../actions';
 import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
@@ -73,11 +73,6 @@ export function RootAccounts() {
   const pageConf = PAGES_CONF[currentTab];
   const Component = pageConf.component;
 
-  const pushTab = (tab: string | null) => {
-    dispatch(addBackPage(currentTab));
-    dispatch(navigate(tab, { replace: true }));
-  };
-
   const onBack = () => {
     const backTabFromConf =
       typeof pageConf.menu.back === 'string' ? pageConf.menu.back : null;
@@ -99,15 +94,9 @@ export function RootAccounts() {
         hasClose={pageConf.menu.close}
         hasLogo={pageConf.menu.hasLogo}
         hasSettings={pageConf.menu.hasSettings}
-        pushTab={pushTab}
         onBack={onBack}
       />
-      <Component
-        {...pageConf.props}
-        pushTab={pushTab}
-        onBack={onBack}
-        key={currentTab}
-      />
+      <Component {...pageConf.props} onBack={onBack} key={currentTab} />
       <Bottom {...pageConf.bottom} />
     </div>
   );

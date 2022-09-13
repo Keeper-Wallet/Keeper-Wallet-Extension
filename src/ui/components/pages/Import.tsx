@@ -5,11 +5,13 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
-import { PageComponentProps, PAGES } from '../../pageConfig';
-import { useAppSelector } from '../../store';
+import { PAGES } from '../../pageConfig';
+import { useAppDispatch, useAppSelector } from '../../store';
 import background from 'ui/services/Background';
+import { navigate } from 'ui/actions/router';
 
-export function Import({ pushTab }: PageComponentProps) {
+export function Import() {
+  const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const tabMode = useAppSelector(state => state.localState?.tabMode);
@@ -42,7 +44,9 @@ export function Import({ pushTab }: PageComponentProps) {
             data-testid="createNewAccountBtn"
             type="submit"
             view="submit"
-            onClick={() => pushTab(PAGES.NEW_ACCOUNT)}
+            onClick={() => {
+              dispatch(navigate(PAGES.NEW_ACCOUNT));
+            }}
           >
             {t('import.createNew')}
           </Button>
@@ -61,7 +65,9 @@ export function Import({ pushTab }: PageComponentProps) {
                   data-testid="importDebug"
                   type="button"
                   view="transparent"
-                  onClick={() => pushTab(PAGES.IMPORT_DEBUG)}
+                  onClick={() => {
+                    dispatch(navigate(PAGES.IMPORT_DEBUG));
+                  }}
                 >
                   <svg
                     className={styles.importButtonIcon}
@@ -83,7 +89,9 @@ export function Import({ pushTab }: PageComponentProps) {
                 data-testid="importSeed"
                 type="button"
                 view="transparent"
-                onClick={() => pushTab(PAGES.IMPORT_SEED)}
+                onClick={() => {
+                  dispatch(navigate(PAGES.IMPORT_SEED));
+                }}
               >
                 <svg
                   className={styles.importButtonIcon}
@@ -110,7 +118,9 @@ export function Import({ pushTab }: PageComponentProps) {
                 disabled={!isLedgerSupported}
                 type="button"
                 view="transparent"
-                onClick={() => pushTab(PAGES.IMPORT_LEDGER)}
+                onClick={() => {
+                  dispatch(navigate(PAGES.IMPORT_LEDGER));
+                }}
               >
                 <svg
                   className={styles.importButtonIcon}
@@ -139,7 +149,9 @@ export function Import({ pushTab }: PageComponentProps) {
                 data-testid="importKeystore"
                 type="button"
                 view="transparent"
-                onClick={() => pushTab(PAGES.IMPORT_KEYSTORE)}
+                onClick={() => {
+                  dispatch(navigate(PAGES.IMPORT_KEYSTORE));
+                }}
               >
                 <svg
                   className={styles.importButtonIcon}
@@ -192,7 +204,9 @@ export function Import({ pushTab }: PageComponentProps) {
                   data-testid="importEmail"
                   type="button"
                   view="transparent"
-                  onClick={() => pushTab(PAGES.IMPORT_EMAIL)}
+                  onClick={() => {
+                    dispatch(navigate(PAGES.IMPORT_EMAIL));
+                  }}
                 >
                   <svg
                     className={styles.importButtonIcon}

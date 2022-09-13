@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { AppState } from 'ui/store';
-import { newAccountSelect } from '../../actions';
+import { navigate, newAccountSelect } from '../../actions';
 import { PageComponentProps, PAGES } from '../../pageConfig';
 import { AvatarList, Button } from '../ui';
 import * as styles from './styles/newwallet.styl';
@@ -28,6 +28,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
+  navigate: (page: string | null) => void;
   newAccountSelect: (
     newAccount: SeedAccountData & { name: string; hasBackup: boolean }
   ) => void;
@@ -140,11 +141,12 @@ class NewWalletComponent extends React.Component<Props, State> {
   _onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     e.stopPropagation();
-    this.props.pushTab(PAGES.SAVE_BACKUP);
+    this.props.navigate(PAGES.SAVE_BACKUP);
   }
 }
 
 const actions = {
+  navigate,
   newAccountSelect,
 };
 

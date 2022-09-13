@@ -5,10 +5,11 @@ import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { useTranslation } from 'react-i18next';
 import {
   getBalances,
+  navigate,
   setActiveAccount,
   setSwapScreenInitialState,
 } from 'ui/actions';
-import { PageComponentProps, PAGES } from 'ui/pageConfig';
+import { PAGES } from 'ui/pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import BigNumber from '@waves/bignumber';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
@@ -19,10 +20,9 @@ import { TabAssets } from './assets/tabs/tabAssets';
 import { TabNfts } from './assets/tabs/tabNfts';
 import { TabTxHistory } from './assets/tabs/tabTxHistory';
 import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
-import { PreferencesAccount } from 'preferences/types';
 import { AssetDetail } from 'assets/types';
 
-export function Assets({ pushTab }: PageComponentProps) {
+export function Assets() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -53,11 +53,6 @@ export function Assets({ pushTab }: PageComponentProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
-
-  const onSelectHandler = (account: PreferencesAccount) => {
-    dispatch(setActiveAccount(account));
-    pushTab(PAGES.ACCOUNT_INFO);
-  };
 
   if (!activeAccount) {
     return <Intro />;
@@ -101,14 +96,17 @@ export function Assets({ pushTab }: PageComponentProps) {
             setTimeout(() => setShowCopy(false), 1000);
           }}
           onSwapClick={() => {
-            pushTab(PAGES.SWAP);
+            dispatch(navigate(PAGES.SWAP));
           }}
           onOtherAccountsClick={() => {
-            pushTab(PAGES.OTHER_ACCOUNTS);
+            dispatch(navigate(PAGES.OTHER_ACCOUNTS));
           }}
-          onClick={onSelectHandler}
+          onClick={account => {
+            dispatch(setActiveAccount(account));
+            dispatch(navigate(PAGES.ACCOUNT_INFO));
+          }}
           onShowQr={() => {
-            pushTab(PAGES.QR_CODE_SELECTED);
+            dispatch(navigate(PAGES.QR_CODE_SELECTED));
           }}
         />
       </div>
@@ -127,14 +125,14 @@ export function Assets({ pushTab }: PageComponentProps) {
             }}
             onSendClick={assetId => {
               setCurrentAsset(assets[assetId]);
-              pushTab(PAGES.SEND);
+              dispatch(navigate(PAGES.SEND));
             }}
             onSwapClick={assetId => {
               dispatch(setSwapScreenInitialState({ fromAssetId: assetId }));
-              pushTab(PAGES.SWAP);
+              dispatch(navigate(PAGES.SWAP));
             }}
           />
-          <TabNfts nextTab={pushTab} />
+          <TabNfts />
           <TabTxHistory />
         </TabPanels>
       </Tabs>

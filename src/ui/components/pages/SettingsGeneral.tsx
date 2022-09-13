@@ -2,12 +2,12 @@ import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Select } from '../ui';
-import { setIdle } from '../../actions';
-import { PageComponentProps, PAGES } from '../../pageConfig';
+import { navigate, setIdle } from '../../actions';
+import { PAGES } from '../../pageConfig';
 import cn from 'classnames';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 
-export function SettingsGeneral({ pushTab }: PageComponentProps) {
+export function SettingsGeneral() {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
@@ -52,7 +52,9 @@ export function SettingsGeneral({ pushTab }: PageComponentProps) {
             type="button"
             view="transparent"
             className={styles.settingsBtn}
-            onClick={() => pushTab(PAGES.CHANGE_PASSWORD)}
+            onClick={() => {
+              dispatch(navigate(PAGES.CHANGE_PASSWORD));
+            }}
           >
             <div className="body1 left">{t('settings.password')}</div>
           </Button>

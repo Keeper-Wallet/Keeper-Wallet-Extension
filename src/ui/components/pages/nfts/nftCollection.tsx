@@ -6,7 +6,7 @@ import * as styles from './nftCollection.module.css';
 import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { useTranslation } from 'react-i18next';
-import { setUiState } from 'ui/actions';
+import { navigate, setUiState } from 'ui/actions';
 import { createNft, Nft } from 'nfts/utils';
 import {
   sortAndFilterNfts,
@@ -24,7 +24,7 @@ const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
     } as Nft)
 );
 
-export function NftCollection({ pushTab, onBack }: PageComponentProps) {
+export function NftCollection({ onBack }: PageComponentProps) {
   const { t } = useTranslation();
 
   const currentAddress = useAppSelector(state => state.selectedAccount.address);
@@ -133,7 +133,7 @@ export function NftCollection({ pushTab, onBack }: PageComponentProps) {
             nfts={creatorNfts}
             onClick={nft => {
               setCurrentAsset(nft.asset);
-              pushTab(PAGES.NFT_INFO);
+              dispatch(navigate(PAGES.NFT_INFO));
             }}
           />
         )}

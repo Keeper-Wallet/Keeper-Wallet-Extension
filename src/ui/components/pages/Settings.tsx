@@ -2,12 +2,12 @@ import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, PowerButton } from '../ui';
-import { lock, setUiState } from '../../actions';
-import { PageComponentProps, PAGES } from '../../pageConfig';
+import { lock, navigate, setUiState } from '../../actions';
+import { PAGES } from '../../pageConfig';
 import { Tooltip } from '../ui/tooltip';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 
-export function Settings({ pushTab }: PageComponentProps) {
+export function Settings() {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
@@ -29,7 +29,9 @@ export function Settings({ pushTab }: PageComponentProps) {
             type="button"
             view="transparent"
             className={styles.settingsBtn}
-            onClick={() => pushTab(PAGES.ADDRESS_BOOK)}
+            onClick={() => {
+              dispatch(navigate(PAGES.ADDRESS_BOOK));
+            }}
           >
             <div className="body1 left">{t('address.title')}</div>
           </Button>
@@ -41,7 +43,9 @@ export function Settings({ pushTab }: PageComponentProps) {
             type="button"
             view="transparent"
             className={styles.settingsBtn}
-            onClick={() => pushTab(PAGES.GENERAL_SETTINGS)}
+            onClick={() => {
+              dispatch(navigate(PAGES.GENERAL_SETTINGS));
+            }}
           >
             <div className="body1 left">{t('settings.settingsGeneral')}</div>
           </Button>
@@ -53,7 +57,9 @@ export function Settings({ pushTab }: PageComponentProps) {
             type="button"
             view="transparent"
             className={styles.settingsBtn}
-            onClick={() => pushTab(PAGES.PERMISSIONS)}
+            onClick={() => {
+              dispatch(navigate(PAGES.PERMISSIONS));
+            }}
           >
             <div className="body1 left">{t('settings.permissionsControl')}</div>
           </Button>
@@ -65,7 +71,9 @@ export function Settings({ pushTab }: PageComponentProps) {
             type="button"
             view="transparent"
             className={styles.settingsBtn}
-            onClick={() => pushTab(PAGES.LANGS_SETTINGS)}
+            onClick={() => {
+              dispatch(navigate(PAGES.LANGS_SETTINGS));
+            }}
           >
             <div className="body1 left">{t('settings.langs')}</div>
           </Button>
@@ -77,7 +85,9 @@ export function Settings({ pushTab }: PageComponentProps) {
             type="button"
             view="transparent"
             className={styles.settingsBtn}
-            onClick={() => pushTab(PAGES.NETWORK_SETTINGS)}
+            onClick={() => {
+              dispatch(navigate(PAGES.NETWORK_SETTINGS));
+            }}
           >
             <div className="body1 left">{t('settings.network')}</div>
           </Button>
@@ -90,7 +100,9 @@ export function Settings({ pushTab }: PageComponentProps) {
             type="button"
             view="transparent"
             className={styles.settingsBtn}
-            onClick={() => pushTab(PAGES.EXPORT_AND_IMPORT)}
+            onClick={() => {
+              dispatch(navigate(PAGES.EXPORT_AND_IMPORT));
+            }}
           >
             <div className="body1 left">{t('settings.exportAndImport')}</div>
           </Button>
@@ -194,7 +206,9 @@ export function Settings({ pushTab }: PageComponentProps) {
           <div>
             <div
               className={styles.deleteAccounts}
-              onClick={() => pushTab(PAGES.DELETE_ACCOUNT)}
+              onClick={() => {
+                dispatch(navigate(PAGES.DELETE_ACCOUNT));
+              }}
             >
               <i className={styles.icon}> </i>
               <span>{t('settings.deleteAccounts')}</span>
@@ -204,7 +218,7 @@ export function Settings({ pushTab }: PageComponentProps) {
             <div
               className={styles.logout}
               onClick={() => {
-                pushTab(null);
+                dispatch(navigate(null));
                 dispatch(lock());
               }}
             >

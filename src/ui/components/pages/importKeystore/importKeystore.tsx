@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { seedUtils } from '@waves/waves-transactions';
 import { KeystoreProfiles } from 'keystore/types';
 import { getNetworkByNetworkCode } from 'ui/utils/waves';
-import { PageComponentProps, PAGES } from '../../../pageConfig';
+import { PAGES } from '../../../pageConfig';
 import { ImportKeystoreChooseFile } from './chooseFile';
 import { ImportKeystoreChooseAccounts } from './chooseAccounts';
 import { batchAddAccounts } from 'ui/actions/user';
 import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
+import { navigate } from 'ui/actions';
 
 type ExchangeKeystoreAccount = {
   address: string;
@@ -113,7 +114,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
 
 const suffixRe = /\((\d+)\)$/;
 
-export function ImportKeystore({ pushTab }: PageComponentProps) {
+export function ImportKeystore() {
   const dispatch = useAppDispatch();
   const allNetworksAccounts = useAppSelector(
     state => state.allNetworksAccounts
@@ -206,7 +207,7 @@ export function ImportKeystore({ pushTab }: PageComponentProps) {
       allNetworksAccounts={allNetworksAccounts}
       profiles={profiles}
       onSkip={() => {
-        pushTab(PAGES.ROOT);
+        dispatch(navigate(PAGES.ROOT));
       }}
       onSubmit={selectedAccounts => {
         dispatch(

@@ -4,7 +4,7 @@ import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { BigLogo } from '../head';
 import { Button, Error, Input } from '../ui';
-import { login } from '../../actions';
+import { login, navigate } from '../../actions';
 import { PageComponentProps, PAGES } from '../../pageConfig';
 import { AppState } from 'ui/store';
 
@@ -14,6 +14,7 @@ interface StateProps {
 
 interface DispatchProps {
   login: (password: string) => void;
+  navigate: (page: string | null) => void;
 }
 
 type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
@@ -46,8 +47,6 @@ class LoginComponent extends React.Component<Props, State> {
   onChange = (e: React.ChangeEvent<HTMLInputElement>) => this._onChange(e);
 
   onSubmit = (e: React.FormEvent<HTMLFormElement>) => this._onSubmit(e);
-
-  forgotHandler = () => this.props.pushTab(PAGES.FORGOT);
 
   render() {
     const { t } = this.props;
@@ -88,7 +87,12 @@ class LoginComponent extends React.Component<Props, State> {
           </Button>
         </form>
         <div>
-          <div className={styles.forgotLnk} onClick={this.forgotHandler}>
+          <div
+            className={styles.forgotLnk}
+            onClick={() => {
+              this.props.navigate(PAGES.FORGOT);
+            }}
+          >
             {t('login.passwordForgot')}
           </div>
         </div>
@@ -109,6 +113,7 @@ class LoginComponent extends React.Component<Props, State> {
 
 const actions = {
   login,
+  navigate,
 };
 
 const mapStateToProps = function ({ localState }: AppState): StateProps {

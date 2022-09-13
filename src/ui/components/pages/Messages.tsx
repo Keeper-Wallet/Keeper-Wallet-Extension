@@ -12,6 +12,7 @@ import {
   clearMessagesStatus,
   closeNotificationWindow,
   getAsset,
+  navigate,
   reject,
   rejectForever,
   setAutoOrigin,
@@ -53,6 +54,7 @@ const actions = {
   clearMessagesStatus,
   closeNotificationWindow,
   getAsset,
+  navigate,
   reject,
   rejectForever,
   setAutoOrigin,
@@ -64,6 +66,7 @@ interface DispatchProps {
   clearMessagesStatus: (perform: boolean) => void;
   closeNotificationWindow: () => void;
   getAsset: (assetId: string) => void;
+  navigate: (page: string | null) => void;
   reject: (id: string) => void;
   rejectForever: (id: string) => void;
   setAutoOrigin: (permissions: {
@@ -245,8 +248,6 @@ class MessagesComponent extends React.Component<Props, State> {
 
   nextHandler = (e: unknown) => this.updateActiveMessages(e, true);
 
-  selectAccountHandler = () => this.props.pushTab(PAGES.CHANGE_TX_ACCOUNT);
-
   componentDidCatch() {
     this.reject();
   }
@@ -296,7 +297,9 @@ class MessagesComponent extends React.Component<Props, State> {
         reject={this.rejectHandler}
         rejectForever={this.rejectForeverHandler}
         approve={this.approveHandler}
-        selectAccount={this.selectAccountHandler}
+        selectAccount={() => {
+          this.props.navigate(PAGES.CHANGE_TX_ACCOUNT);
+        }}
       />
     );
   }
@@ -353,7 +356,7 @@ class MessagesComponent extends React.Component<Props, State> {
     }
 
     this.props.clearMessagesStatus(!isNext);
-    this.props.pushTab(PAGES.ROOT);
+    this.props.navigate(PAGES.ROOT);
     this.hasApproved = false;
   }
 }

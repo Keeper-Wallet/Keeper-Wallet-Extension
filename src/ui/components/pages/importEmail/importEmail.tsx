@@ -5,11 +5,11 @@ import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { Login } from './login';
-import { newAccountSelect } from '../../../actions';
-import { PageComponentProps, PAGES } from '../../../pageConfig';
+import { navigate, newAccountSelect } from '../../../actions';
+import { PAGES } from '../../../pageConfig';
 import { IdentityUser } from 'controllers/IdentityController';
 
-export function ImportEmail({ pushTab }: PageComponentProps) {
+export function ImportEmail() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
@@ -42,9 +42,9 @@ export function ImportEmail({ pushTab }: PageComponentProps) {
         })
       );
 
-      pushTab(PAGES.ACCOUNT_NAME_SEED);
+      dispatch(navigate(PAGES.ACCOUNT_NAME_SEED));
     },
-    [dispatch, pushTab]
+    [dispatch]
   );
 
   return (

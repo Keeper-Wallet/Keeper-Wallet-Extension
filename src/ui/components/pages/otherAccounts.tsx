@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Asset, Money } from '@waves/data-entities';
 import { compareAccountsByLastUsed } from 'preferences/utils';
 import { setActiveAccount } from 'ui/actions/assets';
-import { PageComponentProps, PAGES } from 'ui/pageConfig';
+import { PAGES } from 'ui/pageConfig';
 import { selectAccount } from 'ui/actions/localState';
 import { AccountCard } from '../accounts/accountCard';
 import * as styles from './otherAccounts.module.css';
@@ -12,7 +12,7 @@ import { SearchInput } from 'ui/components/ui/searchInput/searchInput';
 import background from 'ui/services/Background';
 import { navigate } from 'ui/actions';
 
-export function OtherAccountsPage({ pushTab }: PageComponentProps) {
+export function OtherAccountsPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
@@ -91,7 +91,7 @@ export function OtherAccountsPage({ pushTab }: PageComponentProps) {
               }}
               onInfoClick={account => {
                 dispatch(setActiveAccount(account));
-                pushTab(PAGES.ACCOUNT_INFO);
+                dispatch(navigate(PAGES.ACCOUNT_INFO));
               }}
             />
           ))

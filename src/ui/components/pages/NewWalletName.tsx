@@ -11,9 +11,9 @@ import { Button, Error, Input } from 'ui/components/ui';
 import { CONFIG } from 'ui/appConfig';
 import { WalletTypes } from 'ui/services/Background';
 import { useAccountsSelector, useAppDispatch } from 'accounts/store';
-import { PageComponentProps, PAGES } from 'ui/pageConfig';
+import { PAGES } from 'ui/pageConfig';
 
-export function NewWalletName({ pushTab }: PageComponentProps) {
+export function NewWalletName() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -63,7 +63,8 @@ export function NewWalletName({ pushTab }: PageComponentProps) {
 
           if (existedAccount) {
             dispatch(selectAccount(existedAccount));
-            return pushTab(PAGES.IMPORT_SUCCESS);
+            dispatch(navigate(PAGES.IMPORT_SUCCESS));
+            return;
           }
 
           if (error) {

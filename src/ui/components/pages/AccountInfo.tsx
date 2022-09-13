@@ -4,7 +4,7 @@ import { WithTranslation, withTranslation } from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
 import { Avatar, Balance, Button, CopyText, Error, Input, Modal } from '../ui';
 import background from '../../services/Background';
-import { getAsset } from '../../actions';
+import { getAsset, navigate } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
 import { PageComponentProps, PAGES } from '../../pageConfig';
 import { getAccountLink } from '../../urls';
@@ -34,6 +34,7 @@ interface StateProps {
 
 interface DispatchProps {
   getAsset: (assetId: string) => void;
+  navigate: (page: string | null) => void;
 }
 
 interface Props
@@ -104,12 +105,12 @@ class AccountInfoComponent extends React.Component<Props, State> {
   inputPassword = (event: React.ChangeEvent<HTMLInputElement>) =>
     this.setState({ password: event.target.value, passwordError: false });
 
-  editNameHandler = () => this.props.pushTab(PAGES.CHANGE_ACCOUNT_NAME);
+  editNameHandler = () => this.props.navigate(PAGES.CHANGE_ACCOUNT_NAME);
 
   onCopyHandler = () => this.setCopiedModal();
 
   onDeleteHandler = () => {
-    this.props.pushTab(PAGES.DELETE_ACTIVE_ACCOUNT);
+    this.props.navigate(PAGES.DELETE_ACTIVE_ACCOUNT);
   };
 
   render() {
@@ -493,6 +494,7 @@ const mapStateToProps = function (store: AppState): StateProps {
 
 const actions = {
   getAsset,
+  navigate,
 };
 
 export const AccountInfo = connect(

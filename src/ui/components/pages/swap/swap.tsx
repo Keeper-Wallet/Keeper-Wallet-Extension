@@ -8,17 +8,18 @@ import { useAssetIdByTicker } from 'assets/utils';
 import { convertFeeToAsset } from 'fee/utils';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { navigate } from 'ui/actions';
 import { updateAssets } from 'ui/actions/assets';
 import { resetSwapScreenInitialState } from 'ui/actions/localState';
 import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
-import { PageComponentProps, PAGES } from 'ui/pageConfig';
+import { PAGES } from 'ui/pageConfig';
 import background from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { SwapForm, OnSwapParams } from './form';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
 
-export function Swap({ pushTab }: PageComponentProps) {
+export function Swap() {
   const { t } = useTranslation();
 
   const dispatch = useAppDispatch();
@@ -125,7 +126,7 @@ export function Swap({ pushTab }: PageComponentProps) {
         fromMoney={performedSwapData.fromMoney}
         transactionId={performedSwapData.transactionId}
         onClose={() => {
-          pushTab(PAGES.ROOT);
+          dispatch(navigate(PAGES.ROOT));
         }}
       />
     );

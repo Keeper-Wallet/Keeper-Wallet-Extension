@@ -4,7 +4,7 @@ import cn from 'classnames';
 import * as React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { newAccountSelect, selectAccount } from '../../actions';
+import { navigate, newAccountSelect, selectAccount } from '../../actions';
 import {
   Button,
   Error,
@@ -43,7 +43,7 @@ function stripBase58Prefix(str: string) {
   return str.replace(/^base58:/, '');
 }
 
-export function ImportSeed({ isNew, pushTab }: Props) {
+export function ImportSeed({ isNew }: Props) {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const accounts = useAppSelector(state => state.accounts);
@@ -220,7 +220,8 @@ export function ImportSeed({ isNew, pushTab }: Props) {
 
           if (showValidationError && existedAccount) {
             dispatch(selectAccount(existedAccount));
-            return pushTab(PAGES.IMPORT_SUCCESS);
+            dispatch(navigate(PAGES.IMPORT_SUCCESS));
+            return;
           }
 
           setShowValidationError(true);
@@ -261,7 +262,7 @@ export function ImportSeed({ isNew, pushTab }: Props) {
             );
           }
 
-          pushTab(PAGES.ACCOUNT_NAME_SEED);
+          dispatch(navigate(PAGES.ACCOUNT_NAME_SEED));
         }}
       >
         <Tabs

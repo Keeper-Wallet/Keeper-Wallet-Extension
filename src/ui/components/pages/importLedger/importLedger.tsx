@@ -2,11 +2,12 @@ import cn from 'classnames';
 import { ledgerService, LedgerServiceStatus } from 'ledger/service';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { navigate } from 'ui/actions';
 import { newAccountSelect } from 'ui/actions/localState';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Error } from 'ui/components/ui/error';
 import { Input } from 'ui/components/ui/input';
-import { PageComponentProps, PAGES } from 'ui/pageConfig';
+import { PAGES } from 'ui/pageConfig';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { LedgerAvatarList } from './avatarList';
 import * as styles from './importLedger.module.css';
@@ -45,7 +46,7 @@ interface LedgerUser {
   statusCode: string;
 }
 
-export function ImportLedger({ pushTab }: PageComponentProps) {
+export function ImportLedger() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
@@ -326,7 +327,7 @@ export function ImportLedger({ pushTab }: PageComponentProps) {
                 })
               );
 
-              pushTab(PAGES.ACCOUNT_NAME_SEED);
+              dispatch(navigate(PAGES.ACCOUNT_NAME_SEED));
             }}
           >
             {t('importLedger.continueButton')}

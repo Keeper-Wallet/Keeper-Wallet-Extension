@@ -9,6 +9,7 @@ import {
 import {
   closeNotificationWindow,
   deleteNotifications,
+  navigate,
   setActiveNotification,
   setShowNotification,
 } from '../../actions';
@@ -62,6 +63,7 @@ interface StateProps {
 
 interface DispatchProps {
   closeNotificationWindow: () => void;
+  navigate: (page: string | null) => void;
   setShowNotification: (permissions: {
     origin: string;
     canUse: boolean | null;
@@ -99,7 +101,7 @@ class NotificationsComponent extends React.Component<Props, State> {
   ): Partial<State> | null {
     const { origins, activeNotification, messages, notifications } = props;
     if (!activeNotification && notifications.length) {
-      props.pushTab(PAGES.MESSAGES_LIST);
+      props.navigate(PAGES.MESSAGES_LIST);
       return { loading: true };
     }
 
@@ -141,7 +143,7 @@ class NotificationsComponent extends React.Component<Props, State> {
 
   toListHandler = () => {
     (this._deleteMessages(null) as unknown as Promise<void>).then(() =>
-      this.props.pushTab(PAGES.MESSAGES_LIST)
+      this.props.navigate(PAGES.MESSAGES_LIST)
     );
   };
 
@@ -158,8 +160,6 @@ class NotificationsComponent extends React.Component<Props, State> {
     )[0];
     this._deleteMessages(nextNotification || null);
   };
-
-  selectAccountHandler = () => this.props.pushTab(PAGES.CHANGE_TX_ACCOUNT);
 
   componentDidCatch() {
     this.toListHandler();
@@ -184,7 +184,9 @@ class NotificationsComponent extends React.Component<Props, State> {
         <div className={styles.walletWrapper}>
           <TransactionWallet
             type="clean"
-            onSelect={this.selectAccountHandler}
+            onSelect={() => {
+              this.props.navigate(PAGES.CHANGE_TX_ACCOUNT);
+            }}
             account={this.props.selectedAccount}
             hideButton={false}
           />
@@ -272,6 +274,7 @@ const mapStateToProps = function (store: AppState): StateProps {
 
 const actions = {
   closeNotificationWindow,
+  navigate,
   setActiveNotification,
   setShowNotification,
   deleteNotifications,

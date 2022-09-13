@@ -6,6 +6,7 @@ import { Button, Error, Pills, PillsListItem } from '../ui';
 import { AppState } from 'ui/store';
 import { PageComponentProps, PAGES } from 'ui/pageConfig';
 import { NewAccountState } from 'ui/reducers/localState';
+import { navigate } from 'ui/actions/router';
 
 const SHUFFLE_COUNT = 500;
 
@@ -13,7 +14,11 @@ interface StateProps {
   account: Extract<NewAccountState, { type: 'seed' }>;
 }
 
-type Props = WithTranslation & PageComponentProps & StateProps;
+interface DispatchProps {
+  navigate: (page: string | null) => void;
+}
+
+type Props = WithTranslation & PageComponentProps & StateProps & DispatchProps;
 
 interface State {
   seed: string | null;
@@ -125,7 +130,7 @@ class ConfirmBackupComponent extends React.Component<Props, State> {
   private _onSubmit(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     this.setState({ disabled: true });
-    this.props.pushTab(PAGES.ACCOUNT_NAME);
+    this.props.navigate(PAGES.ACCOUNT_NAME);
   }
 
   private _onSelect({ text, id }: PillsListItem) {
@@ -170,6 +175,6 @@ const mapStateToProps = (state: AppState): StateProps => {
   };
 };
 
-export const ConfirmBackup = connect(mapStateToProps)(
+export const ConfirmBackup = connect(mapStateToProps, { navigate })(
   withTranslation()(ConfirmBackupComponent)
 );
