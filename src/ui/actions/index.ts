@@ -1,6 +1,6 @@
 export * from './constants';
 export * from './uiState';
-export * from './setTab';
+export * from './tabs';
 export * from './localState';
 export * from './network';
 export * from './balances';
