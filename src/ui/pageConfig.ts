@@ -108,8 +108,7 @@ interface PageMenuConfig {
   hasLogo: boolean;
   hasSettings?: boolean;
   back: string | boolean | null;
-  deleteAccount?: boolean;
-  close?: unknown;
+  close?: boolean;
 }
 
 interface PageBottomConfig {
@@ -438,7 +437,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       hasLogo: true,
       hasSettings: false,
       back: true,
-      deleteAccount: false,
     },
   },
   [PAGES.DELETE_ACTIVE_ACCOUNT]: {

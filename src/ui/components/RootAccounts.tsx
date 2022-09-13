@@ -87,25 +87,19 @@ export function RootAccounts() {
     dispatch(navigate(tab, { replace: true }));
   };
 
-  const onDelete = () => {
-    pushTab(PAGES.DELETE_ACTIVE_ACCOUNT);
-  };
-
   return (
     <div className={`height ${currentLocale}`}>
       <Menu
-        deleteAccount={pageConf.menu.deleteAccount}
         hasBack={
           currentTab !== window.location.hash.split('#')[1] &&
           pageConf.menu.back !== null &&
           (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back)
         }
-        hasClose={!!pageConf.menu.close}
+        hasClose={pageConf.menu.close}
         hasLogo={pageConf.menu.hasLogo}
         hasSettings={pageConf.menu.hasSettings}
         pushTab={pushTab}
         onBack={onBack}
-        onDelete={onDelete}
       />
       <Component
         {...pageConf.props}
