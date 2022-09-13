@@ -26,10 +26,6 @@ export function RootAccounts() {
       tab = PAGES.INTRO;
     }
 
-    if (!tab && state.state?.locked) {
-      tab = PAGES.WELCOME;
-    }
-
     let canUseTab = !state.state?.locked;
 
     switch (tab) {

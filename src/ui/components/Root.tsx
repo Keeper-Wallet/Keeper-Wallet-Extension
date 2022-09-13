@@ -35,10 +35,6 @@ export function Root() {
       }
     }
 
-    if (!tab && state.state?.locked) {
-      tab = PAGES.WELCOME;
-    }
-
     let canUseTab = !state.state?.locked;
 
     switch (tab) {
