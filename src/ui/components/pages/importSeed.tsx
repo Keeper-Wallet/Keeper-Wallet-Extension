@@ -15,13 +15,9 @@ import {
   TabPanels,
   Tabs,
 } from '../ui';
-import { PageComponentProps, PAGES } from '../../pageConfig';
+import { PAGES } from '../../pageConfig';
 import * as styles from './importSeed.module.css';
 import { InlineButton } from '../ui/buttons/inlineButton';
-
-interface Props extends PageComponentProps {
-  isNew?: boolean;
-}
 
 const SEED_MIN_LENGTH = 24;
 const ENCODED_SEED_MIN_LENGTH = 16;
@@ -43,36 +39,23 @@ function stripBase58Prefix(str: string) {
   return str.replace(/^base58:/, '');
 }
 
-export function ImportSeed({ isNew }: Props) {
+export function ImportSeed() {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const accounts = useAppSelector(state => state.accounts);
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const customCodes = useAppSelector(state => state.customCodes);
   const networks = useAppSelector(state => state.networks);
-  const newAccount = useAppSelector(state => state.localState.newAccount);
 
-  const [activeTab, setActiveTab] = React.useState(
-    isNew || newAccount.type === 'seed'
-      ? SEED_TAB_INDEX
-      : newAccount.type === 'encodedSeed'
-      ? ENCODED_SEED_TAB_INDEX
-      : PRIVATE_KEY_TAB_INDEX
-  );
+  const [activeTab, setActiveTab] = React.useState(SEED_TAB_INDEX);
 
   const [showValidationError, setShowValidationError] = React.useState(false);
 
-  const [seedValue, setSeedValue] = React.useState<string>(
-    isNew || newAccount.type !== 'seed' ? '' : newAccount.seed
-  );
+  const [seedValue, setSeedValue] = React.useState<string>('');
 
-  const [encodedSeedValue, setEncodedSeedValue] = React.useState<string>(
-    isNew || newAccount.type !== 'encodedSeed' ? '' : newAccount.encodedSeed
-  );
+  const [encodedSeedValue, setEncodedSeedValue] = React.useState<string>('');
 
-  const [privateKeyValue, setPrivateKeyValue] = React.useState<string>(
-    isNew || newAccount.type !== 'privateKey' ? '' : newAccount.privateKey
-  );
+  const [privateKeyValue, setPrivateKeyValue] = React.useState<string>('');
 
   const networkCode =
     customCodes[currentNetwork] ||

@@ -296,20 +296,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
   },
   [PAGES.IMPORT_SEED]: {
     component: ImportSeed,
-    props: {
-      isNew: true,
-    },
-    bottom: {
-      noChangeNetwork: true,
-    },
-    menu: {
-      hasLogo: true,
-      hasSettings: false,
-      back: true,
-    },
-  },
-  [PAGES.IMPORT_SEED_BACK]: {
-    component: ImportSeed,
     bottom: {
       noChangeNetwork: true,
     },
