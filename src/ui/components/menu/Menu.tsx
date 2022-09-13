@@ -71,15 +71,15 @@ const Close = ({
 };
 
 export const Menu = ({
-  setTab,
+  pushTab,
   onBack,
   hasClose = false,
   hasBack = false,
   onDelete,
   ...props
 }: IProps) => {
-  const leftClick = () => setTab(PAGES.SETTINGS);
-  const rightClick = () => setTab(PAGES.INFO);
+  const leftClick = () => pushTab(PAGES.SETTINGS);
+  const rightClick = () => pushTab(PAGES.INFO);
   const navBack = () => onBack();
 
   return (
@@ -99,7 +99,7 @@ interface IProps {
   hasBack: boolean;
   hasClose: boolean;
   deleteAccount: boolean | undefined;
-  setTab: (tab: string) => void;
+  pushTab: (tab: string) => void;
   onBack: () => void;
   onDelete: () => void;
 }

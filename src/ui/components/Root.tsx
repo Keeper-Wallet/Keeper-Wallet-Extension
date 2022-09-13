@@ -137,7 +137,7 @@ export function Root() {
         hasClose={!!pageConf.menu.close}
         hasLogo={pageConf.menu.hasLogo}
         hasSettings={pageConf.menu.hasSettings}
-        setTab={pushTab}
+        pushTab={pushTab}
         onBack={onBack}
         onDelete={onDelete}
       />
