@@ -20,7 +20,7 @@ export function addBackPage(page: string | null) {
   };
 }
 
-export function removeBackTab() {
+export function removeBackPage() {
   return {
     type: ACTION.REMOVE_BACK_PAGE,
   };
