@@ -116,7 +116,6 @@ interface PageConfig {
   component: React.ComponentType<PageComponentProps>;
   bottom?: PageBottomConfig;
   menu?: PageMenuConfig;
-  props?: Record<never, unknown>;
 }
 
 export const PAGES_CONF: Record<string, PageConfig> = {

@@ -91,7 +91,7 @@ export function RootAccounts() {
         hasSettings={pageConf.menu?.hasSettings}
         onBack={onBack}
       />
-      <Component {...pageConf.props} onBack={onBack} key={currentTab} />
+      <Component onBack={onBack} key={currentTab} />
       <Bottom {...pageConf.bottom} />
     </div>
   );
