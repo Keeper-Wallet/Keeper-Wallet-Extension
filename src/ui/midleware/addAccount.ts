@@ -1,11 +1,11 @@
-import { ACTION, addBackPage, selectAccount, navigate } from '../actions';
+import { ACTION, selectAccount, navigate } from '../actions';
 import background, { WalletTypes } from '../services/Background';
 import { PAGES } from 'ui/pageConfig';
 import { UiMiddleware } from 'ui/store';
 
 export const addAccount: UiMiddleware = store => next => action => {
   const { type, payload, meta } = action;
-  const { currentNetwork, networks, router } = store.getState();
+  const { currentNetwork, networks } = store.getState();
 
   if (type === ACTION.SAVE_NEW_ACCOUNT) {
     const networkCode = (
@@ -20,9 +20,7 @@ export const addAccount: UiMiddleware = store => next => action => {
       })
       .then(lastAccount => {
         store.dispatch(selectAccount(lastAccount));
-
-        store.dispatch(addBackPage(router.currentPage));
-        store.dispatch(navigate(PAGES.IMPORT_SUCCESS, { replace: true }));
+        store.dispatch(navigate(PAGES.IMPORT_SUCCESS));
 
         if (meta.type !== WalletTypes.Debug) {
           background.sendEvent('addWallet', { type: meta.type });
@@ -33,8 +31,7 @@ export const addAccount: UiMiddleware = store => next => action => {
   if (type === ACTION.BATCH_ADD_ACCOUNTS) {
     Promise.all(payload.map(account => background.addWallet(account))).then(
       () => {
-        store.dispatch(addBackPage(router.currentPage));
-        store.dispatch(navigate(PAGES.IMPORT_SUCCESS, { replace: true }));
+        store.dispatch(navigate(PAGES.IMPORT_SUCCESS));
 
         if (meta.type !== WalletTypes.Debug) {
           background.sendEvent('addWallet', { type: meta.type });
