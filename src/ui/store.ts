@@ -604,7 +604,7 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.ADD_BACK_TAB;
+      type: typeof ACTION.ADD_BACK_PAGE;
       payload: string | null;
       meta?: never;
     }

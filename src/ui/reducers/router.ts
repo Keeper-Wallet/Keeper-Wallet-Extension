@@ -17,7 +17,7 @@ export function backTabs(
   { type, payload }: UiAction
 ) {
   switch (type) {
-    case ACTION.ADD_BACK_TAB:
+    case ACTION.ADD_BACK_PAGE:
       return [...state, payload].slice(-MAX_HISTORY);
     case ACTION.REMOVE_BACK_TAB:
       return state.slice(0, -1);

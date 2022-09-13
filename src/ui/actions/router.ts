@@ -15,7 +15,7 @@ export function navigate(
 
 export function addBackTab(tab: string | null) {
   return {
-    type: ACTION.ADD_BACK_TAB,
+    type: ACTION.ADD_BACK_PAGE,
     payload: tab,
   };
 }
