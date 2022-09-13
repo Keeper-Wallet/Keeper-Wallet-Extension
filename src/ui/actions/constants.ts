@@ -3,7 +3,7 @@ import { UiAction, UiActionPayload } from 'ui/store';
 export const ACTION = {
   CHANGE_LNG: 'CHANGE_LNG',
   CHANGE_MENU: 'CHANGE_MENU',
-  CHANGE_TAB: 'CHANGE_TAB',
+  NAVIGATE: 'NAVIGATE',
   ADD_BACK_TAB: 'ADD_BACK_TAB',
   REMOVE_BACK_TAB: 'REMOVE_BACK_TAB',
   CHANGE_NETWORK: 'CHANGE_NETWORK',

@@ -199,7 +199,7 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.CHANGE_TAB;
+      type: typeof ACTION.NAVIGATE;
       payload: string | null;
       meta?: never;
     }
