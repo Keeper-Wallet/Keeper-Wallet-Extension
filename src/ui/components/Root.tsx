@@ -119,7 +119,7 @@ export function Root() {
         hasSettings={pageConf.menu?.hasSettings}
         onBack={onBack}
       />
-      <Component onBack={onBack} key={currentTab} />
+      <Component onBack={onBack} />
       <Bottom
         hide={pageConf.bottom?.hide}
         noChangeNetwork={pageConf.bottom?.noChangeNetwork}
