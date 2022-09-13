@@ -11,8 +11,7 @@ export * from './feeConfig';
 export * from './nftConfig';
 export * from './remoteConfig';
 export * from './notifications';
-
-const MAX_HISTORY = 10;
+export * from './tabs';
 
 function createSimpleReducer<TActionType extends UiAction['type']>(
   initialState: UiActionPayload<TActionType>,
@@ -25,8 +24,6 @@ function createSimpleReducer<TActionType extends UiAction['type']>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (actionType === action.type ? action.payload : state) as any;
 }
-
-export const tab = createSimpleReducer(null, ACTION.CHANGE_TAB);
 
 export type AssetFilters = {
   term?: string;
@@ -125,18 +122,5 @@ export const assetLogos = createSimpleReducer({}, ACTION.SET_ASSET_LOGOS);
 export const assetTickers = createSimpleReducer({}, ACTION.SET_ASSET_TICKERS);
 export const addresses = createSimpleReducer({}, ACTION.UPDATE_ADDRESSES);
 export const nfts = createSimpleReducer(null, ACTION.UPDATE_NFTS);
-
-export const backTabs = (
-  state: string[] = [],
-  { type, payload }: { type: string; payload: string }
-) => {
-  if (type === ACTION.ADD_BACK_TAB) {
-    state = [...state, payload].slice(-MAX_HISTORY);
-  } else if (type === ACTION.REMOVE_BACK_TAB) {
-    state = state.slice(0, -1);
-  }
-
-  return state;
-};
 
 export const version = (state = '') => state;
