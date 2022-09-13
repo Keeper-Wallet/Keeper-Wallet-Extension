@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react';
 import * as React from 'react';
-import { addBackTab, loading, removeBackTab, navigate } from '../actions';
+import { addBackPage, loading, removeBackTab, navigate } from '../actions';
 import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
@@ -109,7 +109,7 @@ export function Root() {
   const Component = pageConf.component;
 
   const pushTab = (tab: string | null) => {
-    dispatch(addBackTab(currentTab));
+    dispatch(addBackPage(currentTab));
     dispatch(navigate(tab, { replace: true }));
   };
 

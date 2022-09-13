@@ -1,4 +1,4 @@
-import { ACTION, addBackTab, selectAccount, navigate } from '../actions';
+import { ACTION, addBackPage, selectAccount, navigate } from '../actions';
 import background, { WalletTypes } from '../services/Background';
 import { PAGES } from 'ui/pageConfig';
 import { UiMiddleware } from 'ui/store';
@@ -21,7 +21,7 @@ export const addAccount: UiMiddleware = store => next => action => {
       .then(lastAccount => {
         store.dispatch(selectAccount(lastAccount));
 
-        store.dispatch(addBackTab(currentTab));
+        store.dispatch(addBackPage(currentTab));
         store.dispatch(navigate(PAGES.IMPORT_SUCCESS, { replace: true }));
 
         if (meta.type !== WalletTypes.Debug) {
@@ -33,7 +33,7 @@ export const addAccount: UiMiddleware = store => next => action => {
   if (type === ACTION.BATCH_ADD_ACCOUNTS) {
     Promise.all(payload.map(account => background.addWallet(account))).then(
       () => {
-        store.dispatch(addBackTab(currentTab));
+        store.dispatch(addBackPage(currentTab));
         store.dispatch(navigate(PAGES.IMPORT_SUCCESS, { replace: true }));
 
         if (meta.type !== WalletTypes.Debug) {

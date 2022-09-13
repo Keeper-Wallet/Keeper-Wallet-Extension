@@ -13,10 +13,10 @@ export function navigate(
   };
 }
 
-export function addBackTab(tab: string | null) {
+export function addBackPage(page: string | null) {
   return {
     type: ACTION.ADD_BACK_PAGE,
-    payload: tab,
+    payload: page,
   };
 }
 

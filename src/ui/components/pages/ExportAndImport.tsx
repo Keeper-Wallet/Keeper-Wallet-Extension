@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from 'ui/store';
 import background from 'ui/services/Background';
-import { addBackTab, navigate } from '../../actions';
+import { addBackPage, navigate } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Button } from '../ui';
 import { downloadKeystore } from '../../../keystore/utils';
@@ -33,7 +33,7 @@ export function ExportAndImport() {
         type="button"
         view="transparent"
         onClick={() => {
-          dispatch(addBackTab(PAGES.EXPORT_AND_IMPORT));
+          dispatch(addBackPage(PAGES.EXPORT_AND_IMPORT));
           dispatch(navigate(PAGES.EXPORT_ACCOUNTS, { replace: true }));
         }}
       >
@@ -59,7 +59,7 @@ export function ExportAndImport() {
         type="button"
         view="transparent"
         onClick={() => {
-          dispatch(addBackTab(PAGES.EXPORT_AND_IMPORT));
+          dispatch(addBackPage(PAGES.EXPORT_AND_IMPORT));
           dispatch(navigate(PAGES.EXPORT_ADDRESS_BOOK, { replace: true }));
         }}
       >
