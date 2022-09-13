@@ -19,7 +19,7 @@ export function backTabs(
   switch (type) {
     case ACTION.ADD_BACK_PAGE:
       return [...state, payload].slice(-MAX_HISTORY);
-    case ACTION.REMOVE_BACK_TAB:
+    case ACTION.REMOVE_BACK_PAGE:
       return state.slice(0, -1);
     default:
       return state;

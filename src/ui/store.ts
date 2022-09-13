@@ -609,7 +609,7 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.REMOVE_BACK_TAB;
+      type: typeof ACTION.REMOVE_BACK_PAGE;
       payload?: never;
       meta?: never;
     };

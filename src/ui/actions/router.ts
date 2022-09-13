@@ -22,6 +22,6 @@ export function addBackTab(tab: string | null) {
 
 export function removeBackTab() {
   return {
-    type: ACTION.REMOVE_BACK_TAB,
+    type: ACTION.REMOVE_BACK_PAGE,
   };
 }
