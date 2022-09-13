@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from 'ui/store';
 export function Root() {
   const dispatch = useAppDispatch();
   const currentLocale = useAppSelector(state => state.currentLocale);
-  const backTabs = useAppSelector(state => state.backTabs);
+  const backPages = useAppSelector(state => state.backPages);
   const currentTab = useAppSelector(state => {
     if (state.localState.loading) {
       return PAGES.INTRO;
@@ -117,7 +117,8 @@ export function Root() {
     const backTabFromConf =
       typeof pageConf.menu.back === 'string' ? pageConf.menu.back : null;
 
-    const tab = backTabFromConf || backTabs[backTabs.length - 1] || PAGES.ROOT;
+    const tab =
+      backTabFromConf || backPages[backPages.length - 1] || PAGES.ROOT;
     dispatch(removeBackPage());
     dispatch(navigate(tab, { replace: true }));
   };

@@ -19,7 +19,7 @@ const reducer = combineReducers({
   networks: reducers.networks,
   langs: reducers.langs,
   idleOptions: reducers.idleOptions,
-  backTabs: reducers.backTabs,
+  backPages: reducers.backPages,
   version: reducers.version,
   localState: reducers.localState,
   uiState: reducers.uiState,

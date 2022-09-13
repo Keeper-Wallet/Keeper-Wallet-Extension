@@ -12,7 +12,7 @@ export function tab(state: string | null = null, action: UiAction) {
   }
 }
 
-export function backTabs(
+export function backPages(
   state: Array<string | null> = [],
   { type, payload }: UiAction
 ) {
