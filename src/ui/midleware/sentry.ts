@@ -13,7 +13,7 @@ export const sentryBreadcrumbs: UiMiddleware = store => next => action => {
 
   switch (action.type) {
     case ACTION.NAVIGATE: {
-      const fromPage = store.getState().tab;
+      const fromPage = store.getState().router.currentPage;
       const toPage = action.payload.page;
 
       if (toPage !== fromPage) {

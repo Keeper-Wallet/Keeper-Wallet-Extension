@@ -9,15 +9,15 @@ import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 export function RootAccounts() {
   const dispatch = useAppDispatch();
   const currentLocale = useAccountsSelector(state => state.currentLocale);
-  const backPages = useAccountsSelector(state => state.backPages);
+  const backPages = useAccountsSelector(state => state.router.backPages);
   const currentTab = useAccountsSelector(state => {
     if (state.localState.loading) {
       return PAGES.INTRO;
     }
 
-    let tab = state.tab;
+    let tab = state.router.currentPage;
 
-    if (typeof state.tab !== 'string') {
+    if (typeof state.router.currentPage !== 'string') {
       const page = window.location.hash.split('#')[1];
       tab = Object.values(PAGES).includes(page) ? page : PAGES.ROOT;
     }
@@ -51,13 +51,13 @@ export function RootAccounts() {
         : PAGES.IMPORT_TAB;
     }
 
-    if (tab !== state.tab) {
+    if (tab !== state.router.currentPage) {
       Sentry.addBreadcrumb({
         type: 'navigation',
         category: 'navigation',
         level: Sentry.Severity.Info,
         data: {
-          from: state.tab,
+          from: state.router.currentPage,
           to: tab,
         },
       });

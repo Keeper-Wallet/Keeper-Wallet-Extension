@@ -5,7 +5,7 @@ import { UiMiddleware } from 'ui/store';
 
 export const addAccount: UiMiddleware = store => next => action => {
   const { type, payload, meta } = action;
-  const { currentNetwork, networks, tab: currentTab } = store.getState();
+  const { currentNetwork, networks, router } = store.getState();
 
   if (type === ACTION.SAVE_NEW_ACCOUNT) {
     const networkCode = (
@@ -21,7 +21,7 @@ export const addAccount: UiMiddleware = store => next => action => {
       .then(lastAccount => {
         store.dispatch(selectAccount(lastAccount));
 
-        store.dispatch(addBackPage(currentTab));
+        store.dispatch(addBackPage(router.currentPage));
         store.dispatch(navigate(PAGES.IMPORT_SUCCESS, { replace: true }));
 
         if (meta.type !== WalletTypes.Debug) {
@@ -33,7 +33,7 @@ export const addAccount: UiMiddleware = store => next => action => {
   if (type === ACTION.BATCH_ADD_ACCOUNTS) {
     Promise.all(payload.map(account => background.addWallet(account))).then(
       () => {
-        store.dispatch(addBackPage(currentTab));
+        store.dispatch(addBackPage(router.currentPage));
         store.dispatch(navigate(PAGES.IMPORT_SUCCESS, { replace: true }));
 
         if (meta.type !== WalletTypes.Debug) {

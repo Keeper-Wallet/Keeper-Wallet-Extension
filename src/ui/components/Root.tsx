@@ -9,13 +9,13 @@ import { useAppDispatch, useAppSelector } from 'ui/store';
 export function Root() {
   const dispatch = useAppDispatch();
   const currentLocale = useAppSelector(state => state.currentLocale);
-  const backPages = useAppSelector(state => state.backPages);
+  const backPages = useAppSelector(state => state.router.backPages);
   const currentTab = useAppSelector(state => {
     if (state.localState.loading) {
       return PAGES.INTRO;
     }
 
-    let tab = state.tab;
+    let tab = state.router.currentPage;
 
     if (!tab && state.state?.locked == null) {
       tab = PAGES.INTRO;
@@ -65,13 +65,13 @@ export function Root() {
         : PAGES.IMPORT_POPUP;
     }
 
-    if (tab !== state.tab) {
+    if (tab !== state.router.currentPage) {
       Sentry.addBreadcrumb({
         type: 'navigation',
         category: 'navigation',
         level: Sentry.Severity.Info,
         data: {
-          from: state.tab,
+          from: state.router.currentPage,
           to: tab,
         },
       });

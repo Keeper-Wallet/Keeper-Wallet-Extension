@@ -43,7 +43,7 @@ export function ImportSuccess() {
   const dispatch = useAppDispatch();
   const account = useAccountsSelector(state => state.selectedAccount);
   const isKeystoreImport = useAccountsSelector(
-    state => state.backPages.slice(-1)[0] === PAGES.IMPORT_KEYSTORE
+    state => state.router.backPages.slice(-1)[0] === PAGES.IMPORT_KEYSTORE
   );
 
   return (

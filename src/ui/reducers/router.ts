@@ -1,26 +1,35 @@
 import { ACTION } from '../actions';
-import { UiAction } from 'ui/store';
+import { UiAction } from '../store';
 
 const MAX_HISTORY = 10;
 
-export function tab(state: string | null = null, action: UiAction) {
-  switch (action.type) {
-    case ACTION.NAVIGATE:
-      return action.payload.page;
-    default:
-      return state;
-  }
+interface RouterState {
+  backPages: Array<string | null>;
+  currentPage: string | null;
 }
 
-export function backPages(
-  state: Array<string | null> = [],
-  { type, payload }: UiAction
-) {
-  switch (type) {
+const initialState: RouterState = {
+  backPages: [],
+  currentPage: null,
+};
+
+export function router(state = initialState, action: UiAction): RouterState {
+  switch (action.type) {
+    case ACTION.NAVIGATE:
+      return {
+        ...state,
+        currentPage: action.payload.page,
+      };
     case ACTION.ADD_BACK_PAGE:
-      return [...state, payload].slice(-MAX_HISTORY);
+      return {
+        ...state,
+        backPages: [...state.backPages, action.payload].slice(-MAX_HISTORY),
+      };
     case ACTION.REMOVE_BACK_PAGE:
-      return state.slice(0, -1);
+      return {
+        ...state,
+        backPages: state.backPages.slice(0, -1),
+      };
     default:
       return state;
   }

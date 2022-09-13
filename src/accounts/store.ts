@@ -6,7 +6,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { UiAction } from 'ui/store';
 
 const reducer = combineReducers({
-  tab: reducers.tab,
+  router: reducers.router,
   addresses: reducers.addresses,
   accounts: reducers.accounts,
   currentLocale: reducers.currentLocale,
@@ -19,7 +19,6 @@ const reducer = combineReducers({
   networks: reducers.networks,
   langs: reducers.langs,
   idleOptions: reducers.idleOptions,
-  backPages: reducers.backPages,
   version: reducers.version,
   localState: reducers.localState,
   uiState: reducers.uiState,
