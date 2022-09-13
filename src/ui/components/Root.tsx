@@ -109,11 +109,7 @@ export function Root() {
   const Component = pageConf.component;
 
   const onBack = () => {
-    const backTabFromConf =
-      typeof pageConf.menu.back === 'string' ? pageConf.menu.back : null;
-
-    const tab =
-      backTabFromConf || backPages[backPages.length - 1] || PAGES.ROOT;
+    const tab = backPages[backPages.length - 1] || PAGES.ROOT;
     dispatch(removeBackPage());
     dispatch(navigate(tab, { replace: true }));
   };
@@ -121,7 +117,7 @@ export function Root() {
   return (
     <div className={`height ${currentLocale}`}>
       <Menu
-        hasBack={typeof pageConf.menu.back === 'string' || pageConf.menu.back}
+        hasBack={pageConf.menu.back}
         hasClose={pageConf.menu.close}
         hasLogo={pageConf.menu.hasLogo}
         hasSettings={pageConf.menu.hasSettings}

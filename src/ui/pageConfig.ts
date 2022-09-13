@@ -104,7 +104,7 @@ export interface PageComponentProps {
 interface PageMenuConfig {
   hasLogo: boolean;
   hasSettings?: boolean;
-  back?: string | boolean;
+  back?: true;
   close?: boolean;
 }
 
@@ -236,7 +236,7 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: true,
       hasSettings: false,
-      back: PAGES.SAVE_BACKUP,
+      back: true,
     },
   },
   [PAGES.IMPORT_ADDRESS_BOOK]: {
@@ -377,7 +377,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: true,
       hasSettings: false,
-      back: false,
       close: true,
     },
   },
@@ -502,7 +501,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: true,
       hasSettings: false,
-      back: false,
     },
   },
   [PAGES.CHANGE_PASSWORD]: {
@@ -535,7 +533,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: false,
       hasSettings: false,
-      back: false,
     },
   },
   [PAGES.NOTIFICATIONS]: {
@@ -546,7 +543,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: true,
       hasSettings: false,
-      back: false,
     },
   },
   [PAGES.MESSAGES]: {
@@ -557,7 +553,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: true,
       hasSettings: false,
-      back: false,
     },
   },
   [PAGES.MESSAGES_LIST]: {
@@ -568,7 +563,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: false,
       hasSettings: false,
-      back: false,
     },
   },
   [PAGES.CHANGE_TX_ACCOUNT]: {
@@ -579,7 +573,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: false,
       hasSettings: true,
-      back: false,
     },
   },
   [PAGES.SEND]: {

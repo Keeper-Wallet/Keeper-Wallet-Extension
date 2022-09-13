@@ -74,11 +74,7 @@ export function RootAccounts() {
   const Component = pageConf.component;
 
   const onBack = () => {
-    const backTabFromConf =
-      typeof pageConf.menu.back === 'string' ? pageConf.menu.back : null;
-
-    const tab =
-      backTabFromConf || backPages[backPages.length - 1] || PAGES.ROOT;
+    const tab = backPages[backPages.length - 1] || PAGES.ROOT;
     dispatch(removeBackPage());
     dispatch(navigate(tab, { replace: true }));
   };
@@ -88,7 +84,7 @@ export function RootAccounts() {
       <Menu
         hasBack={
           currentTab !== window.location.hash.split('#')[1] &&
-          (typeof pageConf.menu.back === 'string' || pageConf.menu.back)
+          pageConf.menu.back
         }
         hasClose={pageConf.menu.close}
         hasLogo={pageConf.menu.hasLogo}
