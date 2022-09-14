@@ -38,13 +38,14 @@ export function ImportSuccessAddressBook() {
   );
 }
 
-export function ImportSuccess() {
+export function ImportSuccess({
+  isKeystoreImport,
+}: {
+  isKeystoreImport?: boolean;
+}) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const account = useAccountsSelector(state => state.selectedAccount);
-  const isKeystoreImport = useAccountsSelector(
-    state => state.router.backPages.slice(-1)[0] === PAGES.IMPORT_KEYSTORE
-  );
 
   return (
     <div data-testid="importSuccessForm" className={styles.content}>
@@ -52,7 +53,7 @@ export function ImportSuccess() {
 
       <p className={cn(styles.title, 'headline2')}>
         {t(
-          isKeystoreImport ? 'import.readyToUse' : 'import.readyToUseKeystore',
+          isKeystoreImport ? 'import.readyToUseKeystore' : 'import.readyToUse',
           { name: account.name }
         )}
       </p>
@@ -61,7 +62,7 @@ export function ImportSuccess() {
         {t('import.readyHelpText')}
       </p>
 
-      {isKeystoreImport && (
+      {!isKeystoreImport && (
         <>
           <div className={`${styles.address} tag1 basic500 input-title`}>
             {t('newAccountName.accountAddress')}
@@ -93,4 +94,8 @@ export function ImportSuccess() {
       </div>
     </div>
   );
+}
+
+export function ImportSuccessKeystore() {
+  return <ImportSuccess isKeystoreImport />;
 }

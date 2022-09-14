@@ -42,6 +42,7 @@ import { Send } from './components/pages/send';
 import {
   ImportSuccess,
   ImportSuccessAddressBook,
+  ImportSuccessKeystore,
 } from 'ui/components/pages/importSuccess';
 import { ImportDebug } from 'ui/components/pages/importDebug';
 import { NftCollection } from 'ui/components/pages/nfts/nftCollection';
@@ -66,6 +67,7 @@ export const PAGES = {
   IMPORT_SEED: 'import_seed',
   IMPORT_SEED_BACK: 'import_seed_back',
   IMPORT_SUCCESS: 'import_success',
+  IMPORT_SUCCESS_KEYSTORE: 'import_success_keystore',
   IMPORT_SUCCESS_ADDRESS_BOOK: 'import_success_address_book',
   EXPORT_ACCOUNTS: 'export_accounts',
   EXPORT_ADDRESS_BOOK: 'export_address_book',
@@ -170,6 +172,15 @@ export const PAGES_CONF: Record<string, PageConfig> = {
   },
   [PAGES.IMPORT_SUCCESS]: {
     component: ImportSuccess,
+    bottom: {
+      hide: true,
+    },
+    menu: {
+      hasLogo: true,
+    },
+  },
+  [PAGES.IMPORT_SUCCESS_KEYSTORE]: {
+    component: ImportSuccessKeystore,
     bottom: {
       hide: true,
     },

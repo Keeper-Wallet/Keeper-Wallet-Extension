@@ -31,7 +31,7 @@ export const addAccount: UiMiddleware = store => next => action => {
   if (type === ACTION.BATCH_ADD_ACCOUNTS) {
     Promise.all(payload.map(account => background.addWallet(account))).then(
       () => {
-        store.dispatch(navigate(PAGES.IMPORT_SUCCESS));
+        store.dispatch(navigate(PAGES.IMPORT_SUCCESS_KEYSTORE));
 
         if (meta.type !== WalletTypes.Debug) {
           background.sendEvent('addWallet', { type: meta.type });
