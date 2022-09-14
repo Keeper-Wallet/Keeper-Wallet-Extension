@@ -19,37 +19,35 @@ export function NewWalletName() {
 
   const account = useAccountsSelector(state => state.localState.newAccount);
   const accounts = useAccountsSelector(state => state.accounts);
-  const [accountName, setAccountName] = React.useState<string>();
+  const [accountName, setAccountName] = React.useState('');
   const [pending, setPending] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>('');
 
-  const existedAccount = accounts.find(
+  const existingAccount = accounts.find(
     ({ address }) => address === account.address
   );
 
   React.useEffect(() => {
     dispatch(newAccountName(accountName));
 
-    if (accountName != null) {
-      setError(null);
+    setError(null);
 
-      if (accountName.length < CONFIG.NAME_MIN_LENGTH) {
-        setError(t('newAccountName.errorRequired'));
-      }
-
-      if (accounts.find(({ name }) => name === accountName)) {
-        setError(t('newAccountName.errorInUse'));
-      }
+    if (accountName.length < CONFIG.NAME_MIN_LENGTH) {
+      setError(t('newAccountName.errorRequired'));
     }
 
-    if (existedAccount) {
+    if (accounts.find(({ name }) => name === accountName)) {
+      setError(t('newAccountName.errorInUse'));
+    }
+
+    if (existingAccount) {
       setError(
         t('newAccountName.errorAlreadyExists', {
-          name: existedAccount.name,
+          name: existingAccount.name,
         })
       );
     }
-  }, [accountName, accounts, existedAccount, dispatch, t]);
+  }, [accountName, accounts, existingAccount, dispatch, t]);
 
   return (
     <div data-testid="newWalletNameForm" className={styles.content}>
@@ -61,8 +59,8 @@ export function NewWalletName() {
 
           setPending(true);
 
-          if (existedAccount) {
-            dispatch(selectAccount(existedAccount));
+          if (existingAccount) {
+            dispatch(selectAccount(existingAccount));
             dispatch(navigate(PAGES.IMPORT_SUCCESS));
             return;
           }
@@ -84,16 +82,16 @@ export function NewWalletName() {
           );
         }}
       >
-        <div className={`margin1`}>
+        <div className="margin1">
           <Input
             data-testid="newAccountNameInput"
             className="margin1"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setAccountName(e.target.value)
-            }
-            value={accountName ?? ''}
+            onChange={event => {
+              setAccountName(event.target.value);
+            }}
+            value={accountName}
             maxLength={32}
-            disabled={!!existedAccount}
+            disabled={!!existingAccount}
             autoFocus
             error={!!error}
           />
@@ -107,7 +105,7 @@ export function NewWalletName() {
         </div>
 
         <div className={styles.footer}>
-          <div className={`tag1 basic500 input-title`}>
+          <div className="tag1 basic500 input-title">
             {t('newAccountName.accountAddress')}
           </div>
 
@@ -115,7 +113,7 @@ export function NewWalletName() {
             {account.address}
           </div>
 
-          {existedAccount ? (
+          {existingAccount ? (
             <>
               <Button className="margin2" type="submit">
                 {t('newAccountName.switchAccount')}
