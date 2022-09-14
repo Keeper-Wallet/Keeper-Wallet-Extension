@@ -122,7 +122,6 @@ extension.runtime.onInstalled.addListener(async details => {
   const bgService = await bgPromise;
 
   if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
-    bgService.messageController.clearUnusedMessages();
     bgService.assetInfoController.addTickersForExistingAssets();
     bgService.vaultController.migrate();
     bgService.addressBookController.migrate();
@@ -192,6 +191,9 @@ async function setupBackgroundService() {
   backgroundService.on('Close current tab', async () => {
     return tabsManager.closeCurrentTab();
   });
+
+  backgroundService.messageController.clearMessages();
+  windowManager.closeWindow();
 
   return backgroundService;
 }

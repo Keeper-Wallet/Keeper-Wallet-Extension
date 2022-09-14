@@ -1,6 +1,6 @@
 import ObservableStore from 'obs-store';
 import { extension } from 'lib/extension';
-import { MsgStatus, MSG_STATUSES } from '../constants';
+import { MSG_STATUSES } from '../constants';
 import { v4 as uuidv4 } from 'uuid';
 import log from 'loglevel';
 import EventEmitter from 'events';
@@ -365,31 +365,6 @@ export class MessageController extends EventEmitter {
       ids.forEach(id => this._deleteMessage(id));
     } else {
       this._updateStore([]);
-    }
-  }
-
-  clearUnusedMessages() {
-    const unusedStatuses: MsgStatus[] = [
-      MSG_STATUSES.REJECTED,
-      MSG_STATUSES.REJECTED_FOREVER,
-      MSG_STATUSES.SIGNED,
-      MSG_STATUSES.PUBLISHED,
-      MSG_STATUSES.FAILED,
-    ];
-    const unusedMessages: MessageStoreItem[] = [];
-    const actualMessages: MessageStoreItem[] = [];
-
-    this.messages.messages.forEach(message => {
-      const { status } = message;
-      if (unusedStatuses.indexOf(status) === -1) {
-        actualMessages.push(message);
-      } else {
-        unusedMessages.push(message);
-      }
-    });
-
-    if (unusedMessages.length) {
-      this._updateStore(actualMessages);
     }
   }
 
