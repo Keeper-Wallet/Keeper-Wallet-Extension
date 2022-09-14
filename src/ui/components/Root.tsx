@@ -71,27 +71,6 @@ export function Root() {
           to: page,
         },
       });
-
-      if (page === PAGES.MESSAGES) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const { msg } = state.activePopup!;
-
-        const data: Record<string, string | number> = {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          type: msg!.type,
-        };
-
-        if (msg?.type === 'transaction') {
-          data.transactionType = msg.data.type;
-        }
-
-        Sentry.addBreadcrumb({
-          type: 'debug',
-          category: 'message',
-          level: Sentry.Severity.Info,
-          data,
-        });
-      }
     }
 
     return page;
