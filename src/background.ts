@@ -115,7 +115,7 @@ extension.runtime.onConnectExternal.addListener(async remotePort => {
 
 extension.runtime.onUpdateAvailable.addListener(async () => {
   await backupStorage();
-  await extension.runtime.reload();
+  extension.runtime.reload();
 });
 
 extension.runtime.onInstalled.addListener(async details => {
@@ -146,7 +146,7 @@ async function setupBackgroundService() {
     (global as any).background = backgroundService;
   }
 
-  const updateBadge = async () => {
+  const updateBadge = () => {
     const { selectedAccount } =
       backgroundService.extensionStorage.getState('selectedAccount');
     const messages = backgroundService.messageController.getUnapproved();
@@ -165,7 +165,7 @@ async function setupBackgroundService() {
   // update badge
   backgroundService.messageController.on('Update badge', updateBadge);
   backgroundService.notificationsController.on('Update badge', updateBadge);
-  await updateBadge();
+  updateBadge();
   // open new tab
   backgroundService.messageController.on('Open new tab', url => {
     extension.tabs.create({ url });
