@@ -52,9 +52,7 @@ export function ImportSeed() {
   const [showValidationError, setShowValidationError] = React.useState(false);
 
   const [seedValue, setSeedValue] = React.useState<string>('');
-
   const [encodedSeedValue, setEncodedSeedValue] = React.useState<string>('');
-
   const [privateKeyValue, setPrivateKeyValue] = React.useState<string>('');
 
   const networkCode =
@@ -183,11 +181,12 @@ export function ImportSeed() {
     }
   }
 
-  const existedAccount =
+  const existingAccount =
     address && accounts.find(acc => acc.address === address);
-  if (existedAccount) {
+
+  if (existingAccount) {
     validationError = t('importSeed.accountExistsError', {
-      name: existedAccount.name,
+      name: existingAccount.name,
     });
   }
 
@@ -201,8 +200,8 @@ export function ImportSeed() {
         onSubmit={event => {
           event.preventDefault();
 
-          if (showValidationError && existedAccount) {
-            dispatch(selectAccount(existedAccount));
+          if (showValidationError && existingAccount) {
+            dispatch(selectAccount(existingAccount));
             dispatch(navigate(PAGES.IMPORT_SUCCESS));
             return;
           }
@@ -329,7 +328,7 @@ export function ImportSeed() {
 
         <Button data-testid="continueBtn" type="submit" view="submit">
           {t(
-            existedAccount && showValidationError
+            existingAccount && showValidationError
               ? 'importSeed.switchAccount'
               : 'importSeed.importAccount'
           )}
