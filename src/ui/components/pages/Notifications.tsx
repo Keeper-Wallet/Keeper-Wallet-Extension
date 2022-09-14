@@ -13,7 +13,7 @@ import {
   setActiveNotification,
   setShowNotification,
 } from '../../actions';
-import { PageComponentProps, PAGES } from '../../pageConfig';
+import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { Intro } from './Intro';
@@ -78,7 +78,7 @@ interface DispatchProps {
   ) => void;
 }
 
-type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps;
 
 interface State {
   canShowNotify?: boolean;

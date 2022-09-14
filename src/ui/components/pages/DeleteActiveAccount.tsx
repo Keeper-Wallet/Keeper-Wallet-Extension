@@ -4,13 +4,12 @@ import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { deleteActiveAccount } from '../../actions';
-import { PageComponentProps } from 'ui/pageConfig';
 
 interface DispatchProps {
   deleteActiveAccount: () => void;
 }
 
-type Props = PageComponentProps & WithTranslation & DispatchProps;
+type Props = WithTranslation & DispatchProps;
 
 interface State {
   disable: boolean;

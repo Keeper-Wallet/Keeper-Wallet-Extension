@@ -1,11 +1,10 @@
 import * as styles from './styles/changeName.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { changeAccountName } from '../../actions';
+import { changeAccountName, navigate } from '../../actions';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
-import { PageComponentProps } from 'ui/pageConfig';
 import { AppState } from 'ui/store';
 import { PreferencesAccount } from 'preferences/types';
 
@@ -16,9 +15,10 @@ interface StateProps {
 
 interface DispatchProps {
   changeAccountName: (updateAccount: { name: string; address: string }) => void;
+  navigate: (delta: number) => void;
 }
 
-type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps;
 
 interface State {
   error: boolean | Array<{ code: number; key: string; msg: string }> | null;
@@ -65,7 +65,7 @@ class ChangeAccountNameComponent extends React.PureComponent<Props, State> {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const address = this.props.account!.address;
     this.props.changeAccountName({ name, address });
-    this.props.onBack();
+    this.props.navigate(-1);
   }
 
   setNewName(event: React.FormEvent<HTMLInputElement>) {
@@ -153,6 +153,7 @@ const mapToProps = (store: AppState): StateProps => {
 
 const actions = {
   changeAccountName,
+  navigate,
 };
 
 export const ChangeAccountName = connect(

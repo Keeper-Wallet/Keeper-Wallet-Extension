@@ -6,7 +6,7 @@ import { Avatar, Balance, Button, CopyText, Error, Input, Modal } from '../ui';
 import background from '../../services/Background';
 import { getAsset, navigate } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
-import { PageComponentProps, PAGES } from '../../pageConfig';
+import { PAGES } from '../../pageConfig';
 import { getAccountLink } from '../../urls';
 import { BigNumber } from '@waves/bignumber';
 import { AppState } from 'ui/store';
@@ -37,11 +37,7 @@ interface DispatchProps {
   navigate: (page: string | null) => void;
 }
 
-interface Props
-  extends WithTranslation,
-    StateProps,
-    DispatchProps,
-    PageComponentProps {}
+interface Props extends WithTranslation, StateProps, DispatchProps {}
 
 interface State {
   balance?: Money | string | BigNumber | null;

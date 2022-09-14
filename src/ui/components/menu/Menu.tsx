@@ -10,16 +10,9 @@ interface Props {
   hasSettings: boolean | undefined;
   hasBack: boolean | undefined;
   hasClose: boolean | undefined;
-  onBack: () => void;
 }
 
-export function Menu({
-  hasClose,
-  hasBack,
-  hasLogo,
-  hasSettings,
-  onBack,
-}: Props) {
+export function Menu({ hasClose, hasBack, hasLogo, hasSettings }: Props) {
   const dispatch = useAppDispatch();
 
   return (
@@ -47,12 +40,19 @@ export function Menu({
       {hasBack && (
         <div
           className={`${styles.arrowBackIcon} arrow-back-icon`}
-          onClick={onBack}
+          onClick={() => {
+            dispatch(navigate(-1));
+          }}
         />
       )}
 
       {hasClose && (
-        <div className={`${styles.closeIcon} close-icon`} onClick={onBack} />
+        <div
+          className={`${styles.closeIcon} close-icon`}
+          onClick={() => {
+            dispatch(navigate(-1));
+          }}
+        />
       )}
     </div>
   );

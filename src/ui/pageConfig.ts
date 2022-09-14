@@ -97,10 +97,6 @@ export const PAGES = {
   NFT_INFO: 'nft_details',
 };
 
-export interface PageComponentProps {
-  onBack: () => void;
-}
-
 interface PageMenuConfig {
   hasLogo?: true;
   hasSettings?: true;
@@ -114,7 +110,8 @@ interface PageBottomConfig {
 }
 
 interface PageConfig {
-  component: React.ComponentType<PageComponentProps>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  component: React.ComponentType<any>;
   bottom?: PageBottomConfig;
   menu?: PageMenuConfig;
 }

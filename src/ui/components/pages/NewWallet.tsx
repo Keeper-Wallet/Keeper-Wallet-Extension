@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { AppState } from 'ui/store';
 import { navigate, newAccountSelect } from '../../actions';
-import { PageComponentProps, PAGES } from '../../pageConfig';
+import { PAGES } from '../../pageConfig';
 import { AvatarList, Button } from '../ui';
 import * as styles from './styles/newwallet.styl';
 import { NewAccountState } from 'ui/reducers/localState';
@@ -26,7 +26,7 @@ interface DispatchProps {
   ) => void;
 }
 
-type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps;
 
 interface State {
   list: NewWalletItem[];

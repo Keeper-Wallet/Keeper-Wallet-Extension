@@ -2,12 +2,11 @@ import * as styles from './deleteAccounts.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Error, Input } from 'ui/components/ui';
-import { deleteAccount } from 'ui/actions';
+import { deleteAccount, navigate } from 'ui/actions';
 import cn from 'classnames';
 import { useAppDispatch } from 'ui/store';
-import { PageComponentProps } from 'ui/pageConfig';
 
-export function DeleteAllAccounts({ onBack }: PageComponentProps) {
+export function DeleteAllAccounts() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -72,7 +71,13 @@ export function DeleteAllAccounts({ onBack }: PageComponentProps) {
       </div>
 
       <div className="buttons-wrapper">
-        <Button type="button" onClick={onBack} data-testid="resetCancel">
+        <Button
+          type="button"
+          onClick={() => {
+            dispatch(navigate(-1));
+          }}
+          data-testid="resetCancel"
+        >
           {t('forgotPassword.resetCancel')}
         </Button>
         <Button

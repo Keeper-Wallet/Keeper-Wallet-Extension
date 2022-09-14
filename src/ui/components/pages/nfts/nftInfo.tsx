@@ -5,13 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { createNft } from 'nfts/utils';
 import { Button, Ellipsis, Loader } from 'ui/components/ui';
-import { PageComponentProps, PAGES } from 'ui/pageConfig';
+import { PAGES } from 'ui/pageConfig';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { getAccountLink, getAssetDetailLink } from 'ui/urls';
 import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 import { navigate } from 'ui/actions';
 
-export function NftInfo({ onBack }: PageComponentProps) {
+export function NftInfo() {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
@@ -120,7 +120,7 @@ export function NftInfo({ onBack }: PageComponentProps) {
         <Button
           onClick={() => {
             setCurrentAsset(null);
-            onBack();
+            dispatch(navigate(-1));
           }}
         >
           {t('nftInfo.backBtn')}

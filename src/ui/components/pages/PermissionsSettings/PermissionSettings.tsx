@@ -20,7 +20,6 @@ import {
 } from './components';
 import { BigNumber } from '@waves/bignumber';
 import { AppState } from 'ui/store';
-import { PageComponentProps } from 'ui/pageConfig';
 
 interface StateProps {
   origins?: { [key: string]: TAutoAuth[] };
@@ -44,7 +43,7 @@ interface DispatchProps {
   }) => void;
 }
 
-type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps;
 
 interface State {
   showSettings: boolean;

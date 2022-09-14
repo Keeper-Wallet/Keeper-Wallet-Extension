@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { BigLogo } from '../head';
 import { Button, Error, Input } from '../ui';
 import { login, navigate } from '../../actions';
-import { PageComponentProps, PAGES } from '../../pageConfig';
+import { PAGES } from '../../pageConfig';
 import { AppState } from 'ui/store';
 
 interface StateProps {
@@ -17,7 +17,7 @@ interface DispatchProps {
   navigate: (page: string | null) => void;
 }
 
-type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps;
 
 interface State {
   passwordError: boolean;

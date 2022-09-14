@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react';
 import * as React from 'react';
-import { loading, removeBackPage, navigate } from '../actions';
+import { loading } from '../actions';
 import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
@@ -9,7 +9,6 @@ import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 export function RootAccounts() {
   const dispatch = useAppDispatch();
   const currentLocale = useAccountsSelector(state => state.currentLocale);
-  const backPages = useAccountsSelector(state => state.router.backPages);
   const currentPage = useAccountsSelector(state => {
     if (state.localState.loading) {
       return PAGES.INTRO;
@@ -77,12 +76,6 @@ export function RootAccounts() {
   const pageConf = PAGES_CONF[currentPage];
   const Component = pageConf.component;
 
-  const onBack = () => {
-    const page = backPages[backPages.length - 1] || PAGES.ROOT;
-    dispatch(removeBackPage());
-    dispatch(navigate(page, { replace: true }));
-  };
-
   return (
     <div className={`height ${currentLocale}`}>
       <Menu
@@ -93,9 +86,8 @@ export function RootAccounts() {
         hasClose={pageConf.menu?.close}
         hasLogo={pageConf.menu?.hasLogo}
         hasSettings={pageConf.menu?.hasSettings}
-        onBack={onBack}
       />
-      <Component onBack={onBack} />
+      <Component />
       <Bottom
         hide={pageConf.bottom?.hide}
         noChangeNetwork={pageConf.bottom?.noChangeNetwork}

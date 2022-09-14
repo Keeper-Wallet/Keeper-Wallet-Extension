@@ -207,6 +207,13 @@ export type UiAction =
       meta?: never;
     }
   | {
+      type: typeof ACTION.NAVIGATE_BACK;
+      payload: {
+        delta: number;
+      };
+      meta?: never;
+    }
+  | {
       type: typeof ACTION.SELECT_ACCOUNT;
       payload: PreferencesAccount;
       meta?: never;
@@ -606,11 +613,6 @@ export type UiAction =
   | {
       type: typeof ACTION.ADD_BACK_PAGE;
       payload: string | null;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.REMOVE_BACK_PAGE;
-      payload?: never;
       meta?: never;
     };
 

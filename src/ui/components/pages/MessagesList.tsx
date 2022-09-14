@@ -17,7 +17,6 @@ import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { Button } from '../ui';
 import { AppState } from 'ui/store';
-import { PageComponentProps } from 'ui/pageConfig';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PreferencesAccount } from 'preferences/types';
 import { MessageStoreItem } from 'messages/types';
@@ -106,7 +105,7 @@ interface DispatchProps {
   reject: (messageId: string) => void;
 }
 
-type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps;
 
 interface State {
   messages?: Props['messages'];

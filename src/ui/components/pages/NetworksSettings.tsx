@@ -6,7 +6,6 @@ import { Button, Copy, Error, Input, Modal } from '../ui';
 import * as styles from './styles/settings.styl';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
 import { AppState } from 'ui/store';
-import { PageComponentProps } from 'ui/pageConfig';
 import { NetworkName } from 'networks/types';
 
 interface StateProps {
@@ -36,7 +35,7 @@ interface DispatchProps {
   }) => void;
 }
 
-type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps;
 
 interface State {
   currentMatcher?: string | null;

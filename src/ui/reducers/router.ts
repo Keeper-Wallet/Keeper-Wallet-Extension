@@ -1,3 +1,4 @@
+import { PAGES } from 'ui/pageConfig';
 import { ACTION } from '../actions';
 import { UiAction } from '../store';
 
@@ -23,15 +24,26 @@ export function router(state = initialState, action: UiAction): RouterState {
           ? state.backPages
           : [...state.backPages, state.currentPage].slice(-MAX_HISTORY),
       };
+    case ACTION.NAVIGATE_BACK: {
+      const { delta } = action.payload;
+
+      if (delta >= 0) {
+        throw new Error('delta must be negative');
+      }
+
+      const prevPage =
+        state.backPages[state.backPages.length + delta] || PAGES.ROOT;
+
+      return {
+        ...state,
+        currentPage: prevPage,
+        backPages: state.backPages.slice(0, delta),
+      };
+    }
     case ACTION.ADD_BACK_PAGE:
       return {
         ...state,
         backPages: [...state.backPages, action.payload].slice(-MAX_HISTORY),
-      };
-    case ACTION.REMOVE_BACK_PAGE:
-      return {
-        ...state,
-        backPages: state.backPages.slice(0, -1),
       };
     default:
       return state;

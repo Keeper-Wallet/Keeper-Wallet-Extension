@@ -6,7 +6,6 @@ import { Button, Error, Input, Modal } from '../ui';
 import background from '../../services/Background';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
-import { PageComponentProps } from 'ui/pageConfig';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
@@ -14,7 +13,7 @@ interface DispatchProps {
   changePassword: (p1: string, p2: string) => void;
 }
 
-type Props = PageComponentProps & WithTranslation & DispatchProps;
+type Props = WithTranslation & DispatchProps;
 
 interface State {
   firstValue: string;

@@ -5,7 +5,6 @@ import * as React from 'react';
 import { Button, Error, Input, LangsSelect } from '../ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
-import { PageComponentProps } from 'ui/pageConfig';
 import { AppState } from 'ui/store';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
@@ -21,7 +20,7 @@ interface DispatchProps {
 }
 
 class NewAccountComponent extends React.PureComponent<
-  PageComponentProps & WithTranslation & DispatchProps
+  WithTranslation & DispatchProps
 > {
   state = {
     firstValue: '',

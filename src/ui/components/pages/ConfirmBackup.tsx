@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, Error, Pills, PillsListItem } from '../ui';
 import { AppState } from 'ui/store';
-import { PageComponentProps, PAGES } from 'ui/pageConfig';
+import { PAGES } from 'ui/pageConfig';
 import { NewAccountState } from 'ui/reducers/localState';
 import { navigate } from 'ui/actions/router';
 
@@ -18,7 +18,7 @@ interface DispatchProps {
   navigate: (page: string | null, options: { replace?: boolean }) => void;
 }
 
-type Props = WithTranslation & PageComponentProps & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps;
 
 interface State {
   seed: string | null;

@@ -12,7 +12,7 @@ import {
   reject,
   updateActiveState,
 } from '../../actions';
-import { PageComponentProps, PAGES } from '../../pageConfig';
+import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import { Intro } from './Intro';
 import { AppState } from 'ui/store';
@@ -30,7 +30,10 @@ interface StateProps {
 
 interface DispatchProps {
   closeNotificationWindow: () => void;
-  navigate: (page: string | null) => void;
+  navigate: {
+    (delta: number): void;
+    (page: string | null): void;
+  };
   updateActiveState: () => void;
   deleteNotifications: (
     ids:
@@ -45,7 +48,7 @@ interface DispatchProps {
   reject: (id: string) => void;
 }
 
-type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps;
 
 interface State {
   loading: boolean;
@@ -105,7 +108,12 @@ class SelectTxAccountComponent extends React.PureComponent<Props, State> {
           hideButton={true}
           account={this.props.selectAccount}
         >
-          <div className={styles.closeIcon} onClick={this.props.onBack} />
+          <div
+            className={styles.closeIcon}
+            onClick={() => {
+              this.props.navigate(-1);
+            }}
+          />
         </TransactionWallet>
         <div className={styles.wrapper}>
           <div className="title1 margin-main-big">

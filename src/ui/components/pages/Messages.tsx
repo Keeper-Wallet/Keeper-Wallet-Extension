@@ -18,7 +18,7 @@ import {
   setAutoOrigin,
   setShowNotification,
 } from '../../actions';
-import { PageComponentProps, PAGES } from '../../pageConfig';
+import { PAGES } from '../../pageConfig';
 import { getConfigByTransaction } from '../transactions';
 import { FinalTransaction } from '../transactions/FinalTransaction/FinalTransaction';
 import { Intro } from './Intro';
@@ -84,7 +84,7 @@ interface DispatchProps {
   }) => void;
 }
 
-type Props = PageComponentProps & StateProps & DispatchProps;
+type Props = StateProps & DispatchProps;
 
 interface State {
   activeMessage: MessageStoreItem;
