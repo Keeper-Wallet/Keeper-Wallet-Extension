@@ -147,8 +147,8 @@ async function setupBackgroundService() {
   }
 
   const updateBadge = () => {
-    const { selectedAccount } =
-      backgroundService.extensionStorage.getState('selectedAccount');
+    const selectedAccount =
+      backgroundService.preferencesController.getSelectedAccount();
     const messages = backgroundService.messageController.getUnapproved();
     const notifications =
       backgroundService.notificationsController.getGroupNotificationsByAccount(
