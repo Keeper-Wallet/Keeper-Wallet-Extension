@@ -61,24 +61,30 @@ export function Root() {
         : PAGES.IMPORT_POPUP;
     }
 
-    if (page !== state.router.currentPage) {
-      Sentry.addBreadcrumb({
-        type: 'navigation',
-        category: 'navigation',
-        level: Sentry.Severity.Info,
-        data: {
-          from: state.router.currentPage,
-          to: page,
-        },
-      });
-    }
-
     return page;
   });
 
   React.useEffect(() => {
     setTimeout(() => dispatch(loading(false)), 200);
   }, [dispatch]);
+
+  const prevPageRef = React.useRef<string | null>(null);
+
+  React.useEffect(() => {
+    const prevPage = prevPageRef.current;
+
+    Sentry.addBreadcrumb({
+      type: 'navigation',
+      category: 'navigation',
+      level: Sentry.Severity.Info,
+      data: {
+        from: prevPage,
+        to: currentPage,
+      },
+    });
+
+    prevPageRef.current = currentPage;
+  }, [currentPage]);
 
   const pageConf = PAGES_CONF[currentPage];
   const Component = pageConf.component;
