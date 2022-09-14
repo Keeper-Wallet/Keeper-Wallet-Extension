@@ -33,10 +33,3 @@ export function navigate(
     },
   };
 }
-
-export function addBackPage(page: string | null) {
-  return {
-    type: ACTION.ADD_BACK_PAGE,
-    payload: page,
-  };
-}

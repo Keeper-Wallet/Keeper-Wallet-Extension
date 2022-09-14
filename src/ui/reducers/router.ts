@@ -40,11 +40,6 @@ export function router(state = initialState, action: UiAction): RouterState {
         backPages: state.backPages.slice(0, delta),
       };
     }
-    case ACTION.ADD_BACK_PAGE:
-      return {
-        ...state,
-        backPages: [...state.backPages, action.payload].slice(-MAX_HISTORY),
-      };
     default:
       return state;
   }

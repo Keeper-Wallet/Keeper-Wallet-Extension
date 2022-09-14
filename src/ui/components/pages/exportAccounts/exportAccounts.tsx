@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useAppSelector, useAppDispatch } from 'ui/store';
-import { addBackPage, navigate } from '../../../actions';
-import { PAGES } from '../../../pageConfig';
+import { navigate } from '../../../actions';
 import { downloadKeystore } from '../../../../keystore/utils';
 import { ExportKeystoreChooseItems } from './chooseItems';
 import { ExportPasswordModal } from './passwordModal';
@@ -35,8 +34,7 @@ export function ExportAccounts() {
           }}
           onSubmit={async password => {
             await downloadKeystore(accountsToExport, undefined, password);
-            dispatch(addBackPage(PAGES.ROOT));
-            dispatch(navigate(PAGES.SETTINGS, { replace: true }));
+            dispatch(navigate(-2));
           }}
         />
       )}

@@ -609,11 +609,6 @@ export type UiAction =
       type: typeof ACTION.SET_PASSWORD;
       payload: string;
       meta?: never;
-    }
-  | {
-      type: typeof ACTION.ADD_BACK_PAGE;
-      payload: string | null;
-      meta?: never;
     };
 
 export type UiActionOfType<T extends UiAction['type']> = Extract<
