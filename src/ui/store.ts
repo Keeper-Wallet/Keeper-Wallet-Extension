@@ -460,11 +460,6 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.SET_UI_STATE_AND_TAB;
-      payload: { ui: UiState; tab: string | null };
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.CHANGE_NETWORK;
       payload: NetworkName;
       meta?: never;

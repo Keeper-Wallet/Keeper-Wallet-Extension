@@ -7,10 +7,3 @@ export function setUiState(ui: Partial<UiState>) {
     payload: ui,
   };
 }
-
-export function setUiStateAndSetTab(ui: UiState, tab: string | null) {
-  return {
-    type: ACTION.SET_UI_STATE_AND_TAB,
-    payload: { ui, tab },
-  };
-}

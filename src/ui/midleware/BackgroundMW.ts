@@ -140,17 +140,6 @@ export const uiState: UiMiddleware = store => next => action => {
     return null;
   }
 
-  if (action.type === ACTION.SET_UI_STATE_AND_TAB) {
-    const ui = store.getState().uiState;
-    const newState = { ...ui, ...action.payload.ui };
-    background.setUiState(newState).then(uiState => {
-      store.dispatch({ type: ACTION.UPDATE_UI_STATE, payload: uiState });
-      store.dispatch(navigate(action.payload.tab, { replace: true }));
-    });
-
-    return;
-  }
-
   return next(action);
 };
 
