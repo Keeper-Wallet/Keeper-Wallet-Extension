@@ -1,13 +1,11 @@
 import * as Sentry from '@sentry/react';
 import * as React from 'react';
-import { loading } from '../actions';
 import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
-import { useAppDispatch, useAppSelector } from 'ui/store';
+import { useAppSelector } from 'ui/store';
 
 export function Root() {
-  const dispatch = useAppDispatch();
   const currentLocale = useAppSelector(state => state.currentLocale);
   const currentPage = useAppSelector(state => {
     if (state.localState.loading) {
@@ -62,10 +60,6 @@ export function Root() {
 
     return page;
   });
-
-  React.useEffect(() => {
-    setTimeout(() => dispatch(loading(false)), 200);
-  }, [dispatch]);
 
   const prevPageRef = React.useRef<string | null>(null);
 

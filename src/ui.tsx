@@ -14,7 +14,7 @@ import { ledgerService } from './ledger/service';
 import { LedgerSignRequest } from './ledger/types';
 import { cbToPromise, setupDnode, transformMethods } from './lib/dnodeUtil';
 import { PortStream } from './lib/portStream';
-import { setLangs } from './ui/actions';
+import { loading, setLangs } from './ui/actions';
 import { createUpdateState } from './ui/actions/updateState';
 import { Root } from 'ui/components/Root';
 import { Error } from 'ui/components/pages/Error';
@@ -150,4 +150,6 @@ async function startUi() {
   document.addEventListener('mousedown', () => backgroundService.updateIdle());
   document.addEventListener('focus', () => backgroundService.updateIdle());
   window.addEventListener('beforeunload', () => background.identityClear());
+
+  store.dispatch(loading(false));
 }
