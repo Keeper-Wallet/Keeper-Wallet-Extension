@@ -105,10 +105,7 @@ export const idleOptions = createSimpleReducer(
   ACTION.REMOTE_CONFIG.UPDATE_IDLE
 );
 
-export const messages = (
-  state: MessageStoreItem[] = [],
-  action: { type: string; payload: { unapprovedMessages: MessageStoreItem[] } }
-) => {
+export const messages = (state: MessageStoreItem[] = [], action: UiAction) => {
   if (action.type === ACTION.UPDATE_MESSAGES) {
     return [...action.payload.unapprovedMessages];
   }
