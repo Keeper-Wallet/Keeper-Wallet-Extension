@@ -49,7 +49,6 @@ import {
   MessageStoreItem,
 } from 'messages/types';
 import { CreateWalletInput } from 'wallets/types';
-import pump from 'pump';
 import { collectBalances } from 'balances/utils';
 import { BalancesItem } from 'balances/types';
 
@@ -101,35 +100,28 @@ Sentry.init({
 
 extension.runtime.onConnect.addListener(async remotePort => {
   const bgService = await bgPromise;
-  const portStream = new PortStream(remotePort);
 
   if (remotePort.name === 'contentscript') {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const origin = new URL(remotePort.sender!.url!).hostname;
-    bgService.setupPageConnection(portStream, origin);
+    bgService.setupPageConnection(remotePort);
   } else {
-    bgService.setupUiConnection(portStream);
+    bgService.setupUiConnection(remotePort);
   }
 });
 
 extension.runtime.onConnectExternal.addListener(async remotePort => {
   const bgService = await bgPromise;
-  const portStream = new PortStream(remotePort);
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const origin = new URL(remotePort.sender!.url!).hostname;
-  bgService.setupPageConnection(portStream, origin);
+  bgService.setupPageConnection(remotePort);
 });
 
 extension.runtime.onUpdateAvailable.addListener(async () => {
   await backupStorage();
-  await extension.runtime.reload();
+  extension.runtime.reload();
 });
 
 extension.runtime.onInstalled.addListener(async details => {
   const bgService = await bgPromise;
 
   if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
-    bgService.messageController.clearUnusedMessages();
     bgService.assetInfoController.addTickersForExistingAssets();
     bgService.vaultController.migrate();
     bgService.addressBookController.migrate();
@@ -153,9 +145,9 @@ async function setupBackgroundService() {
     (global as any).background = backgroundService;
   }
 
-  const updateBadge = async () => {
-    const { selectedAccount } =
-      backgroundService.extensionStorage.getState('selectedAccount');
+  const updateBadge = () => {
+    const selectedAccount =
+      backgroundService.preferencesController.getSelectedAccount();
     const messages = backgroundService.messageController.getUnapproved();
     const notifications =
       backgroundService.notificationsController.getGroupNotificationsByAccount(
@@ -172,7 +164,7 @@ async function setupBackgroundService() {
   // update badge
   backgroundService.messageController.on('Update badge', updateBadge);
   backgroundService.notificationsController.on('Update badge', updateBadge);
-  await updateBadge();
+  updateBadge();
   // open new tab
   backgroundService.messageController.on('Open new tab', url => {
     extension.tabs.create({ url });
@@ -199,6 +191,9 @@ async function setupBackgroundService() {
   backgroundService.on('Close current tab', async () => {
     return tabsManager.closeCurrentTab();
   });
+
+  backgroundService.messageController.clearMessages();
+  windowManager.closeWindow();
 
   return backgroundService;
 }
@@ -759,7 +754,7 @@ class BackgroundService extends EventEmitter {
     };
   }
 
-  async validatePermission(origin: string) {
+  async validatePermission(origin: string, connectionId: string) {
     const { selectedAccount } = this.getState('selectedAccount');
 
     if (!selectedAccount) throw ERRORS.EMPTY_KEEPER();
@@ -791,6 +786,7 @@ class BackgroundService extends EventEmitter {
       if (!messageId) {
         const messageData: MessageInput = {
           origin,
+          connectionId,
           title: null,
           options: {},
           broadcast: false,
@@ -823,7 +819,7 @@ class BackgroundService extends EventEmitter {
     }
   }
 
-  getNewMessageFn(origin?: string): NewMessageFn {
+  getNewMessageFn(origin?: string, connectionId?: string): NewMessageFn {
     return async (data, type, options, broadcast, title = '') => {
       if (data.type === 1000) {
         type = 'auth';
@@ -832,13 +828,14 @@ class BackgroundService extends EventEmitter {
         data.isRequest = true;
       }
 
-      if (origin) {
-        await this.validatePermission(origin);
+      if (origin != null && connectionId != null) {
+        await this.validatePermission(origin, connectionId);
       }
 
       const { selectedAccount } = this.getState('selectedAccount');
 
       const { noSign, ...result } = await this.messageController.newMessage({
+        connectionId,
         data,
         type,
         title,
@@ -871,8 +868,8 @@ class BackgroundService extends EventEmitter {
     };
   }
 
-  getInpageApi(origin: string) {
-    const newMessage = this.getNewMessageFn(origin);
+  getInpageApi(origin: string, connectionId: string) {
+    const newMessage = this.getNewMessageFn(origin, connectionId);
 
     const newNotification = async (
       data:
@@ -996,7 +993,7 @@ class BackgroundService extends EventEmitter {
           throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
         }
 
-        await this.validatePermission(origin);
+        await this.validatePermission(origin, connectionId);
 
         return await newNotification(data);
       },
@@ -1011,7 +1008,7 @@ class BackgroundService extends EventEmitter {
           throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
         }
 
-        await this.validatePermission(origin);
+        await this.validatePermission(origin, connectionId);
 
         return this._publicState(origin);
       },
@@ -1048,7 +1045,7 @@ class BackgroundService extends EventEmitter {
           throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
         }
 
-        await this.validatePermission(origin);
+        await this.validatePermission(origin, connectionId);
 
         return this.walletController.getKEK(
           selectedAccount.address,
@@ -1080,7 +1077,7 @@ class BackgroundService extends EventEmitter {
           throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
         }
 
-        await this.validatePermission(origin);
+        await this.validatePermission(origin, connectionId);
 
         return this.walletController.encryptMessage(
           selectedAccount.address,
@@ -1113,7 +1110,7 @@ class BackgroundService extends EventEmitter {
           throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
         }
 
-        await this.validatePermission(origin);
+        await this.validatePermission(origin, connectionId);
 
         return this.walletController.decryptMessage(
           selectedAccount.address,
@@ -1126,9 +1123,8 @@ class BackgroundService extends EventEmitter {
     };
   }
 
-  setupUiConnection(connectionStream: pump.Stream) {
-    const api = this.getApi();
-    const dnode = setupDnode(connectionStream, api, 'api');
+  setupUiConnection(remotePort: chrome.runtime.Port) {
+    const dnode = setupDnode(new PortStream(remotePort), this.getApi(), 'api');
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const remoteHandler = (remote: any) => {
@@ -1149,9 +1145,37 @@ class BackgroundService extends EventEmitter {
     dnode.on('remote', remoteHandler);
   }
 
-  setupPageConnection(connectionStream: pump.Stream, origin: string) {
-    const inpageApi = this.getInpageApi(origin);
-    setupDnode(connectionStream, inpageApi, 'inpageApi');
+  setupPageConnection(remotePort: chrome.runtime.Port) {
+    const { sender } = remotePort;
+
+    if (!sender || !sender.url) {
+      return;
+    }
+
+    const origin = new URL(sender.url).hostname;
+    const connectionId = uuidv4();
+    const inpageApi = this.getInpageApi(origin, connectionId);
+
+    const dnode = setupDnode(
+      new PortStream(remotePort),
+      inpageApi,
+      'inpageApi'
+    );
+
+    dnode.once('end', () => {
+      this.messageController.removeMessagesFromConnection(connectionId);
+
+      const messages = this.messageController.getUnapproved();
+
+      const notifications =
+        this.notificationsController.getGroupNotificationsByAccount(
+          this.preferencesController.getSelectedAccount()
+        );
+
+      if (messages.length === 0 && notifications.length === 0) {
+        this.emit('Close notification');
+      }
+    });
   }
 
   _getCurrentNetwork(account: PreferencesAccount | undefined) {

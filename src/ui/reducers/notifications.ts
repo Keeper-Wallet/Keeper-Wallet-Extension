@@ -76,21 +76,23 @@ const getActiveFromState = (
 ): ActivePopupState | null => {
   // Can activeMessage
   if (state != null && (state.msg || state.notify)) {
+    let { msg, notify } = state;
+
     // Update from messages
-    if (state.msg) {
+    if (msg) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const msgItem = allMessages.find(item => item.id === state.msg!.id);
-      state.msg = msgItem || state.msg;
+      const msgItem = allMessages.find(item => item.id === msg!.id);
+      msg = msgItem || allMessages[0] || null;
     }
 
     // Update from notifications
-    if (state.notify) {
-      const { origin } = state.notify[0];
+    if (notify) {
+      const { origin } = notify[0];
       const newItem = notifications.find(([item]) => item.origin === origin);
-      state.notify = newItem || state.notify;
+      notify = newItem || notifications[0] || null;
     }
 
-    return state;
+    return { msg, notify };
   }
 
   // To msgList

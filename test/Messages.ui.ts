@@ -1,10 +1,8 @@
-import * as mocha from 'mocha';
 import { By, until } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { App, CreateNewAccount, Settings, Windows } from './utils/actions';
 import {
   CUSTOMLIST,
-  DEFAULT_ANIMATION_DELAY,
   DEFAULT_PAGE_LOAD_DELAY,
   WHITELIST,
 } from './utils/constants';
@@ -12,10 +10,10 @@ import {
 describe('Messages', function () {
   this.timeout(5 * 60 * 1000);
 
-  const NOTIFICATION_POLL_INTERVAL = 5 * 1000;
-  let tabKeeper: string;
+  let tabOrigin: string;
+  let messageWindow: string | null = null;
 
-  const sendMessage = (...args: unknown[]) => {
+  const sendNotification = (...args: unknown[]) => {
     const done = args[args.length - 1];
 
     KeeperWallet.initialPromise.then(api => {
@@ -26,29 +24,11 @@ describe('Messages', function () {
     });
   };
 
-  async function sendMessageFromOrigin(
-    this: mocha.Context,
-    origin: string,
-    isWhitelisted = true,
-    reload = true
-  ) {
-    if (reload) {
-      await this.driver.get(`https://${origin}`);
-    }
-
-    if (isWhitelisted) {
-      return await this.driver.executeAsyncScript(sendMessage);
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return await this.driver.executeScript<any>(sendMessage);
-  }
-
   before(async function () {
     await App.initVault.call(this);
     await Settings.setMaxSessionTimeout.call(this);
     await App.open.call(this);
-    tabKeeper = await this.driver.getWindowHandle();
+    const tabKeeper = await this.driver.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
     await this.driver
@@ -59,6 +39,9 @@ describe('Messages', function () {
       .click();
     const [tabAccounts] = await waitForNewWindows(1);
 
+    await this.driver.switchTo().window(tabKeeper);
+    await this.driver.close();
+
     await this.driver.switchTo().window(tabAccounts);
     await this.driver.navigate().refresh();
 
@@ -68,11 +51,17 @@ describe('Messages', function () {
       'waves private node seed with waves tokens'
     );
 
-    await this.driver.switchTo().window(tabKeeper);
-    await App.open.call(this);
+    await this.driver.switchTo().newWindow('tab');
+    tabOrigin = await this.driver.getWindowHandle();
+
+    await this.driver.switchTo().window(tabAccounts);
+    await this.driver.close();
+    await this.driver.switchTo().window(tabOrigin);
   });
 
   after(async function () {
+    const tabKeeper = await this.driver.getWindowHandle();
+    await App.open.call(this);
     await Settings.clearCustomList.call(this);
     await App.closeBgTabs.call(this, tabKeeper);
     await App.resetVault.call(this);
@@ -80,9 +69,14 @@ describe('Messages', function () {
 
   it('Allowed messages from all resources from WhiteList', async function () {
     for (const origin of WHITELIST) {
-      await sendMessageFromOrigin.call(this, origin);
+      await this.driver.get(`https://${origin}`);
 
-      await App.open.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      await this.driver.executeAsyncScript(sendNotification);
+      [messageWindow] = await waitForNewWindows(1);
+      await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
+
       expect(
         await this.driver
           .wait(
@@ -97,22 +91,28 @@ describe('Messages', function () {
       ).not.to.be.empty;
 
       await this.driver.findElement(By.css('button#closeNotification')).click();
+      await Windows.waitForWindowToClose.call(this, messageWindow);
+      messageWindow = null;
+      await this.driver.switchTo().window(tabOrigin);
     }
   });
 
   it('When a message is received from a new resource, permission is requested to access', async function () {
-    await sendMessageFromOrigin.call(this, CUSTOMLIST[0], false);
-    await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
-    await App.open.call(this);
+    await this.driver.get(`https://${CUSTOMLIST[0]}`);
+
+    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    await this.driver.executeScript(sendNotification);
+    [messageWindow] = await waitForNewWindows(1);
+    await this.driver.switchTo().window(messageWindow);
+    await this.driver.navigate().refresh();
+
     // permission request is shown
-    expect(
-      await this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, 'originAuth-transaction')]")
-        ),
-        this.wait
-      )
-    ).not.to.be.throw;
+    await this.driver.wait(
+      until.elementLocated(
+        By.xpath("//div[contains(@class, 'originAuth-transaction')]")
+      ),
+      this.wait
+    );
   });
 
   it('When allowing access to messages - the message is instantly displayed', async function () {
@@ -155,13 +155,22 @@ describe('Messages', function () {
     ).not.to.be.empty;
 
     await this.driver.findElement(By.css('button#closeNotification')).click();
+    expect(messageWindow).not.to.be.null;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    await Windows.waitForWindowToClose.call(this, messageWindow!);
+    messageWindow = null;
+    await this.driver.switchTo().window(tabOrigin);
   });
 
-  const lastOrigin = CUSTOMLIST[1];
   it('When allowing access to an application, but denying messages - messages are not displayed', async function () {
-    await sendMessageFromOrigin.call(this, lastOrigin, false);
-    await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
-    await App.open.call(this);
+    await this.driver.get(`https://${CUSTOMLIST[1]}`);
+
+    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    await this.driver.executeScript(sendNotification);
+    [messageWindow] = await waitForNewWindows(1);
+    await this.driver.switchTo().window(messageWindow);
+    await this.driver.navigate().refresh();
+
     // permission request is shown
     await this.driver.wait(
       until.elementLocated(
@@ -178,14 +187,17 @@ describe('Messages', function () {
       )
       .click();
 
-    expect(
-      await this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, 'final-transaction')]")
-        ),
-        this.wait
-      )
-    ).not.to.be.throw;
+    await this.driver.wait(
+      until.elementLocated(
+        By.xpath("//div[contains(@class, 'final-transaction')]")
+      ),
+      this.wait
+    );
+
+    await this.driver.findElement(By.css('button#close')).click();
+    await Windows.waitForWindowToClose.call(this, messageWindow);
+    messageWindow = null;
+    await this.driver.switchTo().window(tabOrigin);
   });
 
   it('When allowing access from settings - messages are displayed', async function () {
@@ -223,11 +235,15 @@ describe('Messages', function () {
       .click();
 
     await this.driver.findElement(By.css('button#save')).click();
-    await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
-    await sendMessageFromOrigin.call(this, lastOrigin);
+    await this.driver.get(`https://${CUSTOMLIST[1]}`);
 
-    await App.open.call(this);
+    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    await this.driver.executeAsyncScript(sendNotification);
+    [messageWindow] = await waitForNewWindows(1);
+    await this.driver.switchTo().window(messageWindow);
+    await this.driver.navigate().refresh();
+
     expect(
       await this.driver
         .wait(
@@ -240,26 +256,33 @@ describe('Messages', function () {
           By.xpath("//div[contains(@class, 'messageList-messageItemInner')]")
         )
     ).not.to.be.empty;
+
     await this.driver.findElement(By.css('button#closeNotification')).click();
+    await Windows.waitForWindowToClose.call(this, messageWindow);
+    messageWindow = null;
+    await this.driver.switchTo().window(tabOrigin);
   });
 
   it('When receiving several messages from one resource - messages are displayed as a "batch"', async function () {
-    let callback,
-      runs = 0,
-      success = 0;
+    await this.driver.get(`https://${WHITELIST[3]}`);
 
-    while (success < 2) {
-      await this.driver.sleep(NOTIFICATION_POLL_INTERVAL);
-      callback = await sendMessageFromOrigin.call(
-        this,
-        WHITELIST[3],
-        true,
-        !runs++
+    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    for (let success = 0; success < 2; ) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = await this.driver.executeAsyncScript<any>(
+        sendNotification
       );
-      success += (callback?.code !== '18' && 1) || 0;
-    }
 
-    await App.open.call(this);
+      if (result?.code !== '18') {
+        success++;
+      }
+
+      await this.driver.sleep(5 * 1000);
+    }
+    [messageWindow] = await waitForNewWindows(1);
+    await this.driver.switchTo().window(messageWindow);
+    await this.driver.navigate().refresh();
+
     expect(
       await this.driver
         .wait(
@@ -276,9 +299,15 @@ describe('Messages', function () {
   });
 
   it('When receiving messages from several resources - messages are displayed in several blocks', async function () {
-    await sendMessageFromOrigin.call(this, WHITELIST[4]);
+    await this.driver.switchTo().window(tabOrigin);
+    await this.driver.get(`https://${WHITELIST[4]}`);
 
-    await App.open.call(this);
+    await this.driver.executeAsyncScript(sendNotification);
+    expect(messageWindow).not.to.be.null;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    await this.driver.switchTo().window(messageWindow!);
+    await this.driver.navigate().refresh();
+
     expect(
       await this.driver
         .wait(
@@ -306,6 +335,9 @@ describe('Messages', function () {
         )
       )
     ).to.be.empty;
+
+    await this.driver.close();
+    await this.driver.switchTo().window(tabOrigin);
   });
 
   // TODO looks like these units need to be checked in unittests
