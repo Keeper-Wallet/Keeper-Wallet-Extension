@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button } from '../ui';
-import { deleteActiveAccount } from '../../actions';
+import { deleteActiveAccount } from '../../actions/localState';
 
 interface DispatchProps {
   deleteActiveAccount: () => void;

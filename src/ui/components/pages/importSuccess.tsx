@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { PAGES } from '../../pageConfig';
 import { useAccountsSelector, useAppDispatch } from 'accounts/store';
-import { navigate } from 'ui/actions';
+import { navigate } from 'ui/actions/router';
 import background from 'ui/services/Background';
 
 export function ImportSuccessAddressBook() {

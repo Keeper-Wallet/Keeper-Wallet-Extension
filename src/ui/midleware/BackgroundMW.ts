@@ -1,12 +1,14 @@
+import { ACTION } from '../actions/constants';
 import {
-  ACTION,
   notificationChangeName,
   notificationDelete,
   notificationSelect,
+} from '../actions/localState';
+import {
   setActiveNotification,
-  navigate,
   updateActiveState,
-} from '../actions';
+} from '../actions/notifications';
+import { navigate } from '../actions/router';
 import background from '../services/Background';
 import i18n from '../i18n';
 import { UiMiddleware } from 'ui/store';

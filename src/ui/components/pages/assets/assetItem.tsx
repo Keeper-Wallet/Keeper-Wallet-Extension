@@ -6,7 +6,7 @@ import cn from 'classnames';
 import { AssetLogo } from './assetLogo';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../store';
-import { favoriteAsset } from '../../../actions';
+import { favoriteAsset } from '../../../actions/assets';
 import { Tooltip } from '../../ui/tooltip';
 import { MoreActions } from './moreActions';
 import { isSwappableAsset } from 'assets/utils';

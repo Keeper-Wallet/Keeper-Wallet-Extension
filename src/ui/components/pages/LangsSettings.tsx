@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
-import { setLocale } from '../../actions';
+import { setLocale } from '../../actions/user';
 import cn from 'classnames';
 
 interface LangProps {

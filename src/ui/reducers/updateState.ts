@@ -1,4 +1,4 @@
-import { ACTION } from '../actions';
+import { ACTION } from '../actions/constants';
 import { UiAction, UiActionPayload } from 'ui/store';
 import { PreferencesAccount } from 'preferences/types';
 import { AssetBalance } from 'balances/types';

@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { ACTION } from '../actions';
+import { ACTION } from '../actions/constants';
 import { UiAction } from 'ui/store';
 import { PreferencesAccount } from 'preferences/types';
 

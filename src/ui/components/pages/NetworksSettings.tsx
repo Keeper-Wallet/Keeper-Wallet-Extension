@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { setCustomCode, setCustomMatcher, setCustomNode } from '../../actions';
+import {
+  setCustomCode,
+  setCustomMatcher,
+  setCustomNode,
+} from '../../actions/network';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, Copy, Error, Input, Modal } from '../ui';
 import * as styles from './styles/settings.styl';

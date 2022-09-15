@@ -5,7 +5,8 @@ import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { Login } from './login';
-import { navigate, newAccountSelect } from '../../../actions';
+import { newAccountSelect } from '../../../actions/localState';
+import { navigate } from '../../../actions/router';
 import { PAGES } from '../../../pageConfig';
 import { IdentityUser } from 'controllers/IdentityController';
 

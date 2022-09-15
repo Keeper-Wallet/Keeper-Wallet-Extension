@@ -1,6 +1,6 @@
 import * as styles from './NewAccount.module.css';
 import { connect } from 'react-redux';
-import { createNew } from '../../actions';
+import { createNew } from '../../actions/localState';
 import * as React from 'react';
 import { Button, Error, Input, LangsSelect } from '../ui';
 import { withTranslation, WithTranslation } from 'react-i18next';

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { validators } from '@waves/waves-transactions';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from 'ui/store';
-import { setAddress, removeAddress } from 'ui/actions';
+import { setAddress, removeAddress } from 'ui/actions/addresses';
 import { AddressInput } from './Input';
 import { Modal, Input, Error, Button } from '..';
 

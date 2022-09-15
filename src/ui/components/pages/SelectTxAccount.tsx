@@ -4,14 +4,15 @@ import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { connect } from 'react-redux';
 import {
-  clearMessages,
   clearMessagesStatus,
   closeNotificationWindow,
+} from '../../actions/localState';
+import {
   deleteNotifications,
-  navigate,
-  reject,
   updateActiveState,
-} from '../../actions';
+} from '../../actions/notifications';
+import { clearMessages, reject } from '../../actions/messages';
+import { navigate } from '../../actions/router';
 import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import { LoadingScreen } from './loadingScreen';

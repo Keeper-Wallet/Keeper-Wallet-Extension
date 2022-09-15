@@ -1,7 +1,7 @@
 import { validators } from '@waves/waves-transactions';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import * as React from 'react';
-import { createAccount } from 'ui/actions';
+import { createAccount } from 'ui/actions/user';
 import { WalletTypes } from 'ui/services/Background';
 import { Button, Error, Input } from 'ui/components/ui';
 import * as styles from 'ui/components/pages/importDebug.module.css';

@@ -1,5 +1,5 @@
 import { ACTION } from '../actions/constants';
-import { loginUpdate, loginPending } from '../actions';
+import { loginPending, loginUpdate } from '../actions/localState';
 import background from '../services/Background';
 import { UiMiddleware } from 'ui/store';
 

@@ -1,7 +1,8 @@
 import * as styles from './styles/changeName.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { changeAccountName, navigate } from '../../actions';
+import { changeAccountName } from '../../actions/account';
+import { navigate } from '../../actions/router';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';

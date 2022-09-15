@@ -2,13 +2,13 @@ import * as styles from './permissionsSettings.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';
+import { setShowNotification } from 'ui/actions/notifications';
 import {
   allowOrigin,
   deleteOrigin,
   disableOrigin,
   setAutoOrigin,
-  setShowNotification,
-} from 'ui/actions';
+} from 'ui/actions/permissions';
 import cn from 'classnames';
 import { Loader, Modal } from 'ui/components/ui';
 import {

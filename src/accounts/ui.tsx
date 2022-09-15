@@ -12,7 +12,7 @@ import { Provider } from 'react-redux';
 import { KEEPERWALLET_DEBUG } from '../constants';
 import { cbToPromise, setupDnode, transformMethods } from 'lib/dnodeUtil';
 import { PortStream } from 'lib/portStream';
-import { setLoading, setLangs, setTabMode } from 'ui/actions';
+import { setLangs, setLoading, setTabMode } from 'ui/actions/localState';
 import { createUpdateState } from './updateState';
 import { RootAccounts } from 'ui/components/RootAccounts';
 import { Error } from 'ui/components/pages/Error';

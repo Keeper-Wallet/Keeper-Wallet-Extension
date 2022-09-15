@@ -1,12 +1,12 @@
 import * as Sentry from '@sentry/react';
+import { ACTION } from '../actions/constants';
 import {
-  ACTION,
   approveError,
   approveOk,
   approvePending,
   rejectOk,
-  setActiveMessage,
-} from '../actions';
+} from '../actions/localState';
+import { setActiveMessage } from '../actions/notifications';
 import { MSG_STATUSES } from '../../constants';
 import background from '../services/Background';
 import { UiMiddleware } from 'ui/store';

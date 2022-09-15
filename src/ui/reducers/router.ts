@@ -1,5 +1,5 @@
 import { PAGES } from 'ui/pageConfig';
-import { ACTION } from '../actions';
+import { ACTION } from '../actions/constants';
 import { UiAction } from '../store';
 
 const MAX_HISTORY = 10;

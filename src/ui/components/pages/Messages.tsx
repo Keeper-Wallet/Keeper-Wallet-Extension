@@ -7,17 +7,15 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { TransactionStatusState } from 'ui/reducers/updateState';
 import { AppState } from 'ui/store';
+import { approve, reject, rejectForever } from '../../actions/messages';
 import {
-  approve,
   clearMessagesStatus,
   closeNotificationWindow,
-  getAsset,
-  navigate,
-  reject,
-  rejectForever,
-  setAutoOrigin,
-  setShowNotification,
-} from '../../actions';
+} from '../../actions/localState';
+import { getAsset } from '../../actions/assets';
+import { navigate } from '../../actions/router';
+import { setAutoOrigin } from '../../actions/permissions';
+import { setShowNotification } from '../../actions/notifications';
 import { PAGES } from '../../pageConfig';
 import { getConfigByTransaction } from '../transactions';
 import { FinalTransaction } from '../transactions/FinalTransaction/FinalTransaction';

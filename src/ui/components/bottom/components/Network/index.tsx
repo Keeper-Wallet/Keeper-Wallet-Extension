@@ -6,13 +6,13 @@ import {
   useTranslation,
   WithTranslation,
 } from 'react-i18next';
+import { setLoading } from 'ui/actions/localState';
 import {
-  setLoading,
   setCustomCode,
   setCustomMatcher,
   setCustomNode,
   setNetwork,
-} from 'ui/actions';
+} from 'ui/actions/network';
 import { Modal } from 'ui/components/ui';
 import { INetworkData, NetworkSettings } from '../NetworkSettings';
 import * as styles from './network.styl';

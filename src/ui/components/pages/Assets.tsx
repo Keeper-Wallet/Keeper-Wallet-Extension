@@ -3,12 +3,10 @@ import * as React from 'react';
 import { useState } from 'react';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { useTranslation } from 'react-i18next';
-import {
-  getBalances,
-  navigate,
-  setActiveAccount,
-  setSwapScreenInitialState,
-} from 'ui/actions';
+import { setActiveAccount } from 'ui/actions/assets';
+import { getBalances } from 'ui/actions/balances';
+import { setSwapScreenInitialState } from 'ui/actions/localState';
+import { navigate } from 'ui/actions/router';
 import { PAGES } from 'ui/pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import BigNumber from '@waves/bignumber';

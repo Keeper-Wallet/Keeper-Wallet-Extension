@@ -14,7 +14,7 @@ import { ledgerService } from './ledger/service';
 import { LedgerSignRequest } from './ledger/types';
 import { cbToPromise, setupDnode, transformMethods } from './lib/dnodeUtil';
 import { PortStream } from './lib/portStream';
-import { setLoading, setLangs } from './ui/actions';
+import { setLangs, setLoading } from './ui/actions/localState';
 import { createUpdateState } from './ui/actions/updateState';
 import { Root } from 'ui/components/Root';
 import { Error } from 'ui/components/pages/Error';

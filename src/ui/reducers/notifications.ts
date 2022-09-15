@@ -1,7 +1,7 @@
 import { MessageStoreItem } from 'messages/types';
 import { NotificationsStoreItem } from 'notifications/types';
 import { UiAction } from 'ui/store';
-import { ACTION } from '../actions';
+import { ACTION } from '../actions/constants';
 
 export function notifications(
   state: NotificationsStoreItem[][] = [],

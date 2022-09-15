@@ -1,6 +1,6 @@
 import * as styles from './styles/changePassword.styl';
 import { connect } from 'react-redux';
-import { changePassword } from '../../actions';
+import { changePassword } from '../../actions/user';
 import * as React from 'react';
 import { Button, Error, Input, Modal } from '../ui';
 import background from '../../services/Background';

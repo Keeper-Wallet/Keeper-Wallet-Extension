@@ -6,13 +6,13 @@ import {
   WithTranslation,
   useTranslation,
 } from 'react-i18next';
+import { closeNotificationWindow } from '../../actions/localState';
 import {
-  closeNotificationWindow,
   deleteNotifications,
-  navigate,
   setActiveNotification,
   setShowNotification,
-} from '../../actions';
+} from '../../actions/notifications';
+import { navigate } from '../../actions/router';
 import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';

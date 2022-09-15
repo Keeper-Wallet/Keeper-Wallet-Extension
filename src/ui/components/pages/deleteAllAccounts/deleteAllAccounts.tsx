@@ -2,7 +2,8 @@ import * as styles from './deleteAccounts.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Error, Input } from 'ui/components/ui';
-import { deleteAccount, navigate } from 'ui/actions';
+import { navigate } from 'ui/actions/router';
+import { deleteAccount } from 'ui/actions/user';
 import cn from 'classnames';
 import { useAppDispatch } from 'ui/store';
 

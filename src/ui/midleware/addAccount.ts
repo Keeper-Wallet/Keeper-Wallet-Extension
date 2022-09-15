@@ -1,4 +1,6 @@
-import { ACTION, selectAccount, navigate } from '../actions';
+import { ACTION } from '../actions/constants';
+import { selectAccount } from '../actions/localState';
+import { navigate } from '../actions/router';
 import background, { WalletTypes } from '../services/Background';
 import { PAGES } from 'ui/pageConfig';
 import { UiMiddleware } from 'ui/store';

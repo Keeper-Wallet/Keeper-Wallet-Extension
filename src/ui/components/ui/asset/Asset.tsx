@@ -2,7 +2,7 @@ import { AssetDetail } from 'assets/types';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { AppState } from 'ui/store';
-import { getAsset } from '../../../actions';
+import { getAsset } from '../../../actions/assets';
 import { Loader } from '../loader';
 
 const AssetComponent = ({

@@ -2,14 +2,12 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import {
-  approve,
-  clearMessages,
   deleteNotifications,
-  getAsset,
-  reject,
   setActiveMessage,
   setActiveNotification,
-} from '../../actions';
+} from '../../actions/notifications';
+import { approve, clearMessages, reject } from '../../actions/messages';
+import { getAsset } from '../../actions/assets';
 import { LoadingScreen } from './loadingScreen';
 import { getConfigByTransaction } from '../transactions';
 import { NotificationCard } from '../notifications';

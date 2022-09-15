@@ -4,7 +4,8 @@ import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { BigLogo } from '../head';
 import { Button, Error, Input } from '../ui';
-import { login, navigate } from '../../actions';
+import { login } from '../../actions/localState';
+import { navigate } from '../../actions/router';
 import { PAGES } from '../../pageConfig';
 import { AppState } from 'ui/store';
 

@@ -6,7 +6,8 @@ import * as styles from './nftCollection.module.css';
 import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { useTranslation } from 'react-i18next';
-import { navigate, setUiState } from 'ui/actions';
+import { navigate } from 'ui/actions/router';
+import { setUiState } from 'ui/actions/uiState';
 import { createNft, Nft } from 'nfts/utils';
 import {
   sortAndFilterNfts,

@@ -1,12 +1,9 @@
 import * as styles from './newWalletName.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  createAccount,
-  newAccountName,
-  selectAccount,
-  navigate,
-} from 'ui/actions';
+import { newAccountName, selectAccount } from 'ui/actions/localState';
+import { navigate } from 'ui/actions/router';
+import { createAccount } from 'ui/actions/user';
 import { Button, Error, Input } from 'ui/components/ui';
 import { CONFIG } from 'ui/appConfig';
 import { WalletTypes } from 'ui/services/Background';
