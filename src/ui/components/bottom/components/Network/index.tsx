@@ -7,7 +7,7 @@ import {
   WithTranslation,
 } from 'react-i18next';
 import {
-  loading,
+  setLoading,
   setCustomCode,
   setCustomMatcher,
   setCustomNode,
@@ -82,7 +82,6 @@ interface StateProps {
 
 interface DispatchProps {
   setNetwork: (net: NetworkName) => void;
-  loading: (show: boolean) => void;
   setCustomNode: (payload: {
     node: string;
     network: NetworkName | null | undefined;
@@ -95,6 +94,7 @@ interface DispatchProps {
     code: string;
     network: NetworkName | null | undefined;
   }) => void;
+  setLoading: (show: boolean) => void;
 }
 
 type Props = WithTranslation &
@@ -178,8 +178,8 @@ class NetworkComponent extends React.PureComponent<Props, IState> {
 
   setNewNetwork = (net: NetworkName | null | undefined) => {
     if (net) {
-      this.props.loading(true);
-      setTimeout(() => this.props.loading(false), 1000);
+      this.props.setLoading(true);
+      setTimeout(() => this.props.setLoading(false), 1000);
       this.props.setNetwork(net);
     }
   };
@@ -323,7 +323,7 @@ const mapStateToProps = ({
 
 const actions = {
   setNetwork,
-  loading,
+  setLoading,
   setCustomNode,
   setCustomMatcher,
   setCustomCode,

@@ -43,7 +43,7 @@ export const selectAccount = createMVAction(ACTION.SELECT_ACCOUNT);
 export const deleteActiveAccount = createMVAction(ACTION.DELETE_ACTIVE_ACCOUNT);
 
 export const setLangs = createMVAction(ACTION.UPDATE_LANGS);
-export const loading = createMVAction(ACTION.LOADING);
+export const setLoading = createMVAction(ACTION.SET_LOADING);
 export const notificationDelete = createMVAction(ACTION.NOTIFICATION_DELETE);
 export const notificationSelect = createMVAction(ACTION.NOTIFICATION_SELECT);
 

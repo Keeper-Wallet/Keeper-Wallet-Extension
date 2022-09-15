@@ -271,7 +271,7 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.LOADING;
+      type: typeof ACTION.SET_LOADING;
       payload: boolean;
       meta?: never;
     }

@@ -94,7 +94,7 @@ function menu(state = { logo: false }, { type, payload }: UiAction) {
 }
 
 function loading(state = true, { type, payload }: UiAction) {
-  if (type === ACTION.LOADING) {
+  if (type === ACTION.SET_LOADING) {
     return payload;
   }
 

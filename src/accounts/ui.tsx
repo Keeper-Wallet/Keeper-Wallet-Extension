@@ -12,7 +12,7 @@ import { Provider } from 'react-redux';
 import { KEEPERWALLET_DEBUG } from '../constants';
 import { cbToPromise, setupDnode, transformMethods } from 'lib/dnodeUtil';
 import { PortStream } from 'lib/portStream';
-import { loading, setLangs, setTabMode } from 'ui/actions';
+import { setLoading, setLangs, setTabMode } from 'ui/actions';
 import { createUpdateState } from './updateState';
 import { RootAccounts } from 'ui/components/RootAccounts';
 import { Error } from 'ui/components/pages/Error';
@@ -129,5 +129,5 @@ async function startUi() {
   document.addEventListener('mousedown', () => backgroundService.updateIdle());
   document.addEventListener('focus', () => backgroundService.updateIdle());
 
-  store.dispatch(loading(false));
+  store.dispatch(setLoading(false));
 }
