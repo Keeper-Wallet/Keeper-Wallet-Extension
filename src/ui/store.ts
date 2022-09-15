@@ -6,6 +6,7 @@ import {
   Dispatch,
   MiddlewareAPI,
 } from 'redux';
+import { createLogger } from 'redux-logger';
 import * as reducers from './reducers/updateState';
 import {
   NewAccountState,
@@ -33,15 +34,6 @@ import { IMoneyLike } from './utils/converters';
 import { NetworkName } from 'networks/types';
 import { MessageInputOfType, MessageStoreItem } from 'messages/types';
 import { AssetDetail } from 'assets/types';
-
-const middlewares = Object.values(middleware);
-
-if (KEEPERWALLET_DEBUG) {
-  middlewares.push(() => next => action => {
-    console.log('-->', action.type, action.payload, action.meta);
-    return next(action);
-  });
-}
 
 const reducer = combineReducers(reducers);
 
@@ -617,6 +609,17 @@ export type UiActionPayload<T extends UiAction['type']> =
 export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
 
 export function createUiStore() {
+  const middlewares = Object.values(middleware);
+
+  if (KEEPERWALLET_DEBUG) {
+    middlewares.push(
+      createLogger({
+        collapsed: true,
+        diff: true,
+      })
+    );
+  }
+
   return createStore<
     AppState,
     UiAction,
