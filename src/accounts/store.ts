@@ -1,9 +1,13 @@
-import { applyMiddleware, combineReducers, createStore } from 'redux';
+import {
+  applyMiddleware,
+  combineReducers,
+  createStore,
+  PreloadedState,
+} from 'redux';
 import { createLogger } from 'redux-logger';
 import thunk, { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import * as reducers from 'ui/reducers/updateState';
 import * as middleware from 'ui/midleware';
-import { extension } from 'lib/extension';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { UiAction } from 'ui/store';
 import { KEEPERWALLET_DEBUG } from 'ui/appConfig';
@@ -33,7 +37,9 @@ export type AccountsState = ReturnType<typeof reducer>;
 export const useAccountsSelector: TypedUseSelectorHook<AccountsState> =
   useSelector;
 
-export function createAccountsStore() {
+export function createAccountsStore(
+  preloadedState: PreloadedState<AccountsState>
+) {
   return createStore<
     AccountsState,
     UiAction,
@@ -43,7 +49,7 @@ export function createAccountsStore() {
     Record<never, unknown>
   >(
     reducer,
-    { version: extension.runtime.getManifest().version },
+    preloadedState,
     applyMiddleware(
       thunk,
       ...Object.values(middleware),

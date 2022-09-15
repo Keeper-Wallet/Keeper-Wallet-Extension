@@ -36,7 +36,9 @@ log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 startUi();
 
 async function startUi() {
-  const store = createAccountsStore();
+  const store = createAccountsStore({
+    version: extension.runtime.getManifest().version,
+  });
 
   store.dispatch(setTabMode('tab'));
   store.dispatch(setLangs(LANGS));

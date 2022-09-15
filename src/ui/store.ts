@@ -5,6 +5,7 @@ import {
   createStore,
   Dispatch,
   MiddlewareAPI,
+  PreloadedState,
 } from 'redux';
 import { createLogger } from 'redux-logger';
 import thunk, { ThunkAction, ThunkDispatch } from 'redux-thunk';
@@ -16,7 +17,6 @@ import {
   UiState,
 } from './reducers/updateState';
 import * as middleware from './midleware';
-import { extension } from 'lib/extension';
 import { KEEPERWALLET_DEBUG } from './appConfig';
 import type { ACTION } from './actions/constants';
 import {
@@ -604,7 +604,7 @@ export type UiActionPayload<T extends UiAction['type']> =
 
 export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
 
-export function createUiStore() {
+export function createUiStore(preloadedState: PreloadedState<AppState>) {
   return createStore<
     AppState,
     UiAction,
@@ -614,7 +614,7 @@ export function createUiStore() {
     Record<never, unknown>
   >(
     reducer,
-    { version: extension.runtime.getManifest().version },
+    preloadedState,
     applyMiddleware(
       thunk,
       ...Object.values(middleware),
