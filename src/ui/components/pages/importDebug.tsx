@@ -6,6 +6,8 @@ import { WalletTypes } from 'ui/services/Background';
 import { Button, Error, Input } from 'ui/components/ui';
 import * as styles from 'ui/components/pages/importDebug.module.css';
 import { useTranslation } from 'react-i18next';
+import { navigate } from 'ui/actions/router';
+import { PAGES } from 'ui/pageConfig';
 
 export function ImportDebug() {
   const { t } = useTranslation();
@@ -59,7 +61,7 @@ export function ImportDebug() {
       <h2 className="margin1 title1">{t('importDebug.title')}</h2>
 
       <form
-        onSubmit={e => {
+        onSubmit={async e => {
           e.preventDefault();
 
           setShowErrors(true);
@@ -68,7 +70,7 @@ export function ImportDebug() {
             return;
           }
 
-          dispatch(
+          await dispatch(
             createAccount(
               {
                 type: 'debug',
@@ -79,6 +81,8 @@ export function ImportDebug() {
               WalletTypes.Debug
             )
           );
+
+          dispatch(navigate(PAGES.IMPORT_SUCCESS));
         }}
       >
         <div className="margin1">

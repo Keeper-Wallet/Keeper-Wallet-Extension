@@ -51,7 +51,7 @@ export function NewWalletName() {
       <h2 className={`title1 margin1`}>{t('newAccountName.accountName')}</h2>
 
       <form
-        onSubmit={e => {
+        onSubmit={async e => {
           e.preventDefault();
 
           setPending(true);
@@ -74,9 +74,11 @@ export function NewWalletName() {
             ledger: WalletTypes.Ledger,
           };
 
-          dispatch(
+          await dispatch(
             createAccount(account, accountTypeToWalletType[account.type])
           );
+
+          dispatch(navigate(PAGES.IMPORT_SUCCESS));
         }}
       >
         <div className="margin1">

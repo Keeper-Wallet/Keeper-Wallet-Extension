@@ -3,8 +3,6 @@ import Background, { WalletTypes } from '../services/Background';
 import { NetworkName } from 'networks/types';
 import { AccountsThunkAction } from 'accounts/store';
 import { selectAccount } from './localState';
-import { navigate } from './router';
-import { PAGES } from 'ui/pageConfig';
 
 export const deleteAccount = () => ({ type: ACTION.DELETE_ACCOUNT });
 
@@ -64,7 +62,6 @@ export function createAccount(
     });
 
     dispatch(selectAccount(lastAccount));
-    dispatch(navigate(PAGES.IMPORT_SUCCESS));
 
     if (type !== WalletTypes.Debug) {
       Background.sendEvent('addWallet', { type });
