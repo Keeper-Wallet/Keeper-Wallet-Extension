@@ -16,7 +16,7 @@ const mapStateToProps = function (store: AppState) {
 };
 
 interface DispatchProps {
-  createNew: (pass: string) => void;
+  createNew: (password: string) => Promise<void>;
 }
 
 class NewAccountComponent extends React.PureComponent<

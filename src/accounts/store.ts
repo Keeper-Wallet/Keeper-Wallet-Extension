@@ -1,5 +1,6 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { createLogger } from 'redux-logger';
+import thunk, { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import * as reducers from 'ui/reducers/updateState';
 import * as middleware from 'ui/midleware';
 import { extension } from 'lib/extension';
@@ -33,29 +34,38 @@ export const useAccountsSelector: TypedUseSelectorHook<AccountsState> =
   useSelector;
 
 export function createAccountsStore() {
-  const middlewares = Object.values(middleware);
-
-  if (KEEPERWALLET_DEBUG) {
-    middlewares.push(
-      createLogger({
-        collapsed: true,
-        diff: true,
-      })
-    );
-  }
-
   return createStore<
     AccountsState,
     UiAction,
-    Record<never, unknown>,
+    {
+      dispatch: ThunkDispatch<AccountsState, undefined, UiAction>;
+    },
     Record<never, unknown>
   >(
     reducer,
     { version: extension.runtime.getManifest().version },
-    applyMiddleware(...middlewares)
+    applyMiddleware(
+      thunk,
+      ...Object.values(middleware),
+      ...(KEEPERWALLET_DEBUG
+        ? [
+            createLogger({
+              collapsed: true,
+              diff: true,
+            }),
+          ]
+        : [])
+    )
   );
 }
 
 export type AccountsStore = ReturnType<typeof createAccountsStore>;
+
+export type AccountsThunkAction<ReturnType> = ThunkAction<
+  ReturnType,
+  AccountsState,
+  undefined,
+  UiAction
+>;
 
 export const useAppDispatch = () => useDispatch<AccountsStore['dispatch']>();

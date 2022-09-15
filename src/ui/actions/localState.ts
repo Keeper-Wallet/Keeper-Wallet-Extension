@@ -1,4 +1,6 @@
+import { AccountsThunkAction } from 'accounts/store';
 import { SwapScreenInitialState, TabMode } from 'ui/reducers/localState';
+import Background from 'ui/services/Background';
 import { UiAction, UiActionPayload } from 'ui/store';
 import { ACTION } from './constants';
 
@@ -26,7 +28,23 @@ const createCommonAction =
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     createMVAction(type)({ pending, error } as any);
 
-export const createNew = createMVAction(ACTION.SET_PASSWORD);
+export const createNew = (
+  password: string
+): AccountsThunkAction<Promise<void>> => {
+  return async (dispatch, getState) => {
+    dispatch(newUser());
+
+    try {
+      console.log('before', { initialized: getState().state?.initialized });
+      await Background.initVault(password);
+      console.log('after', { initialized: getState().state?.initialized });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      dispatch(newUserUpdate(err));
+    }
+  };
+};
+
 export const newUser = createCommonAction(ACTION.SET_PASSWORD_PENDING, true);
 export const newUserUpdate = createCommonAction(
   ACTION.SET_PASSWORD_UPDATE,

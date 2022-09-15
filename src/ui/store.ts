@@ -7,6 +7,7 @@ import {
   MiddlewareAPI,
 } from 'redux';
 import { createLogger } from 'redux-logger';
+import thunk, { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import * as reducers from './reducers/updateState';
 import {
   NewAccountState,
@@ -591,11 +592,6 @@ export type UiAction =
       type: typeof ACTION.REJECT_FOREVER;
       payload: { messageId: string; forever: boolean };
       meta?: never;
-    }
-  | {
-      type: typeof ACTION.SET_PASSWORD;
-      payload: string;
-      meta?: never;
     };
 
 export type UiActionOfType<T extends UiAction['type']> = Extract<
@@ -609,30 +605,39 @@ export type UiActionPayload<T extends UiAction['type']> =
 export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
 
 export function createUiStore() {
-  const middlewares = Object.values(middleware);
-
-  if (KEEPERWALLET_DEBUG) {
-    middlewares.push(
-      createLogger({
-        collapsed: true,
-        diff: true,
-      })
-    );
-  }
-
   return createStore<
     AppState,
     UiAction,
-    Record<never, unknown>,
+    {
+      dispatch: ThunkDispatch<AppState, undefined, UiAction>;
+    },
     Record<never, unknown>
   >(
     reducer,
     { version: extension.runtime.getManifest().version },
-    applyMiddleware(...middlewares)
+    applyMiddleware(
+      thunk,
+      ...Object.values(middleware),
+      ...(KEEPERWALLET_DEBUG
+        ? [
+            createLogger({
+              collapsed: true,
+              diff: true,
+            }),
+          ]
+        : [])
+    )
   );
 }
 
 export type UiStore = ReturnType<typeof createUiStore>;
+
+export type UiThunkAction<ReturnType> = ThunkAction<
+  ReturnType,
+  AppState,
+  undefined,
+  UiAction
+>;
 
 export type UiMiddleware = (
   api: MiddlewareAPI<Dispatch, AppState>
