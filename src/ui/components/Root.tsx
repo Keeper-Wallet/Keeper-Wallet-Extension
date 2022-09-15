@@ -29,9 +29,6 @@ export function Root() {
     let canUsePage = !state.state?.locked;
 
     switch (page) {
-      case PAGES.NEW:
-        canUsePage = !state.state?.initialized;
-        break;
       case PAGES.LOGIN:
       case PAGES.FORGOT:
         canUsePage = Boolean(state.state?.initialized && state.state?.locked);
