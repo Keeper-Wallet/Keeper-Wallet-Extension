@@ -12,7 +12,6 @@ import {
   ImportPopup,
   ImportTab,
   Info,
-  LoadingScreen,
   LangsSettings,
   Login,
   MessageList,
@@ -80,7 +79,6 @@ export const PAGES = {
   DELETE_ACTIVE_ACCOUNT: 'delete_active_account',
   CHANGE_ACCOUNT_NAME: 'change_account_name',
   QR_CODE_SELECTED: 'qr_code_selected_account',
-  INTRO: 'intro',
   NETWORK_SETTINGS: 'networks_select',
   GENERAL_SETTINGS: 'general_settings',
   LANGS_SETTINGS: 'langs_settings',
@@ -382,12 +380,6 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     menu: {
       hasLogo: true,
       back: true,
-    },
-  },
-  [PAGES.INTRO]: {
-    component: LoadingScreen,
-    bottom: {
-      hide: true,
     },
   },
   [PAGES.GENERAL_SETTINGS]: {

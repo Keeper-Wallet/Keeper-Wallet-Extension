@@ -4,14 +4,12 @@ import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
 import { useAccountsSelector } from 'accounts/store';
+import { LoadingScreen } from './pages/loadingScreen';
 
 export function RootAccounts() {
   const currentLocale = useAccountsSelector(state => state.currentLocale);
+  const isLoading = useAccountsSelector(state => state.localState.loading);
   const currentPage = useAccountsSelector(state => {
-    if (state.localState.loading) {
-      return PAGES.INTRO;
-    }
-
     let page = state.router.currentPage;
 
     if (typeof state.router.currentPage !== 'string') {
@@ -21,15 +19,10 @@ export function RootAccounts() {
         : PAGES.ROOT;
     }
 
-    if (!page && state.state?.locked == null) {
-      page = PAGES.INTRO;
-    }
-
     let canUsePage = !state.state?.locked;
 
     switch (page) {
       case PAGES.NEW:
-      case PAGES.INTRO:
         canUsePage = !state.state?.initialized;
         break;
       case PAGES.LOGIN:
@@ -72,20 +65,26 @@ export function RootAccounts() {
 
   return (
     <div className={`height ${currentLocale}`}>
-      <Menu
-        hasBack={
-          currentPage !== window.location.hash.split('#')[1] &&
-          pageConf.menu?.back
-        }
-        hasClose={pageConf.menu?.close}
-        hasLogo={pageConf.menu?.hasLogo}
-        hasSettings={pageConf.menu?.hasSettings}
-      />
-      <Component />
-      <Bottom
-        hide={pageConf.bottom?.hide}
-        noChangeNetwork={pageConf.bottom?.noChangeNetwork}
-      />
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <>
+          <Menu
+            hasBack={
+              currentPage !== window.location.hash.split('#')[1] &&
+              pageConf.menu?.back
+            }
+            hasClose={pageConf.menu?.close}
+            hasLogo={pageConf.menu?.hasLogo}
+            hasSettings={pageConf.menu?.hasSettings}
+          />
+          <Component />
+          <Bottom
+            hide={pageConf.bottom?.hide}
+            noChangeNetwork={pageConf.bottom?.noChangeNetwork}
+          />
+        </>
+      )}
     </div>
   );
 }
