@@ -22,7 +22,6 @@ import type { ACTION } from './actions/constants';
 import {
   BackgroundGetStateResult,
   BackgroundUiApi,
-  WalletTypes,
 } from './services/Background';
 import { FeeConfig, NftConfig } from '../constants';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';
@@ -30,7 +29,6 @@ import { PermissionValue } from 'permissions/types';
 import { NotificationsStoreItem } from 'notifications/types';
 import { BalancesItem } from 'balances/types';
 import { NftInfo } from 'nfts';
-import { BatchAddAccountsPayload } from './actions/user';
 import { IMoneyLike } from './utils/converters';
 import { NetworkName } from 'networks/types';
 import { MessageInputOfType, MessageStoreItem } from 'messages/types';
@@ -516,11 +514,6 @@ export type UiAction =
       type: typeof ACTION.SIGN_AND_PUBLISH_TRANSACTION;
       payload: MessageInputOfType<'transaction'>['data'];
       meta?: never;
-    }
-  | {
-      type: typeof ACTION.BATCH_ADD_ACCOUNTS;
-      payload: BatchAddAccountsPayload;
-      meta: { type: WalletTypes };
     }
   | {
       type: typeof ACTION.LOGIN;

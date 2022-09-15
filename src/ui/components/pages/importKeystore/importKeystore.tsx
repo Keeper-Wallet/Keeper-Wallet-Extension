@@ -209,8 +209,8 @@ export function ImportKeystore() {
       onSkip={() => {
         dispatch(navigate(PAGES.ROOT));
       }}
-      onSubmit={selectedAccounts => {
-        dispatch(
+      onSubmit={async selectedAccounts => {
+        await dispatch(
           batchAddAccounts(
             selectedAccounts.map(acc => ({
               type: 'seed',
@@ -221,6 +221,8 @@ export function ImportKeystore() {
             walletType!
           )
         );
+
+        dispatch(navigate(PAGES.IMPORT_SUCCESS_KEYSTORE));
       }}
     />
   );

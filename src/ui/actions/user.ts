@@ -69,7 +69,7 @@ export function createAccount(
   };
 }
 
-export type BatchAddAccountsPayload = Array<
+type BatchAddAccountsInput = Array<
   {
     name: string;
     network: NetworkName;
@@ -94,13 +94,15 @@ export type BatchAddAccountsPayload = Array<
 >;
 
 export function batchAddAccounts(
-  accounts: BatchAddAccountsPayload,
+  accounts: BatchAddAccountsInput,
   type: WalletTypes
-) {
-  return {
-    type: ACTION.BATCH_ADD_ACCOUNTS,
-    payload: accounts,
-    meta: { type },
+): AccountsThunkAction<Promise<void>> {
+  return async () => {
+    await Promise.all(accounts.map(account => Background.addWallet(account)));
+
+    if (type !== WalletTypes.Debug) {
+      Background.sendEvent('addWallet', { type });
+    }
   };
 }
 
