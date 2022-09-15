@@ -10,7 +10,7 @@ import {
   setActiveMessage,
   setActiveNotification,
 } from '../../actions';
-import { Intro } from './Intro';
+import { LoadingScreen } from './loadingScreen';
 import { getConfigByTransaction } from '../transactions';
 import { NotificationCard } from '../notifications';
 import { TransactionWallet } from '../wallets/TransactionWallet';
@@ -172,7 +172,7 @@ class MessageListComponent extends React.Component<Props, State> {
 
   render() {
     if (this.state.loading) {
-      return <Intro />;
+      return <LoadingScreen />;
     }
 
     const { t, messages, notifications, assets } = this.props;

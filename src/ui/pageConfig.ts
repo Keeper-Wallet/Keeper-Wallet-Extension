@@ -12,7 +12,7 @@ import {
   ImportPopup,
   ImportTab,
   Info,
-  Intro,
+  LoadingScreen,
   LangsSettings,
   Login,
   MessageList,
@@ -385,7 +385,7 @@ export const PAGES_CONF: Record<string, PageConfig> = {
     },
   },
   [PAGES.INTRO]: {
-    component: Intro,
+    component: LoadingScreen,
     bottom: {
       hide: true,
     },

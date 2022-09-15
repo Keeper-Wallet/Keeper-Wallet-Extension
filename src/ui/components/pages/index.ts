@@ -5,7 +5,7 @@ export * from './ChangeName';
 export * from './BackupSeed';
 export * from './ConfirmBackup';
 export * from './Import';
-export * from './Intro';
+export * from './loadingScreen';
 export * from './Info';
 export * from './AccountInfo';
 export * from './AddressBook';

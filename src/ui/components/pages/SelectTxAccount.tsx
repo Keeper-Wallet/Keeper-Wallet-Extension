@@ -14,7 +14,7 @@ import {
 } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
-import { Intro } from './Intro';
+import { LoadingScreen } from './loadingScreen';
 import { AppState } from 'ui/store';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PreferencesAccount } from 'preferences/types';
@@ -96,7 +96,7 @@ class SelectTxAccountComponent extends React.PureComponent<Props, State> {
 
   render() {
     if (this.state.loading) {
-      return <Intro />;
+      return <LoadingScreen />;
     }
 
     const { t } = this.props;

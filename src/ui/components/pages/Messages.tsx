@@ -21,7 +21,7 @@ import {
 import { PAGES } from '../../pageConfig';
 import { getConfigByTransaction } from '../transactions';
 import { FinalTransaction } from '../transactions/FinalTransaction/FinalTransaction';
-import { Intro } from './Intro';
+import { LoadingScreen } from './loadingScreen';
 import { MessageComponentProps, MessageConfig } from '../transactions/types';
 
 interface StateProps {
@@ -254,7 +254,7 @@ class MessagesComponent extends React.Component<Props, State> {
 
   render() {
     if (this.state.loading || this.state.approvePending) {
-      return <Intro />;
+      return <LoadingScreen />;
     }
 
     const { approveOk, approveError, rejectOk } = this.state.transactionStatus;

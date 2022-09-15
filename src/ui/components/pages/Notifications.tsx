@@ -16,7 +16,7 @@ import {
 import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
-import { Intro } from './Intro';
+import { LoadingScreen } from './loadingScreen';
 import { AppState } from 'ui/store';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PreferencesAccount } from 'preferences/types';
@@ -176,7 +176,7 @@ class NotificationsComponent extends React.Component<Props, State> {
     } = this.state;
 
     if (loading) {
-      return <Intro />;
+      return <LoadingScreen />;
     }
 
     return (

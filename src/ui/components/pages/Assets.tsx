@@ -13,7 +13,7 @@ import { PAGES } from 'ui/pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import BigNumber from '@waves/bignumber';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
-import { Intro } from './Intro';
+import { LoadingScreen } from './loadingScreen';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { AssetInfo } from './assets/assetInfo';
 import { TabAssets } from './assets/tabs/tabAssets';
@@ -55,7 +55,7 @@ export function Assets() {
   }, [dispatch]);
 
   if (!activeAccount) {
-    return <Intro />;
+    return <LoadingScreen />;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
