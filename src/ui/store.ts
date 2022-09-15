@@ -518,47 +518,6 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.SAVE_NEW_ACCOUNT;
-      payload:
-        | {
-            type: 'seed';
-            name: string;
-            seed: string;
-          }
-        | {
-            type: 'encodedSeed';
-            encodedSeed: string;
-            name: string;
-          }
-        | {
-            type: 'privateKey';
-            name: string;
-            privateKey: string;
-          }
-        | {
-            type: 'wx';
-            name: string;
-            publicKey: string;
-            address: string | null;
-            uuid: string;
-            username: string;
-          }
-        | {
-            type: 'ledger';
-            address: string | null;
-            id: number;
-            name: string;
-            publicKey: string;
-          }
-        | {
-            type: 'debug';
-            address: string;
-            name: string;
-            networkCode: string;
-          };
-      meta: { type: WalletTypes };
-    }
-  | {
       type: typeof ACTION.BATCH_ADD_ACCOUNTS;
       payload: BatchAddAccountsPayload;
       meta: { type: WalletTypes };

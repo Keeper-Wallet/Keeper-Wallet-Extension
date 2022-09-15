@@ -1,18 +1,74 @@
 import { ACTION } from './constants';
-import { WalletTypes } from '../services/Background';
+import Background, { WalletTypes } from '../services/Background';
 import { NetworkName } from 'networks/types';
-import { UiActionPayload } from 'ui/store';
+import { AccountsThunkAction } from 'accounts/store';
+import { selectAccount } from './localState';
+import { navigate } from './router';
+import { PAGES } from 'ui/pageConfig';
 
 export const deleteAccount = () => ({ type: ACTION.DELETE_ACCOUNT });
 
+type CreateAccountInput =
+  | {
+      type: 'seed';
+      name: string;
+      seed: string;
+    }
+  | {
+      type: 'encodedSeed';
+      encodedSeed: string;
+      name: string;
+    }
+  | {
+      type: 'privateKey';
+      name: string;
+      privateKey: string;
+    }
+  | {
+      type: 'wx';
+      name: string;
+      publicKey: string;
+      address: string | null;
+      uuid: string;
+      username: string;
+    }
+  | {
+      type: 'ledger';
+      address: string | null;
+      id: number;
+      name: string;
+      publicKey: string;
+    }
+  | {
+      type: 'debug';
+      address: string;
+      name: string;
+      networkCode: string;
+    };
+
 export function createAccount(
-  account: UiActionPayload<typeof ACTION.SAVE_NEW_ACCOUNT>,
+  account: CreateAccountInput,
   type: WalletTypes
-) {
-  return {
-    type: ACTION.SAVE_NEW_ACCOUNT,
-    payload: account,
-    meta: { type },
+): AccountsThunkAction<Promise<void>> {
+  return async (dispatch, getState) => {
+    const { currentNetwork, networks } = getState();
+
+    const networkCode = (
+      networks.filter(({ name }) => name === currentNetwork)[0] || networks[0]
+    ).code;
+
+    const lastAccount = await Background.addWallet({
+      ...account,
+      networkCode,
+      network: currentNetwork,
+    });
+
+    dispatch(selectAccount(lastAccount));
+    dispatch(navigate(PAGES.IMPORT_SUCCESS));
+
+    if (type !== WalletTypes.Debug) {
+      Background.sendEvent('addWallet', { type });
+    }
   };
 }
 
