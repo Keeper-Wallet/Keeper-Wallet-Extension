@@ -15,7 +15,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  navigate: (page: string | null, options: { replace?: boolean }) => void;
+  navigate: (page: string, options: { replace?: boolean }) => void;
 }
 
 type Props = WithTranslation & StateProps & DispatchProps;

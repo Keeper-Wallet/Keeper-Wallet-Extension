@@ -32,7 +32,7 @@ interface DispatchProps {
   closeNotificationWindow: () => void;
   navigate: {
     (delta: number): void;
-    (page: string | null): void;
+    (page: string): void;
   };
   updateActiveState: () => void;
   deleteNotifications: (

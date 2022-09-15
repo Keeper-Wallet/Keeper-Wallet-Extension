@@ -12,7 +12,7 @@ export function RootAccounts() {
   const currentPage = useAccountsSelector(state => {
     let page = state.router.currentPage;
 
-    if (typeof state.router.currentPage !== 'string') {
+    if (!page) {
       const pageFromHash = window.location.hash.split('#')[1];
       page = Object.values(PAGES).includes(pageFromHash)
         ? pageFromHash

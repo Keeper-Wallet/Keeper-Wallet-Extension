@@ -193,7 +193,7 @@ export type UiAction =
   | {
       type: typeof ACTION.NAVIGATE;
       payload: {
-        page: string | null;
+        page: string;
         replace: boolean;
       };
       meta?: never;

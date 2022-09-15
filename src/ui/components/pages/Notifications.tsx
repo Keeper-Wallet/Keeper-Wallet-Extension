@@ -63,7 +63,7 @@ interface StateProps {
 
 interface DispatchProps {
   closeNotificationWindow: () => void;
-  navigate: (page: string | null) => void;
+  navigate: (page: string) => void;
   setShowNotification: (permissions: {
     origin: string;
     canUse: boolean | null;

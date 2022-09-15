@@ -218,7 +218,7 @@ export function Settings() {
             <div
               className={styles.logout}
               onClick={() => {
-                dispatch(navigate(null));
+                dispatch(navigate(PAGES.ROOT));
                 dispatch(lock());
               }}
             >

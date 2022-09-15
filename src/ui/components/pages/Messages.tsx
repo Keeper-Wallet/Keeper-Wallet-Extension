@@ -66,7 +66,7 @@ interface DispatchProps {
   clearMessagesStatus: (perform: boolean) => void;
   closeNotificationWindow: () => void;
   getAsset: (assetId: string) => void;
-  navigate: (page: string | null) => void;
+  navigate: (page: string) => void;
   reject: (id: string) => void;
   rejectForever: (id: string) => void;
   setAutoOrigin: (permissions: {

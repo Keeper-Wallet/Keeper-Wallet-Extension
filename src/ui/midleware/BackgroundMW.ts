@@ -11,6 +11,7 @@ import background from '../services/Background';
 import i18n from '../i18n';
 import { UiMiddleware } from 'ui/store';
 import { NotificationsStoreItem } from 'notifications/types';
+import { PAGES } from 'ui/pageConfig';
 
 export const changeLang: UiMiddleware = store => next => action => {
   if (
@@ -103,7 +104,7 @@ export const deleteActiveAccount: UiMiddleware = store => next => action => {
       store.dispatch(notificationDelete(true));
       setTimeout(() => {
         store.dispatch(notificationDelete(false));
-        store.dispatch(navigate(null, { replace: true }));
+        store.dispatch(navigate(PAGES.ROOT, { replace: true }));
       }, 1000);
     });
     return null;
@@ -123,7 +124,7 @@ export const deleteAccountMw: UiMiddleware = store => next => action => {
   if (action.type === ACTION.DELETE_ACCOUNT) {
     background.deleteVault().then(() => {
       store.dispatch(updateActiveState());
-      store.dispatch(navigate(null, { replace: true }));
+      store.dispatch(navigate(PAGES.ROOT, { replace: true }));
     });
     return null;
   }
@@ -147,12 +148,12 @@ export const changeNetwork: UiMiddleware = store => next => action => {
   if (action.type === ACTION.CHANGE_NETWORK) {
     background
       .setNetwork(action.payload)
-      .then(() => store.dispatch(navigate(null, { replace: true })));
+      .then(() => store.dispatch(navigate(PAGES.ROOT, { replace: true })));
     return null;
   }
   if (action.type === ACTION.UPDATE_CURRENT_NETWORK) {
     if (store.getState().localState.tabMode === 'tab') {
-      store.dispatch(navigate(null, { replace: true }));
+      store.dispatch(navigate(PAGES.ROOT, { replace: true }));
     }
   }
 

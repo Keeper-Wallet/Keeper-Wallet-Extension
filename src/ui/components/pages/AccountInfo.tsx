@@ -34,7 +34,7 @@ interface StateProps {
 
 interface DispatchProps {
   getAsset: (assetId: string) => void;
-  navigate: (page: string | null) => void;
+  navigate: (page: string) => void;
 }
 
 interface Props extends WithTranslation, StateProps, DispatchProps {}

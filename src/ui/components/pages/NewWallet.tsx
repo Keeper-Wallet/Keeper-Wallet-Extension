@@ -20,7 +20,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  navigate: (page: string | null) => void;
+  navigate: (page: string) => void;
   newAccountSelect: (
     newAccount: NewWalletItem & { name: string; hasBackup: boolean }
   ) => void;

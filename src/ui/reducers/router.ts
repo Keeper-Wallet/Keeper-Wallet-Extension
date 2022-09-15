@@ -5,13 +5,13 @@ import { UiAction } from '../store';
 const MAX_HISTORY = 10;
 
 interface RouterState {
-  backPages: Array<string | null>;
-  currentPage: string | null;
+  backPages: string[];
+  currentPage: string;
 }
 
 const initialState: RouterState = {
   backPages: [],
-  currentPage: null,
+  currentPage: '',
 };
 
 export function router(state = initialState, action: UiAction): RouterState {

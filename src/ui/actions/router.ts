@@ -6,12 +6,9 @@ interface NavigateOptions {
 }
 
 export function navigate(delta: number): UiAction;
+export function navigate(page: string, options?: NavigateOptions): UiAction;
 export function navigate(
-  page: string | null,
-  options?: NavigateOptions
-): UiAction;
-export function navigate(
-  pageOrDelta: number | string | null,
+  pageOrDelta: number | string,
   { replace = false }: NavigateOptions = {}
 ): UiAction {
   if (typeof pageOrDelta === 'number') {

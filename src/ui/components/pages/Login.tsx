@@ -14,7 +14,7 @@ interface StateProps {
 
 interface DispatchProps {
   login: (password: string) => void;
-  navigate: (page: string | null) => void;
+  navigate: (page: string) => void;
 }
 
 type Props = WithTranslation & StateProps & DispatchProps;
