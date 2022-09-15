@@ -9,43 +9,39 @@ import { LoadingScreen } from './pages';
 export function Root() {
   const currentLocale = useAppSelector(state => state.currentLocale);
   const isLoading = useAppSelector(state => state.localState.loading);
+
   const currentPage = useAppSelector(state => {
     let page = state.router.currentPage;
+    const initialized = state.state?.initialized;
+    const locked = state.state?.locked;
+    const haveAccounts = state.accounts.length !== 0;
 
-    if (
-      !state.state?.locked &&
-      page !== PAGES.CHANGE_TX_ACCOUNT &&
-      state.accounts.length
-    ) {
-      if (state.activePopup && state.activePopup.msg) {
+    if (!locked && haveAccounts && page !== PAGES.CHANGE_TX_ACCOUNT) {
+      if (state.activePopup?.msg) {
         page = PAGES.MESSAGES;
-      } else if (state.activePopup && state.activePopup.notify) {
+      } else if (state.activePopup?.notify) {
         page = PAGES.NOTIFICATIONS;
       } else if (state.messages.length + state.notifications.length) {
         page = PAGES.MESSAGES_LIST;
       }
     }
 
-    let canUsePage = !state.state?.locked;
-
-    switch (page) {
-      case PAGES.LOGIN:
-      case PAGES.FORGOT:
-        canUsePage = Boolean(state.state?.initialized && state.state?.locked);
-        break;
-      case PAGES.ASSETS:
-        canUsePage = !state.state?.locked && state.accounts.length !== 0;
-        break;
-    }
-
-    if (!page || !canUsePage) {
-      page = state.state?.locked
-        ? state.state?.initialized
-          ? PAGES.LOGIN
-          : PAGES.WELCOME
-        : state.accounts.length
-        ? PAGES.ASSETS
-        : PAGES.IMPORT_POPUP;
+    if ([PAGES.LOGIN, PAGES.FORGOT].includes(page)) {
+      if (!locked) {
+        page = haveAccounts ? PAGES.ASSETS : PAGES.IMPORT_POPUP;
+      } else if (!initialized) {
+        page = PAGES.WELCOME;
+      }
+    } else if (page === PAGES.ASSETS) {
+      if (locked) {
+        page = initialized ? PAGES.LOGIN : PAGES.WELCOME;
+      } else if (!haveAccounts) {
+        page = PAGES.IMPORT_POPUP;
+      }
+    } else if (locked) {
+      page = initialized ? PAGES.LOGIN : PAGES.WELCOME;
+    } else if (page === PAGES.ROOT) {
+      page = haveAccounts ? PAGES.ASSETS : PAGES.IMPORT_POPUP;
     }
 
     return page;

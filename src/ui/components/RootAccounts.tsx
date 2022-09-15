@@ -9,34 +9,34 @@ import { LoadingScreen } from './pages/loadingScreen';
 export function RootAccounts() {
   const currentLocale = useAccountsSelector(state => state.currentLocale);
   const isLoading = useAccountsSelector(state => state.localState.loading);
+
   const currentPage = useAccountsSelector(state => {
     let page = state.router.currentPage;
+    const initialized = state.state?.initialized;
+    const locked = state.state?.locked;
 
-    if (!page) {
+    if (page === PAGES.ROOT) {
       const pageFromHash = window.location.hash.split('#')[1];
-      page = Object.values(PAGES).includes(pageFromHash)
-        ? pageFromHash
-        : PAGES.ROOT;
+
+      if (Object.values(PAGES).includes(pageFromHash)) {
+        page = pageFromHash;
+      }
     }
 
-    let canUsePage = !state.state?.locked;
-
-    switch (page) {
-      case PAGES.NEW:
-        canUsePage = !state.state?.initialized;
-        break;
-      case PAGES.LOGIN:
-      case PAGES.FORGOT:
-        canUsePage = Boolean(state.state?.initialized && state.state?.locked);
-        break;
-    }
-
-    if (!page || !canUsePage) {
-      page = state.state?.locked
-        ? state.state?.initialized
-          ? PAGES.LOGIN
-          : PAGES.WELCOME
-        : PAGES.IMPORT_TAB;
+    if (page === PAGES.NEW) {
+      if (initialized) {
+        page = locked ? PAGES.LOGIN : PAGES.IMPORT_TAB;
+      }
+    } else if ([PAGES.LOGIN, PAGES.FORGOT].includes(page)) {
+      if (!locked) {
+        page = PAGES.IMPORT_TAB;
+      } else if (!initialized) {
+        page = PAGES.WELCOME;
+      }
+    } else if (locked) {
+      page = initialized ? PAGES.LOGIN : PAGES.WELCOME;
+    } else if (page === PAGES.ROOT) {
+      page = PAGES.IMPORT_TAB;
     }
 
     return page;
