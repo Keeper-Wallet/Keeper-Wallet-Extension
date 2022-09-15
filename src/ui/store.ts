@@ -431,11 +431,6 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.DELETE_ACTIVE_ACCOUNT;
-      payload: void;
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.CLOSE_WINDOW;
       payload: void;
       meta?: never;

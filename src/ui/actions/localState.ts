@@ -1,7 +1,7 @@
 import { AccountsThunkAction } from 'accounts/store';
 import { SwapScreenInitialState, TabMode } from 'ui/reducers/localState';
 import Background from 'ui/services/Background';
-import { UiAction, UiActionPayload } from 'ui/store';
+import { UiAction, UiActionPayload, UiThunkAction } from 'ui/store';
 import { ACTION } from './constants';
 
 function createMVAction<TActionType extends UiAction['type']>(
@@ -58,11 +58,28 @@ export const loginUpdate = createCommonAction(ACTION.LOGIN_UPDATE, false);
 export const newAccountName = createMVAction(ACTION.NEW_ACCOUNT_NAME);
 export const newAccountSelect = createMVAction(ACTION.NEW_ACCOUNT_SELECT);
 export const selectAccount = createMVAction(ACTION.SELECT_ACCOUNT);
-export const deleteActiveAccount = createMVAction(ACTION.DELETE_ACTIVE_ACCOUNT);
+
+const notificationDelete = createMVAction(ACTION.NOTIFICATION_DELETE);
+
+export function deleteActiveAccount(): UiThunkAction<Promise<void>> {
+  return async (dispatch, getState) => {
+    const { selectedAccount, localState, currentNetwork } = getState();
+
+    const selected = localState.assets.account
+      ? localState.assets.account.address
+      : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        selectedAccount.address!;
+
+    await Background.removeWallet(selected, currentNetwork);
+
+    dispatch(notificationDelete(true));
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    dispatch(notificationDelete(false));
+  };
+}
 
 export const setLangs = createMVAction(ACTION.UPDATE_LANGS);
 export const setLoading = createMVAction(ACTION.SET_LOADING);
-export const notificationDelete = createMVAction(ACTION.NOTIFICATION_DELETE);
 export const notificationSelect = createMVAction(ACTION.NOTIFICATION_SELECT);
 
 export const notificationChangeName = createMVAction(

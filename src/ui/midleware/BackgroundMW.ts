@@ -1,7 +1,6 @@
 import { ACTION } from '../actions/constants';
 import {
   notificationChangeName,
-  notificationDelete,
   notificationSelect,
 } from '../actions/localState';
 import {
@@ -89,27 +88,6 @@ export const selectAccount: UiMiddleware = store => next => action => {
         store.dispatch(notificationSelect(true));
         setTimeout(() => store.dispatch(notificationSelect(false)), 1000);
       });
-  }
-
-  return next(action);
-};
-
-export const deleteActiveAccount: UiMiddleware = store => next => action => {
-  if (action.type === ACTION.DELETE_ACTIVE_ACCOUNT) {
-    const { selectedAccount, localState, currentNetwork } = store.getState();
-    const selected = localState.assets.account
-      ? localState.assets.account.address
-      : selectedAccount.address;
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    background.removeWallet(selected!, currentNetwork).then(() => {
-      store.dispatch(notificationDelete(true));
-      setTimeout(() => {
-        store.dispatch(notificationDelete(false));
-        store.dispatch(navigate(PAGES.ROOT, { replace: true }));
-      }, 1000);
-    });
-    return null;
   }
 
   return next(action);
