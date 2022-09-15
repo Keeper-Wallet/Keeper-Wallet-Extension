@@ -13,18 +13,6 @@ export function Welcome() {
   const { t } = useTranslation();
   const tabMode = useAppSelector(state => state.localState?.tabMode);
 
-  React.useEffect(() => {
-    if (window.location.hash.split('#')[1] === PAGES.NEW) {
-      history.replaceState(
-        history.state,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        null as any,
-        window.location.pathname
-      );
-      dispatch(navigate(PAGES.NEW));
-    }
-  }, [dispatch]);
-
   return (
     <div className={styles.content}>
       <BigLogo className={styles.logo} />
