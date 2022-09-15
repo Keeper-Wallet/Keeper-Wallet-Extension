@@ -6,7 +6,6 @@ import {
   ChangeAccountName,
   ChangePassword,
   ConfirmBackup,
-  DeleteActiveAccount,
   DeleteAllAccounts,
   ExportAndImport,
   ImportPopup,
@@ -46,6 +45,7 @@ import {
 import { ImportDebug } from 'ui/components/pages/importDebug';
 import { NftCollection } from 'ui/components/pages/nfts/nftCollection';
 import { NftInfo } from 'ui/components/pages/nfts/nftInfo';
+import { DeleteActiveAccount } from './components/pages/deleteActiveAccount';
 
 export const PAGES = {
   WELCOME: 'welcome',
