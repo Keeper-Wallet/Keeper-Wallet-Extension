@@ -260,11 +260,19 @@ class MessagesComponent extends React.Component<Props, State> {
           notifications={notifications}
           transactionStatus={this.state.transactionStatus}
           config={this.state.config}
-          onClose={() => {
+          onClose={async () => {
+            await Background.closeNotificationWindow();
+
+            if (window.location.pathname === '/notification.html') {
+              // NOTE: This return would not be needed if
+              // closeNotificationWindow would resolve *after* window is closed,
+              // but it's resolved right after event is emitted instead.
+              return;
+            }
+
             clearMessagesStatus(false);
             navigate(PAGES.ASSETS);
             this.hasApproved = false;
-            Background.closeNotificationWindow();
           }}
           onNext={() => {
             clearMessagesStatus(false);

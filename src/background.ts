@@ -657,7 +657,9 @@ class BackgroundService extends EventEmitter {
       removeAddress: async (address: string) =>
         this.addressBookController.removeAddress(address),
       // window control
-      closeNotificationWindow: async () => this.emit('Close notification'),
+      closeNotificationWindow: async () => {
+        this.emit('Close notification');
+      },
       resizeNotificationWindow: async (width: number, height: number) =>
         this.emit('Resize notification', width, height),
 
