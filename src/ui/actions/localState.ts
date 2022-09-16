@@ -31,13 +31,11 @@ const createCommonAction =
 export const createNew = (
   password: string
 ): AccountsThunkAction<Promise<void>> => {
-  return async (dispatch, getState) => {
+  return async dispatch => {
     dispatch(newUser());
 
     try {
-      console.log('before', { initialized: getState().state?.initialized });
       await Background.initVault(password);
-      console.log('after', { initialized: getState().state?.initialized });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       dispatch(newUserUpdate(err));
