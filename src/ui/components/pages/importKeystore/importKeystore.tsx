@@ -208,7 +208,7 @@ export function ImportKeystore() {
       allNetworksAccounts={allNetworksAccounts}
       profiles={profiles}
       onSkip={() => {
-        navigate(PAGES.ROOT);
+        navigate(PAGES.IMPORT_TAB);
       }}
       onSubmit={async selectedAccounts => {
         await dispatch(

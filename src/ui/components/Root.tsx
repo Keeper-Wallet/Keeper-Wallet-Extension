@@ -40,7 +40,7 @@ export function Root() {
       }
     } else if (locked) {
       page = initialized ? PAGES.LOGIN : PAGES.WELCOME;
-    } else if (page === PAGES.ROOT) {
+    } else if (!page) {
       page = haveAccounts ? PAGES.ASSETS : PAGES.IMPORT_POPUP;
     }
 

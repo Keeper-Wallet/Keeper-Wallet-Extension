@@ -17,7 +17,7 @@ export function RootAccounts() {
     const initialized = state.state?.initialized;
     const locked = state.state?.locked;
 
-    if (page === PAGES.ROOT) {
+    if (!page) {
       const pageFromHash = window.location.hash.split('#')[1];
 
       if (Object.values(PAGES).includes(pageFromHash)) {
@@ -37,7 +37,7 @@ export function RootAccounts() {
       }
     } else if (locked) {
       page = initialized ? PAGES.LOGIN : PAGES.WELCOME;
-    } else if (page === PAGES.ROOT) {
+    } else if (!page) {
       page = PAGES.IMPORT_TAB;
     }
 
@@ -70,7 +70,7 @@ export function RootAccounts() {
       return;
     }
 
-    navigate(PAGES.ROOT, { replace: true });
+    navigate(PAGES.IMPORT_TAB, { replace: true });
     prevNetworkRef.current = currentNetwork;
   }, [currentNetwork, navigate]);
 

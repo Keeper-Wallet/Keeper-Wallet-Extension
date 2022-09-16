@@ -47,7 +47,7 @@ export function ExportAndImport() {
             `${window.location.origin}/accounts.html#${PAGES.IMPORT_KEYSTORE}`,
             PAGES.IMPORT_KEYSTORE
           );
-          navigate(PAGES.ROOT, { replace: true });
+          navigate(PAGES.ASSETS, { replace: true });
         }}
       >
         <p className="body1 left">{t('exportAndImport.importAccounts')}</p>
@@ -72,7 +72,7 @@ export function ExportAndImport() {
             `${window.location.origin}/accounts.html#${PAGES.IMPORT_ADDRESS_BOOK}`,
             PAGES.IMPORT_ADDRESS_BOOK
           );
-          navigate(PAGES.ROOT, { replace: true });
+          navigate(PAGES.ASSETS, { replace: true });
         }}
       >
         <p className="body1 left">{t('exportAndImport.importAddressBook')}</p>

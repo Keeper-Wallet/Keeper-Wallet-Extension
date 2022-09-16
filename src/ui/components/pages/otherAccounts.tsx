@@ -108,7 +108,7 @@ export function OtherAccountsPage() {
                 `${window.location.origin}/accounts.html`,
                 'accounts'
               );
-              navigate(PAGES.ROOT, { replace: true });
+              navigate(PAGES.ASSETS, { replace: true });
             }}
           >
             {t('otherAccounts.addAccount')}

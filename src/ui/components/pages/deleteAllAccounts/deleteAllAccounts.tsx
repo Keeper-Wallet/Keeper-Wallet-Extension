@@ -89,7 +89,7 @@ export function DeleteAllAccounts() {
           disabled={hasError}
           onClick={async () => {
             await dispatch(deleteAllAccounts());
-            navigate(PAGES.ROOT, { replace: true });
+            navigate(PAGES.WELCOME, { replace: true });
           }}
           data-testid="resetConfirm"
         >
