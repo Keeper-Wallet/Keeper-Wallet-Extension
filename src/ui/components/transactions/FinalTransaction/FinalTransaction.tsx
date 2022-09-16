@@ -47,9 +47,9 @@ interface Props extends WithTranslation {
   messages: MessageStoreItem[];
   notifications: NotificationsStoreItem[][];
   message: MessageStoreItem;
-  onClose: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  onNext: (event?: React.MouseEvent<HTMLButtonElement>) => void;
-  onList: (event?: React.MouseEvent<HTMLButtonElement>) => void;
+  onClose: () => void;
+  onNext: () => void;
+  onList: () => void;
   assets: Record<string, AssetDetail>;
   config: MessageConfig;
 }
@@ -170,13 +170,30 @@ class FinalTransactionComponent extends React.PureComponent<Props> {
           })}
         >
           {isShowList ? (
-            <Button type="button" onClick={onList}>
+            <Button
+              type="button"
+              onClick={event => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                onList();
+              }}
+            >
               {t('sign.pendingList')}
             </Button>
           ) : null}
 
           {isShowNext ? (
-            <Button type="submit" view="submit" onClick={onNext}>
+            <Button
+              type="submit"
+              view="submit"
+              onClick={event => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                onNext();
+              }}
+            >
               {t('sign.nextTransaction')}
             </Button>
           ) : null}
@@ -186,7 +203,12 @@ class FinalTransactionComponent extends React.PureComponent<Props> {
               data-testid="closeTransaction"
               id="close"
               type="button"
-              onClick={onClose}
+              onClick={event => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                onClose();
+              }}
             >
               {isError ? t('sign.understand') : null}
               {isReject || isApprove ? t('sign.close') : null}

@@ -236,15 +236,6 @@ class MessagesComponent extends React.Component<Props, State> {
   approveHandler: MessageComponentProps['approve'] = (e, params) =>
     this.approve(e, params);
 
-  closeHandler = (e: unknown) => {
-    this.updateActiveMessages(e);
-    this.props.closeNotificationWindow();
-  };
-
-  toListHandler = (e: unknown) => this.updateActiveMessages(e);
-
-  nextHandler = (e: unknown) => this.updateActiveMessages(e, true);
-
   componentDidCatch() {
     this.reject();
   }
@@ -267,9 +258,22 @@ class MessagesComponent extends React.Component<Props, State> {
           notifications={this.props.notifications}
           transactionStatus={this.state.transactionStatus}
           config={this.state.config}
-          onClose={this.closeHandler}
-          onNext={this.nextHandler}
-          onList={this.toListHandler}
+          onClose={() => {
+            this.props.clearMessagesStatus(false);
+            this.props.navigate(PAGES.ROOT);
+            this.hasApproved = false;
+            this.props.closeNotificationWindow();
+          }}
+          onNext={() => {
+            this.props.clearMessagesStatus(false);
+            this.props.navigate(PAGES.ROOT);
+            this.hasApproved = false;
+          }}
+          onList={() => {
+            this.props.clearMessagesStatus(true);
+            this.props.navigate(PAGES.ROOT);
+            this.hasApproved = false;
+          }}
         />
       );
     }
@@ -339,19 +343,6 @@ class MessagesComponent extends React.Component<Props, State> {
     if (e) (e as any).preventDefault();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.props.rejectForever(this.state.activeMessage.id!);
-  }
-
-  updateActiveMessages(e: unknown, isNext = false) {
-    if (e) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (e as any).preventDefault();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (e as any).stopPropagation();
-    }
-
-    this.props.clearMessagesStatus(!isNext);
-    this.props.navigate(PAGES.ROOT);
-    this.hasApproved = false;
   }
 }
 
