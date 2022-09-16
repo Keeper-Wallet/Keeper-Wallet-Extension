@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { deleteActiveAccount } from '../../actions/localState';
 import { useAppDispatch } from 'ui/store';
-import { navigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 import { PAGES } from 'ui/pageConfig';
 
 export function DeleteActiveAccount() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
@@ -20,7 +21,7 @@ export function DeleteActiveAccount() {
           id="deleteAccount"
           onClick={async () => {
             await dispatch(deleteActiveAccount());
-            dispatch(navigate(PAGES.ROOT, { replace: true }));
+            navigate(PAGES.ROOT, { replace: true });
           }}
           type="button"
           view="warning"

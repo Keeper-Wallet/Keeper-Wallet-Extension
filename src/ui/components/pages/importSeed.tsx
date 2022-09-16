@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { newAccountSelect, selectAccount } from 'ui/actions/localState';
-import { navigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 import {
   Button,
   Error,
@@ -41,6 +41,7 @@ function stripBase58Prefix(str: string) {
 }
 
 export function ImportSeed() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const accounts = useAppSelector(state => state.accounts);
@@ -203,7 +204,7 @@ export function ImportSeed() {
 
           if (showValidationError && existingAccount) {
             dispatch(selectAccount(existingAccount));
-            dispatch(navigate(PAGES.IMPORT_SUCCESS));
+            navigate(PAGES.IMPORT_SUCCESS);
             return;
           }
 
@@ -245,7 +246,7 @@ export function ImportSeed() {
             );
           }
 
-          dispatch(navigate(PAGES.ACCOUNT_NAME));
+          navigate(PAGES.ACCOUNT_NAME);
         }}
       >
         <Tabs

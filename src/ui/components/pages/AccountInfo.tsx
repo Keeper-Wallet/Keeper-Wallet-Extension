@@ -5,7 +5,7 @@ import * as styles from './styles/accountInfo.styl';
 import { Avatar, Balance, Button, CopyText, Error, Input, Modal } from '../ui';
 import background from '../../services/Background';
 import { getAsset } from '../../actions/assets';
-import { navigate } from '../../router';
+import { WithNavigate, withNavigate } from '../../router';
 import { Asset, Money } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { getAccountLink } from '../../urls';
@@ -35,10 +35,13 @@ interface StateProps {
 
 interface DispatchProps {
   getAsset: (assetId: string) => void;
-  navigate: (page: string) => void;
 }
 
-interface Props extends WithTranslation, StateProps, DispatchProps {}
+interface Props
+  extends WithTranslation,
+    StateProps,
+    DispatchProps,
+    WithNavigate {}
 
 interface State {
   balance?: Money | string | BigNumber | null;
@@ -491,10 +494,9 @@ const mapStateToProps = function (store: AppState): StateProps {
 
 const actions = {
   getAsset,
-  navigate,
 };
 
 export const AccountInfo = connect(
   mapStateToProps,
   actions
-)(withTranslation()(AccountInfoComponent));
+)(withTranslation()(withNavigate(AccountInfoComponent)));

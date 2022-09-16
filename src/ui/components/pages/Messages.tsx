@@ -13,7 +13,7 @@ import {
   closeNotificationWindow,
 } from '../../actions/localState';
 import { getAsset } from '../../actions/assets';
-import { navigate } from '../../router';
+import { WithNavigate, withNavigate } from '../../router';
 import { setAutoOrigin } from '../../actions/permissions';
 import { setShowNotification } from '../../actions/notifications';
 import { PAGES } from '../../pageConfig';
@@ -52,7 +52,6 @@ const actions = {
   clearMessagesStatus,
   closeNotificationWindow,
   getAsset,
-  navigate,
   reject,
   rejectForever,
   setAutoOrigin,
@@ -64,7 +63,6 @@ interface DispatchProps {
   clearMessagesStatus: (perform: boolean) => void;
   closeNotificationWindow: () => void;
   getAsset: (assetId: string) => void;
-  navigate: (page: string) => void;
   reject: (id: string) => void;
   rejectForever: (id: string) => void;
   setAutoOrigin: (permissions: {
@@ -82,7 +80,7 @@ interface DispatchProps {
   }) => void;
 }
 
-type Props = StateProps & DispatchProps;
+type Props = StateProps & DispatchProps & WithNavigate;
 
 interface State {
   activeMessage: MessageStoreItem;
@@ -359,4 +357,7 @@ class MessagesComponent extends React.Component<Props, State> {
   }
 }
 
-export const Messages = connect(mapStateToProps, actions)(MessagesComponent);
+export const Messages = connect(
+  mapStateToProps,
+  actions
+)(withNavigate(MessagesComponent));

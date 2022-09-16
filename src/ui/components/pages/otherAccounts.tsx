@@ -10,9 +10,10 @@ import { AccountCard } from '../accounts/accountCard';
 import * as styles from './otherAccounts.module.css';
 import { SearchInput } from 'ui/components/ui/searchInput/searchInput';
 import background from 'ui/services/Background';
-import { navigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 
 export function OtherAccountsPage() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
@@ -87,11 +88,11 @@ export function OtherAccountsPage() {
               balance={balancesMoney[account.address]}
               onClick={account => {
                 dispatch(selectAccount(account));
-                dispatch(navigate(PAGES.ASSETS, { replace: true }));
+                navigate(PAGES.ASSETS, { replace: true });
               }}
               onInfoClick={account => {
                 dispatch(setActiveAccount(account));
-                dispatch(navigate(PAGES.ACCOUNT_INFO));
+                navigate(PAGES.ACCOUNT_INFO);
               }}
             />
           ))
@@ -107,7 +108,7 @@ export function OtherAccountsPage() {
                 `${window.location.origin}/accounts.html`,
                 'accounts'
               );
-              dispatch(navigate(PAGES.ROOT, { replace: true }));
+              navigate(PAGES.ROOT, { replace: true });
             }}
           >
             {t('otherAccounts.addAccount')}

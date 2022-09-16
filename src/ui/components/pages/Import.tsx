@@ -6,9 +6,9 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { PAGES } from '../../pageConfig';
-import { useAppDispatch, useAppSelector } from '../../store';
+import { useAppSelector } from '../../store';
 import background from 'ui/services/Background';
-import { navigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 import { generateNewWalletItems } from './NewWallet';
 
 export function ImportPopup() {
@@ -50,7 +50,7 @@ export function ImportPopup() {
 }
 
 export function ImportTab() {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const customCodes = useAppSelector(state => state.customCodes);
   const currentNetwork = useAppSelector(state => state.currentNetwork);
@@ -88,7 +88,7 @@ export function ImportTab() {
             (networks.find(x => x.name === currentNetwork)?.code ?? '');
 
           generateNewWalletItems(networkCode);
-          dispatch(navigate(PAGES.NEW_ACCOUNT));
+          navigate(PAGES.NEW_ACCOUNT);
         }}
       >
         {t('import.createNew')}
@@ -107,7 +107,7 @@ export function ImportTab() {
               type="button"
               view="transparent"
               onClick={() => {
-                dispatch(navigate(PAGES.IMPORT_DEBUG));
+                navigate(PAGES.IMPORT_DEBUG);
               }}
             >
               <svg
@@ -131,7 +131,7 @@ export function ImportTab() {
             type="button"
             view="transparent"
             onClick={() => {
-              dispatch(navigate(PAGES.IMPORT_SEED));
+              navigate(PAGES.IMPORT_SEED);
             }}
           >
             <svg
@@ -160,7 +160,7 @@ export function ImportTab() {
             type="button"
             view="transparent"
             onClick={() => {
-              dispatch(navigate(PAGES.IMPORT_LEDGER));
+              navigate(PAGES.IMPORT_LEDGER);
             }}
           >
             <svg
@@ -191,7 +191,7 @@ export function ImportTab() {
             type="button"
             view="transparent"
             onClick={() => {
-              dispatch(navigate(PAGES.IMPORT_KEYSTORE));
+              navigate(PAGES.IMPORT_KEYSTORE);
             }}
           >
             <svg
@@ -246,7 +246,7 @@ export function ImportTab() {
               type="button"
               view="transparent"
               onClick={() => {
-                dispatch(navigate(PAGES.IMPORT_EMAIL));
+                navigate(PAGES.IMPORT_EMAIL);
               }}
             >
               <svg

@@ -12,7 +12,7 @@ import {
   updateActiveState,
 } from '../../actions/notifications';
 import { clearMessages, reject } from '../../actions/messages';
-import { navigate } from '../../router';
+import { WithNavigate, withNavigate } from '../../router';
 import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import { LoadingScreen } from './loadingScreen';
@@ -31,10 +31,6 @@ interface StateProps {
 
 interface DispatchProps {
   closeNotificationWindow: () => void;
-  navigate: {
-    (delta: number): void;
-    (page: string): void;
-  };
   updateActiveState: () => void;
   deleteNotifications: (
     ids:
@@ -49,7 +45,7 @@ interface DispatchProps {
   reject: (id: string) => void;
 }
 
-type Props = WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps & WithNavigate;
 
 interface State {
   loading: boolean;
@@ -150,11 +146,10 @@ const actions = {
   deleteNotifications,
   clearMessagesStatus,
   clearMessages,
-  navigate,
   reject,
 };
 
 export const SelectTxAccount = connect(
   mapStateToProps,
   actions
-)(withTranslation()(SelectTxAccountComponent));
+)(withTranslation()(withNavigate(SelectTxAccountComponent)));

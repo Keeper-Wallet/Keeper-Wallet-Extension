@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { BigLogo } from '../head';
 import { Button, Error, Input } from '../ui';
 import { login } from '../../actions/localState';
-import { navigate } from '../../router';
+import { withNavigate, WithNavigate } from '../../router';
 import { PAGES } from '../../pageConfig';
 import { AppState } from 'ui/store';
 
@@ -15,10 +15,9 @@ interface StateProps {
 
 interface DispatchProps {
   login: (password: string) => void;
-  navigate: (page: string) => void;
 }
 
-type Props = WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps & WithNavigate;
 
 interface State {
   passwordError: boolean;
@@ -114,7 +113,6 @@ class LoginComponent extends React.Component<Props, State> {
 
 const actions = {
   login,
-  navigate,
 };
 
 const mapStateToProps = function ({ localState }: AppState): StateProps {
@@ -126,4 +124,4 @@ const mapStateToProps = function ({ localState }: AppState): StateProps {
 export const Login = connect(
   mapStateToProps,
   actions
-)(withTranslation()(LoginComponent));
+)(withTranslation()(withNavigate(LoginComponent)));

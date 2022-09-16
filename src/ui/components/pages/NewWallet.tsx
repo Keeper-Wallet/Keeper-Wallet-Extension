@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { AppState } from 'ui/store';
 import { newAccountSelect } from '../../actions/localState';
-import { navigate } from '../../router';
+import { WithNavigate, withNavigate } from '../../router';
 import { PAGES } from '../../pageConfig';
 import { AvatarList, Button } from '../ui';
 import * as styles from './styles/newwallet.styl';
@@ -21,13 +21,12 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  navigate: (page: string) => void;
   newAccountSelect: (
     newAccount: NewWalletItem & { name: string; hasBackup: boolean }
   ) => void;
 }
 
-type Props = WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps & WithNavigate;
 
 interface State {
   list: NewWalletItem[];
@@ -126,7 +125,6 @@ class NewWalletComponent extends React.Component<Props, State> {
 }
 
 const actions = {
-  navigate,
   newAccountSelect,
 };
 
@@ -142,4 +140,4 @@ const mapStateToProps = function (store: AppState): StateProps {
 export const NewWallet = connect(
   mapStateToProps,
   actions
-)(withTranslation()(NewWalletComponent));
+)(withTranslation()(withNavigate(NewWalletComponent)));

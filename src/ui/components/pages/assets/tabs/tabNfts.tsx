@@ -2,7 +2,7 @@ import * as styles from 'ui/components/pages/styles/assets.styl';
 import { Trans, useTranslation } from 'react-i18next';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';
-import { useAppDispatch, useAppSelector } from 'ui/store';
+import { useAppSelector } from 'ui/store';
 import { sortAndFilterNfts, useUiState } from './helpers';
 import cn from 'classnames';
 import { NftList } from 'nfts/nftList';
@@ -11,7 +11,7 @@ import { PAGES } from 'ui/pageConfig';
 import { createNft, Nft } from 'nfts/utils';
 import { getNftsLink } from 'ui/urls';
 import { MAX_NFT_ITEMS } from 'controllers/currentAccount';
-import { navigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
   key =>
@@ -22,7 +22,7 @@ const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
 );
 
 export function TabNfts() {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const currentAddress = useAppSelector(state => state.selectedAccount.address);
@@ -121,7 +121,7 @@ export function TabNfts() {
           counters={creatorCounts}
           onClick={(asset: Nft) => {
             setCreator(asset.creator);
-            dispatch(navigate(PAGES.NFT_COLLECTION));
+            navigate(PAGES.NFT_COLLECTION);
           }}
           renderMore={() =>
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain

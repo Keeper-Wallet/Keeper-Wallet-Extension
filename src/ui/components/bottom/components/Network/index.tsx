@@ -19,7 +19,7 @@ import * as styles from './network.styl';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { AppState } from 'ui/store';
 import { NetworkName } from 'networks/types';
-import { navigate } from 'ui/router';
+import { withNavigate, WithNavigate } from 'ui/router';
 import { PAGES } from 'ui/pageConfig';
 
 const key = (key: string) => `bottom.${key}`;
@@ -83,7 +83,6 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  navigate: (page: string, options: { replace?: boolean }) => void;
   setNetwork: (net: NetworkName) => Promise<void>;
   setCustomNode: (payload: {
     node: string;
@@ -102,7 +101,8 @@ interface DispatchProps {
 
 type Props = WithTranslation &
   StateProps &
-  DispatchProps & {
+  DispatchProps &
+  WithNavigate & {
     noChangeNetwork: boolean | undefined;
   };
 
@@ -326,7 +326,6 @@ const mapStateToProps = ({
 });
 
 const actions = {
-  navigate,
   setNetwork,
   setLoading,
   setCustomNode,
@@ -337,4 +336,4 @@ const actions = {
 export const Network = connect(
   mapStateToProps,
   actions
-)(withTranslation()(NetworkComponent));
+)(withTranslation()(withNavigate(NetworkComponent)));

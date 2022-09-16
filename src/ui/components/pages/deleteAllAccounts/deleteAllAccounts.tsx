@@ -2,13 +2,14 @@ import * as styles from './deleteAccounts.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Error, Input } from 'ui/components/ui';
-import { navigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 import { deleteAllAccounts } from 'ui/actions/user';
 import cn from 'classnames';
 import { useAppDispatch } from 'ui/store';
 import { PAGES } from 'ui/pageConfig';
 
 export function DeleteAllAccounts() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -76,7 +77,7 @@ export function DeleteAllAccounts() {
         <Button
           type="button"
           onClick={() => {
-            dispatch(navigate(-1));
+            navigate(-1);
           }}
           data-testid="resetCancel"
         >
@@ -88,7 +89,7 @@ export function DeleteAllAccounts() {
           disabled={hasError}
           onClick={async () => {
             await dispatch(deleteAllAccounts());
-            dispatch(navigate(PAGES.ROOT, { replace: true }));
+            navigate(PAGES.ROOT, { replace: true });
           }}
           data-testid="resetConfirm"
         >

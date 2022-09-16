@@ -9,7 +9,7 @@ import { ImportKeystoreChooseAccounts } from './chooseAccounts';
 import { batchAddAccounts } from 'ui/actions/user';
 import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { navigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 
 type ExchangeKeystoreAccount = {
   address: string;
@@ -115,6 +115,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
 const suffixRe = /\((\d+)\)$/;
 
 export function ImportKeystore() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const allNetworksAccounts = useAppSelector(
     state => state.allNetworksAccounts
@@ -207,7 +208,7 @@ export function ImportKeystore() {
       allNetworksAccounts={allNetworksAccounts}
       profiles={profiles}
       onSkip={() => {
-        dispatch(navigate(PAGES.ROOT));
+        navigate(PAGES.ROOT);
       }}
       onSubmit={async selectedAccounts => {
         await dispatch(
@@ -222,7 +223,7 @@ export function ImportKeystore() {
           )
         );
 
-        dispatch(navigate(PAGES.IMPORT_SUCCESS_KEYSTORE));
+        navigate(PAGES.IMPORT_SUCCESS_KEYSTORE);
       }}
     />
   );

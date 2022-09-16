@@ -2,7 +2,7 @@ import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, PowerButton } from '../ui';
-import { navigate } from '../../router';
+import { useNavigate } from '../../router';
 import { setUiState } from '../../actions/uiState';
 import { lock } from '../../actions/user';
 import { PAGES } from '../../pageConfig';
@@ -10,6 +10,7 @@ import { Tooltip } from '../ui/tooltip';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 
 export function Settings() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
@@ -32,7 +33,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              dispatch(navigate(PAGES.ADDRESS_BOOK));
+              navigate(PAGES.ADDRESS_BOOK);
             }}
           >
             <div className="body1 left">{t('address.title')}</div>
@@ -46,7 +47,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              dispatch(navigate(PAGES.GENERAL_SETTINGS));
+              navigate(PAGES.GENERAL_SETTINGS);
             }}
           >
             <div className="body1 left">{t('settings.settingsGeneral')}</div>
@@ -60,7 +61,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              dispatch(navigate(PAGES.PERMISSIONS));
+              navigate(PAGES.PERMISSIONS);
             }}
           >
             <div className="body1 left">{t('settings.permissionsControl')}</div>
@@ -74,7 +75,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              dispatch(navigate(PAGES.LANGS_SETTINGS));
+              navigate(PAGES.LANGS_SETTINGS);
             }}
           >
             <div className="body1 left">{t('settings.langs')}</div>
@@ -88,7 +89,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              dispatch(navigate(PAGES.NETWORK_SETTINGS));
+              navigate(PAGES.NETWORK_SETTINGS);
             }}
           >
             <div className="body1 left">{t('settings.network')}</div>
@@ -103,7 +104,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              dispatch(navigate(PAGES.EXPORT_AND_IMPORT));
+              navigate(PAGES.EXPORT_AND_IMPORT);
             }}
           >
             <div className="body1 left">{t('settings.exportAndImport')}</div>
@@ -209,7 +210,7 @@ export function Settings() {
             <div
               className={styles.deleteAccounts}
               onClick={() => {
-                dispatch(navigate(PAGES.DELETE_ACCOUNT));
+                navigate(PAGES.DELETE_ACCOUNT);
               }}
             >
               <i className={styles.icon}> </i>
@@ -220,7 +221,7 @@ export function Settings() {
             <div
               className={styles.logout}
               onClick={() => {
-                dispatch(navigate(PAGES.ROOT));
+                navigate(PAGES.ROOT);
                 dispatch(lock());
               }}
             >

@@ -6,7 +6,7 @@ import { Button, Error, Pills, PillsListItem } from '../ui';
 import { AppState } from 'ui/store';
 import { PAGES } from 'ui/pageConfig';
 import { NewAccountState } from 'ui/reducers/localState';
-import { navigate } from 'ui/router';
+import { withNavigate, WithNavigate } from 'ui/router';
 
 const SHUFFLE_COUNT = 500;
 
@@ -14,11 +14,7 @@ interface StateProps {
   account: Extract<NewAccountState, { type: 'seed' }>;
 }
 
-interface DispatchProps {
-  navigate: (page: string, options: { replace?: boolean }) => void;
-}
-
-type Props = WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & WithNavigate;
 
 interface State {
   seed: string | null;
@@ -175,6 +171,6 @@ const mapStateToProps = (state: AppState): StateProps => {
   };
 };
 
-export const ConfirmBackup = connect(mapStateToProps, { navigate })(
-  withTranslation()(ConfirmBackupComponent)
+export const ConfirmBackup = connect(mapStateToProps)(
+  withTranslation()(withNavigate(ConfirmBackupComponent))
 );

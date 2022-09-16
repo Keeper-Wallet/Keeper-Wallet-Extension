@@ -6,7 +6,7 @@ import * as styles from './nftCollection.module.css';
 import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { useTranslation } from 'react-i18next';
-import { navigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 import { setUiState } from 'ui/actions/uiState';
 import { createNft, Nft } from 'nfts/utils';
 import {
@@ -26,6 +26,7 @@ const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
 );
 
 export function NftCollection() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const currentAddress = useAppSelector(state => state.selectedAccount.address);
@@ -134,7 +135,7 @@ export function NftCollection() {
             nfts={creatorNfts}
             onClick={nft => {
               setCurrentAsset(nft.asset);
-              dispatch(navigate(PAGES.NFT_INFO));
+              navigate(PAGES.NFT_INFO);
             }}
           />
         )}
@@ -144,7 +145,7 @@ export function NftCollection() {
             className="fullwidth"
             onClick={() => {
               setCurrentAsset(null);
-              dispatch(navigate(-1));
+              navigate(-1);
             }}
           >
             {t('nftCollection.backToNftBtn')}

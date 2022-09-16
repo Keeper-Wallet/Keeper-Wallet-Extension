@@ -6,11 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { Login } from './login';
 import { newAccountSelect } from '../../../actions/localState';
-import { navigate } from '../../../router';
+import { useNavigate } from '../../../router';
 import { PAGES } from '../../../pageConfig';
 import { IdentityUser } from 'controllers/IdentityController';
 
 export function ImportEmail() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
@@ -43,9 +44,9 @@ export function ImportEmail() {
         })
       );
 
-      dispatch(navigate(PAGES.ACCOUNT_NAME));
+      navigate(PAGES.ACCOUNT_NAME);
     },
-    [dispatch]
+    [dispatch, navigate]
   );
 
   return (

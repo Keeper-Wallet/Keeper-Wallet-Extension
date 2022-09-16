@@ -4,12 +4,12 @@ import { BigLogo } from '../head';
 import { useTranslation } from 'react-i18next';
 import { Button, LangsSelect } from '../ui';
 import { PAGES } from '../../pageConfig';
-import { useAppDispatch, useAppSelector } from 'ui/store';
+import { useAppSelector } from 'ui/store';
 import background from 'ui/services/Background';
-import { navigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 
 export function Welcome() {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const tabMode = useAppSelector(state => state.localState?.tabMode);
 
@@ -28,7 +28,7 @@ export function Welcome() {
               'accounts'
             );
           }
-          dispatch(navigate(PAGES.NEW));
+          navigate(PAGES.NEW);
         }}
       >
         {t('welcome.getStarted')}

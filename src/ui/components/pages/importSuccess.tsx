@@ -4,8 +4,8 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { PAGES } from '../../pageConfig';
-import { useAccountsSelector, useAppDispatch } from 'accounts/store';
-import { navigate } from 'ui/router';
+import { useAccountsSelector } from 'accounts/store';
+import { useNavigate } from 'ui/router';
 import background from 'ui/services/Background';
 
 export function ImportSuccessAddressBook() {
@@ -43,8 +43,8 @@ export function ImportSuccess({
 }: {
   isKeystoreImport?: boolean;
 }) {
+  const navigate = useNavigate();
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
   const account = useAccountsSelector(state => state.selectedAccount);
 
   return (
@@ -87,7 +87,9 @@ export function ImportSuccess({
           data-testid="addAnotherAccountBtn"
           className={styles.button}
           type="button"
-          onClick={() => dispatch(navigate(PAGES.ROOT, { replace: true }))}
+          onClick={() => {
+            navigate(PAGES.ROOT, { replace: true });
+          }}
         >
           {t('import.addAnotherAccount')}
         </Button>

@@ -1,3 +1,5 @@
+import { createElement, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
 import { PAGES } from 'ui/pageConfig';
 import { UiAction } from 'ui/store';
 import { ACTION } from './actions/constants';
@@ -6,9 +8,9 @@ interface NavigateOptions {
   replace?: boolean;
 }
 
-export function navigate(delta: number): UiAction;
-export function navigate(page: string, options?: NavigateOptions): UiAction;
-export function navigate(
+function navigate(delta: number): UiAction;
+function navigate(page: string, options?: NavigateOptions): UiAction;
+function navigate(
   pageOrDelta: number | string,
   { replace = false }: NavigateOptions = {}
 ): UiAction {
@@ -73,4 +75,40 @@ export function router(state = initialState, action: UiAction): RouterState {
     default:
       return state;
   }
+}
+
+export function useNavigate() {
+  const dispatch = useDispatch();
+
+  return useMemo(() => {
+    function dispatchedNavigate(delta: number): void;
+    function dispatchedNavigate(page: string, options?: NavigateOptions): void;
+    function dispatchedNavigate(
+      pageOrDelta: number | string,
+      options?: NavigateOptions
+    ) {
+      if (typeof pageOrDelta === 'number') {
+        dispatch(navigate(pageOrDelta));
+      } else {
+        dispatch(navigate(pageOrDelta, options));
+      }
+    }
+
+    return dispatchedNavigate;
+  }, [dispatch]);
+}
+
+export interface WithNavigate {
+  navigate: ReturnType<typeof useNavigate>;
+}
+
+export function withNavigate<Props>(
+  component: React.ComponentType<Props & WithNavigate>
+): React.ComponentType<Props> {
+  return function WrappedWithNavigate(props) {
+    return createElement(component, {
+      ...props,
+      navigate: useNavigate(),
+    });
+  };
 }

@@ -2,17 +2,17 @@ import * as React from 'react';
 import * as styles from './nftInfo.module.css';
 import { NftCover } from 'nfts/nftCard';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAppSelector } from 'ui/store';
+import { useAppSelector } from 'ui/store';
 import { createNft } from 'nfts/utils';
 import { Button, Ellipsis, Loader } from 'ui/components/ui';
 import { PAGES } from 'ui/pageConfig';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { getAccountLink, getAssetDetailLink } from 'ui/urls';
 import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
-import { navigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 
 export function NftInfo() {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const networkCode = useAppSelector(
@@ -120,7 +120,7 @@ export function NftInfo() {
         <Button
           onClick={() => {
             setCurrentAsset(null);
-            dispatch(navigate(-1));
+            navigate(-1);
           }}
         >
           {t('nftInfo.backBtn')}
@@ -130,7 +130,7 @@ export function NftInfo() {
           view="submit"
           onClick={() => {
             setCurrentAsset(nft?.asset);
-            dispatch(navigate(PAGES.SEND));
+            navigate(PAGES.SEND);
           }}
         >
           {t('nftInfo.sendBtn')}

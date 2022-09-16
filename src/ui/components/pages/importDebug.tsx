@@ -6,10 +6,11 @@ import { WalletTypes } from 'ui/services/Background';
 import { Button, Error, Input } from 'ui/components/ui';
 import * as styles from 'ui/components/pages/importDebug.module.css';
 import { useTranslation } from 'react-i18next';
-import { navigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 import { PAGES } from 'ui/pageConfig';
 
 export function ImportDebug() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
@@ -82,7 +83,7 @@ export function ImportDebug() {
             )
           );
 
-          dispatch(navigate(PAGES.IMPORT_SUCCESS));
+          navigate(PAGES.IMPORT_SUCCESS);
         }}
       >
         <div className="margin1">

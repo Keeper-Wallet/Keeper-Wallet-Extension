@@ -1,9 +1,9 @@
 import * as styles from './ExportAndImport.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector, useAppDispatch } from 'ui/store';
+import { useAppSelector } from 'ui/store';
 import background from 'ui/services/Background';
-import { navigate } from '../../router';
+import { useNavigate } from '../../router';
 import { PAGES } from '../../pageConfig';
 import { Button } from '../ui';
 import { downloadKeystore } from '../../../keystore/utils';
@@ -11,8 +11,8 @@ import { ExportPasswordModal } from '../pages/exportAccounts/passwordModal';
 import { isExportable } from '../pages/exportAccounts/chooseItems';
 
 export function ExportAndImport() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
 
   const addresses = useAppSelector(state => state.addresses);
   const allNetworksAccounts = useAppSelector(
@@ -33,7 +33,7 @@ export function ExportAndImport() {
         type="button"
         view="transparent"
         onClick={() => {
-          dispatch(navigate(PAGES.EXPORT_ACCOUNTS));
+          navigate(PAGES.EXPORT_ACCOUNTS);
         }}
       >
         <p className="body1 left">{t('exportAndImport.exportAccounts')}</p>
@@ -47,7 +47,7 @@ export function ExportAndImport() {
             `${window.location.origin}/accounts.html#${PAGES.IMPORT_KEYSTORE}`,
             PAGES.IMPORT_KEYSTORE
           );
-          dispatch(navigate(PAGES.ROOT, { replace: true }));
+          navigate(PAGES.ROOT, { replace: true });
         }}
       >
         <p className="body1 left">{t('exportAndImport.importAccounts')}</p>
@@ -58,7 +58,7 @@ export function ExportAndImport() {
         type="button"
         view="transparent"
         onClick={() => {
-          dispatch(navigate(PAGES.EXPORT_ADDRESS_BOOK));
+          navigate(PAGES.EXPORT_ADDRESS_BOOK);
         }}
       >
         <p className="body1 left">{t('exportAndImport.exportAddressBook')}</p>
@@ -72,7 +72,7 @@ export function ExportAndImport() {
             `${window.location.origin}/accounts.html#${PAGES.IMPORT_ADDRESS_BOOK}`,
             PAGES.IMPORT_ADDRESS_BOOK
           );
-          dispatch(navigate(PAGES.ROOT, { replace: true }));
+          navigate(PAGES.ROOT, { replace: true });
         }}
       >
         <p className="body1 left">{t('exportAndImport.importAddressBook')}</p>
@@ -103,7 +103,7 @@ export function ExportAndImport() {
                 password,
                 encrypted
               );
-              dispatch(navigate(PAGES.SETTINGS, { replace: true }));
+              navigate(PAGES.SETTINGS, { replace: true });
             }}
           />
         )}

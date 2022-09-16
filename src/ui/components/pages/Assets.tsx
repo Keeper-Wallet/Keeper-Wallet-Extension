@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { setActiveAccount } from 'ui/actions/assets';
 import { getBalances } from 'ui/actions/balances';
 import { setSwapScreenInitialState } from 'ui/actions/localState';
-import { navigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 import { PAGES } from 'ui/pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import BigNumber from '@waves/bignumber';
@@ -21,6 +21,7 @@ import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 import { AssetDetail } from 'assets/types';
 
 export function Assets() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -94,17 +95,17 @@ export function Assets() {
             setTimeout(() => setShowCopy(false), 1000);
           }}
           onSwapClick={() => {
-            dispatch(navigate(PAGES.SWAP));
+            navigate(PAGES.SWAP);
           }}
           onOtherAccountsClick={() => {
-            dispatch(navigate(PAGES.OTHER_ACCOUNTS));
+            navigate(PAGES.OTHER_ACCOUNTS);
           }}
           onClick={account => {
             dispatch(setActiveAccount(account));
-            dispatch(navigate(PAGES.ACCOUNT_INFO));
+            navigate(PAGES.ACCOUNT_INFO);
           }}
           onShowQr={() => {
-            dispatch(navigate(PAGES.QR_CODE_SELECTED));
+            navigate(PAGES.QR_CODE_SELECTED);
           }}
         />
       </div>
@@ -123,11 +124,11 @@ export function Assets() {
             }}
             onSendClick={assetId => {
               setCurrentAsset(assets[assetId]);
-              dispatch(navigate(PAGES.SEND));
+              navigate(PAGES.SEND);
             }}
             onSwapClick={assetId => {
               dispatch(setSwapScreenInitialState({ fromAssetId: assetId }));
-              dispatch(navigate(PAGES.SWAP));
+              navigate(PAGES.SWAP);
             }}
           />
           <TabNfts />

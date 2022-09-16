@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { useAppSelector, useAppDispatch } from 'ui/store';
-import { navigate } from '../../../router';
+import { useAppSelector } from 'ui/store';
+import { useNavigate } from '../../../router';
 import { downloadKeystore } from '../../../../keystore/utils';
 import { ExportKeystoreChooseItems } from './chooseItems';
 import { ExportPasswordModal } from './passwordModal';
 import { PreferencesAccount } from 'preferences/types';
 
 export function ExportAccounts() {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const allNetworksAccounts = useAppSelector(
     state => state.allNetworksAccounts
   );
@@ -34,7 +34,7 @@ export function ExportAccounts() {
           }}
           onSubmit={async password => {
             await downloadKeystore(accountsToExport, undefined, password);
-            dispatch(navigate(-2));
+            navigate(-2);
           }}
         />
       )}

@@ -2,7 +2,7 @@ import * as styles from './newWalletName.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { newAccountName, selectAccount } from 'ui/actions/localState';
-import { navigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 import { createAccount } from 'ui/actions/user';
 import { Button, Error, Input } from 'ui/components/ui';
 import { CONFIG } from 'ui/appConfig';
@@ -11,6 +11,7 @@ import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 import { PAGES } from 'ui/pageConfig';
 
 export function NewWalletName() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -58,7 +59,7 @@ export function NewWalletName() {
 
           if (existingAccount) {
             dispatch(selectAccount(existingAccount));
-            dispatch(navigate(PAGES.IMPORT_SUCCESS));
+            navigate(PAGES.IMPORT_SUCCESS);
             return;
           }
 
@@ -78,7 +79,7 @@ export function NewWalletName() {
             createAccount(account, accountTypeToWalletType[account.type])
           );
 
-          dispatch(navigate(PAGES.IMPORT_SUCCESS));
+          navigate(PAGES.IMPORT_SUCCESS);
         }}
       >
         <div className="margin1">
@@ -121,9 +122,9 @@ export function NewWalletName() {
               <Button
                 className="margin1"
                 type="button"
-                onClick={() =>
-                  dispatch(navigate(PAGES.ROOT, { replace: true }))
-                }
+                onClick={() => {
+                  navigate(PAGES.ROOT, { replace: true });
+                }}
               >
                 {t('newAccountName.cancel')}
               </Button>

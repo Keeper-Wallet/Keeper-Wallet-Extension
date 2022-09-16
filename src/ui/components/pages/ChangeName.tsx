@@ -2,7 +2,7 @@ import * as styles from './styles/changeName.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { changeAccountName } from '../../actions/account';
-import { navigate } from '../../router';
+import { withNavigate, WithNavigate } from '../../router';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
@@ -16,10 +16,9 @@ interface StateProps {
 
 interface DispatchProps {
   changeAccountName: (updateAccount: { name: string; address: string }) => void;
-  navigate: (delta: number) => void;
 }
 
-type Props = WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps & WithNavigate;
 
 interface State {
   error: boolean | Array<{ code: number; key: string; msg: string }> | null;
@@ -154,10 +153,9 @@ const mapToProps = (store: AppState): StateProps => {
 
 const actions = {
   changeAccountName,
-  navigate,
 };
 
 export const ChangeAccountName = connect(
   mapToProps,
   actions
-)(withTranslation()(ChangeAccountNameComponent));
+)(withTranslation()(withNavigate(ChangeAccountNameComponent)));

@@ -8,7 +8,7 @@ import { useAssetIdByTicker } from 'assets/utils';
 import { convertFeeToAsset } from 'fee/utils';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { navigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 import { updateAssets } from 'ui/actions/assets';
 import { resetSwapScreenInitialState } from 'ui/actions/localState';
 import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
@@ -20,6 +20,7 @@ import { SwapResult } from './result';
 import * as styles from './swap.module.css';
 
 export function Swap() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const dispatch = useAppDispatch();
@@ -126,7 +127,7 @@ export function Swap() {
         fromMoney={performedSwapData.fromMoney}
         transactionId={performedSwapData.transactionId}
         onClose={() => {
-          dispatch(navigate(PAGES.ROOT));
+          navigate(PAGES.ROOT);
         }}
       />
     );

@@ -5,11 +5,10 @@ import { Button, Copy, Modal } from '../ui';
 import { PAGES } from '../../pageConfig';
 import { useAccountsSelector } from 'accounts/store';
 import { NewAccountState } from 'ui/reducers/localState';
-import { useAppDispatch } from 'ui/store';
-import { navigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 
 export function BackUpSeed() {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const [showCopy, setShowCopy] = React.useState<boolean>(false);
   const newAccount = useAccountsSelector(
@@ -47,7 +46,7 @@ export function BackUpSeed() {
         className="margin-main-big"
         type="submit"
         onClick={() => {
-          dispatch(navigate(PAGES.CONFIRM_BACKUP));
+          navigate(PAGES.CONFIRM_BACKUP);
         }}
       >
         {t('backupSeed.continue')}
@@ -56,7 +55,7 @@ export function BackUpSeed() {
       <Button
         id="cancelCreation"
         onClick={() => {
-          dispatch(navigate(PAGES.ROOT));
+          navigate(PAGES.ROOT);
         }}
       >
         {t('backupSeed.cancel')}

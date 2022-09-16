@@ -3,12 +3,13 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Select } from '../ui';
 import { setIdle } from '../../actions/localState';
-import { navigate } from '../../router';
+import { useNavigate } from '../../router';
 import { PAGES } from '../../pageConfig';
 import cn from 'classnames';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 
 export function SettingsGeneral() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
@@ -54,7 +55,7 @@ export function SettingsGeneral() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              dispatch(navigate(PAGES.CHANGE_PASSWORD));
+              navigate(PAGES.CHANGE_PASSWORD);
             }}
           >
             <div className="body1 left">{t('settings.password')}</div>

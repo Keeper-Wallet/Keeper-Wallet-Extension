@@ -12,7 +12,7 @@ import {
   setActiveNotification,
   setShowNotification,
 } from '../../actions/notifications';
-import { navigate } from '../../router';
+import { WithNavigate, withNavigate } from '../../router';
 import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
@@ -63,7 +63,6 @@ interface StateProps {
 
 interface DispatchProps {
   closeNotificationWindow: () => void;
-  navigate: (page: string) => void;
   setShowNotification: (permissions: {
     origin: string;
     canUse: boolean | null;
@@ -78,7 +77,7 @@ interface DispatchProps {
   ) => void;
 }
 
-type Props = WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps & WithNavigate;
 
 interface State {
   canShowNotify?: boolean;
@@ -274,7 +273,6 @@ const mapStateToProps = function (store: AppState): StateProps {
 
 const actions = {
   closeNotificationWindow,
-  navigate,
   setActiveNotification,
   setShowNotification,
   deleteNotifications,
@@ -283,4 +281,4 @@ const actions = {
 export const Notifications = connect(
   mapStateToProps,
   actions
-)(withTranslation()(NotificationsComponent));
+)(withTranslation()(withNavigate(NotificationsComponent)));
