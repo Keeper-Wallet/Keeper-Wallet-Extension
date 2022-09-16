@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { AppState } from 'ui/store';
 import { newAccountSelect } from '../../actions/localState';
-import { navigate } from '../../actions/router';
+import { navigate } from '../../router';
 import { PAGES } from '../../pageConfig';
 import { AvatarList, Button } from '../ui';
 import * as styles from './styles/newwallet.styl';

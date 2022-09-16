@@ -10,7 +10,7 @@ import { AccountCard } from '../accounts/accountCard';
 import * as styles from './otherAccounts.module.css';
 import { SearchInput } from 'ui/components/ui/searchInput/searchInput';
 import background from 'ui/services/Background';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 
 export function OtherAccountsPage() {
   const { t } = useTranslation();

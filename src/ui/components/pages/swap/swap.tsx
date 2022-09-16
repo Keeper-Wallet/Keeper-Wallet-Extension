@@ -8,7 +8,7 @@ import { useAssetIdByTicker } from 'assets/utils';
 import { convertFeeToAsset } from 'fee/utils';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 import { updateAssets } from 'ui/actions/assets';
 import { resetSwapScreenInitialState } from 'ui/actions/localState';
 import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';

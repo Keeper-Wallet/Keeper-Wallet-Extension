@@ -19,7 +19,7 @@ import * as styles from './network.styl';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { AppState } from 'ui/store';
 import { NetworkName } from 'networks/types';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 import { PAGES } from 'ui/pageConfig';
 
 const key = (key: string) => `bottom.${key}`;

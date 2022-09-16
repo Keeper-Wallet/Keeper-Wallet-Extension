@@ -1,6 +1,36 @@
 import { PAGES } from 'ui/pageConfig';
-import { ACTION } from '../actions/constants';
-import { UiAction } from '../store';
+import { UiAction } from 'ui/store';
+import { ACTION } from './actions/constants';
+
+interface NavigateOptions {
+  replace?: boolean;
+}
+
+export function navigate(delta: number): UiAction;
+export function navigate(page: string, options?: NavigateOptions): UiAction;
+export function navigate(
+  pageOrDelta: number | string,
+  { replace = false }: NavigateOptions = {}
+): UiAction {
+  if (typeof pageOrDelta === 'number') {
+    const delta = pageOrDelta;
+
+    return {
+      type: ACTION.NAVIGATE_BACK,
+      payload: { delta },
+    };
+  }
+
+  const page = pageOrDelta;
+
+  return {
+    type: ACTION.NAVIGATE,
+    payload: {
+      page,
+      replace,
+    },
+  };
+}
 
 const MAX_HISTORY = 10;
 

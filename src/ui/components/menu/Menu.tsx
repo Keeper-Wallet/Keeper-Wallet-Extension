@@ -3,7 +3,7 @@ import * as styles from './menu.styl';
 import { HeadLogo } from '../head';
 import { PAGES } from '../../pageConfig';
 import { useAppDispatch } from 'ui/store';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 
 interface Props {
   hasLogo: boolean | undefined;

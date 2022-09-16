@@ -12,7 +12,7 @@ import {
   updateActiveState,
 } from '../../actions/notifications';
 import { clearMessages, reject } from '../../actions/messages';
-import { navigate } from '../../actions/router';
+import { navigate } from '../../router';
 import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import { LoadingScreen } from './loadingScreen';

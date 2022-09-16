@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from 'ui/store';
 import background from 'ui/services/Background';
-import { navigate } from '../../actions/router';
+import { navigate } from '../../router';
 import { PAGES } from '../../pageConfig';
 import { Button } from '../ui';
 import { downloadKeystore } from '../../../keystore/utils';

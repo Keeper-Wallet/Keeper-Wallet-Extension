@@ -9,7 +9,7 @@ import { ImportKeystoreChooseAccounts } from './chooseAccounts';
 import { batchAddAccounts } from 'ui/actions/user';
 import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 
 type ExchangeKeystoreAccount = {
   address: string;

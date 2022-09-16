@@ -2,7 +2,7 @@ import * as styles from './newWalletName.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { newAccountName, selectAccount } from 'ui/actions/localState';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 import { createAccount } from 'ui/actions/user';
 import { Button, Error, Input } from 'ui/components/ui';
 import { CONFIG } from 'ui/appConfig';

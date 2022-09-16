@@ -6,7 +6,7 @@ import { Button, LangsSelect } from '../ui';
 import { PAGES } from '../../pageConfig';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import background from 'ui/services/Background';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 
 export function Welcome() {
   const dispatch = useAppDispatch();

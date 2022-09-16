@@ -2,7 +2,7 @@ import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, PowerButton } from '../ui';
-import { navigate } from '../../actions/router';
+import { navigate } from '../../router';
 import { setUiState } from '../../actions/uiState';
 import { lock } from '../../actions/user';
 import { PAGES } from '../../pageConfig';

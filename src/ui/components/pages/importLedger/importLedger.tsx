@@ -2,7 +2,7 @@ import cn from 'classnames';
 import { ledgerService, LedgerServiceStatus } from 'ledger/service';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 import { newAccountSelect } from 'ui/actions/localState';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Error } from 'ui/components/ui/error';

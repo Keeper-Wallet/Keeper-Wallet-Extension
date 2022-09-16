@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { Login } from './login';
 import { newAccountSelect } from '../../../actions/localState';
-import { navigate } from '../../../actions/router';
+import { navigate } from '../../../router';
 import { PAGES } from '../../../pageConfig';
 import { IdentityUser } from 'controllers/IdentityController';
 

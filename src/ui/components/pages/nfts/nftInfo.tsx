@@ -9,7 +9,7 @@ import { PAGES } from 'ui/pageConfig';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { getAccountLink, getAssetDetailLink } from 'ui/urls';
 import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 
 export function NftInfo() {
   const dispatch = useAppDispatch();

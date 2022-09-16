@@ -8,7 +8,7 @@ import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { PAGES } from '../../pageConfig';
 import { useAppDispatch, useAppSelector } from '../../store';
 import background from 'ui/services/Background';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 import { generateNewWalletItems } from './NewWallet';
 
 export function ImportPopup() {

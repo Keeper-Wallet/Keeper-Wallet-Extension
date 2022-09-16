@@ -11,7 +11,7 @@ import { PAGES } from 'ui/pageConfig';
 import { createNft, Nft } from 'nfts/utils';
 import { getNftsLink } from 'ui/urls';
 import { MAX_NFT_ITEMS } from 'controllers/currentAccount';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
   key =>

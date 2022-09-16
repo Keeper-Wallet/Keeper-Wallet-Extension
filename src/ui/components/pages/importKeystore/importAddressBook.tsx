@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { seedUtils } from '@waves/waves-transactions';
 import { ImportKeystoreChooseFile } from './chooseFile';
 import { setAddresses } from 'ui/actions/addresses';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 import { PAGES } from '../../../pageConfig';
 import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';

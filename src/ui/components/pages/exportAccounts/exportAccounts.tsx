@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useAppSelector, useAppDispatch } from 'ui/store';
-import { navigate } from '../../../actions/router';
+import { navigate } from '../../../router';
 import { downloadKeystore } from '../../../../keystore/utils';
 import { ExportKeystoreChooseItems } from './chooseItems';
 import { ExportPasswordModal } from './passwordModal';

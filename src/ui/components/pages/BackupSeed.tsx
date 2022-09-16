@@ -6,7 +6,7 @@ import { PAGES } from '../../pageConfig';
 import { useAccountsSelector } from 'accounts/store';
 import { NewAccountState } from 'ui/reducers/localState';
 import { useAppDispatch } from 'ui/store';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 
 export function BackUpSeed() {
   const dispatch = useAppDispatch();

@@ -6,7 +6,7 @@ import { WalletTypes } from 'ui/services/Background';
 import { Button, Error, Input } from 'ui/components/ui';
 import * as styles from 'ui/components/pages/importDebug.module.css';
 import { useTranslation } from 'react-i18next';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 import { PAGES } from 'ui/pageConfig';
 
 export function ImportDebug() {

@@ -13,7 +13,7 @@ import {
   closeNotificationWindow,
 } from '../../actions/localState';
 import { getAsset } from '../../actions/assets';
-import { navigate } from '../../actions/router';
+import { navigate } from '../../router';
 import { setAutoOrigin } from '../../actions/permissions';
 import { setShowNotification } from '../../actions/notifications';
 import { PAGES } from '../../pageConfig';

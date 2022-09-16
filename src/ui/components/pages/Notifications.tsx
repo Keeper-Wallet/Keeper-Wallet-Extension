@@ -12,7 +12,7 @@ import {
   setActiveNotification,
   setShowNotification,
 } from '../../actions/notifications';
-import { navigate } from '../../actions/router';
+import { navigate } from '../../router';
 import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';

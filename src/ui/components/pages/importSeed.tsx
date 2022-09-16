@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { newAccountSelect, selectAccount } from 'ui/actions/localState';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 import {
   Button,
   Error,

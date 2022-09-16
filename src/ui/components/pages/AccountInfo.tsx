@@ -5,7 +5,7 @@ import * as styles from './styles/accountInfo.styl';
 import { Avatar, Balance, Button, CopyText, Error, Input, Modal } from '../ui';
 import background from '../../services/Background';
 import { getAsset } from '../../actions/assets';
-import { navigate } from '../../actions/router';
+import { navigate } from '../../router';
 import { Asset, Money } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { getAccountLink } from '../../urls';

@@ -5,7 +5,7 @@ import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
 import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 import { LoadingScreen } from './pages/loadingScreen';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 
 export function RootAccounts() {
   const dispatch = useAppDispatch();

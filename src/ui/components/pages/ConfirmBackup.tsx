@@ -6,7 +6,7 @@ import { Button, Error, Pills, PillsListItem } from '../ui';
 import { AppState } from 'ui/store';
 import { PAGES } from 'ui/pageConfig';
 import { NewAccountState } from 'ui/reducers/localState';
-import { navigate } from 'ui/actions/router';
+import { navigate } from 'ui/router';
 
 const SHUFFLE_COUNT = 500;
 
