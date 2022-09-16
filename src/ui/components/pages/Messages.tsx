@@ -267,18 +267,16 @@ class MessagesComponent extends React.Component<Props, State> {
           config={this.state.config}
           onClose={() => {
             clearMessagesStatus(false);
-            navigate(PAGES.ROOT);
+            navigate(PAGES.ASSETS);
             this.hasApproved = false;
             closeNotificationWindow();
           }}
           onNext={() => {
             clearMessagesStatus(false);
-            navigate(PAGES.ROOT);
             this.hasApproved = false;
           }}
           onList={() => {
             clearMessagesStatus(true);
-            navigate(PAGES.ROOT);
             this.hasApproved = false;
           }}
         />
