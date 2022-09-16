@@ -3,10 +3,12 @@ import * as React from 'react';
 import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
-import { useAccountsSelector } from 'accounts/store';
+import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 import { LoadingScreen } from './pages/loadingScreen';
+import { navigate } from 'ui/actions/router';
 
 export function RootAccounts() {
+  const dispatch = useAppDispatch();
   const currentLocale = useAccountsSelector(state => state.currentLocale);
   const isLoading = useAccountsSelector(state => state.localState.loading);
 
@@ -59,6 +61,18 @@ export function RootAccounts() {
 
     prevPageRef.current = currentPage;
   }, [currentPage]);
+
+  const currentNetwork = useAccountsSelector(state => state.currentNetwork);
+  const prevNetworkRef = React.useRef(currentNetwork);
+
+  React.useEffect(() => {
+    if (currentNetwork === prevNetworkRef.current) {
+      return;
+    }
+
+    dispatch(navigate(PAGES.ROOT, { replace: true }));
+    prevNetworkRef.current = currentNetwork;
+  }, [currentNetwork, dispatch]);
 
   const pageConf = PAGES_CONF[currentPage];
   const Component = pageConf.component;

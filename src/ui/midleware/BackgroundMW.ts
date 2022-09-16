@@ -4,12 +4,10 @@ import {
   notificationSelect,
 } from '../actions/localState';
 import { setActiveNotification } from '../actions/notifications';
-import { navigate } from '../actions/router';
 import background from '../services/Background';
 import i18n from '../i18n';
 import { UiMiddleware } from 'ui/store';
 import { NotificationsStoreItem } from 'notifications/types';
-import { PAGES } from 'ui/pageConfig';
 
 export const changeLang: UiMiddleware = store => next => action => {
   if (
@@ -104,16 +102,6 @@ export const uiState: UiMiddleware = store => next => action => {
     store.dispatch({ type: ACTION.UPDATE_UI_STATE, payload: newState });
     background.setUiState(newState);
     return null;
-  }
-
-  return next(action);
-};
-
-export const changeNetwork: UiMiddleware = store => next => action => {
-  if (action.type === ACTION.UPDATE_CURRENT_NETWORK) {
-    if (store.getState().localState.tabMode === 'tab') {
-      store.dispatch(navigate(PAGES.ROOT, { replace: true }));
-    }
   }
 
   return next(action);
