@@ -6,16 +6,15 @@ import * as Sentry from '@sentry/react';
 import { extension } from 'lib/extension';
 import log from 'loglevel';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 
 import { KEEPERWALLET_DEBUG } from '../constants';
 import { cbToPromise, setupDnode, transformMethods } from 'lib/dnodeUtil';
 import { PortStream } from 'lib/portStream';
-import { setLangs, setLoading, setTabMode } from 'ui/actions/localState';
+import { setLangs, setTabMode } from 'ui/actions/localState';
 import { createUpdateState } from './updateState';
 import { RootAccounts } from 'ui/components/RootAccounts';
-import { Error } from 'ui/components/pages/Error';
 import { LANGS } from 'ui/i18n';
 import backgroundService, {
   BackgroundGetStateResult,
@@ -25,6 +24,8 @@ import { createAccountsStore } from './store';
 import { LedgerSignRequest } from 'ledger/types';
 import { ledgerService } from 'ledger/service';
 import { initUiSentry } from 'sentry';
+import { RootWrapper } from 'ui/components/RootWrapper';
+import { LoadingScreen } from 'ui/components/pages';
 
 initUiSentry({
   ignoreErrorContext: 'beforeSendAccounts',
@@ -43,13 +44,11 @@ async function startUi() {
   store.dispatch(setTabMode('tab'));
   store.dispatch(setLangs(LANGS));
 
-  ReactDOM.render(
+  render(
     <Provider store={store}>
-      <Sentry.ErrorBoundary fallback={errorData => <Error {...errorData} />}>
-        <div className="app">
-          <RootAccounts />
-        </div>
-      </Sentry.ErrorBoundary>
+      <RootWrapper>
+        <LoadingScreen />
+      </RootWrapper>
     </Provider>,
     document.getElementById('app-content')
   );
@@ -131,5 +130,12 @@ async function startUi() {
   document.addEventListener('mousedown', () => backgroundService.updateIdle());
   document.addEventListener('focus', () => backgroundService.updateIdle());
 
-  store.dispatch(setLoading(false));
+  render(
+    <Provider store={store}>
+      <RootWrapper>
+        <RootAccounts />
+      </RootWrapper>
+    </Provider>,
+    document.getElementById('app-content')
+  );
 }

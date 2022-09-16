@@ -4,13 +4,10 @@ import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
 import { useAccountsSelector } from 'accounts/store';
-import { LoadingScreen } from './pages/loadingScreen';
 import { useNavigate } from 'ui/router';
 
 export function RootAccounts() {
   const navigate = useNavigate();
-  const currentLocale = useAccountsSelector(state => state.currentLocale);
-  const isLoading = useAccountsSelector(state => state.localState.loading);
 
   const currentPage = useAccountsSelector(state => {
     let page = state.router.currentPage;
@@ -77,27 +74,21 @@ export function RootAccounts() {
   const Component = pageConf.component;
 
   return (
-    <div className={`height ${currentLocale}`}>
-      {isLoading ? (
-        <LoadingScreen />
-      ) : (
-        <>
-          <Menu
-            hasBack={
-              currentPage !== window.location.hash.split('#')[1] &&
-              pageConf.menu?.back
-            }
-            hasClose={pageConf.menu?.close}
-            hasLogo={pageConf.menu?.hasLogo}
-            hasSettings={pageConf.menu?.hasSettings}
-          />
-          <Component />
-          <Bottom
-            hide={pageConf.bottom?.hide}
-            noChangeNetwork={pageConf.bottom?.noChangeNetwork}
-          />
-        </>
-      )}
-    </div>
+    <>
+      <Menu
+        hasBack={
+          currentPage !== window.location.hash.split('#')[1] &&
+          pageConf.menu?.back
+        }
+        hasClose={pageConf.menu?.close}
+        hasLogo={pageConf.menu?.hasLogo}
+        hasSettings={pageConf.menu?.hasSettings}
+      />
+      <Component />
+      <Bottom
+        hide={pageConf.bottom?.hide}
+        noChangeNetwork={pageConf.bottom?.noChangeNetwork}
+      />
+    </>
   );
 }

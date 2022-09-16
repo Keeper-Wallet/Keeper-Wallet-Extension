@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/react';
 import { extension } from 'lib/extension';
 import log from 'loglevel';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 
 import { KEEPERWALLET_DEBUG } from './constants';
@@ -14,10 +14,9 @@ import { ledgerService } from './ledger/service';
 import { LedgerSignRequest } from './ledger/types';
 import { cbToPromise, setupDnode, transformMethods } from './lib/dnodeUtil';
 import { PortStream } from './lib/portStream';
-import { setLangs, setLoading } from './ui/actions/localState';
+import { setLangs } from './ui/actions/localState';
 import { createUpdateState } from './ui/actions/updateState';
 import { Root } from 'ui/components/Root';
-import { Error } from 'ui/components/pages/Error';
 import { LANGS } from './ui/i18n';
 import backgroundService, {
   BackgroundGetStateResult,
@@ -25,6 +24,8 @@ import backgroundService, {
 } from './ui/services/Background';
 import { createUiStore } from './ui/store';
 import { initUiSentry } from 'sentry';
+import { RootWrapper } from 'ui/components/RootWrapper';
+import { LoadingScreen } from 'ui/components/pages';
 
 const isNotificationWindow = window.location.pathname === '/notification.html';
 
@@ -44,13 +45,11 @@ async function startUi() {
 
   store.dispatch(setLangs(LANGS));
 
-  ReactDOM.render(
+  render(
     <Provider store={store}>
-      <Sentry.ErrorBoundary fallback={errorData => <Error {...errorData} />}>
-        <div className="app">
-          <Root />
-        </div>
-      </Sentry.ErrorBoundary>
+      <RootWrapper>
+        <LoadingScreen />
+      </RootWrapper>
     </Provider>,
     document.getElementById('app-content')
   );
@@ -153,5 +152,12 @@ async function startUi() {
   document.addEventListener('focus', () => backgroundService.updateIdle());
   window.addEventListener('beforeunload', () => background.identityClear());
 
-  store.dispatch(setLoading(false));
+  render(
+    <Provider store={store}>
+      <RootWrapper>
+        <Root />
+      </RootWrapper>
+    </Provider>,
+    document.getElementById('app-content')
+  );
 }

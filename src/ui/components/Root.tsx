@@ -4,13 +4,10 @@ import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
 import { useAppSelector } from 'ui/store';
-import { LoadingScreen } from './pages';
 import { useNavigate } from 'ui/router';
 
 export function Root() {
   const navigate = useNavigate();
-  const currentLocale = useAppSelector(state => state.currentLocale);
-  const isLoading = useAppSelector(state => state.localState.loading);
 
   const currentPage = useAppSelector(state => {
     let page = state.router.currentPage;
@@ -82,24 +79,18 @@ export function Root() {
   const Component = pageConf.component;
 
   return (
-    <div className={`height ${currentLocale}`}>
-      {isLoading ? (
-        <LoadingScreen />
-      ) : (
-        <>
-          <Menu
-            hasBack={pageConf.menu?.back}
-            hasClose={pageConf.menu?.close}
-            hasLogo={pageConf.menu?.hasLogo}
-            hasSettings={pageConf.menu?.hasSettings}
-          />
-          <Component />
-          <Bottom
-            hide={pageConf.bottom?.hide}
-            noChangeNetwork={pageConf.bottom?.noChangeNetwork}
-          />
-        </>
-      )}
-    </div>
+    <>
+      <Menu
+        hasBack={pageConf.menu?.back}
+        hasClose={pageConf.menu?.close}
+        hasLogo={pageConf.menu?.hasLogo}
+        hasSettings={pageConf.menu?.hasSettings}
+      />
+      <Component />
+      <Bottom
+        hide={pageConf.bottom?.hide}
+        noChangeNetwork={pageConf.bottom?.noChangeNetwork}
+      />
+    </>
   );
 }
