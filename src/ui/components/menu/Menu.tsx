@@ -3,6 +3,7 @@ import * as styles from './menu.styl';
 import { HeadLogo } from '../head';
 import { PAGES } from '../../pageConfig';
 import { useNavigate } from 'ui/router';
+import { useAccountsSelector } from 'accounts/store';
 
 interface Props {
   hasLogo: boolean | undefined;
@@ -13,6 +14,8 @@ interface Props {
 
 export function Menu({ hasClose, hasBack, hasLogo, hasSettings }: Props) {
   const navigate = useNavigate();
+
+  const currentPage = useAccountsSelector(state => state.router.currentPage);
 
   return (
     <div>
@@ -36,7 +39,7 @@ export function Menu({ hasClose, hasBack, hasLogo, hasSettings }: Props) {
         </>
       )}
 
-      {hasBack && (
+      {hasBack && currentPage !== window.location.hash.split('#')[1] && (
         <div
           className={`${styles.arrowBackIcon} arrow-back-icon`}
           onClick={() => {

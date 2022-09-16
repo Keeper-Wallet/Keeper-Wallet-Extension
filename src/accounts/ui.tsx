@@ -26,6 +26,8 @@ import { ledgerService } from 'ledger/service';
 import { initUiSentry } from 'sentry';
 import { RootWrapper } from 'ui/components/RootWrapper';
 import { LoadingScreen } from 'ui/components/pages';
+import { ACTION } from 'ui/actions/constants';
+import { PAGES } from 'ui/pageConfig';
 
 initUiSentry({
   ignoreErrorContext: 'beforeSendAccounts',
@@ -129,6 +131,18 @@ async function startUi() {
   document.addEventListener('keyup', () => backgroundService.updateIdle());
   document.addEventListener('mousedown', () => backgroundService.updateIdle());
   document.addEventListener('focus', () => backgroundService.updateIdle());
+
+  const pageFromHash = window.location.hash.split('#')[1];
+
+  if (Object.values(PAGES).includes(pageFromHash)) {
+    store.dispatch({
+      type: ACTION.NAVIGATE,
+      payload: {
+        page: pageFromHash,
+        replace: true,
+      },
+    });
+  }
 
   render(
     <Provider store={store}>

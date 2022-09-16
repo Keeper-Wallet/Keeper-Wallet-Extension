@@ -13,14 +13,6 @@ export function RootAccounts() {
     const initialized = state.state?.initialized;
     const locked = state.state?.locked;
 
-    if (!page) {
-      const pageFromHash = window.location.hash.split('#')[1];
-
-      if (Object.values(PAGES).includes(pageFromHash)) {
-        page = pageFromHash;
-      }
-    }
-
     if (page === PAGES.NEW) {
       if (initialized) {
         page = locked ? PAGES.LOGIN : PAGES.IMPORT_TAB;
@@ -57,10 +49,7 @@ export function RootAccounts() {
   return (
     <>
       <Menu
-        hasBack={
-          currentPage !== window.location.hash.split('#')[1] &&
-          pageConf.menu?.back
-        }
+        hasBack={pageConf.menu?.back}
         hasClose={pageConf.menu?.close}
         hasLogo={pageConf.menu?.hasLogo}
         hasSettings={pageConf.menu?.hasSettings}
