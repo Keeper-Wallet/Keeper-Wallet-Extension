@@ -8,10 +8,7 @@ import { connect } from 'react-redux';
 import { TransactionStatusState } from 'ui/reducers/updateState';
 import { AppState } from 'ui/store';
 import { approve, reject, rejectForever } from '../../actions/messages';
-import {
-  clearMessagesStatus,
-  closeNotificationWindow,
-} from '../../actions/localState';
+import { clearMessagesStatus } from '../../actions/localState';
 import { getAsset } from '../../actions/assets';
 import { WithNavigate, withNavigate } from '../../router';
 import { setAutoOrigin } from '../../actions/permissions';
@@ -22,6 +19,7 @@ import { FinalTransaction } from '../transactions/FinalTransaction/FinalTransact
 import { LoadingScreen } from './loadingScreen';
 import { MessageConfig } from '../transactions/types';
 import { NotificationsStoreItem } from 'notifications/types';
+import Background from 'ui/services/Background';
 
 interface StateProps {
   activeMessage: MessageStoreItem | null;
@@ -51,7 +49,6 @@ const mapStateToProps = function (state: AppState): StateProps {
 const actions = {
   approve,
   clearMessagesStatus,
-  closeNotificationWindow,
   getAsset,
   reject,
   rejectForever,
@@ -62,7 +59,6 @@ const actions = {
 interface DispatchProps {
   approve: (id: string) => void;
   clearMessagesStatus: (perform: boolean) => void;
-  closeNotificationWindow: () => void;
   getAsset: (assetId: string) => void;
   reject: (id: string) => void;
   rejectForever: (id: string) => void;
@@ -238,7 +234,6 @@ class MessagesComponent extends React.Component<Props, State> {
       approve,
       autoClickProtection,
       clearMessagesStatus,
-      closeNotificationWindow,
       messages,
       navigate,
       notifications,
@@ -269,7 +264,7 @@ class MessagesComponent extends React.Component<Props, State> {
             clearMessagesStatus(false);
             navigate(PAGES.ASSETS);
             this.hasApproved = false;
-            closeNotificationWindow();
+            Background.closeNotificationWindow();
           }}
           onNext={() => {
             clearMessagesStatus(false);

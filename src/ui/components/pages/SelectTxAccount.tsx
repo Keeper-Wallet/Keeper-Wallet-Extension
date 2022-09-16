@@ -3,10 +3,7 @@ import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { connect } from 'react-redux';
-import {
-  clearMessagesStatus,
-  closeNotificationWindow,
-} from '../../actions/localState';
+import { clearMessagesStatus } from '../../actions/localState';
 import {
   deleteNotifications,
   updateActiveState,
@@ -20,6 +17,7 @@ import { AppState } from 'ui/store';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PreferencesAccount } from 'preferences/types';
 import { MessageStoreItem } from 'messages/types';
+import Background from 'ui/services/Background';
 
 interface StateProps {
   selectAccount: Partial<PreferencesAccount>;
@@ -30,7 +28,6 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  closeNotificationWindow: () => void;
   updateActiveState: () => void;
   deleteNotifications: (
     ids:
@@ -88,7 +85,7 @@ class SelectTxAccountComponent extends React.PureComponent<Props, State> {
     this.deleteNotifications();
     this.props.updateActiveState();
     this.setState({ loading: true });
-    this.props.closeNotificationWindow();
+    Background.closeNotificationWindow();
   };
 
   render() {
@@ -141,7 +138,6 @@ const mapStateToProps = (state: AppState): StateProps => {
 };
 
 const actions = {
-  closeNotificationWindow,
   updateActiveState,
   deleteNotifications,
   clearMessagesStatus,

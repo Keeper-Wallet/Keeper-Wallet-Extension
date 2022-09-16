@@ -6,7 +6,6 @@ import {
   WithTranslation,
   useTranslation,
 } from 'react-i18next';
-import { closeNotificationWindow } from '../../actions/localState';
 import {
   deleteNotifications,
   setActiveNotification,
@@ -22,6 +21,7 @@ import { NotificationsStoreItem } from 'notifications/types';
 import { PreferencesAccount } from 'preferences/types';
 import { PermissionObject, PermissionValue } from 'permissions/types';
 import { MessageStoreItem } from 'messages/types';
+import Background from 'ui/services/Background';
 
 const NotificationItem = ({
   notification,
@@ -62,7 +62,6 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  closeNotificationWindow: () => void;
   setShowNotification: (permissions: {
     origin: string;
     canUse: boolean | null;
@@ -137,7 +136,7 @@ class NotificationsComponent extends React.Component<Props, State> {
 
   closeHandler = () => {
     this._deleteMessages(null);
-    this.props.closeNotificationWindow();
+    Background.closeNotificationWindow();
   };
 
   toListHandler = () => {
@@ -272,7 +271,6 @@ const mapStateToProps = function (store: AppState): StateProps {
 };
 
 const actions = {
-  closeNotificationWindow,
   setActiveNotification,
   setShowNotification,
   deleteNotifications,

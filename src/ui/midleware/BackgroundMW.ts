@@ -88,13 +88,6 @@ export const selectAccount: UiMiddleware = store => next => action => {
   return next(action);
 };
 
-export const closeNotificationWindow: UiMiddleware = () => next => action => {
-  if (action.type === ACTION.CLOSE_WINDOW) {
-    background.closeNotificationWindow();
-  }
-  return next(action);
-};
-
 export const uiState: UiMiddleware = store => next => action => {
   if (action.type === ACTION.SET_UI_STATE) {
     const ui = store.getState().uiState;
