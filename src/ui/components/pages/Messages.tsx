@@ -20,7 +20,7 @@ import { PAGES } from '../../pageConfig';
 import { getConfigByTransaction } from '../transactions';
 import { FinalTransaction } from '../transactions/FinalTransaction/FinalTransaction';
 import { LoadingScreen } from './loadingScreen';
-import { MessageComponentProps, MessageConfig } from '../transactions/types';
+import { MessageConfig } from '../transactions/types';
 import { NotificationsStoreItem } from 'notifications/types';
 
 interface StateProps {
@@ -229,18 +229,25 @@ class MessagesComponent extends React.Component<Props, State> {
     return { assets, moneys };
   }
 
-  rejectHandler = (e: unknown) => this.reject(e);
-
-  rejectForeverHandler = (e: unknown) => this.rejectForever(e);
-
-  approveHandler: MessageComponentProps['approve'] = (e, params) =>
-    this.approve(e, params);
-
   componentDidCatch() {
-    this.reject();
+    this.props.reject(this.state.activeMessage.id);
   }
 
   render() {
+    const {
+      approve,
+      autoClickProtection,
+      clearMessagesStatus,
+      closeNotificationWindow,
+      messages,
+      navigate,
+      notifications,
+      reject,
+      rejectForever,
+      setAutoOrigin,
+      setShowNotification,
+    } = this.props;
+
     if (this.state.loading || this.state.approvePending) {
       return <LoadingScreen />;
     }
@@ -254,24 +261,24 @@ class MessagesComponent extends React.Component<Props, State> {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           message={this.props.activeMessage!}
           assets={this.props.assets}
-          messages={this.props.messages}
-          notifications={this.props.notifications}
+          messages={messages}
+          notifications={notifications}
           transactionStatus={this.state.transactionStatus}
           config={this.state.config}
           onClose={() => {
-            this.props.clearMessagesStatus(false);
-            this.props.navigate(PAGES.ROOT);
+            clearMessagesStatus(false);
+            navigate(PAGES.ROOT);
             this.hasApproved = false;
-            this.props.closeNotificationWindow();
+            closeNotificationWindow();
           }}
           onNext={() => {
-            this.props.clearMessagesStatus(false);
-            this.props.navigate(PAGES.ROOT);
+            clearMessagesStatus(false);
+            navigate(PAGES.ROOT);
             this.hasApproved = false;
           }}
           onList={() => {
-            this.props.clearMessagesStatus(true);
-            this.props.navigate(PAGES.ROOT);
+            clearMessagesStatus(true);
+            navigate(PAGES.ROOT);
             this.hasApproved = false;
           }}
         />
@@ -286,63 +293,47 @@ class MessagesComponent extends React.Component<Props, State> {
     return (
       <Component
         txType={type}
-        autoClickProtection={this.props.autoClickProtection}
+        autoClickProtection={autoClickProtection}
         pending={approvePending}
         txHash={txHash}
         assets={assets}
         message={activeMessage}
         selectedAccount={selectedAccount}
-        reject={this.rejectHandler}
-        rejectForever={this.rejectForeverHandler}
-        approve={this.approveHandler}
+        reject={event => {
+          event.preventDefault();
+          reject(this.state.activeMessage.id);
+        }}
+        rejectForever={event => {
+          event.preventDefault();
+          rejectForever(this.state.activeMessage.id);
+        }}
+        approve={(event, params) => {
+          event?.preventDefault();
+
+          if (this.hasApproved) {
+            return;
+          }
+
+          if (params) {
+            const { notifyPermissions, approvePermissions } = params;
+
+            if (approvePermissions) {
+              setAutoOrigin(approvePermissions);
+            }
+
+            if (notifyPermissions) {
+              setShowNotification(notifyPermissions);
+            }
+          }
+
+          this.hasApproved = true;
+          approve(this.state.activeMessage.id);
+        }}
         selectAccount={() => {
-          this.props.navigate(PAGES.CHANGE_TX_ACCOUNT);
+          navigate(PAGES.CHANGE_TX_ACCOUNT);
         }}
       />
     );
-  }
-
-  approve(
-    e: Parameters<MessageComponentProps['approve']>[0],
-    params: Parameters<MessageComponentProps['approve']>[1]
-  ) {
-    e?.preventDefault();
-
-    if (this.hasApproved) {
-      return;
-    }
-
-    if (params) {
-      const { notifyPermissions, approvePermissions } = params;
-
-      if (approvePermissions) {
-        this.props.setAutoOrigin(approvePermissions);
-      }
-
-      if (notifyPermissions) {
-        this.props.setShowNotification(notifyPermissions);
-      }
-    }
-
-    this.hasApproved = true;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    this.props.approve(this.state.activeMessage.id!);
-  }
-
-  reject(e: unknown = null) {
-    if (e) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (e as any).preventDefault();
-    }
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    this.props.reject(this.state.activeMessage.id!);
-  }
-
-  rejectForever(e: unknown = null) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (e) (e as any).preventDefault();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    this.props.rejectForever(this.state.activeMessage.id!);
   }
 }
 

@@ -18,7 +18,7 @@ export interface MessageComponentProps {
   selectedAccount: Partial<PreferencesAccount>;
 
   approve: (
-    e: { preventDefault: () => void } | null | undefined,
+    event: React.MouseEvent<HTMLButtonElement> | null | undefined,
     params?: {
       notifyPermissions?: {
         origin: string | undefined;
@@ -35,8 +35,8 @@ export interface MessageComponentProps {
       } | null;
     }
   ) => void;
-  reject: (...args: unknown[]) => void;
-  rejectForever: (...args: unknown[]) => void;
+  reject: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  rejectForever: (event: React.MouseEvent<HTMLButtonElement>) => void;
   selectAccount: () => void;
 }
 
