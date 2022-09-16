@@ -65,7 +65,7 @@ export class WindowManager {
   async closeWindow() {
     const notificationWindow = await this._getNotificationWindow();
     if (notificationWindow) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, no-console
       extension.windows.remove(notificationWindow.id!, console.error);
       this.store.updateState({ notificationWindowId: undefined });
     }

@@ -89,10 +89,12 @@ class LedgerService {
         ) {
           this._connectionRetryIsNeeded = true;
         } else {
+          // eslint-disable-next-line no-console
           console.error('NO MATCH FOR ERROR', err);
           Sentry.captureException(err);
         }
       } else {
+        // eslint-disable-next-line no-console
         console.error('NON-ERROR THROWN', err);
 
         Sentry.captureException(

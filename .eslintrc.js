@@ -32,6 +32,7 @@ module.exports = {
     'prettier',
   ],
   rules: {
+    'no-console': 'warn',
     'prefer-const': [
       'error',
       {
