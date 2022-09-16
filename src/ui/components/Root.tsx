@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react';
 import * as React from 'react';
 import { Menu } from './menu';
 import { Bottom } from './bottom';
@@ -45,24 +44,6 @@ export function Root() {
 
     return page;
   });
-
-  const prevPageRef = React.useRef<string | null>(null);
-
-  React.useEffect(() => {
-    const prevPage = prevPageRef.current;
-
-    Sentry.addBreadcrumb({
-      type: 'navigation',
-      category: 'navigation',
-      level: Sentry.Severity.Info,
-      data: {
-        from: prevPage,
-        to: currentPage,
-      },
-    });
-
-    prevPageRef.current = currentPage;
-  }, [currentPage]);
 
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const prevNetworkRef = React.useRef(currentNetwork);
