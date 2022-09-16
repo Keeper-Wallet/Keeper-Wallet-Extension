@@ -3,9 +3,10 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Error, Input } from 'ui/components/ui';
 import { navigate } from 'ui/actions/router';
-import { deleteAccount } from 'ui/actions/user';
+import { deleteAllAccounts } from 'ui/actions/user';
 import cn from 'classnames';
 import { useAppDispatch } from 'ui/store';
+import { PAGES } from 'ui/pageConfig';
 
 export function DeleteAllAccounts() {
   const { t } = useTranslation();
@@ -85,7 +86,10 @@ export function DeleteAllAccounts() {
           type="button"
           view="warning"
           disabled={hasError}
-          onClick={() => dispatch(deleteAccount())}
+          onClick={async () => {
+            await dispatch(deleteAllAccounts());
+            dispatch(navigate(PAGES.ROOT, { replace: true }));
+          }}
           data-testid="resetConfirm"
         >
           {t('forgotPassword.resetConfirm')}

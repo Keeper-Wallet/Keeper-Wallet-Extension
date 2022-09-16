@@ -436,11 +436,6 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.DELETE_ACCOUNT;
-      payload?: never;
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.SET_UI_STATE;
       payload: UiState;
       meta?: never;

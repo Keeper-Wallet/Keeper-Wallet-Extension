@@ -3,8 +3,16 @@ import Background, { WalletTypes } from '../services/Background';
 import { NetworkName } from 'networks/types';
 import { AccountsThunkAction } from 'accounts/store';
 import { selectAccount } from './localState';
+import { UiThunkAction } from 'ui/store';
+import { updateActiveState } from './notifications';
 
-export const deleteAccount = () => ({ type: ACTION.DELETE_ACCOUNT });
+export function deleteAllAccounts(): UiThunkAction<Promise<void>> {
+  return async dispatch => {
+    await Background.deleteVault();
+
+    dispatch(updateActiveState());
+  };
+}
 
 type CreateAccountInput =
   | {

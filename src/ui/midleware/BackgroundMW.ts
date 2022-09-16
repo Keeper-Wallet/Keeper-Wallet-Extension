@@ -3,10 +3,7 @@ import {
   notificationChangeName,
   notificationSelect,
 } from '../actions/localState';
-import {
-  setActiveNotification,
-  updateActiveState,
-} from '../actions/notifications';
+import { setActiveNotification } from '../actions/notifications';
 import { navigate } from '../actions/router';
 import background from '../services/Background';
 import i18n from '../i18n';
@@ -97,18 +94,6 @@ export const closeNotificationWindow: UiMiddleware = () => next => action => {
   if (action.type === ACTION.CLOSE_WINDOW) {
     background.closeNotificationWindow();
   }
-  return next(action);
-};
-
-export const deleteAccountMw: UiMiddleware = store => next => action => {
-  if (action.type === ACTION.DELETE_ACCOUNT) {
-    background.deleteVault().then(() => {
-      store.dispatch(updateActiveState());
-      store.dispatch(navigate(PAGES.ROOT, { replace: true }));
-    });
-    return null;
-  }
-
   return next(action);
 };
 
