@@ -288,9 +288,6 @@ class MessagesComponent extends React.Component<Props, State> {
         assets={assets}
         message={activeMessage}
         selectedAccount={selectedAccount}
-        onClose={this.closeHandler}
-        onNext={this.nextHandler}
-        onList={this.toListHandler}
         reject={this.rejectHandler}
         rejectForever={this.rejectForeverHandler}
         approve={this.approveHandler}

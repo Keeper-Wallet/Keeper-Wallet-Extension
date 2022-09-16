@@ -17,9 +17,6 @@ export interface MessageComponentProps {
   message: MessageStoreItem;
   selectedAccount: Partial<PreferencesAccount>;
 
-  onClose: (...args: unknown[]) => void;
-  onNext: (...args: unknown[]) => void;
-  onList: (...args: unknown[]) => void;
   approve: (
     e: { preventDefault: () => void } | null | undefined,
     params?: {
