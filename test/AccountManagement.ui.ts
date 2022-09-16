@@ -417,7 +417,9 @@ describe('Account management', function () {
           .click();
         await this.driver.wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'deleteAccount-content')]")
+            By.xpath(
+              "//div[contains(@class, 'deleteActiveAccount-module-content')]"
+            )
           ),
           this.wait
         );
