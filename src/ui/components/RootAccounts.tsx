@@ -64,7 +64,6 @@ export function RootAccounts() {
 
   const currentNetwork = useAccountsSelector(state => state.currentNetwork);
   const prevNetworkRef = React.useRef(currentNetwork);
-
   React.useEffect(() => {
     if (currentNetwork === prevNetworkRef.current) {
       return;

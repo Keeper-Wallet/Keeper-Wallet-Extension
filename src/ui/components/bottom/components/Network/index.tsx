@@ -19,8 +19,6 @@ import * as styles from './network.styl';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { AppState } from 'ui/store';
 import { NetworkName } from 'networks/types';
-import { withNavigate, WithNavigate } from 'ui/router';
-import { PAGES } from 'ui/pageConfig';
 
 const key = (key: string) => `bottom.${key}`;
 
@@ -101,8 +99,7 @@ interface DispatchProps {
 
 type Props = WithTranslation &
   StateProps &
-  DispatchProps &
-  WithNavigate & {
+  DispatchProps & {
     noChangeNetwork: boolean | undefined;
   };
 
@@ -184,7 +181,6 @@ class NetworkComponent extends React.PureComponent<Props, IState> {
       this.props.setLoading(true);
       setTimeout(() => this.props.setLoading(false), 1000);
       await this.props.setNetwork(net);
-      this.props.navigate(PAGES.ROOT, { replace: true });
     }
   };
 
@@ -336,4 +332,4 @@ const actions = {
 export const Network = connect(
   mapStateToProps,
   actions
-)(withTranslation()(withNavigate(NetworkComponent)));
+)(withTranslation()(NetworkComponent));

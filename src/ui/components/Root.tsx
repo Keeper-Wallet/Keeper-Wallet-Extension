@@ -5,8 +5,10 @@ import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
 import { useAppSelector } from 'ui/store';
 import { LoadingScreen } from './pages';
+import { useNavigate } from 'ui/router';
 
 export function Root() {
+  const navigate = useNavigate();
   const currentLocale = useAppSelector(state => state.currentLocale);
   const isLoading = useAppSelector(state => state.localState.loading);
 
@@ -64,6 +66,17 @@ export function Root() {
 
     prevPageRef.current = currentPage;
   }, [currentPage]);
+
+  const currentNetwork = useAppSelector(state => state.currentNetwork);
+  const prevNetworkRef = React.useRef(currentNetwork);
+  React.useEffect(() => {
+    if (currentNetwork === prevNetworkRef.current) {
+      return;
+    }
+
+    navigate(PAGES.ASSETS, { replace: true });
+    prevNetworkRef.current = currentNetwork;
+  }, [currentNetwork, navigate]);
 
   const pageConf = PAGES_CONF[currentPage];
   const Component = pageConf.component;
