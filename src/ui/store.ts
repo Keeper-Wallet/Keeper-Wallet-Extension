@@ -441,11 +441,6 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.CHANGE_NETWORK;
-      payload: NetworkName;
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.GET_ASSETS;
       payload: string;
       meta?: never;

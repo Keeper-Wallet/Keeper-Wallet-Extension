@@ -110,12 +110,6 @@ export const uiState: UiMiddleware = store => next => action => {
 };
 
 export const changeNetwork: UiMiddleware = store => next => action => {
-  if (action.type === ACTION.CHANGE_NETWORK) {
-    background
-      .setNetwork(action.payload)
-      .then(() => store.dispatch(navigate(PAGES.ROOT, { replace: true })));
-    return null;
-  }
   if (action.type === ACTION.UPDATE_CURRENT_NETWORK) {
     if (store.getState().localState.tabMode === 'tab') {
       store.dispatch(navigate(PAGES.ROOT, { replace: true }));

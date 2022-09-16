@@ -19,6 +19,8 @@ import * as styles from './network.styl';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { AppState } from 'ui/store';
 import { NetworkName } from 'networks/types';
+import { navigate } from 'ui/actions/router';
+import { PAGES } from 'ui/pageConfig';
 
 const key = (key: string) => `bottom.${key}`;
 
@@ -81,7 +83,8 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  setNetwork: (net: NetworkName) => void;
+  navigate: (page: string, options: { replace?: boolean }) => void;
+  setNetwork: (net: NetworkName) => Promise<void>;
   setCustomNode: (payload: {
     node: string;
     network: NetworkName | null | undefined;
@@ -176,11 +179,12 @@ class NetworkComponent extends React.PureComponent<Props, IState> {
       net: this.state.networkHash![this.props.currentNetwork],
     });
 
-  setNewNetwork = (net: NetworkName | null | undefined) => {
+  setNewNetwork = async (net: NetworkName | null | undefined) => {
     if (net) {
       this.props.setLoading(true);
       setTimeout(() => this.props.setLoading(false), 1000);
-      this.props.setNetwork(net);
+      await this.props.setNetwork(net);
+      this.props.navigate(PAGES.ROOT, { replace: true });
     }
   };
 
@@ -322,6 +326,7 @@ const mapStateToProps = ({
 });
 
 const actions = {
+  navigate,
   setNetwork,
   setLoading,
   setCustomNode,

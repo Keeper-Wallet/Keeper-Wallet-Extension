@@ -1,12 +1,13 @@
 import { NetworkName } from 'networks/types';
+import Background from 'ui/services/Background';
+import { UiThunkAction } from 'ui/store';
 import { ACTION } from './constants';
 
-export const setNetwork = (netName: NetworkName) => {
-  return {
-    type: ACTION.CHANGE_NETWORK,
-    payload: netName,
+export function setNetwork(network: NetworkName): UiThunkAction<Promise<void>> {
+  return async () => {
+    await Background.setNetwork(network);
   };
-};
+}
 
 export const setCustomNode = (payload: {
   network: NetworkName | null | undefined;
