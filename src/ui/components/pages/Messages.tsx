@@ -21,6 +21,7 @@ import { getConfigByTransaction } from '../transactions';
 import { FinalTransaction } from '../transactions/FinalTransaction/FinalTransaction';
 import { LoadingScreen } from './loadingScreen';
 import { MessageComponentProps, MessageConfig } from '../transactions/types';
+import { NotificationsStoreItem } from 'notifications/types';
 
 interface StateProps {
   activeMessage: MessageStoreItem | null;
@@ -28,7 +29,7 @@ interface StateProps {
   autoClickProtection?: boolean;
   balance: BalancesItem | undefined;
   messages: MessageStoreItem[];
-  notifications: unknown[];
+  notifications: NotificationsStoreItem[][];
   selectedAccount: Partial<PreferencesAccount>;
   transactionStatus: TransactionStatusState;
 }
@@ -89,7 +90,7 @@ interface State {
   config: MessageConfig;
   loading: boolean;
   messages: MessageStoreItem[];
-  notifications: unknown[];
+  notifications: NotificationsStoreItem[][];
   selectedAccount: Partial<PreferencesAccount>;
   transactionStatus: TransactionStatusState;
   txHash: string | string[];

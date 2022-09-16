@@ -15,6 +15,7 @@ import { PreferencesAccount } from 'preferences/types';
 import { MessageStoreItem } from 'messages/types';
 import { AssetDetail } from 'assets/types';
 import { MessageConfig } from '../types';
+import { NotificationsStoreItem } from 'notifications/types';
 
 const Error = ({
   approveError,
@@ -44,11 +45,11 @@ interface Props extends WithTranslation {
   transactionStatus: TransactionStatusState;
   selectedAccount: Partial<PreferencesAccount>;
   messages: MessageStoreItem[];
-  notifications: unknown[];
+  notifications: NotificationsStoreItem[][];
   message: MessageStoreItem;
-  onClose: (...args: unknown[]) => void;
-  onNext: (...args: unknown[]) => void;
-  onList: (...args: unknown[]) => void;
+  onClose: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onNext: (event?: React.MouseEvent<HTMLButtonElement>) => void;
+  onList: (event?: React.MouseEvent<HTMLButtonElement>) => void;
   assets: Record<string, AssetDetail>;
   config: MessageConfig;
 }
