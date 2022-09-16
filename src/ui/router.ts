@@ -1,6 +1,5 @@
 import { createElement, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { PAGES } from 'ui/pageConfig';
 import { UiAction } from 'ui/store';
 import { ACTION } from './actions/constants';
 
@@ -63,8 +62,7 @@ export function router(state = initialState, action: UiAction): RouterState {
         throw new Error('delta must be negative');
       }
 
-      const prevPage =
-        state.backPages[state.backPages.length + delta] || PAGES.ROOT;
+      const prevPage = state.backPages[state.backPages.length + delta];
 
       return {
         ...state,

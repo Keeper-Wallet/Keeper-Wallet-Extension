@@ -92,7 +92,6 @@ export const PAGES = {
   CHANGE_TX_ACCOUNT: 'change_tx_account',
   SEND: 'send',
   SWAP: 'swap',
-  ROOT: '',
   NFT_COLLECTION: 'nft_collection',
   NFT_INFO: 'nft_details',
 };
