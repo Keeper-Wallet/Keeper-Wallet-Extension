@@ -6,7 +6,6 @@ import { Button, Error, Pills, PillsListItem } from '../ui';
 import { AppState } from 'ui/store';
 import { NewAccountState } from 'ui/reducers/localState';
 import { withNavigate, WithNavigate } from 'ui/router';
-import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 const SHUFFLE_COUNT = 500;
 
@@ -126,7 +125,7 @@ class ConfirmBackupComponent extends React.Component<Props, State> {
   private _onSubmit(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     this.setState({ disabled: true });
-    this.props.navigate(ACCOUNTS_PAGES.ACCOUNT_NAME, { replace: true });
+    this.props.navigate('/account-name', { replace: true });
   }
 
   private _onSelect({ text, id }: PillsListItem) {

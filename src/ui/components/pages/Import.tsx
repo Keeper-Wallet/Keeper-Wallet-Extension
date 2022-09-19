@@ -9,7 +9,6 @@ import { useAppSelector } from '../../store';
 import background from 'ui/services/Background';
 import { useNavigate } from 'ui/router';
 import { generateNewWalletItems } from './NewWallet';
-import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 export function ImportPopup() {
   const { t } = useTranslation();
@@ -88,7 +87,7 @@ export function AccountsHome() {
             (networks.find(x => x.name === currentNetwork)?.code ?? '');
 
           generateNewWalletItems(networkCode);
-          navigate(ACCOUNTS_PAGES.NEW_ACCOUNT);
+          navigate('/create-account');
         }}
       >
         {t('import.createNew')}
@@ -107,7 +106,7 @@ export function AccountsHome() {
               type="button"
               view="transparent"
               onClick={() => {
-                navigate(ACCOUNTS_PAGES.IMPORT_DEBUG);
+                navigate('/import-debug');
               }}
             >
               <svg
@@ -131,7 +130,7 @@ export function AccountsHome() {
             type="button"
             view="transparent"
             onClick={() => {
-              navigate(ACCOUNTS_PAGES.IMPORT_SEED);
+              navigate('/import-seed');
             }}
           >
             <svg
@@ -160,7 +159,7 @@ export function AccountsHome() {
             type="button"
             view="transparent"
             onClick={() => {
-              navigate(ACCOUNTS_PAGES.IMPORT_LEDGER);
+              navigate('/import-ledger');
             }}
           >
             <svg
@@ -191,7 +190,7 @@ export function AccountsHome() {
             type="button"
             view="transparent"
             onClick={() => {
-              navigate(ACCOUNTS_PAGES.IMPORT_KEYSTORE);
+              navigate('/import-keystore');
             }}
           >
             <svg
@@ -246,7 +245,7 @@ export function AccountsHome() {
               type="button"
               view="transparent"
               onClick={() => {
-                navigate(ACCOUNTS_PAGES.IMPORT_EMAIL);
+                navigate('/import-email');
               }}
             >
               <svg

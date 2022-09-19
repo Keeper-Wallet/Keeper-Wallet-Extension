@@ -7,7 +7,6 @@ import { sortAndFilterNfts, useUiState } from './helpers';
 import cn from 'classnames';
 import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
-import { POPUP_PAGES } from 'ui/pages';
 import { createNft, Nft } from 'nfts/utils';
 import { getNftsLink } from 'ui/urls';
 import { MAX_NFT_ITEMS } from 'controllers/currentAccount';
@@ -121,7 +120,7 @@ export function TabNfts() {
           counters={creatorCounts}
           onClick={(asset: Nft) => {
             setCreator(asset.creator);
-            navigate(POPUP_PAGES.NFT_COLLECTION);
+            navigate('/nft-collection');
           }}
           renderMore={() =>
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain

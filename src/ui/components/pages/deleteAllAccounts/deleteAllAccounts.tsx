@@ -6,7 +6,6 @@ import { useNavigate } from 'ui/router';
 import { deleteAllAccounts } from 'ui/actions/user';
 import cn from 'classnames';
 import { useAppDispatch } from 'ui/store';
-import { POPUP_PAGES } from 'ui/pages';
 
 export function DeleteAllAccounts() {
   const navigate = useNavigate();
@@ -89,7 +88,7 @@ export function DeleteAllAccounts() {
           disabled={hasError}
           onClick={async () => {
             await dispatch(deleteAllAccounts());
-            navigate(POPUP_PAGES.HOME, { replace: true });
+            navigate('/', { replace: true });
           }}
           data-testid="resetConfirm"
         >

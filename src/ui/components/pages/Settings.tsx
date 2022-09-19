@@ -5,7 +5,6 @@ import { Button, PowerButton } from '../ui';
 import { useNavigate } from '../../router';
 import { setUiState } from '../../actions/uiState';
 import { lock } from '../../actions/user';
-import { POPUP_PAGES } from '../../pages';
 import { Tooltip } from '../ui/tooltip';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 
@@ -33,7 +32,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              navigate(POPUP_PAGES.ADDRESS_BOOK);
+              navigate('/address-book');
             }}
           >
             <div className="body1 left">{t('address.title')}</div>
@@ -47,7 +46,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              navigate(POPUP_PAGES.GENERAL_SETTINGS);
+              navigate('/settings/general');
             }}
           >
             <div className="body1 left">{t('settings.settingsGeneral')}</div>
@@ -61,7 +60,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              navigate(POPUP_PAGES.PERMISSIONS);
+              navigate('/settings/permissions');
             }}
           >
             <div className="body1 left">{t('settings.permissionsControl')}</div>
@@ -75,7 +74,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              navigate(POPUP_PAGES.LANGS_SETTINGS);
+              navigate('/settings/language');
             }}
           >
             <div className="body1 left">{t('settings.langs')}</div>
@@ -89,7 +88,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              navigate(POPUP_PAGES.NETWORK_SETTINGS);
+              navigate('/settings/network');
             }}
           >
             <div className="body1 left">{t('settings.network')}</div>
@@ -104,7 +103,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              navigate(POPUP_PAGES.EXPORT_AND_IMPORT);
+              navigate('/settings/export-and-import');
             }}
           >
             <div className="body1 left">{t('settings.exportAndImport')}</div>
@@ -210,7 +209,7 @@ export function Settings() {
             <div
               className={styles.deleteAccounts}
               onClick={() => {
-                navigate(POPUP_PAGES.DELETE_ACCOUNT);
+                navigate('/delete-all-accounts');
               }}
             >
               <i className={styles.icon}> </i>
@@ -221,7 +220,7 @@ export function Settings() {
             <div
               className={styles.logout}
               onClick={() => {
-                navigate(POPUP_PAGES.HOME);
+                navigate('/');
                 dispatch(lock());
               }}
             >

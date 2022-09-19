@@ -6,7 +6,6 @@ import { Button } from '../ui';
 import { useAccountsSelector } from 'accounts/store';
 import { useNavigate } from 'ui/router';
 import background from 'ui/services/Background';
-import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 export function ImportSuccessAddressBook() {
   const { t } = useTranslation();
@@ -88,7 +87,7 @@ export function ImportSuccess({
           className={styles.button}
           type="button"
           onClick={() => {
-            navigate(ACCOUNTS_PAGES.HOME, { replace: true });
+            navigate('/', { replace: true });
           }}
         >
           {t('import.addAnotherAccount')}

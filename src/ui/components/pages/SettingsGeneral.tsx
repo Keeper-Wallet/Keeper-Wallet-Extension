@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Button, Select } from '../ui';
 import { setIdle } from '../../actions/localState';
 import { useNavigate } from '../../router';
-import { POPUP_PAGES } from '../../pages';
 import cn from 'classnames';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 
@@ -55,7 +54,7 @@ export function SettingsGeneral() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              navigate(POPUP_PAGES.CHANGE_PASSWORD);
+              navigate('/change-password');
             }}
           >
             <div className="body1 left">{t('settings.password')}</div>

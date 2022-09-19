@@ -18,14 +18,13 @@ import {
 import { NewAccount } from '../ui/components/pages/NewAccount';
 import { NewWallet } from '../ui/components/pages/NewWallet';
 import { NewWalletName } from '../ui/components/pages/NewWalletName';
-import { ACCOUNTS_PAGES } from './pages';
 
 export const routes: Array<{
   path: string;
   element: React.ReactElement;
 }> = [
   {
-    path: ACCOUNTS_PAGES.HOME,
+    path: '/',
     element: (
       <>
         <Menu hasLogo />
@@ -35,7 +34,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: ACCOUNTS_PAGES.NEW_ACCOUNT,
+    path: '/create-account',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -45,7 +44,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: ACCOUNTS_PAGES.SAVE_BACKUP,
+    path: '/create-account/save-backup',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -55,7 +54,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: ACCOUNTS_PAGES.CONFIRM_BACKUP,
+    path: '/create-account/confirm-backup',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -65,7 +64,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: ACCOUNTS_PAGES.IMPORT_DEBUG,
+    path: '/import-debug',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -75,7 +74,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: ACCOUNTS_PAGES.IMPORT_SEED,
+    path: '/import-seed',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -85,7 +84,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: ACCOUNTS_PAGES.IMPORT_LEDGER,
+    path: '/import-ledger',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -94,7 +93,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: ACCOUNTS_PAGES.IMPORT_KEYSTORE,
+    path: '/import-keystore',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -103,7 +102,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: ACCOUNTS_PAGES.IMPORT_EMAIL,
+    path: '/import-email',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -113,7 +112,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: ACCOUNTS_PAGES.ACCOUNT_NAME,
+    path: '/account-name',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -123,7 +122,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: ACCOUNTS_PAGES.IMPORT_SUCCESS,
+    path: '/import-success',
     element: (
       <>
         <Menu hasLogo />
@@ -132,7 +131,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: ACCOUNTS_PAGES.IMPORT_SUCCESS_KEYSTORE,
+    path: '/import-keystore/success',
     element: (
       <>
         <Menu hasLogo />
@@ -141,7 +140,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: ACCOUNTS_PAGES.IMPORT_ADDRESS_BOOK,
+    path: '/import-address-book',
     element: (
       <>
         <Menu hasLogo />
@@ -150,7 +149,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: ACCOUNTS_PAGES.IMPORT_SUCCESS_ADDRESS_BOOK,
+    path: '/import-address-book/success',
     element: (
       <>
         <Menu hasLogo />
@@ -159,7 +158,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: ACCOUNTS_PAGES.NEW,
+    path: '/init-vault',
     element: (
       <>
         <Menu hasLogo />
@@ -168,7 +167,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: ACCOUNTS_PAGES.FORGOT,
+    path: '/forgot-password',
     element: <DeleteAllAccounts />,
   },
 ];

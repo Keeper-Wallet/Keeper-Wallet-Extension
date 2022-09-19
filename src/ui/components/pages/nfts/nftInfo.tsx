@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
 import { createNft } from 'nfts/utils';
 import { Button, Ellipsis, Loader } from 'ui/components/ui';
-import { POPUP_PAGES } from 'ui/pages';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { getAccountLink, getAssetDetailLink } from 'ui/urls';
 import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
@@ -130,7 +129,7 @@ export function NftInfo() {
           view="submit"
           onClick={() => {
             setCurrentAsset(nft?.asset);
-            navigate(POPUP_PAGES.SEND);
+            navigate('/send');
           }}
         >
           {t('nftInfo.sendBtn')}

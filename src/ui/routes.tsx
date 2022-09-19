@@ -27,14 +27,13 @@ import { Send } from './components/pages/send';
 import { Settings } from './components/pages/Settings';
 import { SettingsGeneral } from './components/pages/SettingsGeneral';
 import { Swap } from './components/pages/swap/swap';
-import { POPUP_PAGES } from './pages';
 
 export const routes: Array<{
   path: string;
   element: React.ReactElement;
 }> = [
   {
-    path: POPUP_PAGES.HOME,
+    path: '/',
     element: (
       <>
         <Menu hasLogo hasSettings />
@@ -44,7 +43,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.QR_CODE_SELECTED,
+    path: '/qr-code',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -53,7 +52,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.ACCOUNT_INFO,
+    path: '/account-info',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -62,7 +61,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.CHANGE_ACCOUNT_NAME,
+    path: '/change-account-name',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -72,7 +71,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.DELETE_ACTIVE_ACCOUNT,
+    path: '/delete-active-account',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -81,7 +80,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.OTHER_ACCOUNTS,
+    path: '/other-accounts',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -90,7 +89,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.SEND,
+    path: '/send',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -99,7 +98,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.SWAP,
+    path: '/swap',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -108,7 +107,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.NFT_COLLECTION,
+    path: '/nft-collection',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -117,7 +116,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.NFT_INFO,
+    path: '/nft-details',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -126,7 +125,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.INFO,
+    path: '/about',
     element: (
       <>
         <Menu hasBack />
@@ -135,7 +134,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.SETTINGS,
+    path: '/settings',
     element: (
       <>
         <Menu hasClose hasLogo />
@@ -144,7 +143,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.ADDRESS_BOOK,
+    path: '/address-book',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -153,7 +152,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.GENERAL_SETTINGS,
+    path: '/settings/general',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -162,7 +161,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.CHANGE_PASSWORD,
+    path: '/change-password',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -171,7 +170,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.PERMISSIONS,
+    path: '/settings/permissions',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -180,7 +179,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.LANGS_SETTINGS,
+    path: '/settings/language',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -189,7 +188,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.NETWORK_SETTINGS,
+    path: '/settings/network',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -198,7 +197,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.EXPORT_AND_IMPORT,
+    path: '/settings/export-and-import',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -207,7 +206,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.EXPORT_ACCOUNTS,
+    path: '/export-accounts',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -216,7 +215,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.EXPORT_ADDRESS_BOOK,
+    path: '/export-address-book',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -225,7 +224,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.DELETE_ACCOUNT,
+    path: '/delete-all-accounts',
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -234,7 +233,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.NOTIFICATIONS,
+    path: '/active-notification',
     element: (
       <>
         <Menu hasLogo />
@@ -243,7 +242,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.MESSAGES,
+    path: '/active-message',
     element: (
       <>
         <Menu hasLogo />
@@ -252,15 +251,15 @@ export const routes: Array<{
     ),
   },
   {
-    path: POPUP_PAGES.MESSAGES_LIST,
+    path: '/messages-and-notifications',
     element: <MessageList />,
   },
   {
-    path: POPUP_PAGES.CHANGE_TX_ACCOUNT,
+    path: '/change-tx-account',
     element: <SelectTxAccount />,
   },
   {
-    path: POPUP_PAGES.FORGOT,
+    path: '/forgot-password',
     element: <DeleteAllAccounts />,
   },
 ];

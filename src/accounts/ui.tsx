@@ -27,7 +27,6 @@ import { initUiSentry } from 'sentry';
 import { RootWrapper } from 'ui/components/RootWrapper';
 import { LoadingScreen } from 'ui/components/pages/loadingScreen';
 import { ACTION } from 'ui/actions/constants';
-import { ACCOUNTS_PAGES } from './pages';
 
 initUiSentry({
   ignoreErrorContext: 'beforeSendAccounts',
@@ -136,9 +135,7 @@ async function startUi() {
   store.dispatch({
     type: ACTION.NAVIGATE,
     payload: {
-      page: Object.values(ACCOUNTS_PAGES).includes(pageFromHash)
-        ? pageFromHash
-        : ACCOUNTS_PAGES.HOME,
+      page: pageFromHash || '/',
       replace: true,
     },
   });

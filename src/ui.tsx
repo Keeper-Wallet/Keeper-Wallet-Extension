@@ -27,7 +27,6 @@ import { initUiSentry } from 'sentry';
 import { RootWrapper } from 'ui/components/RootWrapper';
 import { LoadingScreen } from 'ui/components/pages/loadingScreen';
 import { ACTION } from 'ui/actions/constants';
-import { POPUP_PAGES } from 'ui/pages';
 
 const isNotificationWindow = window.location.pathname === '/notification.html';
 
@@ -157,7 +156,7 @@ async function startUi() {
   store.dispatch({
     type: ACTION.NAVIGATE,
     payload: {
-      page: POPUP_PAGES.HOME,
+      page: '/',
       replace: true,
     },
   });

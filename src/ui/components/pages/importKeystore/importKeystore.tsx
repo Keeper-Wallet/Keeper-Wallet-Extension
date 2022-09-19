@@ -9,7 +9,6 @@ import { batchAddAccounts } from 'ui/actions/user';
 import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { useNavigate } from 'ui/router';
-import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 type ExchangeKeystoreAccount = {
   address: string;
@@ -208,7 +207,7 @@ export function ImportKeystore() {
       allNetworksAccounts={allNetworksAccounts}
       profiles={profiles}
       onSkip={() => {
-        navigate(ACCOUNTS_PAGES.HOME);
+        navigate('/');
       }}
       onSubmit={async selectedAccounts => {
         await dispatch(
@@ -223,7 +222,7 @@ export function ImportKeystore() {
           )
         );
 
-        navigate(ACCOUNTS_PAGES.IMPORT_SUCCESS_KEYSTORE);
+        navigate('/import-keystore/success');
       }}
     />
   );

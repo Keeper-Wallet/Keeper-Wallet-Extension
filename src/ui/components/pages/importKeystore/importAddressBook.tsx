@@ -10,7 +10,6 @@ import {
   fromEthereumToWavesAddress,
   isEthereumAddress,
 } from 'ui/utils/ethereum';
-import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 interface EncryptedAddressBook {
   type: WalletTypes;
@@ -116,7 +115,7 @@ export function ImportAddressBook() {
           dispatch(
             setAddresses(getFormattedAddresses(addresses, keystoreAddresses))
           );
-          navigate(ACCOUNTS_PAGES.IMPORT_SUCCESS_ADDRESS_BOOK);
+          navigate('/import-address-book/success');
         } catch (err) {
           setError(t('importKeystore.errorUnexpected'));
         }

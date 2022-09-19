@@ -5,7 +5,6 @@ import { Button, Copy, Modal } from '../ui';
 import { useAccountsSelector } from 'accounts/store';
 import { NewAccountState } from 'ui/reducers/localState';
 import { useNavigate } from 'ui/router';
-import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 export function BackUpSeed() {
   const navigate = useNavigate();
@@ -46,7 +45,7 @@ export function BackUpSeed() {
         className="margin-main-big"
         type="submit"
         onClick={() => {
-          navigate(ACCOUNTS_PAGES.CONFIRM_BACKUP);
+          navigate('/create-account/confirm-backup');
         }}
       >
         {t('backupSeed.continue')}
@@ -55,7 +54,7 @@ export function BackUpSeed() {
       <Button
         id="cancelCreation"
         onClick={() => {
-          navigate(ACCOUNTS_PAGES.HOME);
+          navigate('/');
         }}
       >
         {t('backupSeed.cancel')}

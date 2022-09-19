@@ -10,7 +10,6 @@ import { Input } from 'ui/components/ui/input';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { LedgerAvatarList } from './avatarList';
 import * as styles from './importLedger.module.css';
-import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 const USERS_PER_PAGE = 4;
 const MAX_USER_ID = 2 ** 31 - 1;
@@ -328,7 +327,7 @@ export function ImportLedger() {
                 })
               );
 
-              navigate(ACCOUNTS_PAGES.ACCOUNT_NAME);
+              navigate('/account-name');
             }}
           >
             {t('importLedger.continueButton')}

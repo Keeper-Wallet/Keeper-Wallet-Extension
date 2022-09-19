@@ -4,7 +4,6 @@ import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Asset, Money } from '@waves/data-entities';
 import { compareAccountsByLastUsed } from 'preferences/utils';
 import { setActiveAccount } from 'ui/actions/assets';
-import { POPUP_PAGES } from 'ui/pages';
 import { selectAccount } from 'ui/actions/localState';
 import { AccountCard } from '../accounts/accountCard';
 import * as styles from './otherAccounts.module.css';
@@ -88,11 +87,11 @@ export function OtherAccountsPage() {
               balance={balancesMoney[account.address]}
               onClick={account => {
                 dispatch(selectAccount(account));
-                navigate(POPUP_PAGES.HOME, { replace: true });
+                navigate('/', { replace: true });
               }}
               onInfoClick={account => {
                 dispatch(setActiveAccount(account));
-                navigate(POPUP_PAGES.ACCOUNT_INFO);
+                navigate('/account-info');
               }}
             />
           ))
@@ -108,7 +107,7 @@ export function OtherAccountsPage() {
                 `${window.location.origin}/accounts.html`,
                 'accounts'
               );
-              navigate(POPUP_PAGES.HOME, { replace: true });
+              navigate('/', { replace: true });
             }}
           >
             {t('otherAccounts.addAccount')}

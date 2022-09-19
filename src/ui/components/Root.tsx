@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { routes } from '../routes';
-import { POPUP_PAGES } from '../pages';
 import { useAppSelector } from 'ui/store';
 import { Navigate, useNavigate } from 'ui/router';
 import { Login } from './pages/Login';
@@ -33,7 +32,7 @@ export function Root() {
       return;
     }
 
-    navigate(POPUP_PAGES.HOME, { replace: true });
+    navigate('/', { replace: true });
     prevNetworkRef.current = currentNetwork;
   }, [currentNetwork, navigate]);
 
@@ -41,50 +40,41 @@ export function Root() {
     return <Welcome isPopup />;
   }
 
-  if (initialized && locked && currentPage !== POPUP_PAGES.FORGOT) {
+  if (initialized && locked && currentPage !== '/forgot-password') {
     return <Login />;
   }
 
-  if (initialized && !locked && currentPage === POPUP_PAGES.FORGOT) {
-    return <Navigate to={POPUP_PAGES.HOME} />;
+  if (initialized && !locked && currentPage === '/forgot-password') {
+    return <Navigate to="/" />;
   }
 
   if (initialized && !locked && haveAccounts) {
     if (haveActiveMessage) {
-      if (
-        ![POPUP_PAGES.MESSAGES, POPUP_PAGES.CHANGE_TX_ACCOUNT].includes(
-          currentPage
-        )
-      ) {
-        return <Navigate replace to={POPUP_PAGES.MESSAGES} />;
+      if (!['/active-message', '/change-tx-account'].includes(currentPage)) {
+        return <Navigate replace to="/active-message" />;
       }
     } else if (haveActiveNotification) {
       if (
-        ![POPUP_PAGES.NOTIFICATIONS, POPUP_PAGES.CHANGE_TX_ACCOUNT].includes(
-          currentPage
-        )
+        !['/active-notification', '/change-tx-account'].includes(currentPage)
       ) {
-        return <Navigate replace to={POPUP_PAGES.NOTIFICATIONS} />;
+        return <Navigate replace to="/active-notification" />;
       }
     } else if (haveMessagesOrNotifications) {
-      if (currentPage !== POPUP_PAGES.MESSAGES_LIST) {
-        return <Navigate replace to={POPUP_PAGES.MESSAGES_LIST} />;
+      if (currentPage !== '/messages-and-notifications') {
+        return <Navigate replace to="/messages-and-notifications" />;
       }
     }
   }
 
   if (
     (!haveActiveMessage &&
-      [POPUP_PAGES.MESSAGES, POPUP_PAGES.CHANGE_TX_ACCOUNT].includes(
-        currentPage
-      )) ||
+      ['/active-message', '/change-tx-account'].includes(currentPage)) ||
     (!haveActiveNotification &&
-      [POPUP_PAGES.NOTIFICATIONS, POPUP_PAGES.CHANGE_TX_ACCOUNT].includes(
-        currentPage
-      )) ||
-    (!haveMessagesOrNotifications && currentPage === POPUP_PAGES.MESSAGES_LIST)
+      ['/active-notification', '/change-tx-account'].includes(currentPage)) ||
+    (!haveMessagesOrNotifications &&
+      currentPage === '/messages-and-notifications')
   ) {
-    return <Navigate replace to={POPUP_PAGES.HOME} />;
+    return <Navigate replace to="/" />;
   }
 
   return routes.find(route => route.path === currentPage)?.element ?? null;

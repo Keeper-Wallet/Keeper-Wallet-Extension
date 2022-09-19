@@ -4,12 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
 import background from 'ui/services/Background';
 import { useNavigate } from '../../router';
-import { POPUP_PAGES } from '../../pages';
 import { Button } from '../ui';
 import { downloadKeystore } from '../../../keystore/utils';
 import { ExportPasswordModal } from '../pages/exportAccounts/passwordModal';
 import { isExportable } from '../pages/exportAccounts/chooseItems';
-import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 export function ExportAndImport() {
   const navigate = useNavigate();
@@ -34,7 +32,7 @@ export function ExportAndImport() {
         type="button"
         view="transparent"
         onClick={() => {
-          navigate(POPUP_PAGES.EXPORT_ACCOUNTS);
+          navigate('/export-accounts');
         }}
       >
         <p className="body1 left">{t('exportAndImport.exportAccounts')}</p>
@@ -45,10 +43,10 @@ export function ExportAndImport() {
         view="transparent"
         onClick={() => {
           background.showTab(
-            `${window.location.origin}/accounts.html#${ACCOUNTS_PAGES.IMPORT_KEYSTORE}`,
-            ACCOUNTS_PAGES.IMPORT_KEYSTORE
+            `${window.location.origin}/accounts.html#/import-keystore`,
+            'import-keystore'
           );
-          navigate(POPUP_PAGES.HOME, { replace: true });
+          navigate('/', { replace: true });
         }}
       >
         <p className="body1 left">{t('exportAndImport.importAccounts')}</p>
@@ -59,7 +57,7 @@ export function ExportAndImport() {
         type="button"
         view="transparent"
         onClick={() => {
-          navigate(POPUP_PAGES.EXPORT_ADDRESS_BOOK);
+          navigate('/export-address-book');
         }}
       >
         <p className="body1 left">{t('exportAndImport.exportAddressBook')}</p>
@@ -70,10 +68,10 @@ export function ExportAndImport() {
         view="transparent"
         onClick={() => {
           background.showTab(
-            `${window.location.origin}/accounts.html#${ACCOUNTS_PAGES.IMPORT_ADDRESS_BOOK}`,
-            ACCOUNTS_PAGES.IMPORT_ADDRESS_BOOK
+            `${window.location.origin}/accounts.html#/import-address-book`,
+            'import-address-book'
           );
-          navigate(POPUP_PAGES.HOME, { replace: true });
+          navigate('/', { replace: true });
         }}
       >
         <p className="body1 left">{t('exportAndImport.importAddressBook')}</p>
@@ -104,7 +102,7 @@ export function ExportAndImport() {
                 password,
                 encrypted
               );
-              navigate(POPUP_PAGES.SETTINGS, { replace: true });
+              navigate('/settings', { replace: true });
             }}
           />
         )}

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { routes } from '../../accounts/routes';
-import { ACCOUNTS_PAGES } from '../../accounts/pages';
 import { useAccountsSelector } from 'accounts/store';
 import { Navigate, useNavigate } from 'ui/router';
 import { Login } from './pages/Login';
@@ -20,20 +19,20 @@ export function RootAccounts() {
       return;
     }
 
-    navigate(ACCOUNTS_PAGES.HOME, { replace: true });
+    navigate('/', { replace: true });
     prevNetworkRef.current = currentNetwork;
   }, [currentNetwork, navigate]);
 
-  if (!initialized && currentPage !== ACCOUNTS_PAGES.NEW) {
+  if (!initialized && currentPage !== '/init-vault') {
     return <Welcome />;
   }
 
-  if (initialized && locked && currentPage !== ACCOUNTS_PAGES.FORGOT) {
+  if (initialized && locked && currentPage !== '/forgot-password') {
     return <Login />;
   }
 
-  if (initialized && !locked && currentPage === ACCOUNTS_PAGES.FORGOT) {
-    return <Navigate to={ACCOUNTS_PAGES.HOME} />;
+  if (initialized && !locked && currentPage === '/forgot-password') {
+    return <Navigate to="/" />;
   }
 
   return routes.find(route => route.path === currentPage)?.element ?? null;

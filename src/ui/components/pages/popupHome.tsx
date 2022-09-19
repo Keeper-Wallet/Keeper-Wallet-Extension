@@ -7,7 +7,6 @@ import { setActiveAccount } from 'ui/actions/assets';
 import { getBalances } from 'ui/actions/balances';
 import { setSwapScreenInitialState } from 'ui/actions/localState';
 import { useNavigate } from 'ui/router';
-import { POPUP_PAGES } from 'ui/pages';
 import { Asset, Money } from '@waves/data-entities';
 import BigNumber from '@waves/bignumber';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
@@ -95,17 +94,17 @@ export function PopupHome() {
             setTimeout(() => setShowCopy(false), 1000);
           }}
           onSwapClick={() => {
-            navigate(POPUP_PAGES.SWAP);
+            navigate('/swap');
           }}
           onOtherAccountsClick={() => {
-            navigate(POPUP_PAGES.OTHER_ACCOUNTS);
+            navigate('/other-accounts');
           }}
           onClick={account => {
             dispatch(setActiveAccount(account));
-            navigate(POPUP_PAGES.ACCOUNT_INFO);
+            navigate('/account-info');
           }}
           onShowQr={() => {
-            navigate(POPUP_PAGES.QR_CODE_SELECTED);
+            navigate('/qr-code');
           }}
         />
       </div>
@@ -124,11 +123,11 @@ export function PopupHome() {
             }}
             onSendClick={assetId => {
               setCurrentAsset(assets[assetId]);
-              navigate(POPUP_PAGES.SEND);
+              navigate('/send');
             }}
             onSwapClick={assetId => {
               dispatch(setSwapScreenInitialState({ fromAssetId: assetId }));
-              navigate(POPUP_PAGES.SWAP);
+              navigate('/swap');
             }}
           />
           <TabNfts />

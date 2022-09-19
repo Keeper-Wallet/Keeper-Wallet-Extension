@@ -8,7 +8,6 @@ import { WithNavigate, withNavigate } from '../../router';
 import { AvatarList, Button } from '../ui';
 import * as styles from './styles/newwallet.styl';
 import { NewAccountState } from 'ui/reducers/localState';
-import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 interface NewWalletItem {
   seed: string;
@@ -103,7 +102,7 @@ class NewWalletComponent extends React.Component<Props, State> {
           onSubmit={event => {
             event.preventDefault();
             event.stopPropagation();
-            this.props.navigate(ACCOUNTS_PAGES.SAVE_BACKUP);
+            this.props.navigate('/create-account/save-backup');
           }}
         >
           <Button type="submit" view="submit" id="continue">

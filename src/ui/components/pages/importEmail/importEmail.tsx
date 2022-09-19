@@ -8,7 +8,6 @@ import { Login } from './login';
 import { newAccountSelect } from '../../../actions/localState';
 import { useNavigate } from '../../../router';
 import { IdentityUser } from 'controllers/IdentityController';
-import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 export function ImportEmail() {
   const navigate = useNavigate();
@@ -44,7 +43,7 @@ export function ImportEmail() {
         })
       );
 
-      navigate(ACCOUNTS_PAGES.ACCOUNT_NAME);
+      navigate('/account-name');
     },
     [dispatch, navigate]
   );

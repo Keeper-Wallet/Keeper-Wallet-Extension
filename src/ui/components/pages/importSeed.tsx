@@ -18,7 +18,6 @@ import {
 } from '../ui';
 import * as styles from './importSeed.module.css';
 import { InlineButton } from '../ui/buttons/inlineButton';
-import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 const SEED_MIN_LENGTH = 24;
 const ENCODED_SEED_MIN_LENGTH = 16;
@@ -204,7 +203,7 @@ export function ImportSeed() {
 
           if (showValidationError && existingAccount) {
             dispatch(selectAccount(existingAccount));
-            navigate(ACCOUNTS_PAGES.IMPORT_SUCCESS);
+            navigate('/import-success');
             return;
           }
 
@@ -246,7 +245,7 @@ export function ImportSeed() {
             );
           }
 
-          navigate(ACCOUNTS_PAGES.ACCOUNT_NAME);
+          navigate('/account-name');
         }}
       >
         <Tabs

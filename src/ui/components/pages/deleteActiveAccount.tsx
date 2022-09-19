@@ -5,7 +5,6 @@ import { Button } from '../ui';
 import { deleteActiveAccount } from '../../actions/localState';
 import { useAppDispatch } from 'ui/store';
 import { useNavigate } from 'ui/router';
-import { POPUP_PAGES } from 'ui/pages';
 
 export function DeleteActiveAccount() {
   const navigate = useNavigate();
@@ -21,7 +20,7 @@ export function DeleteActiveAccount() {
           id="deleteAccount"
           onClick={async () => {
             await dispatch(deleteActiveAccount());
-            navigate(POPUP_PAGES.HOME, { replace: true });
+            navigate('/', { replace: true });
           }}
           type="button"
           view="warning"

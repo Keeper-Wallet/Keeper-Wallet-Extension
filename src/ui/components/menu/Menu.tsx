@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as styles from './menu.styl';
 import { HeadLogo } from '../head';
-import { POPUP_PAGES } from '../../pages';
 import { useNavigate } from 'ui/router';
 import { useAccountsSelector } from 'accounts/store';
 
@@ -26,14 +25,14 @@ export function Menu({ hasClose, hasBack, hasLogo, hasSettings }: Props) {
           <div
             className={styles.settingsIcon}
             onClick={() => {
-              navigate(POPUP_PAGES.SETTINGS);
+              navigate('/settings');
             }}
           />
 
           <div
             className={styles.navigationIcon}
             onClick={() => {
-              navigate(POPUP_PAGES.INFO);
+              navigate('/about');
             }}
           />
         </>

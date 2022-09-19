@@ -1,7 +1,6 @@
 import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
 import * as React from 'react';
-import { POPUP_PAGES } from 'ui/pages';
 import * as styles from './nftCollection.module.css';
 import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
 import { useAppDispatch, useAppSelector } from 'ui/store';
@@ -135,7 +134,7 @@ export function NftCollection() {
             nfts={creatorNfts}
             onClick={nft => {
               setCurrentAsset(nft.asset);
-              navigate(POPUP_PAGES.NFT_INFO);
+              navigate('/nft-details');
             }}
           />
         )}
