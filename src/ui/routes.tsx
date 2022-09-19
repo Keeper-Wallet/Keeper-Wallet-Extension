@@ -3,7 +3,6 @@ import { Bottom } from './components/bottom';
 import { Menu } from './components/menu/Menu';
 import { AccountInfo } from './components/pages/AccountInfo';
 import { AddressBook } from './components/pages/AddressBook';
-import { Assets } from './components/pages/Assets';
 import { ChangeAccountName } from './components/pages/ChangeName';
 import { ChangePassword } from './components/pages/ChangePassword';
 import { DeleteActiveAccount } from './components/pages/deleteActiveAccount';
@@ -21,6 +20,7 @@ import { NftInfo } from './components/pages/nfts/nftInfo';
 import { Notifications } from './components/pages/Notifications';
 import { OtherAccountsPage } from './components/pages/otherAccounts';
 import { PermissionsSettings } from './components/pages/PermissionsSettings/PermissionSettings';
+import { PopupHome } from './components/pages/popupHome';
 import { SelectedAccountQr } from './components/pages/SelectedAccountQr';
 import { SelectTxAccount } from './components/pages/SelectTxAccount';
 import { Send } from './components/pages/send';
@@ -39,7 +39,7 @@ export const routes: Array<{
     element: (
       <>
         <Menu hasLogo hasSettings />
-        <Assets />
+        <PopupHome />
         <Bottom allowChangingNetwork />
       </>
     ),

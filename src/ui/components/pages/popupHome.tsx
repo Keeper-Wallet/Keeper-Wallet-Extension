@@ -20,7 +20,7 @@ import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 import { AssetDetail } from 'assets/types';
 import { ImportPopup } from './Import';
 
-export function Assets() {
+export function PopupHome() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
