@@ -27,7 +27,6 @@ import { Send } from './components/pages/send';
 import { Settings } from './components/pages/Settings';
 import { SettingsGeneral } from './components/pages/SettingsGeneral';
 import { Swap } from './components/pages/swap/swap';
-import { Welcome } from './components/pages/Welcome';
 import { POPUP_PAGES } from './pages';
 
 export const routes: Array<{
@@ -259,10 +258,6 @@ export const routes: Array<{
   {
     path: POPUP_PAGES.CHANGE_TX_ACCOUNT,
     element: <SelectTxAccount />,
-  },
-  {
-    path: POPUP_PAGES.WELCOME,
-    element: <Welcome isPopup />,
   },
   {
     path: POPUP_PAGES.FORGOT,

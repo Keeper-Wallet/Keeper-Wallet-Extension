@@ -4,6 +4,7 @@ import { POPUP_PAGES } from '../pages';
 import { useAppSelector } from 'ui/store';
 import { Navigate, useNavigate } from 'ui/router';
 import { Login } from './pages/Login';
+import { Welcome } from './pages/Welcome';
 
 export function Root() {
   const navigate = useNavigate();
@@ -36,12 +37,8 @@ export function Root() {
     prevNetworkRef.current = currentNetwork;
   }, [currentNetwork, navigate]);
 
-  if (!initialized && currentPage !== POPUP_PAGES.WELCOME) {
-    return <Navigate to={POPUP_PAGES.WELCOME} />;
-  }
-
-  if (initialized && currentPage === POPUP_PAGES.WELCOME) {
-    return <Navigate to={POPUP_PAGES.HOME} />;
+  if (!initialized) {
+    return <Welcome isPopup />;
   }
 
   if (initialized && locked && currentPage !== POPUP_PAGES.FORGOT) {

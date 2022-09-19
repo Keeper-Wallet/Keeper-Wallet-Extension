@@ -25,6 +25,5 @@ export const POPUP_PAGES = {
   MESSAGES: 'messages',
   MESSAGES_LIST: 'messages_list',
   CHANGE_TX_ACCOUNT: 'change_tx_account',
-  WELCOME: 'welcome',
   FORGOT: 'forgot_password',
 };

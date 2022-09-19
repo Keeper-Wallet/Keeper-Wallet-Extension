@@ -18,7 +18,6 @@ import {
 import { NewAccount } from '../ui/components/pages/NewAccount';
 import { NewWallet } from '../ui/components/pages/NewWallet';
 import { NewWalletName } from '../ui/components/pages/NewWalletName';
-import { Welcome } from '../ui/components/pages/Welcome';
 import { ACCOUNTS_PAGES } from './pages';
 
 export const routes: Array<{
@@ -158,10 +157,6 @@ export const routes: Array<{
         <ImportSuccessAddressBook />
       </>
     ),
-  },
-  {
-    path: ACCOUNTS_PAGES.WELCOME,
-    element: <Welcome />,
   },
   {
     path: ACCOUNTS_PAGES.NEW,

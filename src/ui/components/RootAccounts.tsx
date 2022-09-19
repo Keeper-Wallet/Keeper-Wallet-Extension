@@ -4,6 +4,7 @@ import { ACCOUNTS_PAGES } from '../../accounts/pages';
 import { useAccountsSelector } from 'accounts/store';
 import { Navigate, useNavigate } from 'ui/router';
 import { Login } from './pages/Login';
+import { Welcome } from './pages/Welcome';
 
 export function RootAccounts() {
   const navigate = useNavigate();
@@ -23,11 +24,8 @@ export function RootAccounts() {
     prevNetworkRef.current = currentNetwork;
   }, [currentNetwork, navigate]);
 
-  if (
-    !initialized &&
-    ![ACCOUNTS_PAGES.WELCOME, ACCOUNTS_PAGES.NEW].includes(currentPage)
-  ) {
-    return <Navigate to={ACCOUNTS_PAGES.WELCOME} />;
+  if (!initialized && currentPage !== ACCOUNTS_PAGES.NEW) {
+    return <Welcome />;
   }
 
   if (initialized && locked && currentPage !== ACCOUNTS_PAGES.FORGOT) {

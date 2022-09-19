@@ -13,7 +13,6 @@ export const ACCOUNTS_PAGES = {
   IMPORT_SUCCESS_KEYSTORE: 'import_success_keystore',
   IMPORT_ADDRESS_BOOK: 'import_address_book',
   IMPORT_SUCCESS_ADDRESS_BOOK: 'import_success_address_book',
-  WELCOME: 'welcome',
   NEW: 'new',
   FORGOT: 'forgot_password',
 };
