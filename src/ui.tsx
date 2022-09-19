@@ -26,6 +26,8 @@ import { createUiStore } from './ui/store';
 import { initUiSentry } from 'sentry';
 import { RootWrapper } from 'ui/components/RootWrapper';
 import { LoadingScreen } from 'ui/components/pages/loadingScreen';
+import { ACTION } from 'ui/actions/constants';
+import { PAGES } from 'ui/pages';
 
 const isNotificationWindow = window.location.pathname === '/notification.html';
 
@@ -151,6 +153,14 @@ async function startUi() {
   document.addEventListener('mousedown', () => backgroundService.updateIdle());
   document.addEventListener('focus', () => backgroundService.updateIdle());
   window.addEventListener('beforeunload', () => background.identityClear());
+
+  store.dispatch({
+    type: ACTION.NAVIGATE,
+    payload: {
+      page: PAGES.ASSETS,
+      replace: true,
+    },
+  });
 
   render(
     <Provider store={store}>

@@ -8,12 +8,18 @@ import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { PAGES } from '../../pages';
 import { useAppSelector } from '../../store';
 import background from 'ui/services/Background';
-import { useNavigate } from 'ui/router';
+import { Navigate, useNavigate } from 'ui/router';
 import { generateNewWalletItems } from './NewWallet';
 
 export function ImportPopup() {
   const { t } = useTranslation();
   const currentNetwork = useAppSelector(state => state.currentNetwork);
+
+  const haveAccounts = useAppSelector(state => state.accounts.length !== 0);
+
+  if (haveAccounts) {
+    return <Navigate replace to={PAGES.ASSETS} />;
+  }
 
   return (
     <div data-testid="importForm" className={styles.root}>

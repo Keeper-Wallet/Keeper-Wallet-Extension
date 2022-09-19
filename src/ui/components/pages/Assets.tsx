@@ -6,12 +6,11 @@ import { useTranslation } from 'react-i18next';
 import { setActiveAccount } from 'ui/actions/assets';
 import { getBalances } from 'ui/actions/balances';
 import { setSwapScreenInitialState } from 'ui/actions/localState';
-import { useNavigate } from 'ui/router';
+import { Navigate, useNavigate } from 'ui/router';
 import { PAGES } from 'ui/pages';
 import { Asset, Money } from '@waves/data-entities';
 import BigNumber from '@waves/bignumber';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
-import { LoadingScreen } from './loadingScreen';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { AssetInfo } from './assets/assetInfo';
 import { TabAssets } from './assets/tabs/tabAssets';
@@ -54,7 +53,7 @@ export function Assets() {
   }, [dispatch]);
 
   if (!activeAccount) {
-    return <LoadingScreen />;
+    return <Navigate replace to={PAGES.IMPORT_POPUP} />;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
