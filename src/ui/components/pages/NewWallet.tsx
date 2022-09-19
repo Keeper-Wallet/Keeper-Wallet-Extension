@@ -5,7 +5,7 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { AppState } from 'ui/store';
 import { newAccountSelect } from '../../actions/localState';
 import { WithNavigate, withNavigate } from '../../router';
-import { PAGES } from '../../pageConfig';
+import { PAGES } from '../../pages';
 import { AvatarList, Button } from '../ui';
 import * as styles from './styles/newwallet.styl';
 import { NewAccountState } from 'ui/reducers/localState';

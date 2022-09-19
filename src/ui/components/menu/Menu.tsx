@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as styles from './menu.styl';
 import { HeadLogo } from '../head';
-import { PAGES } from '../../pageConfig';
+import { PAGES } from '../../pages';
 import { useNavigate } from 'ui/router';
 import { useAccountsSelector } from 'accounts/store';
 

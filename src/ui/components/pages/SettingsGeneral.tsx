@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Select } from '../ui';
 import { setIdle } from '../../actions/localState';
 import { useNavigate } from '../../router';
-import { PAGES } from '../../pageConfig';
+import { PAGES } from '../../pages';
 import cn from 'classnames';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 

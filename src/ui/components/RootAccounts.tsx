@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Menu } from './menu';
 import { Bottom } from './bottom';
-import { PAGES, PAGES_CONF } from '../pageConfig';
+import { PAGES_CONF } from '../pageConfig';
+import { PAGES } from '../pages';
 import { useAccountsSelector } from 'accounts/store';
 import { useNavigate } from 'ui/router';
 

@@ -6,7 +6,7 @@ import { BigLogo } from '../head';
 import { Button, Error, Input } from '../ui';
 import { login } from '../../actions/localState';
 import { withNavigate, WithNavigate } from '../../router';
-import { PAGES } from '../../pageConfig';
+import { PAGES } from '../../pages';
 import { AppState } from 'ui/store';
 
 interface StateProps {

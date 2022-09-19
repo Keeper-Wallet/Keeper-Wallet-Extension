@@ -3,7 +3,7 @@ import * as React from 'react';
 import { BigLogo } from '../head';
 import { useTranslation } from 'react-i18next';
 import { Button, LangsSelect } from '../ui';
-import { PAGES } from '../../pageConfig';
+import { PAGES } from '../../pages';
 import { useAppSelector } from 'ui/store';
 import background from 'ui/services/Background';
 import { useNavigate } from 'ui/router';

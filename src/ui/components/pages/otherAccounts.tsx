@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Asset, Money } from '@waves/data-entities';
 import { compareAccountsByLastUsed } from 'preferences/utils';
 import { setActiveAccount } from 'ui/actions/assets';
-import { PAGES } from 'ui/pageConfig';
+import { PAGES } from 'ui/pages';
 import { selectAccount } from 'ui/actions/localState';
 import { AccountCard } from '../accounts/accountCard';
 import * as styles from './otherAccounts.module.css';

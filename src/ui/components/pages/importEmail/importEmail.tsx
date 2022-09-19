@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../../store';
 import { Login } from './login';
 import { newAccountSelect } from '../../../actions/localState';
 import { useNavigate } from '../../../router';
-import { PAGES } from '../../../pageConfig';
+import { PAGES } from '../../../pages';
 import { IdentityUser } from 'controllers/IdentityController';
 
 export function ImportEmail() {

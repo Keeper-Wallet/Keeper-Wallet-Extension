@@ -7,7 +7,7 @@ import { sortAndFilterNfts, useUiState } from './helpers';
 import cn from 'classnames';
 import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
-import { PAGES } from 'ui/pageConfig';
+import { PAGES } from 'ui/pages';
 import { createNft, Nft } from 'nfts/utils';
 import { getNftsLink } from 'ui/urls';
 import { MAX_NFT_ITEMS } from 'controllers/currentAccount';

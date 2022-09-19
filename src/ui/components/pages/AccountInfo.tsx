@@ -7,7 +7,7 @@ import background from '../../services/Background';
 import { getAsset } from '../../actions/assets';
 import { WithNavigate, withNavigate } from '../../router';
 import { Asset, Money } from '@waves/data-entities';
-import { PAGES } from '../../pageConfig';
+import { PAGES } from '../../pages';
 import { getAccountLink } from '../../urls';
 import { BigNumber } from '@waves/bignumber';
 import { AppState } from 'ui/store';

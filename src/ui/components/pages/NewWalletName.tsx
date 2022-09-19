@@ -8,7 +8,7 @@ import { Button, Error, Input } from 'ui/components/ui';
 import { CONFIG } from 'ui/appConfig';
 import { WalletTypes } from 'ui/services/Background';
 import { useAccountsSelector, useAppDispatch } from 'accounts/store';
-import { PAGES } from 'ui/pageConfig';
+import { PAGES } from 'ui/pages';
 
 export function NewWalletName() {
   const navigate = useNavigate();

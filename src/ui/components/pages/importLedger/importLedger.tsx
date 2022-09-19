@@ -7,7 +7,7 @@ import { newAccountSelect } from 'ui/actions/localState';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Error } from 'ui/components/ui/error';
 import { Input } from 'ui/components/ui/input';
-import { PAGES } from 'ui/pageConfig';
+import { PAGES } from 'ui/pages';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { LedgerAvatarList } from './avatarList';
 import * as styles from './importLedger.module.css';

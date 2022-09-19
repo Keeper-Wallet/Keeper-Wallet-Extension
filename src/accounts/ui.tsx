@@ -27,7 +27,7 @@ import { initUiSentry } from 'sentry';
 import { RootWrapper } from 'ui/components/RootWrapper';
 import { LoadingScreen } from 'ui/components/pages';
 import { ACTION } from 'ui/actions/constants';
-import { PAGES } from 'ui/pageConfig';
+import { PAGES } from '../ui/pages';
 
 initUiSentry({
   ignoreErrorContext: 'beforeSendAccounts',

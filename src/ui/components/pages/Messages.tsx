@@ -13,7 +13,7 @@ import { getAsset } from '../../actions/assets';
 import { WithNavigate, withNavigate } from '../../router';
 import { setAutoOrigin } from '../../actions/permissions';
 import { setShowNotification } from '../../actions/notifications';
-import { PAGES } from '../../pageConfig';
+import { PAGES } from '../../pages';
 import { getConfigByTransaction } from '../transactions';
 import { FinalTransaction } from '../transactions/FinalTransaction/FinalTransaction';
 import { LoadingScreen } from './loadingScreen';

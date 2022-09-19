@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
 import background from 'ui/services/Background';
 import { useNavigate } from '../../router';
-import { PAGES } from '../../pageConfig';
+import { PAGES } from '../../pages';
 import { Button } from '../ui';
 import { downloadKeystore } from '../../../keystore/utils';
 import { ExportPasswordModal } from '../pages/exportAccounts/passwordModal';

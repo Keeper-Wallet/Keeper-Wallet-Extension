@@ -3,7 +3,7 @@ import cn from 'classnames';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
-import { PAGES } from '../../pageConfig';
+import { PAGES } from '../../pages';
 import { useAccountsSelector } from 'accounts/store';
 import { useNavigate } from 'ui/router';
 import background from 'ui/services/Background';

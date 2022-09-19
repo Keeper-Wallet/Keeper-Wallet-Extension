@@ -5,7 +5,7 @@ import { Button } from '../ui';
 import { deleteActiveAccount } from '../../actions/localState';
 import { useAppDispatch } from 'ui/store';
 import { useNavigate } from 'ui/router';
-import { PAGES } from 'ui/pageConfig';
+import { PAGES } from 'ui/pages';
 
 export function DeleteActiveAccount() {
   const navigate = useNavigate();

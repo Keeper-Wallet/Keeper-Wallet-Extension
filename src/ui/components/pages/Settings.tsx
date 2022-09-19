@@ -5,7 +5,7 @@ import { Button, PowerButton } from '../ui';
 import { useNavigate } from '../../router';
 import { setUiState } from '../../actions/uiState';
 import { lock } from '../../actions/user';
-import { PAGES } from '../../pageConfig';
+import { PAGES } from '../../pages';
 import { Tooltip } from '../ui/tooltip';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 

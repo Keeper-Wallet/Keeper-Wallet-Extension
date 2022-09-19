@@ -16,7 +16,7 @@ import {
   TabPanels,
   Tabs,
 } from '../ui';
-import { PAGES } from '../../pageConfig';
+import { PAGES } from '../../pages';
 import * as styles from './importSeed.module.css';
 import { InlineButton } from '../ui/buttons/inlineButton';
 

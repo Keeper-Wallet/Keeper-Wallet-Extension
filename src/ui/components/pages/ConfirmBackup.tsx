@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, Error, Pills, PillsListItem } from '../ui';
 import { AppState } from 'ui/store';
-import { PAGES } from 'ui/pageConfig';
+import { PAGES } from 'ui/pages';
 import { NewAccountState } from 'ui/reducers/localState';
 import { withNavigate, WithNavigate } from 'ui/router';
 

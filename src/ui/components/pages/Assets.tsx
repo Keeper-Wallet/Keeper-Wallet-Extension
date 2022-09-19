@@ -7,7 +7,7 @@ import { setActiveAccount } from 'ui/actions/assets';
 import { getBalances } from 'ui/actions/balances';
 import { setSwapScreenInitialState } from 'ui/actions/localState';
 import { useNavigate } from 'ui/router';
-import { PAGES } from 'ui/pageConfig';
+import { PAGES } from 'ui/pages';
 import { Asset, Money } from '@waves/data-entities';
 import BigNumber from '@waves/bignumber';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';

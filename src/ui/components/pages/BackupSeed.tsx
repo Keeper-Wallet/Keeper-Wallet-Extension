@@ -2,7 +2,7 @@ import * as styles from './styles/backupSeed.styl';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Copy, Modal } from '../ui';
-import { PAGES } from '../../pageConfig';
+import { PAGES } from '../../pages';
 import { useAccountsSelector } from 'accounts/store';
 import { NewAccountState } from 'ui/reducers/localState';
 import { useNavigate } from 'ui/router';

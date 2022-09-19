@@ -12,7 +12,7 @@ import {
   setShowNotification,
 } from '../../actions/notifications';
 import { WithNavigate, withNavigate } from '../../router';
-import { PAGES } from '../../pageConfig';
+import { PAGES } from '../../pages';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { LoadingScreen } from './loadingScreen';

@@ -6,7 +6,7 @@ import { useNavigate } from 'ui/router';
 import { deleteAllAccounts } from 'ui/actions/user';
 import cn from 'classnames';
 import { useAppDispatch } from 'ui/store';
-import { PAGES } from 'ui/pageConfig';
+import { PAGES } from 'ui/pages';
 
 export function DeleteAllAccounts() {
   const navigate = useNavigate();
