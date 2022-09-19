@@ -6,10 +6,10 @@ import { useNavigate } from 'ui/router';
 import { useAccountsSelector } from 'accounts/store';
 
 interface Props {
-  hasLogo: boolean | undefined;
-  hasSettings: boolean | undefined;
-  hasBack: boolean | undefined;
-  hasClose: boolean | undefined;
+  hasLogo?: boolean;
+  hasSettings?: boolean;
+  hasBack?: boolean;
+  hasClose?: boolean;
 }
 
 export function Menu({ hasClose, hasBack, hasLogo, hasSettings }: Props) {

@@ -57,6 +57,13 @@ export function Root() {
   }, [currentNetwork, navigate]);
 
   const pageConf = PAGES_CONF[currentPage];
+
+  console.log({ currentPage });
+
+  if ('element' in pageConf) {
+    return pageConf.element;
+  }
+
   const Component = pageConf.component;
 
   return (

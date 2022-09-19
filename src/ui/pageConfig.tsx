@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {
   AccountInfo,
   AddressBook,
@@ -108,19 +109,20 @@ interface PageBottomConfig {
   noChangeNetwork?: true;
 }
 
-interface PageConfig {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  component: React.ComponentType<any>;
-  bottom?: PageBottomConfig;
-  menu?: PageMenuConfig;
-}
+type PageConfig =
+  | {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      component: React.ComponentType<any>;
+      bottom?: PageBottomConfig;
+      menu?: PageMenuConfig;
+    }
+  | {
+      element: React.ReactElement;
+    };
 
 export const PAGES_CONF: Record<string, PageConfig> = {
   [PAGES.WELCOME]: {
-    component: Welcome,
-    bottom: {
-      hide: true,
-    },
+    element: <Welcome />,
   },
   [PAGES.LOGIN]: {
     component: Login,
