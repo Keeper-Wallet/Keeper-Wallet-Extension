@@ -5,22 +5,15 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
-import { POPUP_PAGES } from '../../pages';
 import { useAppSelector } from '../../store';
 import background from 'ui/services/Background';
-import { Navigate, useNavigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 import { generateNewWalletItems } from './NewWallet';
 import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 export function ImportPopup() {
   const { t } = useTranslation();
   const currentNetwork = useAppSelector(state => state.currentNetwork);
-
-  const haveAccounts = useAppSelector(state => state.accounts.length !== 0);
-
-  if (haveAccounts) {
-    return <Navigate replace to={POPUP_PAGES.ASSETS} />;
-  }
 
   return (
     <div data-testid="importForm" className={styles.root}>

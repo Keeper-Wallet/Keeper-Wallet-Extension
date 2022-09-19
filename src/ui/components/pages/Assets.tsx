@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { setActiveAccount } from 'ui/actions/assets';
 import { getBalances } from 'ui/actions/balances';
 import { setSwapScreenInitialState } from 'ui/actions/localState';
-import { Navigate, useNavigate } from 'ui/router';
+import { useNavigate } from 'ui/router';
 import { POPUP_PAGES } from 'ui/pages';
 import { Asset, Money } from '@waves/data-entities';
 import BigNumber from '@waves/bignumber';
@@ -18,6 +18,7 @@ import { TabNfts } from './assets/tabs/tabNfts';
 import { TabTxHistory } from './assets/tabs/tabTxHistory';
 import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 import { AssetDetail } from 'assets/types';
+import { ImportPopup } from './Import';
 
 export function Assets() {
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ export function Assets() {
   }, [dispatch]);
 
   if (!activeAccount) {
-    return <Navigate replace to={POPUP_PAGES.IMPORT_POPUP} />;
+    return <ImportPopup />;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

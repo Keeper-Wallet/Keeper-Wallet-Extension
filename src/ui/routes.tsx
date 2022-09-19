@@ -11,7 +11,6 @@ import { DeleteAllAccounts } from './components/pages/deleteAllAccounts/deleteAl
 import { ExportAccounts } from './components/pages/exportAccounts/exportAccounts';
 import { ExportAddressBook } from './components/pages/exportAccounts/exportAddressBook';
 import { ExportAndImport } from './components/pages/ExportAndImport';
-import { ImportPopup } from './components/pages/Import';
 import { Info } from './components/pages/Info';
 import { LangsSettings } from './components/pages/LangsSettings';
 import { Messages } from './components/pages/Messages';
@@ -41,16 +40,6 @@ export const routes: Array<{
       <>
         <Menu hasLogo hasSettings />
         <Assets />
-        <Bottom allowChangingNetwork />
-      </>
-    ),
-  },
-  {
-    path: POPUP_PAGES.IMPORT_POPUP,
-    element: (
-      <>
-        <Menu hasLogo hasSettings />
-        <ImportPopup />
         <Bottom allowChangingNetwork />
       </>
     ),
