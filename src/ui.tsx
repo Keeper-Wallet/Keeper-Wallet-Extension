@@ -25,7 +25,7 @@ import backgroundService, {
 import { createUiStore } from './ui/store';
 import { initUiSentry } from 'sentry';
 import { RootWrapper } from 'ui/components/RootWrapper';
-import { LoadingScreen } from 'ui/components/pages';
+import { LoadingScreen } from 'ui/components/pages/loadingScreen';
 
 const isNotificationWindow = window.location.pathname === '/notification.html';
 

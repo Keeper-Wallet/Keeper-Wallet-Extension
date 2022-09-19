@@ -25,7 +25,7 @@ import { LedgerSignRequest } from 'ledger/types';
 import { ledgerService } from 'ledger/service';
 import { initUiSentry } from 'sentry';
 import { RootWrapper } from 'ui/components/RootWrapper';
-import { LoadingScreen } from 'ui/components/pages';
+import { LoadingScreen } from 'ui/components/pages/loadingScreen';
 import { ACTION } from 'ui/actions/constants';
 import { PAGES } from '../ui/pages';
 

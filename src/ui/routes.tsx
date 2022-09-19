@@ -1,33 +1,4 @@
 import * as React from 'react';
-import {
-  AccountInfo,
-  AddressBook,
-  Assets,
-  BackUpSeed,
-  ChangeAccountName,
-  ChangePassword,
-  ConfirmBackup,
-  DeleteAllAccounts,
-  ExportAndImport,
-  ImportPopup,
-  ImportTab,
-  Info,
-  LangsSettings,
-  Login,
-  MessageList,
-  Messages,
-  NetworksSettings,
-  NewAccount,
-  NewWallet,
-  NewWalletName,
-  Notifications,
-  PermissionsSettings,
-  SelectedAccountQr,
-  SelectTxAccount,
-  Settings,
-  SettingsGeneral,
-  Welcome,
-} from './components/pages';
 import { ImportLedger } from './components/pages/importLedger/importLedger';
 import { ImportSeed } from './components/pages/importSeed';
 import { Swap } from './components/pages/swap/swap';
@@ -49,6 +20,32 @@ import { DeleteActiveAccount } from './components/pages/deleteActiveAccount';
 import { PAGES } from './pages';
 import { Menu } from './components/menu/Menu';
 import { Bottom } from './components/bottom';
+import { Welcome } from './components/pages/Welcome';
+import { Login } from './components/pages/Login';
+import { NewAccount } from './components/pages/NewAccount';
+import { ImportPopup, ImportTab } from './components/pages/Import';
+import { NewWallet } from './components/pages/NewWallet';
+import { NewWalletName } from './components/pages/NewWalletName';
+import { ChangeAccountName } from './components/pages/ChangeName';
+import { BackUpSeed } from './components/pages/BackupSeed';
+import { ConfirmBackup } from './components/pages/ConfirmBackup';
+import { ExportAndImport } from './components/pages/ExportAndImport';
+import { Assets } from './components/pages/Assets';
+import { Settings } from './components/pages/Settings';
+import { Info } from './components/pages/Info';
+import { AccountInfo } from './components/pages/AccountInfo';
+import { SelectedAccountQr } from './components/pages/SelectedAccountQr';
+import { SettingsGeneral } from './components/pages/SettingsGeneral';
+import { AddressBook } from './components/pages/AddressBook';
+import { NetworksSettings } from './components/pages/NetworksSettings';
+import { PermissionsSettings } from './components/pages/PermissionsSettings/PermissionSettings';
+import { LangsSettings } from './components/pages/LangsSettings';
+import { ChangePassword } from './components/pages/ChangePassword';
+import { DeleteAllAccounts } from './components/pages/deleteAllAccounts/deleteAllAccounts';
+import { Notifications } from './components/pages/Notifications';
+import { Messages } from './components/pages/Messages';
+import { MessageList } from './components/pages/MessagesList';
+import { SelectTxAccount } from './components/pages/SelectTxAccount';
 
 export const routes: Array<{
   path: string;
