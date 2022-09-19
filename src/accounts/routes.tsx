@@ -4,7 +4,7 @@ import { Menu } from '../ui/components/menu/Menu';
 import { BackUpSeed } from '../ui/components/pages/BackupSeed';
 import { ConfirmBackup } from '../ui/components/pages/ConfirmBackup';
 import { DeleteAllAccounts } from '../ui/components/pages/deleteAllAccounts/deleteAllAccounts';
-import { ImportTab } from '../ui/components/pages/Import';
+import { AccountsHome } from '../ui/components/pages/Import';
 import { ImportDebug } from '../ui/components/pages/importDebug';
 import { ImportEmail } from '../ui/components/pages/importEmail/importEmail';
 import { ImportAddressBook } from '../ui/components/pages/importKeystore/importAddressBook';
@@ -30,7 +30,7 @@ export const routes: Array<{
     element: (
       <>
         <Menu hasLogo />
-        <ImportTab />
+        <AccountsHome />
         <Bottom allowChangingNetwork />
       </>
     ),

@@ -49,7 +49,7 @@ export function ImportPopup() {
   );
 }
 
-export function ImportTab() {
+export function AccountsHome() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const customCodes = useAppSelector(state => state.customCodes);
