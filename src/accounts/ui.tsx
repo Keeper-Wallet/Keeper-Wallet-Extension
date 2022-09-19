@@ -138,7 +138,7 @@ async function startUi() {
     payload: {
       page: Object.values(ACCOUNTS_PAGES).includes(pageFromHash)
         ? pageFromHash
-        : ACCOUNTS_PAGES.IMPORT_TAB,
+        : ACCOUNTS_PAGES.HOME,
       replace: true,
     },
   });

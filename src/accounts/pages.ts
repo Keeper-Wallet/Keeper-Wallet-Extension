@@ -1,5 +1,5 @@
 export const ACCOUNTS_PAGES = {
-  IMPORT_TAB: 'import_tab',
+  HOME: 'import_tab',
   NEW_ACCOUNT: 'new_account',
   SAVE_BACKUP: 'safe_backup',
   CONFIRM_BACKUP: 'confirm_backup',

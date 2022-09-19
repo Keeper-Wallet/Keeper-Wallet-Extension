@@ -55,7 +55,7 @@ export function BackUpSeed() {
       <Button
         id="cancelCreation"
         onClick={() => {
-          navigate(ACCOUNTS_PAGES.IMPORT_TAB);
+          navigate(ACCOUNTS_PAGES.HOME);
         }}
       >
         {t('backupSeed.cancel')}

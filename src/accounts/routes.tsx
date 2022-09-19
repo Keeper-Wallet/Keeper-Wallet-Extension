@@ -26,7 +26,7 @@ export const routes: Array<{
   element: React.ReactElement;
 }> = [
   {
-    path: ACCOUNTS_PAGES.IMPORT_TAB,
+    path: ACCOUNTS_PAGES.HOME,
     element: (
       <>
         <Menu hasLogo />

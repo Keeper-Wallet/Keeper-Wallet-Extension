@@ -88,7 +88,7 @@ export function ImportSuccess({
           className={styles.button}
           type="button"
           onClick={() => {
-            navigate(ACCOUNTS_PAGES.IMPORT_TAB, { replace: true });
+            navigate(ACCOUNTS_PAGES.HOME, { replace: true });
           }}
         >
           {t('import.addAnotherAccount')}

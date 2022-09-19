@@ -19,7 +19,7 @@ export function RootAccounts() {
       return;
     }
 
-    navigate(ACCOUNTS_PAGES.IMPORT_TAB, { replace: true });
+    navigate(ACCOUNTS_PAGES.HOME, { replace: true });
     prevNetworkRef.current = currentNetwork;
   }, [currentNetwork, navigate]);
 
@@ -35,7 +35,7 @@ export function RootAccounts() {
   }
 
   if (initialized && !locked && currentPage === ACCOUNTS_PAGES.FORGOT) {
-    return <Navigate to={ACCOUNTS_PAGES.IMPORT_TAB} />;
+    return <Navigate to={ACCOUNTS_PAGES.HOME} />;
   }
 
   return routes.find(route => route.path === currentPage)?.element ?? null;

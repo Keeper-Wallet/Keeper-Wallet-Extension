@@ -123,7 +123,7 @@ export function NewWalletName() {
                 className="margin1"
                 type="button"
                 onClick={() => {
-                  navigate(ACCOUNTS_PAGES.IMPORT_TAB, { replace: true });
+                  navigate(ACCOUNTS_PAGES.HOME, { replace: true });
                 }}
               >
                 {t('newAccountName.cancel')}

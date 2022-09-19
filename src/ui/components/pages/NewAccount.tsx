@@ -117,7 +117,7 @@ class NewAccountComponent extends React.PureComponent<Props> {
     const { initialized, t } = this.props;
 
     if (initialized) {
-      return <Navigate replace to={ACCOUNTS_PAGES.IMPORT_TAB} />;
+      return <Navigate replace to={ACCOUNTS_PAGES.HOME} />;
     }
 
     return (
