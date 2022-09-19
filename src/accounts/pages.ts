@@ -13,6 +13,6 @@ export const ACCOUNTS_PAGES = {
   IMPORT_SUCCESS: '/import-success',
   IMPORT_ADDRESS_BOOK: '/import-address-book',
   IMPORT_SUCCESS_ADDRESS_BOOK: '/import-address-book/success',
-  NEW: '/new',
+  NEW: '/init-vault',
   FORGOT: '/forgot-password',
 };
