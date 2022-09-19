@@ -50,18 +50,20 @@ import { PAGES } from './pages';
 import { Menu } from './components/menu/Menu';
 import { Bottom } from './components/bottom';
 
-type PageConfig = {
+export const routes: Array<{
+  path: string;
   element: React.ReactElement;
-};
-
-export const PAGES_CONF: Record<string, PageConfig> = {
-  [PAGES.WELCOME]: {
+}> = [
+  {
+    path: PAGES.WELCOME,
     element: <Welcome />,
   },
-  [PAGES.LOGIN]: {
+  {
+    path: PAGES.LOGIN,
     element: <Login />,
   },
-  [PAGES.NEW]: {
+  {
+    path: PAGES.NEW,
     element: (
       <>
         <Menu hasLogo />
@@ -69,7 +71,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.IMPORT_POPUP]: {
+  {
+    path: PAGES.IMPORT_POPUP,
     element: (
       <>
         <Menu hasLogo hasSettings />
@@ -78,7 +81,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.IMPORT_TAB]: {
+  {
+    path: PAGES.IMPORT_TAB,
     element: (
       <>
         <Menu hasLogo />
@@ -87,7 +91,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.NEW_ACCOUNT]: {
+  {
+    path: PAGES.NEW_ACCOUNT,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -96,7 +101,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.ACCOUNT_NAME]: {
+  {
+    path: PAGES.ACCOUNT_NAME,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -105,7 +111,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.IMPORT_SUCCESS]: {
+  {
+    path: PAGES.IMPORT_SUCCESS,
     element: (
       <>
         <Menu hasLogo />
@@ -113,7 +120,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.IMPORT_SUCCESS_KEYSTORE]: {
+  {
+    path: PAGES.IMPORT_SUCCESS_KEYSTORE,
     element: (
       <>
         <Menu hasLogo />
@@ -121,7 +129,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.IMPORT_SUCCESS_ADDRESS_BOOK]: {
+  {
+    path: PAGES.IMPORT_SUCCESS_ADDRESS_BOOK,
     element: (
       <>
         <Menu hasLogo />
@@ -129,8 +138,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-
-  [PAGES.CHANGE_ACCOUNT_NAME]: {
+  {
+    path: PAGES.CHANGE_ACCOUNT_NAME,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -139,7 +148,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.SAVE_BACKUP]: {
+  {
+    path: PAGES.SAVE_BACKUP,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -148,7 +158,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.CONFIRM_BACKUP]: {
+  {
+    path: PAGES.CONFIRM_BACKUP,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -157,7 +168,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.IMPORT_ADDRESS_BOOK]: {
+  {
+    path: PAGES.IMPORT_ADDRESS_BOOK,
     element: (
       <>
         <Menu hasLogo />
@@ -165,7 +177,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.IMPORT_DEBUG]: {
+  {
+    path: PAGES.IMPORT_DEBUG,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -174,7 +187,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.IMPORT_EMAIL]: {
+  {
+    path: PAGES.IMPORT_EMAIL,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -183,7 +197,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.IMPORT_KEYSTORE]: {
+  {
+    path: PAGES.IMPORT_KEYSTORE,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -191,7 +206,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.IMPORT_LEDGER]: {
+  {
+    path: PAGES.IMPORT_LEDGER,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -199,7 +215,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.IMPORT_SEED]: {
+  {
+    path: PAGES.IMPORT_SEED,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -208,7 +225,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.EXPORT_ACCOUNTS]: {
+  {
+    path: PAGES.EXPORT_ACCOUNTS,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -216,7 +234,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.EXPORT_ADDRESS_BOOK]: {
+  {
+    path: PAGES.EXPORT_ADDRESS_BOOK,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -224,7 +243,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.EXPORT_AND_IMPORT]: {
+  {
+    path: PAGES.EXPORT_AND_IMPORT,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -232,7 +252,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.ASSETS]: {
+  {
+    path: PAGES.ASSETS,
     element: (
       <>
         <Menu hasLogo hasSettings />
@@ -241,7 +262,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.OTHER_ACCOUNTS]: {
+  {
+    path: PAGES.OTHER_ACCOUNTS,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -249,7 +271,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.SETTINGS]: {
+  {
+    path: PAGES.SETTINGS,
     element: (
       <>
         <Menu hasClose hasLogo />
@@ -257,7 +280,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.INFO]: {
+  {
+    path: PAGES.INFO,
     element: (
       <>
         <Menu hasBack />
@@ -265,7 +289,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.ACCOUNT_INFO]: {
+  {
+    path: PAGES.ACCOUNT_INFO,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -273,7 +298,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.DELETE_ACTIVE_ACCOUNT]: {
+  {
+    path: PAGES.DELETE_ACTIVE_ACCOUNT,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -281,7 +307,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.QR_CODE_SELECTED]: {
+  {
+    path: PAGES.QR_CODE_SELECTED,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -289,7 +316,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.GENERAL_SETTINGS]: {
+  {
+    path: PAGES.GENERAL_SETTINGS,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -297,7 +325,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.ADDRESS_BOOK]: {
+  {
+    path: PAGES.ADDRESS_BOOK,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -305,7 +334,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.NETWORK_SETTINGS]: {
+  {
+    path: PAGES.NETWORK_SETTINGS,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -313,7 +343,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.PERMISSIONS]: {
+  {
+    path: PAGES.PERMISSIONS,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -321,7 +352,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.LANGS_SETTINGS]: {
+  {
+    path: PAGES.LANGS_SETTINGS,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -329,7 +361,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.CHANGE_PASSWORD]: {
+  {
+    path: PAGES.CHANGE_PASSWORD,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -337,7 +370,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.DELETE_ACCOUNT]: {
+  {
+    path: PAGES.DELETE_ACCOUNT,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -345,10 +379,12 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.FORGOT]: {
+  {
+    path: PAGES.FORGOT,
     element: <DeleteAllAccounts />,
   },
-  [PAGES.NOTIFICATIONS]: {
+  {
+    path: PAGES.NOTIFICATIONS,
     element: (
       <>
         <Menu hasLogo />
@@ -356,7 +392,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.MESSAGES]: {
+  {
+    path: PAGES.MESSAGES,
     element: (
       <>
         <Menu hasLogo />
@@ -364,13 +401,16 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.MESSAGES_LIST]: {
+  {
+    path: PAGES.MESSAGES_LIST,
     element: <MessageList />,
   },
-  [PAGES.CHANGE_TX_ACCOUNT]: {
+  {
+    path: PAGES.CHANGE_TX_ACCOUNT,
     element: <SelectTxAccount />,
   },
-  [PAGES.SEND]: {
+  {
+    path: PAGES.SEND,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -378,7 +418,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.SWAP]: {
+  {
+    path: PAGES.SWAP,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -386,7 +427,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.NFT_COLLECTION]: {
+  {
+    path: PAGES.NFT_COLLECTION,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -394,7 +436,8 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-  [PAGES.NFT_INFO]: {
+  {
+    path: PAGES.NFT_INFO,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -402,4 +445,4 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       </>
     ),
   },
-};
+];

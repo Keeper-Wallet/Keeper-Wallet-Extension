@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { PAGES_CONF } from '../pageConfig';
+import { routes } from '../routes';
 import { PAGES } from '../pages';
 import { useAppSelector } from 'ui/store';
 import { useNavigate } from 'ui/router';
@@ -55,7 +55,5 @@ export function Root() {
     prevNetworkRef.current = currentNetwork;
   }, [currentNetwork, navigate]);
 
-  const pageConf = PAGES_CONF[currentPage];
-
-  return pageConf.element;
+  return routes.find(route => route.path === currentPage)?.element ?? null;
 }
