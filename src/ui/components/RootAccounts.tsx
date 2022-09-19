@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { routes } from '../../accounts/routes';
-import { PAGES } from '../pages';
+import { ACCOUNTS_PAGES } from '../../accounts/pages';
 import { useAccountsSelector } from 'accounts/store';
 import { Navigate, useNavigate } from 'ui/router';
 import { Login } from './pages/Login';
@@ -19,20 +19,23 @@ export function RootAccounts() {
       return;
     }
 
-    navigate(PAGES.IMPORT_TAB, { replace: true });
+    navigate(ACCOUNTS_PAGES.IMPORT_TAB, { replace: true });
     prevNetworkRef.current = currentNetwork;
   }, [currentNetwork, navigate]);
 
-  if (!initialized && ![PAGES.WELCOME, PAGES.NEW].includes(currentPage)) {
-    return <Navigate to={PAGES.WELCOME} />;
+  if (
+    !initialized &&
+    ![ACCOUNTS_PAGES.WELCOME, ACCOUNTS_PAGES.NEW].includes(currentPage)
+  ) {
+    return <Navigate to={ACCOUNTS_PAGES.WELCOME} />;
   }
 
-  if (initialized && locked && currentPage !== PAGES.FORGOT) {
+  if (initialized && locked && currentPage !== ACCOUNTS_PAGES.FORGOT) {
     return <Login />;
   }
 
-  if (initialized && !locked && currentPage === PAGES.FORGOT) {
-    return <Navigate to={PAGES.IMPORT_TAB} />;
+  if (initialized && !locked && currentPage === ACCOUNTS_PAGES.FORGOT) {
+    return <Navigate to={ACCOUNTS_PAGES.IMPORT_TAB} />;
   }
 
   return routes.find(route => route.path === currentPage)?.element ?? null;

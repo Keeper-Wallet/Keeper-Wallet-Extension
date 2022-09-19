@@ -12,7 +12,7 @@ import {
   setShowNotification,
 } from '../../actions/notifications';
 import { WithNavigate, withNavigate } from '../../router';
-import { PAGES } from '../../pages';
+import { POPUP_PAGES } from '../../pages';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { LoadingScreen } from './loadingScreen';
@@ -99,7 +99,7 @@ class NotificationsComponent extends React.Component<Props, State> {
   ): Partial<State> | null {
     const { origins, activeNotification, messages, notifications } = props;
     if (!activeNotification && notifications.length) {
-      props.navigate(PAGES.MESSAGES_LIST);
+      props.navigate(POPUP_PAGES.MESSAGES_LIST);
       return { loading: true };
     }
 
@@ -141,7 +141,7 @@ class NotificationsComponent extends React.Component<Props, State> {
 
   toListHandler = () => {
     (this._deleteMessages(null) as unknown as Promise<void>).then(() =>
-      this.props.navigate(PAGES.MESSAGES_LIST)
+      this.props.navigate(POPUP_PAGES.MESSAGES_LIST)
     );
   };
 
@@ -183,7 +183,7 @@ class NotificationsComponent extends React.Component<Props, State> {
           <TransactionWallet
             type="clean"
             onSelect={() => {
-              this.props.navigate(PAGES.CHANGE_TX_ACCOUNT);
+              this.props.navigate(POPUP_PAGES.CHANGE_TX_ACCOUNT);
             }}
             account={this.props.selectedAccount}
             hideButton={false}

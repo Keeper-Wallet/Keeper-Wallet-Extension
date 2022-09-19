@@ -8,7 +8,7 @@ import { Button, Error, Input } from 'ui/components/ui';
 import { CONFIG } from 'ui/appConfig';
 import { WalletTypes } from 'ui/services/Background';
 import { useAccountsSelector, useAppDispatch } from 'accounts/store';
-import { PAGES } from 'ui/pages';
+import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 export function NewWalletName() {
   const navigate = useNavigate();
@@ -59,7 +59,7 @@ export function NewWalletName() {
 
           if (existingAccount) {
             dispatch(selectAccount(existingAccount));
-            navigate(PAGES.IMPORT_SUCCESS);
+            navigate(ACCOUNTS_PAGES.IMPORT_SUCCESS);
             return;
           }
 
@@ -79,7 +79,7 @@ export function NewWalletName() {
             createAccount(account, accountTypeToWalletType[account.type])
           );
 
-          navigate(PAGES.IMPORT_SUCCESS);
+          navigate(ACCOUNTS_PAGES.IMPORT_SUCCESS);
         }}
       >
         <div className="margin1">
@@ -123,7 +123,7 @@ export function NewWalletName() {
                 className="margin1"
                 type="button"
                 onClick={() => {
-                  navigate(PAGES.IMPORT_TAB, { replace: true });
+                  navigate(ACCOUNTS_PAGES.IMPORT_TAB, { replace: true });
                 }}
               >
                 {t('newAccountName.cancel')}

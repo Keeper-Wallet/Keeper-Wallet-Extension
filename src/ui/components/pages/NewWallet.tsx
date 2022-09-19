@@ -5,10 +5,10 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { AppState } from 'ui/store';
 import { newAccountSelect } from '../../actions/localState';
 import { WithNavigate, withNavigate } from '../../router';
-import { PAGES } from '../../pages';
 import { AvatarList, Button } from '../ui';
 import * as styles from './styles/newwallet.styl';
 import { NewAccountState } from 'ui/reducers/localState';
+import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 interface NewWalletItem {
   seed: string;
@@ -103,7 +103,7 @@ class NewWalletComponent extends React.Component<Props, State> {
           onSubmit={event => {
             event.preventDefault();
             event.stopPropagation();
-            this.props.navigate(PAGES.SAVE_BACKUP);
+            this.props.navigate(ACCOUNTS_PAGES.SAVE_BACKUP);
           }}
         >
           <Button type="submit" view="submit" id="continue">

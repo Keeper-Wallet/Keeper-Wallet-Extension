@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { seedUtils } from '@waves/waves-transactions';
 import { KeystoreProfiles } from 'keystore/types';
 import { getNetworkByNetworkCode } from 'ui/utils/waves';
-import { PAGES } from '../../../pages';
 import { ImportKeystoreChooseFile } from './chooseFile';
 import { ImportKeystoreChooseAccounts } from './chooseAccounts';
 import { batchAddAccounts } from 'ui/actions/user';
 import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { useNavigate } from 'ui/router';
+import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 type ExchangeKeystoreAccount = {
   address: string;
@@ -208,7 +208,7 @@ export function ImportKeystore() {
       allNetworksAccounts={allNetworksAccounts}
       profiles={profiles}
       onSkip={() => {
-        navigate(PAGES.IMPORT_TAB);
+        navigate(ACCOUNTS_PAGES.IMPORT_TAB);
       }}
       onSubmit={async selectedAccounts => {
         await dispatch(
@@ -223,7 +223,7 @@ export function ImportKeystore() {
           )
         );
 
-        navigate(PAGES.IMPORT_SUCCESS_KEYSTORE);
+        navigate(ACCOUNTS_PAGES.IMPORT_SUCCESS_KEYSTORE);
       }}
     />
   );

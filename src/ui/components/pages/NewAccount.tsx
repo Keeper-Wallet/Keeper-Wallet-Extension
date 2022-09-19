@@ -7,7 +7,7 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
 import { AppState } from 'ui/store';
 import { Navigate } from 'ui/router';
-import { PAGES } from 'ui/pages';
+import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
@@ -117,7 +117,7 @@ class NewAccountComponent extends React.PureComponent<Props> {
     const { initialized, t } = this.props;
 
     if (initialized) {
-      return <Navigate replace to={PAGES.IMPORT_TAB} />;
+      return <Navigate replace to={ACCOUNTS_PAGES.IMPORT_TAB} />;
     }
 
     return (

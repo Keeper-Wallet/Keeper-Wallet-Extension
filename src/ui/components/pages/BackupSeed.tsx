@@ -2,10 +2,10 @@ import * as styles from './styles/backupSeed.styl';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Copy, Modal } from '../ui';
-import { PAGES } from '../../pages';
 import { useAccountsSelector } from 'accounts/store';
 import { NewAccountState } from 'ui/reducers/localState';
 import { useNavigate } from 'ui/router';
+import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 export function BackUpSeed() {
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ export function BackUpSeed() {
         className="margin-main-big"
         type="submit"
         onClick={() => {
-          navigate(PAGES.CONFIRM_BACKUP);
+          navigate(ACCOUNTS_PAGES.CONFIRM_BACKUP);
         }}
       >
         {t('backupSeed.continue')}
@@ -55,7 +55,7 @@ export function BackUpSeed() {
       <Button
         id="cancelCreation"
         onClick={() => {
-          navigate(PAGES.IMPORT_TAB);
+          navigate(ACCOUNTS_PAGES.IMPORT_TAB);
         }}
       >
         {t('backupSeed.cancel')}

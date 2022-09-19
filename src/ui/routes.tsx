@@ -29,14 +29,14 @@ import { Settings } from './components/pages/Settings';
 import { SettingsGeneral } from './components/pages/SettingsGeneral';
 import { Swap } from './components/pages/swap/swap';
 import { Welcome } from './components/pages/Welcome';
-import { PAGES } from './pages';
+import { POPUP_PAGES } from './pages';
 
 export const routes: Array<{
   path: string;
   element: React.ReactElement;
 }> = [
   {
-    path: PAGES.ASSETS,
+    path: POPUP_PAGES.ASSETS,
     element: (
       <>
         <Menu hasLogo hasSettings />
@@ -46,7 +46,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.IMPORT_POPUP,
+    path: POPUP_PAGES.IMPORT_POPUP,
     element: (
       <>
         <Menu hasLogo hasSettings />
@@ -56,7 +56,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.QR_CODE_SELECTED,
+    path: POPUP_PAGES.QR_CODE_SELECTED,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -65,7 +65,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.ACCOUNT_INFO,
+    path: POPUP_PAGES.ACCOUNT_INFO,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -74,7 +74,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.CHANGE_ACCOUNT_NAME,
+    path: POPUP_PAGES.CHANGE_ACCOUNT_NAME,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -84,7 +84,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.DELETE_ACTIVE_ACCOUNT,
+    path: POPUP_PAGES.DELETE_ACTIVE_ACCOUNT,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -93,7 +93,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.OTHER_ACCOUNTS,
+    path: POPUP_PAGES.OTHER_ACCOUNTS,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -102,7 +102,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.SEND,
+    path: POPUP_PAGES.SEND,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -111,7 +111,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.SWAP,
+    path: POPUP_PAGES.SWAP,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -120,7 +120,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.NFT_COLLECTION,
+    path: POPUP_PAGES.NFT_COLLECTION,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -129,7 +129,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.NFT_INFO,
+    path: POPUP_PAGES.NFT_INFO,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -138,7 +138,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.INFO,
+    path: POPUP_PAGES.INFO,
     element: (
       <>
         <Menu hasBack />
@@ -147,7 +147,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.SETTINGS,
+    path: POPUP_PAGES.SETTINGS,
     element: (
       <>
         <Menu hasClose hasLogo />
@@ -156,7 +156,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.ADDRESS_BOOK,
+    path: POPUP_PAGES.ADDRESS_BOOK,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -165,7 +165,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.GENERAL_SETTINGS,
+    path: POPUP_PAGES.GENERAL_SETTINGS,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -174,7 +174,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.CHANGE_PASSWORD,
+    path: POPUP_PAGES.CHANGE_PASSWORD,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -183,7 +183,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.PERMISSIONS,
+    path: POPUP_PAGES.PERMISSIONS,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -192,7 +192,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.LANGS_SETTINGS,
+    path: POPUP_PAGES.LANGS_SETTINGS,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -201,7 +201,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.NETWORK_SETTINGS,
+    path: POPUP_PAGES.NETWORK_SETTINGS,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -210,7 +210,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.EXPORT_AND_IMPORT,
+    path: POPUP_PAGES.EXPORT_AND_IMPORT,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -219,7 +219,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.EXPORT_ACCOUNTS,
+    path: POPUP_PAGES.EXPORT_ACCOUNTS,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -228,7 +228,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.EXPORT_ADDRESS_BOOK,
+    path: POPUP_PAGES.EXPORT_ADDRESS_BOOK,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -237,7 +237,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.DELETE_ACCOUNT,
+    path: POPUP_PAGES.DELETE_ACCOUNT,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -246,7 +246,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.NOTIFICATIONS,
+    path: POPUP_PAGES.NOTIFICATIONS,
     element: (
       <>
         <Menu hasLogo />
@@ -255,7 +255,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.MESSAGES,
+    path: POPUP_PAGES.MESSAGES,
     element: (
       <>
         <Menu hasLogo />
@@ -264,19 +264,19 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.MESSAGES_LIST,
+    path: POPUP_PAGES.MESSAGES_LIST,
     element: <MessageList />,
   },
   {
-    path: PAGES.CHANGE_TX_ACCOUNT,
+    path: POPUP_PAGES.CHANGE_TX_ACCOUNT,
     element: <SelectTxAccount />,
   },
   {
-    path: PAGES.WELCOME,
+    path: POPUP_PAGES.WELCOME,
     element: <Welcome isPopup />,
   },
   {
-    path: PAGES.FORGOT,
+    path: POPUP_PAGES.FORGOT,
     element: <DeleteAllAccounts />,
   },
 ];

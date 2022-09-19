@@ -4,13 +4,13 @@ import { seedUtils } from '@waves/waves-transactions';
 import { ImportKeystoreChooseFile } from './chooseFile';
 import { setAddresses } from 'ui/actions/addresses';
 import { useNavigate } from 'ui/router';
-import { PAGES } from '../../../pages';
 import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import {
   fromEthereumToWavesAddress,
   isEthereumAddress,
 } from 'ui/utils/ethereum';
+import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 interface EncryptedAddressBook {
   type: WalletTypes;
@@ -116,7 +116,7 @@ export function ImportAddressBook() {
           dispatch(
             setAddresses(getFormattedAddresses(addresses, keystoreAddresses))
           );
-          navigate(PAGES.IMPORT_SUCCESS_ADDRESS_BOOK);
+          navigate(ACCOUNTS_PAGES.IMPORT_SUCCESS_ADDRESS_BOOK);
         } catch (err) {
           setError(t('importKeystore.errorUnexpected'));
         }

@@ -12,7 +12,7 @@ import { useNavigate } from 'ui/router';
 import { updateAssets } from 'ui/actions/assets';
 import { resetSwapScreenInitialState } from 'ui/actions/localState';
 import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
-import { PAGES } from 'ui/pages';
+import { POPUP_PAGES } from 'ui/pages';
 import background from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { SwapForm, OnSwapParams } from './form';
@@ -127,7 +127,7 @@ export function Swap() {
         fromMoney={performedSwapData.fromMoney}
         transactionId={performedSwapData.transactionId}
         onClose={() => {
-          navigate(PAGES.ASSETS);
+          navigate(POPUP_PAGES.ASSETS);
         }}
       />
     );

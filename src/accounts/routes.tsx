@@ -19,14 +19,14 @@ import { NewAccount } from '../ui/components/pages/NewAccount';
 import { NewWallet } from '../ui/components/pages/NewWallet';
 import { NewWalletName } from '../ui/components/pages/NewWalletName';
 import { Welcome } from '../ui/components/pages/Welcome';
-import { PAGES } from '../ui/pages';
+import { ACCOUNTS_PAGES } from './pages';
 
 export const routes: Array<{
   path: string;
   element: React.ReactElement;
 }> = [
   {
-    path: PAGES.IMPORT_TAB,
+    path: ACCOUNTS_PAGES.IMPORT_TAB,
     element: (
       <>
         <Menu hasLogo />
@@ -36,7 +36,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.NEW_ACCOUNT,
+    path: ACCOUNTS_PAGES.NEW_ACCOUNT,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -46,7 +46,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.SAVE_BACKUP,
+    path: ACCOUNTS_PAGES.SAVE_BACKUP,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -56,7 +56,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.CONFIRM_BACKUP,
+    path: ACCOUNTS_PAGES.CONFIRM_BACKUP,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -66,7 +66,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.IMPORT_DEBUG,
+    path: ACCOUNTS_PAGES.IMPORT_DEBUG,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -76,7 +76,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.IMPORT_SEED,
+    path: ACCOUNTS_PAGES.IMPORT_SEED,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -86,7 +86,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.IMPORT_LEDGER,
+    path: ACCOUNTS_PAGES.IMPORT_LEDGER,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -95,7 +95,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.IMPORT_KEYSTORE,
+    path: ACCOUNTS_PAGES.IMPORT_KEYSTORE,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -104,7 +104,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.IMPORT_EMAIL,
+    path: ACCOUNTS_PAGES.IMPORT_EMAIL,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -114,7 +114,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.ACCOUNT_NAME,
+    path: ACCOUNTS_PAGES.ACCOUNT_NAME,
     element: (
       <>
         <Menu hasBack hasLogo />
@@ -124,7 +124,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.IMPORT_SUCCESS,
+    path: ACCOUNTS_PAGES.IMPORT_SUCCESS,
     element: (
       <>
         <Menu hasLogo />
@@ -133,7 +133,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.IMPORT_SUCCESS_KEYSTORE,
+    path: ACCOUNTS_PAGES.IMPORT_SUCCESS_KEYSTORE,
     element: (
       <>
         <Menu hasLogo />
@@ -142,7 +142,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.IMPORT_ADDRESS_BOOK,
+    path: ACCOUNTS_PAGES.IMPORT_ADDRESS_BOOK,
     element: (
       <>
         <Menu hasLogo />
@@ -151,7 +151,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.IMPORT_SUCCESS_ADDRESS_BOOK,
+    path: ACCOUNTS_PAGES.IMPORT_SUCCESS_ADDRESS_BOOK,
     element: (
       <>
         <Menu hasLogo />
@@ -160,11 +160,11 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.WELCOME,
+    path: ACCOUNTS_PAGES.WELCOME,
     element: <Welcome />,
   },
   {
-    path: PAGES.NEW,
+    path: ACCOUNTS_PAGES.NEW,
     element: (
       <>
         <Menu hasLogo />
@@ -173,7 +173,7 @@ export const routes: Array<{
     ),
   },
   {
-    path: PAGES.FORGOT,
+    path: ACCOUNTS_PAGES.FORGOT,
     element: <DeleteAllAccounts />,
   },
 ];

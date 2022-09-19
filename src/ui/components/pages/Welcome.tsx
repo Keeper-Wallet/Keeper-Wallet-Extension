@@ -3,7 +3,7 @@ import * as React from 'react';
 import { BigLogo } from '../head';
 import { useTranslation } from 'react-i18next';
 import { Button, LangsSelect } from '../ui';
-import { PAGES } from '../../pages';
+import { ACCOUNTS_PAGES } from '../../../accounts/pages';
 import background from 'ui/services/Background';
 import { useNavigate } from 'ui/router';
 
@@ -26,11 +26,11 @@ export function Welcome({ isPopup }: Props) {
         onClick={() => {
           if (isPopup) {
             return background.showTab(
-              `${window.location.origin}/accounts.html#${PAGES.NEW}`,
+              `${window.location.origin}/accounts.html#${ACCOUNTS_PAGES.NEW}`,
               'accounts'
             );
           }
-          navigate(PAGES.NEW);
+          navigate(ACCOUNTS_PAGES.NEW);
         }}
       >
         {t('welcome.getStarted')}

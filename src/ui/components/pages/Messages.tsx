@@ -13,7 +13,7 @@ import { getAsset } from '../../actions/assets';
 import { WithNavigate, withNavigate } from '../../router';
 import { setAutoOrigin } from '../../actions/permissions';
 import { setShowNotification } from '../../actions/notifications';
-import { PAGES } from '../../pages';
+import { POPUP_PAGES } from '../../pages';
 import { getConfigByTransaction } from '../transactions';
 import { FinalTransaction } from '../transactions/FinalTransaction/FinalTransaction';
 import { LoadingScreen } from './loadingScreen';
@@ -271,7 +271,7 @@ class MessagesComponent extends React.Component<Props, State> {
             }
 
             clearMessagesStatus(false);
-            navigate(PAGES.ASSETS);
+            navigate(POPUP_PAGES.ASSETS);
             this.hasApproved = false;
           }}
           onNext={() => {
@@ -331,7 +331,7 @@ class MessagesComponent extends React.Component<Props, State> {
           approve(this.state.activeMessage.id);
         }}
         selectAccount={() => {
-          navigate(PAGES.CHANGE_TX_ACCOUNT);
+          navigate(POPUP_PAGES.CHANGE_TX_ACCOUNT);
         }}
       />
     );

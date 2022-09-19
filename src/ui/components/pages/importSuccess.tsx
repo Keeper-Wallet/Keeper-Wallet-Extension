@@ -3,10 +3,10 @@ import cn from 'classnames';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
-import { PAGES } from '../../pages';
 import { useAccountsSelector } from 'accounts/store';
 import { useNavigate } from 'ui/router';
 import background from 'ui/services/Background';
+import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 export function ImportSuccessAddressBook() {
   const { t } = useTranslation();
@@ -88,7 +88,7 @@ export function ImportSuccess({
           className={styles.button}
           type="button"
           onClick={() => {
-            navigate(PAGES.IMPORT_TAB, { replace: true });
+            navigate(ACCOUNTS_PAGES.IMPORT_TAB, { replace: true });
           }}
         >
           {t('import.addAnotherAccount')}

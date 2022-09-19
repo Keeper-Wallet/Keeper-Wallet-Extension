@@ -7,7 +7,7 @@ import background from '../../services/Background';
 import { getAsset } from '../../actions/assets';
 import { WithNavigate, withNavigate } from '../../router';
 import { Asset, Money } from '@waves/data-entities';
-import { PAGES } from '../../pages';
+import { POPUP_PAGES } from '../../pages';
 import { getAccountLink } from '../../urls';
 import { BigNumber } from '@waves/bignumber';
 import { AppState } from 'ui/store';
@@ -101,12 +101,12 @@ class AccountInfoComponent extends React.Component<Props, State> {
   inputPassword = (event: React.ChangeEvent<HTMLInputElement>) =>
     this.setState({ password: event.target.value, passwordError: false });
 
-  editNameHandler = () => this.props.navigate(PAGES.CHANGE_ACCOUNT_NAME);
+  editNameHandler = () => this.props.navigate(POPUP_PAGES.CHANGE_ACCOUNT_NAME);
 
   onCopyHandler = () => this.setCopiedModal();
 
   onDeleteHandler = () => {
-    this.props.navigate(PAGES.DELETE_ACTIVE_ACCOUNT);
+    this.props.navigate(POPUP_PAGES.DELETE_ACTIVE_ACCOUNT);
   };
 
   render() {

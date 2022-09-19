@@ -7,7 +7,7 @@ import { Button, Error, Input } from 'ui/components/ui';
 import * as styles from 'ui/components/pages/importDebug.module.css';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'ui/router';
-import { PAGES } from 'ui/pages';
+import { ACCOUNTS_PAGES } from 'accounts/pages';
 
 export function ImportDebug() {
   const navigate = useNavigate();
@@ -83,7 +83,7 @@ export function ImportDebug() {
             )
           );
 
-          navigate(PAGES.IMPORT_SUCCESS);
+          navigate(ACCOUNTS_PAGES.IMPORT_SUCCESS);
         }}
       >
         <div className="margin1">

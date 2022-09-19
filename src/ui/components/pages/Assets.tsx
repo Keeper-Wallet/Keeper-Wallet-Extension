@@ -7,7 +7,7 @@ import { setActiveAccount } from 'ui/actions/assets';
 import { getBalances } from 'ui/actions/balances';
 import { setSwapScreenInitialState } from 'ui/actions/localState';
 import { Navigate, useNavigate } from 'ui/router';
-import { PAGES } from 'ui/pages';
+import { POPUP_PAGES } from 'ui/pages';
 import { Asset, Money } from '@waves/data-entities';
 import BigNumber from '@waves/bignumber';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
@@ -53,7 +53,7 @@ export function Assets() {
   }, [dispatch]);
 
   if (!activeAccount) {
-    return <Navigate replace to={PAGES.IMPORT_POPUP} />;
+    return <Navigate replace to={POPUP_PAGES.IMPORT_POPUP} />;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -94,17 +94,17 @@ export function Assets() {
             setTimeout(() => setShowCopy(false), 1000);
           }}
           onSwapClick={() => {
-            navigate(PAGES.SWAP);
+            navigate(POPUP_PAGES.SWAP);
           }}
           onOtherAccountsClick={() => {
-            navigate(PAGES.OTHER_ACCOUNTS);
+            navigate(POPUP_PAGES.OTHER_ACCOUNTS);
           }}
           onClick={account => {
             dispatch(setActiveAccount(account));
-            navigate(PAGES.ACCOUNT_INFO);
+            navigate(POPUP_PAGES.ACCOUNT_INFO);
           }}
           onShowQr={() => {
-            navigate(PAGES.QR_CODE_SELECTED);
+            navigate(POPUP_PAGES.QR_CODE_SELECTED);
           }}
         />
       </div>
@@ -123,11 +123,11 @@ export function Assets() {
             }}
             onSendClick={assetId => {
               setCurrentAsset(assets[assetId]);
-              navigate(PAGES.SEND);
+              navigate(POPUP_PAGES.SEND);
             }}
             onSwapClick={assetId => {
               dispatch(setSwapScreenInitialState({ fromAssetId: assetId }));
-              navigate(PAGES.SWAP);
+              navigate(POPUP_PAGES.SWAP);
             }}
           />
           <TabNfts />

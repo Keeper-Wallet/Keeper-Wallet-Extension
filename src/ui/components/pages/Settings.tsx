@@ -5,7 +5,7 @@ import { Button, PowerButton } from '../ui';
 import { useNavigate } from '../../router';
 import { setUiState } from '../../actions/uiState';
 import { lock } from '../../actions/user';
-import { PAGES } from '../../pages';
+import { POPUP_PAGES } from '../../pages';
 import { Tooltip } from '../ui/tooltip';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 
@@ -33,7 +33,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              navigate(PAGES.ADDRESS_BOOK);
+              navigate(POPUP_PAGES.ADDRESS_BOOK);
             }}
           >
             <div className="body1 left">{t('address.title')}</div>
@@ -47,7 +47,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              navigate(PAGES.GENERAL_SETTINGS);
+              navigate(POPUP_PAGES.GENERAL_SETTINGS);
             }}
           >
             <div className="body1 left">{t('settings.settingsGeneral')}</div>
@@ -61,7 +61,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              navigate(PAGES.PERMISSIONS);
+              navigate(POPUP_PAGES.PERMISSIONS);
             }}
           >
             <div className="body1 left">{t('settings.permissionsControl')}</div>
@@ -75,7 +75,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              navigate(PAGES.LANGS_SETTINGS);
+              navigate(POPUP_PAGES.LANGS_SETTINGS);
             }}
           >
             <div className="body1 left">{t('settings.langs')}</div>
@@ -89,7 +89,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              navigate(PAGES.NETWORK_SETTINGS);
+              navigate(POPUP_PAGES.NETWORK_SETTINGS);
             }}
           >
             <div className="body1 left">{t('settings.network')}</div>
@@ -104,7 +104,7 @@ export function Settings() {
             view="transparent"
             className={styles.settingsBtn}
             onClick={() => {
-              navigate(PAGES.EXPORT_AND_IMPORT);
+              navigate(POPUP_PAGES.EXPORT_AND_IMPORT);
             }}
           >
             <div className="body1 left">{t('settings.exportAndImport')}</div>
@@ -210,7 +210,7 @@ export function Settings() {
             <div
               className={styles.deleteAccounts}
               onClick={() => {
-                navigate(PAGES.DELETE_ACCOUNT);
+                navigate(POPUP_PAGES.DELETE_ACCOUNT);
               }}
             >
               <i className={styles.icon}> </i>
@@ -221,7 +221,7 @@ export function Settings() {
             <div
               className={styles.logout}
               onClick={() => {
-                navigate(PAGES.ASSETS);
+                navigate(POPUP_PAGES.ASSETS);
                 dispatch(lock());
               }}
             >

@@ -6,7 +6,7 @@ import { BigLogo } from '../head';
 import { Button, Error, Input } from '../ui';
 import { login } from '../../actions/localState';
 import { withNavigate, WithNavigate } from '../../router';
-import { PAGES } from '../../pages';
+import { POPUP_PAGES } from '../../pages';
 import { AppState } from 'ui/store';
 
 interface StateProps {
@@ -90,7 +90,7 @@ class LoginComponent extends React.Component<Props, State> {
           <div
             className={styles.forgotLnk}
             onClick={() => {
-              this.props.navigate(PAGES.FORGOT);
+              this.props.navigate(POPUP_PAGES.FORGOT);
             }}
           >
             {t('login.passwordForgot')}

@@ -10,7 +10,7 @@ import {
 } from '../../actions/notifications';
 import { clearMessages, reject } from '../../actions/messages';
 import { WithNavigate, withNavigate } from '../../router';
-import { PAGES } from '../../pages';
+import { POPUP_PAGES } from '../../pages';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import { LoadingScreen } from './loadingScreen';
 import { AppState } from 'ui/store';
@@ -64,7 +64,7 @@ class SelectTxAccountComponent extends React.PureComponent<Props, State> {
       !activeNotification &&
       notifications.length === 0
     ) {
-      props.navigate(PAGES.ASSETS);
+      props.navigate(POPUP_PAGES.ASSETS);
       return { loading: false };
     }
 
