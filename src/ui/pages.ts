@@ -9,7 +9,7 @@ export const POPUP_PAGES = {
   SWAP: '/swap',
   NFT_COLLECTION: '/nft-collection',
   NFT_INFO: '/nft-details',
-  INFO: '/info',
+  INFO: '/about',
   SETTINGS: '/settings',
   ADDRESS_BOOK: '/address-book',
   GENERAL_SETTINGS: '/settings/general',
