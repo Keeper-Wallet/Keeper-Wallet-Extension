@@ -133,15 +133,15 @@ async function startUi() {
 
   const pageFromHash = window.location.hash.split('#')[1];
 
-  if (Object.values(PAGES).includes(pageFromHash)) {
-    store.dispatch({
-      type: ACTION.NAVIGATE,
-      payload: {
-        page: pageFromHash,
-        replace: true,
-      },
-    });
-  }
+  store.dispatch({
+    type: ACTION.NAVIGATE,
+    payload: {
+      page: Object.values(PAGES).includes(pageFromHash)
+        ? pageFromHash
+        : PAGES.IMPORT_TAB,
+      replace: true,
+    },
+  });
 
   render(
     <Provider store={store}>

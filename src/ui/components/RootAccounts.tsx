@@ -2,32 +2,14 @@ import * as React from 'react';
 import { routes } from '../../accounts/routes';
 import { PAGES } from '../pages';
 import { useAccountsSelector } from 'accounts/store';
-import { useNavigate } from 'ui/router';
+import { Navigate, useNavigate } from 'ui/router';
 
 export function RootAccounts() {
   const navigate = useNavigate();
+  const currentPage = useAccountsSelector(state => state.router.currentPage);
 
-  const currentPage = useAccountsSelector(state => {
-    let page = state.router.currentPage;
-    const initialized = state.state?.initialized;
-    const locked = state.state?.locked;
-
-    if (page !== PAGES.NEW) {
-      if ([PAGES.LOGIN, PAGES.FORGOT].includes(page)) {
-        if (!locked) {
-          page = PAGES.IMPORT_TAB;
-        } else if (!initialized) {
-          page = PAGES.WELCOME;
-        }
-      } else if (locked) {
-        page = initialized ? PAGES.LOGIN : PAGES.WELCOME;
-      } else if (!page) {
-        page = PAGES.IMPORT_TAB;
-      }
-    }
-
-    return page;
-  });
+  const initialized = useAccountsSelector(state => state.state?.initialized);
+  const locked = useAccountsSelector(state => state.state?.locked);
 
   const currentNetwork = useAccountsSelector(state => state.currentNetwork);
   const prevNetworkRef = React.useRef(currentNetwork);
@@ -39,6 +21,26 @@ export function RootAccounts() {
     navigate(PAGES.IMPORT_TAB, { replace: true });
     prevNetworkRef.current = currentNetwork;
   }, [currentNetwork, navigate]);
+
+  if (!initialized && ![PAGES.WELCOME, PAGES.NEW].includes(currentPage)) {
+    return <Navigate to={PAGES.WELCOME} />;
+  }
+
+  if (
+    initialized &&
+    locked &&
+    ![PAGES.LOGIN, PAGES.FORGOT].includes(currentPage)
+  ) {
+    return <Navigate to={PAGES.LOGIN} />;
+  }
+
+  if (
+    initialized &&
+    !locked &&
+    [PAGES.LOGIN, PAGES.FORGOT].includes(currentPage)
+  ) {
+    return <Navigate to={PAGES.IMPORT_TAB} />;
+  }
 
   return routes.find(route => route.path === currentPage)?.element ?? null;
 }
