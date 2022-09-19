@@ -11,10 +11,10 @@ import * as styles from './send.module.css';
 import { getBalances } from 'ui/actions/balances';
 import { setUiState } from 'ui/actions/uiState';
 import { Error, Loader } from '../ui';
-import { signAndPublishTransaction } from 'ui/actions/transactions';
 import { AssetAmountInput } from '../../../assets/amountInput';
 import { AssetDetail } from 'assets/types';
 import { createNft } from 'nfts/utils';
+import Background from 'ui/services/Background';
 
 export function Send() {
   const { t } = useTranslation();
@@ -118,20 +118,27 @@ export function Send() {
 
         setIsSubmitting(true);
 
-        dispatch(
-          signAndPublishTransaction({
-            type: 4,
-            data: {
-              amount: {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                assetId: currentAsset!.id,
-                tokens: amountValue,
-              },
-              recipient: recipientValue,
-              attachment: attachmentValue,
+        Background.signAndPublishTransaction({
+          type: 4,
+          data: {
+            amount: {
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              assetId: currentAsset!.id,
+              tokens: amountValue,
             },
-          })
-        );
+            recipient: recipientValue,
+            attachment: attachmentValue,
+          },
+        }).catch(err => {
+          if (
+            err instanceof window.Error &&
+            /user denied request|failed request/i.test(err.message)
+          ) {
+            return;
+          }
+
+          throw err;
+        });
       }}
     >
       <div className={styles.wrapper}>

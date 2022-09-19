@@ -30,7 +30,7 @@ import { BalancesItem } from 'balances/types';
 import { NftInfo } from 'nfts';
 import { IMoneyLike } from './utils/converters';
 import { NetworkName } from 'networks/types';
-import { MessageInputOfType, MessageStoreItem } from 'messages/types';
+import { MessageStoreItem } from 'messages/types';
 import { AssetDetail } from 'assets/types';
 
 const reducer = combineReducers(reducers);
@@ -482,11 +482,6 @@ export type UiAction =
   | {
       type: typeof ACTION.LOCK;
       payload?: never;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.SIGN_AND_PUBLISH_TRANSACTION;
-      payload: MessageInputOfType<'transaction'>['data'];
       meta?: never;
     }
   | {
