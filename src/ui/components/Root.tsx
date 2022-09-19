@@ -40,15 +40,15 @@ export function Root() {
     return <Welcome isPopup />;
   }
 
-  if (initialized && locked && currentPage !== '/forgot-password') {
+  if (locked && currentPage !== '/forgot-password') {
     return <Login />;
   }
 
-  if (initialized && !locked && currentPage === '/forgot-password') {
+  if (!locked && currentPage === '/forgot-password') {
     return <Navigate to="/" />;
   }
 
-  if (initialized && !locked && haveAccounts) {
+  if (!locked && haveAccounts) {
     if (haveActiveMessage) {
       if (!['/active-message', '/change-tx-account'].includes(currentPage)) {
         return <Navigate replace to="/active-message" />;
