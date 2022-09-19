@@ -3,6 +3,7 @@ import { routes } from '../routes';
 import { PAGES } from '../pages';
 import { useAppSelector } from 'ui/store';
 import { Navigate, useNavigate } from 'ui/router';
+import { Login } from './pages/Login';
 
 export function Root() {
   const navigate = useNavigate();
@@ -43,19 +44,11 @@ export function Root() {
     return <Navigate to={PAGES.ASSETS} />;
   }
 
-  if (
-    initialized &&
-    locked &&
-    ![PAGES.LOGIN, PAGES.FORGOT].includes(currentPage)
-  ) {
-    return <Navigate to={PAGES.LOGIN} />;
+  if (initialized && locked && currentPage !== PAGES.FORGOT) {
+    return <Login />;
   }
 
-  if (
-    initialized &&
-    !locked &&
-    [PAGES.LOGIN, PAGES.FORGOT].includes(currentPage)
-  ) {
+  if (initialized && !locked && currentPage === PAGES.FORGOT) {
     return <Navigate to={PAGES.ASSETS} />;
   }
 

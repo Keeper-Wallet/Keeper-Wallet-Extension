@@ -1,6 +1,5 @@
 export const PAGES = {
   WELCOME: 'welcome',
-  LOGIN: 'login',
   NEW: 'new',
   IMPORT_POPUP: 'import_popup',
   IMPORT_TAB: 'import_tab',

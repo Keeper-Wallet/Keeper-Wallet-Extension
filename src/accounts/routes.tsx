@@ -15,7 +15,6 @@ import {
   ImportSuccess,
   ImportSuccessAddressBook,
 } from '../ui/components/pages/importSuccess';
-import { Login } from '../ui/components/pages/Login';
 import { NewAccount } from '../ui/components/pages/NewAccount';
 import { NewWallet } from '../ui/components/pages/NewWallet';
 import { NewWalletName } from '../ui/components/pages/NewWalletName';
@@ -172,10 +171,6 @@ export const routes: Array<{
         <NewAccount />
       </>
     ),
-  },
-  {
-    path: PAGES.LOGIN,
-    element: <Login />,
   },
   {
     path: PAGES.FORGOT,

@@ -14,7 +14,6 @@ import { ExportAndImport } from './components/pages/ExportAndImport';
 import { ImportPopup } from './components/pages/Import';
 import { Info } from './components/pages/Info';
 import { LangsSettings } from './components/pages/LangsSettings';
-import { Login } from './components/pages/Login';
 import { Messages } from './components/pages/Messages';
 import { MessageList } from './components/pages/MessagesList';
 import { NetworksSettings } from './components/pages/NetworksSettings';
@@ -275,10 +274,6 @@ export const routes: Array<{
   {
     path: PAGES.WELCOME,
     element: <Welcome isPopup />,
-  },
-  {
-    path: PAGES.LOGIN,
-    element: <Login />,
   },
   {
     path: PAGES.FORGOT,
