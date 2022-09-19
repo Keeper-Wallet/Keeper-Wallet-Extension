@@ -37,11 +37,7 @@ interface DispatchProps {
   getAsset: (assetId: string) => void;
 }
 
-interface Props
-  extends WithTranslation,
-    StateProps,
-    DispatchProps,
-    WithNavigate {}
+type Props = WithTranslation & StateProps & DispatchProps & WithNavigate;
 
 interface State {
   balance?: Money | string | BigNumber | null;

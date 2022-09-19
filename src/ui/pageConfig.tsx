@@ -41,447 +41,365 @@ import { Send } from './components/pages/send';
 import {
   ImportSuccess,
   ImportSuccessAddressBook,
-  ImportSuccessKeystore,
 } from 'ui/components/pages/importSuccess';
 import { ImportDebug } from 'ui/components/pages/importDebug';
 import { NftCollection } from 'ui/components/pages/nfts/nftCollection';
 import { NftInfo } from 'ui/components/pages/nfts/nftInfo';
 import { DeleteActiveAccount } from './components/pages/deleteActiveAccount';
 import { PAGES } from './pages';
+import { Menu } from './components/menu/Menu';
+import { Bottom } from './components/bottom';
 
-interface PageMenuConfig {
-  hasLogo?: true;
-  hasSettings?: true;
-  back?: true;
-  close?: true;
-}
-
-interface PageBottomConfig {
-  hide?: true;
-  noChangeNetwork?: true;
-}
-
-type PageConfig =
-  | {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      component: React.ComponentType<any>;
-      bottom?: PageBottomConfig;
-      menu?: PageMenuConfig;
-    }
-  | {
-      element: React.ReactElement;
-    };
+type PageConfig = {
+  element: React.ReactElement;
+};
 
 export const PAGES_CONF: Record<string, PageConfig> = {
   [PAGES.WELCOME]: {
     element: <Welcome />,
   },
   [PAGES.LOGIN]: {
-    component: Login,
-    bottom: {
-      hide: true,
-    },
+    element: <Login />,
   },
   [PAGES.NEW]: {
-    component: NewAccount,
-    menu: {
-      hasLogo: true,
-    },
+    element: (
+      <>
+        <Menu hasLogo />
+        <NewAccount />
+      </>
+    ),
   },
   [PAGES.IMPORT_POPUP]: {
-    component: ImportPopup,
-    menu: {
-      hasLogo: true,
-      hasSettings: true,
-    },
+    element: (
+      <>
+        <Menu hasLogo hasSettings />
+        <ImportPopup />
+        <Bottom />
+      </>
+    ),
   },
   [PAGES.IMPORT_TAB]: {
-    component: ImportTab,
-    menu: {
-      hasLogo: true,
-    },
+    element: (
+      <>
+        <Menu hasLogo />
+        <ImportTab />
+        <Bottom />
+      </>
+    ),
   },
   [PAGES.NEW_ACCOUNT]: {
-    component: NewWallet,
-    bottom: {
-      noChangeNetwork: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <NewWallet />
+        <Bottom noChangeNetwork />
+      </>
+    ),
   },
   [PAGES.ACCOUNT_NAME]: {
-    component: NewWalletName,
-    bottom: {
-      noChangeNetwork: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <NewWalletName />
+        <Bottom noChangeNetwork />
+      </>
+    ),
   },
   [PAGES.IMPORT_SUCCESS]: {
-    component: ImportSuccess,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-    },
+    element: (
+      <>
+        <Menu hasLogo />
+        <ImportSuccess />
+      </>
+    ),
   },
   [PAGES.IMPORT_SUCCESS_KEYSTORE]: {
-    component: ImportSuccessKeystore,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-    },
+    element: (
+      <>
+        <Menu hasLogo />
+        <ImportSuccess isKeystoreImport />
+      </>
+    ),
   },
   [PAGES.IMPORT_SUCCESS_ADDRESS_BOOK]: {
-    component: ImportSuccessAddressBook,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-    },
+    element: (
+      <>
+        <Menu hasLogo />
+        <ImportSuccessAddressBook />
+      </>
+    ),
   },
 
   [PAGES.CHANGE_ACCOUNT_NAME]: {
-    component: ChangeAccountName,
-    bottom: {
-      noChangeNetwork: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <ChangeAccountName />
+        <Bottom noChangeNetwork />
+      </>
+    ),
   },
   [PAGES.SAVE_BACKUP]: {
-    component: BackUpSeed,
-    bottom: {
-      noChangeNetwork: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <BackUpSeed />
+        <Bottom noChangeNetwork />
+      </>
+    ),
   },
   [PAGES.CONFIRM_BACKUP]: {
-    component: ConfirmBackup,
-    bottom: {
-      noChangeNetwork: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <ConfirmBackup />
+        <Bottom noChangeNetwork />
+      </>
+    ),
   },
   [PAGES.IMPORT_ADDRESS_BOOK]: {
-    component: ImportAddressBook,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasLogo />
+        <ImportAddressBook />
+      </>
+    ),
   },
   [PAGES.IMPORT_DEBUG]: {
-    component: ImportDebug,
-    bottom: {
-      noChangeNetwork: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <ImportDebug />
+        <Bottom noChangeNetwork />
+      </>
+    ),
   },
   [PAGES.IMPORT_EMAIL]: {
-    component: ImportEmail,
-    bottom: {
-      noChangeNetwork: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <ImportEmail />
+        <Bottom noChangeNetwork />
+      </>
+    ),
   },
   [PAGES.IMPORT_KEYSTORE]: {
-    component: ImportKeystore,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <ImportKeystore />
+      </>
+    ),
   },
   [PAGES.IMPORT_LEDGER]: {
-    component: ImportLedger,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <ImportLedger />
+      </>
+    ),
   },
   [PAGES.IMPORT_SEED]: {
-    component: ImportSeed,
-    bottom: {
-      noChangeNetwork: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <ImportSeed />
+        <Bottom noChangeNetwork />
+      </>
+    ),
   },
   [PAGES.EXPORT_ACCOUNTS]: {
-    component: ExportAccounts,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <ExportAccounts />
+      </>
+    ),
   },
   [PAGES.EXPORT_ADDRESS_BOOK]: {
-    component: ExportAddressBook,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <ExportAddressBook />
+      </>
+    ),
   },
   [PAGES.EXPORT_AND_IMPORT]: {
-    component: ExportAndImport,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <ExportAndImport />
+      </>
+    ),
   },
   [PAGES.ASSETS]: {
-    component: Assets,
-    menu: {
-      hasLogo: true,
-      hasSettings: true,
-    },
+    element: (
+      <>
+        <Menu hasLogo hasSettings />
+        <Assets />
+        <Bottom />
+      </>
+    ),
   },
   [PAGES.OTHER_ACCOUNTS]: {
-    component: OtherAccountsPage,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      back: true,
-      hasLogo: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <OtherAccountsPage />
+      </>
+    ),
   },
   [PAGES.SETTINGS]: {
-    component: Settings,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      close: true,
-    },
+    element: (
+      <>
+        <Menu hasClose hasLogo />
+        <Settings />
+      </>
+    ),
   },
   [PAGES.INFO]: {
-    component: Info,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack />
+        <Info />
+      </>
+    ),
   },
   [PAGES.ACCOUNT_INFO]: {
-    component: AccountInfo,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <AccountInfo />
+      </>
+    ),
   },
   [PAGES.DELETE_ACTIVE_ACCOUNT]: {
-    component: DeleteActiveAccount,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <DeleteActiveAccount />
+      </>
+    ),
   },
   [PAGES.QR_CODE_SELECTED]: {
-    component: SelectedAccountQr,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <SelectedAccountQr />
+      </>
+    ),
   },
   [PAGES.GENERAL_SETTINGS]: {
-    component: SettingsGeneral,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <SettingsGeneral />
+      </>
+    ),
   },
   [PAGES.ADDRESS_BOOK]: {
-    component: AddressBook,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <AddressBook />
+      </>
+    ),
   },
   [PAGES.NETWORK_SETTINGS]: {
-    component: NetworksSettings,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <NetworksSettings />
+      </>
+    ),
   },
   [PAGES.PERMISSIONS]: {
-    component: PermissionsSettings,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <PermissionsSettings />
+      </>
+    ),
   },
   [PAGES.LANGS_SETTINGS]: {
-    component: LangsSettings,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <LangsSettings />
+      </>
+    ),
   },
   [PAGES.CHANGE_PASSWORD]: {
-    component: ChangePassword,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <ChangePassword />
+      </>
+    ),
   },
   [PAGES.DELETE_ACCOUNT]: {
-    component: DeleteAllAccounts,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      back: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <DeleteAllAccounts />
+      </>
+    ),
   },
   [PAGES.FORGOT]: {
-    component: DeleteAllAccounts,
-    bottom: {
-      hide: true,
-    },
+    element: <DeleteAllAccounts />,
   },
   [PAGES.NOTIFICATIONS]: {
-    component: Notifications,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-    },
+    element: (
+      <>
+        <Menu hasLogo />
+        <Notifications />
+      </>
+    ),
   },
   [PAGES.MESSAGES]: {
-    component: Messages,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-    },
+    element: (
+      <>
+        <Menu hasLogo />
+        <Messages />
+      </>
+    ),
   },
   [PAGES.MESSAGES_LIST]: {
-    component: MessageList,
-    bottom: {
-      hide: true,
-    },
+    element: <MessageList />,
   },
   [PAGES.CHANGE_TX_ACCOUNT]: {
-    component: SelectTxAccount,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasSettings: true,
-    },
+    element: <SelectTxAccount />,
   },
   [PAGES.SEND]: {
-    component: Send,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      back: true,
-      hasLogo: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <Send />
+      </>
+    ),
   },
   [PAGES.SWAP]: {
-    component: Swap,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      back: true,
-      hasLogo: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <Swap />
+      </>
+    ),
   },
   [PAGES.NFT_COLLECTION]: {
-    component: NftCollection,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      back: true,
-      hasLogo: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <NftCollection />
+      </>
+    ),
   },
   [PAGES.NFT_INFO]: {
-    component: NftInfo,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      back: true,
-      hasLogo: true,
-    },
+    element: (
+      <>
+        <Menu hasBack hasLogo />
+        <NftInfo />
+      </>
+    ),
   },
 };

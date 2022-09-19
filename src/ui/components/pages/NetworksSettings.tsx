@@ -65,6 +65,7 @@ interface State {
 }
 
 class NetworksSettingsComponent extends React.PureComponent<Props, State> {
+  state: State = {};
   _tCopy: ReturnType<typeof setTimeout> | undefined;
   _tSave: ReturnType<typeof setTimeout> | undefined;
   _tSetDefault: ReturnType<typeof setTimeout> | undefined;

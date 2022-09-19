@@ -97,7 +97,3 @@ export function ImportSuccess({
     </div>
   );
 }
-
-export function ImportSuccessKeystore() {
-  return <ImportSuccess isKeystoreImport />;
-}

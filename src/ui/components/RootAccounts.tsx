@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { Menu } from './menu';
-import { Bottom } from './bottom';
 import { PAGES_CONF } from '../pageConfig';
 import { PAGES } from '../pages';
 import { useAccountsSelector } from 'accounts/store';
@@ -46,25 +44,5 @@ export function RootAccounts() {
 
   const pageConf = PAGES_CONF[currentPage];
 
-  if ('element' in pageConf) {
-    return pageConf.element;
-  }
-
-  const Component = pageConf.component;
-
-  return (
-    <>
-      <Menu
-        hasBack={pageConf.menu?.back}
-        hasClose={pageConf.menu?.close}
-        hasLogo={pageConf.menu?.hasLogo}
-        hasSettings={pageConf.menu?.hasSettings}
-      />
-      <Component />
-      <Bottom
-        hide={pageConf.bottom?.hide}
-        noChangeNetwork={pageConf.bottom?.noChangeNetwork}
-      />
-    </>
-  );
+  return pageConf.element;
 }
