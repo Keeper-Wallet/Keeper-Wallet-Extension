@@ -48,7 +48,7 @@ export function ExportAndImport() {
             `${window.location.origin}/accounts.html#${ACCOUNTS_PAGES.IMPORT_KEYSTORE}`,
             ACCOUNTS_PAGES.IMPORT_KEYSTORE
           );
-          navigate(POPUP_PAGES.ASSETS, { replace: true });
+          navigate(POPUP_PAGES.HOME, { replace: true });
         }}
       >
         <p className="body1 left">{t('exportAndImport.importAccounts')}</p>
@@ -73,7 +73,7 @@ export function ExportAndImport() {
             `${window.location.origin}/accounts.html#${ACCOUNTS_PAGES.IMPORT_ADDRESS_BOOK}`,
             ACCOUNTS_PAGES.IMPORT_ADDRESS_BOOK
           );
-          navigate(POPUP_PAGES.ASSETS, { replace: true });
+          navigate(POPUP_PAGES.HOME, { replace: true });
         }}
       >
         <p className="body1 left">{t('exportAndImport.importAddressBook')}</p>

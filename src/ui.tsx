@@ -157,7 +157,7 @@ async function startUi() {
   store.dispatch({
     type: ACTION.NAVIGATE,
     payload: {
-      page: POPUP_PAGES.ASSETS,
+      page: POPUP_PAGES.HOME,
       replace: true,
     },
   });

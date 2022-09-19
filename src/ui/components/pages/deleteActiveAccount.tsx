@@ -21,7 +21,7 @@ export function DeleteActiveAccount() {
           id="deleteAccount"
           onClick={async () => {
             await dispatch(deleteActiveAccount());
-            navigate(POPUP_PAGES.ASSETS, { replace: true });
+            navigate(POPUP_PAGES.HOME, { replace: true });
           }}
           type="button"
           view="warning"

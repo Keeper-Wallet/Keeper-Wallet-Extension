@@ -64,7 +64,7 @@ class SelectTxAccountComponent extends React.PureComponent<Props, State> {
       !activeNotification &&
       notifications.length === 0
     ) {
-      props.navigate(POPUP_PAGES.ASSETS);
+      props.navigate(POPUP_PAGES.HOME);
       return { loading: false };
     }
 

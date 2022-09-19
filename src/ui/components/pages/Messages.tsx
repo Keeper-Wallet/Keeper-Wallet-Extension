@@ -271,7 +271,7 @@ class MessagesComponent extends React.Component<Props, State> {
             }
 
             clearMessagesStatus(false);
-            navigate(POPUP_PAGES.ASSETS);
+            navigate(POPUP_PAGES.HOME);
             this.hasApproved = false;
           }}
           onNext={() => {

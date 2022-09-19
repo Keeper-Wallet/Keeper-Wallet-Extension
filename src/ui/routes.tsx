@@ -35,7 +35,7 @@ export const routes: Array<{
   element: React.ReactElement;
 }> = [
   {
-    path: POPUP_PAGES.ASSETS,
+    path: POPUP_PAGES.HOME,
     element: (
       <>
         <Menu hasLogo hasSettings />

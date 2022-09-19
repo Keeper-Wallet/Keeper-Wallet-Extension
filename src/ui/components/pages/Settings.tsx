@@ -221,7 +221,7 @@ export function Settings() {
             <div
               className={styles.logout}
               onClick={() => {
-                navigate(POPUP_PAGES.ASSETS);
+                navigate(POPUP_PAGES.HOME);
                 dispatch(lock());
               }}
             >

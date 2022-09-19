@@ -127,7 +127,7 @@ export function Swap() {
         fromMoney={performedSwapData.fromMoney}
         transactionId={performedSwapData.transactionId}
         onClose={() => {
-          navigate(POPUP_PAGES.ASSETS);
+          navigate(POPUP_PAGES.HOME);
         }}
       />
     );

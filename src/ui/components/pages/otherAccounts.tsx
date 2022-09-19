@@ -88,7 +88,7 @@ export function OtherAccountsPage() {
               balance={balancesMoney[account.address]}
               onClick={account => {
                 dispatch(selectAccount(account));
-                navigate(POPUP_PAGES.ASSETS, { replace: true });
+                navigate(POPUP_PAGES.HOME, { replace: true });
               }}
               onInfoClick={account => {
                 dispatch(setActiveAccount(account));
@@ -108,7 +108,7 @@ export function OtherAccountsPage() {
                 `${window.location.origin}/accounts.html`,
                 'accounts'
               );
-              navigate(POPUP_PAGES.ASSETS, { replace: true });
+              navigate(POPUP_PAGES.HOME, { replace: true });
             }}
           >
             {t('otherAccounts.addAccount')}

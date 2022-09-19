@@ -1,5 +1,5 @@
 export const POPUP_PAGES = {
-  ASSETS: 'assets',
+  HOME: 'assets',
   QR_CODE_SELECTED: 'qr_code_selected_account',
   ACCOUNT_INFO: 'account_info',
   CHANGE_ACCOUNT_NAME: 'change_account_name',

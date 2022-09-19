@@ -32,7 +32,7 @@ export function Root() {
       return;
     }
 
-    navigate(POPUP_PAGES.ASSETS, { replace: true });
+    navigate(POPUP_PAGES.HOME, { replace: true });
     prevNetworkRef.current = currentNetwork;
   }, [currentNetwork, navigate]);
 
@@ -41,7 +41,7 @@ export function Root() {
   }
 
   if (initialized && currentPage === POPUP_PAGES.WELCOME) {
-    return <Navigate to={POPUP_PAGES.ASSETS} />;
+    return <Navigate to={POPUP_PAGES.HOME} />;
   }
 
   if (initialized && locked && currentPage !== POPUP_PAGES.FORGOT) {
@@ -49,7 +49,7 @@ export function Root() {
   }
 
   if (initialized && !locked && currentPage === POPUP_PAGES.FORGOT) {
-    return <Navigate to={POPUP_PAGES.ASSETS} />;
+    return <Navigate to={POPUP_PAGES.HOME} />;
   }
 
   if (initialized && !locked && haveAccounts) {
@@ -87,7 +87,7 @@ export function Root() {
       )) ||
     (!haveMessagesOrNotifications && currentPage === POPUP_PAGES.MESSAGES_LIST)
   ) {
-    return <Navigate replace to={POPUP_PAGES.ASSETS} />;
+    return <Navigate replace to={POPUP_PAGES.HOME} />;
   }
 
   return routes.find(route => route.path === currentPage)?.element ?? null;
