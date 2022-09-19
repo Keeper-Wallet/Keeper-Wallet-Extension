@@ -13,7 +13,7 @@ import {
   useUiState,
 } from './helpers';
 import { TransactionFromNode, TRANSACTION_TYPE } from '@waves/ts-types';
-import { MAX_TX_HISTORY_ITEMS } from 'controllers/currentAccount';
+import { MAX_TX_HISTORY_ITEMS } from '../../../../../constants';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';

@@ -10,9 +10,8 @@ import { VaultController } from './VaultController';
 import { TransactionFromNode } from '@waves/ts-types';
 import { AssetBalance, BalancesItem } from 'balances/types';
 import { collectBalances } from 'balances/utils';
+import { MAX_NFT_ITEMS, MAX_TX_HISTORY_ITEMS } from '../constants';
 
-export const MAX_TX_HISTORY_ITEMS = 101;
-export const MAX_NFT_ITEMS = 1000;
 const PERIOD_IN_SECONDS = 10;
 
 export class CurrentAccountController {

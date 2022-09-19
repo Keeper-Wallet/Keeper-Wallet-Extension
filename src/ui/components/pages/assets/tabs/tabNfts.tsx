@@ -9,7 +9,7 @@ import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
 import { createNft, Nft } from 'nfts/utils';
 import { getNftsLink } from 'ui/urls';
-import { MAX_NFT_ITEMS } from 'controllers/currentAccount';
+import { MAX_NFT_ITEMS } from '../../../../../constants';
 import { useNavigate } from 'ui/router';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
