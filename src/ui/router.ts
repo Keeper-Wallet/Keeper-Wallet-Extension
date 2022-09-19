@@ -1,4 +1,4 @@
-import { createElement, useMemo } from 'react';
+import { createElement, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { UiAction } from 'ui/store';
 import { ACTION } from './actions/constants';
@@ -109,4 +109,19 @@ export function withNavigate<Props>(
       navigate: useNavigate(),
     });
   };
+}
+
+interface NavigateProps {
+  replace?: boolean;
+  to: string;
+}
+
+export function Navigate({ replace, to }: NavigateProps) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate(to, { replace });
+  });
+
+  return null;
 }

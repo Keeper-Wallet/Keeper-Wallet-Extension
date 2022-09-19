@@ -6,22 +6,24 @@ import { Button, Error, Input, LangsSelect } from '../ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
 import { AppState } from 'ui/store';
+import { Navigate } from 'ui/router';
+import { PAGES } from 'ui/pages';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
-const mapStateToProps = function (store: AppState) {
-  return {
-    account: store.localState.newAccount,
-  };
-};
+const mapStateToProps = (state: AppState) => ({
+  initialized: state.state?.initialized,
+});
 
 interface DispatchProps {
   createNew: (password: string) => Promise<void>;
 }
 
-class NewAccountComponent extends React.PureComponent<
-  WithTranslation & DispatchProps
-> {
+type Props = WithTranslation &
+  DispatchProps &
+  ReturnType<typeof mapStateToProps>;
+
+class NewAccountComponent extends React.PureComponent<Props> {
   state = {
     firstValue: '',
     secondValue: '',
@@ -112,7 +114,12 @@ class NewAccountComponent extends React.PureComponent<
   };
 
   render() {
-    const { t } = this.props;
+    const { initialized, t } = this.props;
+
+    if (initialized) {
+      return <Navigate replace to={PAGES.IMPORT_TAB} />;
+    }
+
     return (
       <div className={styles.account}>
         <form

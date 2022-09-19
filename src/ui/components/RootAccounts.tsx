@@ -12,20 +12,18 @@ export function RootAccounts() {
     const initialized = state.state?.initialized;
     const locked = state.state?.locked;
 
-    if (page === PAGES.NEW) {
-      if (initialized) {
-        page = locked ? PAGES.LOGIN : PAGES.IMPORT_TAB;
-      }
-    } else if ([PAGES.LOGIN, PAGES.FORGOT].includes(page)) {
-      if (!locked) {
+    if (page !== PAGES.NEW) {
+      if ([PAGES.LOGIN, PAGES.FORGOT].includes(page)) {
+        if (!locked) {
+          page = PAGES.IMPORT_TAB;
+        } else if (!initialized) {
+          page = PAGES.WELCOME;
+        }
+      } else if (locked) {
+        page = initialized ? PAGES.LOGIN : PAGES.WELCOME;
+      } else if (!page) {
         page = PAGES.IMPORT_TAB;
-      } else if (!initialized) {
-        page = PAGES.WELCOME;
       }
-    } else if (locked) {
-      page = initialized ? PAGES.LOGIN : PAGES.WELCOME;
-    } else if (!page) {
-      page = PAGES.IMPORT_TAB;
     }
 
     return page;
