@@ -130,10 +130,7 @@ export function Send() {
             attachment: attachmentValue,
           },
         }).catch(err => {
-          if (
-            err instanceof window.Error &&
-            /user denied request|failed request/i.test(err.message)
-          ) {
+          if (err instanceof window.Error && /user denied/i.test(err.message)) {
             return;
           }
 
