@@ -100,7 +100,7 @@ interface DispatchProps {
 type Props = WithTranslation &
   StateProps &
   DispatchProps & {
-    noChangeNetwork: boolean | undefined;
+    allowChangingNetwork: boolean | undefined;
   };
 
 interface INetwork {
@@ -153,7 +153,7 @@ class NetworkComponent extends React.PureComponent<Props, IState> {
 
   selectFromNetworksHandler = () => {
     this.addClickOutHandler();
-    this.setState({ showNetworks: !this.props.noChangeNetwork, net: null });
+    this.setState({ showNetworks: this.props.allowChangingNetwork, net: null });
   };
 
   selectHandler = ({ name }: INetwork) => {
@@ -171,7 +171,7 @@ class NetworkComponent extends React.PureComponent<Props, IState> {
 
   editClickHandler = () =>
     this.setState({
-      showSettings: !this.props.noChangeNetwork,
+      showSettings: this.props.allowChangingNetwork,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       net: this.state.networkHash![this.props.currentNetwork],
     });
@@ -233,7 +233,7 @@ class NetworkComponent extends React.PureComponent<Props, IState> {
   render(): React.ReactNode {
     const networkClassName = cn(
       'basic500',
-      this.props.noChangeNetwork && styles.disabledNet
+      !this.props.allowChangingNetwork && styles.disabledNet
     );
 
     const { t } = this.props;
@@ -256,7 +256,7 @@ class NetworkComponent extends React.PureComponent<Props, IState> {
         {props => (
           <div
             className={`${styles.network} flex`}
-            {...(this.props.noChangeNetwork && props)}
+            {...(!this.props.allowChangingNetwork ? props : undefined)}
           >
             <div
               className={`${networkClassName} flex`}
@@ -272,7 +272,7 @@ class NetworkComponent extends React.PureComponent<Props, IState> {
               <div
                 className={cn(
                   styles.editBtn,
-                  this.props.noChangeNetwork && styles.disabledNet
+                  !this.props.allowChangingNetwork && styles.disabledNet
                 )}
                 onClick={this.editClickHandler}
               >

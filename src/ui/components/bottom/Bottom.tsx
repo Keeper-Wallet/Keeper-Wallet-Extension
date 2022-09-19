@@ -4,15 +4,15 @@ import { Network } from './components';
 import { useAppSelector } from 'ui/store';
 
 interface Props {
-  noChangeNetwork?: boolean;
+  allowChangingNetwork?: boolean;
 }
 
-export function Bottom({ noChangeNetwork }: Props) {
+export function Bottom({ allowChangingNetwork }: Props) {
   const version = useAppSelector(state => state.version);
 
   return (
     <div className={styles.bottom}>
-      <Network noChangeNetwork={noChangeNetwork} />
+      <Network allowChangingNetwork={allowChangingNetwork} />
       <div className="version basic500" data-testid="currentVersion">
         v {version}
       </div>

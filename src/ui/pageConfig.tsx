@@ -74,7 +74,7 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       <>
         <Menu hasLogo hasSettings />
         <ImportPopup />
-        <Bottom />
+        <Bottom allowChangingNetwork />
       </>
     ),
   },
@@ -83,7 +83,7 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       <>
         <Menu hasLogo />
         <ImportTab />
-        <Bottom />
+        <Bottom allowChangingNetwork />
       </>
     ),
   },
@@ -92,7 +92,7 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       <>
         <Menu hasBack hasLogo />
         <NewWallet />
-        <Bottom noChangeNetwork />
+        <Bottom />
       </>
     ),
   },
@@ -101,7 +101,7 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       <>
         <Menu hasBack hasLogo />
         <NewWalletName />
-        <Bottom noChangeNetwork />
+        <Bottom />
       </>
     ),
   },
@@ -135,7 +135,7 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       <>
         <Menu hasBack hasLogo />
         <ChangeAccountName />
-        <Bottom noChangeNetwork />
+        <Bottom />
       </>
     ),
   },
@@ -144,7 +144,7 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       <>
         <Menu hasBack hasLogo />
         <BackUpSeed />
-        <Bottom noChangeNetwork />
+        <Bottom />
       </>
     ),
   },
@@ -153,7 +153,7 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       <>
         <Menu hasBack hasLogo />
         <ConfirmBackup />
-        <Bottom noChangeNetwork />
+        <Bottom />
       </>
     ),
   },
@@ -170,7 +170,7 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       <>
         <Menu hasBack hasLogo />
         <ImportDebug />
-        <Bottom noChangeNetwork />
+        <Bottom />
       </>
     ),
   },
@@ -179,7 +179,7 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       <>
         <Menu hasBack hasLogo />
         <ImportEmail />
-        <Bottom noChangeNetwork />
+        <Bottom />
       </>
     ),
   },
@@ -204,7 +204,7 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       <>
         <Menu hasBack hasLogo />
         <ImportSeed />
-        <Bottom noChangeNetwork />
+        <Bottom />
       </>
     ),
   },
@@ -237,7 +237,7 @@ export const PAGES_CONF: Record<string, PageConfig> = {
       <>
         <Menu hasLogo hasSettings />
         <Assets />
-        <Bottom />
+        <Bottom allowChangingNetwork />
       </>
     ),
   },
