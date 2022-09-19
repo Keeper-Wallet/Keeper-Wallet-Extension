@@ -172,17 +172,7 @@ function swapScreenInitialState(
   }
 }
 
-export type TabMode = 'popup' | 'tab';
-
-function tabMode(state: TabMode = 'popup', action: UiAction): TabMode {
-  if (action.type === ACTION.SET_TAB_MODE) {
-    return action.payload;
-  }
-  return state;
-}
-
 export const localState = combineReducers({
-  tabMode,
   loading,
   newUser,
   login,

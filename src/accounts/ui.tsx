@@ -12,7 +12,7 @@ import { Provider } from 'react-redux';
 import { KEEPERWALLET_DEBUG } from '../constants';
 import { cbToPromise, setupDnode, transformMethods } from 'lib/dnodeUtil';
 import { PortStream } from 'lib/portStream';
-import { setLangs, setTabMode } from 'ui/actions/localState';
+import { setLangs } from 'ui/actions/localState';
 import { createUpdateState } from './updateState';
 import { RootAccounts } from 'ui/components/RootAccounts';
 import { LANGS } from 'ui/i18n';
@@ -43,7 +43,6 @@ async function startUi() {
     version: extension.runtime.getManifest().version,
   });
 
-  store.dispatch(setTabMode('tab'));
   store.dispatch(setLangs(LANGS));
 
   render(

@@ -4,14 +4,16 @@ import { BigLogo } from '../head';
 import { useTranslation } from 'react-i18next';
 import { Button, LangsSelect } from '../ui';
 import { PAGES } from '../../pages';
-import { useAppSelector } from 'ui/store';
 import background from 'ui/services/Background';
 import { useNavigate } from 'ui/router';
 
-export function Welcome() {
+interface Props {
+  isPopup?: boolean;
+}
+
+export function Welcome({ isPopup }: Props) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const tabMode = useAppSelector(state => state.localState?.tabMode);
 
   return (
     <div className={styles.content}>
@@ -22,7 +24,7 @@ export function Welcome() {
         type="submit"
         view="submit"
         onClick={() => {
-          if (tabMode === 'popup') {
+          if (isPopup) {
             return background.showTab(
               `${window.location.origin}/accounts.html#${PAGES.NEW}`,
               'accounts'

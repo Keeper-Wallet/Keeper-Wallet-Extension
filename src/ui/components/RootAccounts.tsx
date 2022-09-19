@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { routes } from '../routes';
+import { routes } from '../../accounts/routes';
 import { PAGES } from '../pages';
 import { useAccountsSelector } from 'accounts/store';
 import { useNavigate } from 'ui/router';

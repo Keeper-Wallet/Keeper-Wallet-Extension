@@ -13,7 +13,6 @@ import * as reducers from './reducers/updateState';
 import {
   NewAccountState,
   SwapScreenInitialState,
-  TabMode,
   UiState,
 } from './reducers/updateState';
 import * as middleware from './midleware';
@@ -207,11 +206,6 @@ export type UiAction =
   | {
       type: typeof ACTION.SELECT_ACCOUNT;
       payload: PreferencesAccount;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.SET_TAB_MODE;
-      payload: TabMode;
       meta?: never;
     }
   | {

@@ -1,5 +1,5 @@
 import { AccountsThunkAction } from 'accounts/store';
-import { SwapScreenInitialState, TabMode } from 'ui/reducers/localState';
+import { SwapScreenInitialState } from 'ui/reducers/localState';
 import Background from 'ui/services/Background';
 import { UiAction, UiActionPayload, UiThunkAction } from 'ui/store';
 import { ACTION } from './constants';
@@ -103,8 +103,4 @@ export function setSwapScreenInitialState(
 
 export function resetSwapScreenInitialState() {
   return { type: ACTION.RESET_SWAP_SCREEN_INITIAL_STATE };
-}
-
-export function setTabMode(mode: TabMode) {
-  return { type: ACTION.SET_TAB_MODE, payload: mode };
 }
