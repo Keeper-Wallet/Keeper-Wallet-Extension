@@ -4,17 +4,16 @@ import { Network } from './components';
 import { useAppSelector } from 'ui/store';
 
 interface Props {
-  hide?: boolean;
   noChangeNetwork?: boolean;
 }
 
-export function Bottom({ hide, noChangeNetwork }: Props) {
+export function Bottom({ noChangeNetwork }: Props) {
   const version = useAppSelector(state => state.version);
   const isLocked = useAppSelector(
     state => state.state?.locked || !state.state?.initialized
   );
 
-  return !isLocked && !hide ? (
+  return !isLocked ? (
     <div className={styles.bottom}>
       <Network noChangeNetwork={noChangeNetwork} />
       <div className="version basic500" data-testid="currentVersion">
