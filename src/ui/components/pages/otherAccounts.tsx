@@ -91,7 +91,7 @@ export function OtherAccountsPage() {
               }}
               onInfoClick={account => {
                 dispatch(setActiveAccount(account));
-                navigate('/account-info');
+                navigate(`/account-info/${account.address}`);
               }}
             />
           ))

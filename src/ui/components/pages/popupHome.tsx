@@ -100,7 +100,7 @@ export function PopupHome() {
           }}
           onClick={account => {
             dispatch(setActiveAccount(account));
-            navigate('/account-info');
+            navigate(`/account-info/${account.address}`);
           }}
           onShowQr={() => {
             navigate('/qr-code');

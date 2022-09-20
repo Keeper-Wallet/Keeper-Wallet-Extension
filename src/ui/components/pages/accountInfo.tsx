@@ -1,7 +1,7 @@
 import { Asset, Money } from '@waves/data-entities';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { getAsset } from '../../actions/assets';
 import Background from '../../services/Background';
@@ -10,8 +10,10 @@ import { Avatar, Balance, Button, CopyText, Error, Input, Modal } from '../ui';
 import * as styles from './styles/accountInfo.styl';
 
 export function AccountInfo() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const navigate = useNavigate();
+  const params = useParams<{ address: string }>();
 
   const dispatch = useAppDispatch();
   const assets = useAppSelector(state => state.assets);
@@ -19,13 +21,9 @@ export function AccountInfo() {
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const notifications = useAppSelector(state => state.localState.notifications);
 
-  const selectedAccount = useAppSelector(state => {
-    const selected = state.localState.assets.account
-      ? state.localState.assets.account.address
-      : state.selectedAccount.address;
-
-    return state.accounts.find(x => x.address === selected);
-  });
+  const account = useAppSelector(state =>
+    state.accounts.find(x => x.address === params.address)
+  );
 
   const copiedTimerRef = React.useRef<ReturnType<typeof setTimeout>>();
 
@@ -44,8 +42,8 @@ export function AccountInfo() {
   let balance: Money | undefined;
   let leaseBalance: Money | undefined;
 
-  if (wavesAsset && selectedAccount) {
-    const balanceItem = balances[selectedAccount.address];
+  if (wavesAsset && account) {
+    const balanceItem = balances[account.address];
 
     if (balanceItem) {
       const assetInstance = new Asset(wavesAsset);
@@ -61,7 +59,7 @@ export function AccountInfo() {
     }
   }, [dispatch, wavesAsset]);
 
-  if (!selectedAccount) {
+  if (!account) {
     return null;
   }
 
@@ -118,11 +116,7 @@ export function AccountInfo() {
     requestPrivateData({
       copyCallback,
       request: password =>
-        Background.getAccountSeed(
-          selectedAccount.address,
-          currentNetwork,
-          password
-        ),
+        Background.getAccountSeed(account.address, currentNetwork, password),
       retry: () => getSeed(copyCallback),
     });
   };
@@ -132,7 +126,7 @@ export function AccountInfo() {
       copyCallback,
       request: password =>
         Background.getAccountEncodedSeed(
-          selectedAccount.address,
+          account.address,
           currentNetwork,
           password
         ).then(encodedSeed => `base58:${encodedSeed}`),
@@ -145,7 +139,7 @@ export function AccountInfo() {
       copyCallback,
       request: password =>
         Background.getAccountPrivateKey(
-          selectedAccount.address,
+          account.address,
           currentNetwork,
           password
         ),
@@ -159,8 +153,8 @@ export function AccountInfo() {
         <div className={`flex ${styles.wallet}`}>
           <Avatar
             className={styles.avatar}
-            address={selectedAccount.address}
-            type={selectedAccount.type}
+            address={account.address}
+            type={account.type}
             size={48}
           />
 
@@ -174,7 +168,7 @@ export function AccountInfo() {
                   navigate('/change-account-name');
                 }}
               >
-                <span className={`basic500 body1`}>{selectedAccount.name}</span>
+                <span className={`basic500 body1`}>{account.name}</span>
                 <i className={styles.editIcon}> </i>
               </Button>
             </div>
@@ -197,10 +191,7 @@ export function AccountInfo() {
         <div className="margin-main-top center">
           <a
             className="link black"
-            href={getAccountLink(
-              selectedAccount.networkCode,
-              selectedAccount.address
-            )}
+            href={getAccountLink(account.networkCode, account.address)}
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -217,13 +208,13 @@ export function AccountInfo() {
           <CopyText
             showCopy
             showText
-            text={selectedAccount.address}
+            text={account.address}
             onCopy={onCopyHandler}
           />
         </div>
       </div>
 
-      {selectedAccount.type !== 'debug' && (
+      {account.type !== 'debug' && (
         <div id="accountInfoPublicKey" className="margin-main-big">
           <div className="input-title basic500 tag1">
             {t('accountInfo.pubKey')}
@@ -232,14 +223,14 @@ export function AccountInfo() {
             <CopyText
               showCopy
               showText
-              text={selectedAccount.publicKey}
+              text={account.publicKey}
               onCopy={onCopyHandler}
             />
           </div>
         </div>
       )}
 
-      {['seed', 'encodedSeed', 'privateKey'].includes(selectedAccount.type) && (
+      {['seed', 'encodedSeed', 'privateKey'].includes(account.type) && (
         <div id="accountInfoPrivateKey" className="margin-main-big">
           <div className="input-title basic500 tag1">
             {t('accountInfo.privKey')}
@@ -255,7 +246,7 @@ export function AccountInfo() {
         </div>
       )}
 
-      {selectedAccount.type === 'seed' ? (
+      {account.type === 'seed' ? (
         <div id="accountInfoBackupPhrase" className="margin-main-big">
           <div className="input-title basic500 tag1">
             {t('accountInfo.backUp')}
@@ -269,13 +260,13 @@ export function AccountInfo() {
             />
           </div>
         </div>
-      ) : selectedAccount.type === 'privateKey' ? (
+      ) : account.type === 'privateKey' ? (
         <div className="margin-main-big basic500">
           <div className="input-title tag1">{t('accountInfo.backUp')}</div>
 
           <div>{t('accountInfo.privateKeyNoBackupPhrase')}</div>
         </div>
-      ) : selectedAccount.type === 'encodedSeed' ? (
+      ) : account.type === 'encodedSeed' ? (
         <div id="accountInfoBackupPhrase" className="margin-main-big">
           <div className="input-title basic500 tag1">
             {t('accountInfo.encodedSeed')}
@@ -289,7 +280,7 @@ export function AccountInfo() {
             />
           </div>
         </div>
-      ) : selectedAccount.type === 'wx' ? (
+      ) : account.type === 'wx' ? (
         <>
           <div className="margin-main-big">
             <div className="input-title basic500 tag1">
@@ -299,7 +290,7 @@ export function AccountInfo() {
               <CopyText
                 showCopy
                 showText
-                text={selectedAccount.username}
+                text={account.username}
                 onCopy={onCopyHandler}
               />
             </div>
@@ -311,7 +302,7 @@ export function AccountInfo() {
             <div>{t('accountInfo.emailNoBackupPhrase')}</div>
           </div>
         </>
-      ) : selectedAccount.type === 'debug' ? (
+      ) : account.type === 'debug' ? (
         <>
           <div className="margin-main-big basic500">
             <div className="input-title tag1">{t('accountInfo.backUp')}</div>

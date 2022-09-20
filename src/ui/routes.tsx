@@ -54,7 +54,7 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/account-info',
+        path: '/account-info/:address',
         element: (
           <>
             <Menu hasBack hasLogo />
