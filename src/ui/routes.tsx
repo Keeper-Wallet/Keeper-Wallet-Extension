@@ -4,7 +4,7 @@ import { Bottom } from './components/bottom';
 import { Menu } from './components/menu/Menu';
 import { AccountInfo } from './components/pages/accountInfo';
 import { AddressBook } from './components/pages/AddressBook';
-import { ChangeAccountName } from './components/pages/ChangeName';
+import { ChangeAccountName } from './components/pages/changeAccountName';
 import { ChangePassword } from './components/pages/ChangePassword';
 import { DeleteActiveAccount } from './components/pages/deleteActiveAccount';
 import { DeleteAllAccounts } from './components/pages/deleteAllAccounts/deleteAllAccounts';
