@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as styles from './nftInfo.module.css';
 import { NftCover } from 'nfts/nftCard';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAppSelector } from 'ui/store';
 import { createNft } from 'nfts/utils';
 import { Button, Ellipsis, Loader } from 'ui/components/ui';
@@ -12,22 +12,26 @@ import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 
 export function NftInfo() {
   const navigate = useNavigate();
+  const params = useParams<{ assetId: string }>();
+
   const { t } = useTranslation();
 
   const networkCode = useAppSelector(
     state => state.selectedAccount.networkCode
   );
   const currentAddress = useAppSelector(state => state.selectedAccount.address);
-  const [currentAsset, setCurrentAsset] = useUiState('currentAsset');
-  const nftInfo = useAppSelector(
-    state => currentAsset && state.nfts?.[currentAsset.id]
-  );
+  const [, setCurrentAsset] = useUiState('currentAsset');
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const asset = useAppSelector(state => state.assets[params.assetId!]);
+
+  const nftInfo = useAppSelector(state => asset && state.nfts?.[asset.id]);
   const nftConfig = useAppSelector(state => state.nftConfig);
 
   const nft =
-    currentAsset &&
+    asset &&
     createNft({
-      asset: currentAsset,
+      asset,
       info: nftInfo,
       currentAddress,
       config: nftConfig,

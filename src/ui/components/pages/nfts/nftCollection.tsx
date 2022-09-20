@@ -134,7 +134,7 @@ export function NftCollection() {
             nfts={creatorNfts}
             onClick={nft => {
               setCurrentAsset(nft.asset);
-              navigate('/nft-details');
+              navigate(`/nft/${nft.asset.id}`);
             }}
           />
         )}

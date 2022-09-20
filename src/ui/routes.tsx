@@ -118,7 +118,7 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/nft-details',
+        path: '/nft/:assetId',
         element: (
           <>
             <Menu hasBack hasLogo />
