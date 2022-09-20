@@ -109,7 +109,7 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/nft-collection',
+        path: '/nft-collection/:creator',
         element: (
           <>
             <Menu hasBack hasLogo />

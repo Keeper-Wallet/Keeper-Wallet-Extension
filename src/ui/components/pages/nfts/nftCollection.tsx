@@ -1,7 +1,7 @@
 import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import * as styles from './nftCollection.module.css';
 import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
 import { useAppSelector } from 'ui/store';
@@ -40,7 +40,8 @@ export function NftCollection() {
     filters?.term,
     (value: string) => setFilters({ ...filters, term: value }),
   ];
-  const creator = filters?.creator;
+
+  const params = useParams<{ creator: string }>();
 
   const nftConfig = useAppSelector(state => state.nftConfig);
 
@@ -53,7 +54,10 @@ export function NftCollection() {
     });
 
   const creatorNfts = myNfts
-    ? sortAndFilterNfts(myNfts.map(getNftDetails), { term, creator })
+    ? sortAndFilterNfts(myNfts.map(getNftDetails), {
+        term,
+        creator: params.creator,
+      })
     : PLACEHOLDERS;
 
   const creatorRef = React.useRef(creatorNfts[0] as Nft);

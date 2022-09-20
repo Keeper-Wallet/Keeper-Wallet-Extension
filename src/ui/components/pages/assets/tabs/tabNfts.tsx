@@ -37,8 +37,6 @@ export function TabNfts() {
     filters?.term,
     (value: string) => setFilters({ ...filters, term: value }),
   ];
-  const setCreator = (value: string | null | undefined) =>
-    setFilters({ ...filters, creator: value });
 
   const nftConfig = useAppSelector(state => state.nftConfig);
 
@@ -118,9 +116,8 @@ export function TabNfts() {
           mode={DisplayMode.Creator}
           nfts={creatorNfts}
           counters={creatorCounts}
-          onClick={(asset: Nft) => {
-            setCreator(asset.creator);
-            navigate('/nft-collection');
+          onClick={asset => {
+            navigate(`/nft-collection/${asset.creator}`);
           }}
           renderMore={() =>
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain

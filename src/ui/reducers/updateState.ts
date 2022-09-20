@@ -30,7 +30,6 @@ export type AssetFilters = {
 };
 export type NftFilters = {
   term?: string;
-  creator?: string | null;
 };
 export type TxHistoryFilters = {
   term?: string;
