@@ -250,11 +250,6 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.CHANGE_MENU;
-      payload: { logo: boolean };
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.MESSAGES.UPDATE_ACTIVE;
       payload: null;
       meta?: never;

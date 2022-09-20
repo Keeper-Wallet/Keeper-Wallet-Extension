@@ -2,7 +2,6 @@ import { UiAction, UiActionPayload } from 'ui/store';
 
 export const ACTION = {
   CHANGE_LNG: 'CHANGE_LNG',
-  CHANGE_MENU: 'CHANGE_MENU',
   CHANGE_LOCK: 'CHANGE_LOCK',
   ADD_ACCOUNT: 'ADD_ACCOUNT',
   REMOVE_ACCOUNT: 'REMOVE_ACCOUNT',

@@ -53,13 +53,6 @@ function newAccount(
   return state;
 }
 
-function menu(state = { logo: false }, { type, payload }: UiAction) {
-  if (type === ACTION.CHANGE_MENU) {
-    return { ...state, ...payload };
-  }
-  return state;
-}
-
 function loading(state = false, { type, payload }: UiAction) {
   if (type === ACTION.SET_LOADING) {
     return payload;
@@ -122,7 +115,6 @@ function transactionStatus(
 export const localState = combineReducers({
   loading,
   newAccount,
-  menu,
   notifications,
   transactionStatus,
 });
