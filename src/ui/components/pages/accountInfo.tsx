@@ -316,7 +316,7 @@ export function AccountInfo() {
         <div
           className={styles.deleteButton}
           onClick={() => {
-            navigate('/delete-active-account');
+            navigate(`/delete-account/${params.address}`);
           }}
         >
           <div className={`${styles.deleteIcon} delete-icon`} />

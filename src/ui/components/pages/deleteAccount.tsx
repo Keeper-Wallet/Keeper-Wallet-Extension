@@ -1,15 +1,18 @@
-import * as styles from './deleteActiveAccount.module.css';
+import * as styles from './deleteAccount.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../ui';
-import { deleteActiveAccount } from '../../actions/localState';
+import { deleteAccount } from '../../actions/localState';
 import { useAppDispatch } from 'ui/store';
 
-export function DeleteActiveAccount() {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+export function DeleteAccount() {
   const { t } = useTranslation();
+
+  const navigate = useNavigate();
+  const params = useParams<{ address: string }>();
+
+  const dispatch = useAppDispatch();
 
   return (
     <div className={styles.content}>
@@ -19,7 +22,8 @@ export function DeleteActiveAccount() {
         <Button
           id="deleteAccount"
           onClick={async () => {
-            await dispatch(deleteActiveAccount());
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            await dispatch(deleteAccount(params.address!));
             navigate('/', { replace: true });
           }}
           type="button"

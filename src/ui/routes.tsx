@@ -6,7 +6,7 @@ import { AccountInfo } from './components/pages/accountInfo';
 import { AddressBook } from './components/pages/AddressBook';
 import { ChangeAccountName } from './components/pages/changeAccountName';
 import { ChangePassword } from './components/pages/ChangePassword';
-import { DeleteActiveAccount } from './components/pages/deleteActiveAccount';
+import { DeleteAccount } from './components/pages/deleteAccount';
 import { DeleteAllAccounts } from './components/pages/deleteAllAccounts/deleteAllAccounts';
 import { ExportAccounts } from './components/pages/exportAccounts/exportAccounts';
 import { ExportAddressBook } from './components/pages/exportAccounts/exportAddressBook';
@@ -73,11 +73,11 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/delete-active-account',
+        path: '/delete-account/:address',
         element: (
           <>
             <Menu hasBack hasLogo />
-            <DeleteActiveAccount />
+            <DeleteAccount />
           </>
         ),
       },

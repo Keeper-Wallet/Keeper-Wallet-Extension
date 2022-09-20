@@ -59,16 +59,11 @@ export const selectAccount = createMVAction(ACTION.SELECT_ACCOUNT);
 
 const notificationDelete = createMVAction(ACTION.NOTIFICATION_DELETE);
 
-export function deleteActiveAccount(): UiThunkAction<Promise<void>> {
+export function deleteAccount(address: string): UiThunkAction<Promise<void>> {
   return async (dispatch, getState) => {
-    const { selectedAccount, localState, currentNetwork } = getState();
+    const { currentNetwork } = getState();
 
-    const selected = localState.assets.account
-      ? localState.assets.account.address
-      : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        selectedAccount.address!;
-
-    await Background.removeWallet(selected, currentNetwork);
+    await Background.removeWallet(address, currentNetwork);
 
     dispatch(notificationDelete(true));
     await new Promise(resolve => setTimeout(resolve, 1000));
