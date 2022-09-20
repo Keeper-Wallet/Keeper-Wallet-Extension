@@ -1,21 +1,16 @@
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from 'ui/store';
-import { login } from '../../actions/localState';
+import Background from 'ui/services/Background';
 import { BigLogo } from '../head';
 import { Button, Error, Input } from '../ui';
 import * as styles from './styles/login.styl';
 
 export function Login() {
   const { t } = useTranslation();
-
-  const dispatch = useAppDispatch();
-  const error = useAppSelector(state => state.localState.login.error);
-
   const navigate = useNavigate();
-
   const [password, setPassword] = React.useState('');
+  const [error, setError] = React.useState(false);
 
   return (
     <div className={styles.content}>
@@ -24,9 +19,14 @@ export function Login() {
       </div>
 
       <form
-        onSubmit={event => {
+        onSubmit={async event => {
           event.preventDefault();
-          dispatch(login(password));
+
+          try {
+            await Background.unlock(password);
+          } catch {
+            setError(true);
+          }
         }}
       >
         <div className="left input-title basic500 tag1">

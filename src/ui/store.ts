@@ -255,16 +255,6 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.LOGIN_UPDATE;
-      payload: Record<never, unknown>;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.LOGIN_PENDING;
-      payload: Record<never, unknown>;
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.MESSAGES.UPDATE_ACTIVE;
       payload: null;
       meta?: never;
@@ -438,11 +428,6 @@ export type UiAction =
   | {
       type: typeof ACTION.LOCK;
       payload?: never;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.LOGIN;
-      payload: string;
       meta?: never;
     }
   | {

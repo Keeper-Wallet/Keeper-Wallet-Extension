@@ -11,21 +11,6 @@ function createMVAction<TActionType extends UiAction['type']>(
   });
 }
 
-const createCommonAction =
-  <
-    TActionType extends typeof ACTION.LOGIN_PENDING | typeof ACTION.LOGIN_UPDATE
-  >(
-    type: TActionType,
-    pending: boolean
-  ) =>
-  (error = false) =>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    createMVAction(type)({ pending, error } as any);
-
-export const login = createMVAction(ACTION.LOGIN);
-export const loginPending = createCommonAction(ACTION.LOGIN_PENDING, true);
-export const loginUpdate = createCommonAction(ACTION.LOGIN_UPDATE, false);
-
 export const newAccountName = createMVAction(ACTION.NEW_ACCOUNT_NAME);
 export const newAccountSelect = createMVAction(ACTION.NEW_ACCOUNT_SELECT);
 export const selectAccount = createMVAction(ACTION.SELECT_ACCOUNT);

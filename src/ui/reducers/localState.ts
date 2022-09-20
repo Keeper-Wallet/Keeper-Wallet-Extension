@@ -2,16 +2,6 @@ import { combineReducers } from 'redux';
 import { ACTION } from '../actions/constants';
 import { UiAction } from 'ui/store';
 
-function login(state: { error?: unknown } = {}, action: UiAction) {
-  switch (action.type) {
-    case ACTION.LOGIN_UPDATE:
-    case ACTION.LOGIN_PENDING:
-      return { ...state, ...action.payload };
-  }
-
-  return state;
-}
-
 export type NewAccountState = {
   address: string | null;
   hasBackup?: boolean;
@@ -131,7 +121,6 @@ function transactionStatus(
 
 export const localState = combineReducers({
   loading,
-  login,
   newAccount,
   menu,
   notifications,
