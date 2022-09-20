@@ -14,11 +14,7 @@ function createMVAction<TActionType extends UiAction['type']>(
 
 const createCommonAction =
   <
-    TActionType extends
-      | typeof ACTION.SET_PASSWORD_PENDING
-      | typeof ACTION.SET_PASSWORD_UPDATE
-      | typeof ACTION.LOGIN_PENDING
-      | typeof ACTION.LOGIN_UPDATE
+    TActionType extends typeof ACTION.LOGIN_PENDING | typeof ACTION.LOGIN_UPDATE
   >(
     type: TActionType,
     pending: boolean
@@ -30,23 +26,10 @@ const createCommonAction =
 export const createNew = (
   password: string
 ): AccountsThunkAction<Promise<void>> => {
-  return async dispatch => {
-    dispatch(newUser());
-
-    try {
-      await Background.initVault(password);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      dispatch(newUserUpdate(err));
-    }
+  return async () => {
+    await Background.initVault(password);
   };
 };
-
-export const newUser = createCommonAction(ACTION.SET_PASSWORD_PENDING, true);
-export const newUserUpdate = createCommonAction(
-  ACTION.SET_PASSWORD_UPDATE,
-  false
-);
 
 export const login = createMVAction(ACTION.LOGIN);
 export const loginPending = createCommonAction(ACTION.LOGIN_PENDING, true);

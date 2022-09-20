@@ -265,16 +265,6 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.SET_PASSWORD_PENDING;
-      payload: { unapprovedMessages?: Record<never, unknown> };
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.SET_PASSWORD_UPDATE;
-      payload: { unapprovedMessages?: Record<never, unknown> };
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.MESSAGES.UPDATE_ACTIVE;
       payload: null;
       meta?: never;
