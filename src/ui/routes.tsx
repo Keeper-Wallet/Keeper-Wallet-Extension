@@ -2,7 +2,7 @@ import * as React from 'react';
 import { RouteObject } from 'react-router-dom';
 import { Bottom } from './components/bottom';
 import { Menu } from './components/menu/Menu';
-import { AccountInfo } from './components/pages/AccountInfo';
+import { AccountInfo } from './components/pages/accountInfo';
 import { AddressBook } from './components/pages/AddressBook';
 import { ChangeAccountName } from './components/pages/ChangeName';
 import { ChangePassword } from './components/pages/ChangePassword';
