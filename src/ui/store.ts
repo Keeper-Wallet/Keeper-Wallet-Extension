@@ -10,11 +10,7 @@ import {
 import { createLogger } from 'redux-logger';
 import thunk, { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import * as reducers from './reducers/updateState';
-import {
-  NewAccountState,
-  SwapScreenInitialState,
-  UiState,
-} from './reducers/updateState';
+import { NewAccountState, UiState } from './reducers/updateState';
 import * as middleware from './midleware';
 import { KEEPERWALLET_DEBUG } from './appConfig';
 import type { ACTION } from './actions/constants';
@@ -191,16 +187,6 @@ export type UiAction =
   | {
       type: typeof ACTION.SELECT_ACCOUNT;
       payload: PreferencesAccount;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.SET_SWAP_SCREEN_INITIAL_STATE;
-      payload: SwapScreenInitialState;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.RESET_SWAP_SCREEN_INITIAL_STATE;
-      payload?: never;
       meta?: never;
     }
   | {

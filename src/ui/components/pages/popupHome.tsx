@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { useTranslation } from 'react-i18next';
 import { getBalances } from 'ui/actions/balances';
-import { setSwapScreenInitialState } from 'ui/actions/localState';
 import { Asset, Money } from '@waves/data-entities';
 import BigNumber from '@waves/bignumber';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
@@ -123,8 +122,9 @@ export function PopupHome() {
               navigate('/send');
             }}
             onSwapClick={assetId => {
-              dispatch(setSwapScreenInitialState({ fromAssetId: assetId }));
-              navigate('/swap');
+              navigate(
+                `/swap?${new URLSearchParams({ fromAssetId: assetId })}`
+              );
             }}
           />
           <TabNfts />

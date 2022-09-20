@@ -1,5 +1,4 @@
 import { AccountsThunkAction } from 'accounts/store';
-import { SwapScreenInitialState } from 'ui/reducers/localState';
 import Background from 'ui/services/Background';
 import { UiAction, UiActionPayload, UiThunkAction } from 'ui/store';
 import { ACTION } from './constants';
@@ -86,16 +85,3 @@ export const rejectOk = createMVAction(ACTION.REJECT_OK);
 export const clearMessagesStatus = createMVAction(ACTION.APPROVE_REJECT_CLEAR);
 export const setIdle = createMVAction(ACTION.REMOTE_CONFIG.SET_IDLE);
 export const updateIdle = createMVAction(ACTION.REMOTE_CONFIG.UPDATE_IDLE);
-
-export function setSwapScreenInitialState(
-  initialState: SwapScreenInitialState
-) {
-  return {
-    type: ACTION.SET_SWAP_SCREEN_INITIAL_STATE,
-    payload: initialState,
-  };
-}
-
-export function resetSwapScreenInitialState() {
-  return { type: ACTION.RESET_SWAP_SCREEN_INITIAL_STATE };
-}

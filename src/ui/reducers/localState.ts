@@ -139,26 +139,6 @@ function transactionStatus(
   return state;
 }
 
-export interface SwapScreenInitialState {
-  fromAssetId: string | null;
-}
-
-const swapScreenInitialStateDefault = { fromAssetId: null };
-
-function swapScreenInitialState(
-  state: SwapScreenInitialState = swapScreenInitialStateDefault,
-  action: UiAction
-): SwapScreenInitialState {
-  switch (action.type) {
-    case ACTION.SET_SWAP_SCREEN_INITIAL_STATE:
-      return action.payload;
-    case ACTION.RESET_SWAP_SCREEN_INITIAL_STATE:
-      return swapScreenInitialStateDefault;
-    default:
-      return state;
-  }
-}
-
 export const localState = combineReducers({
   loading,
   newUser,
@@ -167,5 +147,4 @@ export const localState = combineReducers({
   menu,
   notifications,
   transactionStatus,
-  swapScreenInitialState,
 });
