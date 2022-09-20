@@ -91,7 +91,7 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/send',
+        path: '/send/:assetId',
         element: (
           <>
             <Menu hasBack hasLogo />

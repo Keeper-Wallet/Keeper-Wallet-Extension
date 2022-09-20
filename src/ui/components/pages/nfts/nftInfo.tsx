@@ -129,7 +129,7 @@ export function NftInfo() {
           view="submit"
           onClick={() => {
             setCurrentAsset(nft?.asset);
-            navigate('/send');
+            navigate(`/send/${nft?.asset.id}`);
           }}
         >
           {t('nftInfo.sendBtn')}

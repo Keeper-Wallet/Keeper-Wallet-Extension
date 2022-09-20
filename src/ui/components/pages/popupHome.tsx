@@ -114,7 +114,7 @@ export function PopupHome() {
             }}
             onSendClick={assetId => {
               setCurrentAsset(assets[assetId]);
-              navigate('/send');
+              navigate(`/send/${assetId}`);
             }}
             onSwapClick={assetId => {
               navigate(

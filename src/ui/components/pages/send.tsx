@@ -3,20 +3,22 @@ import { Asset, Money } from '@waves/data-entities';
 import { validators } from '@waves/waves-transactions';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Input } from '../ui/input';
 import { AddressSuggestInput } from '../ui/Address/SuggestInput';
 import { Button } from '../ui/buttons/Button';
 import * as styles from './send.module.css';
 import { getBalances } from 'ui/actions/balances';
-import { setUiState } from 'ui/actions/uiState';
 import { Error, Loader } from '../ui';
 import { AssetAmountInput } from '../../../assets/amountInput';
-import { AssetDetail } from 'assets/types';
 import { createNft } from 'nfts/utils';
 import Background from 'ui/services/Background';
 
 export function Send() {
+  const params = useParams<{ assetId: string }>();
+  const navigate = useNavigate();
+
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const chainId = useAppSelector(state =>
@@ -29,26 +31,24 @@ export function Send() {
   );
   const assetBalances = accountBalance?.assets;
   const assets = useAppSelector(state => state.assets);
-  const currentAsset = useAppSelector(state => state.uiState?.currentAsset);
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const asset = useAppSelector(state => state.assets[params.assetId!]);
+
   const isNft =
-    currentAsset &&
-    currentAsset.precision === 0 &&
-    currentAsset.quantity == 1 &&
-    !currentAsset.reissuable;
+    asset && asset.precision === 0 && asset.quantity == 1 && !asset.reissuable;
 
   const currentAddress = useAppSelector(state => state.selectedAccount.address);
-  const nftInfo = useAppSelector(
-    state => currentAsset && state.nfts?.[currentAsset.id]
-  );
+  const nftInfo = useAppSelector(state => asset && state.nfts?.[asset.id]);
   const nftConfig = useAppSelector(state => state.nftConfig);
 
   const displayName = React.useMemo(() => {
-    if (!currentAsset) {
+    if (!asset) {
       return null;
     }
     if (isNft) {
       const nft = createNft({
-        asset: currentAsset,
+        asset,
         info: nftInfo,
         currentAddress,
         config: nftConfig,
@@ -57,8 +57,8 @@ export function Send() {
       return nft.displayName;
     }
 
-    return currentAsset.displayName;
-  }, [currentAddress, currentAsset, isNft, nftConfig, nftInfo]);
+    return asset.displayName;
+  }, [asset, currentAddress, isNft, nftConfig, nftInfo]);
 
   React.useEffect(() => {
     if (!assetBalances) {
@@ -66,11 +66,11 @@ export function Send() {
     }
   }, [assetBalances, dispatch]);
 
-  const currentBalance = currentAsset
+  const currentBalance = asset
     ? Money.fromCoins(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        !isNft ? assetBalances![currentAsset.id]?.balance : 1,
-        new Asset(currentAsset as AssetDetail)
+        !isNft ? assetBalances![asset.id]?.balance : 1,
+        new Asset(asset)
       )
     : null;
 
@@ -123,7 +123,7 @@ export function Send() {
           data: {
             amount: {
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              assetId: currentAsset!.id,
+              assetId: asset!.id,
               tokens: amountValue,
             },
             recipient: recipientValue,
@@ -169,16 +169,16 @@ export function Send() {
           {!isNft && (
             <>
               <div className="margin-main-big">
-                {!currentAsset ||
+                {!asset ||
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                !assetBalances![currentAsset.id] ? (
+                !assetBalances![asset.id] ? (
                   <Loader />
                 ) : (
                   (() => {
                     const balance = new Money(
                       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                      new BigNumber(assetBalances![currentAsset.id].balance),
-                      new Asset(currentAsset as AssetDetail)
+                      new BigNumber(assetBalances![asset.id].balance),
+                      new Asset(asset)
                     );
 
                     return (
@@ -195,9 +195,7 @@ export function Send() {
                           showUsdAmount
                           value={amountValue}
                           onAssetChange={assetId => {
-                            dispatch(
-                              setUiState({ currentAsset: assets[assetId] })
-                            );
+                            navigate(`/send/${assetId}`, { replace: true });
                           }}
                           onBalanceClick={() => {
                             setAmountValue(balance.toTokens());
