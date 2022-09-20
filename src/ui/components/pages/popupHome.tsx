@@ -13,7 +13,6 @@ import { TabAssets } from './assets/tabs/tabAssets';
 import { TabNfts } from './assets/tabs/tabNfts';
 import { TabTxHistory } from './assets/tabs/tabTxHistory';
 import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
-import { AssetDetail } from 'assets/types';
 import { ImportPopup } from './Import';
 
 export function PopupHome() {
@@ -161,7 +160,7 @@ export function PopupHome() {
       >
         <AssetInfo
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          asset={currentAsset! as AssetDetail}
+          asset={currentAsset!}
           onCopy={() => {
             setShowCopy(true);
             setTimeout(() => setShowCopy(false), 1000);
