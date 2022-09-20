@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Asset, Money } from '@waves/data-entities';
 import { compareAccountsByLastUsed } from 'preferences/utils';
-import { setActiveAccount } from 'ui/actions/assets';
 import { selectAccount } from 'ui/actions/localState';
 import { AccountCard } from '../accounts/accountCard';
 import * as styles from './otherAccounts.module.css';
@@ -90,7 +89,6 @@ export function OtherAccountsPage() {
                 navigate('/', { replace: true });
               }}
               onInfoClick={account => {
-                dispatch(setActiveAccount(account));
                 navigate(`/account-info/${account.address}`);
               }}
             />

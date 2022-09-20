@@ -279,11 +279,6 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.SET_ACTIVE_ACCOUNT;
-      payload: PreferencesAccount;
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.SET_PASSWORD_PENDING;
       payload: { unapprovedMessages?: Record<never, unknown> };
       meta?: never;

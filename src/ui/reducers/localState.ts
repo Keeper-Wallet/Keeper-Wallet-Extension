@@ -1,25 +1,12 @@
 import { combineReducers } from 'redux';
 import { ACTION } from '../actions/constants';
 import { UiAction } from 'ui/store';
-import { PreferencesAccount } from 'preferences/types';
 
 function newUser(state = {}, action: UiAction) {
   switch (action.type) {
     case ACTION.SET_PASSWORD_PENDING:
     case ACTION.SET_PASSWORD_UPDATE:
       return { ...state, ...action.payload.unapprovedMessages };
-  }
-
-  return state;
-}
-
-function assets(
-  state: { account?: PreferencesAccount } = {},
-  action: UiAction
-) {
-  switch (action.type) {
-    case ACTION.SET_ACTIVE_ACCOUNT:
-      return { ...state, account: action.payload };
   }
 
   return state;
@@ -178,7 +165,6 @@ export const localState = combineReducers({
   login,
   newAccount,
   menu,
-  assets,
   notifications,
   transactionStatus,
   swapScreenInitialState,

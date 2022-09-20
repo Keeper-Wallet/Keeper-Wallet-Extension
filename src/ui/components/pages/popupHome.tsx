@@ -3,7 +3,6 @@ import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { useTranslation } from 'react-i18next';
-import { setActiveAccount } from 'ui/actions/assets';
 import { getBalances } from 'ui/actions/balances';
 import { setSwapScreenInitialState } from 'ui/actions/localState';
 import { Asset, Money } from '@waves/data-entities';
@@ -99,7 +98,6 @@ export function PopupHome() {
             navigate('/other-accounts');
           }}
           onClick={account => {
-            dispatch(setActiveAccount(account));
             navigate(`/account-info/${account.address}`);
           }}
           onShowQr={() => {
