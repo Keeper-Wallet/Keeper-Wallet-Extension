@@ -14,6 +14,7 @@ import { TabNfts } from './assets/tabs/tabNfts';
 import { TabTxHistory } from './assets/tabs/tabTxHistory';
 import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 import { ImportPopup } from './Import';
+import { AssetDetail } from 'assets/types';
 
 export function PopupHome() {
   const navigate = useNavigate();
@@ -35,10 +36,9 @@ export function PopupHome() {
   const [showAsset, setShowAsset] = React.useState(false);
   const [showCopy, setShowCopy] = React.useState(false);
 
-  const [currentAsset, setCurrentAsset] = useUiState('currentAsset');
+  const [asset, setAsset] = React.useState<AssetDetail | null>(null);
 
   React.useEffect(() => {
-    setCurrentAsset(null);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
     if (!balances[activeAccount?.address!]) {
       dispatch(getBalances());
@@ -109,11 +109,10 @@ export function PopupHome() {
         <TabPanels className={styles.tabPanels}>
           <TabAssets
             onInfoClick={assetId => {
-              setCurrentAsset(assets[assetId]);
+              setAsset(assets[assetId]);
               setShowAsset(true);
             }}
             onSendClick={assetId => {
-              setCurrentAsset(assets[assetId]);
               navigate(`/send/${assetId}`);
             }}
             onSwapClick={assetId => {
@@ -149,21 +148,22 @@ export function PopupHome() {
         </div>
       </Modal>
 
-      <Modal
-        animation={Modal.ANIMATION.FLASH}
-        showModal={currentAsset && showAsset}
-        onExited={() => setCurrentAsset(null)}
-      >
-        <AssetInfo
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          asset={currentAsset!}
-          onCopy={() => {
-            setShowCopy(true);
-            setTimeout(() => setShowCopy(false), 1000);
-          }}
-          onClose={() => setShowAsset(false)}
-        />
-      </Modal>
+      {asset && (
+        <Modal
+          animation={Modal.ANIMATION.FLASH}
+          showModal={showAsset}
+          onExited={() => setAsset(null)}
+        >
+          <AssetInfo
+            asset={asset}
+            onCopy={() => {
+              setShowCopy(true);
+              setTimeout(() => setShowCopy(false), 1000);
+            }}
+            onClose={() => setShowAsset(false)}
+          />
+        </Modal>
+      )}
     </div>
   );
 }

@@ -8,7 +8,6 @@ import { createNft } from 'nfts/utils';
 import { Button, Ellipsis, Loader } from 'ui/components/ui';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { getAccountLink, getAssetDetailLink } from 'ui/urls';
-import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 
 export function NftInfo() {
   const navigate = useNavigate();
@@ -20,7 +19,6 @@ export function NftInfo() {
     state => state.selectedAccount.networkCode
   );
   const currentAddress = useAppSelector(state => state.selectedAccount.address);
-  const [, setCurrentAsset] = useUiState('currentAsset');
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const asset = useAppSelector(state => state.assets[params.assetId!]);
@@ -122,7 +120,6 @@ export function NftInfo() {
       <div className={styles.stickyBottomPanel}>
         <Button
           onClick={() => {
-            setCurrentAsset(null);
             navigate(-1);
           }}
         >
@@ -132,7 +129,6 @@ export function NftInfo() {
           type="submit"
           view="submit"
           onClick={() => {
-            setCurrentAsset(nft?.asset);
             navigate(`/send/${nft?.asset.id}`);
           }}
         >

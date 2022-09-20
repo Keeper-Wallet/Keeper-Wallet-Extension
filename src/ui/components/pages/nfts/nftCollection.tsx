@@ -4,9 +4,8 @@ import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as styles from './nftCollection.module.css';
 import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
-import { useAppDispatch, useAppSelector } from 'ui/store';
+import { useAppSelector } from 'ui/store';
 import { useTranslation } from 'react-i18next';
-import { setUiState } from 'ui/actions/uiState';
 import { createNft, Nft } from 'nfts/utils';
 import {
   sortAndFilterNfts,
@@ -35,11 +34,6 @@ export function NftCollection() {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const myNfts = useAppSelector(state => state.balances[currentAddress!]?.nfts);
   const nfts = useAppSelector(state => state.nfts);
-
-  const dispatch = useAppDispatch();
-
-  const setCurrentAsset = (asset: AssetDetail | null) =>
-    dispatch(setUiState({ currentAsset: asset }));
 
   const [filters, setFilters] = useUiState('nftFilters');
   const [term, setTerm] = [
@@ -133,7 +127,6 @@ export function NftCollection() {
             mode={DisplayMode.Name}
             nfts={creatorNfts}
             onClick={nft => {
-              setCurrentAsset(nft.asset);
               navigate(`/nft/${nft.asset.id}`);
             }}
           />
@@ -143,7 +136,6 @@ export function NftCollection() {
           <Button
             className="fullwidth"
             onClick={() => {
-              setCurrentAsset(null);
               navigate(-1);
             }}
           >

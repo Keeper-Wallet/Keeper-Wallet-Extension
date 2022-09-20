@@ -4,7 +4,6 @@ import { PreferencesAccount } from 'preferences/types';
 import { AssetBalance } from 'balances/types';
 import { NetworkName } from 'networks/types';
 import { MessageStoreItem } from 'messages/types';
-import { AssetDetail } from 'assets/types';
 
 export * from './localState';
 export * from './feeConfig';
@@ -45,7 +44,6 @@ export interface UiState {
   assetFilters?: AssetFilters;
   assetsTab?: number;
   autoClickProtection?: boolean;
-  currentAsset?: AssetDetail | null;
   nftFilters?: NftFilters;
   showSuspiciousAssets?: boolean;
   slippageToleranceIndex?: number;
