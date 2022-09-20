@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import * as React from 'react';
 import { RouteObject } from 'react-router-dom';
 import { Bottom } from './components/bottom';
@@ -8,6 +9,7 @@ import { ChangeAccountName } from './components/pages/changeAccountName';
 import { ChangePassword } from './components/pages/ChangePassword';
 import { DeleteAccount } from './components/pages/deleteAccount';
 import { DeleteAllAccounts } from './components/pages/deleteAllAccounts/deleteAllAccounts';
+import { ErrorPage } from './components/pages/errorPage';
 import { ExportAccounts } from './components/pages/exportAccounts/exportAccounts';
 import { ExportAddressBook } from './components/pages/exportAccounts/exportAddressBook';
 import { ExportAndImport } from './components/pages/ExportAndImport';
@@ -32,7 +34,13 @@ import { Root } from './components/Root';
 
 export const routes: RouteObject[] = [
   {
-    element: <Root />,
+    element: (
+      <Sentry.ErrorBoundary
+        fallback={errorData => <ErrorPage {...errorData} />}
+      >
+        <Root />
+      </Sentry.ErrorBoundary>
+    ),
     children: [
       {
         path: '/',
