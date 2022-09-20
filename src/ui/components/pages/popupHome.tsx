@@ -37,12 +37,10 @@ export function PopupHome() {
 
   const [currentAsset, setCurrentAsset] = useUiState('currentAsset');
 
-  const address = activeAccount && activeAccount.address;
-
   React.useEffect(() => {
     setCurrentAsset(null);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (!balances[address!]) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+    if (!balances[activeAccount?.address!]) {
       dispatch(getBalances());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -52,10 +50,9 @@ export function PopupHome() {
     return <ImportPopup />;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const amountInUsd = balances[address!]?.assets
+  const amountInUsd = balances[activeAccount.address]?.assets
     ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      Object.entries(balances[address!]!.assets!).reduce(
+      Object.entries(balances[activeAccount.address]!.assets!).reduce(
         (acc, [id, { balance }]) => {
           if (assets[id] && usdPrices[id]) {
             const tokens = new Money(
@@ -79,8 +76,7 @@ export function PopupHome() {
           wavesBalance={
             assets['WAVES'] &&
             new Money(
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              balances[address!]?.available || 0,
+              balances[activeAccount.address]?.available || 0,
               new Asset(assets['WAVES'])
             )
           }
