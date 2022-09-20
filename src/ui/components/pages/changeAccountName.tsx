@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { changeAccountName } from '../../actions/account';
 import { CONFIG } from '../../appConfig';
-import { Button, Error, Input } from '../ui';
+import { Button, ErrorMessage, Input } from '../ui';
 import * as styles from './styles/changeName.styl';
 
 function validateName(name: string, accounts: PreferencesAccount[]) {
@@ -110,7 +110,7 @@ export function ChangeAccountName() {
             }}
           />
 
-          <Error
+          <ErrorMessage
             show={error}
             errors={errors}
             data-testid="newAccountNameError"

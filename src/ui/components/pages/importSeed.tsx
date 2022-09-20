@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from 'ui/store';
 import { newAccountSelect, selectAccount } from 'ui/actions/localState';
 import {
   Button,
-  Error,
+  ErrorMessage,
   Input,
   Tab,
   TabList,
@@ -311,13 +311,13 @@ export function ImportSeed() {
           </TabPanels>
         </Tabs>
 
-        <Error
+        <ErrorMessage
           className={styles.error}
           data-testid="validationError"
           show={showValidationError}
         >
           {validationError}
-        </Error>
+        </ErrorMessage>
 
         <div className="tag1 basic500 input-title">
           {t('importSeed.address')}

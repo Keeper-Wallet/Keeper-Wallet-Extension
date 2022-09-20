@@ -1,7 +1,7 @@
 import * as styles from './importEmail.module.css';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
-import { Button, Error, Input } from '../../ui';
+import { Button, ErrorMessage, Input } from '../../ui';
 import * as React from 'react';
 import { useAppSelector } from '../../../store';
 import { NetworkName } from 'networks/types';
@@ -134,9 +134,9 @@ export function SignInForm({ className, userData, signIn }: Props) {
           />
         )}
 
-        <Error show={errors.emailRequired != null}>
+        <ErrorMessage show={errors.emailRequired != null}>
           {errors.emailRequired}
-        </Error>
+        </ErrorMessage>
       </div>
 
       <div className="margin4">
@@ -154,9 +154,9 @@ export function SignInForm({ className, userData, signIn }: Props) {
           error={!!errors.passwordRequired}
           autoFocus={!!userData?.username}
         />
-        <Error show={errors.passwordRequired != null}>
+        <ErrorMessage show={errors.passwordRequired != null}>
           {errors.passwordRequired}
-        </Error>
+        </ErrorMessage>
       </div>
 
       <div className="margin4">
@@ -172,7 +172,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
           {t('importEmail.continue')}
         </Button>
 
-        <Error show={errors._form != null}>{errors._form}</Error>
+        <ErrorMessage show={errors._form != null}>{errors._form}</ErrorMessage>
       </div>
 
       <div className={cn(styles.footer, 'body3')}>

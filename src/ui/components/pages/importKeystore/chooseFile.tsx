@@ -2,7 +2,7 @@ import * as styles from './chooseFile.styl';
 import cn from 'classnames';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Error, Input } from '../../ui';
+import { Button, ErrorMessage, Input } from '../../ui';
 
 interface Props {
   title: string;
@@ -124,7 +124,7 @@ export function ImportKeystoreChooseFile({
         </>
       )}
 
-      {error && <Error show>{error}</Error>}
+      {error && <ErrorMessage show>{error}</ErrorMessage>}
 
       <Button
         className={styles.keystoreButton}

@@ -10,7 +10,7 @@ import { AddressSuggestInput } from '../ui/Address/SuggestInput';
 import { Button } from '../ui/buttons/Button';
 import * as styles from './send.module.css';
 import { getBalances } from 'ui/actions/balances';
-import { Error, Loader } from '../ui';
+import { ErrorMessage, Loader } from '../ui';
 import { AssetAmountInput } from '../../../assets/amountInput';
 import { createNft } from 'nfts/utils';
 import Background from 'ui/services/Background';
@@ -130,7 +130,7 @@ export function Send() {
             attachment: attachmentValue,
           },
         }).catch(err => {
-          if (err instanceof window.Error && /user denied/i.test(err.message)) {
+          if (err instanceof Error && /user denied/i.test(err.message)) {
             return;
           }
 
@@ -163,7 +163,9 @@ export function Send() {
               }}
             />
 
-            <Error show={showRecipientError}>{recipientError}</Error>
+            <ErrorMessage show={showRecipientError}>
+              {recipientError}
+            </ErrorMessage>
           </div>
 
           {!isNft && (
@@ -204,7 +206,9 @@ export function Send() {
                             setAmountValue(value);
                           }}
                         />
-                        <Error show={showAmountError}>{amountError}</Error>
+                        <ErrorMessage show={showAmountError}>
+                          {amountError}
+                        </ErrorMessage>
                       </>
                     );
                   })()
@@ -233,7 +237,9 @@ export function Send() {
               }}
             />
 
-            <Error show={showAttachmentError}>{attachmentError}</Error>
+            <ErrorMessage show={showAttachmentError}>
+              {attachmentError}
+            </ErrorMessage>
           </div>
         </div>
 

@@ -2,7 +2,7 @@ import * as styles from './deleteAccounts.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Button, Error, Input } from 'ui/components/ui';
+import { Button, ErrorMessage, Input } from 'ui/components/ui';
 import { deleteAllAccounts } from 'ui/actions/user';
 import cn from 'classnames';
 import { useAppDispatch } from 'ui/store';
@@ -63,13 +63,13 @@ export function DeleteAllAccounts() {
           onBlur={handleBlur}
           data-testid="confirmPhrase"
         />
-        <Error
+        <ErrorMessage
           className={cn('margin1', styles.error)}
           show={hasError && (isBlur || isCorrectLength)}
           data-testid="confirmPhraseError"
         >
           {t('forgotPassword.phraseError')}
-        </Error>
+        </ErrorMessage>
       </div>
 
       <div className="buttons-wrapper">

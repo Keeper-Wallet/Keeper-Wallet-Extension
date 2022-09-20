@@ -2,7 +2,7 @@ import * as styles from './NewAccount.module.css';
 import { connect } from 'react-redux';
 import * as React from 'react';
 import { Navigate } from 'react-router-dom';
-import { Button, Error, Input, LangsSelect } from '../ui';
+import { Button, ErrorMessage, Input, LangsSelect } from '../ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
 import { AppState } from 'ui/store';
@@ -141,9 +141,12 @@ class NewAccountComponent extends React.PureComponent<Props> {
                 autoComplete="off"
               />
 
-              <Error show={this.state.firstError} data-testid="firstError">
+              <ErrorMessage
+                show={this.state.firstError}
+                data-testid="firstError"
+              >
                 {t('newAccount.smallPass')}
-              </Error>
+              </ErrorMessage>
             </div>
             <div className="margin1 relative">
               <div className={`basic500 tag1 left input-title`}>
@@ -158,9 +161,12 @@ class NewAccountComponent extends React.PureComponent<Props> {
                 error={!!this.state.secondError}
                 autoComplete="off"
               />
-              <Error show={this.state.secondError} data-testid="secondError">
+              <ErrorMessage
+                show={this.state.secondError}
+                data-testid="secondError"
+              >
                 {t('newAccount.notMatch')}
-              </Error>
+              </ErrorMessage>
             </div>
           </div>
           <div className={styles.checkboxWrapper}>

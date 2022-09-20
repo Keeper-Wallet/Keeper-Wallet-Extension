@@ -6,7 +6,15 @@ import { useAppDispatch, useAppSelector } from 'ui/store';
 import { getAsset } from '../../actions/assets';
 import Background from '../../services/Background';
 import { getAccountLink } from '../../urls';
-import { Avatar, Balance, Button, CopyText, Error, Input, Modal } from '../ui';
+import {
+  Avatar,
+  Balance,
+  Button,
+  CopyText,
+  ErrorMessage,
+  Input,
+  Modal,
+} from '../ui';
 import * as styles from './styles/accountInfo.styl';
 
 export function AccountInfo() {
@@ -354,9 +362,9 @@ export function AccountInfo() {
                 }}
               />
 
-              <Error show={passwordError}>
+              <ErrorMessage show={passwordError}>
                 <div className="error">{t('accountInfo.passwordError')}</div>
-              </Error>
+              </ErrorMessage>
             </div>
 
             <Button

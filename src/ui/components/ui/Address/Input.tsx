@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as styles from './Input.module.css';
-import { Input, InputProps, Error } from '..';
+import { Input, InputProps, ErrorMessage } from '..';
 
 type Props = Extract<InputProps, { multiLine?: false }> & {
   value: string;
@@ -17,9 +17,9 @@ export function AddressInput({
   return (
     <div className={styles.container}>
       <Input error={!!addressError} value={value} {...props} />
-      <Error className={styles.error} show={!!addressError}>
+      <ErrorMessage className={styles.error} show={!!addressError}>
         {addressError}
-      </Error>
+      </ErrorMessage>
     </div>
   );
 }

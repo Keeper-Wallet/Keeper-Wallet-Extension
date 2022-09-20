@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from 'ui/store';
 import { setAddress } from 'ui/actions/addresses';
 import { AddressInput } from './Input';
-import { Modal, Input, Error, Button } from '../';
+import { Modal, Input, ErrorMessage, Button } from '../';
 
 interface Props {
   showModal: boolean;
@@ -126,9 +126,9 @@ export function AddModal({ showModal, setShowModal, address }: Props) {
                   autoFocus
                   error={!!nameError}
                 />
-                <Error className={styles.error} show={!!nameError}>
+                <ErrorMessage className={styles.error} show={!!nameError}>
                   {nameError}
-                </Error>
+                </ErrorMessage>
               </div>
               <p className={`basic500 ${styles.subtitle}`}>
                 {t('address.subtitle')}

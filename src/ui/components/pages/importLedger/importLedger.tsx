@@ -5,7 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { newAccountSelect } from 'ui/actions/localState';
 import { Button } from 'ui/components/ui/buttons/Button';
-import { Error } from 'ui/components/ui/error';
+import { ErrorMessage } from 'ui/components/ui/error';
 import { Input } from 'ui/components/ui/input';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { LedgerAvatarList } from './avatarList';
@@ -240,9 +240,9 @@ export function ImportLedger() {
                   }}
                 />
               ) : getUsersError ? (
-                <Error className={styles.error} show>
+                <ErrorMessage className={styles.error} show>
                   {getUsersError}
-                </Error>
+                </ErrorMessage>
               ) : (
                 t('importLedger.avatarListLoading')
               )}
@@ -281,9 +281,9 @@ export function ImportLedger() {
             )}
           </div>
 
-          <Error className={styles.error} show={!!selectAccountError}>
+          <ErrorMessage className={styles.error} show={!!selectAccountError}>
             {selectAccountError}
-          </Error>
+          </ErrorMessage>
 
           <div className="margin2">
             <div className="tag1 basic500 input-title">
@@ -300,7 +300,9 @@ export function ImportLedger() {
               }}
             />
 
-            <Error show={userIdInputError != null}>{userIdInputError}</Error>
+            <ErrorMessage show={userIdInputError != null}>
+              {userIdInputError}
+            </ErrorMessage>
           </div>
 
           <div className={cn(styles.address, 'grey-line')}>
@@ -339,9 +341,9 @@ export function ImportLedger() {
             {t('importLedger.connectInstructions')}
           </p>
 
-          <Error className={styles.error} show={!!connectionError}>
+          <ErrorMessage className={styles.error} show={!!connectionError}>
             {connectionError}
-          </Error>
+          </ErrorMessage>
 
           {isConnecting ? (
             <div className={styles.loader} />

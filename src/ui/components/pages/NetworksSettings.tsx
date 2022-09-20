@@ -6,7 +6,7 @@ import {
   setCustomNode,
 } from '../../actions/network';
 import { WithTranslation, withTranslation } from 'react-i18next';
-import { Button, Copy, Error, Input, Modal } from '../ui';
+import { Button, Copy, ErrorMessage, Input, Modal } from '../ui';
 import * as styles from './styles/settings.styl';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
 import { AppState } from 'ui/store';
@@ -161,7 +161,7 @@ class NetworksSettingsComponent extends React.PureComponent<Props, State> {
       const newCode = await getNetworkByte(node!);
       this.setState({ newCode });
       if (code && code !== newCode) {
-        throw new window.Error('Incorrect node network byte');
+        throw new Error('Incorrect node network byte');
       }
     } catch (e) {
       this.setState({ nodeError: true });
@@ -177,7 +177,7 @@ class NetworksSettingsComponent extends React.PureComponent<Props, State> {
     }
 
     if (hasErrors) {
-      throw new window.Error('invalid node or matcher');
+      throw new Error('invalid node or matcher');
     }
   }
 
@@ -208,9 +208,9 @@ class NetworksSettingsComponent extends React.PureComponent<Props, State> {
             value={this.state.node}
             onChange={this.onInputHandler}
           />
-          <Error show={nodeError} data-testid="nodeAddressError">
+          <ErrorMessage show={nodeError} data-testid="nodeAddressError">
             {t('networkSettings.nodeError')}
-          </Error>
+          </ErrorMessage>
         </div>
 
         <div className="margin-main-big relative">
@@ -229,7 +229,9 @@ class NetworksSettingsComponent extends React.PureComponent<Props, State> {
             value={this.state.matcher}
             onChange={this.onInputMatcherHandler}
           />
-          <Error show={matcherError}>{t('networkSettings.matcherError')}</Error>
+          <ErrorMessage show={matcherError}>
+            {t('networkSettings.matcherError')}
+          </ErrorMessage>
         </div>
 
         <div>

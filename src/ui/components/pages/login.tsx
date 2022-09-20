@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Background from 'ui/services/Background';
 import { BigLogo } from '../head';
-import { Button, Error, Input } from '../ui';
+import { Button, ErrorMessage, Input } from '../ui';
 import * as styles from './styles/login.styl';
 
 export function Login() {
@@ -47,9 +47,9 @@ export function Login() {
             }}
           />
 
-          <Error show={!!error} data-testid="loginPasswordError">
+          <ErrorMessage show={!!error} data-testid="loginPasswordError">
             {t('login.passwordError')}
-          </Error>
+          </ErrorMessage>
         </div>
 
         <Button

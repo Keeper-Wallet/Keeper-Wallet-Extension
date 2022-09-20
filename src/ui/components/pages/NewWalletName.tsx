@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { newAccountName, selectAccount } from 'ui/actions/localState';
 import { createAccount } from 'ui/actions/user';
-import { Button, Error, Input } from 'ui/components/ui';
+import { Button, ErrorMessage, Input } from 'ui/components/ui';
 import { CONFIG } from 'ui/appConfig';
 import { WalletTypes } from 'ui/services/Background';
 import { useAccountsSelector, useAppDispatch } from 'accounts/store';
@@ -94,9 +94,9 @@ export function NewWalletName() {
             autoFocus
             error={!!error}
           />
-          <Error data-testid="newAccountNameError" show={!!error}>
+          <ErrorMessage data-testid="newAccountNameError" show={!!error}>
             {error}
-          </Error>
+          </ErrorMessage>
         </div>
 
         <div className={`basic500 tag1 margin2`}>
