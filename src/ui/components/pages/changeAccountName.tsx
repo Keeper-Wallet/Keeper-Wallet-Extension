@@ -1,7 +1,7 @@
 import { PreferencesAccount } from 'preferences/types';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { changeAccountName } from '../../actions/account';
 import { CONFIG } from '../../appConfig';
@@ -32,19 +32,17 @@ function validateName(name: string, accounts: PreferencesAccount[]) {
 }
 
 export function ChangeAccountName() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const navigate = useNavigate();
+  const params = useParams<{ address: string }>();
 
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
 
-  const account = useAppSelector(state => {
-    const selected = state.localState.assets.account
-      ? state.localState.assets.account.address
-      : state.selectedAccount.address;
-
-    return state.accounts.find(x => x.address === selected);
-  });
+  const account = useAppSelector(state =>
+    state.accounts.find(x => x.address === params.address)
+  );
 
   const [error, setError] = React.useState(false);
 

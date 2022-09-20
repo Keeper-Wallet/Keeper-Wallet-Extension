@@ -165,7 +165,7 @@ export function AccountInfo() {
                 view="transparent"
                 className={styles.accountName}
                 onClick={() => {
-                  navigate('/change-account-name');
+                  navigate(`/change-account-name/${params.address}`);
                 }}
               >
                 <span className={`basic500 body1`}>{account.name}</span>

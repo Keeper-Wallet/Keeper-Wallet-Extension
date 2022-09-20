@@ -63,7 +63,7 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/change-account-name',
+        path: '/change-account-name/:address',
         element: (
           <>
             <Menu hasBack hasLogo />
