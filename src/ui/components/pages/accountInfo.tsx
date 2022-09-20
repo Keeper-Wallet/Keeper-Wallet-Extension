@@ -39,30 +39,27 @@ export function AccountInfo() {
   const [showCopied, setShowCopied] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
 
-  const asset = assets['WAVES'];
+  const wavesAsset = assets['WAVES'];
 
-  let balance: Money | null = null;
+  let balance: Money | undefined;
   let leaseBalance: Money | undefined;
 
-  if (asset && selectedAccount) {
-    const assetInstance = new Asset(asset);
-    const balancesMoney: Record<string, Money> = {};
-    const leaseMoney: Record<string, Money> = {};
+  if (wavesAsset && selectedAccount) {
+    const balanceItem = balances[selectedAccount.address];
 
-    Object.entries(balances).forEach(([key, balance]) => {
-      if (!balance) {
-        return;
-      }
+    if (balanceItem) {
+      const assetInstance = new Asset(wavesAsset);
 
-      balancesMoney[key] = new Money(balance.available, assetInstance);
-      leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
-    });
-
-    balance = balancesMoney[selectedAccount.address];
-    leaseBalance = leaseMoney[selectedAccount.address];
-  } else {
-    dispatch(getAsset('WAVES'));
+      balance = new Money(balanceItem.available, assetInstance);
+      leaseBalance = new Money(balanceItem.leasedOut, assetInstance);
+    }
   }
+
+  React.useEffect(() => {
+    if (!wavesAsset) {
+      dispatch(getAsset('WAVES'));
+    }
+  }, [dispatch, wavesAsset]);
 
   if (!selectedAccount) {
     return null;
@@ -166,6 +163,7 @@ export function AccountInfo() {
             type={selectedAccount.type}
             size={48}
           />
+
           <div className={styles.accountData}>
             <div>
               <Button
@@ -180,14 +178,9 @@ export function AccountInfo() {
                 <i className={styles.editIcon}> </i>
               </Button>
             </div>
+
             <div className={`headline1 marginTop1 ${styles.balance}`}>
-              <Balance
-                split={true}
-                showAsset={true}
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                balance={balance!}
-                showUsdAmount
-              />
+              <Balance balance={balance} showAsset split showUsdAmount />
 
               {leaseBalance && leaseBalance.gt(leaseBalance.cloneWithCoins(0)) && (
                 <div
@@ -208,8 +201,8 @@ export function AccountInfo() {
               selectedAccount.networkCode,
               selectedAccount.address
             )}
-            target="_blank"
             rel="noopener noreferrer"
+            target="_blank"
           >
             {t('accountInfo.viewInExplorer')}
           </a>
@@ -222,9 +215,9 @@ export function AccountInfo() {
         </div>
         <div className="input-like tag1">
           <CopyText
+            showCopy
+            showText
             text={selectedAccount.address}
-            showCopy={true}
-            showText={true}
             onCopy={onCopyHandler}
           />
         </div>
@@ -237,9 +230,9 @@ export function AccountInfo() {
           </div>
           <div className={`input-like tag1 ${styles.ellipsis}`}>
             <CopyText
+              showCopy
+              showText
               text={selectedAccount.publicKey}
-              showCopy={true}
-              showText={true}
               onCopy={onCopyHandler}
             />
           </div>
@@ -253,9 +246,9 @@ export function AccountInfo() {
           </div>
           <div className="input-like password-input tag1">
             <CopyText
-              type="key"
               getText={getPrivateKey}
-              showCopy={true}
+              showCopy
+              type="key"
               onCopy={onCopyHandler}
             />
           </div>
@@ -269,9 +262,9 @@ export function AccountInfo() {
           </div>
           <div className="input-like password-input tag1">
             <CopyText
-              type="key"
               getText={getSeed}
-              showCopy={true}
+              showCopy
+              type="key"
               onCopy={onCopyHandler}
             />
           </div>
@@ -289,9 +282,9 @@ export function AccountInfo() {
           </div>
           <div className="input-like password-input tag1">
             <CopyText
-              type="key"
               getText={getEncodedSeed}
-              showCopy={true}
+              showCopy
+              type="key"
               onCopy={onCopyHandler}
             />
           </div>
@@ -304,9 +297,9 @@ export function AccountInfo() {
             </div>
             <div className={`input-like tag1 ${styles.ellipsis}`}>
               <CopyText
+                showCopy
+                showText
                 text={selectedAccount.username}
-                showCopy={true}
-                showText={true}
                 onCopy={onCopyHandler}
               />
             </div>
@@ -357,6 +350,7 @@ export function AccountInfo() {
               <div className="basic500 tag1 input-title">
                 {t('accountInfo.password')}
               </div>
+
               <Input
                 autoFocus
                 type="password"
