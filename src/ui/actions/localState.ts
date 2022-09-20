@@ -1,4 +1,3 @@
-import { AccountsThunkAction } from 'accounts/store';
 import Background from 'ui/services/Background';
 import { UiAction, UiActionPayload, UiThunkAction } from 'ui/store';
 import { ACTION } from './constants';
@@ -22,14 +21,6 @@ const createCommonAction =
   (error = false) =>
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     createMVAction(type)({ pending, error } as any);
-
-export const createNew = (
-  password: string
-): AccountsThunkAction<Promise<void>> => {
-  return async () => {
-    await Background.initVault(password);
-  };
-};
 
 export const login = createMVAction(ACTION.LOGIN);
 export const loginPending = createCommonAction(ACTION.LOGIN_PENDING, true);

@@ -1,12 +1,12 @@
 import * as styles from './NewAccount.module.css';
 import { connect } from 'react-redux';
-import { createNew } from '../../actions/localState';
 import * as React from 'react';
 import { Navigate } from 'react-router-dom';
 import { Button, Error, Input, LangsSelect } from '../ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
 import { AppState } from 'ui/store';
+import Background from 'ui/services/Background';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
@@ -14,13 +14,7 @@ const mapStateToProps = (state: AppState) => ({
   initialized: state.state?.initialized,
 });
 
-interface DispatchProps {
-  createNew: (password: string) => Promise<void>;
-}
-
-type Props = WithTranslation &
-  DispatchProps &
-  ReturnType<typeof mapStateToProps>;
+type Props = WithTranslation & ReturnType<typeof mapStateToProps>;
 
 class NewAccountComponent extends React.PureComponent<Props> {
   state = {
@@ -108,7 +102,7 @@ class NewAccountComponent extends React.PureComponent<Props> {
     e.preventDefault();
     e.stopPropagation();
     if (!this.state.passwordError && this.state.firstValue) {
-      this.props.createNew(this.state.firstValue);
+      Background.initVault(this.state.firstValue);
     }
   };
 
@@ -261,6 +255,6 @@ class NewAccountComponent extends React.PureComponent<Props> {
   }
 }
 
-export const NewAccount = connect(mapStateToProps, {
-  createNew,
-})(withTranslation()(NewAccountComponent));
+export const NewAccount = connect(mapStateToProps)(
+  withTranslation()(NewAccountComponent)
+);
