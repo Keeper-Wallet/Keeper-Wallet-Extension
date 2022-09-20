@@ -2,7 +2,7 @@ import { useSentryNavigationBreadcrumbs } from 'common/useSentryNavigationBreadc
 import * as React from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector } from 'ui/store';
-import { Login } from './pages/Login';
+import { Login } from './pages/login';
 import { Welcome } from './pages/Welcome';
 
 export function Root() {

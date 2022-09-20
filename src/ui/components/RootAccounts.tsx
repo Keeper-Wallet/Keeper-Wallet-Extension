@@ -2,7 +2,7 @@ import { useAccountsSelector } from 'accounts/store';
 import { useSentryNavigationBreadcrumbs } from 'common/useSentryNavigationBreadcrumbs';
 import * as React from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Login } from './pages/Login';
+import { Login } from './pages/login';
 import { Welcome } from './pages/Welcome';
 
 export function RootAccounts() {
