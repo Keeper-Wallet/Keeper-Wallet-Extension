@@ -1,6 +1,7 @@
+import { useAccountsSelector } from 'accounts/store';
+import { useSentryNavigationBreadcrumbs } from 'common/useSentryNavigationBreadcrumbs';
 import * as React from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useAccountsSelector } from 'accounts/store';
 import { Login } from './pages/Login';
 import { Welcome } from './pages/Welcome';
 
@@ -21,6 +22,8 @@ export function RootAccounts() {
     navigate('/', { replace: true });
     prevNetworkRef.current = currentNetwork;
   }, [currentNetwork, navigate]);
+
+  useSentryNavigationBreadcrumbs(location);
 
   if (!initialized && location.pathname !== '/init-vault') {
     return <Welcome />;

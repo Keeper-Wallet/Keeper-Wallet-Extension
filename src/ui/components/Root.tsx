@@ -1,3 +1,4 @@
+import { useSentryNavigationBreadcrumbs } from 'common/useSentryNavigationBreadcrumbs';
 import * as React from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector } from 'ui/store';
@@ -34,6 +35,8 @@ export function Root() {
     navigate('/', { replace: true });
     prevNetworkRef.current = currentNetwork;
   }, [currentNetwork, navigate]);
+
+  useSentryNavigationBreadcrumbs(location);
 
   if (!initialized) {
     return <Welcome isPopup />;
