@@ -8,6 +8,7 @@ import log from 'loglevel';
 import * as React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 
 import { KEEPERWALLET_DEBUG } from './constants';
 import { ledgerService } from './ledger/service';
@@ -16,7 +17,6 @@ import { cbToPromise, setupDnode, transformMethods } from './lib/dnodeUtil';
 import { PortStream } from './lib/portStream';
 import { setLangs } from './ui/actions/localState';
 import { createUpdateState } from './ui/actions/updateState';
-import { Root } from 'ui/components/Root';
 import { LANGS } from './ui/i18n';
 import backgroundService, {
   BackgroundGetStateResult,
@@ -26,7 +26,7 @@ import { createUiStore } from './ui/store';
 import { initUiSentry } from 'sentry';
 import { RootWrapper } from 'ui/components/RootWrapper';
 import { LoadingScreen } from 'ui/components/pages/loadingScreen';
-import { ACTION } from 'ui/actions/constants';
+import { routes } from './ui/routes';
 
 const isNotificationWindow = window.location.pathname === '/notification.html';
 
@@ -153,18 +153,12 @@ async function startUi() {
   document.addEventListener('focus', () => backgroundService.updateIdle());
   window.addEventListener('beforeunload', () => background.identityClear());
 
-  store.dispatch({
-    type: ACTION.NAVIGATE,
-    payload: {
-      page: '/',
-      replace: true,
-    },
-  });
+  const router = createMemoryRouter(routes);
 
   render(
     <Provider store={store}>
       <RootWrapper>
-        <Root />
+        <RouterProvider router={router} />
       </RootWrapper>
     </Provider>,
     document.getElementById('app-content')

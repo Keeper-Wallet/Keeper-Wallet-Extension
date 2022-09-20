@@ -1,12 +1,11 @@
 import * as styles from './styles/assets.styl';
 import * as React from 'react';
-import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { useTranslation } from 'react-i18next';
 import { setActiveAccount } from 'ui/actions/assets';
 import { getBalances } from 'ui/actions/balances';
 import { setSwapScreenInitialState } from 'ui/actions/localState';
-import { useNavigate } from 'ui/router';
 import { Asset, Money } from '@waves/data-entities';
 import BigNumber from '@waves/bignumber';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
@@ -36,7 +35,7 @@ export function PopupHome() {
 
   const [activeTab, setActiveTab] = useUiState('assetsTab');
 
-  const [showAsset, setShowAsset] = useState(false);
+  const [showAsset, setShowAsset] = React.useState(false);
   const [showCopy, setShowCopy] = React.useState(false);
 
   const [currentAsset, setCurrentAsset] = useUiState('currentAsset');

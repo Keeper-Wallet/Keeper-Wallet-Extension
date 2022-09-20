@@ -2,6 +2,7 @@ import * as styles from 'ui/components/pages/styles/assets.styl';
 import { Trans, useTranslation } from 'react-i18next';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from 'ui/store';
 import { sortAndFilterNfts, useUiState } from './helpers';
 import cn from 'classnames';
@@ -10,7 +11,6 @@ import { DisplayMode } from 'nfts';
 import { createNft, Nft } from 'nfts/utils';
 import { getNftsLink } from 'ui/urls';
 import { MAX_NFT_ITEMS } from '../../../../../constants';
-import { useNavigate } from 'ui/router';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
   key =>

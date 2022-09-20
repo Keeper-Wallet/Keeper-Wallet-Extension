@@ -13,7 +13,6 @@ import { UiAction } from 'ui/store';
 import { KEEPERWALLET_DEBUG } from 'ui/appConfig';
 
 const reducer = combineReducers({
-  router: reducers.router,
   addresses: reducers.addresses,
   accounts: reducers.accounts,
   currentLocale: reducers.currentLocale,

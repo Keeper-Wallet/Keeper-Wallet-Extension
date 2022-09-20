@@ -1,10 +1,10 @@
 import * as styles from './deleteActiveAccount.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui';
 import { deleteActiveAccount } from '../../actions/localState';
 import { useAppDispatch } from 'ui/store';
-import { useNavigate } from 'ui/router';
 
 export function DeleteActiveAccount() {
   const navigate = useNavigate();

@@ -1,8 +1,8 @@
 import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Button, PowerButton } from '../ui';
-import { useNavigate } from '../../router';
 import { setUiState } from '../../actions/uiState';
 import { lock } from '../../actions/user';
 import { Tooltip } from '../ui/tooltip';

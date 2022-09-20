@@ -2,9 +2,9 @@ import * as styles from './importSuccess.module.css';
 import cn from 'classnames';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui';
 import { useAccountsSelector } from 'accounts/store';
-import { useNavigate } from 'ui/router';
 import background from 'ui/services/Background';
 
 export function ImportSuccessAddressBook() {

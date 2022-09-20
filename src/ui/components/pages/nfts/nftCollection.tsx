@@ -1,11 +1,11 @@
 import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as styles from './nftCollection.module.css';
 import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'ui/router';
 import { setUiState } from 'ui/actions/uiState';
 import { createNft, Nft } from 'nfts/utils';
 import {

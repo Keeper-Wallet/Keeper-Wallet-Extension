@@ -3,9 +3,9 @@ import { validators } from '@waves/waves-transactions';
 import cn from 'classnames';
 import * as React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { newAccountSelect, selectAccount } from 'ui/actions/localState';
-import { useNavigate } from 'ui/router';
 import {
   Button,
   Error,

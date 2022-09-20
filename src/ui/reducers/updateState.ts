@@ -11,7 +11,6 @@ export * from './feeConfig';
 export * from './nftConfig';
 export * from './remoteConfig';
 export * from './notifications';
-export { router } from '../router';
 
 function createSimpleReducer<TActionType extends UiAction['type']>(
   initialState: UiActionPayload<TActionType>,

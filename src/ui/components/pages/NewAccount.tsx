@@ -2,11 +2,11 @@ import * as styles from './NewAccount.module.css';
 import { connect } from 'react-redux';
 import { createNew } from '../../actions/localState';
 import * as React from 'react';
+import { Navigate } from 'react-router-dom';
 import { Button, Error, Input, LangsSelect } from '../ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
 import { AppState } from 'ui/store';
-import { Navigate } from 'ui/router';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 

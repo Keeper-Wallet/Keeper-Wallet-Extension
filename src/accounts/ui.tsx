@@ -8,13 +8,13 @@ import log from 'loglevel';
 import * as React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 
 import { KEEPERWALLET_DEBUG } from '../constants';
 import { cbToPromise, setupDnode, transformMethods } from 'lib/dnodeUtil';
 import { PortStream } from 'lib/portStream';
 import { setLangs } from 'ui/actions/localState';
 import { createUpdateState } from './updateState';
-import { RootAccounts } from 'ui/components/RootAccounts';
 import { LANGS } from 'ui/i18n';
 import backgroundService, {
   BackgroundGetStateResult,
@@ -26,7 +26,7 @@ import { ledgerService } from 'ledger/service';
 import { initUiSentry } from 'sentry';
 import { RootWrapper } from 'ui/components/RootWrapper';
 import { LoadingScreen } from 'ui/components/pages/loadingScreen';
-import { ACTION } from 'ui/actions/constants';
+import { routes } from './routes';
 
 initUiSentry({
   ignoreErrorContext: 'beforeSendAccounts',
@@ -132,18 +132,14 @@ async function startUi() {
 
   const pageFromHash = window.location.hash.split('#')[1];
 
-  store.dispatch({
-    type: ACTION.NAVIGATE,
-    payload: {
-      page: pageFromHash || '/',
-      replace: true,
-    },
+  const router = createMemoryRouter(routes, {
+    initialEntries: [pageFromHash || '/'],
   });
 
   render(
     <Provider store={store}>
       <RootWrapper>
-        <RootAccounts />
+        <RouterProvider router={router} />
       </RootWrapper>
     </Provider>,
     document.getElementById('app-content')

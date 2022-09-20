@@ -189,21 +189,6 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.NAVIGATE;
-      payload: {
-        page: string;
-        replace: boolean;
-      };
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.NAVIGATE_BACK;
-      payload: {
-        delta: number;
-      };
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.SELECT_ACCOUNT;
       payload: PreferencesAccount;
       meta?: never;

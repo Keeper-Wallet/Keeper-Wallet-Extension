@@ -1,6 +1,6 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from 'ui/store';
-import { useNavigate } from '../../../router';
 import { getNetworkByAddress } from 'ui/utils/waves';
 import { downloadKeystore } from '../../../../keystore/utils';
 import { ExportKeystoreChooseItems } from './chooseItems';

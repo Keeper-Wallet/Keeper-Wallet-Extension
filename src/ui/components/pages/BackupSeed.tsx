@@ -1,10 +1,10 @@
 import * as styles from './styles/backupSeed.styl';
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, Copy, Modal } from '../ui';
 import { useAccountsSelector } from 'accounts/store';
 import { NewAccountState } from 'ui/reducers/localState';
-import { useNavigate } from 'ui/router';
 
 export function BackUpSeed() {
   const navigate = useNavigate();

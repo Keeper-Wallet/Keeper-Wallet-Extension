@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { RouteObject } from 'react-router-dom';
 import { Bottom } from './components/bottom';
 import { Menu } from './components/menu/Menu';
 import { AccountInfo } from './components/pages/AccountInfo';
@@ -27,239 +28,242 @@ import { Send } from './components/pages/send';
 import { Settings } from './components/pages/Settings';
 import { SettingsGeneral } from './components/pages/SettingsGeneral';
 import { Swap } from './components/pages/swap/swap';
+import { Root } from './components/Root';
 
-export const routes: Array<{
-  path: string;
-  element: React.ReactElement;
-}> = [
+export const routes: RouteObject[] = [
   {
-    path: '/',
-    element: (
-      <>
-        <Menu hasLogo hasSettings />
-        <PopupHome />
-        <Bottom allowChangingNetwork />
-      </>
-    ),
-  },
-  {
-    path: '/qr-code',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <SelectedAccountQr />
-      </>
-    ),
-  },
-  {
-    path: '/account-info',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <AccountInfo />
-      </>
-    ),
-  },
-  {
-    path: '/change-account-name',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <ChangeAccountName />
-        <Bottom />
-      </>
-    ),
-  },
-  {
-    path: '/delete-active-account',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <DeleteActiveAccount />
-      </>
-    ),
-  },
-  {
-    path: '/other-accounts',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <OtherAccountsPage />
-      </>
-    ),
-  },
-  {
-    path: '/send',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <Send />
-      </>
-    ),
-  },
-  {
-    path: '/swap',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <Swap />
-      </>
-    ),
-  },
-  {
-    path: '/nft-collection',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <NftCollection />
-      </>
-    ),
-  },
-  {
-    path: '/nft-details',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <NftInfo />
-      </>
-    ),
-  },
-  {
-    path: '/about',
-    element: (
-      <>
-        <Menu hasBack />
-        <Info />
-      </>
-    ),
-  },
-  {
-    path: '/settings',
-    element: (
-      <>
-        <Menu hasClose hasLogo />
-        <Settings />
-      </>
-    ),
-  },
-  {
-    path: '/address-book',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <AddressBook />
-      </>
-    ),
-  },
-  {
-    path: '/settings/general',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <SettingsGeneral />
-      </>
-    ),
-  },
-  {
-    path: '/change-password',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <ChangePassword />
-      </>
-    ),
-  },
-  {
-    path: '/settings/permissions',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <PermissionsSettings />
-      </>
-    ),
-  },
-  {
-    path: '/settings/language',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <LangsSettings />
-      </>
-    ),
-  },
-  {
-    path: '/settings/network',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <NetworksSettings />
-      </>
-    ),
-  },
-  {
-    path: '/settings/export-and-import',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <ExportAndImport />
-      </>
-    ),
-  },
-  {
-    path: '/export-accounts',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <ExportAccounts />
-      </>
-    ),
-  },
-  {
-    path: '/export-address-book',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <ExportAddressBook />
-      </>
-    ),
-  },
-  {
-    path: '/delete-all-accounts',
-    element: (
-      <>
-        <Menu hasBack hasLogo />
-        <DeleteAllAccounts />
-      </>
-    ),
-  },
-  {
-    path: '/active-notification',
-    element: (
-      <>
-        <Menu hasLogo />
-        <Notifications />
-      </>
-    ),
-  },
-  {
-    path: '/active-message',
-    element: (
-      <>
-        <Menu hasLogo />
-        <Messages />
-      </>
-    ),
-  },
-  {
-    path: '/messages-and-notifications',
-    element: <MessageList />,
-  },
-  {
-    path: '/change-tx-account',
-    element: <SelectTxAccount />,
-  },
-  {
-    path: '/forgot-password',
-    element: <DeleteAllAccounts />,
+    element: <Root />,
+    children: [
+      {
+        path: '/',
+        element: (
+          <>
+            <Menu hasLogo hasSettings />
+            <PopupHome />
+            <Bottom allowChangingNetwork />
+          </>
+        ),
+      },
+      {
+        path: '/qr-code',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <SelectedAccountQr />
+          </>
+        ),
+      },
+      {
+        path: '/account-info',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <AccountInfo />
+          </>
+        ),
+      },
+      {
+        path: '/change-account-name',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <ChangeAccountName />
+            <Bottom />
+          </>
+        ),
+      },
+      {
+        path: '/delete-active-account',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <DeleteActiveAccount />
+          </>
+        ),
+      },
+      {
+        path: '/other-accounts',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <OtherAccountsPage />
+          </>
+        ),
+      },
+      {
+        path: '/send',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <Send />
+          </>
+        ),
+      },
+      {
+        path: '/swap',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <Swap />
+          </>
+        ),
+      },
+      {
+        path: '/nft-collection',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <NftCollection />
+          </>
+        ),
+      },
+      {
+        path: '/nft-details',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <NftInfo />
+          </>
+        ),
+      },
+      {
+        path: '/about',
+        element: (
+          <>
+            <Menu hasBack />
+            <Info />
+          </>
+        ),
+      },
+      {
+        path: '/settings',
+        element: (
+          <>
+            <Menu hasClose hasLogo />
+            <Settings />
+          </>
+        ),
+      },
+      {
+        path: '/address-book',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <AddressBook />
+          </>
+        ),
+      },
+      {
+        path: '/settings/general',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <SettingsGeneral />
+          </>
+        ),
+      },
+      {
+        path: '/change-password',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <ChangePassword />
+          </>
+        ),
+      },
+      {
+        path: '/settings/permissions',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <PermissionsSettings />
+          </>
+        ),
+      },
+      {
+        path: '/settings/language',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <LangsSettings />
+          </>
+        ),
+      },
+      {
+        path: '/settings/network',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <NetworksSettings />
+          </>
+        ),
+      },
+      {
+        path: '/settings/export-and-import',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <ExportAndImport />
+          </>
+        ),
+      },
+      {
+        path: '/export-accounts',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <ExportAccounts />
+          </>
+        ),
+      },
+      {
+        path: '/export-address-book',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <ExportAddressBook />
+          </>
+        ),
+      },
+      {
+        path: '/delete-all-accounts',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <DeleteAllAccounts />
+          </>
+        ),
+      },
+      {
+        path: '/active-notification',
+        element: (
+          <>
+            <Menu hasLogo />
+            <Notifications />
+          </>
+        ),
+      },
+      {
+        path: '/active-message',
+        element: (
+          <>
+            <Menu hasLogo />
+            <Messages />
+          </>
+        ),
+      },
+      {
+        path: '/messages-and-notifications',
+        element: <MessageList />,
+      },
+      {
+        path: '/change-tx-account',
+        element: <SelectTxAccount />,
+      },
+      {
+        path: '/forgot-password',
+        element: <DeleteAllAccounts />,
+      },
+    ],
   },
 ];

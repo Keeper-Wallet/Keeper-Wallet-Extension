@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { routes } from '../routes';
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector } from 'ui/store';
-import { Navigate, useNavigate } from 'ui/router';
 import { Login } from './pages/Login';
 import { Welcome } from './pages/Welcome';
 
 export function Root() {
   const navigate = useNavigate();
-  const currentPage = useAppSelector(state => state.router.currentPage);
+  const location = useLocation();
 
   const initialized = useAppSelector(state => state.state?.initialized);
   const locked = useAppSelector(state => state.state?.locked);
@@ -40,27 +39,31 @@ export function Root() {
     return <Welcome isPopup />;
   }
 
-  if (locked && currentPage !== '/forgot-password') {
+  if (locked && location.pathname !== '/forgot-password') {
     return <Login />;
   }
 
-  if (!locked && currentPage === '/forgot-password') {
+  if (!locked && location.pathname === '/forgot-password') {
     return <Navigate to="/" />;
   }
 
   if (!locked && haveAccounts) {
     if (haveActiveMessage) {
-      if (!['/active-message', '/change-tx-account'].includes(currentPage)) {
+      if (
+        !['/active-message', '/change-tx-account'].includes(location.pathname)
+      ) {
         return <Navigate replace to="/active-message" />;
       }
     } else if (haveActiveNotification) {
       if (
-        !['/active-notification', '/change-tx-account'].includes(currentPage)
+        !['/active-notification', '/change-tx-account'].includes(
+          location.pathname
+        )
       ) {
         return <Navigate replace to="/active-notification" />;
       }
     } else if (haveMessagesOrNotifications) {
-      if (currentPage !== '/messages-and-notifications') {
+      if (location.pathname !== '/messages-and-notifications') {
         return <Navigate replace to="/messages-and-notifications" />;
       }
     }
@@ -68,14 +71,16 @@ export function Root() {
 
   if (
     (!haveActiveMessage &&
-      ['/active-message', '/change-tx-account'].includes(currentPage)) ||
+      ['/active-message', '/change-tx-account'].includes(location.pathname)) ||
     (!haveActiveNotification &&
-      ['/active-notification', '/change-tx-account'].includes(currentPage)) ||
+      ['/active-notification', '/change-tx-account'].includes(
+        location.pathname
+      )) ||
     (!haveMessagesOrNotifications &&
-      currentPage === '/messages-and-notifications')
+      location.pathname === '/messages-and-notifications')
   ) {
     return <Navigate replace to="/" />;
   }
 
-  return routes.find(route => route.path === currentPage)?.element ?? null;
+  return <Outlet />;
 }

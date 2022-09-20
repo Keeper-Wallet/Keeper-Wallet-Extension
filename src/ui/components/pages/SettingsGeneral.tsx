@@ -1,9 +1,9 @@
 import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Button, Select } from '../ui';
 import { setIdle } from '../../actions/localState';
-import { useNavigate } from '../../router';
 import cn from 'classnames';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 

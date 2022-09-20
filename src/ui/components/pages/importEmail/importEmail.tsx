@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as styles from './importEmail.module.css';
 import cn from 'classnames';
 
@@ -6,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { Login } from './login';
 import { newAccountSelect } from '../../../actions/localState';
-import { useNavigate } from '../../../router';
 import { IdentityUser } from 'controllers/IdentityController';
 
 export function ImportEmail() {
