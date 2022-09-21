@@ -13,7 +13,7 @@ class CustomDataInfoComponent extends React.PureComponent<
     return (
       <div>
         <div className={styles.txRow}>
-          <div className="tx-title tag1 basic500">{t('transactions.txid')}</div>
+          <div className="tx-title tag1 basic500">{t('transactions.hash')}</div>
           <div className={styles.txValue}>{messageHash}</div>
         </div>
       </div>

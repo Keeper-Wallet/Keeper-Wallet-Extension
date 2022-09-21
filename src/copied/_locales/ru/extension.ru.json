@@ -626,7 +626,7 @@
     "clearSponsored": "Отключить спонсорство",
     "createAlias": "Создать псевдоним",
     "dApp": "dApp",
-    "dataHash": "Хеширование данных",
+    "dataHash": "Хэширование данных",
     "dataTransaction": "Запись в блокчейне",
     "dataTransactionName": "Данные",
     "decimalPoints": "Знаков после запятой",
@@ -684,6 +684,7 @@
     "reissue": "Перевыпустить",
     "transfer": "Перевести",
     "txid": "ID транзакции",
+    "hash": "Хэш",
     "txTime": "Время транзакции",
     "unknown": "Неизвестно",
     "wavesAuthTimeStamp": "Временная метка"

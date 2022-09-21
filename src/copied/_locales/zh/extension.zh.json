@@ -673,6 +673,7 @@
     "reissue": "重新发行",
     "transfer": "转账",
     "txid": "TXID",
+    "hash": "哈希",
     "txTime": "TX时间",
     "unknown": "未知",
     "wavesAuthTimeStamp": "时间戳"
