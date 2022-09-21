@@ -678,6 +678,7 @@
     "reissue": "再発行",
     "transfer": "転送",
     "txid": "TXID",
+    "hash": "ハッシュ",
     "txTime": "TX時間",
     "unknown": "不明",
     "wavesAuthTimeStamp": "タイムスタンプ"

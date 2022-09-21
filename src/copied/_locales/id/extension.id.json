@@ -691,6 +691,7 @@
     "reissue": "Reissue",
     "transfer": "Transfer",
     "txid": "TXID",
+    "hash": "Hash",
     "txTime": "Waktu TX",
     "unknown": "Tidak diketahui",
     "wavesAuthTimeStamp": "Time Stamp"

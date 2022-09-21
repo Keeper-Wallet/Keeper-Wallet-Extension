@@ -691,6 +691,7 @@
     "reissue": "Reedición",
     "transfer": "Transferir",
     "txid": "TXID",
+    "hash": "Hash",
     "txTime": "Hora de TX",
     "unknown": "Desconocido",
     "wavesAuthTimeStamp": "Marca de tiempo"

@@ -678,6 +678,7 @@
     "reissue": "สร้างเพิ่ม",
     "transfer": "โอน",
     "txid": "TXID",
+    "hash": "แฮช",
     "txTime": "เวลา TX",
     "unknown": "ไม่ทราบ",
     "wavesAuthTimeStamp": "เวลาที่เกิดธุรกรรม"

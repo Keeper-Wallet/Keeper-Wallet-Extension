@@ -678,6 +678,7 @@
     "reissue": "Phát hành lại",
     "transfer": "Chuyển ",
     "txid": "TXID",
+    "hash": "Hash",
     "txTime": "Thời gian TX",
     "unknown": "Không rõ",
     "wavesAuthTimeStamp": "Dấu thời gian"

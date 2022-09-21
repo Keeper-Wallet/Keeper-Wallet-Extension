@@ -675,6 +675,7 @@
     "reissue": "Yeniden ihraç et",
     "transfer": "Transfer",
     "txid": "TXID",
+    "hash": "Hash",
     "txTime": "TX zamanı",
     "unknown": "Bilinmeyen",
     "wavesAuthTimeStamp": "Zaman damgası"
