@@ -18,6 +18,7 @@ const reducer = combineReducers({
   networks: reducers.networks,
   langs: reducers.langs,
   idleOptions: reducers.idleOptions,
+  swappableAssetsFromVendor: reducers.swappableAssetsFromVendor,
   backTabs: reducers.backTabs,
   version: reducers.version,
   localState: reducers.localState,
