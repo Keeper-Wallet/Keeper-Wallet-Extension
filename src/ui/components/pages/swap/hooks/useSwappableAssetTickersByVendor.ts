@@ -30,18 +30,25 @@ export function useSwappableAssetTickersByVendor(): {
       new Set()
     );
 
-    return (
-      Object.entries(assetTickers)
-        .filter(([key]) => commonSet.has(key))
-        .map(([, value]) => value)
-    );
+    return Object.entries(assetTickers).reduce((acc, [key, value]) => {
+      if (commonSet.has(key)) {
+        acc.push(value);
+      }
+
+      return acc;
+    }, [] as string[]);
   }, [assetTickers, swappableAssetTickersByVendor]);
 
   const swappableAssetIds = useMemo(
     () => ({
-      mainnet: swappableAssetTickers
-        .filter(assetName => assetIds.mainnet[assetName])
-        .map(assetName => assetIds.mainnet[assetName]),
+      mainnet: swappableAssetTickers.reduce((acc, assetName) => {
+        const item = assetIds.mainnet[assetName];
+        if (item) {
+          acc.push(item);
+        }
+
+        return acc;
+      }, [] as string[]),
     }),
     [swappableAssetTickers]
   );
