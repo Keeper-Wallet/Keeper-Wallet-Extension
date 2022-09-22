@@ -409,8 +409,8 @@ export function SwapForm({
   const fromSwappableAssets = React.useMemo(() => {
     const availableTickers = new Set(
       Object.values(swappableAssetTickersByVendor)
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         .filter(tickersSet =>
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           tickersSet instanceof Set ? tickersSet.has(toAsset.ticker!) : false
         )
         .flatMap(tickersSet =>
