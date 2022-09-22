@@ -114,7 +114,7 @@ export interface StorageLocalState {
   suspiciousAssets: string[];
   tabs: Partial<Record<string, chrome.tabs.Tab>>;
   uiState: UiState;
-  swappableAssetsFromVendor: Record<string, string>;
+  swappableAssetsFromVendor: Record<string, string[]>;
   usdPrices: Record<string, string>;
   userId: string | undefined;
   WalletController: {

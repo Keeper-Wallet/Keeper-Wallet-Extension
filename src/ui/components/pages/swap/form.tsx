@@ -407,17 +407,13 @@ export function SwapForm({
   const { swappableAssetTickersByVendor } = useSwappableAssetTickersByVendor();
 
   const fromSwappableAssets = React.useMemo(() => {
-    const availableTickers = new Set(
-      Object.values(swappableAssetTickersByVendor)
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        .filter(tickersSet => tickersSet.includes(toAsset.ticker!))
-    );
+    const availableTickers = swappableAssetTickersByVendor;
 
     return swappableAssets
       .filter(asset => asset.id !== toAsset.id)
       .map((asset): AssetSelectOption => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const isAvailable = availableTickers.has(asset.ticker!);
+        const isAvailable = availableTickers.includes(asset.ticker!);
 
         return {
           ...asset,
@@ -433,18 +429,13 @@ export function SwapForm({
   }, [swappableAssets, toAsset, t, swappableAssetTickersByVendor]);
 
   const toSwappableAssets = React.useMemo(() => {
-    const arrayToSet: string[] = Object.values(swappableAssetTickersByVendor)
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    .filter(tickersSet => tickersSet.includes(fromAsset.ticker!));
-    const availableTickers = new Set(arrayToSet);
-
-    console.log('availableTickers', swappableAssetTickersByVendor, arrayToSet, availableTickers);
+    const availableTickers = swappableAssetTickersByVendor;
 
     return swappableAssets
       .filter(asset => asset.id !== fromAsset.id)
       .map((asset): AssetSelectOption => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const isAvailable = availableTickers.has(asset.ticker!);
+        const isAvailable = availableTickers.includes(asset.ticker!);
 
         return {
           ...asset,
