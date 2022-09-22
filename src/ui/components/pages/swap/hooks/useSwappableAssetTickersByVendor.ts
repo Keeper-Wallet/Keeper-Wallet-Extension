@@ -7,37 +7,28 @@ import { NetworkName } from 'networks/types';
 export type SwappableAssetIdsByNetwork = Record<NetworkName.Mainnet, string[]>;
 
 export function useSwappableAssetTickersByVendor(): {
-  swappableAssetTickersByVendor: Record<SwapVendor, Set<string>>;
+  swappableAssetTickersByVendor: Record<SwapVendor, string>;
   swappableAssetTickers: string[];
   swappableAssetIds: Record<NetworkName.Mainnet, string[]>;
 } {
   const data = useAppSelector(state => state.swappableAssetsFromVendor);
   const assetTickers = useAppSelector(state => state.assetTickers);
-
-  const swappableAssetTickersByVendor = useMemo(
-    () =>
-      Object.keys(data).reduce((acc, key) => {
-        const vendor = key as SwapVendor;
-        acc[vendor] = new Set(data[vendor]);
-        return acc;
-      }, {} as Record<SwapVendor, Set<string>>),
-    [data]
-  );
+ 
 
   const swappableAssetTickers = useMemo(() => {
-    const commonSet = Object.entries(swappableAssetTickersByVendor).reduce(
-      (acc, [, swapSet]) => new Set([...acc, ...swapSet]),
-      new Set()
+    const commonTickers = Object.entries(data).reduce(
+      (acc, [, swapSet]) => [...acc, ...swapSet],
+      [] as string[]
     );
 
     return Object.entries(assetTickers).reduce((acc, [key, value]) => {
-      if (commonSet.has(key)) {
+      if (commonTickers.includes(key)) {
         acc.push(value);
       }
 
       return acc;
     }, [] as string[]);
-  }, [assetTickers, swappableAssetTickersByVendor]);
+  }, [data, assetTickers]);
 
   const swappableAssetIds = useMemo(
     () => ({
@@ -54,7 +45,7 @@ export function useSwappableAssetTickersByVendor(): {
   );
 
   return {
-    swappableAssetTickersByVendor,
+    swappableAssetTickersByVendor: data,
     swappableAssetTickers,
     swappableAssetIds,
   };

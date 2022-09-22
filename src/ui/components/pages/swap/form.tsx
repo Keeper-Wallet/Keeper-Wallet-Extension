@@ -410,9 +410,7 @@ export function SwapForm({
     const availableTickers = new Set(
       Object.values(swappableAssetTickersByVendor)
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        .filter(tickersSet => tickersSet.has(toAsset.ticker!)
-        )
-        .flatMap(tickersSet => Array.from(tickersSet))
+        .filter(tickersSet => tickersSet.includes(toAsset.ticker!))
     );
 
     return swappableAssets
@@ -435,12 +433,12 @@ export function SwapForm({
   }, [swappableAssets, toAsset, t, swappableAssetTickersByVendor]);
 
   const toSwappableAssets = React.useMemo(() => {
-    const availableTickers = new Set(
-      Object.values(useSwappableAssetTickersByVendor)
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        .filter(tickersSet => tickersSet.has(fromAsset.ticker!))
-        .flatMap(tickersSet => Array.from(tickersSet))
-    );
+    const arrayToSet: string[] = Object.values(swappableAssetTickersByVendor)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    .filter(tickersSet => tickersSet.includes(fromAsset.ticker!));
+    const availableTickers = new Set(arrayToSet);
+
+    console.log('availableTickers', swappableAssetTickersByVendor, arrayToSet, availableTickers);
 
     return swappableAssets
       .filter(asset => asset.id !== fromAsset.id)
@@ -459,7 +457,7 @@ export function SwapForm({
               }),
         };
       });
-  }, [fromAsset, swappableAssets, t]);
+  }, [fromAsset, swappableAssets, t, swappableAssetTickersByVendor]);
 
   return (
     <SwapLayout>
