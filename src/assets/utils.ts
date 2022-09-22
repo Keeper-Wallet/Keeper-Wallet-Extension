@@ -1,7 +1,7 @@
 import { assetIds, assetLogosByNetwork } from './constants';
 import { useAppSelector } from 'ui/store';
 import { NetworkName } from 'networks/types';
-import { SwappableAssetIdRecord } from 'ui/components/pages/swap/hooks/useSwappableAssetTickersByVendor';
+import { SwappableAssetIdsByNetwork } from 'ui/components/pages/swap/hooks/useSwappableAssetTickersByVendor';
 
 export function useAssetLogo(network: NetworkName, assetId: string) {
   const logos = useAppSelector(state => state.assetLogos);
@@ -27,7 +27,7 @@ export function useAssetIdByTicker(network: NetworkName, ticker: string) {
 }
 
 export function isSwappableAsset(
-  swappableAssetIds: SwappableAssetIdRecord,
+  swappableAssetIds: SwappableAssetIdsByNetwork,
   network: NetworkName.Mainnet,
   assetId: string
 ) {

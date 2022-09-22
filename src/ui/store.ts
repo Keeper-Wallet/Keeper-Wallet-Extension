@@ -181,7 +181,7 @@ export type UiAction =
     }
   | {
       type: typeof ACTION.SET_SWAPPABLE_ASSETS_FROM_VENDOR;
-      payload: Record<SwapVendor, Set<string>> | Record<string, unknown>;
+      payload: Record<SwapVendor, string>;
       meta?: never;
     }
   | {

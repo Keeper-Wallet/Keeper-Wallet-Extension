@@ -88,7 +88,7 @@ export function Swap({ setTab }: PageComponentProps) {
         assetId,
         assets[assetId],
       ]),
-    [assets, swappableAssetIds.mainnet]
+    [assets, swappableAssetIds]
   );
 
   React.useEffect(() => {
