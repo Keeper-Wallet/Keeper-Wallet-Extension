@@ -409,13 +409,10 @@ export function SwapForm({
   const fromSwappableAssets = React.useMemo(() => {
     const availableTickers = new Set(
       Object.values(swappableAssetTickersByVendor)
-        .filter(tickersSet =>
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          tickersSet instanceof Set ? tickersSet.has(toAsset.ticker!) : false
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .filter(tickersSet => tickersSet.has(toAsset.ticker!)
         )
-        .flatMap(tickersSet =>
-          tickersSet instanceof Set ? Array.from(tickersSet) : []
-        )
+        .flatMap(tickersSet => Array.from(tickersSet))
     );
 
     return swappableAssets
