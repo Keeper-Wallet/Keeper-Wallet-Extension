@@ -6,16 +6,15 @@ import * as Sentry from '@sentry/react';
 import { extension } from 'lib/extension';
 import log from 'loglevel';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { render } from 'react-dom';
 import { Provider } from 'react-redux';
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 
 import { KEEPERWALLET_DEBUG } from '../constants';
 import { cbToPromise, setupDnode, transformMethods } from 'lib/dnodeUtil';
 import { PortStream } from 'lib/portStream';
-import { setLangs, setTabMode } from 'ui/actions';
+import { setLangs } from 'ui/actions/localState';
 import { createUpdateState } from './updateState';
-import { RootAccounts } from 'ui/components/RootAccounts';
-import { Error } from 'ui/components/pages/Error';
 import { LANGS } from 'ui/i18n';
 import backgroundService, {
   BackgroundGetStateResult,
@@ -25,6 +24,9 @@ import { createAccountsStore } from './store';
 import { LedgerSignRequest } from 'ledger/types';
 import { ledgerService } from 'ledger/service';
 import { initUiSentry } from 'sentry';
+import { RootWrapper } from 'ui/components/RootWrapper';
+import { LoadingScreen } from 'ui/components/pages/loadingScreen';
+import { routes } from './routes';
 
 initUiSentry({
   ignoreErrorContext: 'beforeSendAccounts',
@@ -36,18 +38,17 @@ log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 startUi();
 
 async function startUi() {
-  const store = createAccountsStore();
+  const store = createAccountsStore({
+    version: extension.runtime.getManifest().version,
+  });
 
-  store.dispatch(setTabMode('tab'));
   store.dispatch(setLangs(LANGS));
 
-  ReactDOM.render(
+  render(
     <Provider store={store}>
-      <Sentry.ErrorBoundary fallback={errorData => <Error {...errorData} />}>
-        <div className="app">
-          <RootAccounts />
-        </div>
-      </Sentry.ErrorBoundary>
+      <RootWrapper>
+        <LoadingScreen />
+      </RootWrapper>
     </Provider>,
     document.getElementById('app-content')
   );
@@ -128,4 +129,19 @@ async function startUi() {
   document.addEventListener('keyup', () => backgroundService.updateIdle());
   document.addEventListener('mousedown', () => backgroundService.updateIdle());
   document.addEventListener('focus', () => backgroundService.updateIdle());
+
+  const pageFromHash = window.location.hash.split('#')[1];
+
+  const router = createMemoryRouter(routes, {
+    initialEntries: [pageFromHash || '/'],
+  });
+
+  render(
+    <Provider store={store}>
+      <RootWrapper>
+        <RouterProvider router={router} />
+      </RootWrapper>
+    </Provider>,
+    document.getElementById('app-content')
+  );
 }

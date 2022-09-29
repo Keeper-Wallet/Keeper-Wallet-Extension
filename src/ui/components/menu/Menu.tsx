@@ -1,105 +1,58 @@
 import * as React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import * as styles from './menu.styl';
 import { HeadLogo } from '../head';
-import { PAGES } from '../../pageConfig';
 
-const Logo = ({ hasLogo }: { hasLogo: boolean }) => {
-  return !hasLogo ? null : <HeadLogo />;
-};
-
-const Settings = ({
-  hasSettings,
-  leftClick,
-  rightClick,
-}: {
+interface Props {
+  hasLogo?: boolean;
   hasSettings?: boolean;
-  leftClick: (event: React.MouseEvent<HTMLElement>) => void;
-  rightClick: (event: React.MouseEvent<HTMLElement>) => void;
-}) => {
-  return !hasSettings ? null : (
-    <div>
-      <div className={styles.settingsIcon} onClick={leftClick} />
-      <div className={styles.navigationIcon} onClick={rightClick} />
-    </div>
-  );
-};
+  hasBack?: boolean;
+  hasClose?: boolean;
+}
 
-const Buttons = ({
-  deleteAccount,
-  onDelete,
-}: {
-  deleteAccount: boolean | undefined;
-  onDelete: (event: React.MouseEvent<HTMLElement>) => void;
-}) => {
+export function Menu({ hasClose, hasBack, hasLogo, hasSettings }: Props) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   return (
     <div>
-      {!deleteAccount ? null : (
+      {hasLogo && <HeadLogo />}
+
+      {hasSettings && (
+        <>
+          <div
+            className={styles.settingsIcon}
+            onClick={() => {
+              navigate('/settings');
+            }}
+          />
+
+          <div
+            className={styles.navigationIcon}
+            onClick={() => {
+              navigate('/about');
+            }}
+          />
+        </>
+      )}
+
+      {hasBack && location.pathname !== window.location.hash.split('#')[1] && (
         <div
-          className={`${styles.deleteIcon} delete-icon`}
-          onClick={onDelete}
+          className={`${styles.arrowBackIcon} arrow-back-icon`}
+          onClick={() => {
+            navigate(-1);
+          }}
+        />
+      )}
+
+      {hasClose && (
+        <div
+          className={`${styles.closeIcon} close-icon`}
+          onClick={() => {
+            navigate(-1);
+          }}
         />
       )}
     </div>
   );
-};
-
-const Back = ({
-  hasBack,
-  onClick,
-}: {
-  hasBack: boolean;
-  onClick: (event: React.MouseEvent<HTMLElement>) => void;
-}) => {
-  return hasBack ? (
-    <div
-      className={`${styles.arrowBackIcon} arrow-back-icon`}
-      onClick={onClick}
-    />
-  ) : null;
-};
-
-const Close = ({
-  hasClose,
-  onClick,
-}: {
-  hasClose: boolean;
-  onClick: (event: React.MouseEvent<HTMLElement>) => void;
-}) => {
-  return hasClose ? (
-    <div className={`${styles.closeIcon} close-icon`} onClick={onClick} />
-  ) : null;
-};
-
-export const Menu = ({
-  setTab,
-  onBack,
-  hasClose = false,
-  hasBack = false,
-  onDelete,
-  ...props
-}: IProps) => {
-  const leftClick = () => setTab(PAGES.SETTINGS);
-  const rightClick = () => setTab(PAGES.INFO);
-  const navBack = () => onBack();
-
-  return (
-    <div>
-      <Logo {...props} />
-      <Settings leftClick={leftClick} rightClick={rightClick} {...props} />
-      <Back hasBack={hasBack} onClick={navBack} />
-      <Close hasClose={hasClose} onClick={navBack} />
-      <Buttons onDelete={onDelete} {...props} />
-    </div>
-  );
-};
-
-interface IProps {
-  hasLogo: boolean;
-  hasSettings?: boolean;
-  hasBack: boolean;
-  hasClose: boolean;
-  deleteAccount: boolean | undefined;
-  setTab: (tab: string) => void;
-  onBack: () => void;
-  onDelete: () => void;
 }

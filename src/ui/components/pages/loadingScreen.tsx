@@ -5,7 +5,7 @@ import { ExportButton, ResetButton } from 'ui/components/ui';
 
 const DEFAULT_TIMEOUT = 5000;
 
-export function Intro() {
+export function LoadingScreen() {
   const [showReset, setShowReset] = React.useState(false);
 
   React.useEffect(() => {

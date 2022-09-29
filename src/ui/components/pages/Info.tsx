@@ -2,11 +2,8 @@ import * as styles from './styles/info.styl';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { BigLogo } from '../head';
-import { PageComponentProps } from 'ui/pageConfig';
 
-class InfoComponent extends React.Component<
-  PageComponentProps & WithTranslation
-> {
+class InfoComponent extends React.Component<WithTranslation> {
   render() {
     const { t } = this.props;
 

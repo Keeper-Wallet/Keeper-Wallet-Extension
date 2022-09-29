@@ -1,4 +1,4 @@
-import * as styles from './Error.module.css';
+import * as styles from './errorPage.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { HeadLogo } from '../head';
@@ -17,7 +17,7 @@ interface Props {
   resetError(): void;
 }
 
-export function Error({ error, componentStack, resetError }: Props) {
+export function ErrorPage({ error, componentStack, resetError }: Props) {
   const { t } = useTranslation();
 
   const [showDetails, setShowDetails] = React.useState(false);

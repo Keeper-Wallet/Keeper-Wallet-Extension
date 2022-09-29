@@ -1,14 +1,13 @@
 import * as React from 'react';
-import { useAppSelector, useAppDispatch } from 'ui/store';
-import { addBackTab, setTab } from '../../../actions';
-import { PAGES } from '../../../pageConfig';
+import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from 'ui/store';
 import { getNetworkByAddress } from 'ui/utils/waves';
 import { downloadKeystore } from '../../../../keystore/utils';
 import { ExportKeystoreChooseItems } from './chooseItems';
 import { ExportPasswordModal } from './passwordModal';
 
 export function ExportAddressBook() {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const addresses = useAppSelector(state => state.addresses);
 
   const [addressesToExport, setAddressesToExport] = React.useState<Record<
@@ -51,8 +50,7 @@ export function ExportAddressBook() {
               password,
               encrypted
             );
-            dispatch(addBackTab(PAGES.ROOT));
-            dispatch(setTab(PAGES.SETTINGS));
+            navigate(-2);
           }}
         />
       )}

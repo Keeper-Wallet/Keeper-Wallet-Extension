@@ -1,15 +1,16 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as styles from './importEmail.module.css';
 import cn from 'classnames';
 
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { Login } from './login';
-import { newAccountSelect } from '../../../actions';
-import { PageComponentProps, PAGES } from '../../../pageConfig';
+import { newAccountSelect } from '../../../actions/localState';
 import { IdentityUser } from 'controllers/IdentityController';
 
-export function ImportEmail({ setTab }: PageComponentProps) {
+export function ImportEmail() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
@@ -42,9 +43,9 @@ export function ImportEmail({ setTab }: PageComponentProps) {
         })
       );
 
-      setTab(PAGES.ACCOUNT_NAME_SEED);
+      navigate('/account-name');
     },
-    [dispatch, setTab]
+    [dispatch, navigate]
   );
 
   return (

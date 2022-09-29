@@ -1,11 +1,18 @@
-import { applyMiddleware, combineReducers, createStore } from 'redux';
+import {
+  applyMiddleware,
+  combineReducers,
+  createStore,
+  PreloadedState,
+} from 'redux';
+import { createLogger } from 'redux-logger';
+import thunk, { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import * as reducers from 'ui/reducers/updateState';
 import * as middleware from 'ui/midleware';
-import { extension } from 'lib/extension';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { UiAction } from 'ui/store';
+import { KEEPERWALLET_DEBUG } from 'ui/appConfig';
 
 const reducer = combineReducers({
-  tab: reducers.tab,
   addresses: reducers.addresses,
   accounts: reducers.accounts,
   currentLocale: reducers.currentLocale,
@@ -18,7 +25,6 @@ const reducer = combineReducers({
   networks: reducers.networks,
   langs: reducers.langs,
   idleOptions: reducers.idleOptions,
-  backTabs: reducers.backTabs,
   version: reducers.version,
   localState: reducers.localState,
   uiState: reducers.uiState,
@@ -30,14 +36,41 @@ export type AccountsState = ReturnType<typeof reducer>;
 export const useAccountsSelector: TypedUseSelectorHook<AccountsState> =
   useSelector;
 
-export function createAccountsStore() {
-  return createStore(
+export function createAccountsStore(
+  preloadedState: PreloadedState<AccountsState>
+) {
+  return createStore<
+    AccountsState,
+    UiAction,
+    {
+      dispatch: ThunkDispatch<AccountsState, undefined, UiAction>;
+    },
+    Record<never, unknown>
+  >(
     reducer,
-    { version: extension.runtime.getManifest().version },
-    applyMiddleware(...Object.values(middleware))
+    preloadedState,
+    applyMiddleware(
+      thunk,
+      ...Object.values(middleware),
+      ...(KEEPERWALLET_DEBUG
+        ? [
+            createLogger({
+              collapsed: true,
+              diff: true,
+            }),
+          ]
+        : [])
+    )
   );
 }
 
 export type AccountsStore = ReturnType<typeof createAccountsStore>;
+
+export type AccountsThunkAction<ReturnType> = ThunkAction<
+  ReturnType,
+  AccountsState,
+  undefined,
+  UiAction
+>;
 
 export const useAppDispatch = () => useDispatch<AccountsStore['dispatch']>();

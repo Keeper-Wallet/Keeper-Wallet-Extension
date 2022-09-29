@@ -1,13 +1,14 @@
 import * as styles from './deleteAccounts.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Error, Input } from 'ui/components/ui';
-import { deleteAccount } from 'ui/actions';
+import { useNavigate } from 'react-router-dom';
+import { Button, ErrorMessage, Input } from 'ui/components/ui';
+import { deleteAllAccounts } from 'ui/actions/user';
 import cn from 'classnames';
 import { useAppDispatch } from 'ui/store';
-import { PageComponentProps } from 'ui/pageConfig';
 
-export function DeleteAllAccounts({ onBack }: PageComponentProps) {
+export function DeleteAllAccounts() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -62,24 +63,33 @@ export function DeleteAllAccounts({ onBack }: PageComponentProps) {
           onBlur={handleBlur}
           data-testid="confirmPhrase"
         />
-        <Error
+        <ErrorMessage
           className={cn('margin1', styles.error)}
           show={hasError && (isBlur || isCorrectLength)}
           data-testid="confirmPhraseError"
         >
           {t('forgotPassword.phraseError')}
-        </Error>
+        </ErrorMessage>
       </div>
 
       <div className="buttons-wrapper">
-        <Button type="button" onClick={onBack} data-testid="resetCancel">
+        <Button
+          type="button"
+          onClick={() => {
+            navigate(-1);
+          }}
+          data-testid="resetCancel"
+        >
           {t('forgotPassword.resetCancel')}
         </Button>
         <Button
           type="button"
           view="warning"
           disabled={hasError}
-          onClick={() => dispatch(deleteAccount())}
+          onClick={async () => {
+            await dispatch(deleteAllAccounts());
+            navigate('/', { replace: true });
+          }}
           data-testid="resetConfirm"
         >
           {t('forgotPassword.resetConfirm')}

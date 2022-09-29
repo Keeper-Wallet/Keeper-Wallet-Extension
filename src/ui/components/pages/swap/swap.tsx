@@ -8,17 +8,19 @@ import { useAssetIdByTicker } from 'assets/utils';
 import { convertFeeToAsset } from 'fee/utils';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { updateAssets } from 'ui/actions/assets';
-import { resetSwapScreenInitialState } from 'ui/actions/localState';
 import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
-import { PageComponentProps, PAGES } from 'ui/pageConfig';
 import background from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { SwapForm, OnSwapParams } from './form';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
 
-export function Swap({ setTab }: PageComponentProps) {
+export function Swap() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
   const { t } = useTranslation();
 
   const dispatch = useAppDispatch();
@@ -26,19 +28,9 @@ export function Swap({ setTab }: PageComponentProps) {
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const feeConfig = useAppSelector(state => state.feeConfig);
 
-  const initialStateFromRedux = useAppSelector(
-    state => state.localState.swapScreenInitialState
-  );
-
-  const [initialState] = React.useState(initialStateFromRedux);
-
-  React.useEffect(() => {
-    dispatch(resetSwapScreenInitialState());
-  }, [dispatch]);
-
   const usdnAssetId = useAssetIdByTicker(currentNetwork, 'USDN');
 
-  const initialFromAssetId = initialState.fromAssetId || usdnAssetId;
+  const initialFromAssetId = searchParams.get('fromAssetId') || usdnAssetId;
 
   const initialToAssetId =
     initialFromAssetId === usdnAssetId ? 'WAVES' : usdnAssetId;
@@ -125,7 +117,7 @@ export function Swap({ setTab }: PageComponentProps) {
         fromMoney={performedSwapData.fromMoney}
         transactionId={performedSwapData.transactionId}
         onClose={() => {
-          setTab(PAGES.ROOT);
+          navigate('/');
         }}
       />
     );

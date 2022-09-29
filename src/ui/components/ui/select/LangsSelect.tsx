@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as styles from './LangsSelect.module.css';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { setLocale } from '../../../actions';
+import { setLocale } from '../../../actions/user';
 import { Select } from '../';
 import cn from 'classnames';
 

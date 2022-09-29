@@ -2,10 +2,9 @@ import * as styles from './importSuccess.module.css';
 import cn from 'classnames';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui';
-import { PAGES } from '../../pageConfig';
-import { useAccountsSelector, useAppDispatch } from 'accounts/store';
-import { setTab } from 'ui/actions';
+import { useAccountsSelector } from 'accounts/store';
 import background from 'ui/services/Background';
 
 export function ImportSuccessAddressBook() {
@@ -38,13 +37,14 @@ export function ImportSuccessAddressBook() {
   );
 }
 
-export function ImportSuccess() {
+export function ImportSuccess({
+  isKeystoreImport,
+}: {
+  isKeystoreImport?: boolean;
+}) {
+  const navigate = useNavigate();
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
   const account = useAccountsSelector(state => state.selectedAccount);
-  const isKeystoreImport = useAccountsSelector(
-    state => state.backTabs.slice(-1)[0] === PAGES.IMPORT_KEYSTORE
-  );
 
   return (
     <div data-testid="importSuccessForm" className={styles.content}>
@@ -52,7 +52,7 @@ export function ImportSuccess() {
 
       <p className={cn(styles.title, 'headline2')}>
         {t(
-          isKeystoreImport ? 'import.readyToUse' : 'import.readyToUseKeystore',
+          isKeystoreImport ? 'import.readyToUseKeystore' : 'import.readyToUse',
           { name: account.name }
         )}
       </p>
@@ -61,7 +61,7 @@ export function ImportSuccess() {
         {t('import.readyHelpText')}
       </p>
 
-      {isKeystoreImport && (
+      {!isKeystoreImport && (
         <>
           <div className={`${styles.address} tag1 basic500 input-title`}>
             {t('newAccountName.accountAddress')}
@@ -86,7 +86,9 @@ export function ImportSuccess() {
           data-testid="addAnotherAccountBtn"
           className={styles.button}
           type="button"
-          onClick={() => dispatch(setTab(PAGES.ROOT))}
+          onClick={() => {
+            navigate('/', { replace: true });
+          }}
         >
           {t('import.addAnotherAccount')}
         </Button>

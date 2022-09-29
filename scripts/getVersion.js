@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const package = require('../package');
 
 module.exports = () => {

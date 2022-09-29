@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 import { ACTION } from '../actions/constants';
 import { UiMiddleware } from 'ui/store';
 
-export const sentryBreadcrumbs: UiMiddleware = store => next => action => {
+export const sentryBreadcrumbs: UiMiddleware = () => next => action => {
   Sentry.addBreadcrumb({
     type: 'info',
     category: 'redux.action',
@@ -12,23 +12,6 @@ export const sentryBreadcrumbs: UiMiddleware = store => next => action => {
   });
 
   switch (action.type) {
-    case ACTION.CHANGE_TAB: {
-      const fromTab = store.getState().tab;
-      const toTab = action.payload;
-
-      if (toTab !== fromTab) {
-        Sentry.addBreadcrumb({
-          type: 'navigation',
-          category: 'navigation',
-          level: Sentry.Severity.Info,
-          data: {
-            from: fromTab,
-            to: toTab,
-          },
-        });
-      }
-      break;
-    }
     case ACTION.UPDATE_CURRENT_NETWORK:
       Sentry.setTag('network', action.payload);
 

@@ -1,4 +1,4 @@
-import { ACTION } from '../actions';
+import { ACTION } from '../actions/constants';
 import { combineReducers } from 'redux';
 import { simpleFabric } from './utils';
 

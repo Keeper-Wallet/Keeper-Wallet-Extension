@@ -2,10 +2,10 @@ import * as styles from './styles/confirmBackup.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';
-import { Button, Error, Pills, PillsListItem } from '../ui';
+import { Button, ErrorMessage, Pills, PillsListItem } from '../ui';
 import { AppState } from 'ui/store';
-import { PageComponentProps, PAGES } from 'ui/pageConfig';
 import { NewAccountState } from 'ui/reducers/localState';
+import { withNavigate, WithNavigate } from 'ui/router';
 
 const SHUFFLE_COUNT = 500;
 
@@ -13,7 +13,7 @@ interface StateProps {
   account: Extract<NewAccountState, { type: 'seed' }>;
 }
 
-type Props = WithTranslation & PageComponentProps & StateProps;
+type Props = WithTranslation & StateProps & WithNavigate;
 
 interface State {
   seed: string | null;
@@ -86,9 +86,9 @@ class ConfirmBackupComponent extends React.Component<Props, State> {
         <div className="center body3">
           {complete ? null : t('confirmBackup.selectWord')}
           {showClear ? (
-            <Error show={true} className={styles.noMargin}>
+            <ErrorMessage show={true} className={styles.noMargin}>
               {t('confirmBackup.wrongSeed')}
-            </Error>
+            </ErrorMessage>
           ) : null}
         </div>
 
@@ -125,7 +125,7 @@ class ConfirmBackupComponent extends React.Component<Props, State> {
   private _onSubmit(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     this.setState({ disabled: true });
-    this.props.setTab(PAGES.ACCOUNT_NAME);
+    this.props.navigate('/account-name', { replace: true });
   }
 
   private _onSelect({ text, id }: PillsListItem) {
@@ -171,5 +171,5 @@ const mapStateToProps = (state: AppState): StateProps => {
 };
 
 export const ConfirmBackup = connect(mapStateToProps)(
-  withTranslation()(ConfirmBackupComponent)
+  withTranslation()(withNavigate(ConfirmBackupComponent))
 );

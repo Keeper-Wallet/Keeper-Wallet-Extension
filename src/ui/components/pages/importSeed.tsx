@@ -3,11 +3,12 @@ import { validators } from '@waves/waves-transactions';
 import cn from 'classnames';
 import * as React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { newAccountSelect, selectAccount } from '../../actions';
+import { newAccountSelect, selectAccount } from 'ui/actions/localState';
 import {
   Button,
-  Error,
+  ErrorMessage,
   Input,
   Tab,
   TabList,
@@ -15,13 +16,8 @@ import {
   TabPanels,
   Tabs,
 } from '../ui';
-import { PageComponentProps, PAGES } from '../../pageConfig';
 import * as styles from './importSeed.module.css';
 import { InlineButton } from '../ui/buttons/inlineButton';
-
-interface Props extends PageComponentProps {
-  isNew?: boolean;
-}
 
 const SEED_MIN_LENGTH = 24;
 const ENCODED_SEED_MIN_LENGTH = 16;
@@ -43,36 +39,22 @@ function stripBase58Prefix(str: string) {
   return str.replace(/^base58:/, '');
 }
 
-export function ImportSeed({ isNew, setTab }: Props) {
+export function ImportSeed() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const accounts = useAppSelector(state => state.accounts);
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const customCodes = useAppSelector(state => state.customCodes);
   const networks = useAppSelector(state => state.networks);
-  const newAccount = useAppSelector(state => state.localState.newAccount);
 
-  const [activeTab, setActiveTab] = React.useState(
-    isNew || newAccount.type === 'seed'
-      ? SEED_TAB_INDEX
-      : newAccount.type === 'encodedSeed'
-      ? ENCODED_SEED_TAB_INDEX
-      : PRIVATE_KEY_TAB_INDEX
-  );
+  const [activeTab, setActiveTab] = React.useState(SEED_TAB_INDEX);
 
   const [showValidationError, setShowValidationError] = React.useState(false);
 
-  const [seedValue, setSeedValue] = React.useState<string>(
-    isNew || newAccount.type !== 'seed' ? '' : newAccount.seed
-  );
-
-  const [encodedSeedValue, setEncodedSeedValue] = React.useState<string>(
-    isNew || newAccount.type !== 'encodedSeed' ? '' : newAccount.encodedSeed
-  );
-
-  const [privateKeyValue, setPrivateKeyValue] = React.useState<string>(
-    isNew || newAccount.type !== 'privateKey' ? '' : newAccount.privateKey
-  );
+  const [seedValue, setSeedValue] = React.useState<string>('');
+  const [encodedSeedValue, setEncodedSeedValue] = React.useState<string>('');
+  const [privateKeyValue, setPrivateKeyValue] = React.useState<string>('');
 
   const networkCode =
     customCodes[currentNetwork] ||
@@ -200,11 +182,12 @@ export function ImportSeed({ isNew, setTab }: Props) {
     }
   }
 
-  const existedAccount =
+  const existingAccount =
     address && accounts.find(acc => acc.address === address);
-  if (existedAccount) {
+
+  if (existingAccount) {
     validationError = t('importSeed.accountExistsError', {
-      name: existedAccount.name,
+      name: existingAccount.name,
     });
   }
 
@@ -218,9 +201,10 @@ export function ImportSeed({ isNew, setTab }: Props) {
         onSubmit={event => {
           event.preventDefault();
 
-          if (showValidationError && existedAccount) {
-            dispatch(selectAccount(existedAccount));
-            return setTab(PAGES.IMPORT_SUCCESS);
+          if (showValidationError && existingAccount) {
+            dispatch(selectAccount(existingAccount));
+            navigate('/import-success');
+            return;
           }
 
           setShowValidationError(true);
@@ -261,7 +245,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
             );
           }
 
-          setTab(PAGES.ACCOUNT_NAME_SEED);
+          navigate('/account-name');
         }}
       >
         <Tabs
@@ -327,13 +311,13 @@ export function ImportSeed({ isNew, setTab }: Props) {
           </TabPanels>
         </Tabs>
 
-        <Error
+        <ErrorMessage
           className={styles.error}
           data-testid="validationError"
           show={showValidationError}
         >
           {validationError}
-        </Error>
+        </ErrorMessage>
 
         <div className="tag1 basic500 input-title">
           {t('importSeed.address')}
@@ -345,7 +329,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
 
         <Button data-testid="continueBtn" type="submit" view="submit">
           {t(
-            existedAccount && showValidationError
+            existingAccount && showValidationError
               ? 'importSeed.switchAccount'
               : 'importSeed.importAccount'
           )}

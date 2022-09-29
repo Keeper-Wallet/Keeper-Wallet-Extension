@@ -1,13 +1,15 @@
 import { validators } from '@waves/waves-transactions';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import * as React from 'react';
-import { createAccount } from 'ui/actions';
+import { useNavigate } from 'react-router-dom';
+import { createAccount } from 'ui/actions/user';
 import { WalletTypes } from 'ui/services/Background';
-import { Button, Error, Input } from 'ui/components/ui';
+import { Button, ErrorMessage, Input } from 'ui/components/ui';
 import * as styles from 'ui/components/pages/importDebug.module.css';
 import { useTranslation } from 'react-i18next';
 
 export function ImportDebug() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
@@ -59,7 +61,7 @@ export function ImportDebug() {
       <h2 className="margin1 title1">{t('importDebug.title')}</h2>
 
       <form
-        onSubmit={e => {
+        onSubmit={async e => {
           e.preventDefault();
 
           setShowErrors(true);
@@ -68,7 +70,7 @@ export function ImportDebug() {
             return;
           }
 
-          dispatch(
+          await dispatch(
             createAccount(
               {
                 type: 'debug',
@@ -79,6 +81,8 @@ export function ImportDebug() {
               WalletTypes.Debug
             )
           );
+
+          navigate('/import-success');
         }}
       >
         <div className="margin1">
@@ -94,7 +98,9 @@ export function ImportDebug() {
             autoFocus
             error={showErrors && !!nameError}
           />
-          <Error show={showErrors && !!nameError}>{nameError}</Error>
+          <ErrorMessage show={showErrors && !!nameError}>
+            {nameError}
+          </ErrorMessage>
         </div>
 
         <div className="margin4">
@@ -109,7 +115,9 @@ export function ImportDebug() {
             maxLength={35}
             error={showErrors && !!addressError}
           />
-          <Error show={showErrors && !!addressError}>{addressError}</Error>
+          <ErrorMessage show={showErrors && !!addressError}>
+            {addressError}
+          </ErrorMessage>
         </div>
 
         <div className="margin4">

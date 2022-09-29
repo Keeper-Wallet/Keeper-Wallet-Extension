@@ -6,13 +6,13 @@ import {
   useTranslation,
   WithTranslation,
 } from 'react-i18next';
+import { setLoading } from 'ui/actions/localState';
 import {
-  loading,
   setCustomCode,
   setCustomMatcher,
   setCustomNode,
   setNetwork,
-} from 'ui/actions';
+} from 'ui/actions/network';
 import { Modal } from 'ui/components/ui';
 import { INetworkData, NetworkSettings } from '../NetworkSettings';
 import * as styles from './network.styl';
@@ -81,8 +81,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  setNetwork: (net: NetworkName) => void;
-  loading: (show: boolean) => void;
+  setNetwork: (net: NetworkName) => Promise<void>;
   setCustomNode: (payload: {
     node: string;
     network: NetworkName | null | undefined;
@@ -95,12 +94,13 @@ interface DispatchProps {
     code: string;
     network: NetworkName | null | undefined;
   }) => void;
+  setLoading: (show: boolean) => void;
 }
 
 type Props = WithTranslation &
   StateProps &
   DispatchProps & {
-    noChangeNetwork: boolean | undefined;
+    allowChangingNetwork: boolean | undefined;
   };
 
 interface INetwork {
@@ -153,7 +153,7 @@ class NetworkComponent extends React.PureComponent<Props, IState> {
 
   selectFromNetworksHandler = () => {
     this.addClickOutHandler();
-    this.setState({ showNetworks: !this.props.noChangeNetwork, net: null });
+    this.setState({ showNetworks: this.props.allowChangingNetwork, net: null });
   };
 
   selectHandler = ({ name }: INetwork) => {
@@ -171,16 +171,16 @@ class NetworkComponent extends React.PureComponent<Props, IState> {
 
   editClickHandler = () =>
     this.setState({
-      showSettings: !this.props.noChangeNetwork,
+      showSettings: this.props.allowChangingNetwork,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       net: this.state.networkHash![this.props.currentNetwork],
     });
 
-  setNewNetwork = (net: NetworkName | null | undefined) => {
+  setNewNetwork = async (net: NetworkName | null | undefined) => {
     if (net) {
-      this.props.loading(true);
-      setTimeout(() => this.props.loading(false), 1000);
-      this.props.setNetwork(net);
+      this.props.setLoading(true);
+      setTimeout(() => this.props.setLoading(false), 1000);
+      await this.props.setNetwork(net);
     }
   };
 
@@ -233,7 +233,7 @@ class NetworkComponent extends React.PureComponent<Props, IState> {
   render(): React.ReactNode {
     const networkClassName = cn(
       'basic500',
-      this.props.noChangeNetwork && styles.disabledNet
+      !this.props.allowChangingNetwork && styles.disabledNet
     );
 
     const { t } = this.props;
@@ -256,7 +256,7 @@ class NetworkComponent extends React.PureComponent<Props, IState> {
         {props => (
           <div
             className={`${styles.network} flex`}
-            {...(this.props.noChangeNetwork && props)}
+            {...(!this.props.allowChangingNetwork ? props : undefined)}
           >
             <div
               className={`${networkClassName} flex`}
@@ -272,7 +272,7 @@ class NetworkComponent extends React.PureComponent<Props, IState> {
               <div
                 className={cn(
                   styles.editBtn,
-                  this.props.noChangeNetwork && styles.disabledNet
+                  !this.props.allowChangingNetwork && styles.disabledNet
                 )}
                 onClick={this.editClickHandler}
               >
@@ -323,7 +323,7 @@ const mapStateToProps = ({
 
 const actions = {
   setNetwork,
-  loading,
+  setLoading,
   setCustomNode,
   setCustomMatcher,
   setCustomCode,

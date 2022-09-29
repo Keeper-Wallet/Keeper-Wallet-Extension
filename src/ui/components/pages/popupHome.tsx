@@ -1,28 +1,23 @@
 import * as styles from './styles/assets.styl';
 import * as React from 'react';
-import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { useTranslation } from 'react-i18next';
-import {
-  getBalances,
-  setActiveAccount,
-  setSwapScreenInitialState,
-} from 'ui/actions';
-import { PageComponentProps, PAGES } from 'ui/pageConfig';
+import { getBalances } from 'ui/actions/balances';
 import { Asset, Money } from '@waves/data-entities';
 import BigNumber from '@waves/bignumber';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
-import { Intro } from './Intro';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { AssetInfo } from './assets/assetInfo';
 import { TabAssets } from './assets/tabs/tabAssets';
 import { TabNfts } from './assets/tabs/tabNfts';
 import { TabTxHistory } from './assets/tabs/tabTxHistory';
 import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
-import { PreferencesAccount } from 'preferences/types';
+import { ImportPopup } from './Import';
 import { AssetDetail } from 'assets/types';
 
-export function Assets({ setTab }: PageComponentProps) {
+export function PopupHome() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -38,35 +33,26 @@ export function Assets({ setTab }: PageComponentProps) {
 
   const [activeTab, setActiveTab] = useUiState('assetsTab');
 
-  const [showAsset, setShowAsset] = useState(false);
+  const [showAsset, setShowAsset] = React.useState(false);
   const [showCopy, setShowCopy] = React.useState(false);
 
-  const [currentAsset, setCurrentAsset] = useUiState('currentAsset');
-
-  const address = activeAccount && activeAccount.address;
+  const [asset, setAsset] = React.useState<AssetDetail | null>(null);
 
   React.useEffect(() => {
-    setCurrentAsset(null);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (!balances[address!]) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+    if (!balances[activeAccount?.address!]) {
       dispatch(getBalances());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
-  const onSelectHandler = (account: PreferencesAccount) => {
-    dispatch(setActiveAccount(account));
-    setTab(PAGES.ACCOUNT_INFO);
-  };
-
   if (!activeAccount) {
-    return <Intro />;
+    return <ImportPopup />;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const amountInUsd = balances[address!]?.assets
+  const amountInUsd = balances[activeAccount.address]?.assets
     ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      Object.entries(balances[address!]!.assets!).reduce(
+      Object.entries(balances[activeAccount.address]!.assets!).reduce(
         (acc, [id, { balance }]) => {
           if (assets[id] && usdPrices[id]) {
             const tokens = new Money(
@@ -90,8 +76,7 @@ export function Assets({ setTab }: PageComponentProps) {
           wavesBalance={
             assets['WAVES'] &&
             new Money(
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              balances[address!]?.available || 0,
+              balances[activeAccount.address]?.available || 0,
               new Asset(assets['WAVES'])
             )
           }
@@ -101,14 +86,16 @@ export function Assets({ setTab }: PageComponentProps) {
             setTimeout(() => setShowCopy(false), 1000);
           }}
           onSwapClick={() => {
-            setTab(PAGES.SWAP);
+            navigate('/swap');
           }}
           onOtherAccountsClick={() => {
-            setTab(PAGES.OTHER_ACCOUNTS);
+            navigate('/other-accounts');
           }}
-          onClick={onSelectHandler}
+          onClick={account => {
+            navigate(`/account-info/${account.address}`);
+          }}
           onShowQr={() => {
-            setTab(PAGES.QR_CODE_SELECTED);
+            navigate('/qr-code');
           }}
         />
       </div>
@@ -122,19 +109,19 @@ export function Assets({ setTab }: PageComponentProps) {
         <TabPanels className={styles.tabPanels}>
           <TabAssets
             onInfoClick={assetId => {
-              setCurrentAsset(assets[assetId]);
+              setAsset(assets[assetId]);
               setShowAsset(true);
             }}
             onSendClick={assetId => {
-              setCurrentAsset(assets[assetId]);
-              setTab(PAGES.SEND);
+              navigate(`/send/${assetId}`);
             }}
             onSwapClick={assetId => {
-              dispatch(setSwapScreenInitialState({ fromAssetId: assetId }));
-              setTab(PAGES.SWAP);
+              navigate(
+                `/swap?${new URLSearchParams({ fromAssetId: assetId })}`
+              );
             }}
           />
-          <TabNfts nextTab={setTab} />
+          <TabNfts />
           <TabTxHistory />
         </TabPanels>
       </Tabs>
@@ -161,21 +148,22 @@ export function Assets({ setTab }: PageComponentProps) {
         </div>
       </Modal>
 
-      <Modal
-        animation={Modal.ANIMATION.FLASH}
-        showModal={currentAsset && showAsset}
-        onExited={() => setCurrentAsset(null)}
-      >
-        <AssetInfo
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          asset={currentAsset! as AssetDetail}
-          onCopy={() => {
-            setShowCopy(true);
-            setTimeout(() => setShowCopy(false), 1000);
-          }}
-          onClose={() => setShowAsset(false)}
-        />
-      </Modal>
+      {asset && (
+        <Modal
+          animation={Modal.ANIMATION.FLASH}
+          showModal={showAsset}
+          onExited={() => setAsset(null)}
+        >
+          <AssetInfo
+            asset={asset}
+            onCopy={() => {
+              setShowCopy(true);
+              setTimeout(() => setShowCopy(false), 1000);
+            }}
+            onClose={() => setShowAsset(false)}
+          />
+        </Modal>
+      )}
     </div>
   );
 }

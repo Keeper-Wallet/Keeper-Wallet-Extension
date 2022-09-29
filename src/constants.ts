@@ -3,6 +3,9 @@ import { TRANSACTION_TYPE } from '@waves/ts-types';
 export const KEEPERWALLET_DEBUG = process.env.NODE_ENV !== 'production';
 export const KEEPERWALLET_ENV = process.env.NODE_ENV || 'development';
 
+export const MAX_TX_HISTORY_ITEMS = 101;
+export const MAX_NFT_ITEMS = 1000;
+
 export const CONFIG_URL =
   'https://raw.githubusercontent.com/wavesplatform/waves-client-config/master/waves_keeper_blacklist.json';
 

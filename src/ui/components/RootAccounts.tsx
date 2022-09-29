@@ -1,118 +1,41 @@
-import * as Sentry from '@sentry/react';
+import { useAccountsSelector } from 'accounts/store';
+import { useSentryNavigationBreadcrumbs } from 'common/useSentryNavigationBreadcrumbs';
 import * as React from 'react';
-import { addBackTab, loading, removeBackTab, setTab } from '../actions';
-import { Menu } from './menu';
-import { Bottom } from './bottom';
-import { PAGES, PAGES_CONF } from '../pageConfig';
-import { useAccountsSelector, useAppDispatch } from 'accounts/store';
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Login } from './pages/login';
+import { Welcome } from './pages/Welcome';
 
 export function RootAccounts() {
-  const dispatch = useAppDispatch();
-  const currentLocale = useAccountsSelector(state => state.currentLocale);
-  const backTabs = useAccountsSelector(state => state.backTabs);
-  const currentTab = useAccountsSelector(state => {
-    if (state.localState.loading) {
-      return PAGES.INTRO;
-    }
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    let tab = state.tab;
+  const initialized = useAccountsSelector(state => state.state?.initialized);
+  const locked = useAccountsSelector(state => state.state?.locked);
 
-    if (typeof state.tab !== 'string') {
-      const page = window.location.hash.split('#')[1];
-      tab = Object.values(PAGES).includes(page) ? page : PAGES.ROOT;
-    }
-
-    if (!tab && state.state?.locked == null) {
-      tab = PAGES.INTRO;
-    }
-
-    if (!tab && state.state?.locked) {
-      tab = PAGES.WELCOME;
-    }
-
-    let canUseTab: boolean | null | undefined = !state.state?.locked;
-
-    switch (tab) {
-      case PAGES.NEW:
-      case PAGES.INTRO:
-        canUseTab = !state.state?.initialized;
-        break;
-      case PAGES.LOGIN:
-      case PAGES.FORGOT:
-        canUseTab = state.state?.initialized && state.state?.locked;
-        break;
-    }
-
-    if (!tab || !canUseTab) {
-      tab = state.state?.locked
-        ? state.state?.initialized
-          ? PAGES.LOGIN
-          : PAGES.WELCOME
-        : PAGES.IMPORT_TAB;
-    }
-
-    if (tab !== state.tab) {
-      Sentry.addBreadcrumb({
-        type: 'navigation',
-        category: 'navigation',
-        level: Sentry.Severity.Info,
-        data: {
-          from: state.tab,
-          to: tab,
-        },
-      });
-    }
-
-    return tab;
-  });
-
+  const currentNetwork = useAccountsSelector(state => state.currentNetwork);
+  const prevNetworkRef = React.useRef(currentNetwork);
   React.useEffect(() => {
-    setTimeout(() => dispatch(loading(false)), 200);
-  }, [dispatch]);
+    if (currentNetwork === prevNetworkRef.current) {
+      return;
+    }
 
-  const pageConf = PAGES_CONF[currentTab];
-  const Component = pageConf.component;
-  const backTabFromConf =
-    typeof pageConf.menu.back === 'string' ? pageConf.menu.back : null;
+    navigate('/', { replace: true });
+    prevNetworkRef.current = currentNetwork;
+  }, [currentNetwork, navigate]);
 
-  const onSetTab = React.useCallback(
-    tab => {
-      dispatch(addBackTab(currentTab));
-      dispatch(setTab(tab));
-    },
-    [currentTab, dispatch]
-  );
+  useSentryNavigationBreadcrumbs(location);
 
-  const onBack = React.useCallback(() => {
-    const tab = backTabFromConf || backTabs[backTabs.length - 1] || PAGES.ROOT;
-    dispatch(removeBackTab());
-    dispatch(setTab(tab));
-  }, [backTabFromConf, backTabs, dispatch]);
+  if (!initialized && location.pathname !== '/init-vault') {
+    return <Welcome />;
+  }
 
-  const onDelete = React.useCallback(() => {
-    setTab(PAGES.DELETE_ACTIVE_ACCOUNT);
-  }, []);
+  if (initialized && locked && location.pathname !== '/forgot-password') {
+    return <Login />;
+  }
 
-  const pageProps = { ...pageConf.props, setTab: onSetTab, onBack };
+  if (initialized && !locked && location.pathname === '/forgot-password') {
+    return <Navigate to="/" />;
+  }
 
-  return (
-    <div className={`height ${currentLocale}`}>
-      <Menu
-        hasLogo={pageConf.menu.hasLogo}
-        hasSettings={pageConf.menu.hasSettings}
-        deleteAccount={pageConf.menu.deleteAccount}
-        hasClose={!!pageConf.menu.close}
-        hasBack={
-          currentTab !== window.location.hash.split('#')[1] &&
-          pageConf.menu.back !== null &&
-          (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back)
-        }
-        setTab={onSetTab}
-        onBack={onBack}
-        onDelete={onDelete}
-      />
-      <Component {...pageProps} key={currentTab} />
-      <Bottom {...pageConf.bottom} />
-    </div>
-  );
+  return <Outlet />;
 }

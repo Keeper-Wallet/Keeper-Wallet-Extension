@@ -1,69 +1,65 @@
 import * as styles from './newWalletName.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  createAccount,
-  newAccountName,
-  selectAccount,
-  setTab as resetTab,
-} from 'ui/actions';
-import { Button, Error, Input } from 'ui/components/ui';
+import { useNavigate } from 'react-router-dom';
+import { newAccountName, selectAccount } from 'ui/actions/localState';
+import { createAccount } from 'ui/actions/user';
+import { Button, ErrorMessage, Input } from 'ui/components/ui';
 import { CONFIG } from 'ui/appConfig';
 import { WalletTypes } from 'ui/services/Background';
 import { useAccountsSelector, useAppDispatch } from 'accounts/store';
-import { PageComponentProps, PAGES } from 'ui/pageConfig';
 
-export function NewWalletName({ setTab }: PageComponentProps) {
+export function NewWalletName() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const account = useAccountsSelector(state => state.localState.newAccount);
   const accounts = useAccountsSelector(state => state.accounts);
-  const [accountName, setAccountName] = React.useState<string>();
+  const [accountName, setAccountName] = React.useState('');
   const [pending, setPending] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>('');
 
-  const existedAccount = accounts.find(
+  const existingAccount = accounts.find(
     ({ address }) => address === account.address
   );
 
   React.useEffect(() => {
     dispatch(newAccountName(accountName));
 
-    if (accountName != null) {
-      setError(null);
+    setError(null);
 
-      if (accountName.length < CONFIG.NAME_MIN_LENGTH) {
-        setError(t('newAccountName.errorRequired'));
-      }
-
-      if (accounts.find(({ name }) => name === accountName)) {
-        setError(t('newAccountName.errorInUse'));
-      }
+    if (accountName.length < CONFIG.NAME_MIN_LENGTH) {
+      setError(t('newAccountName.errorRequired'));
     }
 
-    if (existedAccount) {
+    if (accounts.find(({ name }) => name === accountName)) {
+      setError(t('newAccountName.errorInUse'));
+    }
+
+    if (existingAccount) {
       setError(
         t('newAccountName.errorAlreadyExists', {
-          name: existedAccount.name,
+          name: existingAccount.name,
         })
       );
     }
-  }, [accountName, accounts, existedAccount, dispatch, t]);
+  }, [accountName, accounts, existingAccount, dispatch, t]);
 
   return (
     <div data-testid="newWalletNameForm" className={styles.content}>
       <h2 className={`title1 margin1`}>{t('newAccountName.accountName')}</h2>
 
       <form
-        onSubmit={e => {
+        onSubmit={async e => {
           e.preventDefault();
 
           setPending(true);
 
-          if (existedAccount) {
-            dispatch(selectAccount(existedAccount));
-            return setTab(PAGES.IMPORT_SUCCESS);
+          if (existingAccount) {
+            dispatch(selectAccount(existingAccount));
+            navigate('/import-success');
+            return;
           }
 
           if (error) {
@@ -78,27 +74,29 @@ export function NewWalletName({ setTab }: PageComponentProps) {
             ledger: WalletTypes.Ledger,
           };
 
-          dispatch(
+          await dispatch(
             createAccount(account, accountTypeToWalletType[account.type])
           );
+
+          navigate('/import-success');
         }}
       >
-        <div className={`margin1`}>
+        <div className="margin1">
           <Input
             data-testid="newAccountNameInput"
             className="margin1"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setAccountName(e.target.value)
-            }
-            value={accountName ?? ''}
+            onChange={event => {
+              setAccountName(event.target.value);
+            }}
+            value={accountName}
             maxLength={32}
-            disabled={!!existedAccount}
+            disabled={!!existingAccount}
             autoFocus
             error={!!error}
           />
-          <Error data-testid="newAccountNameError" show={!!error}>
+          <ErrorMessage data-testid="newAccountNameError" show={!!error}>
             {error}
-          </Error>
+          </ErrorMessage>
         </div>
 
         <div className={`basic500 tag1 margin2`}>
@@ -106,7 +104,7 @@ export function NewWalletName({ setTab }: PageComponentProps) {
         </div>
 
         <div className={styles.footer}>
-          <div className={`tag1 basic500 input-title`}>
+          <div className="tag1 basic500 input-title">
             {t('newAccountName.accountAddress')}
           </div>
 
@@ -114,7 +112,7 @@ export function NewWalletName({ setTab }: PageComponentProps) {
             {account.address}
           </div>
 
-          {existedAccount ? (
+          {existingAccount ? (
             <>
               <Button className="margin2" type="submit">
                 {t('newAccountName.switchAccount')}
@@ -123,7 +121,9 @@ export function NewWalletName({ setTab }: PageComponentProps) {
               <Button
                 className="margin1"
                 type="button"
-                onClick={() => dispatch(resetTab(PAGES.ROOT))}
+                onClick={() => {
+                  navigate('/', { replace: true });
+                }}
               >
                 {t('newAccountName.cancel')}
               </Button>

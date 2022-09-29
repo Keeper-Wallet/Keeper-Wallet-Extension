@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { seedUtils } from '@waves/waves-transactions';
 import { ImportKeystoreChooseFile } from './chooseFile';
-import { setAddresses } from 'ui/actions';
-import { PageComponentProps, PAGES } from '../../../pageConfig';
+import { setAddresses } from 'ui/actions/addresses';
 import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import {
@@ -75,7 +75,8 @@ function getFormattedAddresses(
   );
 }
 
-export function ImportAddressBook({ setTab }: PageComponentProps) {
+export function ImportAddressBook() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const addresses = useAppSelector(state => state.addresses);
   const { t } = useTranslation();
@@ -114,7 +115,7 @@ export function ImportAddressBook({ setTab }: PageComponentProps) {
           dispatch(
             setAddresses(getFormattedAddresses(addresses, keystoreAddresses))
           );
-          setTab(PAGES.IMPORT_SUCCESS_ADDRESS_BOOK);
+          navigate('/import-address-book/success');
         } catch (err) {
           setError(t('importKeystore.errorUnexpected'));
         }

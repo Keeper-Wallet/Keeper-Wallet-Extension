@@ -1,18 +1,17 @@
 import * as styles from './ExportAndImport.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector, useAppDispatch } from 'ui/store';
+import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from 'ui/store';
 import background from 'ui/services/Background';
-import { addBackTab, setTab } from '../../actions';
-import { PAGES } from '../../pageConfig';
 import { Button } from '../ui';
 import { downloadKeystore } from '../../../keystore/utils';
 import { ExportPasswordModal } from '../pages/exportAccounts/passwordModal';
 import { isExportable } from '../pages/exportAccounts/chooseItems';
 
 export function ExportAndImport() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
 
   const addresses = useAppSelector(state => state.addresses);
   const allNetworksAccounts = useAppSelector(
@@ -33,8 +32,7 @@ export function ExportAndImport() {
         type="button"
         view="transparent"
         onClick={() => {
-          dispatch(addBackTab(PAGES.EXPORT_AND_IMPORT));
-          dispatch(setTab(PAGES.EXPORT_ACCOUNTS));
+          navigate('/export-accounts');
         }}
       >
         <p className="body1 left">{t('exportAndImport.exportAccounts')}</p>
@@ -45,10 +43,10 @@ export function ExportAndImport() {
         view="transparent"
         onClick={() => {
           background.showTab(
-            `${window.location.origin}/accounts.html#${PAGES.IMPORT_KEYSTORE}`,
-            PAGES.IMPORT_KEYSTORE
+            `${window.location.origin}/accounts.html#/import-keystore`,
+            'import-keystore'
           );
-          dispatch(setTab(PAGES.ROOT));
+          navigate('/', { replace: true });
         }}
       >
         <p className="body1 left">{t('exportAndImport.importAccounts')}</p>
@@ -59,8 +57,7 @@ export function ExportAndImport() {
         type="button"
         view="transparent"
         onClick={() => {
-          dispatch(addBackTab(PAGES.EXPORT_AND_IMPORT));
-          dispatch(setTab(PAGES.EXPORT_ADDRESS_BOOK));
+          navigate('/export-address-book');
         }}
       >
         <p className="body1 left">{t('exportAndImport.exportAddressBook')}</p>
@@ -71,10 +68,10 @@ export function ExportAndImport() {
         view="transparent"
         onClick={() => {
           background.showTab(
-            `${window.location.origin}/accounts.html#${PAGES.IMPORT_ADDRESS_BOOK}`,
-            PAGES.IMPORT_ADDRESS_BOOK
+            `${window.location.origin}/accounts.html#/import-address-book`,
+            'import-address-book'
           );
-          dispatch(setTab(PAGES.ROOT));
+          navigate('/', { replace: true });
         }}
       >
         <p className="body1 left">{t('exportAndImport.importAddressBook')}</p>
@@ -105,7 +102,7 @@ export function ExportAndImport() {
                 password,
                 encrypted
               );
-              dispatch(setTab(PAGES.SETTINGS));
+              navigate('/settings', { replace: true });
             }}
           />
         )}

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import * as styles from './networkSettings.styl';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
-import { Button, Error, Input } from 'ui/components/ui';
+import { Button, ErrorMessage, Input } from 'ui/components/ui';
 import { NetworkName } from 'networks/types';
 
 const key = (key: string | null | undefined) => `bottom.${key}`;
@@ -80,11 +80,14 @@ class NetworkSettingsComponent extends React.PureComponent<Props, State> {
                 value={this.state.node || ''}
                 onChange={this.changeHandler('node', 'nodeError')}
               />
-              <Error show={this.state.nodeError} data-testid="nodeAddressError">
+              <ErrorMessage
+                show={this.state.nodeError}
+                data-testid="nodeAddressError"
+              >
                 {this.state.node
                   ? t('networkSettings.nodeError')
                   : t('networkSettings.nodeUrlEmpty')}
-              </Error>
+              </ErrorMessage>
             </div>
 
             <div className="margin-main-big relative">
@@ -99,9 +102,9 @@ class NetworkSettingsComponent extends React.PureComponent<Props, State> {
                 value={this.state.matcher || ''}
                 onChange={this.changeHandler('matcher', 'matcherError')}
               />
-              <Error show={this.state.matcherError}>
+              <ErrorMessage show={this.state.matcherError}>
                 {t('networkSettings.matcherError')}
-              </Error>
+              </ErrorMessage>
             </div>
           </div>
 

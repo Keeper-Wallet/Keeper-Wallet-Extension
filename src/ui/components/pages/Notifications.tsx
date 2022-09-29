@@ -7,20 +7,20 @@ import {
   useTranslation,
 } from 'react-i18next';
 import {
-  closeNotificationWindow,
   deleteNotifications,
   setActiveNotification,
   setShowNotification,
-} from '../../actions';
-import { PageComponentProps, PAGES } from '../../pageConfig';
+} from '../../actions/notifications';
+import { WithNavigate, withNavigate } from '../../router';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
-import { Intro } from './Intro';
+import { LoadingScreen } from './loadingScreen';
 import { AppState } from 'ui/store';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PreferencesAccount } from 'preferences/types';
 import { PermissionObject, PermissionValue } from 'permissions/types';
 import { MessageStoreItem } from 'messages/types';
+import Background from 'ui/services/Background';
 
 const NotificationItem = ({
   notification,
@@ -61,7 +61,6 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  closeNotificationWindow: () => void;
   setShowNotification: (permissions: {
     origin: string;
     canUse: boolean | null;
@@ -76,7 +75,7 @@ interface DispatchProps {
   ) => void;
 }
 
-type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps & WithNavigate;
 
 interface State {
   canShowNotify?: boolean;
@@ -99,7 +98,7 @@ class NotificationsComponent extends React.Component<Props, State> {
   ): Partial<State> | null {
     const { origins, activeNotification, messages, notifications } = props;
     if (!activeNotification && notifications.length) {
-      props.setTab(PAGES.MESSAGES_LIST);
+      props.navigate('/messages-and-notifications');
       return { loading: true };
     }
 
@@ -136,12 +135,12 @@ class NotificationsComponent extends React.Component<Props, State> {
 
   closeHandler = () => {
     this._deleteMessages(null);
-    this.props.closeNotificationWindow();
+    Background.closeNotificationWindow();
   };
 
   toListHandler = () => {
     (this._deleteMessages(null) as unknown as Promise<void>).then(() =>
-      this.props.setTab(PAGES.MESSAGES_LIST)
+      this.props.navigate('/messages-and-notifications')
     );
   };
 
@@ -159,8 +158,6 @@ class NotificationsComponent extends React.Component<Props, State> {
     this._deleteMessages(nextNotification || null);
   };
 
-  selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
-
   componentDidCatch() {
     this.toListHandler();
   }
@@ -176,7 +173,7 @@ class NotificationsComponent extends React.Component<Props, State> {
     } = this.state;
 
     if (loading) {
-      return <Intro />;
+      return <LoadingScreen />;
     }
 
     return (
@@ -184,7 +181,9 @@ class NotificationsComponent extends React.Component<Props, State> {
         <div className={styles.walletWrapper}>
           <TransactionWallet
             type="clean"
-            onSelect={this.selectAccountHandler}
+            onSelect={() => {
+              this.props.navigate('/change-tx-account');
+            }}
             account={this.props.selectedAccount}
             hideButton={false}
           />
@@ -271,7 +270,6 @@ const mapStateToProps = function (store: AppState): StateProps {
 };
 
 const actions = {
-  closeNotificationWindow,
   setActiveNotification,
   setShowNotification,
   deleteNotifications,
@@ -280,4 +278,4 @@ const actions = {
 export const Notifications = connect(
   mapStateToProps,
   actions
-)(withTranslation()(NotificationsComponent));
+)(withTranslation()(withNavigate(NotificationsComponent)));

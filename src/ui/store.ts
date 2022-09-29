@@ -5,22 +5,18 @@ import {
   createStore,
   Dispatch,
   MiddlewareAPI,
+  PreloadedState,
 } from 'redux';
+import { createLogger } from 'redux-logger';
+import thunk, { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import * as reducers from './reducers/updateState';
-import {
-  NewAccountState,
-  SwapScreenInitialState,
-  TabMode,
-  UiState,
-} from './reducers/updateState';
+import { NewAccountState, UiState } from './reducers/updateState';
 import * as middleware from './midleware';
-import { extension } from 'lib/extension';
 import { KEEPERWALLET_DEBUG } from './appConfig';
 import type { ACTION } from './actions/constants';
 import {
   BackgroundGetStateResult,
   BackgroundUiApi,
-  WalletTypes,
 } from './services/Background';
 import { FeeConfig, NftConfig } from '../constants';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';
@@ -28,20 +24,10 @@ import { PermissionValue } from 'permissions/types';
 import { NotificationsStoreItem } from 'notifications/types';
 import { BalancesItem } from 'balances/types';
 import { NftInfo } from 'nfts';
-import { BatchAddAccountsPayload } from './actions/user';
 import { IMoneyLike } from './utils/converters';
 import { NetworkName } from 'networks/types';
-import { MessageInputOfType, MessageStoreItem } from 'messages/types';
+import { MessageStoreItem } from 'messages/types';
 import { AssetDetail } from 'assets/types';
-
-const middlewares = Object.values(middleware);
-
-if (KEEPERWALLET_DEBUG) {
-  middlewares.push(() => next => action => {
-    console.log('-->', action.type, action.payload, action.meta);
-    return next(action);
-  });
-}
 
 const reducer = combineReducers(reducers);
 
@@ -199,28 +185,8 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.CHANGE_TAB;
-      payload: string | null;
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.SELECT_ACCOUNT;
       payload: PreferencesAccount;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.SET_TAB_MODE;
-      payload: TabMode;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.SET_SWAP_SCREEN_INITIAL_STATE;
-      payload: SwapScreenInitialState;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.RESET_SWAP_SCREEN_INITIAL_STATE;
-      payload?: never;
       meta?: never;
     }
   | {
@@ -269,7 +235,7 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.LOADING;
+      type: typeof ACTION.SET_LOADING;
       payload: boolean;
       meta?: never;
     }
@@ -281,36 +247,6 @@ export type UiAction =
   | {
       type: typeof ACTION.NEW_ACCOUNT_SELECT;
       payload: NewAccountState;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.CHANGE_MENU;
-      payload: { logo: boolean };
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.LOGIN_UPDATE;
-      payload: Record<never, unknown>;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.LOGIN_PENDING;
-      payload: Record<never, unknown>;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.SET_ACTIVE_ACCOUNT;
-      payload: PreferencesAccount;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.SET_PASSWORD_PENDING;
-      payload: { unapprovedMessages?: Record<never, unknown> };
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.SET_PASSWORD_UPDATE;
-      payload: { unapprovedMessages?: Record<never, unknown> };
       meta?: never;
     }
   | {
@@ -430,33 +366,8 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.DELETE_ACTIVE_ACCOUNT;
-      payload: void;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.CLOSE_WINDOW;
-      payload: void;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.DELETE_ACCOUNT;
-      payload?: never;
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.SET_UI_STATE;
       payload: UiState;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.SET_UI_STATE_AND_TAB;
-      payload: { ui: UiState; tab: string | null };
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.CHANGE_NETWORK;
-      payload: NetworkName;
       meta?: never;
     }
   | {
@@ -515,62 +426,6 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.SIGN_AND_PUBLISH_TRANSACTION;
-      payload: MessageInputOfType<'transaction'>['data'];
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.SAVE_NEW_ACCOUNT;
-      payload:
-        | {
-            type: 'seed';
-            name: string;
-            seed: string;
-          }
-        | {
-            type: 'encodedSeed';
-            encodedSeed: string;
-            name: string;
-          }
-        | {
-            type: 'privateKey';
-            name: string;
-            privateKey: string;
-          }
-        | {
-            type: 'wx';
-            name: string;
-            publicKey: string;
-            address: string | null;
-            uuid: string;
-            username: string;
-          }
-        | {
-            type: 'ledger';
-            address: string | null;
-            id: number;
-            name: string;
-            publicKey: string;
-          }
-        | {
-            type: 'debug';
-            address: string;
-            name: string;
-            networkCode: string;
-          };
-      meta: { type: WalletTypes };
-    }
-  | {
-      type: typeof ACTION.BATCH_ADD_ACCOUNTS;
-      payload: BatchAddAccountsPayload;
-      meta: { type: WalletTypes };
-    }
-  | {
-      type: typeof ACTION.LOGIN;
-      payload: string;
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.UPDATE_TRANSACTION_FEE;
       payload: { messageId: string; fee: IMoneyLike };
       meta?: never;
@@ -594,21 +449,6 @@ export type UiAction =
       type: typeof ACTION.REJECT_FOREVER;
       payload: { messageId: string; forever: boolean };
       meta?: never;
-    }
-  | {
-      type: typeof ACTION.SET_PASSWORD;
-      payload: string;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.ADD_BACK_TAB;
-      payload: string | null;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.REMOVE_BACK_TAB;
-      payload: void;
-      meta?: never;
     };
 
 export type UiActionOfType<T extends UiAction['type']> = Extract<
@@ -621,20 +461,40 @@ export type UiActionPayload<T extends UiAction['type']> =
 
 export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
 
-export function createUiStore() {
+export function createUiStore(preloadedState: PreloadedState<AppState>) {
   return createStore<
     AppState,
     UiAction,
-    Record<never, unknown>,
+    {
+      dispatch: ThunkDispatch<AppState, undefined, UiAction>;
+    },
     Record<never, unknown>
   >(
     reducer,
-    { version: extension.runtime.getManifest().version },
-    applyMiddleware(...middlewares)
+    preloadedState,
+    applyMiddleware(
+      thunk,
+      ...Object.values(middleware),
+      ...(KEEPERWALLET_DEBUG
+        ? [
+            createLogger({
+              collapsed: true,
+              diff: true,
+            }),
+          ]
+        : [])
+    )
   );
 }
 
 export type UiStore = ReturnType<typeof createUiStore>;
+
+export type UiThunkAction<ReturnType> = ThunkAction<
+  ReturnType,
+  AppState,
+  undefined,
+  UiAction
+>;
 
 export type UiMiddleware = (
   api: MiddlewareAPI<Dispatch, AppState>

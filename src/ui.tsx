@@ -6,18 +6,17 @@ import * as Sentry from '@sentry/react';
 import { extension } from 'lib/extension';
 import log from 'loglevel';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { render } from 'react-dom';
 import { Provider } from 'react-redux';
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 
 import { KEEPERWALLET_DEBUG } from './constants';
 import { ledgerService } from './ledger/service';
 import { LedgerSignRequest } from './ledger/types';
 import { cbToPromise, setupDnode, transformMethods } from './lib/dnodeUtil';
 import { PortStream } from './lib/portStream';
-import { setLangs } from './ui/actions';
+import { setLangs } from './ui/actions/localState';
 import { createUpdateState } from './ui/actions/updateState';
-import { Root } from 'ui/components/Root';
-import { Error } from 'ui/components/pages/Error';
 import { LANGS } from './ui/i18n';
 import backgroundService, {
   BackgroundGetStateResult,
@@ -25,6 +24,9 @@ import backgroundService, {
 } from './ui/services/Background';
 import { createUiStore } from './ui/store';
 import { initUiSentry } from 'sentry';
+import { RootWrapper } from 'ui/components/RootWrapper';
+import { LoadingScreen } from 'ui/components/pages/loadingScreen';
+import { routes } from './ui/routes';
 
 const isNotificationWindow = window.location.pathname === '/notification.html';
 
@@ -38,17 +40,17 @@ log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 startUi();
 
 async function startUi() {
-  const store = createUiStore();
+  const store = createUiStore({
+    version: extension.runtime.getManifest().version,
+  });
 
   store.dispatch(setLangs(LANGS));
 
-  ReactDOM.render(
+  render(
     <Provider store={store}>
-      <Sentry.ErrorBoundary fallback={errorData => <Error {...errorData} />}>
-        <div className="app">
-          <Root />
-        </div>
-      </Sentry.ErrorBoundary>
+      <RootWrapper>
+        <LoadingScreen />
+      </RootWrapper>
     </Provider>,
     document.getElementById('app-content')
   );
@@ -150,4 +152,15 @@ async function startUi() {
   document.addEventListener('mousedown', () => backgroundService.updateIdle());
   document.addEventListener('focus', () => backgroundService.updateIdle());
   window.addEventListener('beforeunload', () => background.identityClear());
+
+  const router = createMemoryRouter(routes);
+
+  render(
+    <Provider store={store}>
+      <RootWrapper>
+        <RouterProvider router={router} />
+      </RootWrapper>
+    </Provider>,
+    document.getElementById('app-content')
+  );
 }

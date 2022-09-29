@@ -1,12 +1,12 @@
 import { UiAction, UiMiddleware } from 'ui/store';
+import { ACTION } from '../actions/constants';
 import {
-  ACTION,
   allowOriginDone,
   autoOriginDone,
   deleteOriginDone,
   disallowOriginDone,
   pendingOrigin,
-} from '../actions';
+} from '../actions/permissions';
 import background from '../services/Background';
 
 let _timer: ReturnType<typeof setTimeout>;

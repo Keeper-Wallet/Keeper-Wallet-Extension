@@ -1,18 +1,15 @@
-import { ACTION } from '../actions';
+import { ACTION } from '../actions/constants';
 import { UiAction, UiActionPayload } from 'ui/store';
 import { PreferencesAccount } from 'preferences/types';
 import { AssetBalance } from 'balances/types';
 import { NetworkName } from 'networks/types';
 import { MessageStoreItem } from 'messages/types';
-import { AssetDetail } from 'assets/types';
 
 export * from './localState';
 export * from './feeConfig';
 export * from './nftConfig';
 export * from './remoteConfig';
 export * from './notifications';
-
-const MAX_HISTORY = 10;
 
 function createSimpleReducer<TActionType extends UiAction['type']>(
   initialState: UiActionPayload<TActionType>,
@@ -26,8 +23,6 @@ function createSimpleReducer<TActionType extends UiAction['type']>(
     (actionType === action.type ? action.payload : state) as any;
 }
 
-export const tab = createSimpleReducer(null, ACTION.CHANGE_TAB);
-
 export type AssetFilters = {
   term?: string;
   onlyMy?: boolean;
@@ -35,7 +30,6 @@ export type AssetFilters = {
 };
 export type NftFilters = {
   term?: string;
-  creator?: string | null;
 };
 export type TxHistoryFilters = {
   term?: string;
@@ -49,7 +43,6 @@ export interface UiState {
   assetFilters?: AssetFilters;
   assetsTab?: number;
   autoClickProtection?: boolean;
-  currentAsset?: AssetDetail | null;
   nftFilters?: NftFilters;
   showSuspiciousAssets?: boolean;
   slippageToleranceIndex?: number;
@@ -108,10 +101,7 @@ export const idleOptions = createSimpleReducer(
   ACTION.REMOTE_CONFIG.UPDATE_IDLE
 );
 
-export const messages = (
-  state: MessageStoreItem[] = [],
-  action: { type: string; payload: { unapprovedMessages: MessageStoreItem[] } }
-) => {
+export const messages = (state: MessageStoreItem[] = [], action: UiAction) => {
   if (action.type === ACTION.UPDATE_MESSAGES) {
     return [...action.payload.unapprovedMessages];
   }
@@ -125,18 +115,5 @@ export const assetLogos = createSimpleReducer({}, ACTION.SET_ASSET_LOGOS);
 export const assetTickers = createSimpleReducer({}, ACTION.SET_ASSET_TICKERS);
 export const addresses = createSimpleReducer({}, ACTION.UPDATE_ADDRESSES);
 export const nfts = createSimpleReducer(null, ACTION.UPDATE_NFTS);
-
-export const backTabs = (
-  state: string[] = [],
-  { type, payload }: { type: string; payload: string }
-) => {
-  if (type === ACTION.ADD_BACK_TAB) {
-    state = [...state, payload].slice(-MAX_HISTORY);
-  } else if (type === ACTION.REMOVE_BACK_TAB) {
-    state = state.slice(0, -1);
-  }
-
-  return state;
-};
 
 export const version = (state = '') => state;

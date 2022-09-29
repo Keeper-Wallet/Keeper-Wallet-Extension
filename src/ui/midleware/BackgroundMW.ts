@@ -1,12 +1,9 @@
+import { ACTION } from '../actions/constants';
 import {
-  ACTION,
   notificationChangeName,
-  notificationDelete,
   notificationSelect,
-  setActiveNotification,
-  setTab,
-  updateActiveState,
-} from '../actions';
+} from '../actions/localState';
+import { setActiveNotification } from '../actions/notifications';
 import background from '../services/Background';
 import i18n from '../i18n';
 import { UiMiddleware } from 'ui/store';
@@ -91,46 +88,6 @@ export const selectAccount: UiMiddleware = store => next => action => {
   return next(action);
 };
 
-export const deleteActiveAccount: UiMiddleware = store => next => action => {
-  if (action.type === ACTION.DELETE_ACTIVE_ACCOUNT) {
-    const { selectedAccount, localState, currentNetwork } = store.getState();
-    const selected = localState.assets.account
-      ? localState.assets.account.address
-      : selectedAccount.address;
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    background.removeWallet(selected!, currentNetwork).then(() => {
-      store.dispatch(notificationDelete(true));
-      setTimeout(() => {
-        store.dispatch(notificationDelete(false));
-        store.dispatch(setTab(null));
-      }, 1000);
-    });
-    return null;
-  }
-
-  return next(action);
-};
-
-export const closeNotificationWindow: UiMiddleware = () => next => action => {
-  if (action.type === ACTION.CLOSE_WINDOW) {
-    background.closeNotificationWindow();
-  }
-  return next(action);
-};
-
-export const deleteAccountMw: UiMiddleware = store => next => action => {
-  if (action.type === ACTION.DELETE_ACCOUNT) {
-    background.deleteVault().then(() => {
-      store.dispatch(updateActiveState());
-      store.dispatch(setTab(null));
-    });
-    return null;
-  }
-
-  return next(action);
-};
-
 export const uiState: UiMiddleware = store => next => action => {
   if (action.type === ACTION.SET_UI_STATE) {
     const ui = store.getState().uiState;
@@ -138,33 +95,6 @@ export const uiState: UiMiddleware = store => next => action => {
     store.dispatch({ type: ACTION.UPDATE_UI_STATE, payload: newState });
     background.setUiState(newState);
     return null;
-  }
-
-  if (action.type === ACTION.SET_UI_STATE_AND_TAB) {
-    const ui = store.getState().uiState;
-    const newState = { ...ui, ...action.payload.ui };
-    background.setUiState(newState).then(uiState => {
-      store.dispatch({ type: ACTION.UPDATE_UI_STATE, payload: uiState });
-      store.dispatch(setTab(action.payload.tab));
-    });
-
-    return;
-  }
-
-  return next(action);
-};
-
-export const changeNetwork: UiMiddleware = store => next => action => {
-  if (action.type === ACTION.CHANGE_NETWORK) {
-    background
-      .setNetwork(action.payload)
-      .then(() => store.dispatch(setTab(null)));
-    return null;
-  }
-  if (action.type === ACTION.UPDATE_CURRENT_NETWORK) {
-    if (store.getState().localState.tabMode === 'tab') {
-      store.dispatch(setTab(null));
-    }
   }
 
   return next(action);
@@ -269,22 +199,5 @@ export const lock: UiMiddleware = () => next => action => {
     background.lock();
     return null;
   }
-  return next(action);
-};
-
-export const signAndPublishTransaction: UiMiddleware = () => next => action => {
-  if (action.type === ACTION.SIGN_AND_PUBLISH_TRANSACTION) {
-    background.signAndPublishTransaction(action.payload).catch(err => {
-      if (
-        err instanceof Error &&
-        /user denied request|failed request/i.test(err.message)
-      ) {
-        return;
-      }
-
-      throw err;
-    });
-  }
-
   return next(action);
 };

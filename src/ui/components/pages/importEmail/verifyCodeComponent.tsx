@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as styles from './verifyCodeComponent.module.css';
-import { Button, Error, Input } from '../../ui';
+import { Button, ErrorMessage, Input } from '../../ui';
 import { useTranslation } from 'react-i18next';
 
 type VerifyCodeComponentProps = {
@@ -169,9 +169,9 @@ export function VerifyCodeComponent({
         ))}
       </div>
       <div className={styles.codeErrorWrapper}>
-        <Error show={!isPending && isIncorrectCode}>
+        <ErrorMessage show={!isPending && isIncorrectCode}>
           {t('importEmail.incorrectCode')}
-        </Error>
+        </ErrorMessage>
         {isPending && (
           <Button
             className="center fullwidth"

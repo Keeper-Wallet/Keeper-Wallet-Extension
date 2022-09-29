@@ -41,7 +41,7 @@ interface State {
   showed: unknown;
 }
 
-export class Error extends React.PureComponent<Props, State> {
+export class ErrorMessage extends React.PureComponent<Props, State> {
   state: State = { showed: false };
 
   static getDerivedStateFromProps(props: Props, state: State): State | null {

@@ -1,39 +1,6 @@
 import { combineReducers } from 'redux';
-import { ACTION } from '../actions';
+import { ACTION } from '../actions/constants';
 import { UiAction } from 'ui/store';
-import { PreferencesAccount } from 'preferences/types';
-
-function newUser(state = {}, action: UiAction) {
-  switch (action.type) {
-    case ACTION.SET_PASSWORD_PENDING:
-    case ACTION.SET_PASSWORD_UPDATE:
-      return { ...state, ...action.payload.unapprovedMessages };
-  }
-
-  return state;
-}
-
-function assets(
-  state: { account?: PreferencesAccount } = {},
-  action: UiAction
-) {
-  switch (action.type) {
-    case ACTION.SET_ACTIVE_ACCOUNT:
-      return { ...state, account: action.payload };
-  }
-
-  return state;
-}
-
-function login(state: { error?: unknown } = {}, action: UiAction) {
-  switch (action.type) {
-    case ACTION.LOGIN_UPDATE:
-    case ACTION.LOGIN_PENDING:
-      return { ...state, ...action.payload };
-  }
-
-  return state;
-}
 
 export type NewAccountState = {
   address: string | null;
@@ -86,15 +53,8 @@ function newAccount(
   return state;
 }
 
-function menu(state = { logo: false }, { type, payload }: UiAction) {
-  if (type === ACTION.CHANGE_MENU) {
-    return { ...state, ...payload };
-  }
-  return state;
-}
-
-function loading(state = true, { type, payload }: UiAction) {
-  if (type === ACTION.LOADING) {
+function loading(state = false, { type, payload }: UiAction) {
+  if (type === ACTION.SET_LOADING) {
     return payload;
   }
 
@@ -152,44 +112,9 @@ function transactionStatus(
   return state;
 }
 
-export interface SwapScreenInitialState {
-  fromAssetId: string | null;
-}
-
-const swapScreenInitialStateDefault = { fromAssetId: null };
-
-function swapScreenInitialState(
-  state: SwapScreenInitialState = swapScreenInitialStateDefault,
-  action: UiAction
-): SwapScreenInitialState {
-  switch (action.type) {
-    case ACTION.SET_SWAP_SCREEN_INITIAL_STATE:
-      return action.payload;
-    case ACTION.RESET_SWAP_SCREEN_INITIAL_STATE:
-      return swapScreenInitialStateDefault;
-    default:
-      return state;
-  }
-}
-
-export type TabMode = 'popup' | 'tab';
-
-function tabMode(state: TabMode = 'popup', action: UiAction): TabMode {
-  if (action.type === ACTION.SET_TAB_MODE) {
-    return action.payload;
-  }
-  return state;
-}
-
 export const localState = combineReducers({
-  tabMode,
   loading,
-  newUser,
-  login,
   newAccount,
-  menu,
-  assets,
   notifications,
   transactionStatus,
-  swapScreenInitialState,
 });

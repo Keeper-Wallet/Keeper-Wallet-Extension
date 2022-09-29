@@ -2,26 +2,17 @@ import * as styles from './Welcome.module.css';
 import * as React from 'react';
 import { BigLogo } from '../head';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Button, LangsSelect } from '../ui';
-import { PageComponentProps, PAGES } from '../../pageConfig';
-import { useAppSelector } from 'ui/store';
 import background from 'ui/services/Background';
 
-export function Welcome({ setTab }: PageComponentProps) {
-  const { t } = useTranslation();
-  const tabMode = useAppSelector(state => state.localState?.tabMode);
+interface Props {
+  isPopup?: boolean;
+}
 
-  React.useEffect(() => {
-    if (window.location.hash.split('#')[1] === PAGES.NEW) {
-      history.replaceState(
-        history.state,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        null as any,
-        window.location.pathname
-      );
-      setTab(PAGES.NEW);
-    }
-  }, [setTab]);
+export function Welcome({ isPopup }: Props) {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className={styles.content}>
@@ -32,13 +23,13 @@ export function Welcome({ setTab }: PageComponentProps) {
         type="submit"
         view="submit"
         onClick={() => {
-          if (tabMode === 'popup') {
+          if (isPopup) {
             return background.showTab(
-              `${window.location.origin}/accounts.html#${PAGES.NEW}`,
+              `${window.location.origin}/accounts.html#/init-vault`,
               'accounts'
             );
           }
-          setTab(PAGES.NEW);
+          navigate('/init-vault');
         }}
       >
         {t('welcome.getStarted')}

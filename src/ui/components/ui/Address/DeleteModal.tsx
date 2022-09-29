@@ -2,7 +2,7 @@ import * as styles from './DeleteModal.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from 'ui/store';
-import { removeAddress } from 'ui/actions';
+import { removeAddress } from 'ui/actions/addresses';
 import { Modal, Button } from '..';
 
 interface Props {

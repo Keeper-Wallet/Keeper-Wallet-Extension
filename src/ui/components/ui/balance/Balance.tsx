@@ -3,7 +3,7 @@ import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
 import { Loader } from '../loader';
 import { connect } from 'react-redux';
-import { getAsset } from '../../../actions';
+import { getAsset } from '../../../actions/assets';
 import { UsdAmount } from '../UsdAmount';
 import * as styles from './Balance.module.css';
 import { AppState } from 'ui/store';

@@ -1,22 +1,83 @@
 import { ACTION } from './constants';
-import { WalletTypes } from '../services/Background';
+import Background, { WalletTypes } from '../services/Background';
 import { NetworkName } from 'networks/types';
-import { UiActionPayload } from 'ui/store';
+import { AccountsThunkAction } from 'accounts/store';
+import { selectAccount } from './localState';
+import { UiThunkAction } from 'ui/store';
+import { updateActiveState } from './notifications';
 
-export const deleteAccount = () => ({ type: ACTION.DELETE_ACCOUNT });
+export function deleteAllAccounts(): UiThunkAction<Promise<void>> {
+  return async dispatch => {
+    await Background.deleteVault();
 
-export function createAccount(
-  account: UiActionPayload<typeof ACTION.SAVE_NEW_ACCOUNT>,
-  type: WalletTypes
-) {
-  return {
-    type: ACTION.SAVE_NEW_ACCOUNT,
-    payload: account,
-    meta: { type },
+    dispatch(updateActiveState());
   };
 }
 
-export type BatchAddAccountsPayload = Array<
+type CreateAccountInput =
+  | {
+      type: 'seed';
+      name: string;
+      seed: string;
+    }
+  | {
+      type: 'encodedSeed';
+      encodedSeed: string;
+      name: string;
+    }
+  | {
+      type: 'privateKey';
+      name: string;
+      privateKey: string;
+    }
+  | {
+      type: 'wx';
+      name: string;
+      publicKey: string;
+      address: string | null;
+      uuid: string;
+      username: string;
+    }
+  | {
+      type: 'ledger';
+      address: string | null;
+      id: number;
+      name: string;
+      publicKey: string;
+    }
+  | {
+      type: 'debug';
+      address: string;
+      name: string;
+      networkCode: string;
+    };
+
+export function createAccount(
+  account: CreateAccountInput,
+  type: WalletTypes
+): AccountsThunkAction<Promise<void>> {
+  return async (dispatch, getState) => {
+    const { currentNetwork, networks } = getState();
+
+    const networkCode = (
+      networks.filter(({ name }) => name === currentNetwork)[0] || networks[0]
+    ).code;
+
+    const lastAccount = await Background.addWallet({
+      ...account,
+      networkCode,
+      network: currentNetwork,
+    });
+
+    dispatch(selectAccount(lastAccount));
+
+    if (type !== WalletTypes.Debug) {
+      Background.sendEvent('addWallet', { type });
+    }
+  };
+}
+
+type BatchAddAccountsInput = Array<
   {
     name: string;
     network: NetworkName;
@@ -41,13 +102,15 @@ export type BatchAddAccountsPayload = Array<
 >;
 
 export function batchAddAccounts(
-  accounts: BatchAddAccountsPayload,
+  accounts: BatchAddAccountsInput,
   type: WalletTypes
-) {
-  return {
-    type: ACTION.BATCH_ADD_ACCOUNTS,
-    payload: accounts,
-    meta: { type },
+): AccountsThunkAction<Promise<void>> {
+  return async () => {
+    await Promise.all(accounts.map(account => Background.addWallet(account)));
+
+    if (type !== WalletTypes.Debug) {
+      Background.sendEvent('addWallet', { type });
+    }
   };
 }
 

@@ -1,6 +1,6 @@
 import { UiAction } from 'ui/store';
 import { DEFAULT_FEE_CONFIG, FeeConfig } from '../../constants';
-import { ACTION } from '../actions';
+import { ACTION } from '../actions/constants';
 
 export function feeConfig(
   state: FeeConfig | undefined = DEFAULT_FEE_CONFIG,

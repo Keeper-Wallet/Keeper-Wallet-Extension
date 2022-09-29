@@ -1,5 +1,5 @@
 import { BackgroundGetStateResult } from 'ui/services/Background';
-import { ACTION } from '../actions';
+import { ACTION } from '../actions/constants';
 import { simpleFabric } from './utils';
 
 export const config = simpleFabric(

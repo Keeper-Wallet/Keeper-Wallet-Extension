@@ -2,15 +2,15 @@ import * as styles from 'ui/components/pages/styles/assets.styl';
 import { Trans, useTranslation } from 'react-i18next';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from 'ui/store';
 import { sortAndFilterNfts, useUiState } from './helpers';
 import cn from 'classnames';
 import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
-import { PAGES } from 'ui/pageConfig';
 import { createNft, Nft } from 'nfts/utils';
 import { getNftsLink } from 'ui/urls';
-import { MAX_NFT_ITEMS } from 'controllers/currentAccount';
+import { MAX_NFT_ITEMS } from '../../../../../constants';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
   key =>
@@ -20,7 +20,8 @@ const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
     } as Nft)
 );
 
-export function TabNfts({ nextTab }: { nextTab: (tab: string) => void }) {
+export function TabNfts() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const currentAddress = useAppSelector(state => state.selectedAccount.address);
@@ -36,8 +37,6 @@ export function TabNfts({ nextTab }: { nextTab: (tab: string) => void }) {
     filters?.term,
     (value: string) => setFilters({ ...filters, term: value }),
   ];
-  const setCreator = (value: string | null | undefined) =>
-    setFilters({ ...filters, creator: value });
 
   const nftConfig = useAppSelector(state => state.nftConfig);
 
@@ -117,9 +116,8 @@ export function TabNfts({ nextTab }: { nextTab: (tab: string) => void }) {
           mode={DisplayMode.Creator}
           nfts={creatorNfts}
           counters={creatorCounts}
-          onClick={(asset: Nft) => {
-            setCreator(asset.creator);
-            nextTab(PAGES.NFT_COLLECTION);
+          onClick={asset => {
+            navigate(`/nft-collection/${asset.creator}`);
           }}
           renderMore={() =>
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain

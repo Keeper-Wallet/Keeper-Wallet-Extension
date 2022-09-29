@@ -3,21 +3,20 @@ import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { connect } from 'react-redux';
+import { clearMessagesStatus } from '../../actions/localState';
 import {
-  clearMessages,
-  clearMessagesStatus,
-  closeNotificationWindow,
   deleteNotifications,
-  reject,
   updateActiveState,
-} from '../../actions';
-import { PageComponentProps, PAGES } from '../../pageConfig';
+} from '../../actions/notifications';
+import { clearMessages, reject } from '../../actions/messages';
+import { WithNavigate, withNavigate } from '../../router';
 import { TransactionWallet } from '../wallets/TransactionWallet';
-import { Intro } from './Intro';
+import { LoadingScreen } from './loadingScreen';
 import { AppState } from 'ui/store';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PreferencesAccount } from 'preferences/types';
 import { MessageStoreItem } from 'messages/types';
+import Background from 'ui/services/Background';
 
 interface StateProps {
   selectAccount: Partial<PreferencesAccount>;
@@ -28,7 +27,6 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  closeNotificationWindow: () => void;
   updateActiveState: () => void;
   deleteNotifications: (
     ids:
@@ -43,7 +41,7 @@ interface DispatchProps {
   reject: (id: string) => void;
 }
 
-type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps & WithNavigate;
 
 interface State {
   loading: boolean;
@@ -65,7 +63,7 @@ class SelectTxAccountComponent extends React.PureComponent<Props, State> {
       !activeNotification &&
       notifications.length === 0
     ) {
-      props.setTab(PAGES.ASSETS);
+      props.navigate('/');
       return { loading: false };
     }
 
@@ -86,12 +84,12 @@ class SelectTxAccountComponent extends React.PureComponent<Props, State> {
     this.deleteNotifications();
     this.props.updateActiveState();
     this.setState({ loading: true });
-    this.props.closeNotificationWindow();
+    Background.closeNotificationWindow();
   };
 
   render() {
     if (this.state.loading) {
-      return <Intro />;
+      return <LoadingScreen />;
     }
 
     const { t } = this.props;
@@ -103,7 +101,12 @@ class SelectTxAccountComponent extends React.PureComponent<Props, State> {
           hideButton={true}
           account={this.props.selectAccount}
         >
-          <div className={styles.closeIcon} onClick={this.props.onBack} />
+          <div
+            className={styles.closeIcon}
+            onClick={() => {
+              this.props.navigate(-1);
+            }}
+          />
         </TransactionWallet>
         <div className={styles.wrapper}>
           <div className="title1 margin-main-big">
@@ -134,7 +137,6 @@ const mapStateToProps = (state: AppState): StateProps => {
 };
 
 const actions = {
-  closeNotificationWindow,
   updateActiveState,
   deleteNotifications,
   clearMessagesStatus,
@@ -145,4 +147,4 @@ const actions = {
 export const SelectTxAccount = connect(
   mapStateToProps,
   actions
-)(withTranslation()(SelectTxAccountComponent));
+)(withTranslation()(withNavigate(SelectTxAccountComponent)));

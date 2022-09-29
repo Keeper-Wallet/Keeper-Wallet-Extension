@@ -1,18 +1,17 @@
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Asset, Money } from '@waves/data-entities';
 import { compareAccountsByLastUsed } from 'preferences/utils';
-import { setActiveAccount } from 'ui/actions/assets';
-import { PageComponentProps, PAGES } from 'ui/pageConfig';
 import { selectAccount } from 'ui/actions/localState';
 import { AccountCard } from '../accounts/accountCard';
 import * as styles from './otherAccounts.module.css';
 import { SearchInput } from 'ui/components/ui/searchInput/searchInput';
 import background from 'ui/services/Background';
-import { setTab as resetTab } from 'ui/actions';
 
-export function OtherAccountsPage({ setTab }: PageComponentProps) {
+export function OtherAccountsPage() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
@@ -87,11 +86,10 @@ export function OtherAccountsPage({ setTab }: PageComponentProps) {
               balance={balancesMoney[account.address]}
               onClick={account => {
                 dispatch(selectAccount(account));
-                dispatch(resetTab(PAGES.ASSETS));
+                navigate('/', { replace: true });
               }}
               onInfoClick={account => {
-                dispatch(setActiveAccount(account));
-                setTab(PAGES.ACCOUNT_INFO);
+                navigate(`/account-info/${account.address}`);
               }}
             />
           ))
@@ -107,7 +105,7 @@ export function OtherAccountsPage({ setTab }: PageComponentProps) {
                 `${window.location.origin}/accounts.html`,
                 'accounts'
               );
-              dispatch(resetTab(PAGES.ROOT));
+              navigate('/', { replace: true });
             }}
           >
             {t('otherAccounts.addAccount')}

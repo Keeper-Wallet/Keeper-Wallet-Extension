@@ -1,12 +1,11 @@
 import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
 import * as React from 'react';
-import { PageComponentProps, PAGES } from 'ui/pageConfig';
+import { useNavigate, useParams } from 'react-router-dom';
 import * as styles from './nftCollection.module.css';
 import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
-import { useAppDispatch, useAppSelector } from 'ui/store';
+import { useAppSelector } from 'ui/store';
 import { useTranslation } from 'react-i18next';
-import { setUiState } from 'ui/actions';
 import { createNft, Nft } from 'nfts/utils';
 import {
   sortAndFilterNfts,
@@ -24,7 +23,8 @@ const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
     } as Nft)
 );
 
-export function NftCollection({ setTab, onBack }: PageComponentProps) {
+export function NftCollection() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const currentAddress = useAppSelector(state => state.selectedAccount.address);
@@ -35,17 +35,13 @@ export function NftCollection({ setTab, onBack }: PageComponentProps) {
   const myNfts = useAppSelector(state => state.balances[currentAddress!]?.nfts);
   const nfts = useAppSelector(state => state.nfts);
 
-  const dispatch = useAppDispatch();
-
-  const setCurrentAsset = (asset: AssetDetail | null) =>
-    dispatch(setUiState({ currentAsset: asset }));
-
   const [filters, setFilters] = useUiState('nftFilters');
   const [term, setTerm] = [
     filters?.term,
     (value: string) => setFilters({ ...filters, term: value }),
   ];
-  const creator = filters?.creator;
+
+  const params = useParams<{ creator: string }>();
 
   const nftConfig = useAppSelector(state => state.nftConfig);
 
@@ -58,7 +54,10 @@ export function NftCollection({ setTab, onBack }: PageComponentProps) {
     });
 
   const creatorNfts = myNfts
-    ? sortAndFilterNfts(myNfts.map(getNftDetails), { term, creator })
+    ? sortAndFilterNfts(myNfts.map(getNftDetails), {
+        term,
+        creator: params.creator,
+      })
     : PLACEHOLDERS;
 
   const creatorRef = React.useRef(creatorNfts[0] as Nft);
@@ -132,8 +131,7 @@ export function NftCollection({ setTab, onBack }: PageComponentProps) {
             mode={DisplayMode.Name}
             nfts={creatorNfts}
             onClick={nft => {
-              setCurrentAsset(nft.asset);
-              setTab(PAGES.NFT_INFO);
+              navigate(`/nft/${nft.asset.id}`);
             }}
           />
         )}
@@ -142,8 +140,7 @@ export function NftCollection({ setTab, onBack }: PageComponentProps) {
           <Button
             className="fullwidth"
             onClick={() => {
-              setCurrentAsset(null);
-              onBack();
+              navigate(-1);
             }}
           >
             {t('nftCollection.backToNftBtn')}

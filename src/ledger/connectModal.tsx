@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui/components/ui/buttons/Button';
-import { Error } from 'ui/components/ui/error';
+import { ErrorMessage } from 'ui/components/ui/error';
 import { ledgerService, LedgerServiceStatus } from './service';
 import * as styles from './connectModal.module.css';
 
@@ -68,9 +68,9 @@ export function LedgerConnectModal({ networkCode, onClose, onReady }: Props) {
           {t('ledgerConnectModal.instructions')}
         </p>
 
-        <Error className={styles.error} show>
+        <ErrorMessage className={styles.error} show>
           {error}
-        </Error>
+        </ErrorMessage>
 
         {isConnecting ? (
           <div className={styles.loader} />

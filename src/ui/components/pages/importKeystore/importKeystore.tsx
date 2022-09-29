@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { seedUtils } from '@waves/waves-transactions';
 import { KeystoreProfiles } from 'keystore/types';
 import { getNetworkByNetworkCode } from 'ui/utils/waves';
-import { PageComponentProps, PAGES } from '../../../pageConfig';
 import { ImportKeystoreChooseFile } from './chooseFile';
 import { ImportKeystoreChooseAccounts } from './chooseAccounts';
 import { batchAddAccounts } from 'ui/actions/user';
@@ -113,7 +113,8 @@ function parseKeystore(json: string): EncryptedKeystore | null {
 
 const suffixRe = /\((\d+)\)$/;
 
-export function ImportKeystore({ setTab }: PageComponentProps) {
+export function ImportKeystore() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const allNetworksAccounts = useAppSelector(
     state => state.allNetworksAccounts
@@ -206,10 +207,10 @@ export function ImportKeystore({ setTab }: PageComponentProps) {
       allNetworksAccounts={allNetworksAccounts}
       profiles={profiles}
       onSkip={() => {
-        setTab(PAGES.ROOT);
+        navigate('/');
       }}
-      onSubmit={selectedAccounts => {
-        dispatch(
+      onSubmit={async selectedAccounts => {
+        await dispatch(
           batchAddAccounts(
             selectedAccounts.map(acc => ({
               type: 'seed',
@@ -220,6 +221,8 @@ export function ImportKeystore({ setTab }: PageComponentProps) {
             walletType!
           )
         );
+
+        navigate('/import-keystore/success');
       }}
     />
   );

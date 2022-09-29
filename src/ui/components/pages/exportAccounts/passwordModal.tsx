@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Modal } from 'ui/components/ui/modal/Modal';
 import { useTranslation, Trans } from 'react-i18next';
 import { Input } from 'ui/components/ui/input';
-import { Error } from 'ui/components/ui/error';
+import { ErrorMessage } from 'ui/components/ui/error';
 import { Button } from 'ui/components/ui/buttons/Button';
 
 interface Props {
@@ -82,9 +82,9 @@ export function ExportPasswordModal({
               }}
             />
 
-            <Error show={passwordError}>
+            <ErrorMessage show={passwordError}>
               <div className="error">{t('exportKeystore.passwordError')}</div>
-            </Error>
+            </ErrorMessage>
           </div>
 
           {(showAttention || encrypted) && (

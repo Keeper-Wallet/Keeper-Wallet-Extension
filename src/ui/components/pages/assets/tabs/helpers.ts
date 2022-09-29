@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '../../../../store';
-import { setUiState } from '../../../../actions';
+import { setUiState } from '../../../../actions/uiState';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { UiState } from '../../../../reducers/updateState';
 import * as React from 'react';

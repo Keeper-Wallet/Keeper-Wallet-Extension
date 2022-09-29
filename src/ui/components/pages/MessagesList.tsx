@@ -2,22 +2,19 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import {
-  approve,
-  clearMessages,
   deleteNotifications,
-  getAsset,
-  reject,
   setActiveMessage,
   setActiveNotification,
-} from '../../actions';
-import { Intro } from './Intro';
+} from '../../actions/notifications';
+import { approve, clearMessages, reject } from '../../actions/messages';
+import { getAsset } from '../../actions/assets';
+import { LoadingScreen } from './loadingScreen';
 import { getConfigByTransaction } from '../transactions';
 import { NotificationCard } from '../notifications';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { Button } from '../ui';
 import { AppState } from 'ui/store';
-import { PageComponentProps } from 'ui/pageConfig';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PreferencesAccount } from 'preferences/types';
 import { MessageStoreItem } from 'messages/types';
@@ -106,7 +103,7 @@ interface DispatchProps {
   reject: (messageId: string) => void;
 }
 
-type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps;
 
 interface State {
   messages?: Props['messages'];
@@ -173,7 +170,7 @@ class MessageListComponent extends React.Component<Props, State> {
 
   render() {
     if (this.state.loading) {
-      return <Intro />;
+      return <LoadingScreen />;
     }
 
     const { t, messages, notifications, assets } = this.props;

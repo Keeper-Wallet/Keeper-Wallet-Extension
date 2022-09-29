@@ -1,200 +1,214 @@
 import * as styles from './final.styl';
 import * as React from 'react';
-import {
-  useTranslation,
-  withTranslation,
-  WithTranslation,
-} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../ui';
 import cn from 'classnames';
-import oauth from '../OriginAuth';
-import { isMe as isOrder } from '../CreateOrder/parseTx';
+import originAuth from '../OriginAuth';
+import * as orderParseTx from '../CreateOrder/parseTx';
 import { TxHeader } from '../BaseTransaction';
 import { TransactionStatusState } from 'ui/reducers/localState';
 import { PreferencesAccount } from 'preferences/types';
 import { MessageStoreItem } from 'messages/types';
 import { AssetDetail } from 'assets/types';
 import { MessageConfig } from '../types';
+import { NotificationsStoreItem } from 'notifications/types';
 
-const Error = ({
-  approveError,
-}: {
-  approveError: { error: unknown } | boolean | undefined;
-}) => {
+interface Props {
+  assets: Record<string, AssetDetail>;
+  config: MessageConfig;
+  message: MessageStoreItem;
+  messages: MessageStoreItem[];
+  notifications: NotificationsStoreItem[][];
+  selectedAccount: Partial<PreferencesAccount>;
+  transactionStatus: TransactionStatusState;
+  onClose: () => void;
+  onList: () => void;
+  onNext: () => void;
+}
+
+export function FinalTransaction({
+  assets,
+  config,
+  message,
+  messages,
+  notifications,
+  selectedAccount,
+  transactionStatus,
+  onClose,
+  onList,
+  onNext,
+}: Props) {
   const { t } = useTranslation();
 
+  const otherMessagesCount = messages
+    .map(item => item.id)
+    .filter(id => id !== message.id).length;
+
+  const isApprove = !!transactionStatus.approveOk;
+  const isReject = !!transactionStatus.rejectOk;
+  const isError = !!transactionStatus.approveError;
+  const isShowNext = otherMessagesCount > 0;
+
+  const isShowList =
+    otherMessagesCount + notifications.length > 1 || notifications.length;
+
+  const isShowClose = !isShowNext && !isShowList;
+  const FinalComponent = config.final;
+  const Card = config.card;
+  const isOrder = orderParseTx.isMe(message.data, message.type);
+
+  const networkCode = selectedAccount && selectedAccount.networkCode;
+
+  const explorerUrls = new Map([
+    ['W', 'wavesexplorer.com'],
+    ['T', 'testnet.wavesexplorer.com'],
+    ['S', 'stagenet.wavesexplorer.com'],
+    ['custom', 'wavesexplorer.com/custom'],
+  ]);
+
+  const explorer = explorerUrls.get(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    explorerUrls.has(networkCode!) ? networkCode! : 'custom'
+  );
+
+  if (config.type === originAuth.type && !isShowClose) {
+    if (isShowList) {
+      onList();
+    } else {
+      onNext();
+    }
+
+    return null;
+  }
+
   return (
-    <div className={`plate ${styles.finalTxPlate}`}>
-      <div
-        className={`headline2Bold margin-main-big error-icon ${styles.finalTxTitle}`}
-      >
-        {t('sign.someError')}
+    <div className={styles.transaction}>
+      <TxHeader
+        hideButton
+        message={message}
+        selectedAccount={selectedAccount}
+      />
+
+      <div className={cn(styles.finalTxScrollBox, 'transactionContent')}>
+        {isReject || isApprove ? (
+          <div
+            className={cn(styles.txBigIcon, 'margin-main', {
+              'tx-reject-icon': isReject,
+              'tx-approve-icon': isApprove,
+            })}
+          />
+        ) : null}
+
+        <div className="margin-main-top margin-main-big">
+          {isApprove || isReject ? (
+            <div className="center">
+              <FinalComponent
+                isApprove={isApprove}
+                isReject={isReject}
+                isSend={message.broadcast}
+                message={message}
+                assets={assets}
+              />
+            </div>
+          ) : null}
+
+          {isError ? (
+            <div className="headline2">
+              <div className={`plate ${styles.finalTxPlate}`}>
+                <div
+                  className={`headline2Bold margin-main-big error-icon ${styles.finalTxTitle}`}
+                >
+                  {t('sign.someError')}
+                </div>
+                <div className={`body3 ${styles.finalTxPlate}`}>
+                  {JSON.stringify(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (transactionStatus.approveError as any).error,
+                    null,
+                    4
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        <Card message={message} assets={assets} collapsed={false} />
+
+        {message.broadcast && isApprove && !isOrder && (
+          <div className="center margin-main-big-top">
+            <a
+              rel="noopener noreferrer"
+              className="link black"
+              href={`https://${explorer}/tx/${message.messageHash}`}
+              target="_blank"
+            >
+              {t('sign.viewTransaction')}
+            </a>
+          </div>
+        )}
+
+        {isOrder && (
+          <div className={`${styles.txRow} margin-main-top`}>
+            <div className="basic500 tx-title tag1">
+              {t('transactions.orderId')}
+            </div>
+            <div className="black">{message.messageHash}</div>
+          </div>
+        )}
       </div>
-      <div className={`body3 ${styles.finalTxPlate}`}>
-        {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          JSON.stringify((approveError as any).error, null, 4)
-        }
+
+      <div
+        className={cn(styles.txButtonsWrapper, {
+          'buttons-wrapper': isShowList && (isShowClose || isShowNext),
+        })}
+      >
+        {isShowList ? (
+          <Button
+            type="button"
+            onClick={event => {
+              event.preventDefault();
+              event.stopPropagation();
+
+              onList();
+            }}
+          >
+            {t('sign.pendingList')}
+          </Button>
+        ) : null}
+
+        {isShowNext ? (
+          <Button
+            type="submit"
+            view="submit"
+            onClick={event => {
+              event.preventDefault();
+              event.stopPropagation();
+
+              onNext();
+            }}
+          >
+            {t('sign.nextTransaction')}
+          </Button>
+        ) : null}
+
+        {isShowClose ? (
+          <Button
+            data-testid="closeTransaction"
+            id="close"
+            type="button"
+            onClick={event => {
+              event.preventDefault();
+              event.stopPropagation();
+
+              onClose();
+            }}
+          >
+            {isError ? t('sign.understand') : null}
+            {isReject || isApprove ? t('sign.close') : null}
+          </Button>
+        ) : null}
       </div>
     </div>
   );
-};
-
-interface Props extends WithTranslation {
-  transactionStatus: TransactionStatusState;
-  selectedAccount: Partial<PreferencesAccount>;
-  messages: MessageStoreItem[];
-  notifications: unknown[];
-  message: MessageStoreItem;
-  onClose: (...args: unknown[]) => void;
-  onNext: (...args: unknown[]) => void;
-  onList: (...args: unknown[]) => void;
-  assets: Record<string, AssetDetail>;
-  config: MessageConfig;
 }
-
-class FinalTransactionComponent extends React.PureComponent<Props> {
-  render() {
-    const {
-      t,
-      transactionStatus,
-      selectedAccount,
-      messages,
-      notifications,
-      message,
-      onClose,
-      onNext,
-      onList,
-      assets,
-    } = this.props;
-
-    const newMessages = messages
-      .map(item => item.id)
-      .filter(id => id !== message.id).length;
-    const msgCount = newMessages + notifications.length;
-    const isSend = message.broadcast;
-    const isApprove = !!transactionStatus.approveOk;
-    const isReject = !!transactionStatus.rejectOk;
-    const isError = !!transactionStatus.approveError;
-    const isShowNext = newMessages > 0;
-    const isShowList = msgCount > 1 || notifications.length;
-    const isShowClose = !isShowNext && !isShowList;
-    const config = this.props.config;
-    const FinalComponent = config.final;
-    const Card = config.card;
-    const isNotOrder = !isOrder(message.data, message.type);
-
-    const network = selectedAccount && selectedAccount.networkCode;
-    const explorerUrls = new Map([
-      ['W', 'wavesexplorer.com'],
-      ['T', 'testnet.wavesexplorer.com'],
-      ['S', 'stagenet.wavesexplorer.com'],
-      ['custom', 'wavesexplorer.com/custom'],
-    ]);
-    const explorer = explorerUrls.get(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      explorerUrls.has(network!) ? network! : 'custom'
-    );
-    const txLink = `https://${explorer}/tx/${message.messageHash}`;
-
-    if (config.type === oauth.type && !isShowClose) {
-      const method = isShowList ? 'onList' : 'onNext';
-      this.props[method]();
-      return null;
-    }
-
-    const showExtraButton =
-      (isShowList && isShowClose) || (isShowNext && isShowList);
-
-    return (
-      <div className={styles.transaction}>
-        <TxHeader {...this.props} hideButton={true} />
-
-        <div className={cn(styles.finalTxScrollBox, 'transactionContent')}>
-          {isReject || isApprove ? (
-            <div
-              className={cn(styles.txBigIcon, 'margin-main', {
-                'tx-reject-icon': isReject,
-                'tx-approve-icon': isApprove,
-              })}
-            />
-          ) : null}
-
-          <div className="margin-main-top margin-main-big">
-            {isApprove || isReject ? (
-              <div className="center">
-                <FinalComponent
-                  isApprove={isApprove}
-                  isReject={isReject}
-                  isSend={message.broadcast}
-                  message={message}
-                  assets={assets}
-                />
-              </div>
-            ) : null}
-            {isError ? (
-              <div className="headline2">
-                <Error approveError={transactionStatus.approveError} />
-              </div>
-            ) : null}
-          </div>
-
-          <Card message={message} assets={assets} collapsed={false} />
-
-          {isSend && isApprove && isNotOrder && (
-            <div className="center margin-main-big-top">
-              <a
-                rel="noopener noreferrer"
-                className="link black"
-                href={txLink}
-                target="_blank"
-              >
-                {t('sign.viewTransaction')}
-              </a>
-            </div>
-          )}
-          {!isNotOrder && (
-            <div className={`${styles.txRow} margin-main-top`}>
-              <div className="basic500 tx-title tag1">
-                {t('transactions.orderId')}
-              </div>
-              <div className="black">{message.messageHash}</div>
-            </div>
-          )}
-        </div>
-
-        <div
-          className={cn(styles.txButtonsWrapper, {
-            'buttons-wrapper': showExtraButton,
-          })}
-        >
-          {isShowList ? (
-            <Button type="button" onClick={onList}>
-              {t('sign.pendingList')}
-            </Button>
-          ) : null}
-
-          {isShowNext ? (
-            <Button type="submit" view="submit" onClick={onNext}>
-              {t('sign.nextTransaction')}
-            </Button>
-          ) : null}
-
-          {isShowClose ? (
-            <Button
-              data-testid="closeTransaction"
-              id="close"
-              type="button"
-              onClick={onClose}
-            >
-              {isError ? t('sign.understand') : null}
-              {isReject || isApprove ? t('sign.close') : null}
-            </Button>
-          ) : null}
-        </div>
-      </div>
-    );
-  }
-}
-
-export const FinalTransaction = withTranslation()(FinalTransactionComponent);

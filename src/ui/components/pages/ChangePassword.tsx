@@ -1,12 +1,11 @@
 import * as styles from './styles/changePassword.styl';
 import { connect } from 'react-redux';
-import { changePassword } from '../../actions';
+import { changePassword } from '../../actions/user';
 import * as React from 'react';
-import { Button, Error, Input, Modal } from '../ui';
+import { Button, ErrorMessage, Input, Modal } from '../ui';
 import background from '../../services/Background';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
-import { PageComponentProps } from 'ui/pageConfig';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
@@ -14,7 +13,7 @@ interface DispatchProps {
   changePassword: (p1: string, p2: string) => void;
 }
 
-type Props = PageComponentProps & WithTranslation & DispatchProps;
+type Props = WithTranslation & DispatchProps;
 
 interface State {
   firstValue: string;
@@ -75,7 +74,7 @@ class ChangePasswordComponent extends React.PureComponent<Props, State> {
                 onBlur={this.onOldBlur}
                 error={!!(this.state.oldError || this.state.passwordError)}
               />
-              <Error
+              <ErrorMessage
                 show={!!(this.state.oldError || this.state.passwordError)}
                 data-testid="oldError"
               >
@@ -83,7 +82,7 @@ class ChangePasswordComponent extends React.PureComponent<Props, State> {
                 {this.state.passwordError
                   ? t('changePassword.errorWrongOld')
                   : null}
-              </Error>
+              </ErrorMessage>
             </div>
 
             <div className="margin-main-big relative">
@@ -99,9 +98,12 @@ class ChangePasswordComponent extends React.PureComponent<Props, State> {
                 onChange={this.onChangeFist}
                 error={!!this.state.firstError || this.state.oldEqualNewError}
               />
-              <Error show={!!this.state.firstError} data-testid="firstError">
+              <ErrorMessage
+                show={!!this.state.firstError}
+                data-testid="firstError"
+              >
                 {t('changePassword.errorShortNew')}
-              </Error>
+              </ErrorMessage>
             </div>
 
             <div className="margin-main-big relative">
@@ -117,7 +119,7 @@ class ChangePasswordComponent extends React.PureComponent<Props, State> {
                 onChange={this.onChangeSecond}
                 error={!!this.state.secondError || this.state.oldEqualNewError}
               />
-              <Error
+              <ErrorMessage
                 show={!!this.state.secondError || this.state.oldEqualNewError}
                 data-testid="secondError"
               >
@@ -127,7 +129,7 @@ class ChangePasswordComponent extends React.PureComponent<Props, State> {
                 {this.state.secondError
                   ? t('changePassword.errorWrongConfirm')
                   : null}
-              </Error>
+              </ErrorMessage>
             </div>
           </div>
           <Button

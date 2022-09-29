@@ -1,29 +1,22 @@
 import * as styles from './NewAccount.module.css';
 import { connect } from 'react-redux';
-import { createNew, setTab } from '../../actions';
 import * as React from 'react';
-import { Button, Error, Input, LangsSelect } from '../ui';
+import { Navigate } from 'react-router-dom';
+import { Button, ErrorMessage, Input, LangsSelect } from '../ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
-import { PageComponentProps } from 'ui/pageConfig';
 import { AppState } from 'ui/store';
+import Background from 'ui/services/Background';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
-const mapStateToProps = function (store: AppState) {
-  return {
-    account: store.localState.newAccount,
-  };
-};
+const mapStateToProps = (state: AppState) => ({
+  initialized: state.state?.initialized,
+});
 
-interface DispatchProps {
-  createNew: (pass: string) => void;
-  setTab: (tab: string | null) => void;
-}
+type Props = WithTranslation & ReturnType<typeof mapStateToProps>;
 
-class NewAccountComponent extends React.PureComponent<
-  PageComponentProps & WithTranslation & DispatchProps
-> {
+class NewAccountComponent extends React.PureComponent<Props> {
   state = {
     firstValue: '',
     secondValue: '',
@@ -109,17 +102,17 @@ class NewAccountComponent extends React.PureComponent<
     e.preventDefault();
     e.stopPropagation();
     if (!this.state.passwordError && this.state.firstValue) {
-      this.props.createNew(this.state.firstValue);
+      Background.initVault(this.state.firstValue);
     }
   };
 
-  openTermsAndConditions = (e: React.MouseEvent): void => {
-    e.preventDefault();
-    this.props.setTab('conditions');
-  };
-
   render() {
-    const { t } = this.props;
+    const { initialized, t } = this.props;
+
+    if (initialized) {
+      return <Navigate replace to="/" />;
+    }
+
     return (
       <div className={styles.account}>
         <form
@@ -148,9 +141,12 @@ class NewAccountComponent extends React.PureComponent<
                 autoComplete="off"
               />
 
-              <Error show={this.state.firstError} data-testid="firstError">
+              <ErrorMessage
+                show={this.state.firstError}
+                data-testid="firstError"
+              >
                 {t('newAccount.smallPass')}
-              </Error>
+              </ErrorMessage>
             </div>
             <div className="margin1 relative">
               <div className={`basic500 tag1 left input-title`}>
@@ -165,9 +161,12 @@ class NewAccountComponent extends React.PureComponent<
                 error={!!this.state.secondError}
                 autoComplete="off"
               />
-              <Error show={this.state.secondError} data-testid="secondError">
+              <ErrorMessage
+                show={this.state.secondError}
+                data-testid="secondError"
+              >
                 {t('newAccount.notMatch')}
-              </Error>
+              </ErrorMessage>
             </div>
           </div>
           <div className={styles.checkboxWrapper}>
@@ -262,7 +261,6 @@ class NewAccountComponent extends React.PureComponent<
   }
 }
 
-export const NewAccount = connect(mapStateToProps, {
-  createNew,
-  setTab,
-})(withTranslation()(NewAccountComponent));
+export const NewAccount = connect(mapStateToProps)(
+  withTranslation()(NewAccountComponent)
+);

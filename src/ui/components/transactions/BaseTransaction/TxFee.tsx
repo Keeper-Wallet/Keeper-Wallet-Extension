@@ -6,7 +6,7 @@ import {
 import { MessageStoreItem } from 'messages/types';
 import * as React from 'react';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { updateTransactionFee } from '../../../actions';
+import { updateTransactionFee } from '../../../actions/messages';
 import { getMoney } from '../../../utils/converters';
 import { Balance, Select, SelectItem } from '../../ui';
 import { getFee } from './parseTx';
