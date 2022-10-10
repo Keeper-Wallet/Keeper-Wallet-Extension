@@ -13,7 +13,7 @@
     "lint:prettier": "prettier . --check",
     "lint:prettier:fix": "prettier . --write",
     "lint:stylelint": "stylelint **/*.module.css",
-    "lint:typescript": "tsc --noEmit",
+    "lint:typescript": "tsc -p src && tsc -p test",
     "test:dev": "mocha --inspect --watch",
     "test": "mocha",
     "build": "webpack --mode production",
