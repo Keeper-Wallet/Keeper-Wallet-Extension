@@ -1,16 +1,24 @@
 import * as mocha from 'mocha';
 import * as path from 'path';
-import { Builder, By, until, WebDriver } from 'selenium-webdriver';
-import * as chrome from 'selenium-webdriver/chrome';
+import { Session, WebDriver } from 'selenium-webdriver';
+import { Executor, HttpClient } from 'selenium-webdriver/http';
 import {
   GenericContainer,
   Network,
   StartedTestContainer,
 } from 'testcontainers';
+import { remote } from 'webdriverio';
 
 declare global {
   interface Window {
     result: unknown;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace NodeJS {
+    interface Global {
+      browser: typeof browser;
+    }
   }
 }
 
@@ -18,15 +26,8 @@ declare module 'mocha' {
   interface Context {
     driver: WebDriver;
     extensionUrl: string;
-    extensionPanel: string;
     nodeUrl: string;
     wait: number;
-  }
-}
-
-declare module 'selenium-webdriver' {
-  interface WebElement {
-    getShadowRoot: () => WebElement;
   }
 }
 
@@ -82,42 +83,55 @@ export const mochaHooks = () => ({
   async beforeAll(this: mocha.Context) {
     this.timeout(15 * 60 * 1000);
     this.wait = 15 * 1000;
+    this.nodeUrl = 'http://waves-private-node:6869';
 
-    this.driver = new Builder()
-      .forBrowser('chrome')
-      .usingServer(`http://localhost:4444/wd/hub`)
-      .setChromeOptions(
-        new chrome.Options().addArguments(
-          '--load-extension=/app/dist/chrome',
-          '--disable-dev-shm-usage',
-          '--disable-web-security'
-        )
-      )
-      .build();
+    global.browser = await remote({
+      logLevel: 'warn',
+      capabilities: {
+        browserName: 'chrome',
+        'goog:chromeOptions': {
+          args: [
+            '--load-extension=/app/dist/chrome',
+            '--disable-dev-shm-usage',
+            '--disable-web-security',
+          ],
+        },
+      },
+      path: '/wd/hub',
+      waitforTimeout: this.wait,
+    });
+
+    global.$ = browser.$.bind(browser);
+    global.$$ = browser.$$.bind(browser);
+
+    this.driver = new WebDriver(
+      new Session(browser.sessionId, {}),
+      new Executor(new HttpClient('http://localhost:4444/wd/hub'))
+    );
 
     // detect Keeper Wallet extension URL
-    await this.driver.get('chrome://system');
-    for (const ext of (
-      await this.driver
-        .wait(until.elementLocated(By.css('div#extensions-value')))
-        .getText()
-    ).split('\n')) {
+    await browser.navigateTo('chrome://system');
+
+    let keeperExtensionId: string | undefined;
+
+    const extensionsValue = await $('#extensions-value').getText();
+    for (const ext of extensionsValue.split('\n')) {
       const [id, name] = ext.split(' : ');
-      if (name.toLowerCase() === 'Keeper Wallet'.toLowerCase()) {
-        this.extensionUrl = `chrome-extension://${id}/popup.html`;
-        this.extensionPanel = `chrome://extensions/?id=${id}`;
-        this.nodeUrl = 'http://waves-private-node:6869';
+
+      if (name.toLowerCase() === 'keeper wallet') {
+        keeperExtensionId = id;
         break;
       }
     }
 
-    // this helps extension to be ready
-    await this.driver.get('chrome://new-tab-page');
+    if (!keeperExtensionId) {
+      throw new Error('Could not find Keeper Wallet extension id');
+    }
+
+    this.extensionUrl = `chrome-extension://${keeperExtensionId}/popup.html`;
   },
 
   async afterAll(this: mocha.Context) {
-    if (this.driver) {
-      await this.driver.quit();
-    }
+    browser.deleteSession();
   },
 });
