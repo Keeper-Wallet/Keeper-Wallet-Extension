@@ -1,0 +1,7 @@
+{
+  "extends": "../tsconfig.base",
+  "include": [".", "../types"],
+  "compilerOptions": {
+    "types": ["long", "webpack/module"]
+  }
+}
