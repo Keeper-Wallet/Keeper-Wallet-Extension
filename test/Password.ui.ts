@@ -3,7 +3,7 @@ import * as mocha from 'mocha';
 import { By, until, WebElement } from 'selenium-webdriver';
 
 import { clear } from './utils';
-import { App, CreateNewAccount, Windows } from './utils/actions';
+import { AccountsHome, App, Windows } from './utils/actions';
 import { DEFAULT_PAGE_LOAD_DELAY } from './utils/constants';
 
 describe('Password management', () => {
@@ -29,7 +29,7 @@ describe('Password management', () => {
     before(async function () {
       tabKeeper = await this.driver.getWindowHandle();
 
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
       await App.open.call(this);
       [tabAccounts] = await waitForNewWindows(1);
 
@@ -300,8 +300,7 @@ describe('Password management', () => {
 
     before(async function () {
       await this.driver.switchTo().window(tabAccounts);
-      await CreateNewAccount.importAccount.call(
-        this,
+      await AccountsHome.importAccount(
         'rich',
         'waves private node seed with waves tokens'
       );

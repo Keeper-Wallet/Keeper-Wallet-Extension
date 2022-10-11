@@ -1,13 +1,7 @@
 import { expect } from 'chai';
 import { By, until } from 'selenium-webdriver';
 
-import {
-  App,
-  CreateNewAccount,
-  Network,
-  Settings,
-  Windows,
-} from './utils/actions';
+import { AccountsHome, App, Network, Settings, Windows } from './utils/actions';
 import { DEFAULT_PAGE_LOAD_DELAY } from './utils/constants';
 
 describe('Others', function () {
@@ -17,7 +11,7 @@ describe('Others', function () {
 
   before(async function () {
     await App.initVault.call(this);
-    await Settings.setMaxSessionTimeout.call(this);
+    await Settings.setMaxSessionTimeout();
     await App.open.call(this);
     tabKeeper = await this.driver.getWindowHandle();
   });
@@ -41,9 +35,9 @@ describe('Others', function () {
 
   describe('Send WAVES', function () {
     before(async function () {
-      await Network.switchToAndCheck.call(this, 'Testnet');
+      await Network.switchToAndCheck('Testnet');
 
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
       await this.driver
         .wait(
           until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
@@ -55,16 +49,15 @@ describe('Others', function () {
       await this.driver.switchTo().window(tabAccounts);
       await this.driver.navigate().refresh();
 
-      await CreateNewAccount.importAccount.call(
-        this,
+      await AccountsHome.importAccount(
         'rich',
         'waves private node seed with waves tokens'
       );
       await this.driver.switchTo().window(tabKeeper);
     });
 
-    after(async function () {
-      await Network.switchToAndCheck.call(this, 'Mainnet');
+    after(async () => {
+      await Network.switchToAndCheck('Mainnet');
     });
 
     beforeEach(async function () {

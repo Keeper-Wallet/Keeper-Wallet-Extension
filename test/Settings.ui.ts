@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import * as mocha from 'mocha';
 import { By, until, WebElement } from 'selenium-webdriver';
 
-import { App, CreateNewAccount, Settings, Windows } from './utils/actions';
+import { AccountsHome, App, Settings, Windows } from './utils/actions';
 import {
   CUSTOMLIST,
   DEFAULT_ANIMATION_DELAY,
@@ -10,8 +10,8 @@ import {
   WHITELIST,
 } from './utils/constants';
 
-const SPENDING_LIMIT = '1',
-  BROWSER_TIMEOUT_DELAY = 60 * 1000 + DEFAULT_ANIMATION_DELAY;
+const SPENDING_LIMIT = '1';
+const BROWSER_TIMEOUT_DELAY = 120 * 1000;
 
 describe('Settings', function () {
   this.timeout(BROWSER_TIMEOUT_DELAY + 60 * 1000);
@@ -43,7 +43,7 @@ describe('Settings', function () {
     await App.open.call(this);
     tabKeeper = await this.driver.getWindowHandle();
 
-    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    const { waitForNewWindows } = await Windows.captureNewWindows();
     await this.driver
       .wait(
         until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
@@ -55,18 +55,15 @@ describe('Settings', function () {
     await this.driver.switchTo().window(tabAccounts);
     await this.driver.navigate().refresh();
 
-    await CreateNewAccount.importAccount.call(
-      this,
+    await AccountsHome.importAccount(
       'rich',
       'waves private node seed with waves tokens'
     );
-    await CreateNewAccount.importAccount.call(
-      this,
+    await AccountsHome.importAccount(
       'test',
       'side angry perfect sight capital absurd stuff pulp climb jealous onion address speed portion category'
     );
-    await CreateNewAccount.importAccount.call(
-      this,
+    await AccountsHome.importAccount(
       'test3',
       'defy credit shoe expect pair gun future slender escape visa test book tone patient vibrant'
     );
@@ -428,16 +425,14 @@ describe('Settings', function () {
 
       after(async function () {
         await App.open.call(this);
-        await Settings.clearCustomList.call(this);
+        await Settings.clearCustomList();
       });
 
       describe('Adding', function () {
         it('Origin added to custom list', async function () {
           const origin = CUSTOMLIST[0];
 
-          const { waitForNewWindows } = await Windows.captureNewWindows.call(
-            this
-          );
+          const { waitForNewWindows } = await Windows.captureNewWindows();
           await publicStateFromOrigin.call(this, origin);
           const [messageWindow] = await waitForNewWindows(1);
           await this.driver.switchTo().window(messageWindow);
@@ -458,7 +453,7 @@ describe('Settings', function () {
             this.wait
           );
           await this.driver.findElement(By.css('button#close')).click();
-          await Windows.waitForWindowToClose.call(this, messageWindow);
+          await Windows.waitForWindowToClose(messageWindow);
           await this.driver.switchTo().window(tabKeeper);
           await App.open.call(this);
 
@@ -501,9 +496,7 @@ describe('Settings', function () {
         it('Origin added to custom list with auto-limits', async function () {
           const origin = CUSTOMLIST[1];
 
-          const { waitForNewWindows } = await Windows.captureNewWindows.call(
-            this
-          );
+          const { waitForNewWindows } = await Windows.captureNewWindows();
           await publicStateFromOrigin.call(this, origin);
           const [messageWindow] = await waitForNewWindows(1);
           await this.driver.switchTo().window(messageWindow);
@@ -562,7 +555,7 @@ describe('Settings', function () {
             this.wait
           );
           await this.driver.findElement(By.css('button#close')).click();
-          await Windows.waitForWindowToClose.call(this, messageWindow);
+          await Windows.waitForWindowToClose(messageWindow);
           await this.driver.switchTo().window(tabKeeper);
           await App.open.call(this);
 
@@ -724,9 +717,7 @@ describe('Settings', function () {
             .wait(until.elementLocated(By.css('button#delete')), this.wait)
             .click();
 
-          const { waitForNewWindows } = await Windows.captureNewWindows.call(
-            this
-          );
+          const { waitForNewWindows } = await Windows.captureNewWindows();
           await publicStateFromOrigin.call(this, origin);
           const [messageWindow] = await waitForNewWindows(1);
           await this.driver.switchTo().window(messageWindow);
@@ -745,7 +736,7 @@ describe('Settings', function () {
             .wait(until.elementLocated(By.css('button#close')), this.wait)
             .click();
 
-          await Windows.waitForWindowToClose.call(this, messageWindow);
+          await Windows.waitForWindowToClose(messageWindow);
           await this.driver.switchTo().window(tabKeeper);
         });
       });
@@ -786,7 +777,7 @@ describe('Settings', function () {
 
       it('Logout after "Browser timeout"', async function () {
         await App.open.call(this);
-        await Settings.setMinSessionTimeout.call(this);
+        await Settings.setMinSessionTimeout();
 
         expect(
           await this.driver.wait(

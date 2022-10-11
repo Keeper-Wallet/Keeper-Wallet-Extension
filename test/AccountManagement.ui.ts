@@ -3,10 +3,10 @@ import { By, until, WebElement } from 'selenium-webdriver';
 
 import { clear } from './utils';
 import {
+  AccountsHome,
   App,
-  Assets,
-  CreateNewAccount,
   Network,
+  PopupHome,
   Settings,
   Windows,
 } from './utils/actions';
@@ -19,11 +19,11 @@ describe('Account management', function () {
 
   before(async function () {
     await App.initVault.call(this, DEFAULT_PASSWORD);
-    await Settings.setMaxSessionTimeout.call(this);
+    await Settings.setMaxSessionTimeout();
     await App.open.call(this);
     tabKeeper = await this.driver.getWindowHandle();
 
-    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    const { waitForNewWindows } = await Windows.captureNewWindows();
     await this.driver
       .wait(
         until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
@@ -35,14 +35,12 @@ describe('Account management', function () {
     await this.driver.switchTo().window(tabAccounts);
     await this.driver.navigate().refresh();
 
-    await CreateNewAccount.importAccount.call(
-      this,
+    await AccountsHome.importAccount(
       'poor',
       'waves private node seed without waves tokens'
     );
 
-    await CreateNewAccount.importAccount.call(
-      this,
+    await AccountsHome.importAccount(
       'rich',
       'waves private node seed with waves tokens'
     );
@@ -77,7 +75,7 @@ describe('Account management', function () {
         )
         .click();
 
-      expect(await Assets.getActiveAccountName.call(this)).to.equal('poor');
+      expect(await PopupHome.getActiveAccountName()).to.equal('poor');
     });
 
     it('Updating account balances on import');
@@ -509,37 +507,33 @@ describe('Account management', function () {
     before(async function () {
       await this.driver.switchTo().window(tabAccounts);
 
-      await CreateNewAccount.importAccount.call(
-        this,
+      await AccountsHome.importAccount(
         'second',
         'second account for testing selected account preservation'
       );
-      await CreateNewAccount.importAccount.call(
-        this,
+      await AccountsHome.importAccount(
         'first',
         'first account for testing selected account preservation'
       );
 
-      await Network.switchToAndCheck.call(this, 'Testnet');
+      await Network.switchToAndCheck('Testnet');
 
-      await CreateNewAccount.importAccount.call(
-        this,
+      await AccountsHome.importAccount(
         'fourth',
         'fourth account for testing selected account preservation'
       );
-      await CreateNewAccount.importAccount.call(
-        this,
+      await AccountsHome.importAccount(
         'third',
         'third account for testing selected account preservation'
       );
 
-      await Network.switchToAndCheck.call(this, 'Mainnet');
+      await Network.switchToAndCheck('Mainnet');
 
       await this.driver.switchTo().window(tabKeeper);
     });
 
     after(async function () {
-      await Network.switchToAndCheck.call(this, 'Mainnet');
+      await Network.switchToAndCheck('Mainnet');
     });
 
     it('should preserve previously selected account for the network', async function () {
@@ -558,9 +552,9 @@ describe('Account management', function () {
         .click();
       await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
-      expect(await Assets.getActiveAccountName.call(this)).to.equal('second');
+      expect(await PopupHome.getActiveAccountName()).to.equal('second');
 
-      await Network.switchToAndCheck.call(this, 'Testnet');
+      await Network.switchToAndCheck('Testnet');
 
       await this.driver
         .wait(
@@ -577,12 +571,12 @@ describe('Account management', function () {
         .click();
       await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
-      expect(await Assets.getActiveAccountName.call(this)).to.equal('fourth');
+      expect(await PopupHome.getActiveAccountName()).to.equal('fourth');
 
-      await Network.switchToAndCheck.call(this, 'Mainnet');
-      expect(await Assets.getActiveAccountName.call(this)).to.equal('second');
-      await Network.switchToAndCheck.call(this, 'Testnet');
-      expect(await Assets.getActiveAccountName.call(this)).to.equal('fourth');
+      await Network.switchToAndCheck('Mainnet');
+      expect(await PopupHome.getActiveAccountName()).to.equal('second');
+      await Network.switchToAndCheck('Testnet');
+      expect(await PopupHome.getActiveAccountName()).to.equal('fourth');
     });
   });
 });
