@@ -14,13 +14,7 @@ import * as mocha from 'mocha';
 import create from 'parse-json-bignumber';
 import { By, until } from 'selenium-webdriver';
 
-import {
-  App,
-  CreateNewAccount,
-  Network,
-  Settings,
-  Windows,
-} from './utils/actions';
+import { AccountsHome, App, Network, Settings, Windows } from './utils/actions';
 import { CUSTOMLIST, WHITELIST } from './utils/constants';
 import { CUSTOM_DATA_V1, CUSTOM_DATA_V2 } from './utils/customData';
 import {
@@ -61,12 +55,12 @@ describe('Signature', function () {
 
   before(async function () {
     await App.initVault.call(this);
-    await Settings.setMaxSessionTimeout.call(this);
+    await Settings.setMaxSessionTimeout();
     await App.open.call(this);
-    await Network.switchToAndCheck.call(this, 'Testnet');
+    await Network.switchToAndCheck('Testnet');
     const tabKeeper = await this.driver.getWindowHandle();
 
-    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    const { waitForNewWindows } = await Windows.captureNewWindows();
     await this.driver
       .wait(
         until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
@@ -81,8 +75,7 @@ describe('Signature', function () {
     await this.driver.switchTo().window(tabAccounts);
     await this.driver.navigate().refresh();
 
-    await CreateNewAccount.importAccount.call(
-      this,
+    await AccountsHome.importAccount(
       'rich',
       'waves private node seed with waves tokens'
     );
@@ -168,14 +161,14 @@ describe('Signature', function () {
     await this.driver.findElement(By.css('#close')).click();
     expect(messageWindow).not.to.be.null;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await Windows.waitForWindowToClose.call(this, messageWindow!);
+    await Windows.waitForWindowToClose(messageWindow!);
     messageWindow = null;
     await this.driver.switchTo().window(tabOrigin);
   }
 
   describe('Stale messages removal', function () {
     it('removes messages and closes window when tab is reloaded', async function () {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
       await this.driver.executeScript(() => {
         KeeperWallet.auth({ data: 'hello' });
       });
@@ -190,7 +183,7 @@ describe('Signature', function () {
       await this.driver.switchTo().window(tabOrigin);
       await this.driver.navigate().refresh();
 
-      await Windows.waitForWindowToClose.call(this, messageWindow);
+      await Windows.waitForWindowToClose(messageWindow);
 
       await this.driver.switchTo().newWindow('tab');
       await App.open.call(this);
@@ -211,7 +204,7 @@ describe('Signature', function () {
       const newTabOrigin = await this.driver.getWindowHandle();
       await this.driver.get(`https://${CUSTOMLIST[1]}`);
 
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
       await this.driver.executeScript(() => {
         KeeperWallet.auth({ data: 'hello' });
       });
@@ -227,7 +220,7 @@ describe('Signature', function () {
       await this.driver.close();
       await this.driver.switchTo().window(tabOrigin);
 
-      await Windows.waitForWindowToClose.call(this, messageWindow);
+      await Windows.waitForWindowToClose(messageWindow);
 
       await this.driver.switchTo().newWindow('tab');
       await App.open.call(this);
@@ -244,7 +237,7 @@ describe('Signature', function () {
     });
 
     it('does not close message window, if there are other messages left', async function () {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
       await this.driver.executeScript(() => {
         KeeperWallet.auth({ data: 'hello' });
       });
@@ -294,7 +287,7 @@ describe('Signature', function () {
 
   describe('Permission request from origin', function () {
     async function performPermissionRequest(this: mocha.Context) {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
       await this.driver.executeScript(() => {
         KeeperWallet.publicState().then(
           result => {
@@ -438,7 +431,7 @@ describe('Signature', function () {
 
   describe('Authentication request from origin', function () {
     async function performAuthRequest(this: mocha.Context) {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
       await this.driver.executeScript(() => {
         KeeperWallet.auth({ data: 'generated auth data' }).then(
           result => {
@@ -515,7 +508,7 @@ describe('Signature', function () {
     const timestamp = Date.now();
 
     async function performMatcherRequest(this: mocha.Context) {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
       await this.driver.executeScript(
         // eslint-disable-next-line @typescript-eslint/no-shadow
         (senderPublicKey: string, timestamp: number) => {
@@ -591,7 +584,7 @@ describe('Signature', function () {
   describe('Transactions', function () {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async function performSignTransaction(this: mocha.Context, tx: any) {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-shadow
       await this.driver.executeScript((tx: any) => {
         KeeperWallet.signTransaction(tx).then(
@@ -3398,7 +3391,7 @@ describe('Signature', function () {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       tx: any
     ) {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
       await this.driver.executeScript(script, tx);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
@@ -4028,7 +4021,7 @@ describe('Signature', function () {
       tx: Array<Parameters<typeof KeeperWallet['signTransaction']>[0]>,
       name: string
     ) {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
       await this.driver.executeScript(
         (
           // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -4526,7 +4519,7 @@ describe('Signature', function () {
   describe('Custom data', function () {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async function performSignCustomData(this: mocha.Context, data: any) {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-shadow
       await this.driver.executeScript((data: any) => {
         KeeperWallet.signCustomData(data).then(

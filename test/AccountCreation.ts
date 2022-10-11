@@ -4,10 +4,10 @@ import { By, Key, until, WebElement } from 'selenium-webdriver';
 
 import { clear } from './utils';
 import {
+  AccountsHome,
   App,
-  Assets,
-  CreateNewAccount,
   Network,
+  PopupHome,
   Settings,
   Windows,
 } from './utils/actions';
@@ -58,11 +58,11 @@ describe('Account creation', function () {
 
   before(async function () {
     await App.initVault.call(this);
-    await Settings.setMaxSessionTimeout.call(this);
+    await Settings.setMaxSessionTimeout();
     await App.open.call(this);
     tabKeeper = await this.driver.getWindowHandle();
 
-    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    const { waitForNewWindows } = await Windows.captureNewWindows();
     await this.driver
       .wait(
         until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
@@ -153,16 +153,14 @@ describe('Account creation', function () {
 
       await this.driver.switchTo().window(tabKeeper);
 
-      expect(await Assets.getActiveAccountName.call(this)).to.equal(
-        ACCOUNTS.FIRST
-      );
+      expect(await PopupHome.getActiveAccountName()).to.equal(ACCOUNTS.FIRST);
     });
 
     describe('additional account via "Add account"', function () {
       describe('When you already have 1 account', function () {
         describe('Create new account page', function () {
           before(async function () {
-            await Assets.addAccount.call(this);
+            await PopupHome.addAccount();
 
             await this.driver.switchTo().window(tabAccounts);
 
@@ -445,7 +443,7 @@ describe('Account creation', function () {
             await this.driver.switchTo().window(tabKeeper);
             await App.open.call(this);
 
-            expect(await Assets.getActiveAccountName.call(this)).to.equal(
+            expect(await PopupHome.getActiveAccountName()).to.equal(
               ACCOUNTS.ANY
             );
           });
@@ -525,7 +523,7 @@ describe('Account creation', function () {
       await this.driver.switchTo().window(tabKeeper);
       await App.open.call(this);
 
-      expect(await Assets.getActiveAccountName.call(this)).to.be.equals(
+      expect(await PopupHome.getActiveAccountName()).to.be.equals(
         ACCOUNTS.FIRST.NAME
       );
     });
@@ -533,7 +531,7 @@ describe('Account creation', function () {
     describe('additional account via the "Add account"', function () {
       describe('When you already have 1 account', function () {
         before(async function () {
-          await Assets.addAccount.call(this);
+          await PopupHome.addAccount();
 
           await this.driver.switchTo().window(tabAccounts);
           await this.driver
@@ -692,7 +690,7 @@ describe('Account creation', function () {
             await this.driver.switchTo().window(tabKeeper);
             await App.open.call(this);
 
-            expect(await Assets.getActiveAccountName.call(this)).to.equal(
+            expect(await PopupHome.getActiveAccountName()).to.equal(
               ACCOUNTS.MORE_24_CHARS.NAME
             );
           });
@@ -969,23 +967,23 @@ describe('Account creation', function () {
           await this.driver.switchTo().window(tabKeeper);
           await App.open.call(this);
 
-          await Network.switchToAndCheck.call(this, 'Testnet');
+          await Network.switchToAndCheck('Testnet');
 
-          expect(
-            await Assets.getAllAccountNames.call(this)
-          ).to.have.ordered.members(['test']);
+          expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
+            'test',
+          ]);
 
-          await Network.switchToAndCheck.call(this, 'Stagenet');
+          await Network.switchToAndCheck('Stagenet');
 
-          expect(
-            await Assets.getAllAccountNames.call(this)
-          ).to.have.ordered.members(['test4']);
+          expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
+            'test4',
+          ]);
         });
       });
 
       describe('when some, but not all accounts already exist', function () {
         it('allows to select only unexisting accounts', async function () {
-          await Assets.addAccount.call(this);
+          await PopupHome.addAccount();
 
           await this.driver.switchTo().window(tabAccounts);
           await this.driver
@@ -1059,29 +1057,30 @@ describe('Account creation', function () {
           await this.driver.switchTo().window(tabKeeper);
           await App.open.call(this);
 
-          await Network.switchToAndCheck.call(this, 'Testnet');
+          await Network.switchToAndCheck('Testnet');
 
-          expect(
-            await Assets.getAllAccountNames.call(this)
-          ).to.have.ordered.members(['test', 'test3']);
+          expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
+            'test',
+            'test3',
+          ]);
 
-          await Network.switchToAndCheck.call(this, 'Stagenet');
+          await Network.switchToAndCheck('Stagenet');
 
-          expect(
-            await Assets.getAllAccountNames.call(this)
-          ).to.have.ordered.members(['test4']);
+          expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
+            'test4',
+          ]);
 
-          await Network.switchToAndCheck.call(this, 'Mainnet');
+          await Network.switchToAndCheck('Mainnet');
 
-          expect(
-            await Assets.getAllAccountNames.call(this)
-          ).to.have.ordered.members(['test2']);
+          expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
+            'test2',
+          ]);
         });
       });
 
       describe('when all accounts exist', function () {
         it('does not allow selecting anything and shows the "Skip" button', async function () {
-          await Assets.addAccount.call(this);
+          await PopupHome.addAccount();
 
           await this.driver.switchTo().window(tabAccounts);
           await this.driver
@@ -1153,8 +1152,7 @@ describe('Account creation', function () {
         beforeEach(deleteEachAndSwitchToAccounts);
 
         it('adds suffix to the name', async function () {
-          await CreateNewAccount.importAccount.call(
-            this,
+          await AccountsHome.importAccount(
             'test2',
             'this is the seed for the test account'
           );
@@ -1208,20 +1206,19 @@ describe('Account creation', function () {
           await this.driver.switchTo().window(tabKeeper);
           await App.open.call(this);
 
-          expect(
-            await Assets.getAllAccountNames.call(this)
-          ).to.have.ordered.members(['test2', 'test2 (1)']);
+          expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
+            'test2',
+            'test2 (1)',
+          ]);
         });
 
         it('increments the number in suffix if it already exists', async function () {
-          await CreateNewAccount.importAccount.call(
-            this,
+          await AccountsHome.importAccount(
             'test2',
             'this is a seed for the test account'
           );
 
-          await CreateNewAccount.importAccount.call(
-            this,
+          await AccountsHome.importAccount(
             'test2 (1)',
             'this is an another seed for the test account'
           );
@@ -1272,9 +1269,11 @@ describe('Account creation', function () {
           await this.driver.switchTo().window(tabKeeper);
           await App.open.call(this);
 
-          expect(
-            await Assets.getAllAccountNames.call(this)
-          ).to.have.ordered.members(['test2 (1)', 'test2', 'test2 (2)']);
+          expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
+            'test2 (1)',
+            'test2',
+            'test2 (2)',
+          ]);
         });
       });
     });

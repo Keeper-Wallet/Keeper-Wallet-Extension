@@ -3,10 +3,10 @@ import * as mocha from 'mocha';
 import { By, until } from 'selenium-webdriver';
 
 import {
+  AccountsHome,
   App,
-  Assets,
-  CreateNewAccount,
   Network,
+  PopupHome,
   Settings,
   Windows,
 } from './utils/actions';
@@ -14,10 +14,10 @@ import {
 describe('Others', function () {
   before(async function () {
     await App.initVault.call(this);
-    await Settings.setMaxSessionTimeout.call(this);
+    await Settings.setMaxSessionTimeout();
     await App.open.call(this);
 
-    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    const { waitForNewWindows } = await Windows.captureNewWindows();
     await this.driver
       .wait(
         until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
@@ -30,10 +30,9 @@ describe('Others', function () {
     await this.driver.switchTo().window(tabAccounts);
     await this.driver.navigate().refresh();
 
-    await Network.switchToAndCheck.call(this, 'Testnet');
+    await Network.switchToAndCheck('Testnet');
 
-    await CreateNewAccount.importAccount.call(
-      this,
+    await AccountsHome.importAccount(
       'rich',
       'waves private node seed with waves tokens'
     );
@@ -47,7 +46,7 @@ describe('Others', function () {
 
   after(async function () {
     await App.open.call(this);
-    await Network.switchToAndCheck.call(this, 'Mainnet');
+    await Network.switchToAndCheck('Mainnet');
     await App.resetVault.call(this);
   });
 
@@ -277,7 +276,7 @@ describe('Others', function () {
       await App.open.call(this);
 
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await Assets.addAccount.call(this);
+      await PopupHome.addAccount();
       const [tabAccounts] = await waitForNewWindows(1);
       await stopServiceWorker.call(this);
       await this.driver.close();

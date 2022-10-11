@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { By, until } from 'selenium-webdriver';
 
-import { App, CreateNewAccount, Settings, Windows } from './utils/actions';
+import { AccountsHome, App, Settings, Windows } from './utils/actions';
 import {
   CUSTOMLIST,
   DEFAULT_PAGE_LOAD_DELAY,
@@ -22,11 +22,11 @@ describe('Messages', function () {
 
   before(async function () {
     await App.initVault.call(this);
-    await Settings.setMaxSessionTimeout.call(this);
+    await Settings.setMaxSessionTimeout();
     await App.open.call(this);
     const tabKeeper = await this.driver.getWindowHandle();
 
-    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    const { waitForNewWindows } = await Windows.captureNewWindows();
     await this.driver
       .wait(
         until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
@@ -41,8 +41,7 @@ describe('Messages', function () {
     await this.driver.switchTo().window(tabAccounts);
     await this.driver.navigate().refresh();
 
-    await CreateNewAccount.importAccount.call(
-      this,
+    await AccountsHome.importAccount(
       'rich',
       'waves private node seed with waves tokens'
     );
@@ -58,7 +57,7 @@ describe('Messages', function () {
   after(async function () {
     const tabKeeper = await this.driver.getWindowHandle();
     await App.open.call(this);
-    await Settings.clearCustomList.call(this);
+    await Settings.clearCustomList();
     await App.closeBgTabs.call(this, tabKeeper);
     await App.resetVault.call(this);
   });
@@ -67,7 +66,7 @@ describe('Messages', function () {
     for (const origin of WHITELIST) {
       await this.driver.get(`https://${origin}`);
 
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
       await this.driver.executeAsyncScript(sendNotification);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
@@ -87,7 +86,7 @@ describe('Messages', function () {
       ).not.to.be.empty;
 
       await this.driver.findElement(By.css('button#closeNotification')).click();
-      await Windows.waitForWindowToClose.call(this, messageWindow);
+      await Windows.waitForWindowToClose(messageWindow);
       messageWindow = null;
       await this.driver.switchTo().window(tabOrigin);
     }
@@ -96,7 +95,7 @@ describe('Messages', function () {
   it('When a message is received from a new resource, permission is requested to access', async function () {
     await this.driver.get(`https://${CUSTOMLIST[0]}`);
 
-    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    const { waitForNewWindows } = await Windows.captureNewWindows();
     await this.driver.executeScript(sendNotification);
     [messageWindow] = await waitForNewWindows(1);
     await this.driver.switchTo().window(messageWindow);
@@ -153,7 +152,7 @@ describe('Messages', function () {
     await this.driver.findElement(By.css('button#closeNotification')).click();
     expect(messageWindow).not.to.be.null;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await Windows.waitForWindowToClose.call(this, messageWindow!);
+    await Windows.waitForWindowToClose(messageWindow!);
     messageWindow = null;
     await this.driver.switchTo().window(tabOrigin);
   });
@@ -161,7 +160,7 @@ describe('Messages', function () {
   it('When allowing access to an application, but denying messages - messages are not displayed', async function () {
     await this.driver.get(`https://${CUSTOMLIST[1]}`);
 
-    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    const { waitForNewWindows } = await Windows.captureNewWindows();
     await this.driver.executeScript(sendNotification);
     [messageWindow] = await waitForNewWindows(1);
     await this.driver.switchTo().window(messageWindow);
@@ -191,7 +190,7 @@ describe('Messages', function () {
     );
 
     await this.driver.findElement(By.css('button#close')).click();
-    await Windows.waitForWindowToClose.call(this, messageWindow);
+    await Windows.waitForWindowToClose(messageWindow);
     messageWindow = null;
     await this.driver.switchTo().window(tabOrigin);
   });
@@ -234,7 +233,7 @@ describe('Messages', function () {
 
     await this.driver.get(`https://${CUSTOMLIST[1]}`);
 
-    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    const { waitForNewWindows } = await Windows.captureNewWindows();
     await this.driver.executeAsyncScript(sendNotification);
     [messageWindow] = await waitForNewWindows(1);
     await this.driver.switchTo().window(messageWindow);
@@ -254,7 +253,7 @@ describe('Messages', function () {
     ).not.to.be.empty;
 
     await this.driver.findElement(By.css('button#closeNotification')).click();
-    await Windows.waitForWindowToClose.call(this, messageWindow);
+    await Windows.waitForWindowToClose(messageWindow);
     messageWindow = null;
     await this.driver.switchTo().window(tabOrigin);
   });
@@ -262,7 +261,7 @@ describe('Messages', function () {
   it('When receiving several messages from one resource - messages are displayed as a "batch"', async function () {
     await this.driver.get(`https://${WHITELIST[3]}`);
 
-    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    const { waitForNewWindows } = await Windows.captureNewWindows();
     for (let success = 0; success < 2; ) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = await this.driver.executeAsyncScript<any>(

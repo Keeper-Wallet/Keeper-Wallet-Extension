@@ -2,13 +2,7 @@ import { expect } from 'chai';
 import { By, until, WebElement } from 'selenium-webdriver';
 
 import { clear } from './utils';
-import {
-  App,
-  CreateNewAccount,
-  Network,
-  Settings,
-  Windows,
-} from './utils/actions';
+import { AccountsHome, App, Network, Settings, Windows } from './utils/actions';
 import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 
 describe('Network management', function () {
@@ -16,36 +10,34 @@ describe('Network management', function () {
 
   before(async function () {
     await App.initVault.call(this);
-    await Settings.setMaxSessionTimeout.call(this);
+    await Settings.setMaxSessionTimeout();
     await App.open.call(this);
   });
 
   after(async function () {
-    await Network.switchToAndCheck.call(this, 'Mainnet');
+    await Network.switchToAndCheck('Mainnet');
     await App.closeBgTabs.call(this, tabKeeper);
     await App.resetVault.call(this);
   });
 
   describe('Switching networks', function () {
-    it('Stagenet', async function () {
-      await Network.switchToAndCheck.call(this, 'Stagenet');
+    it('Stagenet', async () => {
+      await Network.switchToAndCheck('Stagenet');
     });
 
-    it('Mainnet', async function () {
-      await Network.switchToAndCheck.call(this, 'Mainnet');
+    it('Mainnet', async () => {
+      await Network.switchToAndCheck('Mainnet');
     });
 
     describe('Testnet', function () {
-      it('Successfully switched', async function () {
-        await Network.switchToAndCheck.call(this, 'Testnet');
+      it('Successfully switched', async () => {
+        await Network.switchToAndCheck('Testnet');
       });
 
       it('Imported testnet account starts with 3N or 3M', async function () {
         tabKeeper = await this.driver.getWindowHandle();
 
-        const { waitForNewWindows } = await Windows.captureNewWindows.call(
-          this
-        );
+        const { waitForNewWindows } = await Windows.captureNewWindows();
         await this.driver
           .wait(
             until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
@@ -57,8 +49,7 @@ describe('Network management', function () {
         await this.driver.switchTo().window(tabAccounts);
         await this.driver.navigate().refresh();
 
-        await CreateNewAccount.importAccount.call(
-          this,
+        await AccountsHome.importAccount(
           'rich',
           'waves private node seed with waves tokens'
         );
@@ -97,7 +88,7 @@ describe('Network management', function () {
       const customNetwork = 'Custom';
 
       it('Successfully switched', async function () {
-        await Network.switchTo.call(this, customNetwork);
+        await Network.switchTo(customNetwork);
 
         await this.driver
           .wait(
@@ -116,7 +107,7 @@ describe('Network management', function () {
           .findElement(By.css('button#networkSettingsSave'))
           .click();
 
-        await Network.checkNetwork.call(this, customNetwork);
+        await Network.checkNetwork(customNetwork);
       });
 
       describe('Changing network settings by "Edit" button', function () {

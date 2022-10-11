@@ -1,7 +1,7 @@
 import * as mocha from 'mocha';
 import { By, until } from 'selenium-webdriver';
 
-import { App, Assets, Windows } from './utils/actions';
+import { App, PopupHome, Windows } from '../test/utils/actions';
 import { DEFAULT_PASSWORD } from './utils/constants';
 
 describe('Tabs manipulation', function () {
@@ -19,7 +19,7 @@ describe('Tabs manipulation', function () {
 
     it('new "accounts" appears when opened "popup"', async function () {
       tabKeeper = await this.driver.getWindowHandle();
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
       await App.open.call(this);
 
       [tabAccounts] = await waitForNewWindows(1);
@@ -103,7 +103,7 @@ describe('Tabs manipulation', function () {
     });
 
     it('new "accounts" appears when click "add account" button in "popup"', async function () {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
       tabKeeper = await this.driver.getWindowHandle();
       await this.driver
         .findElement(By.css('[data-testid="addAccountBtn"]'))
@@ -226,7 +226,7 @@ describe('Tabs manipulation', function () {
     it('"accounts" appears when add another account from "popup"', async function () {
       await this.driver.switchTo().window(tabKeeper);
 
-      await Assets.addAccount.call(this);
+      await PopupHome.addAccount();
 
       await this.driver.wait(
         async () => (await this.driver.getAllWindowHandles()).length === 2,
@@ -237,7 +237,7 @@ describe('Tabs manipulation', function () {
     it('no more tabs appears when add another account from "popup" again', async function () {
       await this.driver.switchTo().window(tabKeeper);
 
-      await Assets.addAccount.call(this);
+      await PopupHome.addAccount();
 
       await this.driver.wait(
         async () => (await this.driver.getAllWindowHandles()).length === 2,
