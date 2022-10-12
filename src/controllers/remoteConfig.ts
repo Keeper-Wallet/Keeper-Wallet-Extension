@@ -222,7 +222,7 @@ export class RemoteConfigController extends EventEmitter {
     } catch (e) {
       this.updateState({ status: STATUS.ERROR });
 
-      // ignore centy errors
+      // ignore centry errors
     }
 
     extension.alarms.create('updateConfig', {
@@ -248,7 +248,7 @@ export class RemoteConfigController extends EventEmitter {
         throw new Error(await response.text());
       }
     } catch (err) {
-      // ignore centy errors
+      // ignore centry errors
     } finally {
       extension.alarms.create('updateIgnoreErrorsConfig', {
         delayInMinutes: IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL,
