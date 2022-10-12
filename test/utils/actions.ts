@@ -1,14 +1,13 @@
 import { expect } from 'chai';
-import * as mocha from 'mocha';
 
 import { DEFAULT_PASSWORD, DEFAULT_SWITCH_NETWORK_DELAY } from './constants';
 
 export const App = {
-  async initVault(this: mocha.Context, password: string = DEFAULT_PASSWORD) {
+  initVault: async (password = DEFAULT_PASSWORD) => {
     const tabKeeper = await browser.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
-    await App.open.call(this);
+    await browser.openKeeperPopup();
     const [tabAccounts] = await waitForNewWindows(1);
     await browser.switchToWindow(tabAccounts);
     await browser.refresh();
@@ -28,8 +27,8 @@ export const App = {
     await browser.switchToWindow(tabKeeper);
   },
 
-  async resetVault(this: mocha.Context) {
-    await App.open.call(this);
+  resetVault: async () => {
+    await browser.openKeeperPopup();
 
     await $("//div[contains(@class, 'settingsIcon@menu')]").click();
     await $("//div[contains(@class, 'deleteAccounts@settings')]").click();
@@ -37,11 +36,7 @@ export const App = {
     await $('[data-testid="resetConfirm"]').click();
   },
 
-  async open(this: mocha.Context) {
-    await browser.navigateTo(this.extensionUrl);
-  },
-
-  async closeBgTabs(this: mocha.Context, foreground: string) {
+  closeBgTabs: async (foreground: string) => {
     for (const handle of await browser.getWindowHandles()) {
       if (handle !== foreground) {
         await browser.switchToWindow(handle);

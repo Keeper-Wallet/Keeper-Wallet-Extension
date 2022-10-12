@@ -7,9 +7,9 @@ import { DEFAULT_PASSWORD } from './utils/constants';
 describe('Tabs manipulation', function () {
   let tabKeeper: string, tabAccounts: string;
 
-  after(async function () {
-    await App.open.call(this);
-    await App.resetVault.call(this);
+  after(async () => {
+    await browser.openKeeperPopup();
+    await App.resetVault();
   });
 
   describe('vault is empty', function () {
@@ -20,7 +20,7 @@ describe('Tabs manipulation', function () {
     it('new "accounts" appears when opened "popup"', async function () {
       tabKeeper = await this.driver.getWindowHandle();
       const { waitForNewWindows } = await Windows.captureNewWindows();
-      await App.open.call(this);
+      await browser.openKeeperPopup();
 
       [tabAccounts] = await waitForNewWindows(1);
       await this.driver.switchTo().window(tabAccounts);

@@ -21,9 +21,9 @@ describe('Messages', function () {
   };
 
   before(async function () {
-    await App.initVault.call(this);
+    await App.initVault();
     await Settings.setMaxSessionTimeout();
-    await App.open.call(this);
+    await browser.openKeeperPopup();
     const tabKeeper = await this.driver.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
@@ -56,10 +56,10 @@ describe('Messages', function () {
 
   after(async function () {
     const tabKeeper = await this.driver.getWindowHandle();
-    await App.open.call(this);
+    await browser.openKeeperPopup();
     await Settings.clearCustomList();
     await App.closeBgTabs.call(this, tabKeeper);
-    await App.resetVault.call(this);
+    await App.resetVault();
   });
 
   it('Allowed messages from all resources from WhiteList', async function () {
@@ -196,7 +196,7 @@ describe('Messages', function () {
   });
 
   it('When allowing access from settings - messages are displayed', async function () {
-    await App.open.call(this);
+    await browser.openKeeperPopup();
 
     await this.driver
       .wait(

@@ -13,9 +13,9 @@ import {
 
 describe('Others', function () {
   before(async function () {
-    await App.initVault.call(this);
+    await App.initVault();
     await Settings.setMaxSessionTimeout();
-    await App.open.call(this);
+    await browser.openKeeperPopup();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
     await this.driver
@@ -45,9 +45,9 @@ describe('Others', function () {
   });
 
   after(async function () {
-    await App.open.call(this);
+    await browser.openKeeperPopup();
     await Network.switchToAndCheck('Mainnet');
-    await App.resetVault.call(this);
+    await App.resetVault();
   });
 
   it(
@@ -63,7 +63,9 @@ describe('Others', function () {
   it('Send more transactions for signature when different screens are open');
 
   describe('Send WAVES', function () {
-    before(App.open);
+    before(async () => {
+      await browser.openKeeperPopup();
+    });
 
     beforeEach(async function () {
       await this.driver
@@ -273,7 +275,7 @@ describe('Others', function () {
 
     it('ui waits until connection with background is established before trying to call methods', async function () {
       await stopServiceWorker.call(this);
-      await App.open.call(this);
+      await browser.openKeeperPopup();
 
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await PopupHome.addAccount();

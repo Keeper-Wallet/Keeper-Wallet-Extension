@@ -57,9 +57,9 @@ describe('Account creation', function () {
   let tabKeeper: string, tabAccounts: string;
 
   before(async function () {
-    await App.initVault.call(this);
+    await App.initVault();
     await Settings.setMaxSessionTimeout();
-    await App.open.call(this);
+    await browser.openKeeperPopup();
     tabKeeper = await this.driver.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
@@ -77,7 +77,7 @@ describe('Account creation', function () {
 
   after(async function () {
     await App.closeBgTabs.call(this, tabKeeper);
-    await App.resetVault.call(this);
+    await App.resetVault();
   });
 
   describe('Create', function () {
@@ -441,7 +441,7 @@ describe('Account creation', function () {
             );
 
             await this.driver.switchTo().window(tabKeeper);
-            await App.open.call(this);
+            await browser.openKeeperPopup();
 
             expect(await PopupHome.getActiveAccountName()).to.equal(
               ACCOUNTS.ANY
@@ -521,7 +521,7 @@ describe('Account creation', function () {
       );
 
       await this.driver.switchTo().window(tabKeeper);
-      await App.open.call(this);
+      await browser.openKeeperPopup();
 
       expect(await PopupHome.getActiveAccountName()).to.be.equals(
         ACCOUNTS.FIRST.NAME
@@ -688,7 +688,7 @@ describe('Account creation', function () {
             );
 
             await this.driver.switchTo().window(tabKeeper);
-            await App.open.call(this);
+            await browser.openKeeperPopup();
 
             expect(await PopupHome.getActiveAccountName()).to.equal(
               ACCOUNTS.MORE_24_CHARS.NAME
@@ -965,7 +965,7 @@ describe('Account creation', function () {
           );
 
           await this.driver.switchTo().window(tabKeeper);
-          await App.open.call(this);
+          await browser.openKeeperPopup();
 
           await Network.switchToAndCheck('Testnet');
 
@@ -1055,7 +1055,7 @@ describe('Account creation', function () {
           );
 
           await this.driver.switchTo().window(tabKeeper);
-          await App.open.call(this);
+          await browser.openKeeperPopup();
 
           await Network.switchToAndCheck('Testnet');
 
@@ -1204,7 +1204,7 @@ describe('Account creation', function () {
           );
 
           await this.driver.switchTo().window(tabKeeper);
-          await App.open.call(this);
+          await browser.openKeeperPopup();
 
           expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
             'test2',
@@ -1267,7 +1267,7 @@ describe('Account creation', function () {
           );
 
           await this.driver.switchTo().window(tabKeeper);
-          await App.open.call(this);
+          await browser.openKeeperPopup();
 
           expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
             'test2 (1)',

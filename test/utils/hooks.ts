@@ -11,12 +11,18 @@ declare global {
   interface Window {
     result: unknown;
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace WebdriverIO {
+    interface Browser {
+      openKeeperPopup: () => Promise<void>;
+    }
+  }
 }
 
 declare module 'mocha' {
   interface Context {
     driver: WebDriver;
-    extensionUrl: string;
     nodeUrl: string;
     wait: number;
   }
@@ -86,7 +92,11 @@ export const mochaHooks = () => ({
       throw new Error('Could not find Keeper Wallet extension id');
     }
 
-    this.extensionUrl = `chrome-extension://${keeperExtensionId}/popup.html`;
+    browser.addCommand('openKeeperPopup', async () => {
+      await browser.navigateTo(
+        `chrome-extension://${keeperExtensionId}/popup.html`
+      );
+    });
   },
 
   async afterAll(this: mocha.Context) {

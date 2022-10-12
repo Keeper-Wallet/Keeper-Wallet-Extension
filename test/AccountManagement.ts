@@ -10,15 +10,15 @@ import {
   Settings,
   Windows,
 } from './utils/actions';
-import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './utils/constants';
+import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 
 describe('Account management', function () {
   let tabKeeper: string, tabAccounts: string;
 
   before(async function () {
-    await App.initVault.call(this, DEFAULT_PASSWORD);
+    await App.initVault();
     await Settings.setMaxSessionTimeout();
-    await App.open.call(this);
+    await browser.openKeeperPopup();
     tabKeeper = await this.driver.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
@@ -44,12 +44,12 @@ describe('Account management', function () {
     );
 
     await this.driver.switchTo().window(tabKeeper);
-    await App.open.call(this);
+    await browser.openKeeperPopup();
   });
 
   after(async function () {
     await App.closeBgTabs.call(this, tabKeeper);
-    await App.resetVault.call(this);
+    await App.resetVault();
   });
 
   describe('Accounts list', function () {

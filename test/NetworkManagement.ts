@@ -8,16 +8,16 @@ import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 describe('Network management', function () {
   let tabKeeper: string;
 
-  before(async function () {
-    await App.initVault.call(this);
+  before(async () => {
+    await App.initVault();
     await Settings.setMaxSessionTimeout();
-    await App.open.call(this);
+    await browser.openKeeperPopup();
   });
 
   after(async function () {
     await Network.switchToAndCheck('Mainnet');
     await App.closeBgTabs.call(this, tabKeeper);
-    await App.resetVault.call(this);
+    await App.resetVault();
   });
 
   describe('Switching networks', function () {
