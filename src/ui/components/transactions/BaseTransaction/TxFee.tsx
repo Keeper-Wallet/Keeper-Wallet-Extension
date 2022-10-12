@@ -29,20 +29,19 @@ export function TxFee({ message: messageProp }: Props) {
   ) as Extract<MessageStoreItem, { type: 'transaction' }>;
 
   const message = messageProp || messageFromState;
-  const initialFee = getMoney(message?.data?.data?.initialFee, assets);
-  const fee = getMoney(getFee({ ...message?.data?.data }), assets);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const initialFee = getMoney(message?.data?.data?.initialFee, assets)!;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const fee = getMoney(getFee({ ...message?.data?.data }), assets)!;
 
   const spendingAmounts = getSpendingAmountsForSponsorableTx({
     assets,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    message: message!,
+    message,
   });
 
   let feeOptions = useFeeOptions({
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    initialFee: initialFee!,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    txType: message!.data.type,
+    initialFee,
+    txType: message.data.type,
   }).filter(option =>
     isEnoughBalanceForFeeAndSpendingAmounts({
       assetBalance: option.assetBalance,
@@ -52,14 +51,12 @@ export function TxFee({ message: messageProp }: Props) {
   );
 
   if (
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    feeOptions.findIndex(opt => opt.money.asset.id === fee!.asset.id) === -1
+    feeOptions.findIndex(opt => opt.money.asset.id === fee.asset.id) === -1 &&
+    balance?.assets?.[fee.asset.id]
   ) {
     feeOptions = feeOptions.concat({
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      assetBalance: balance!.assets![fee!.asset.id],
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      money: fee!,
+      assetBalance: balance.assets[fee.asset.id],
+      money: fee,
     });
   }
 
@@ -79,12 +76,10 @@ export function TxFee({ message: messageProp }: Props) {
               }`,
             })
           )}
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          selected={fee!.asset.id}
+          selected={fee.asset.id}
           onSelectItem={(id, tokens) => {
             dispatch(
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              updateTransactionFee(message!.id, {
+              updateTransactionFee(message.id, {
                 tokens: tokens,
                 assetId: id as string,
               })

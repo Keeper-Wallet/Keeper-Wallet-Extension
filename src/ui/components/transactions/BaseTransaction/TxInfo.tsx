@@ -55,12 +55,7 @@ export function TxInfo({ message: messageProp }: Props) {
 
       <div className={styles.txRow}>
         <div className="tx-title tag1 basic500">{t('transactions.txid')}</div>
-        <div className={styles.txValue}>
-          {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            message!.messageHash
-          }
-        </div>
+        <div className={styles.txValue}>{message.messageHash}</div>
       </div>
     </div>
   );
