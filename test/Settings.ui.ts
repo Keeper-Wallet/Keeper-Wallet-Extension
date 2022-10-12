@@ -38,9 +38,9 @@ describe('Settings', function () {
   }
 
   before(async function () {
-    await App.initVault.call(this, DEFAULT_PASSWORD);
+    await App.initVault();
     await Settings.setMaxSessionTimeout.call(this);
-    await App.open.call(this);
+    await browser.openKeeperPopup();
     tabKeeper = await this.driver.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
@@ -423,8 +423,8 @@ describe('Settings', function () {
         await this.driver.executeScript(permissionRequest);
       }
 
-      after(async function () {
-        await App.open.call(this);
+      after(async () => {
+        await browser.openKeeperPopup();
         await Settings.clearCustomList();
       });
 
@@ -455,7 +455,7 @@ describe('Settings', function () {
           await this.driver.findElement(By.css('button#close')).click();
           await Windows.waitForWindowToClose(messageWindow);
           await this.driver.switchTo().window(tabKeeper);
-          await App.open.call(this);
+          await browser.openKeeperPopup();
 
           await this.driver
             .wait(
@@ -557,7 +557,7 @@ describe('Settings', function () {
           await this.driver.findElement(By.css('button#close')).click();
           await Windows.waitForWindowToClose(messageWindow);
           await this.driver.switchTo().window(tabKeeper);
-          await App.open.call(this);
+          await browser.openKeeperPopup();
 
           await this.driver
             .wait(
@@ -600,7 +600,7 @@ describe('Settings', function () {
 
       describe('Blocking', function () {
         after(async function () {
-          await App.open.call(this);
+          await browser.openKeeperPopup();
 
           await this.driver
             .wait(
@@ -659,7 +659,7 @@ describe('Settings', function () {
 
       describe('Removing', function () {
         after(async function () {
-          await App.open.call(this);
+          await browser.openKeeperPopup();
 
           await this.driver
             .wait(
@@ -776,7 +776,7 @@ describe('Settings', function () {
       });
 
       it('Logout after "Browser timeout"', async function () {
-        await App.open.call(this);
+        await browser.openKeeperPopup();
         await Settings.setMinSessionTimeout();
 
         expect(

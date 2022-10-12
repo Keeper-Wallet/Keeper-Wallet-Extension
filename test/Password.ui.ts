@@ -30,7 +30,7 @@ describe('Password management', () => {
       tabKeeper = await this.driver.getWindowHandle();
 
       const { waitForNewWindows } = await Windows.captureNewWindows();
-      await App.open.call(this);
+      await browser.openKeeperPopup();
       [tabAccounts] = await waitForNewWindows(1);
 
       await this.driver.switchTo().window(tabAccounts);
@@ -134,7 +134,7 @@ describe('Password management', () => {
 
     before(async function () {
       await this.driver.switchTo().window(tabKeeper);
-      await App.open.call(this);
+      await browser.openKeeperPopup();
 
       await this.driver
         .wait(
@@ -305,7 +305,7 @@ describe('Password management', () => {
         'waves private node seed with waves tokens'
       );
       await this.driver.switchTo().window(tabKeeper);
-      await App.open.call(this);
+      await browser.openKeeperPopup();
     });
 
     it('Logout', async function () {

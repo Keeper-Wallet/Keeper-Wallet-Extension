@@ -56,9 +56,9 @@ describe('Signature', function () {
   const senderPublicKey = 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV';
 
   before(async function () {
-    await App.initVault.call(this);
+    await App.initVault();
     await Settings.setMaxSessionTimeout();
-    await App.open.call(this);
+    await browser.openKeeperPopup();
     await Network.switchToAndCheck('Testnet');
     const tabKeeper = await this.driver.getWindowHandle();
 
@@ -95,7 +95,7 @@ describe('Signature', function () {
     await this.driver.switchTo().newWindow('tab');
     const tabKeeper = await this.driver.getWindowHandle();
     await App.closeBgTabs.call(this, tabKeeper);
-    await App.resetVault.call(this);
+    await App.resetVault();
   });
 
   async function checkOrigin(this: mocha.Context, expectedOrigin: string) {
@@ -188,7 +188,7 @@ describe('Signature', function () {
       await Windows.waitForWindowToClose(messageWindow);
 
       await this.driver.switchTo().newWindow('tab');
-      await App.open.call(this);
+      await browser.openKeeperPopup();
 
       await this.driver.wait(
         until.elementLocated(
@@ -225,7 +225,7 @@ describe('Signature', function () {
       await Windows.waitForWindowToClose(messageWindow);
 
       await this.driver.switchTo().newWindow('tab');
-      await App.open.call(this);
+      await browser.openKeeperPopup();
 
       await this.driver.wait(
         until.elementLocated(

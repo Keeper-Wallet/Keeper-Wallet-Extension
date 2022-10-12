@@ -10,15 +10,15 @@ describe('Others', function () {
   let tabKeeper: string;
 
   before(async function () {
-    await App.initVault.call(this);
+    await App.initVault();
     await Settings.setMaxSessionTimeout();
-    await App.open.call(this);
+    await browser.openKeeperPopup();
     tabKeeper = await this.driver.getWindowHandle();
   });
 
   after(async function () {
     await App.closeBgTabs.call(this, tabKeeper);
-    await App.resetVault.call(this);
+    await App.resetVault();
   });
 
   it(

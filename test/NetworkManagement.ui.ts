@@ -10,14 +10,14 @@ describe('Network management', function () {
 
   let tabKeeper: string;
 
-  before(async function () {
-    await App.initVault.call(this);
+  before(async () => {
+    await App.initVault();
   });
 
   after(async function () {
     await Network.switchToAndCheck('Mainnet');
     await App.closeBgTabs.call(this, tabKeeper);
-    await App.resetVault.call(this);
+    await App.resetVault();
   });
 
   describe('Switching networks', function () {
