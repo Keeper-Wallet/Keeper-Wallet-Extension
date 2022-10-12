@@ -1,8 +1,5 @@
 import { expect } from 'chai';
-import * as mocha from 'mocha';
-import { By, Key, until, WebElement } from 'selenium-webdriver';
 
-import { clear } from './utils';
 import {
   AccountsHome,
   App,
@@ -13,20 +10,17 @@ import {
 } from './utils/actions';
 
 describe('Account creation', function () {
-  async function deleteEachAndSwitchToAccounts(this: mocha.Context) {
+  let tabKeeper: string, tabAccounts: string;
+
+  async function deleteEachAndSwitchToAccounts() {
     const repeat = true;
 
     while (repeat) {
-      await this.driver.wait(
-        until.elementLocated(
-          By.css('[data-testid="assetsForm"], [data-testid="importForm"]')
-        ),
-        this.wait
-      );
+      await $(
+        '[data-testid="assetsForm"], [data-testid="importForm"]'
+      ).waitForExist();
 
-      const activeAccountCards = await this.driver.findElements(
-        By.css('[data-testid="activeAccountCard"]')
-      );
+      const activeAccountCards = await $$('[data-testid="activeAccountCard"]');
 
       if (!activeAccountCards.length) {
         break; // the cycle
@@ -34,53 +28,35 @@ describe('Account creation', function () {
 
       await activeAccountCards[0].click();
 
-      await this.driver
-        .wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'deleteButton@accountInfo')]")
-          ),
-          this.wait
-        )
-        .click();
-
-      await this.driver
-        .wait(until.elementLocated(By.id('deleteAccount')), this.wait)
-        .click();
+      await $("//div[contains(@class, 'deleteButton@accountInfo')]").click();
+      await $('#deleteAccount').click();
     }
 
-    expect(await this.driver.findElements(By.css('[data-testid="importForm"]')))
-      .not.to.be.empty;
-
-    await this.driver.switchTo().window(tabAccounts);
+    await $('[data-testid="importForm"]').waitForExist();
+    await browser.switchToWindow(tabAccounts);
   }
 
-  let tabKeeper: string, tabAccounts: string;
-
-  before(async function () {
+  before(async () => {
     await App.initVault();
     await Settings.setMaxSessionTimeout();
     await browser.openKeeperPopup();
-    tabKeeper = await this.driver.getWindowHandle();
+    tabKeeper = await browser.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
-    await this.driver
-      .wait(
-        until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
-        this.wait
-      )
-      .click();
+    await $('[data-testid="addAccountBtn"]').click();
     [tabAccounts] = await waitForNewWindows(1);
-
-    await this.driver.switchTo().window(tabAccounts);
-    await this.driver.navigate().refresh();
+    await browser.switchToWindow(tabAccounts);
+    await browser.refresh();
   });
 
-  after(async function () {
-    await App.closeBgTabs.call(this, tabKeeper);
+  after(async () => {
+    await browser.switchToWindow(tabAccounts);
+    await browser.closeWindow();
+    await browser.switchToWindow(tabKeeper);
     await App.resetVault();
   });
 
-  describe('Create', function () {
+  describe('Create', () => {
     const ACCOUNTS = {
       FIRST: 'first',
       SECOND: 'second',
@@ -90,357 +66,230 @@ describe('Account creation', function () {
 
     after(deleteEachAndSwitchToAccounts);
 
-    it('first account via "Create a new account"', async function () {
-      await this.driver
-        .wait(
-          until.elementIsVisible(
-            this.driver.wait(
-              until.elementLocated(
-                By.css('[data-testid="createNewAccountBtn"]')
-              ),
-              this.wait
-            )
-          ),
-          this.wait
-        )
-        .click();
+    it('first account via "Create a new account"', async () => {
+      await $('[data-testid="createNewAccountBtn"]').click();
+      await $('#continue').click();
 
-      await this.driver
-        .wait(until.elementLocated(By.css('button#continue')), this.wait)
-        .click();
+      const seed = await $('div.cant-select').getText();
+      await $('#continue').click();
 
-      const seed: string[] = (
-        await this.driver
-          .wait(until.elementLocated(By.css('div.cant-select')), this.wait)
-          .getText()
-      ).split(' ');
-      await this.driver.findElement(By.css('button#continue')).click();
+      for (const word of seed.split(' ')) {
+        await $(
+          "//div[(contains(@class, 'selectedPill@pills') and not(contains(@class, 'hiddenPill@pills')))]" +
+            `//div[contains(@class, 'text@pills')][text()='${word}']`
+        ).click();
 
-      for (const word of seed) {
-        await this.driver
-          .findElement(
-            By.xpath(
-              "//div[(contains(@class, 'selectedPill@pills') and not(contains(@class, 'hiddenPill@pills')))]" +
-                `//div[contains(@class, 'text@pills')][text()='${word}']`
-            )
-          )
-          .click();
-        await this.driver.sleep(PILL_ANIMATION_DELAY);
+        await browser.pause(PILL_ANIMATION_DELAY);
       }
-      await this.driver
-        .wait(until.elementLocated(By.css('button#confirmBackup')), this.wait)
-        .click();
 
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid=newAccountNameInput]')),
-          this.wait
-        )
-        .sendKeys(ACCOUNTS.FIRST);
+      await $('#confirmBackup').click();
 
-      await this.driver
-        .findElement(By.css('[data-testid=continueBtn]'))
-        .click();
+      await $('[data-testid="newAccountNameInput"]').setValue(ACCOUNTS.FIRST);
+      await $('[data-testid="continueBtn"]').click();
 
-      await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-        this.wait
-      );
+      await $('[data-testid="addAnotherAccountBtn"]').click();
 
-      await this.driver
-        .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-        .click();
-
-      await this.driver.switchTo().window(tabKeeper);
-
+      await browser.switchToWindow(tabKeeper);
       expect(await PopupHome.getActiveAccountName()).to.equal(ACCOUNTS.FIRST);
     });
 
-    describe('additional account via "Add account"', function () {
-      describe('When you already have 1 account', function () {
-        describe('Create new account page', function () {
-          before(async function () {
+    describe('additional account via "Add account"', () => {
+      describe('When you already have 1 account', () => {
+        describe('Create new account page', () => {
+          before(async () => {
             await PopupHome.addAccount();
-
-            await this.driver.switchTo().window(tabAccounts);
-
-            await this.driver
-              .wait(
-                until.elementIsVisible(
-                  await this.driver.wait(
-                    until.elementLocated(
-                      By.css('[data-testid="createNewAccountBtn"]')
-                    ),
-                    this.wait
-                  )
-                ),
-                this.wait
-              )
-              .click();
+            await browser.switchToWindow(tabAccounts);
+            await $('[data-testid="createNewAccountBtn"]').click();
           });
 
-          it('Each time you open the "Create new account" screen, new addresses are generated', async function () {
-            const prevAddress = await this.driver
-              .wait(
-                until.elementLocated(
-                  By.xpath("//div[contains(@class, 'greyLine@newwallet')]")
-                )
-              )
-              .getText();
-            await this.driver
-              .findElement(By.css('div.arrow-back-icon'))
-              .click();
+          it('Each time you open the "Create new account" screen, new addresses are generated', async () => {
+            const prevAddress = await $(
+              "//div[contains(@class, 'greyLine@newwallet')]"
+            ).getText();
 
-            await this.driver
-              .wait(
-                until.elementLocated(
-                  By.css('[data-testid="createNewAccountBtn"]')
-                ),
-                this.wait
-              )
-              .click();
+            await $('div.arrow-back-icon').click();
+
+            await $('[data-testid="createNewAccountBtn"]').click();
 
             expect(
-              await this.driver
-                .wait(
-                  until.elementLocated(
-                    By.xpath("//div[contains(@class, 'greyLine@newwallet')]")
-                  )
-                )
-                .getText()
-            ).to.be.not.equal(prevAddress);
+              await $("//div[contains(@class, 'greyLine@newwallet')]").getText()
+            ).not.to.be.equal(prevAddress);
           });
 
-          it('You can select any account from the list of 5 generated', async function () {
-            const addressEl = this.driver.wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'greyLine@newwallet')]")
-              )
+          it('You can select any account from the list of 5 generated', async () => {
+            const avatarList = await $$(
+              "//div[contains(@class, 'avatar@avatar')]"
             );
+            expect(avatarList).to.have.length(5);
+
+            const addressEl = await $(
+              "//div[contains(@class, 'greyLine@newwallet')]"
+            );
+
             let prevAddress: string | null = null;
-            const avatarList = await this.driver.findElements(
-              By.xpath("//div[contains(@class, 'avatar@avatar')]")
-            );
-            expect(avatarList).length(5);
 
             for (const avatar of avatarList) {
               await avatar.click();
               const currentAddress = await addressEl.getText();
-              expect(currentAddress).to.be.not.equal(prevAddress);
+              expect(currentAddress).not.to.equal(prevAddress);
               prevAddress = currentAddress;
             }
 
-            await this.driver
-              .wait(until.elementLocated(By.css('button#continue')), this.wait)
-              .click();
+            await $('#continue').click();
           });
         });
 
         let rightSeed: string;
-        describe('Save backup phrase page', function () {
-          it('Backup phrase is visible', async function () {
-            const seedEl = this.driver.wait(
-              until.elementLocated(By.css('div.cant-select')),
-              this.wait
-            );
-
-            expect(await seedEl.isDisplayed()).to.be.true;
+        describe('Save backup phrase page', () => {
+          it('Backup phrase is visible', async () => {
+            const seedEl = await $('div.cant-select');
+            await seedEl.waitForDisplayed();
             rightSeed = await seedEl.getText();
             expect(rightSeed).to.be.not.empty;
 
-            await this.driver.findElement(By.css('button#continue')).click();
+            await $('#continue').click();
           });
 
           it('Backup phrase cannot be selected with cursor');
           it('Ability to copy backup phrase to clipboard');
         });
 
-        describe('Confirm backup page', function () {
-          let clearButton: WebElement;
+        describe('Confirm backup page', () => {
           const xpWriteVisiblePill =
-              "//div[(contains(@class, 'selectedPill@pills') and not(contains(@class, 'hiddenPill@pills')))]",
-            xpReadVisiblePill =
-              "//div[(contains(@class, 'pill@pills') and not(contains(@class, 'selectedPill@pills')) and not(contains(@class, 'hiddenPill@pills')))]",
-            PILLS_COUNT = 15;
+            "//div[(contains(@class, 'selectedPill@pills') and not(contains(@class, 'hiddenPill@pills')))]";
 
-          it('Filling in a seed in the wrong word order', async function () {
+          const xpReadVisiblePill =
+            "//div[(contains(@class, 'pill@pills') and not(contains(@class, 'selectedPill@pills')) and not(contains(@class, 'hiddenPill@pills')))]";
+
+          const PILLS_COUNT = 15;
+
+          it('Filling in a seed in the wrong word order', async () => {
             // there is no Confirm button. An error message and a "Clear" button are displayed
             const wrongSeed = rightSeed.split(' ').reverse();
+
             for (const word of wrongSeed) {
-              await this.driver
-                .findElement(
-                  By.xpath(
-                    `${xpWriteVisiblePill}//div[contains(@class, 'text@pills')][text()='${word}']`
-                  )
-                )
-                .click();
-              await this.driver.sleep(PILL_ANIMATION_DELAY);
+              await $(
+                `${xpWriteVisiblePill}//div[contains(@class, 'text@pills')][text()='${word}']`
+              ).click();
+
+              await browser.pause(PILL_ANIMATION_DELAY);
             }
-            const errorDiv = this.driver.wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'error@error')]")
-              ),
-              this.wait
-            );
-            expect(await errorDiv.isDisplayed()).to.be.true;
-            expect(await errorDiv.getText()).is.not.empty;
-            clearButton = this.driver.findElement(
-              By.xpath("//div[contains(@class, 'clearSeed@confirmBackup')]")
-            );
-            expect(
-              await this.driver
-                .findElement(
-                  By.xpath("//div[contains(@class, 'clearSeed@confirmBackup')]")
-                )
-                .isDisplayed()
-            ).to.be.true;
-            expect(
-              await this.driver.findElements(By.xpath(xpReadVisiblePill))
-            ).length(PILLS_COUNT);
-            expect(await this.driver.findElements(By.xpath(xpWriteVisiblePill)))
-              .to.be.empty;
+
+            const errorEl = $("//div[contains(@class, 'error@error')]");
+            await errorEl.waitForDisplayed();
+            expect(await errorEl.getText()).to.equal('Wrong order, try again');
+
+            await $(
+              "//div[contains(@class, 'clearSeed@confirmBackup')]"
+            ).waitForDisplayed();
+
+            expect(await $$(xpReadVisiblePill)).to.have.length(PILLS_COUNT);
+            expect(await $$(xpWriteVisiblePill)).to.have.length(0);
           });
 
-          it('The "Clear" button resets a completely filled phrase', async function () {
-            await clearButton.click();
-            await this.driver.sleep(PILL_ANIMATION_DELAY);
+          it('The "Clear" button resets a completely filled phrase', async () => {
+            await $(
+              "//div[contains(@class, 'clearSeed@confirmBackup')]"
+            ).click();
+
+            await browser.pause(PILL_ANIMATION_DELAY);
+
+            expect(await $$("//div[contains(@class, 'error@error')]")).to.be
+              .empty;
 
             expect(
-              await this.driver.findElements(
-                By.xpath("//div[contains(@class, 'error@error')]")
-              )
+              await $$("//div[contains(@class, 'clearSeed@confirmBackup')]")
             ).to.be.empty;
 
-            expect(
-              await this.driver.findElements(
-                By.xpath("//div[contains(@class, 'clearSeed@confirmBackup')]")
-              )
-            ).to.be.empty;
-            expect(await this.driver.findElements(By.xpath(xpReadVisiblePill)))
-              .to.be.empty;
-            expect(
-              await this.driver.findElements(By.xpath(xpWriteVisiblePill))
-            ).length(PILLS_COUNT);
+            expect(await $$(xpReadVisiblePill)).to.be.empty;
+            expect(await $$(xpWriteVisiblePill)).length(PILLS_COUNT);
           });
 
-          it('The word can be reset by clicking (any, not only the last)', async function () {
-            const writePills = await this.driver.wait(
-              until.elementsLocated(By.xpath(xpWriteVisiblePill)),
-              this.wait
-            );
+          it('The word can be reset by clicking (any, not only the last)', async () => {
+            const writePills = await $$(xpWriteVisiblePill);
+
             for (const writePill of writePills) {
               await writePill.click();
-              await this.driver.sleep(PILL_ANIMATION_DELAY);
+              await browser.pause(PILL_ANIMATION_DELAY);
             }
-            await this.driver.wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'clearSeed@confirmBackup')]")
-              ),
-              this.wait
-            );
-            expect(
-              await this.driver.findElements(By.xpath(xpReadVisiblePill))
-            ).length(PILLS_COUNT);
-            expect(await this.driver.findElements(By.xpath(xpWriteVisiblePill)))
-              .to.be.empty;
 
-            const readPills = await this.driver.findElements(
-              By.xpath(
-                "//div[contains(@class, 'readSeed@confirmBackup')]" +
-                  "//div[(contains(@class, 'pill@pills') and not(contains(@class, 'hiddenPill@pills')))]"
-              )
+            await $(
+              "//div[contains(@class, 'clearSeed@confirmBackup')]"
+            ).waitForDisplayed();
+
+            expect(await $$(xpReadVisiblePill)).to.have.length(PILLS_COUNT);
+            expect(await $$(xpWriteVisiblePill)).to.be.empty;
+
+            const readPills = await $$(
+              "//div[contains(@class, 'readSeed@confirmBackup')]" +
+                "//div[(contains(@class, 'pill@pills') and not(contains(@class, 'hiddenPill@pills')))]"
             );
 
             for (const readPill of readPills) {
               await readPill.click();
-              await this.driver.sleep(PILL_ANIMATION_DELAY);
+              await browser.pause(PILL_ANIMATION_DELAY);
             }
 
-            expect(await this.driver.findElements(By.xpath(xpReadVisiblePill)))
-              .to.be.empty;
-            expect(
-              await this.driver.findElements(By.xpath(xpWriteVisiblePill))
-            ).length(PILLS_COUNT);
+            expect(await $$(xpReadVisiblePill)).to.be.empty;
+            expect(await $$(xpWriteVisiblePill)).to.have.length(PILLS_COUNT);
           });
 
-          it('Account name page opened while filling in the phrase in the correct order', async function () {
+          it('Account name page opened while filling in the phrase in the correct order', async () => {
             for (const word of rightSeed.split(' ')) {
-              await this.driver
-                .findElement(
-                  By.xpath(
-                    `${xpWriteVisiblePill}//div[contains(@class, 'text@pills')][text()='${word}']`
-                  )
-                )
-                .click();
-              await this.driver.sleep(PILL_ANIMATION_DELAY);
+              await $(
+                `${xpWriteVisiblePill}//div[contains(@class, 'text@pills')][text()='${word}']`
+              ).click();
+
+              await browser.pause(PILL_ANIMATION_DELAY);
             }
-            await this.driver
-              .wait(
-                until.elementLocated(By.css('button#confirmBackup')),
-                this.wait
-              )
-              .click();
+
+            await $('#confirmBackup').click();
           });
         });
 
-        describe('Account name page', function () {
-          let accountNameInput: WebElement,
-            continueBtn: WebElement,
-            errorDiv: WebElement;
-          before(function () {
-            accountNameInput = this.driver.wait(
-              until.elementLocated(
-                By.css('[data-testid="newAccountNameInput"]')
-              ),
-              this.wait
+        describe('Account name page', () => {
+          it('Account cannot be given a name that is already in use', async () => {
+            await $('[data-testid="newAccountNameInput"]').setValue(
+              ACCOUNTS.FIRST
             );
-            continueBtn = this.driver.findElement(
-              By.css('[data-testid="continueBtn"]')
-            );
-            errorDiv = this.driver.findElement(
-              By.css('[data-testid="newAccountNameError"]')
-            );
-          });
 
-          beforeEach(async function () {
-            await clear(accountNameInput);
-          });
+            await browser.keys('Tab');
 
-          it('Account cannot be given a name that is already in use', async function () {
-            await accountNameInput.sendKeys(ACCOUNTS.FIRST);
-            await accountNameInput.sendKeys('\t');
-            expect(await errorDiv.getText()).matches(/name already exist/i);
-            expect(await continueBtn.isEnabled()).to.be.false;
+            expect(
+              await $('[data-testid="newAccountNameError"]').getText()
+            ).matches(/name already exist/i);
+
+            expect(await $('[data-testid="continueBtn"]').isEnabled()).to.be
+              .false;
           });
 
           it('Ability to paste account name from clipboard');
 
-          it('In the account name, you can enter numbers, special characters and symbols from any layout', async function () {
-            await accountNameInput.sendKeys(ACCOUNTS.ANY);
-            await accountNameInput.sendKeys('\t');
-            expect(await errorDiv.getText()).to.be.empty;
-            expect(await continueBtn.isEnabled()).to.be.true;
+          it('In the account name, you can enter numbers, special characters and symbols from any layout', async () => {
+            await $('[data-testid="newAccountNameInput"]').setValue(
+              ACCOUNTS.ANY
+            );
+
+            await browser.keys('Tab');
+
+            expect(await $('[data-testid="newAccountNameError"]').getText()).to
+              .be.empty;
+            expect(await $('[data-testid="continueBtn"]').isEnabled()).to.be
+              .true;
           });
 
-          it('Account successfully created and selected', async function () {
-            await accountNameInput.sendKeys(ACCOUNTS.ANY);
-            await continueBtn.click();
-
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-              this.wait
+          it('Account successfully created and selected', async () => {
+            await $('[data-testid="newAccountNameInput"]').setValue(
+              ACCOUNTS.ANY
             );
 
-            await this.driver
-              .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-              .click();
+            await $('[data-testid="continueBtn"]').click();
 
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="importForm"]')),
-              this.wait
-            );
+            await $('[data-testid="importSuccessForm"]').waitForExist();
+            await $('[data-testid="addAnotherAccountBtn"]').click();
+            await $('[data-testid="importForm"]').waitForExist();
 
-            await this.driver.switchTo().window(tabKeeper);
+            await browser.switchToWindow(tabKeeper);
             await browser.openKeeperPopup();
 
             expect(await PopupHome.getActiveAccountName()).to.equal(
@@ -456,71 +305,34 @@ describe('Account creation', function () {
     });
   });
 
-  describe('Import via seed', function () {
+  describe('Import via seed', () => {
     const ACCOUNTS = {
       FIRST: { SEED: 'this is first account seed', NAME: 'first' },
       MORE_24_CHARS: {
         SEED: 'there is more than 24 characters',
         NAME: 'more than 24 characters',
       },
-      LESS_24_CHARS: { SEED: 'too short seed', NAME: 'short' },
     };
 
     after(deleteEachAndSwitchToAccounts);
 
-    it('first account via "Import account"', async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="importSeed"]')),
-          this.wait
-        )
-        .click();
+    it('first account via "Import account"', async () => {
+      await $('[data-testid="importSeed"]').click();
 
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="seedInput"]')),
-          this.wait
-        )
-        .sendKeys(ACCOUNTS.FIRST.SEED);
-      await this.driver
-        .wait(
-          until.elementIsEnabled(
-            this.driver.findElement(By.css('[data-testid="continueBtn"]'))
-          ),
-          this.wait
-        )
-        .click();
+      await $('[data-testid="seedInput"]').setValue(ACCOUNTS.FIRST.SEED);
+      await $('[data-testid="continueBtn"]').click();
 
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="newAccountNameInput"]')),
-          this.wait
-        )
-        .sendKeys(ACCOUNTS.FIRST.NAME);
-      await this.driver
-        .wait(
-          until.elementIsEnabled(
-            this.driver.findElement(By.css('[data-testid="continueBtn"]'))
-          ),
-          this.wait
-        )
-        .click();
-
-      await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-        this.wait
+      await $('[data-testid="newAccountNameInput"]').setValue(
+        ACCOUNTS.FIRST.NAME
       );
+      await $('[data-testid="continueBtn"]').click();
 
-      await this.driver
-        .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-        .click();
+      await $('[data-testid="importSuccessForm"]').waitForExist();
+      await $('[data-testid="addAnotherAccountBtn"]').click();
 
-      await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="importForm"]')),
-        this.wait
-      );
+      await $('[data-testid="importForm"]').waitForExist();
 
-      await this.driver.switchTo().window(tabKeeper);
+      await browser.switchToWindow(tabKeeper);
       await browser.openKeeperPopup();
 
       expect(await PopupHome.getActiveAccountName()).to.be.equals(
@@ -528,166 +340,100 @@ describe('Account creation', function () {
       );
     });
 
-    describe('additional account via the "Add account"', function () {
-      describe('When you already have 1 account', function () {
-        before(async function () {
+    describe('additional account via the "Add account"', () => {
+      describe('When you already have 1 account', () => {
+        before(async () => {
           await PopupHome.addAccount();
-
-          await this.driver.switchTo().window(tabAccounts);
-          await this.driver
-            .wait(
-              until.elementIsVisible(
-                this.driver.wait(
-                  until.elementLocated(By.css('[data-testid="importSeed"]')),
-                  this.wait
-                )
-              ),
-              this.wait
-            )
-            .click();
+          await browser.switchToWindow(tabAccounts);
+          await $('[data-testid="importSeed"]').click();
         });
-        describe('Seed phrase page', function () {
-          let seedTextarea: WebElement,
-            importAccountBtn: WebElement,
-            currentAddressDiv: WebElement;
 
-          before(function () {
-            seedTextarea = this.driver.wait(
-              until.elementLocated(By.css('[data-testid="seedInput"]')),
-              this.wait
-            );
-            importAccountBtn = this.driver.findElement(
-              By.css('[data-testid="continueBtn"]')
-            );
-            currentAddressDiv = this.driver.findElement(
-              By.css('[data-testid="address"]')
-            );
+        describe('Seed phrase page', () => {
+          it("Can't import seed with length less than 24 characters", async () => {
+            await $('[data-testid="seedInput"]').setValue('too short seed');
+            await $('[data-testid="continueBtn"]').click();
+
+            expect(
+              await $('[data-testid="validationError"]').getText()
+            ).to.equal('Seed cannot be shorter than 24 characters');
           });
 
-          beforeEach(async function () {
-            await clear(seedTextarea);
-          });
+          it('Can be switched to existing account', async () => {
+            await $('[data-testid="seedInput"]').setValue(ACCOUNTS.FIRST.SEED);
 
-          it("Can't import seed with length less than 24 characters", async function () {
-            await seedTextarea.sendKeys(ACCOUNTS.LESS_24_CHARS.SEED);
-            await this.driver
-              .findElement(By.css('[data-testid="continueBtn"]'))
-              .click();
-
-            const validationError = await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="validationError"]')),
-              this.wait
-            );
-            expect(await validationError.getText()).to.equal(
-              'Seed cannot be shorter than 24 characters'
-            );
-          });
-
-          it('Can be switched to existed account', async function () {
-            await seedTextarea.sendKeys(ACCOUNTS.FIRST.SEED);
-
-            const validationError = await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="validationError"]')),
-              this.wait
+            expect(await $('[data-testid="continueBtn"]').getText()).matches(
+              /switch account/i
             );
 
             expect(
-              await this.driver
-                .findElement(By.css('[data-testid="continueBtn"]'))
-                .getText()
-            ).matches(/switch account/i);
-
-            expect(await validationError.getText()).matches(
-              /Account already known as .+/i
-            );
+              await $('[data-testid="validationError"]').getText()
+            ).matches(/Account already known as .+/i);
           });
 
-          it('Any change in the seed changes the address', async function () {
-            let lastAddress: string | null = null,
-              currentAddress: string;
+          it('Any change in the seed changes the address', async () => {
             // input seed
-            await seedTextarea.sendKeys(ACCOUNTS.MORE_24_CHARS.SEED);
-            currentAddress = await currentAddressDiv.getText();
-            expect(currentAddress).to.be.not.equal(lastAddress);
-            lastAddress = currentAddress;
+            await $('[data-testid="seedInput"]').setValue(
+              ACCOUNTS.MORE_24_CHARS.SEED
+            );
+
+            let prevAddress = await $('[data-testid="address"]').getText();
+
             // insert char
-            await seedTextarea.sendKeys('W');
-            currentAddress = await currentAddressDiv.getText();
-            expect(currentAddress).to.be.not.equal(lastAddress);
-            lastAddress = currentAddress;
+            await $('[data-testid="seedInput"]').addValue('W');
+            expect(await $('[data-testid="address"]').getText()).not.to.equal(
+              prevAddress
+            );
+            prevAddress = await $('[data-testid="address"]').getText();
+
             // delete inserted char
-            await seedTextarea.sendKeys(Key.BACK_SPACE);
-            expect(await currentAddressDiv.getText()).to.be.not.equal(
-              lastAddress
+            await browser.keys('Backspace');
+            expect(await $('[data-testid="address"]').getText()).not.to.equal(
+              prevAddress
             );
           });
 
           it('You can paste a seed from the clipboard');
 
-          it('Correct seed entered', async function () {
-            await seedTextarea.sendKeys(ACCOUNTS.MORE_24_CHARS.SEED);
-            await importAccountBtn.click();
-
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="continueBtn"]')),
-              this.wait
+          it('Correct seed entered', async () => {
+            await $('[data-testid="seedInput"]').setValue(
+              ACCOUNTS.MORE_24_CHARS.SEED
             );
+
+            await $('[data-testid="continueBtn"]').click();
           });
         });
 
-        describe('Account name page', function () {
-          let accountNameInput: WebElement,
-            continueBtn: WebElement,
-            errorDiv: WebElement;
+        describe('Account name page', () => {
+          it('The account cannot be given a name already in use', async () => {
+            await $('[data-testid="newAccountNameInput"]').setValue(
+              ACCOUNTS.FIRST.NAME
+            );
+            await browser.keys('Tab');
 
-          before(function () {
-            accountNameInput = this.driver.wait(
-              until.elementLocated(
-                By.css('[data-testid="newAccountNameInput"]')
-              ),
-              this.wait
-            );
-            continueBtn = this.driver.findElement(
-              By.css('[data-testid="continueBtn"]')
-            );
-            errorDiv = this.driver.findElement(
-              By.css('[data-testid="newAccountNameError"]')
-            );
+            expect(
+              await $('[data-testid="newAccountNameError"]').getText()
+            ).matches(/name already exist/i);
+
+            expect(await $('[data-testid="continueBtn"]').isEnabled()).to.be
+              .false;
           });
 
-          beforeEach(async function () {
-            await clear(accountNameInput);
-          });
-
-          it('The account cannot be given a name already in use', async function () {
-            await accountNameInput.sendKeys(ACCOUNTS.FIRST.NAME);
-            await accountNameInput.sendKeys('\t');
-            expect(await errorDiv.getText()).matches(/name already exist/i);
-            expect(await continueBtn.isEnabled()).to.be.false;
-          });
-
-          it('Additional account successfully imported while entered correct account name', async function () {
-            await accountNameInput.sendKeys(ACCOUNTS.MORE_24_CHARS.NAME);
-            await accountNameInput.sendKeys('\t');
-            expect(errorDiv.getText()).to.be.empty;
-            expect(await continueBtn.isEnabled()).to.be.true;
-            await continueBtn.click();
-
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-              this.wait
+          it('Additional account successfully imported while entered correct account name', async () => {
+            await $('[data-testid="newAccountNameInput"]').setValue(
+              ACCOUNTS.MORE_24_CHARS.NAME
             );
+            await browser.keys('Tab');
 
-            await this.driver
-              .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-              .click();
+            expect($('[data-testid="newAccountNameError"]').getText()).to.be
+              .empty;
 
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="importForm"]')),
-              this.wait
-            );
+            await $('[data-testid="continueBtn"]').click();
 
-            await this.driver.switchTo().window(tabKeeper);
+            await $('[data-testid="addAnotherAccountBtn"]').click();
+
+            await $('[data-testid="importForm"]').waitForExist();
+
+            await browser.switchToWindow(tabKeeper);
             await browser.openKeeperPopup();
 
             expect(await PopupHome.getActiveAccountName()).to.equal(
@@ -698,12 +444,11 @@ describe('Account creation', function () {
       });
 
       it('When you already have 2 accounts');
-
       it('When you already have 10 accounts');
     });
   });
 
-  describe('Import via keystore file', function () {
+  describe('Import via keystore file', () => {
     describe('validation', () => {
       it(
         'keeps "Continue" button disabled until both keystore file is selected and password is entered'
@@ -711,74 +456,39 @@ describe('Account creation', function () {
     });
 
     describe('file parsing and decryption', () => {
-      beforeEach(async function () {
-        await this.driver
-          .wait(until.elementLocated(By.css('[data-testid="importKeystore"]')))
-          .click();
+      beforeEach(async () => {
+        await $('[data-testid="importKeystore"]').click();
       });
 
-      afterEach(async function () {
-        await this.driver
-          .findElement(
-            By.xpath("//div[contains(@class, 'arrowBackIcon@menu')]")
-          )
-          .click();
+      afterEach(async () => {
+        await $("//div[contains(@class, 'arrowBackIcon@menu')]").click();
       });
 
-      function extractParsedAccountsFromDOM(this: mocha.Context) {
-        return this.driver
-          .findElements(By.css('[data-testid="accountsGroup"]'))
-          .then(accountGroups =>
-            Promise.all(
-              accountGroups.map(group =>
+      function extractParsedAccountsFromDOM() {
+        return $$('[data-testid="accountsGroup"]').map(group =>
+          Promise.all([
+            group.$('[data-testid="accountsGroupLabel"]').getText(),
+            group
+              .$$('[data-testid="accountCard"]')
+              .map(card =>
                 Promise.all([
-                  group
-                    .findElement(By.css('[data-testid="accountsGroupLabel"]'))
-                    .getText(),
-                  group
-                    .findElements(By.css('[data-testid="accountCard"]'))
-                    .then(accountCards =>
-                      Promise.all(
-                        accountCards.map(card =>
-                          Promise.all([
-                            card
-                              .findElement(
-                                By.css('[data-testid="accountName"]')
-                              )
-                              .getText(),
-                            card.getAttribute('title'),
-                          ]).then(([name, address]) => ({
-                            name,
-                            address,
-                          }))
-                        )
-                      )
-                    ),
-                ]).then(([label, accounts]) => ({
-                  label,
-                  accounts,
-                }))
-              )
-            )
-          );
+                  card.$('[data-testid="accountName"]').getText(),
+                  card.getAttribute('title'),
+                ]).then(([name, address]) => ({ name, address }))
+              ),
+          ]).then(([label, accounts]) => ({ label, accounts }))
+        );
       }
 
-      it('can decrypt the correct keeper keystore file', async function () {
-        await this.driver
-          .wait(
-            until.elementLocated(By.css('[data-testid="fileInput"]')),
-            this.wait
-          )
-          .sendKeys('/app/test/fixtures/keystore-keeper.json');
+      it('can decrypt the correct keeper keystore file', async () => {
+        await $('[data-testid="fileInput"]').addValue(
+          '/app/test/fixtures/keystore-keeper.json'
+        );
 
-        await this.driver
-          .findElement(By.css('[data-testid="passwordInput"]'))
-          .sendKeys('xHZ7Zaxu2wuncWC');
-        await this.driver
-          .findElement(By.css('[data-testid="submitButton"]'))
-          .click();
+        await $('[data-testid="passwordInput"]').setValue('xHZ7Zaxu2wuncWC');
+        await $('[data-testid="submitButton"]').click();
 
-        expect(await extractParsedAccountsFromDOM.call(this)).to.deep.equal([
+        expect(await extractParsedAccountsFromDOM()).to.deep.equal([
           {
             label: 'Mainnet',
             accounts: [
@@ -801,19 +511,15 @@ describe('Account creation', function () {
         ]);
       });
 
-      it('can decrypt the correct exchange keystore file', async function () {
-        await this.driver
-          .findElement(By.css('[data-testid="fileInput"]'))
-          .sendKeys('/app/test/fixtures/keystore-exchange.json');
+      it('can decrypt the correct exchange keystore file', async () => {
+        await $('[data-testid="fileInput"]').addValue(
+          '/app/test/fixtures/keystore-exchange.json'
+        );
 
-        await this.driver
-          .findElement(By.css('[data-testid="passwordInput"]'))
-          .sendKeys('N72r78ByXBfNBnN#');
-        await this.driver
-          .findElement(By.css('[data-testid="submitButton"]'))
-          .click();
+        await $('[data-testid="passwordInput"]').setValue('N72r78ByXBfNBnN#');
+        await $('[data-testid="submitButton"]').click();
 
-        expect(await extractParsedAccountsFromDOM.call(this)).to.deep.equal([
+        expect(await extractParsedAccountsFromDOM()).to.deep.equal([
           {
             label: 'Mainnet',
             accounts: [
@@ -828,60 +534,33 @@ describe('Account creation', function () {
       it('shows an error if the password is wrong');
     });
 
-    describe('actual import', function () {
-      function extractAccountCheckboxesFromDOM(this: mocha.Context) {
-        return this.driver
-          .wait(
-            until.elementLocated(By.css('[data-testid="chooseAccountsForm"]')),
-            this.wait
-          )
-          .findElements(By.css('[data-testid="accountCard"]'))
-          .then(cards =>
-            Promise.all(
-              cards.map(card =>
-                Promise.all([
-                  card.getAttribute('title'),
-                  card
-                    .findElement(By.css('[data-testid="accountName"]'))
-                    .getText(),
-                  card.findElement(By.name('selected')).then(
-                    checkbox =>
-                      checkbox
-                        .getAttribute('checked')
-                        .then(checked => checked === 'true'),
-                    () => null
-                  ),
-                ]).then(([address, name, selected]) => ({
-                  address,
-                  name,
-                  selected,
-                }))
-              )
-            )
-          );
+    describe('actual import', () => {
+      function extractAccountCheckboxesFromDOM() {
+        return $$('[data-testid="accountCard"]').map(card =>
+          Promise.all([
+            card.getAttribute('title'),
+            card.$('[data-testid="accountName"]').getText(),
+            card
+              .$('[name="selected"]')
+              .isSelected()
+              .catch(() => null),
+          ]).then(([address, name, selected]) => ({ address, name, selected }))
+        );
       }
 
-      describe('when no accounts exist', function () {
-        it('allows to select and import all accounts', async function () {
-          await this.driver
-            .wait(
-              until.elementLocated(By.css('[data-testid="importKeystore"]'))
-            )
-            .click();
+      describe('when no accounts exist', () => {
+        it('allows to select and import all accounts', async () => {
+          await $('[data-testid="importKeystore"]').click();
 
-          await this.driver
-            .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/app/test/fixtures/keystore-keeper.json');
+          await $('[data-testid="fileInput"]').addValue(
+            '/app/test/fixtures/keystore-keeper.json'
+          );
 
-          await this.driver
-            .findElement(By.css('[data-testid="passwordInput"]'))
-            .sendKeys('xHZ7Zaxu2wuncWC');
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+          await $('[data-testid="passwordInput"]').setValue('xHZ7Zaxu2wuncWC');
+          await $('[data-testid="submitButton"]').click();
 
           expect(
-            await extractAccountCheckboxesFromDOM.call(this)
+            await extractAccountCheckboxesFromDOM()
           ).to.have.deep.ordered.members([
             {
               name: 'test2',
@@ -905,24 +584,16 @@ describe('Account creation', function () {
             },
           ]);
 
-          await this.driver
-            .findElement(
-              By.css(
-                'input[type="checkbox"][value="3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi"]'
-              )
-            )
-            .click();
+          await $(
+            'input[type="checkbox"][value="3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi"]'
+          ).click();
 
-          await this.driver
-            .findElement(
-              By.css(
-                'input[type="checkbox"][value="3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r"]'
-              )
-            )
-            .click();
+          await $(
+            'input[type="checkbox"][value="3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r"]'
+          ).click();
 
           expect(
-            await extractAccountCheckboxesFromDOM.call(this)
+            await extractAccountCheckboxesFromDOM()
           ).to.have.deep.ordered.members([
             {
               name: 'test2',
@@ -946,27 +617,10 @@ describe('Account creation', function () {
             },
           ]);
 
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+          await $('[data-testid="submitButton"]').click();
+          await $('[data-testid="addAnotherAccountBtn"]').click();
 
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-            this.wait
-          );
-
-          await this.driver
-            .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-            .click();
-
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importForm"]')),
-            this.wait
-          );
-
-          await this.driver.switchTo().window(tabKeeper);
-          await browser.openKeeperPopup();
-
+          await browser.switchToWindow(tabKeeper);
           await Network.switchToAndCheck('Testnet');
 
           expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
@@ -981,38 +635,22 @@ describe('Account creation', function () {
         });
       });
 
-      describe('when some, but not all accounts already exist', function () {
-        it('allows to select only unexisting accounts', async function () {
+      describe('when some, but not all accounts already exist', () => {
+        it('allows to select only unexisting accounts', async () => {
           await PopupHome.addAccount();
 
-          await this.driver.switchTo().window(tabAccounts);
-          await this.driver
-            .wait(
-              until.elementIsVisible(
-                this.driver.wait(
-                  until.elementLocated(
-                    By.css('[data-testid="importKeystore"]')
-                  ),
-                  this.wait
-                )
-              ),
-              this.wait
-            )
-            .click();
+          await browser.switchToWindow(tabAccounts);
+          await $('[data-testid="importKeystore"]').click();
 
-          await this.driver
-            .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/app/test/fixtures/keystore-keeper.json');
+          await $('[data-testid="fileInput"]').addValue(
+            '/app/test/fixtures/keystore-keeper.json'
+          );
 
-          await this.driver
-            .findElement(By.css('[data-testid="passwordInput"]'))
-            .sendKeys('xHZ7Zaxu2wuncWC');
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+          await $('[data-testid="passwordInput"]').setValue('xHZ7Zaxu2wuncWC');
+          await $('[data-testid="submitButton"]').click();
 
           expect(
-            await extractAccountCheckboxesFromDOM.call(this)
+            await extractAccountCheckboxesFromDOM()
           ).to.have.deep.ordered.members([
             {
               name: 'test2',
@@ -1036,27 +674,11 @@ describe('Account creation', function () {
             },
           ]);
 
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+          await $('[data-testid="submitButton"]').click();
+          await $('[data-testid="addAnotherAccountBtn"]').click();
 
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-            this.wait
-          );
-
-          await this.driver
-            .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-            .click();
-
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importForm"]')),
-            this.wait
-          );
-
-          await this.driver.switchTo().window(tabKeeper);
+          await browser.switchToWindow(tabKeeper);
           await browser.openKeeperPopup();
-
           await Network.switchToAndCheck('Testnet');
 
           expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
@@ -1078,38 +700,22 @@ describe('Account creation', function () {
         });
       });
 
-      describe('when all accounts exist', function () {
-        it('does not allow selecting anything and shows the "Skip" button', async function () {
+      describe('when all accounts exist', () => {
+        it('does not allow selecting anything and shows the "Skip" button', async () => {
           await PopupHome.addAccount();
 
-          await this.driver.switchTo().window(tabAccounts);
-          await this.driver
-            .wait(
-              until.elementIsVisible(
-                this.driver.wait(
-                  until.elementLocated(
-                    By.css('[data-testid="importKeystore"]')
-                  ),
-                  this.wait
-                )
-              ),
-              this.wait
-            )
-            .click();
+          await browser.switchToWindow(tabAccounts);
+          await $('[data-testid="importKeystore"]').click();
 
-          await this.driver
-            .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/app/test/fixtures/keystore-keeper.json');
+          await $('[data-testid="fileInput"]').addValue(
+            '/app/test/fixtures/keystore-keeper.json'
+          );
 
-          await this.driver
-            .findElement(By.css('[data-testid="passwordInput"]'))
-            .sendKeys('xHZ7Zaxu2wuncWC');
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+          await $('[data-testid="passwordInput"]').setValue('xHZ7Zaxu2wuncWC');
+          await $('[data-testid="submitButton"]').click();
 
           expect(
-            await extractAccountCheckboxesFromDOM.call(this)
+            await extractAccountCheckboxesFromDOM()
           ).to.have.deep.ordered.members([
             {
               name: 'test2',
@@ -1133,50 +739,35 @@ describe('Account creation', function () {
             },
           ]);
 
-          await this.driver
-            .findElement(By.css('[data-testid="skipButton"]'))
-            .click();
-
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importForm"]')),
-            this.wait
-          );
+          await $('[data-testid="skipButton"]').click();
+          await $('[data-testid="importForm"]').waitForExist();
         });
       });
 
-      describe('when the user already has an account with the same name, but different address', function () {
-        before(async function () {
-          await this.driver.switchTo().window(tabKeeper);
+      describe('when the user already has an account with the same name, but different address', () => {
+        before(async () => {
+          await browser.switchToWindow(tabKeeper);
         });
 
         beforeEach(deleteEachAndSwitchToAccounts);
 
-        it('adds suffix to the name', async function () {
+        it('adds suffix to the name', async () => {
           await AccountsHome.importAccount(
             'test2',
             'this is the seed for the test account'
           );
 
-          await this.driver
-            .wait(
-              until.elementLocated(By.css('[data-testid="importKeystore"]')),
-              this.wait
-            )
-            .click();
+          await $('[data-testid="importKeystore"]').click();
 
-          await this.driver
-            .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/app/test/fixtures/keystore-keeper.json');
+          await $('[data-testid="fileInput"]').addValue(
+            '/app/test/fixtures/keystore-keeper.json'
+          );
 
-          await this.driver
-            .findElement(By.css('[data-testid="passwordInput"]'))
-            .sendKeys('xHZ7Zaxu2wuncWC');
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+          await $('[data-testid="passwordInput"]').setValue('xHZ7Zaxu2wuncWC');
+          await $('[data-testid="submitButton"]').click();
 
           expect(
-            await extractAccountCheckboxesFromDOM.call(this)
+            await extractAccountCheckboxesFromDOM()
           ).to.include.deep.members([
             {
               name: 'test2 (1)',
@@ -1185,25 +776,10 @@ describe('Account creation', function () {
             },
           ]);
 
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+          await $('[data-testid="submitButton"]').click();
+          await $('[data-testid="addAnotherAccountBtn"]').click();
 
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-            this.wait
-          );
-
-          await this.driver
-            .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-            .click();
-
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importForm"]')),
-            this.wait
-          );
-
-          await this.driver.switchTo().window(tabKeeper);
+          await browser.switchToWindow(tabKeeper);
           await browser.openKeeperPopup();
 
           expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
@@ -1212,7 +788,7 @@ describe('Account creation', function () {
           ]);
         });
 
-        it('increments the number in suffix if it already exists', async function () {
+        it('increments the number in suffix if it already exists', async () => {
           await AccountsHome.importAccount(
             'test2',
             'this is a seed for the test account'
@@ -1223,23 +799,17 @@ describe('Account creation', function () {
             'this is an another seed for the test account'
           );
 
-          await this.driver
-            .findElement(By.css('[data-testid="importKeystore"]'))
-            .click();
+          await $('[data-testid="importKeystore"]').click();
 
-          await this.driver
-            .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/app/test/fixtures/keystore-keeper.json');
+          await $('[data-testid="fileInput"]').addValue(
+            '/app/test/fixtures/keystore-keeper.json'
+          );
 
-          await this.driver
-            .findElement(By.css('[data-testid="passwordInput"]'))
-            .sendKeys('xHZ7Zaxu2wuncWC');
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+          await $('[data-testid="passwordInput"]').setValue('xHZ7Zaxu2wuncWC');
+          await $('[data-testid="submitButton"]').click();
 
           expect(
-            await extractAccountCheckboxesFromDOM.call(this)
+            await extractAccountCheckboxesFromDOM()
           ).to.include.deep.members([
             {
               name: 'test2 (2)',
@@ -1248,25 +818,11 @@ describe('Account creation', function () {
             },
           ]);
 
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+          await $('[data-testid="submitButton"]').click();
 
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-            this.wait
-          );
+          await $('[data-testid="addAnotherAccountBtn"]').click();
 
-          await this.driver
-            .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-            .click();
-
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importForm"]')),
-            this.wait
-          );
-
-          await this.driver.switchTo().window(tabKeeper);
+          await browser.switchToWindow(tabKeeper);
           await browser.openKeeperPopup();
 
           expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
