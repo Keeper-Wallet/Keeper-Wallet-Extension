@@ -222,7 +222,7 @@ export class RemoteConfigController extends EventEmitter {
     } catch (e) {
       this.updateState({ status: STATUS.ERROR });
 
-      //throw new Error(`Could not fetch waves_keeper_blacklist.json: ${e}`);
+      // ignore centy errors
     }
 
     extension.alarms.create('updateConfig', {
@@ -248,7 +248,7 @@ export class RemoteConfigController extends EventEmitter {
         throw new Error(await response.text());
       }
     } catch (err) {
-      //throw new Error(`Could not fetch keeper-ignore-errors.json: ${err}`);
+      // ignore centy errors
     } finally {
       extension.alarms.create('updateIgnoreErrorsConfig', {
         delayInMinutes: IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL,
@@ -351,7 +351,7 @@ export class RemoteConfigController extends EventEmitter {
         throw new Error(await response.text());
       }
     } catch (err) {
-      //throw new Error(`Could not fetch fee.json: ${err}`);
+      // ignore centy errors
     } finally {
       extension.alarms.create('fetchFeeConfig', {
         delayInMinutes: FEE_CONFIG_UPDATE_INTERVAL,
@@ -369,7 +369,7 @@ export class RemoteConfigController extends EventEmitter {
         throw new Error(await response.text());
       }
     } catch (err) {
-      //throw new Error(`Could not fetch nft.json: ${err}`);
+      // ignore centy errors
     } finally {
       extension.alarms.create('fetchNftConfig', {
         delayInMinutes: NFT_CONFIG_UPDATE_INTERVAL,
