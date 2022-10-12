@@ -222,7 +222,7 @@ export class RemoteConfigController extends EventEmitter {
     } catch (e) {
       this.updateState({ status: STATUS.ERROR });
 
-      // ignore centry errors
+      // ignore sentry errors
     }
 
     extension.alarms.create('updateConfig', {
@@ -248,7 +248,7 @@ export class RemoteConfigController extends EventEmitter {
         throw new Error(await response.text());
       }
     } catch (err) {
-      // ignore centry errors
+      // ignore sentry errors
     } finally {
       extension.alarms.create('updateIgnoreErrorsConfig', {
         delayInMinutes: IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL,
@@ -351,7 +351,7 @@ export class RemoteConfigController extends EventEmitter {
         throw new Error(await response.text());
       }
     } catch (err) {
-      // ignore centy errors
+      // ignore sentry errors
     } finally {
       extension.alarms.create('fetchFeeConfig', {
         delayInMinutes: FEE_CONFIG_UPDATE_INTERVAL,
@@ -369,7 +369,7 @@ export class RemoteConfigController extends EventEmitter {
         throw new Error(await response.text());
       }
     } catch (err) {
-      // ignore centy errors
+      // ignore sentry errors
     } finally {
       extension.alarms.create('fetchNftConfig', {
         delayInMinutes: NFT_CONFIG_UPDATE_INTERVAL,
