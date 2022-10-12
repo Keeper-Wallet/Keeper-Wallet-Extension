@@ -401,6 +401,7 @@ class BackgroundService extends EventEmitter {
         this.networkController
       ),
       getNode: this.networkController.getNode.bind(this.networkController),
+      remoteConfig: this.remoteConfigController,
     });
 
     this.nftInfoController = new NftInfoController({

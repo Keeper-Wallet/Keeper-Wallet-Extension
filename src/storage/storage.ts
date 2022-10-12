@@ -14,6 +14,7 @@ import {
   FeeConfig,
   NftConfig,
   IgnoreErrorsConfig,
+  AssetsConfig,
 } from '../constants';
 import { TrashItem } from 'controllers/trash';
 import { UiState } from 'ui/reducers/updateState';
@@ -73,6 +74,7 @@ export interface StorageLocalState {
   addresses: Record<string, string>;
   assetLogos: Record<string, string>;
   assets: Record<NetworkName, AssetsRecord>;
+  assetsConfig: AssetsConfig;
   assetTickers: Record<string, string>;
   backup: string;
   blacklist: string[];
