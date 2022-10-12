@@ -2,7 +2,7 @@ import { CognitoUser } from 'amazon-cognito-identity-js';
 import { SwapVendor } from 'swap/constants';
 import { AuthChallenge, IdentityUser } from 'controllers/IdentityController';
 import { SwapAssetsParams, SwapAssetsResult } from 'controllers/SwapController';
-import { KEEPERWALLET_DEBUG } from '../../constants';
+import { IgnoreErrorsContext, KEEPERWALLET_DEBUG } from '../../constants';
 import type { __BackgroundUiApiDirect } from 'background';
 import { UiState } from 'ui/reducers/updateState';
 import { IMoneyLike } from 'ui/utils/converters';
@@ -696,7 +696,7 @@ class Background {
     }
   }
 
-  async shouldIgnoreError(context: string, message: string): Promise<number> {
+  async shouldIgnoreError(context: IgnoreErrorsContext, message: string) {
     try {
       await this.initPromise;
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

@@ -1,9 +1,9 @@
 import { UiAction } from 'ui/store';
-import { DEFAULT_NFT_CONFIG, NftConfig } from '../../constants';
+import { DEFAULT_MAIN_CONFIG, NftConfig } from '../../constants';
 import { ACTION } from '../actions/constants';
 
 export function nftConfig(
-  state: NftConfig | undefined = DEFAULT_NFT_CONFIG,
+  state = DEFAULT_MAIN_CONFIG.nfts,
   action: UiAction
 ): NftConfig {
   switch (action.type) {

@@ -9,11 +9,11 @@ import { createStreamSink } from 'lib/createStreamSink';
 import type ObservableStore from 'obs-store';
 import { NftInfo } from 'nfts';
 import {
-  DEFAULT_CONFIG,
+  DEFAULT_LEGACY_CONFIG,
   DEFAULT_IDENTITY_CONFIG,
-  DEFAULT_IGNORE_ERRORS_CONFIG,
   FeeConfig,
   NftConfig,
+  IgnoreErrorsConfig,
 } from '../constants';
 import { TrashItem } from 'controllers/trash';
 import { UiState } from 'ui/reducers/updateState';
@@ -77,11 +77,11 @@ export interface StorageLocalState {
   backup: string;
   blacklist: string[];
   config: {
-    networks: typeof DEFAULT_CONFIG.NETWORKS;
-    network_config: typeof DEFAULT_CONFIG.NETWORK_CONFIG;
-    messages_config: typeof DEFAULT_CONFIG.MESSAGES_CONFIG;
-    pack_config: typeof DEFAULT_CONFIG.PACK_CONFIG;
-    idle: typeof DEFAULT_CONFIG.IDLE;
+    networks: typeof DEFAULT_LEGACY_CONFIG.NETWORKS;
+    network_config: typeof DEFAULT_LEGACY_CONFIG.NETWORK_CONFIG;
+    messages_config: typeof DEFAULT_LEGACY_CONFIG.MESSAGES_CONFIG;
+    pack_config: typeof DEFAULT_LEGACY_CONFIG.PACK_CONFIG;
+    idle: typeof DEFAULT_LEGACY_CONFIG.IDLE;
   };
   cognitoSessions: string | undefined;
   currentLocale: string;
@@ -93,7 +93,7 @@ export interface StorageLocalState {
   feeConfig: FeeConfig;
   identityConfig: typeof DEFAULT_IDENTITY_CONFIG;
   idleOptions: IdleOptions;
-  ignoreErrorsConfig: typeof DEFAULT_IGNORE_ERRORS_CONFIG;
+  ignoreErrorsConfig: IgnoreErrorsConfig;
   initialized: boolean | null;
   inPending: Record<string, string | null>;
   inShowMode: boolean | undefined;
