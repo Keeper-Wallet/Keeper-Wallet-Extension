@@ -27,7 +27,7 @@ import { NftInfo } from 'nfts';
 import { IMoneyLike } from './utils/converters';
 import { NetworkName } from 'networks/types';
 import { MessageStoreItem } from 'messages/types';
-import { AssetDetail } from 'assets/types';
+import { AssetsRecord } from 'assets/types';
 
 const reducer = combineReducers(reducers);
 
@@ -156,7 +156,7 @@ export type UiAction =
     }
   | {
       type: typeof ACTION.SET_ASSETS;
-      payload: Record<string, AssetDetail>;
+      payload: AssetsRecord;
       meta?: never;
     }
   | {

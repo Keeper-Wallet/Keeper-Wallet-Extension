@@ -4,6 +4,7 @@ import { PreferencesAccount } from 'preferences/types';
 import { AssetBalance } from 'balances/types';
 import { NetworkName } from 'networks/types';
 import { MessageStoreItem } from 'messages/types';
+import { AssetsRecord } from 'assets/types';
 
 export * from './localState';
 export * from './feeConfig';
@@ -109,7 +110,10 @@ export const messages = (state: MessageStoreItem[] = [], action: UiAction) => {
   return state;
 };
 
-export const assets = createSimpleReducer({}, ACTION.SET_ASSETS);
+export const assets = createSimpleReducer(
+  {} as AssetsRecord,
+  ACTION.SET_ASSETS
+);
 export const usdPrices = createSimpleReducer({}, ACTION.SET_USD_PRICES);
 export const assetLogos = createSimpleReducer({}, ACTION.SET_ASSET_LOGOS);
 export const assetTickers = createSimpleReducer({}, ACTION.SET_ASSET_TICKERS);

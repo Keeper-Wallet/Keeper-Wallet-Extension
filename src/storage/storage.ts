@@ -22,7 +22,7 @@ import { NotificationsStoreItem } from 'notifications/types';
 import { PermissionValue } from 'permissions/types';
 import { NetworkName } from 'networks/types';
 import { MessageStoreItem } from 'messages/types';
-import { AssetDetail } from 'assets/types';
+import { AssetsRecord } from 'assets/types';
 import { MIGRATIONS } from './migrations';
 
 const CURRENT_MIGRATION_VERSION = 3;
@@ -72,7 +72,7 @@ export interface StorageLocalState {
   accounts: PreferencesAccount[];
   addresses: Record<string, string>;
   assetLogos: Record<string, string>;
-  assets: Record<NetworkName, Record<string, AssetDetail>>;
+  assets: Record<NetworkName, AssetsRecord>;
   assetTickers: Record<string, string>;
   backup: string;
   blacklist: string[];

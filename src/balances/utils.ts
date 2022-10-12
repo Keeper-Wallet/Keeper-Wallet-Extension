@@ -16,9 +16,6 @@ export function collectBalances(
 
         return [address, value as BalancesItem] as const;
       })
-      .filter(
-        (entry): entry is Exclude<typeof entry, null | undefined> =>
-          entry != null
-      )
+      .filter((entry): entry is NonNullable<typeof entry> => entry != null)
   );
 }

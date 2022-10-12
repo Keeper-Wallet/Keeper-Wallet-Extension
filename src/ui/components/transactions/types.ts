@@ -1,5 +1,5 @@
 import { Money } from '@waves/data-entities';
-import { AssetDetail } from 'assets/types';
+import { AssetDetail, AssetsRecord } from 'assets/types';
 import { MessageStoreItem } from 'messages/types';
 import { PreferencesAccount } from 'preferences/types';
 import { ComponentType } from 'react';
@@ -13,7 +13,7 @@ export interface MessageComponentProps {
   pending?: boolean;
   collapsed?: boolean;
   txHash: string | string[];
-  assets: Record<string, AssetDetail>;
+  assets: AssetsRecord;
   message: MessageStoreItem;
   selectedAccount: Partial<PreferencesAccount>;
 
@@ -41,7 +41,7 @@ export interface MessageComponentProps {
 }
 
 export interface MessageCardComponentProps {
-  assets: Record<string, AssetDetail>;
+  assets: AssetsRecord;
   className?: string;
   collapsed?: boolean;
   message: MessageStoreItem;
@@ -52,7 +52,7 @@ export interface MessageFinalComponentProps {
   isReject: boolean;
   isSend: boolean | undefined;
   message: MessageStoreItem;
-  assets: Record<string, AssetDetail>;
+  assets: AssetsRecord;
 }
 
 export interface MessageConfig {

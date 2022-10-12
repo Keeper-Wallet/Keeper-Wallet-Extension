@@ -2,7 +2,7 @@ import { BigNumber } from '@waves/bignumber';
 import { getMoney, IMoneyLike } from '../../../utils/converters';
 import { getConfigByTransaction } from '../index';
 import { Money } from '@waves/data-entities';
-import { AssetDetail } from 'assets/types';
+import { AssetsRecord } from 'assets/types';
 
 export const messageType = 'transactionPackage';
 export const txType = 'transactionPackage';
@@ -39,10 +39,7 @@ export function getFee() {
 
 type AnyMoney = IMoneyLike | BigNumber | Money | string | number;
 
-export function getFees(
-  tx: PackageItem[],
-  assets: Record<string, AssetDetail>
-) {
+export function getFees(tx: PackageItem[], assets: AssetsRecord) {
   if (!Array.isArray(tx)) {
     return {};
   }
@@ -69,10 +66,7 @@ export function getFees(
   }, Object.create(null));
 }
 
-export function getPackageAmounts(
-  tx: PackageItem[],
-  assets: Record<string, AssetDetail>
-) {
+export function getPackageAmounts(tx: PackageItem[], assets: AssetsRecord) {
   if (!Array.isArray(tx)) {
     return [];
   }

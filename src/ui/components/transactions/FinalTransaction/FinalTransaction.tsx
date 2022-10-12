@@ -9,12 +9,12 @@ import { TxHeader } from '../BaseTransaction';
 import { TransactionStatusState } from 'ui/reducers/localState';
 import { PreferencesAccount } from 'preferences/types';
 import { MessageStoreItem } from 'messages/types';
-import { AssetDetail } from 'assets/types';
+import { AssetsRecord } from 'assets/types';
 import { MessageConfig } from '../types';
 import { NotificationsStoreItem } from 'notifications/types';
 
 interface Props {
-  assets: Record<string, AssetDetail>;
+  assets: AssetsRecord;
   config: MessageConfig;
   message: MessageStoreItem;
   messages: MessageStoreItem[];

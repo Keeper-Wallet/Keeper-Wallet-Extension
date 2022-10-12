@@ -3,7 +3,7 @@ import { WithTranslation, withTranslation } from 'react-i18next';
 import * as styles from './package.styl';
 import { getTransactionData } from './parseTx';
 import { TxIcon, TxInfo } from '../BaseTransaction';
-import { AssetDetail } from 'assets/types';
+import { AssetsRecord } from 'assets/types';
 import { MessageComponentProps, MessageConfig } from '../types';
 
 const MessageItem = ({
@@ -14,7 +14,7 @@ const MessageItem = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   message: any;
   config: MessageConfig;
-  assets: Record<string, AssetDetail>;
+  assets: AssetsRecord;
 }) => {
   const Card = config.card;
   return (

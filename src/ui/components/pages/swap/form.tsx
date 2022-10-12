@@ -149,16 +149,19 @@ export function SwapForm({
   });
 
   const fromAsset = React.useMemo(
-    () => new Asset(assets[fromAssetId]),
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    () => new Asset(assets[fromAssetId]!),
     [assets, fromAssetId]
   );
 
   const toAsset = React.useMemo(
-    () => new Asset(assets[toAssetId]),
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    () => new Asset(assets[toAssetId]!),
     [assets, toAssetId]
   );
 
-  const feeAsset = new Asset(assets[feeAssetId]);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const feeAsset = new Asset(assets[feeAssetId]!);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const fromAssetBalance = getAssetBalance(fromAsset, accountBalance!);
@@ -513,7 +516,8 @@ export function SwapForm({
               ) {
                 const fee = convertFeeToAsset(
                   wavesFee,
-                  new Asset(assets[feeAssetId]),
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  new Asset(assets[feeAssetId]!),
                   feeConfig
                 );
 

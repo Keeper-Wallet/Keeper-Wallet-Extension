@@ -76,7 +76,8 @@ export function Swap() {
     () =>
       swappableAssetIds.mainnet.map((assetId): [string, AssetDetail] => [
         assetId,
-        assets[assetId],
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        assets[assetId]!,
       ]),
     [assets]
   );
@@ -143,7 +144,8 @@ export function Swap() {
           const wavesFee = new Money(wavesFeeCoins, new Asset(assets['WAVES']));
           const fee = convertFeeToAsset(
             wavesFee,
-            new Asset(assets[feeAssetId]),
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            new Asset(assets[feeAssetId]!),
             feeConfig
           );
 
@@ -166,7 +168,8 @@ export function Swap() {
             });
 
             setPerformedSwapData({
-              fromMoney: new Money(fromCoins, new Asset(assets[fromAssetId])),
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              fromMoney: new Money(fromCoins, new Asset(assets[fromAssetId]!)),
               transactionId: swapResult.transactionId,
             });
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

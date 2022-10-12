@@ -1,5 +1,5 @@
 import { Money } from '@waves/data-entities';
-import { AssetDetail } from 'assets/types';
+import { AssetsRecord } from 'assets/types';
 import { BalancesItem } from 'balances/types';
 import { MessageStoreItem } from 'messages/types';
 import { PreferencesAccount } from 'preferences/types';
@@ -22,7 +22,7 @@ import Background from 'ui/services/Background';
 
 interface StateProps {
   activeMessage: MessageStoreItem | null;
-  assets: Record<string, AssetDetail>;
+  assets: AssetsRecord;
   autoClickProtection?: boolean;
   balance: BalancesItem | undefined;
   messages: MessageStoreItem[];
@@ -81,7 +81,7 @@ type Props = StateProps & DispatchProps & WithNavigate;
 interface State {
   activeMessage: MessageStoreItem;
   approvePending: boolean;
-  assets: Record<string, AssetDetail>;
+  assets: AssetsRecord;
   config: MessageConfig;
   loading: boolean;
   messages: MessageStoreItem[];

@@ -7,7 +7,7 @@ import * as transferParseTx from '../ui/components/transactions/Transfer/parseTx
 import { FeeConfig } from '../constants';
 import { SPONSORED_FEE_TX_TYPES } from './constants';
 import { AssetBalance, BalancesItem } from 'balances/types';
-import { AssetDetail } from 'assets/types';
+import { AssetDetail, AssetsRecord } from 'assets/types';
 import { MessageStoreItem } from 'messages/types';
 
 export function convertFeeToAsset(
@@ -40,7 +40,7 @@ export function getFeeOptions({
   txType,
   usdPrices,
 }: {
-  assets: Record<string, AssetDetail>;
+  assets: AssetsRecord;
   balance: BalancesItem | undefined;
   feeConfig: FeeConfig;
   initialFee: Money;
@@ -56,12 +56,16 @@ export function getFeeOptions({
   return SPONSORED_FEE_TX_TYPES.includes(txType)
     ? Object.entries(balance?.assets || {})
         .map(([assetId, assetBalance]) => ({
+          asset: assets[assetId],
           assetBalance,
-          money: convertFeeToAsset(
-            initialFee,
-            new Asset(assets[assetId]),
-            feeConfig
-          ),
+        }))
+        .filter(
+          (item): item is { asset: AssetDetail; assetBalance: AssetBalance } =>
+            item.asset != null
+        )
+        .map(({ asset, assetBalance }) => ({
+          assetBalance,
+          money: convertFeeToAsset(initialFee, new Asset(asset), feeConfig),
         }))
         .filter(
           ({ assetBalance, money }) =>
@@ -108,7 +112,7 @@ export function getSpendingAmountsForSponsorableTx({
   assets,
   message,
 }: {
-  assets: Record<string, AssetDetail>;
+  assets: AssetsRecord;
   message: MessageStoreItem;
 }): Money[] {
   switch (message.data.type) {

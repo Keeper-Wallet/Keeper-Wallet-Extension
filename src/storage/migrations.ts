@@ -156,10 +156,7 @@ const flattenBalances: Migration = {
 
           return [address, value];
         })
-        .filter(
-          (entry): entry is Exclude<typeof entry, null | undefined> =>
-            entry != null
-        )
+        .filter((entry): entry is NonNullable<typeof entry> => entry != null)
     );
 
     await browser.storage.local.remove(
