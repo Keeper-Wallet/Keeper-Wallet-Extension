@@ -155,6 +155,10 @@ export class StatisticsController {
                   return;
                 }
 
+                if (response.status !== 400) {
+                  return;
+                }
+
                 Sentry.withScope(scope => {
                   scope.setExtra('responseText', responseText);
 
