@@ -1,7 +1,5 @@
 import { expect } from 'chai';
-import { By, until, WebElement } from 'selenium-webdriver';
 
-import { clear } from './utils';
 import {
   AccountsHome,
   App,
@@ -10,30 +8,23 @@ import {
   Settings,
   Windows,
 } from './utils/actions';
-import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 
 describe('Account management', function () {
   this.timeout(60 * 1000);
 
   let tabKeeper: string, tabAccounts: string;
 
-  before(async function () {
+  before(async () => {
     await App.initVault();
     await Settings.setMaxSessionTimeout();
     await browser.openKeeperPopup();
-    tabKeeper = await this.driver.getWindowHandle();
+    tabKeeper = await browser.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
-    await this.driver
-      .wait(
-        until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
-        this.wait
-      )
-      .click();
+    await $('[data-testid="addAccountBtn"]').click();
     [tabAccounts] = await waitForNewWindows(1);
-
-    await this.driver.switchTo().window(tabAccounts);
-    await this.driver.navigate().refresh();
+    await browser.switchToWindow(tabAccounts);
+    await browser.refresh();
 
     await AccountsHome.importAccount(
       'poor',
@@ -45,168 +36,105 @@ describe('Account management', function () {
       'waves private node seed with waves tokens'
     );
 
-    await this.driver.switchTo().window(tabKeeper);
+    await browser.switchToWindow(tabKeeper);
     await browser.openKeeperPopup();
   });
 
-  after(async function () {
-    await App.closeBgTabs.call(this, tabKeeper);
+  after(async () => {
+    await browser.switchToWindow(tabAccounts);
+    await browser.closeWindow();
+    await browser.switchToWindow(tabKeeper);
     await App.resetVault();
   });
 
-  describe('Accounts list', function () {
-    it('Change active account', async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
-          this.wait
-        )
-        .click();
-
-      await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="otherAccountsPage"]')),
-        this.wait
-      );
-
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="accountCard"]')),
-          this.wait
-        )
-        .click();
-
+  describe('Accounts list', () => {
+    it('Change active account', async () => {
+      await $('[data-testid="otherAccountsButton"]').click();
+      await $('[data-testid="otherAccountsPage"]').waitForExist();
+      await $('[data-testid="accountCard"]').click();
       expect(await PopupHome.getActiveAccountName()).to.equal('poor');
     });
 
     it('Updating account balances on import');
-
     it('The balance reflects the leased WAVES');
-
     it('Copying the address of the active account on the accounts screen');
 
-    describe('Show QR', function () {
-      after(async function () {
-        await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+    describe('Show QR', () => {
+      after(async () => {
+        await $('div.arrow-back-icon').click();
       });
 
-      it('Opening the screen with the QR code of the address by clicking the "Show QR" button', async function () {
-        await this.driver
-          .wait(
-            until.elementLocated(
-              By.css('[data-testid="activeAccountCard"] .showQrIcon')
-            ),
-            this.wait
-          )
-          .click();
-
-        await this.driver.wait(
-          until.elementLocated(
-            By.css('[class^="content@SelectedAccountQr-module"]')
-          ),
-          this.wait
-        );
+      it('Opening the screen with the QR code of the address by clicking the "Show QR" button', async () => {
+        await $('[data-testid="activeAccountCard"] .showQrIcon').click();
+        await $('[class^="content@SelectedAccountQr-module"]').waitForExist();
       });
 
       it('Check that QR matches the displayed address');
-
       it('Download QR code'); // file downloaded, filename equals "${address}.png"
     });
 
-    describe('Search', function () {
-      let searchInput: WebElement;
+    describe('Search', () => {
+      before(async () => {
+        await $('[data-testid="otherAccountsButton"]').click();
+      });
 
-      before(async function () {
-        await this.driver
-          .wait(
-            until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
-            this.wait
-          )
-          .click();
-        searchInput = this.driver.wait(
-          until.elementLocated(By.css('[data-testid="accountsSearchInput"]')),
-          this.wait
+      after(async () => {
+        await $('div.arrow-back-icon').click();
+      });
+
+      it('Displays "not found" description if term is not account name, address, public key or email', async () => {
+        await $('[data-testid="accountsSearchInput"]').setValue('WRONG TERM');
+
+        expect(await $$('[data-testid="accountCard"]')).to.have.length(0);
+
+        expect(await $('[data-testid="accountsNote"]').getText()).matches(
+          /No other accounts were found for the specified filters/i
         );
       });
 
-      after(async function () {
-        await this.driver.findElement(By.css('div.arrow-back-icon')).click();
-      });
-
-      beforeEach(async function () {
-        await searchInput.clear();
-      });
-
-      it('Displays "not found" description if term is not account name, address, public key or email', async function () {
-        await searchInput.sendKeys('WRONG TERM');
-
-        expect(
-          await this.driver.findElements(By.css('[data-testid="accountCard"]'))
-        ).length(0);
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="accountsNote"]'))
-            .getText()
-        ).matches(/No other accounts were found for the specified filters/i);
-      });
-
-      it('"x" appears and clear search input', async function () {
-        await searchInput.sendKeys('WRONG TERM');
-        const searchClear = this.driver.findElement(
-          By.css('[data-testid="searchClear"]')
-        );
+      it('"x" appears and clear search input', async () => {
+        await $('[data-testid="accountsSearchInput"]').setValue('WRONG TERM');
+        const searchClear = $('[data-testid="searchClear"]');
         expect(await searchClear.isDisplayed()).to.be.true;
         await searchClear.click();
-        expect(await searchInput.getText()).to.be.empty;
+        expect(await $('[data-testid="accountsSearchInput"]').getText()).to.be
+          .empty;
       });
 
-      it('By existing account name', async function () {
-        await searchInput.sendKeys(/* r */ 'ic' /* h */);
+      it('By existing account name', async () => {
+        await $('[data-testid="accountsSearchInput"]').setValue(
+          /* r */ 'ic' /* h */
+        );
+
         expect(
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.css(
-                  '[data-testid="accountCard"] [data-testid="accountName"]'
-                )
-              ),
-              this.wait
-            )
-            .getText()
-        ).to.be.equal('rich');
+          await $(
+            '[data-testid="accountCard"] [data-testid="accountName"]'
+          ).getText()
+        ).to.equal('rich');
       });
 
-      it('By existing account address', async function () {
-        await searchInput.sendKeys('3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1');
+      it('By existing account address', async () => {
+        await $('[data-testid="accountsSearchInput"]').setValue(
+          '3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1'
+        );
+
         expect(
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.css(
-                  '[data-testid="accountCard"] [data-testid="accountName"]'
-                )
-              ),
-              this.wait
-            )
-            .getText()
-        ).to.be.equal('rich');
+          await $(
+            '[data-testid="accountCard"] [data-testid="accountName"]'
+          ).getText()
+        ).to.equal('rich');
       });
 
-      it('By existing account public key', async function () {
-        await searchInput.sendKeys(
+      it('By existing account public key', async () => {
+        await $('[data-testid="accountsSearchInput"]').setValue(
           'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV'
         );
+
         expect(
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.css(
-                  '[data-testid="accountCard"] [data-testid="accountName"]'
-                )
-              ),
-              this.wait
-            )
-            .getText()
-        ).to.be.equal('rich');
+          await $(
+            '[data-testid="accountCard"] [data-testid="accountName"]'
+          ).getText()
+        ).to.equal('rich');
       });
 
       it('By existing email account');
@@ -214,303 +142,191 @@ describe('Account management', function () {
   });
 
   function accountPropertiesShouldBeRight() {
-    describe('Address', function () {
-      it('Is displayed', async function () {
+    describe('Address', () => {
+      it('Is displayed', async () => {
         expect(
-          await this.driver
-            .findElement(
-              By.xpath(
-                "//div[@id='accountInfoAddress']//div[contains(@class, 'copyTextOverflow@copy')]"
-              )
-            )
-            .getText()
+          await $(
+            "//div[@id='accountInfoAddress']//div[contains(@class, 'copyTextOverflow@copy')]"
+          ).getText()
         ).matches(/\w+/i);
       });
 
       it('Copying by clicking the "Copy" button');
     });
 
-    describe('Public key', function () {
-      it('Is displayed', async function () {
+    describe('Public key', () => {
+      it('Is displayed', async () => {
         expect(
-          await this.driver
-            .findElement(
-              By.xpath(
-                "//div[@id='accountInfoPublicKey']//div[contains(@class, 'copyTextOverflow@copy')]"
-              )
-            )
-            .getText()
+          await $(
+            "//div[@id='accountInfoPublicKey']//div[contains(@class, 'copyTextOverflow@copy')]"
+          ).getText()
         ).matches(/\w+/i);
       });
 
       it('Copying by clicking the "Copy" button');
     });
 
-    describe('Private key', function () {
-      it('Is hidden', async function () {
+    describe('Private key', () => {
+      it('Is hidden', async () => {
         expect(
-          await this.driver
-            .findElement(
-              By.xpath(
-                "//div[@id='accountInfoPrivateKey']//div[contains(@class, 'copyTextOverflow@copy')]"
-              )
-            )
-            .getText()
+          await $(
+            "//div[@id='accountInfoPrivateKey']//div[contains(@class, 'copyTextOverflow@copy')]"
+          ).getText()
         ).not.matches(/\w+/i);
       });
 
-      describe('Copying by clicking the "Copy" button', function () {
-        before(async function () {
-          await this.driver
-            .findElement(
-              By.xpath(
-                "//div[@id='accountInfoPrivateKey']//div[contains(@class, 'lastIcon@copy')]"
-              )
-            )
-            .click();
+      describe('Copying by clicking the "Copy" button', () => {
+        before(async () => {
+          await $(
+            "//div[@id='accountInfoPrivateKey']//div[contains(@class, 'lastIcon@copy')]"
+          ).click();
         });
 
-        it('Clicking "Copy" displays the password entry form', async function () {
-          await this.driver.wait(
-            until.elementLocated(By.css('form#enterPassword')),
-            this.wait
-          );
-          await this.driver
-            .findElement(By.css('button#passwordCancel'))
-            .click();
+        it('Clicking "Copy" displays the password entry form', async () => {
+          await $('form#enterPassword').waitForExist();
+          await $('button#passwordCancel').click();
         });
 
         it('Clicking "Cancel" does not copy');
-
         it('Clicking "Copy" and entering the correct password will copy it');
       });
     });
 
-    describe('Backup phrase', function () {
-      it('Is hidden', async function () {
+    describe('Backup phrase', () => {
+      it('Is hidden', async () => {
         expect(
-          await this.driver
-            .findElement(
-              By.xpath(
-                "//div[@id='accountInfoBackupPhrase']//div[contains(@class, 'copyTextOverflow@copy')]"
-              )
-            )
-            .getText()
+          await $(
+            "//div[@id='accountInfoBackupPhrase']//div[contains(@class, 'copyTextOverflow@copy')]"
+          ).getText()
         ).not.matches(/\w+/i);
       });
 
-      describe('Copying by clicking the "Copy" button', function () {
-        before(async function () {
-          await this.driver
-            .findElement(
-              By.xpath(
-                "//div[@id='accountInfoBackupPhrase']//div[contains(@class, 'lastIcon@copy')]"
-              )
-            )
-            .click();
-          await this.driver.wait(
-            until.elementLocated(By.css('form#enterPassword')),
-            this.wait
-          );
+      describe('Copying by clicking the "Copy" button', () => {
+        before(async () => {
+          await $(
+            "//div[@id='accountInfoBackupPhrase']//div[contains(@class, 'lastIcon@copy')]"
+          ).click();
+
+          await $('form#enterPassword').waitForExist();
         });
 
-        after(async function () {
-          await this.driver
-            .findElement(By.css('button#passwordCancel'))
-            .click();
+        after(async () => {
+          await $('button#passwordCancel').click();
         });
 
         it('Clicking "Cancel" does not copy');
-
         it('Clicking "Copy" and entering the correct password will copy it');
       });
     });
 
-    describe('Rename an account', function () {
-      let newAccountNameInput: WebElement,
-        newAccountNameErr: WebElement,
-        saveBtn: WebElement,
-        currentAccountName: string,
-        newAccountName: string;
+    describe('Rename an account', () => {
+      let currentAccountName: string;
+      let newAccountName: string;
 
-      before(async function () {
-        await this.driver
-          .wait(
-            until.elementLocated(
-              By.xpath("//button[contains(@class, 'accountName@accountInfo')]")
-            ),
-            this.wait
-          )
-          .click();
-        newAccountNameInput = this.driver.wait(
-          until.elementLocated(By.css('input#newAccountName')),
-          this.wait
-        );
-        newAccountNameErr = this.driver.findElement(
-          By.css('[data-testid="newAccountNameError"]')
-        );
-        saveBtn = this.driver.findElement(By.css('button#save'));
-        currentAccountName = await this.driver
-          .findElement(By.css('div#currentAccountName'))
-          .getText();
+      before(async () => {
+        await $(
+          "//button[contains(@class, 'accountName@accountInfo')]"
+        ).click();
+
+        currentAccountName = await $('#currentAccountName').getText();
       });
 
-      it('A name that is already in use cannot be specified', async function () {
-        await newAccountNameInput.sendKeys(currentAccountName);
-        await newAccountNameInput.sendKeys('\t');
-        expect(await newAccountNameErr.getText()).matches(
-          /Name already exist/i
-        );
-        expect(await saveBtn.isEnabled()).to.be.false;
-        await clear(newAccountNameInput);
+      it('A name that is already in use cannot be specified', async () => {
+        await $('#newAccountName').setValue(currentAccountName);
+        await browser.keys('Tab');
+        expect(
+          await $('[data-testid="newAccountNameError"]').getText()
+        ).matches(/Name already exist/i);
+        expect(await $('#save').isEnabled()).to.be.false;
+        await $('#newAccountName').clearValue();
       });
 
-      it('Unique name specified', async function () {
+      it('Unique name specified', async () => {
         newAccountName = currentAccountName.slice(1);
-        await newAccountNameInput.sendKeys(newAccountName);
-        await newAccountNameInput.sendKeys('\t');
-        expect(await newAccountNameErr.getText()).to.be.empty;
-        expect(await saveBtn.isEnabled()).to.be.true;
+        await $('#newAccountName').setValue(newAccountName);
+        await browser.keys('Tab');
+        expect(await $('[data-testid="newAccountNameError"]').getText()).to.be
+          .empty;
+        expect(await $('#save').isEnabled()).to.be.true;
       });
 
-      it('Successfully changed account name', async function () {
-        await saveBtn.click();
+      it('Successfully changed account name', async () => {
+        await $('#save').click();
 
-        expect(
-          await this.driver
-            .wait(
-              until.elementIsVisible(
-                this.driver.findElement(By.css('.modal.notification'))
-              ),
-              this.wait
-            )
-            .getText()
-        ).matches(/Account name changed/i);
+        expect(await $('.modal.notification').getText()).matches(
+          /Account name changed/i
+        );
 
-        await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath(
-                  "//button[contains(@class, 'accountName@accountInfo')]//span"
-                )
-              ),
-              this.wait
-            )
-            .getText()
-        ).to.be.equal(newAccountName);
+        await browser.waitUntil(
+          async () =>
+            (await $(
+              "//button[contains(@class, 'accountName@accountInfo')]//span"
+            ).getText()) === newAccountName,
+          {
+            timeoutMsg: 'account name did not change',
+          }
+        );
       });
     });
 
-    describe('Delete account', function () {
-      beforeEach(async function () {
-        await this.driver
-          .wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'deleteButton@accountInfo')]")
-            ),
-            this.wait
-          )
-          .click();
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'content@deleteAccount-module')]")
-          ),
-          this.wait
-        );
+    describe('Delete account', () => {
+      beforeEach(async () => {
+        await $("//div[contains(@class, 'deleteButton@accountInfo')]").click();
+
+        await $(
+          "//div[contains(@class, 'content@deleteAccount-module')]"
+        ).waitForExist();
       });
 
-      it('Click "Back" on the account deletion confirmation screen - the account is not deleted', async function () {
-        await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+      it('Click "Back" on the account deletion confirmation screen - the account is not deleted', async () => {
+        await $('div.arrow-back-icon').click();
 
-        expect(
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'content@accountInfo')]")
-            ),
-            this.wait
-          )
-        ).not.to.be.throw;
+        await $(
+          "//div[contains(@class, 'content@accountInfo')]"
+        ).waitForExist();
       });
 
-      it('Click "Delete account" deletes the account', async function () {
-        await this.driver.findElement(By.css('button#deleteAccount')).click();
+      it('Click "Delete account" deletes the account', async () => {
+        await $('button#deleteAccount').click();
 
-        expect(
-          await this.driver.wait(
-            until.elementLocated(
-              By.css('[data-testid="importForm"], [data-testid="assetsForm"]')
-            ),
-            this.wait
-          )
-        ).not.to.be.throw;
+        await $(
+          '[data-testid="importForm"], [data-testid="assetsForm"]'
+        ).waitForExist();
       });
     });
   }
 
-  describe('Inactive account', async function () {
-    before(async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
-          this.wait
-        )
-        .click();
+  describe('Inactive account', async () => {
+    before(async () => {
+      await $('[data-testid="otherAccountsButton"]').click();
     });
 
-    it('By clicking on account - go to the account properties screen', async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="accountInfoButton"]')),
-          this.wait
-        )
-        .click();
-
-      expect(
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'content@accountInfo')]")
-          ),
-          this.wait
-        )
-      ).not.to.be.throw;
+    it('By clicking on account - go to the account properties screen', async () => {
+      await $('[data-testid="accountInfoButton"]').click();
+      await $("//div[contains(@class, 'content@accountInfo')]").waitForExist();
     });
 
-    accountPropertiesShouldBeRight.call(this);
+    accountPropertiesShouldBeRight();
   });
 
-  describe('Active account', async function () {
-    it('By clicking on account - go to the account properties screen', async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="activeAccountCard"]')),
-          this.wait
-        )
-        .click();
-
-      expect(
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'content@accountInfo')]")
-          ),
-          this.wait
-        )
-      ).not.to.be.throw;
+  describe('Active account', async () => {
+    it('By clicking on account - go to the account properties screen', async () => {
+      await $('[data-testid="activeAccountCard"]').click();
+      await $("//div[contains(@class, 'content@accountInfo')]").waitForExist();
     });
 
-    accountPropertiesShouldBeRight.call(this);
+    accountPropertiesShouldBeRight();
   });
 
-  describe('Switching networks', function () {
-    before(async function () {
-      await this.driver.switchTo().window(tabAccounts);
+  describe('Switching networks', () => {
+    before(async () => {
+      await browser.switchToWindow(tabAccounts);
 
       await AccountsHome.importAccount(
         'second',
         'second account for testing selected account preservation'
       );
+
       await AccountsHome.importAccount(
         'first',
         'first account for testing selected account preservation'
@@ -522,59 +338,48 @@ describe('Account management', function () {
         'fourth',
         'fourth account for testing selected account preservation'
       );
+
       await AccountsHome.importAccount(
         'third',
         'third account for testing selected account preservation'
       );
 
       await Network.switchToAndCheck('Mainnet');
-
-      await this.driver.switchTo().window(tabKeeper);
+      await browser.switchToWindow(tabKeeper);
     });
 
-    after(async function () {
+    after(async () => {
       await Network.switchToAndCheck('Mainnet');
     });
 
-    it('should preserve previously selected account for the network', async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
-          this.wait
-        )
-        .click();
+    it('should preserve previously selected account for the network', async () => {
+      await $('[data-testid="otherAccountsButton"]').click();
+      await $('[data-testid="otherAccountsPage"]').waitForExist();
+      await $('[data-testid="accountCard"]').click();
 
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="accountCard"]')),
-          this.wait
-        )
-        .click();
-      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-
-      expect(await PopupHome.getActiveAccountName()).to.equal('second');
+      await browser.waitUntil(
+        async () => (await PopupHome.getActiveAccountName()) === 'second',
+        {
+          timeoutMsg: 'selected account did not change',
+        }
+      );
 
       await Network.switchToAndCheck('Testnet');
 
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
-          this.wait
-        )
-        .click();
+      await $('[data-testid="otherAccountsButton"]').click();
+      await $('[data-testid="otherAccountsPage"]').waitForExist();
+      await $('[data-testid="accountCard"]').click();
 
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="accountCard"]')),
-          this.wait
-        )
-        .click();
-      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-
-      expect(await PopupHome.getActiveAccountName()).to.equal('fourth');
+      await browser.waitUntil(
+        async () => (await PopupHome.getActiveAccountName()) === 'fourth',
+        {
+          timeoutMsg: 'selected account did not change',
+        }
+      );
 
       await Network.switchToAndCheck('Mainnet');
       expect(await PopupHome.getActiveAccountName()).to.equal('second');
+
       await Network.switchToAndCheck('Testnet');
       expect(await PopupHome.getActiveAccountName()).to.equal('fourth');
     });
