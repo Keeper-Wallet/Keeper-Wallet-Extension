@@ -92,11 +92,26 @@ export const mochaHooks = () => ({
       throw new Error('Could not find Keeper Wallet extension id');
     }
 
-    browser.addCommand('openKeeperPopup', async () => {
-      await browser.navigateTo(
-        `chrome-extension://${keeperExtensionId}/popup.html`
-      );
-    });
+    // default clearValue doesn't produce input event for some reason ¯\_(ツ)_/¯
+    // https://github.com/webdriverio/webdriverio/issues/5869#issuecomment-964012560
+    browser.overwriteCommand(
+      'clearValue',
+      async function (this: WebdriverIO.Element) {
+        // https://w3c.github.io/webdriver/#keyboard-actions
+        await this.elementSendKeys(this.elementId, '\uE009a'); // Ctrl+a
+        await this.elementSendKeys(this.elementId, '\uE003'); // Backspace
+      },
+      true
+    );
+
+    browser.addCommand(
+      'openKeeperPopup',
+      async function (this: WebdriverIO.Browser) {
+        await this.navigateTo(
+          `chrome-extension://${keeperExtensionId}/popup.html`
+        );
+      }
+    );
   },
 
   async afterAll(this: mocha.Context) {
