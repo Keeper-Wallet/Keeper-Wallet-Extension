@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { DEFAULT_PASSWORD, DEFAULT_SWITCH_NETWORK_DELAY } from './constants';
+import { DEFAULT_PASSWORD } from './constants';
 
 export const App = {
   initVault: async (password = DEFAULT_PASSWORD) => {
@@ -34,6 +34,8 @@ export const App = {
     await $("//div[contains(@class, 'deleteAccounts@settings')]").click();
     await $('[data-testid="confirmPhrase"]').setValue('DELETE ALL ACCOUNTS');
     await $('[data-testid="resetConfirm"]').click();
+
+    await $('[data-testid="getStartedBtn"]').waitForExist();
   },
 
   closeBgTabs: async (foreground: string) => {
@@ -133,8 +135,6 @@ export const Settings = {
 
 export const Network = {
   switchTo: async (network: string) => {
-    await browser.pause(DEFAULT_SWITCH_NETWORK_DELAY);
-
     const networkMenuBtn = await $(
       "//div[contains(@class, 'network@network')]//div[contains(@class, 'basic500 flex')]"
     );
