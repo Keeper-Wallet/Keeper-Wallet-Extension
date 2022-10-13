@@ -251,8 +251,14 @@ describe('Account management', function () {
       it('Successfully changed account name', async () => {
         await $('#save').click();
 
-        expect(await $('.modal.notification').getText()).matches(
-          /Account name changed/i
+        const notification = await $('.modal.notification');
+        await notification.waitForDisplayed();
+
+        await browser.waitUntil(
+          async () => (await notification.getText()) === 'Account name changed',
+          {
+            timeoutMsg: 'notification text is incorrect',
+          }
         );
 
         await browser.waitUntil(
