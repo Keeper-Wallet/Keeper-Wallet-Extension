@@ -63,6 +63,7 @@ export const PopupHome = {
 
   getOtherAccountNames: async () => {
     await $('[data-testid="otherAccountsButton"]').click();
+    await $('[data-testid="otherAccountsPage"]').waitForDisplayed();
 
     const accountNames = await $$(
       '[data-testid="accountCard"] [data-testid="accountName"]'
