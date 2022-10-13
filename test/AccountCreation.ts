@@ -62,7 +62,6 @@ describe('Account creation', function () {
       SECOND: 'second',
       ANY: 'account123!@#_аккаунт',
     };
-    const PILL_ANIMATION_DELAY = 200;
 
     after(deleteEachAndSwitchToAccounts);
 
@@ -74,12 +73,13 @@ describe('Account creation', function () {
       await $('#continue').click();
 
       for (const word of seed.split(' ')) {
-        await $(
+        const pill = await $(
           "//div[(contains(@class, 'selectedPill@pills') and not(contains(@class, 'hiddenPill@pills')))]" +
             `//div[contains(@class, 'text@pills')][text()='${word}']`
-        ).click();
+        );
 
-        await browser.pause(PILL_ANIMATION_DELAY);
+        await pill.click();
+        await pill.waitForDisplayed({ interval: 100, reverse: true });
       }
 
       await $('#confirmBackup').click();
@@ -120,6 +120,7 @@ describe('Account creation', function () {
             const avatarList = await $$(
               "//div[contains(@class, 'avatar@avatar')]"
             );
+
             expect(avatarList).to.have.length(5);
 
             const addressEl = await $(
@@ -168,11 +169,12 @@ describe('Account creation', function () {
             const wrongSeed = rightSeed.split(' ').reverse();
 
             for (const word of wrongSeed) {
-              await $(
+              const pill = $(
                 `${xpWriteVisiblePill}//div[contains(@class, 'text@pills')][text()='${word}']`
-              ).click();
+              );
 
-              await browser.pause(PILL_ANIMATION_DELAY);
+              await pill.click();
+              await pill.waitForDisplayed({ interval: 100, reverse: true });
             }
 
             const errorEl = $("//div[contains(@class, 'error@error')]");
@@ -188,21 +190,19 @@ describe('Account creation', function () {
           });
 
           it('The "Clear" button resets a completely filled phrase', async () => {
-            await $(
+            const clearSeedBtn = await $(
               "//div[contains(@class, 'clearSeed@confirmBackup')]"
-            ).click();
+            );
 
-            await browser.pause(PILL_ANIMATION_DELAY);
+            await clearSeedBtn.click();
+            await clearSeedBtn.waitForExist({ reverse: true });
 
-            expect(await $$("//div[contains(@class, 'error@error')]")).to.be
-              .empty;
+            await $("//div[contains(@class, 'error@error')]").waitForExist({
+              reverse: true,
+            });
 
-            expect(
-              await $$("//div[contains(@class, 'clearSeed@confirmBackup')]")
-            ).to.be.empty;
-
-            expect(await $$(xpReadVisiblePill)).to.be.empty;
-            expect(await $$(xpWriteVisiblePill)).length(PILLS_COUNT);
+            await $(xpReadVisiblePill).waitForExist({ reverse: true });
+            expect(await $$(xpWriteVisiblePill)).to.have.length(PILLS_COUNT);
           });
 
           it('The word can be reset by clicking (any, not only the last)', async () => {
@@ -210,37 +210,43 @@ describe('Account creation', function () {
 
             for (const writePill of writePills) {
               await writePill.click();
-              await browser.pause(PILL_ANIMATION_DELAY);
+
+              await writePill.waitForDisplayed({
+                interval: 100,
+                reverse: true,
+              });
             }
 
             await $(
               "//div[contains(@class, 'clearSeed@confirmBackup')]"
             ).waitForDisplayed();
 
-            expect(await $$(xpReadVisiblePill)).to.have.length(PILLS_COUNT);
-            expect(await $$(xpWriteVisiblePill)).to.be.empty;
-
-            const readPills = await $$(
-              "//div[contains(@class, 'readSeed@confirmBackup')]" +
-                "//div[(contains(@class, 'pill@pills') and not(contains(@class, 'hiddenPill@pills')))]"
-            );
+            const readPills = await $$(xpReadVisiblePill);
+            expect(readPills).to.have.length(PILLS_COUNT);
 
             for (const readPill of readPills) {
+              const prevPillsCount = await $$(xpReadVisiblePill).length;
               await readPill.click();
-              await browser.pause(PILL_ANIMATION_DELAY);
+
+              await browser.waitUntil(
+                async () =>
+                  (await $$(xpReadVisiblePill).length) === prevPillsCount - 1,
+                { timeoutMsg: "pill didn't disappear" }
+              );
             }
 
-            expect(await $$(xpReadVisiblePill)).to.be.empty;
+            expect(await $$(xpReadVisiblePill)).to.have.length(0);
             expect(await $$(xpWriteVisiblePill)).to.have.length(PILLS_COUNT);
           });
 
           it('Account name page opened while filling in the phrase in the correct order', async () => {
             for (const word of rightSeed.split(' ')) {
-              await $(
+              const pill = $(
                 `${xpWriteVisiblePill}//div[contains(@class, 'text@pills')][text()='${word}']`
-              ).click();
+              );
 
-              await browser.pause(PILL_ANIMATION_DELAY);
+              await pill.click();
+              await pill.waitForExist({ interval: 100, reverse: true });
             }
 
             await $('#confirmBackup').click();
