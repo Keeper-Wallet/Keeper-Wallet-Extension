@@ -115,6 +115,8 @@ export const mochaHooks = () => ({
   },
 
   async afterAll(this: mocha.Context) {
-    browser.deleteSession();
+    if (typeof browser !== 'undefined') {
+      browser.deleteSession();
+    }
   },
 });
