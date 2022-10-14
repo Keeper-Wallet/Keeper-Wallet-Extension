@@ -7,7 +7,7 @@ import { useAssetLogo } from '../../../../assets/utils';
 
 interface Props {
   assetId: string;
-  name: string;
+  name: string | undefined;
   logo?: string;
   hasScript?: boolean;
   hasSponsorship?: boolean;

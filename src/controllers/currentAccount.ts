@@ -220,16 +220,15 @@ export class CurrentAccountController {
     const assetExists = (assetId: string) => !!assets[assetId];
 
     const isMaxAgeExceeded = (assetId: string) =>
-      this.assetInfoController.isMaxAgeExceeded(
-        assets[assetId] && assets[assetId].lastUpdated
-      );
+      this.assetInfoController.isMaxAgeExceeded(assets[assetId]?.lastUpdated);
 
     const isSponsorshipUpdated = (balanceAsset: {
       assetId: string;
       minSponsoredAssetFee: string | null;
     }) =>
       balanceAsset.minSponsoredAssetFee !==
-      assets[balanceAsset.assetId].minSponsoredFee;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      assets[balanceAsset.assetId]!.minSponsoredFee;
 
     const fetchAssetIds = (
       myAssets.balances.filter(

@@ -7,7 +7,7 @@ import { equals } from 'ramda';
 import { Nft } from 'nfts/utils';
 import { NftVendorKeys } from 'nfts';
 import { TFunction } from 'react-i18next';
-import { AssetDetail } from 'assets/types';
+import { AssetsRecord } from 'assets/types';
 
 export function useUiState<T extends keyof UiState>(
   key: T
@@ -29,25 +29,27 @@ export function useUiState<T extends keyof UiState>(
 
 export function sortAssetEntries<T>(
   assetEntries: Array<[string, T]>,
-  assets: Record<string, AssetDetail>,
+  assets: AssetsRecord,
   showSuspiciousAssets: boolean | undefined
 ): Array<[string, T]> {
   return assetEntries
     .filter(
       ([assetId]) => showSuspiciousAssets || !assets[assetId]?.isSuspicious
     )
-    .sort(
-      ([a], [b]) =>
-        (a === 'WAVES' && -1) ||
-        (b === 'WAVES' && 1) ||
-        (assets[a] &&
-          assets[b] &&
-          (+!!assets[b].isFavorite - +!!assets[a].isFavorite ||
-            +!!assets[a].isSuspicious - +!!assets[b].isSuspicious ||
-            (assets[a].displayName ?? '').localeCompare(
-              assets[b].displayName ?? ''
-            )))
-    );
+    .sort(([aAssetId], [bAssetId]) => {
+      const a = assets[aAssetId];
+      const b = assets[bAssetId];
+
+      return (
+        (aAssetId === 'WAVES' && -1) ||
+        (bAssetId === 'WAVES' && 1) ||
+        (a && b
+          ? +!!b.isFavorite - +!!a.isFavorite ||
+            +!!a.isSuspicious - +!!b.isSuspicious ||
+            (a.displayName ?? '').localeCompare(b.displayName ?? '')
+          : 0)
+      );
+    });
 }
 
 export function sortAndFilterNfts<T extends Nft>(

@@ -1,4 +1,4 @@
-import { BigNumber } from '@waves/bignumber';
+import type { BigNumber } from '@waves/bignumber';
 
 export interface AssetDetail {
   description: string;
@@ -19,4 +19,9 @@ export interface AssetDetail {
   sender: string;
   ticker?: string;
   timestamp: Date;
+}
+
+export interface AssetsRecord {
+  WAVES: AssetDetail;
+  [key: string]: AssetDetail | undefined;
 }

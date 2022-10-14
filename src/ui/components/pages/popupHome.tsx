@@ -54,11 +54,10 @@ export function PopupHome() {
     ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       Object.entries(balances[activeAccount.address]!.assets!).reduce(
         (acc, [id, { balance }]) => {
-          if (assets[id] && usdPrices[id]) {
-            const tokens = new Money(
-              balance,
-              new Asset(assets[id])
-            ).getTokens();
+          const asset = assets[id];
+
+          if (asset && usdPrices[id]) {
+            const tokens = new Money(balance, new Asset(asset)).getTokens();
             acc = acc.add(new BigNumber(usdPrices[id]).mul(tokens));
           }
 
@@ -109,7 +108,8 @@ export function PopupHome() {
         <TabPanels className={styles.tabPanels}>
           <TabAssets
             onInfoClick={assetId => {
-              setAsset(assets[assetId]);
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              setAsset(assets[assetId]!);
               setShowAsset(true);
             }}
             onSendClick={assetId => {

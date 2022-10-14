@@ -12,7 +12,7 @@ import { MoreActions } from './moreActions';
 import { isSwappableAsset } from 'assets/utils';
 
 interface Props {
-  balance: Money;
+  balance: Money | undefined;
   assetId: string;
   className?: string;
   onInfoClick: (assetId: string) => void;

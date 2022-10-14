@@ -13,7 +13,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { BalanceAssets } from 'ui/reducers/updateState';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import cn from 'classnames';
-import { AssetDetail } from 'assets/types';
+import { AssetsRecord } from 'assets/types';
 
 const Row = ({
   data,
@@ -22,7 +22,7 @@ const Row = ({
 }: {
   data: {
     assetEntries: Array<[string, { balance: string | number | BigNumber }]>;
-    assets: Record<string, AssetDetail>;
+    assets: AssetsRecord;
     onInfoClick: (assetId: string) => void;
     onSendClick: (assetId: string) => void;
     onSwapClick: (assetId: string) => void;
@@ -32,13 +32,12 @@ const Row = ({
 }) => {
   const { assetEntries, assets, onInfoClick, onSendClick, onSwapClick } = data;
   const [assetId, { balance }] = assetEntries[index];
+  const asset = assets[assetId];
+
   return (
     <div style={style}>
       <AssetItem
-        balance={
-          assets[assetId] &&
-          new Money(new BigNumber(balance), new Asset(assets[assetId]))
-        }
+        balance={asset && new Money(new BigNumber(balance), new Asset(asset))}
         assetId={assetId}
         onInfoClick={onInfoClick}
         onSendClick={onSendClick}

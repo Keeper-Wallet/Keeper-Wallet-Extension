@@ -1,4 +1,4 @@
-import { AssetDetail } from 'assets/types';
+import { AssetsRecord } from 'assets/types';
 import { getMoney, IMoneyLike } from '../../../utils/converters';
 
 export const messageType = 'create-order';
@@ -64,7 +64,7 @@ export function getPriceAmount(
     amount?: IMoneyLike | string | number;
     price?: IMoneyLike | string | number;
   },
-  assets: Record<string, AssetDetail>
+  assets: AssetsRecord
 ) {
   const amount = getMoney(getAmount(tx), assets);
   const price = getMoney(getPrice(tx), assets);

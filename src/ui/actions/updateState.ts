@@ -1,4 +1,4 @@
-import { AssetDetail } from 'assets/types';
+import { AssetsRecord } from 'assets/types';
 import { collectBalances } from 'balances/utils';
 import { MessageStoreItem } from 'messages/types';
 import { NetworkName } from 'networks/types';
@@ -239,7 +239,7 @@ export function createUpdateState(store: UiStore) {
 
     const assets = getParam<
       BackgroundGetStateResult['assets'] | undefined,
-      Partial<Record<NetworkName, Record<string, AssetDetail>>>
+      Partial<Record<NetworkName, AssetsRecord>>
     >(state.assets, {});
 
     const network = state.currentNetwork || currentState.currentNetwork;

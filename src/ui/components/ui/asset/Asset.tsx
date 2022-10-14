@@ -1,4 +1,4 @@
-import { AssetDetail } from 'assets/types';
+import { AssetsRecord } from 'assets/types';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { AppState } from 'ui/store';
@@ -12,7 +12,9 @@ const AssetComponent = ({
   assetId,
   ...props
 }: IProps) => {
-  if (!assets[assetId]) {
+  const asset = assets[assetId];
+
+  if (!asset) {
     getAsset(assetId);
 
     return (
@@ -25,7 +27,7 @@ const AssetComponent = ({
 
   return (
     <span {...props}>
-      {assets[assetId].displayName}
+      {asset.displayName}
       {children}
     </span>
   );
@@ -39,6 +41,6 @@ interface IProps {
   assetId: string;
   children?: React.ReactNode;
   className?: string;
-  assets: Record<string, AssetDetail>;
+  assets: AssetsRecord;
   getAsset: (id: string) => void;
 }

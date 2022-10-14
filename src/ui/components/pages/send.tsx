@@ -188,10 +188,15 @@ export function Send() {
                         <AssetAmountInput
                           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                           assetBalances={assetBalances!}
-                          assetOptions={Object.values(assets).filter(
-                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                            asset => assetBalances![asset.id] != null
-                          )}
+                          assetOptions={Object.values(assets)
+                            .filter(
+                              (asset): asset is NonNullable<typeof asset> =>
+                                asset != null
+                            )
+                            .filter(
+                              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                              asset => assetBalances![asset.id] != null
+                            )}
                           balance={balance}
                           label={t('send.amountInputLabel')}
                           showUsdAmount

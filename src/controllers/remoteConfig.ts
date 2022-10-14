@@ -1,23 +1,15 @@
 import ObservableStore from 'obs-store';
-import { extension } from 'lib/extension';
+import * as browser from 'webextension-polyfill';
 import {
-  CONFIG_URL,
-  DEFAULT_CONFIG,
-  DEFAULT_FEE_CONFIG,
-  DEFAULT_FEE_CONFIG_URL,
+  DEFAULT_LEGACY_CONFIG,
+  DEFAULT_MAIN_CONFIG,
   DEFAULT_IDENTITY_CONFIG,
-  DEFAULT_IGNORE_ERRORS_CONFIG,
-  DEFAULT_NFT_CONFIG,
-  DEFAULT_NFT_CONFIG_URL,
-  FEE_CONFIG_UPDATE_INTERVAL,
-  IDENTITY_CONFIG_UPDATE_INTERVAL,
-  IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL,
-  IGNORE_ERRORS_CONFIG_URL,
-  NFT_CONFIG_UPDATE_INTERVAL,
   STATUS,
+  MainConfig,
+  IgnoreErrorsContext,
 } from '../constants';
 import { EventEmitter } from 'events';
-import * as R from 'ramda';
+import { equals } from 'ramda';
 import { ExtensionStorage } from '../storage/storage';
 import { IdentityConfig } from './IdentityController';
 import { NetworkName } from 'networks/types';
@@ -68,73 +60,68 @@ export class RemoteConfigController extends EventEmitter {
         blacklist: [],
         whitelist: [],
         config: {
-          networks: DEFAULT_CONFIG.NETWORKS,
-          network_config: DEFAULT_CONFIG.NETWORK_CONFIG,
-          messages_config: DEFAULT_CONFIG.MESSAGES_CONFIG,
-          pack_config: DEFAULT_CONFIG.PACK_CONFIG,
-          idle: DEFAULT_CONFIG.IDLE,
+          networks: DEFAULT_LEGACY_CONFIG.NETWORKS,
+          network_config: DEFAULT_LEGACY_CONFIG.NETWORK_CONFIG,
+          messages_config: DEFAULT_LEGACY_CONFIG.MESSAGES_CONFIG,
+          pack_config: DEFAULT_LEGACY_CONFIG.PACK_CONFIG,
+          idle: DEFAULT_LEGACY_CONFIG.IDLE,
         },
-        ignoreErrorsConfig: DEFAULT_IGNORE_ERRORS_CONFIG,
+        ignoreErrorsConfig: DEFAULT_MAIN_CONFIG.ignoreErrors,
         identityConfig: DEFAULT_IDENTITY_CONFIG,
-        feeConfig: DEFAULT_FEE_CONFIG,
-        nftConfig: DEFAULT_NFT_CONFIG,
+        feeConfig: DEFAULT_MAIN_CONFIG.fee,
+        nftConfig: DEFAULT_MAIN_CONFIG.nfts,
         status: STATUS.PENDING,
       })
     );
 
     extensionStorage.subscribe(this.store);
 
-    this._getConfig();
-    this._getIgnoreErrorsConfig();
-    this._fetchIdentityConfig();
-    this._fetchFeeConfig();
-    this._fetchNftConfig();
+    this.#updateLegacyConfig();
+    this.#updateMainConfig();
+    this.#updateIdentityConfig();
 
-    extension.alarms.onAlarm.addListener(({ name }) => {
+    browser.alarms.onAlarm.addListener(({ name }) => {
       switch (name) {
-        case 'updateConfig':
-          this._getConfig();
+        case 'updateLegacyConfig':
+          this.#updateLegacyConfig();
           break;
-        case 'updateIgnoreErrorsConfig':
-          this._getIgnoreErrorsConfig();
+        case 'updateMainConfig':
+          this.#updateMainConfig();
           break;
-        case 'fetchIdentityConfig':
-          this._fetchIdentityConfig();
-          break;
-        case 'fetchFeeConfig':
-          this._fetchFeeConfig();
-          break;
-        case 'fetchNftConfig':
-          this._fetchNftConfig();
+        case 'updateIdentityConfig':
+          this.#updateIdentityConfig();
           break;
       }
     });
   }
 
-  getPackConfig(): typeof DEFAULT_CONFIG.PACK_CONFIG {
+  getPackConfig(): typeof DEFAULT_LEGACY_CONFIG.PACK_CONFIG {
     try {
       const { pack_config } = this.store.getState().config;
-      return extendValues(DEFAULT_CONFIG.PACK_CONFIG, pack_config);
+      return extendValues(DEFAULT_LEGACY_CONFIG.PACK_CONFIG, pack_config);
     } catch (e) {
-      return DEFAULT_CONFIG.PACK_CONFIG;
+      return DEFAULT_LEGACY_CONFIG.PACK_CONFIG;
     }
   }
 
   getIdleConfig() {
     try {
       const { idle } = this.store.getState().config;
-      return extendValues(DEFAULT_CONFIG.IDLE, idle);
+      return extendValues(DEFAULT_LEGACY_CONFIG.IDLE, idle);
     } catch (e) {
-      return DEFAULT_CONFIG.IDLE;
+      return DEFAULT_LEGACY_CONFIG.IDLE;
     }
   }
 
   getMessagesConfig() {
     try {
       const { messages_config } = this.store.getState().config;
-      return extendValues(DEFAULT_CONFIG.MESSAGES_CONFIG, messages_config);
+      return extendValues(
+        DEFAULT_LEGACY_CONFIG.MESSAGES_CONFIG,
+        messages_config
+      );
     } catch (e) {
-      return DEFAULT_CONFIG.MESSAGES_CONFIG;
+      return DEFAULT_LEGACY_CONFIG.MESSAGES_CONFIG;
     }
   }
 
@@ -169,42 +156,67 @@ export class RemoteConfigController extends EventEmitter {
   getNetworkConfig(): NetworkConfig {
     try {
       const { network_config } = this.store.getState().config;
-      return extendValues(DEFAULT_CONFIG.NETWORK_CONFIG, network_config);
+      return extendValues(DEFAULT_LEGACY_CONFIG.NETWORK_CONFIG, network_config);
     } catch (e) {
-      return DEFAULT_CONFIG.NETWORK_CONFIG;
+      return DEFAULT_LEGACY_CONFIG.NETWORK_CONFIG;
     }
   }
 
   getNetworks() {
     try {
       const { networks } = this.store.getState().config;
-      return networks || DEFAULT_CONFIG.NETWORKS;
+      return networks || DEFAULT_LEGACY_CONFIG.NETWORKS;
     } catch (e) {
-      return DEFAULT_CONFIG.NETWORKS;
+      return DEFAULT_LEGACY_CONFIG.NETWORKS;
     }
   }
 
-  updateState(state = {}) {
-    const currentState = this.store.getState();
-    this.store.updateState({ ...currentState, ...state });
+  shouldIgnoreError(context: IgnoreErrorsContext, message: string) {
+    const { ignoreErrorsConfig } = this.store.getState();
+
+    return (
+      ignoreErrorsConfig.ignoreAll ||
+      ignoreErrorsConfig[context].some(str => {
+        const re = new RegExp(str);
+
+        return re.test(message);
+      })
+    );
   }
 
-  async _getConfig() {
+  getIdentityConfig(network: NetworkName): IdentityConfig {
+    const { identityConfig } = this.store.getState();
+
+    return identityConfig[
+      network === NetworkName.Testnet
+        ? NetworkName.Testnet
+        : NetworkName.Mainnet
+    ];
+  }
+
+  getFeeConfig() {
+    const { feeConfig } = this.store.getState();
+    return feeConfig;
+  }
+
+  async #updateLegacyConfig() {
     try {
-      const response = await fetch(CONFIG_URL);
+      const response = await fetch(
+        'https://raw.githubusercontent.com/wavesplatform/waves-client-config/master/waves_keeper_blacklist.json'
+      );
 
       if (response.ok) {
         const {
           blacklist = [],
           whitelist = [],
-          networks = DEFAULT_CONFIG.NETWORKS,
-          network_config = DEFAULT_CONFIG.NETWORK_CONFIG,
-          messages_config = DEFAULT_CONFIG.MESSAGES_CONFIG,
-          idle = DEFAULT_CONFIG.IDLE,
-          pack_config = DEFAULT_CONFIG.PACK_CONFIG,
+          networks = DEFAULT_LEGACY_CONFIG.NETWORKS,
+          network_config = DEFAULT_LEGACY_CONFIG.NETWORK_CONFIG,
+          messages_config = DEFAULT_LEGACY_CONFIG.MESSAGES_CONFIG,
+          idle = DEFAULT_LEGACY_CONFIG.IDLE,
+          pack_config = DEFAULT_LEGACY_CONFIG.PACK_CONFIG,
         } = await response.json();
 
-        this.updateState({
+        this.store.updateState({
           blacklist,
           whitelist,
           config: {
@@ -220,57 +232,40 @@ export class RemoteConfigController extends EventEmitter {
         throw new Error(await response.text());
       }
     } catch (e) {
-      this.updateState({ status: STATUS.ERROR });
+      this.store.updateState({ status: STATUS.ERROR });
 
       // ignore sentry errors
     }
 
-    extension.alarms.create('updateConfig', {
-      delayInMinutes: DEFAULT_CONFIG.CONFIG.update_ms / 1000 / 60,
+    browser.alarms.create('updateLegacyConfig', {
+      delayInMinutes: DEFAULT_LEGACY_CONFIG.CONFIG.update_ms / 1000 / 60,
     });
   }
 
-  async _getIgnoreErrorsConfig() {
-    const { ignoreErrorsConfig } = this.store.getState();
-
+  async #updateMainConfig() {
     try {
-      const response = await fetch(IGNORE_ERRORS_CONFIG_URL);
+      const response = await fetch(
+        'https://raw.githubusercontent.com/Keeper-Wallet/configs/master/main.json'
+      );
 
       if (response.ok) {
+        const config: MainConfig = await response.json();
+        const { ignoreErrorsConfig } = this.store.getState();
+
         this.store.updateState({
-          ignoreErrorsConfig: Object.assign(
-            {},
-            ignoreErrorsConfig,
-            await response.json()
-          ),
+          feeConfig: config.fee,
+          ignoreErrorsConfig: { ...ignoreErrorsConfig, ...config.ignoreErrors },
+          nftConfig: config.nfts,
         });
-      } else if (response.status < 500) {
-        throw new Error(await response.text());
       }
-    } catch (err) {
-      // ignore sentry errors
-    } finally {
-      extension.alarms.create('updateIgnoreErrorsConfig', {
-        delayInMinutes: IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL,
-      });
+    } catch {
+      // ignore errors
     }
+
+    browser.alarms.create('updateMainConfig', { delayInMinutes: 1 });
   }
 
-  shouldIgnoreError(context: string, message: string) {
-    const { ignoreErrorsConfig } = this.store.getState();
-
-    return (
-      ignoreErrorsConfig.ignoreAll ||
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (ignoreErrorsConfig as any)[context].some((str: string) => {
-        const re = new RegExp(str);
-
-        return re.test(message);
-      })
-    );
-  }
-
-  async _fetchIdentityConfig() {
+  async #updateIdentityConfig() {
     const { identityConfig } = this.store.getState();
     const networks = [NetworkName.Mainnet, NetworkName.Testnet];
 
@@ -316,7 +311,7 @@ export class RemoteConfigController extends EventEmitter {
           networks.map((network, i) => [network, networkConfigs[i].identity])
         );
 
-        if (!R.equals(identityConfig, fetchedConfig)) {
+        if (!equals(identityConfig, fetchedConfig)) {
           this.store.updateState({
             identityConfig: Object.assign({}, identityConfig, fetchedConfig),
           });
@@ -325,60 +320,7 @@ export class RemoteConfigController extends EventEmitter {
       })
       .catch(() => undefined) // ignore
       .then(() =>
-        extension.alarms.create('fetchIdentityConfig', {
-          delayInMinutes: IDENTITY_CONFIG_UPDATE_INTERVAL,
-        })
+        browser.alarms.create('updateIdentityConfig', { delayInMinutes: 1 })
       );
-  }
-
-  getIdentityConfig(network: NetworkName): IdentityConfig {
-    const { identityConfig } = this.store.getState();
-
-    return identityConfig[
-      network === NetworkName.Testnet
-        ? NetworkName.Testnet
-        : NetworkName.Mainnet
-    ];
-  }
-
-  async _fetchFeeConfig() {
-    try {
-      const response = await fetch(DEFAULT_FEE_CONFIG_URL);
-
-      if (response.ok) {
-        this.store.updateState({ feeConfig: await response.json() });
-      } else if (response.status < 500) {
-        throw new Error(await response.text());
-      }
-    } catch (err) {
-      // ignore sentry errors
-    } finally {
-      extension.alarms.create('fetchFeeConfig', {
-        delayInMinutes: FEE_CONFIG_UPDATE_INTERVAL,
-      });
-    }
-  }
-
-  async _fetchNftConfig() {
-    try {
-      const response = await fetch(DEFAULT_NFT_CONFIG_URL);
-
-      if (response.ok) {
-        this.store.updateState({ nftConfig: await response.json() });
-      } else if (response.status < 500) {
-        throw new Error(await response.text());
-      }
-    } catch (err) {
-      // ignore sentry errors
-    } finally {
-      extension.alarms.create('fetchNftConfig', {
-        delayInMinutes: NFT_CONFIG_UPDATE_INTERVAL,
-      });
-    }
-  }
-
-  getFeeConfig() {
-    const { feeConfig } = this.store.getState();
-    return feeConfig;
   }
 }

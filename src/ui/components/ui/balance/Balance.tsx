@@ -7,7 +7,7 @@ import { getAsset } from '../../../actions/assets';
 import { UsdAmount } from '../UsdAmount';
 import * as styles from './Balance.module.css';
 import { AppState } from 'ui/store';
-import { AssetDetail } from 'assets/types';
+import { AssetsRecord } from 'assets/types';
 
 const SEPARATOR = '.';
 
@@ -28,7 +28,7 @@ interface Props {
   children?: React.ReactNode;
   addSign?: string;
   className?: string;
-  assets: Record<string, AssetDetail>;
+  assets: AssetsRecord;
   getAsset: (id: string) => void;
 }
 

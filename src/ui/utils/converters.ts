@@ -1,11 +1,8 @@
-import { Asset, Money } from '@waves/data-entities';
+import { Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
-import { AssetDetail } from 'assets/types';
+import { AssetsRecord } from 'assets/types';
 
-export const moneyLikeToMoney = (
-  amount: IMoneyLike,
-  assets: Record<string, AssetDetail | Asset>
-) => {
+export const moneyLikeToMoney = (amount: IMoneyLike, assets: AssetsRecord) => {
   if (amount) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let amountResult = new Money(0, assets[amount.assetId || 'WAVES'] as any);
@@ -26,7 +23,7 @@ export const moneyLikeToMoney = (
 
 export const getMoney = (
   amount: IMoneyLike | BigNumber | Money | string | number,
-  assets: Record<string, AssetDetail>
+  assets: AssetsRecord
 ) => {
   if (amount instanceof Money) {
     return amount;

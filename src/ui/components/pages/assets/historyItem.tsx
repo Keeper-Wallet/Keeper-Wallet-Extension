@@ -38,13 +38,16 @@ export function HistoryItem({ tx, className }: Props) {
     tx.applicationStatus &&
     tx.applicationStatus !== 'succeeded';
 
-  const fromCoins = (amount: Long | BigNumber, assetId?: string | null) =>
-    assets[assetId ?? 'WAVES'] &&
-    Money.fromCoins(amount, new Asset(assets[assetId ?? 'WAVES']));
+  const fromCoins = (amount: Long | BigNumber, assetId?: string | null) => {
+    const asset = assets[assetId ?? 'WAVES'];
+    return asset && Money.fromCoins(amount, new Asset(asset));
+  };
 
-  const fromTokens = (amount: Long | BigNumber, assetId?: string | null) =>
-    assets[assetId ?? 'WAVES'] &&
-    Money.fromTokens(amount, new Asset(assets[assetId ?? 'WAVES']));
+  const fromTokens = (amount: Long | BigNumber, assetId?: string | null) => {
+    const asset = assets[assetId ?? 'WAVES'];
+
+    return asset && Money.fromTokens(amount, new Asset(asset));
+  };
 
   switch (tx.type) {
     case TRANSACTION_TYPE.GENESIS:
@@ -169,8 +172,11 @@ export function HistoryItem({ tx, className }: Props) {
         tx.order1.assetPair.amountAsset || 'WAVES'
       );
 
-      let priceAmount, totalPriceAmount;
+      let priceAmount: Money | undefined;
+      let totalPriceAmount: Money | undefined;
+
       if (assetAmount && priceAsset) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         priceAmount = fromTokens(
           new BigNumber(tx.price).div(
             new BigNumber(10).pow(
@@ -181,7 +187,8 @@ export function HistoryItem({ tx, className }: Props) {
             )
           ),
           priceAssetId
-        );
+        )!;
+
         totalPriceAmount = assetAmount.convertTo(
           priceAmount.asset,
           priceAmount.getTokens()

@@ -18,7 +18,7 @@ import { AppState } from 'ui/store';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PreferencesAccount } from 'preferences/types';
 import { MessageStoreItem } from 'messages/types';
-import { AssetDetail } from 'assets/types';
+import { AssetsRecord } from 'assets/types';
 
 const Messages = ({ messages, assets, onSelect }: IProps) => {
   return (
@@ -47,7 +47,7 @@ const Messages = ({ messages, assets, onSelect }: IProps) => {
 
 interface IProps {
   messages: MessageStoreItem[];
-  assets: Record<string, AssetDetail>;
+  assets: AssetsRecord;
   onSelect: (message: MessageStoreItem | null) => void;
   onReject: (messageId: string) => void;
 }
@@ -87,7 +87,7 @@ const Notifications = ({
 interface StateProps {
   balance: unknown;
   selectedAccount: Partial<PreferencesAccount>;
-  assets: Record<string, AssetDetail>;
+  assets: AssetsRecord;
   messages: MessageStoreItem[];
   notifications: NotificationsStoreItem[][];
   hasNewMessages: boolean;
@@ -131,7 +131,7 @@ class MessageListComponent extends React.Component<Props, State> {
 
   static getAssets(
     messages: MessageStoreItem[] = [],
-    assetsHash: Record<string, AssetDetail>
+    assetsHash: AssetsRecord
   ) {
     const assets = messages.reduce((acc, message) => {
       const { data } = message;

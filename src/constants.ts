@@ -6,9 +6,6 @@ export const KEEPERWALLET_ENV = process.env.NODE_ENV || 'development';
 export const MAX_TX_HISTORY_ITEMS = 101;
 export const MAX_NFT_ITEMS = 1000;
 
-export const CONFIG_URL =
-  'https://raw.githubusercontent.com/wavesplatform/waves-client-config/master/waves_keeper_blacklist.json';
-
 export const allowMatcher = ['dex.tokenomica.com', 'vfa.tokenomica.com'];
 
 export const MSG_STATUSES = {
@@ -31,7 +28,7 @@ export const STATUS = {
   UPDATED: 2,
 };
 
-export const DEFAULT_CONFIG = {
+export const DEFAULT_LEGACY_CONFIG = {
   CONFIG: {
     update_ms: 30000,
   },
@@ -80,69 +77,72 @@ export const DEFAULT_CONFIG = {
   },
 };
 
-export const DEFAULT_FEE_CONFIG_URL =
-  'https://raw.githubusercontent.com/Keeper-Wallet/configs/master/fee.json';
-
-export const FEE_CONFIG_UPDATE_INTERVAL = 1;
-
-export const DEFAULT_FEE_CONFIG = {
-  smart_asset_extra_fee: 400000,
-  smart_account_extra_fee: 400000,
-  calculate_fee_rules: {
-    default: {
-      add_smart_asset_fee: true,
-      add_smart_account_fee: true,
-      min_price_step: 100000,
-      fee: 100000,
+export const DEFAULT_MAIN_CONFIG = {
+  fee: {
+    smart_asset_extra_fee: 400000,
+    smart_account_extra_fee: 400000,
+    calculate_fee_rules: {
+      default: {
+        add_smart_asset_fee: true,
+        add_smart_account_fee: true,
+        min_price_step: 100000,
+        fee: 100000,
+      },
+      [TRANSACTION_TYPE.ISSUE]: {
+        fee: 100000000,
+        nftFee: 100000,
+      },
+      [TRANSACTION_TYPE.EXCHANGE]: {
+        add_smart_account_fee: false,
+        fee: 300000,
+      },
+      [TRANSACTION_TYPE.MASS_TRANSFER]: {
+        price_per_transfer: 50000,
+      },
+      [TRANSACTION_TYPE.DATA]: {
+        price_per_kb: 100000,
+      },
+      [TRANSACTION_TYPE.SET_SCRIPT]: {
+        price_per_kb: 100000,
+      },
+      [TRANSACTION_TYPE.SET_ASSET_SCRIPT]: {
+        fee: 100000000,
+      },
+      [TRANSACTION_TYPE.INVOKE_SCRIPT]: {
+        fee: 500000,
+      },
     },
-    [TRANSACTION_TYPE.ISSUE]: {
-      fee: 100000000,
-      nftFee: 100000,
-    },
-    [TRANSACTION_TYPE.EXCHANGE]: {
-      add_smart_account_fee: false,
-      fee: 300000,
-    },
-    [TRANSACTION_TYPE.MASS_TRANSFER]: {
-      price_per_transfer: 50000,
-    },
-    [TRANSACTION_TYPE.DATA]: {
-      price_per_kb: 100000,
-    },
-    [TRANSACTION_TYPE.SET_SCRIPT]: {
-      price_per_kb: 100000,
-    },
-    [TRANSACTION_TYPE.SET_ASSET_SCRIPT]: {
-      fee: 100000000,
-    },
-    [TRANSACTION_TYPE.INVOKE_SCRIPT]: {
-      fee: 500000,
-    },
+  },
+  ignoreErrors: {
+    ignoreAll: false,
+    beforeSend: [
+      'An operation that changes interface state is in progress',
+      'Failed to fetch',
+      'NetworkError when attempting to fetch resource',
+      'No device selected',
+      'The operation was aborted',
+    ],
+    beforeSendAccounts: [] as string[],
+    beforeSendBackground: [] as string[],
+    beforeSendPopup: [] as string[],
+    contentScriptApprove: [] as string[],
+    popupApprove: [] as string[],
+  },
+  nfts: {
+    signArtImgUrl: 'https://signart.infura-ipfs.io/ipfs/{domain}/{filename}',
   },
 };
 
-export type FeeConfig = typeof DEFAULT_FEE_CONFIG;
+export type MainConfig = typeof DEFAULT_MAIN_CONFIG;
+export type FeeConfig = MainConfig['fee'];
+export type IgnoreErrorsConfig = MainConfig['ignoreErrors'];
+export type NftConfig = MainConfig['nfts'];
 
-export const IGNORE_ERRORS_CONFIG_URL =
-  'https://raw.githubusercontent.com/Keeper-Wallet/configs/master/keeper-ignore-errors.json';
-
-export const IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL = 1;
-
-export const DEFAULT_IGNORE_ERRORS_CONFIG = {
-  ignoreAll: false,
-  beforeSend: [
-    'An operation that changes interface state is in progress',
-    'Failed to fetch',
-    'NetworkError when attempting to fetch resource',
-    'No device selected',
-    'The operation was aborted',
-  ],
-  beforeSendAccounts: [] as string[],
-  beforeSendBackground: [] as string[],
-  beforeSendPopup: [] as string[],
-  contentScriptApprove: [] as string[],
-  popupApprove: [] as string[],
-};
+export type IgnoreErrorsContext = {
+  [K in keyof IgnoreErrorsConfig]: IgnoreErrorsConfig[K] extends string[]
+    ? K
+    : never;
+}[keyof IgnoreErrorsConfig];
 
 export const DEFAULT_IDENTITY_CONFIG = {
   testnet: {
@@ -162,16 +162,3 @@ export const DEFAULT_IDENTITY_CONFIG = {
     },
   },
 };
-
-export const IDENTITY_CONFIG_UPDATE_INTERVAL = 1;
-
-export const DEFAULT_NFT_CONFIG_URL =
-  'https://raw.githubusercontent.com/Keeper-Wallet/configs/master/nft.json';
-
-export const NFT_CONFIG_UPDATE_INTERVAL = 1;
-
-export const DEFAULT_NFT_CONFIG = {
-  signArtImgUrl: 'https://signart.infura-ipfs.io/ipfs/{domain}/{filename}',
-};
-
-export type NftConfig = typeof DEFAULT_NFT_CONFIG;

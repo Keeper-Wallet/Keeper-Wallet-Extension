@@ -104,7 +104,8 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
             setReceivedMoney(
               new Money(
                 transfer.amount,
-                new Asset(assets[transfer.asset || 'WAVES'])
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                new Asset(assets[transfer.asset || 'WAVES']!)
               )
             );
             setSwapStatus(SwapStatus.Succeeded);

@@ -11,7 +11,11 @@ import {
   StorageLocalState,
 } from './storage/storage';
 import { getFirstLangCode } from 'lib/getFirstLangCode';
-import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
+import {
+  IgnoreErrorsContext,
+  KEEPERWALLET_DEBUG,
+  MSG_STATUSES,
+} from './constants';
 import { AssetInfoController } from './controllers/assetInfo';
 import { CurrentAccountController } from './controllers/currentAccount';
 import { IdentityController } from './controllers/IdentityController';
@@ -729,8 +733,10 @@ class BackgroundService extends EventEmitter {
       getExtraFee: (address: string, network: NetworkName) =>
         getExtraFee(address, this.networkController.getNode(network)),
 
-      shouldIgnoreError: async (context: string, message: string) =>
-        this.remoteConfigController.shouldIgnoreError(context, message),
+      shouldIgnoreError: async (
+        context: IgnoreErrorsContext,
+        message: string
+      ) => this.remoteConfigController.shouldIgnoreError(context, message),
 
       identitySignIn: async (username: string, password: string) =>
         this.identityController.signIn(username, password),

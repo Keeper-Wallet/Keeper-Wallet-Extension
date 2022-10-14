@@ -288,7 +288,8 @@ export class AssetInfoController {
 
     if (assetIdsToUpdate.length !== 0) {
       assetIdsToUpdate.forEach(assetId => {
-        const asset = assets.mainnet[assetId];
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const asset = assets.mainnet[assetId]!;
         const ticker = assetTickers[assetId];
 
         asset.displayName = asset.ticker = ticker;
@@ -319,11 +320,10 @@ export class AssetInfoController {
   isSuspiciousAsset(assetId: string) {
     const { assets, suspiciousAssets } = this.store.getState();
     const network = this.getNetwork();
-    const asset = assets[network][assetId] || {};
 
     return network === NetworkName.Mainnet && suspiciousAssets
       ? binarySearch(suspiciousAssets, assetId) > -1
-      : asset.isSuspicious;
+      : assets[network][assetId]?.isSuspicious;
   }
 
   async assetInfo(assetId: string) {
@@ -374,7 +374,8 @@ export class AssetInfoController {
       }
     }
 
-    return assets[network][assetId];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return assets[network][assetId]!;
   }
 
   toAssetDetails(info: AssetInfoResponseItem) {
@@ -404,13 +405,13 @@ export class AssetInfoController {
   async toggleAssetFavorite(assetId: string) {
     const { assets } = this.store.getState();
     const network = this.getNetwork();
-    const asset = assets[network] && assets[network][assetId];
+    const asset = assets[network][assetId];
 
     if (!asset) {
       return;
     }
 
-    assets[network][assetId].isFavorite = !asset.isFavorite;
+    asset.isFavorite = !asset.isFavorite;
     this.store.updateState({ assets });
   }
 
@@ -469,7 +470,8 @@ export class AssetInfoController {
         if (suspiciousAssets) {
           Object.keys(assets[NetworkName.Mainnet]).forEach(
             assetId =>
-              (assets[NetworkName.Mainnet][assetId].isSuspicious =
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              (assets[NetworkName.Mainnet][assetId]!.isSuspicious =
                 binarySearch(suspiciousAssets, assetId) > -1)
           );
         }
