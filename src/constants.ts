@@ -78,6 +78,9 @@ export const DEFAULT_LEGACY_CONFIG = {
 };
 
 export const DEFAULT_MAIN_CONFIG = {
+  assets: {
+    maxAssetsPerRequest: 100,
+  },
   fee: {
     smart_asset_extra_fee: 400000,
     smart_account_extra_fee: 400000,
@@ -134,6 +137,7 @@ export const DEFAULT_MAIN_CONFIG = {
 };
 
 export type MainConfig = typeof DEFAULT_MAIN_CONFIG;
+export type AssetsConfig = MainConfig['assets'];
 export type FeeConfig = MainConfig['fee'];
 export type IgnoreErrorsConfig = MainConfig['ignoreErrors'];
 export type NftConfig = MainConfig['nfts'];

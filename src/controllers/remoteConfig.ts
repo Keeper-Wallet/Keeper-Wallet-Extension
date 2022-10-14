@@ -66,6 +66,7 @@ export class RemoteConfigController extends EventEmitter {
           pack_config: DEFAULT_LEGACY_CONFIG.PACK_CONFIG,
           idle: DEFAULT_LEGACY_CONFIG.IDLE,
         },
+        assetsConfig: DEFAULT_MAIN_CONFIG.assets,
         ignoreErrorsConfig: DEFAULT_MAIN_CONFIG.ignoreErrors,
         identityConfig: DEFAULT_IDENTITY_CONFIG,
         feeConfig: DEFAULT_MAIN_CONFIG.fee,
@@ -199,6 +200,11 @@ export class RemoteConfigController extends EventEmitter {
     return feeConfig;
   }
 
+  getAssetsConfig() {
+    const { assetsConfig } = this.store.getState();
+    return assetsConfig;
+  }
+
   async #updateLegacyConfig() {
     try {
       const response = await fetch(
@@ -253,6 +259,7 @@ export class RemoteConfigController extends EventEmitter {
         const { ignoreErrorsConfig } = this.store.getState();
 
         this.store.updateState({
+          assetsConfig: config.assets,
           feeConfig: config.fee,
           ignoreErrorsConfig: { ...ignoreErrorsConfig, ...config.ignoreErrors },
           nftConfig: config.nfts,

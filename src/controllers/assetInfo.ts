@@ -1,9 +1,11 @@
+import * as Sentry from '@sentry/react';
 import { AssetDetail } from 'assets/types';
-import { extension } from 'lib/extension';
+import * as browser from 'webextension-polyfill';
 import { ExtensionStorage, StorageLocalState } from '../storage/storage';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import { NetworkController } from './network';
+import { RemoteConfigController } from './remoteConfig';
 
 const WAVES: AssetDetail = {
   quantity: '10000000000000000',
@@ -198,15 +200,18 @@ export class AssetInfoController {
   private store;
   private getNode;
   private getNetwork;
+  #remoteConfig;
 
   constructor({
     extensionStorage,
     getNode,
     getNetwork,
+    remoteConfig,
   }: {
     extensionStorage: ExtensionStorage;
     getNode: NetworkController['getNode'];
     getNetwork: NetworkController['getNetwork'];
+    remoteConfig: RemoteConfigController;
   }) {
     const initState = extensionStorage.getInitState({
       assets: {
@@ -231,6 +236,7 @@ export class AssetInfoController {
     this.store = new ObservableStore(initState);
     extensionStorage.subscribe(this.store);
 
+    this.#remoteConfig = remoteConfig;
     this.getNode = getNode;
     this.getNetwork = getNetwork;
 
@@ -249,17 +255,17 @@ export class AssetInfoController {
       this.updateInfo();
     }
 
-    extension.alarms.create('updateSuspiciousAssets', {
+    browser.alarms.create('updateSuspiciousAssets', {
       periodInMinutes: SUSPICIOUS_PERIOD_IN_MINUTES,
     });
-    extension.alarms.create('updateUsdPrices', {
+    browser.alarms.create('updateUsdPrices', {
       periodInMinutes: MARKETDATA_PERIOD_IN_MINUTES,
     });
-    extension.alarms.create('updateInfo', {
+    browser.alarms.create('updateInfo', {
       periodInMinutes: INFO_PERIOD_IN_MINUTES,
     });
 
-    extension.alarms.onAlarm.addListener(({ name }) => {
+    browser.alarms.onAlarm.addListener(({ name }) => {
       switch (name) {
         case 'updateSuspiciousAssets':
           this.updateSuspiciousAssets();
@@ -415,46 +421,65 @@ export class AssetInfoController {
     this.store.updateState({ assets });
   }
 
-  async updateAssets(assetIds: string[]) {
-    const { assets } = this.store.getState();
-    const network = this.getNetwork();
+  async #fetchAssetsBatch(assetIds: string[]) {
+    const response = await fetch(new URL('assets/details', this.getNode()), {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json;large-significand-format=string',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ids: assetIds }),
+    });
 
-    if (assetIds.length === 0) {
+    if (!response.ok) {
+      throw new Error(
+        `Could not fetch assets batch: ${response.status} ${
+          response.statusText
+        } - ${await response.text()}`
+      );
+    }
+
+    const assets: AssetInfoResponseItem[] = await response.json();
+
+    return assets;
+  }
+
+  async updateAssets(assetIdsArg: string[]) {
+    const { assets } = this.store.getState();
+
+    if (assetIdsArg.length === 0) {
       return;
     }
 
-    const resp = await fetch(
-      new URL(`assets/details`, this.getNode()).toString(),
-      {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json;large-significand-format=string',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ids: assetIds }),
-      }
-    );
+    const network = this.getNetwork();
+    const assetIds = Array.from(new Set(assetIdsArg));
 
-    switch (resp.status) {
-      case 200: {
-        const assetInfos = (await resp.json()) as AssetInfoResponseItem[];
+    const { maxAssetsPerRequest } = this.#remoteConfig.getAssetsConfig();
 
-        assetInfos.forEach(assetInfo => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          if (!(assetInfo as any).error) {
-            assets[network][assetInfo.assetId] = {
-              ...assets[network][assetInfo.assetId],
-              ...this.toAssetDetails(assetInfo),
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            } as any;
-          }
-        });
-        this.store.updateState({ assets });
-        break;
+    const assetInfos: AssetInfoResponseItem[] = [];
+    for (let start = 0; start < assetIds.length; ) {
+      try {
+        const assetsBatch = await this.#fetchAssetsBatch(
+          assetIds.slice(start, start + maxAssetsPerRequest)
+        );
+
+        assetInfos.push(...assetsBatch);
+        start += maxAssetsPerRequest;
+      } catch (err) {
+        Sentry.captureException(err);
+        await new Promise(resolve => setTimeout(resolve, 10000));
       }
-      default:
-        throw new Error(await resp.text());
     }
+
+    assetInfos.forEach(assetInfo => {
+      assets[network][assetInfo.assetId] = {
+        ...assets[network][assetInfo.assetId],
+        ...this.toAssetDetails(assetInfo),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any;
+    });
+
+    this.store.updateState({ assets });
   }
 
   async updateSuspiciousAssets() {
