@@ -50,7 +50,7 @@ module.exports = async (_, { mode }) => {
         stream: require.resolve('stream-browserify'),
       },
     },
-    devtool: dev ? 'inline-source-map' : 'source-map',
+    devtool: dev ? 'cheap-module-source-map' : 'source-map',
     stats: 'errors-warnings',
     optimization: {
       minimizer: ['...', new CssMinimizerPlugin()],
