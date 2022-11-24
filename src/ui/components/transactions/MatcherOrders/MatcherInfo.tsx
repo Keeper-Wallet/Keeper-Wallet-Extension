@@ -1,9 +1,10 @@
-import * as React from 'react';
+import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
-import * as styles from './matcher.styl';
-import { MessageComponentProps } from '../types';
 
-class MatcherInfoComponent extends React.PureComponent<
+import { MessageComponentProps } from '../types';
+import * as styles from './matcher.styl';
+
+class MatcherInfoComponent extends PureComponent<
   Pick<MessageComponentProps, 'message' | 'assets'> & WithTranslation
 > {
   render() {

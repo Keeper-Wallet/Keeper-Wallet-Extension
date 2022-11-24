@@ -1,10 +1,10 @@
-import * as styles from './Welcome.module.css';
-import * as React from 'react';
-import { BigLogo } from '../head';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Button, LangsSelect } from '../ui';
 import background from 'ui/services/Background';
+
+import { BigLogo } from '../head';
+import { Button, LangsSelect } from '../ui';
+import * as styles from './Welcome.module.css';
 
 interface Props {
   isPopup?: boolean;

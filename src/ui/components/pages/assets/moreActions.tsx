@@ -1,8 +1,9 @@
-import * as React from 'react';
+import { useState } from 'react';
+
 import * as styles from './moreActions.module.css';
 
 export function MoreActions({ children }: { children: React.ReactNode }) {
-  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div

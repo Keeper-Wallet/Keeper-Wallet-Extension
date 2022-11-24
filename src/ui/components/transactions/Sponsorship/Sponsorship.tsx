@@ -1,9 +1,7 @@
-import * as styles from './sponsorship.styl';
-import * as React from 'react';
-
-import { SponsorshipCard } from './SponsorshipCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './sponsorship.styl';
+import { SponsorshipCard } from './SponsorshipCard';
 
 export function Sponsorship(props: MessageComponentProps) {
   return (

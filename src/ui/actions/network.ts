@@ -1,6 +1,7 @@
 import { NetworkName } from 'networks/types';
 import Background from 'ui/services/Background';
 import { UiThunkAction } from 'ui/store';
+
 import { ACTION } from './constants';
 
 export function setNetwork(network: NetworkName): UiThunkAction<Promise<void>> {

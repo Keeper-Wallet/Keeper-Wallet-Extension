@@ -1,9 +1,7 @@
-import * as styles from './scriptInvocation.styl';
-import * as React from 'react';
-
-import { ScriptInvocationCard } from './ScriptInvocationCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './scriptInvocation.styl';
+import { ScriptInvocationCard } from './ScriptInvocationCard';
 
 export function ScriptInvocation(props: MessageComponentProps) {
   return (

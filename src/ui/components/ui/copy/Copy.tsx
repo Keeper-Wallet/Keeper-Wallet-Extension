@@ -1,5 +1,5 @@
-import * as React from 'react';
 import copy from 'copy-to-clipboard';
+import { Children, cloneElement, PureComponent } from 'react';
 
 interface Props {
   text: string;
@@ -13,7 +13,7 @@ interface Props {
   onCopy: (...args: unknown[]) => unknown;
 }
 
-export class Copy extends React.PureComponent<Props> {
+export class Copy extends PureComponent<Props> {
   static defaultProps = {
     onCopy: undefined,
     options: { format: 'text/plain' },
@@ -29,7 +29,7 @@ export class Copy extends React.PureComponent<Props> {
     event.stopPropagation();
     event.preventDefault();
 
-    const elem = React.Children.only(children);
+    const elem = Children.only(children);
 
     const result = copy(text, options);
 
@@ -48,9 +48,9 @@ export class Copy extends React.PureComponent<Props> {
 
   render() {
     const { text, onCopy, options, children, ...props } = this.props;
-    const elem = React.Children.only(children);
+    const elem = Children.only(children);
 
-    return React.cloneElement(elem as React.ReactElement, {
+    return cloneElement(elem as React.ReactElement, {
       ...props,
       onClick: this.onClick,
     });

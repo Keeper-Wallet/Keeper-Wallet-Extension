@@ -1,7 +1,7 @@
-import * as React from 'react';
-import * as styles from './head.styl';
-import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
+import { useTranslation } from 'react-i18next';
+
+import * as styles from './head.styl';
 
 export const BigLogo = ({
   className = '',

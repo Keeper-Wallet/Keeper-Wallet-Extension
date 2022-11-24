@@ -2,23 +2,24 @@ import { Money } from '@waves/data-entities';
 import { AssetsRecord } from 'assets/types';
 import { BalancesItem } from 'balances/types';
 import { MessageStoreItem } from 'messages/types';
+import { NotificationsStoreItem } from 'notifications/types';
 import { PreferencesAccount } from 'preferences/types';
-import * as React from 'react';
+import { Component } from 'react';
 import { connect } from 'react-redux';
 import { TransactionStatusState } from 'ui/reducers/updateState';
+import Background from 'ui/services/Background';
 import { AppState } from 'ui/store';
-import { approve, reject, rejectForever } from '../../actions/messages';
-import { clearMessagesStatus } from '../../actions/localState';
+
 import { getAsset } from '../../actions/assets';
-import { WithNavigate, withNavigate } from '../../router';
-import { setAutoOrigin } from '../../actions/permissions';
+import { clearMessagesStatus } from '../../actions/localState';
+import { approve, reject, rejectForever } from '../../actions/messages';
 import { setShowNotification } from '../../actions/notifications';
+import { setAutoOrigin } from '../../actions/permissions';
+import { WithNavigate, withNavigate } from '../../router';
 import { getConfigByTransaction } from '../transactions';
 import { FinalTransaction } from '../transactions/FinalTransaction/FinalTransaction';
-import { LoadingScreen } from './loadingScreen';
 import { MessageConfig } from '../transactions/types';
-import { NotificationsStoreItem } from 'notifications/types';
-import Background from 'ui/services/Background';
+import { LoadingScreen } from './loadingScreen';
 
 interface StateProps {
   activeMessage: MessageStoreItem | null;
@@ -31,7 +32,7 @@ interface StateProps {
   transactionStatus: TransactionStatusState;
 }
 
-const mapStateToProps = function (state: AppState): StateProps {
+function mapStateToProps(state: AppState): StateProps {
   return {
     activeMessage: state.activePopup && state.activePopup.msg,
     assets: state.assets,
@@ -43,7 +44,7 @@ const mapStateToProps = function (state: AppState): StateProps {
     selectedAccount: state.selectedAccount,
     transactionStatus: state.localState.transactionStatus,
   };
-};
+}
 
 const actions = {
   approve,
@@ -91,7 +92,7 @@ interface State {
   txHash: string | string[];
 }
 
-class MessagesComponent extends React.Component<Props, State> {
+class MessagesComponent extends Component<Props, State> {
   readonly state = {} as State;
   hasApproved: boolean | undefined;
 
@@ -109,7 +110,7 @@ class MessagesComponent extends React.Component<Props, State> {
     } = nextProps;
     let loading = true;
 
-    if (!assets || !assets['WAVES'] || !balance) {
+    if (!assets || !assets.WAVES || !balance) {
       nextProps.getAsset('WAVES');
       return { loading: true, selectedAccount };
     }
@@ -213,6 +214,7 @@ class MessagesComponent extends React.Component<Props, State> {
         }
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       for (const [key, data] of Object.entries(currentData)) {
         const path = [...currentPath, key];
         if (typeof data === 'object') {
@@ -230,15 +232,21 @@ class MessagesComponent extends React.Component<Props, State> {
 
   render() {
     const {
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       approve,
       autoClickProtection,
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       clearMessagesStatus,
       messages,
       navigate,
       notifications,
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       reject,
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       rejectForever,
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       setAutoOrigin,
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       setShowNotification,
     } = this.props;
 
@@ -288,10 +296,10 @@ class MessagesComponent extends React.Component<Props, State> {
     const { activeMessage, assets, approvePending, txHash, selectedAccount } =
       this.state;
     const conf = getConfigByTransaction(activeMessage);
-    const { message: Component, type } = conf;
+    const { message: Message, type } = conf;
 
     return (
-      <Component
+      <Message
         txType={type}
         autoClickProtection={autoClickProtection}
         pending={approvePending}

@@ -1,8 +1,13 @@
 import * as Sentry from '@sentry/react';
 import { extension } from 'lib/extension';
-import * as React from 'react';
+import log from 'loglevel';
+import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
+import { LoadingScreen } from 'ui/components/pages/loadingScreen';
+import { RootWrapper } from 'ui/components/RootWrapper';
+
+import { KEEPERWALLET_DEBUG } from './constants';
 import { ledgerService } from './ledger/service';
 import { LedgerSignRequest } from './ledger/types';
 import { cbToPromise, setupDnode, transformMethods } from './lib/dnodeUtil';
@@ -10,16 +15,12 @@ import { PortStream } from './lib/portStream';
 import { setLangs } from './ui/actions/localState';
 import { createUpdateState } from './ui/actions/updateState';
 import { LANGS } from './ui/i18n';
+import { routes } from './ui/routes';
 import backgroundService, {
   BackgroundGetStateResult,
   BackgroundUiApi,
 } from './ui/services/Background';
 import { createUiStore } from './ui/store';
-import { RootWrapper } from 'ui/components/RootWrapper';
-import { LoadingScreen } from 'ui/components/pages/loadingScreen';
-import { routes } from './ui/routes';
-import { KEEPERWALLET_DEBUG } from './constants';
-import log from 'loglevel';
 
 log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 
@@ -93,9 +94,9 @@ const connect = async () => {
 };
 
 export function PopupRoot() {
-  const [isReady, setIsReady] = React.useState(false);
+  const [isReady, setIsReady] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function init() {
       const background = await connect();
 
@@ -121,7 +122,7 @@ export function PopupRoot() {
 
       if (!state.initialized) {
         background.showTab(
-          window.location.origin + '/accounts.html',
+          `${window.location.origin}/accounts.html`,
           'accounts'
         );
       }

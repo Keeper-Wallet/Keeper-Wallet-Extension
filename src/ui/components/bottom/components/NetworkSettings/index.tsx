@@ -1,10 +1,12 @@
-import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import * as styles from './networkSettings.styl';
-import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
-import { Button, ErrorMessage, Input } from 'ui/components/ui';
 import { NetworkName } from 'networks/types';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import { Button, ErrorMessage, Input } from 'ui/components/ui';
+import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
 
+import * as styles from './networkSettings.styl';
+
+// eslint-disable-next-line @typescript-eslint/no-shadow
 const key = (key: string | null | undefined) => `bottom.${key}`;
 
 interface Props extends WithTranslation {
@@ -30,7 +32,7 @@ interface State extends Partial<Props> {
   filledData?: boolean;
 }
 
-class NetworkSettingsComponent extends React.PureComponent<Props, State> {
+class NetworkSettingsComponent extends PureComponent<Props, State> {
   state: State = {};
 
   static getDerivedStateFromProps(

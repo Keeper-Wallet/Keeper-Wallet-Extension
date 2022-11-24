@@ -1,13 +1,14 @@
-import { NetworkName } from 'networks/types';
 import cn from 'classnames';
-import * as React from 'react';
+import { NetworkName } from 'networks/types';
+import { PreferencesAccount } from 'preferences/types';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
 import { Button } from 'ui/components/ui/buttons/Button';
-import { Modal } from 'ui/components/ui/modal/Modal';
 import { Ellipsis } from 'ui/components/ui/ellipsis/Ellipsis';
+import { Modal } from 'ui/components/ui/modal/Modal';
+
 import * as styles from './chooseItems.styl';
-import { PreferencesAccount } from 'preferences/types';
 
 const allNetworks: NetworkName[] = Object.values(NetworkName);
 
@@ -44,11 +45,12 @@ export function ExportKeystoreChooseItems<
 >({ items, type, onSubmit }: Props<T>) {
   const { t } = useTranslation();
 
-  const [selected, setSelected] = React.useState(
+  const [selected, setSelected] = useState(
     () => new Set(items.filter(isExportable).map(({ address }) => address))
   );
 
   function toggleSelected(
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     items: Array<PreferencesAccount | Contact>,
     isSelected: boolean
   ) {
@@ -67,7 +69,7 @@ export function ExportKeystoreChooseItems<
     });
   }
 
-  const [showWarningModal, setShowWarningModal] = React.useState(
+  const [showWarningModal, setShowWarningModal] = useState(
     !items.every(isExportable)
   );
 
@@ -101,7 +103,9 @@ export function ExportKeystoreChooseItems<
             network,
             items.filter(acc => acc.network === network),
           ])
+          // eslint-disable-next-line @typescript-eslint/no-shadow
           .filter(([, items]) => items.length !== 0)
+          // eslint-disable-next-line @typescript-eslint/no-shadow
           .map(([network, items]) => (
             <div key={network} className={styles.accountsGroup}>
               <header className={styles.accountsGroupHeader}>

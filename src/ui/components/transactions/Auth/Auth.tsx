@@ -1,14 +1,13 @@
-import * as styles from './auth.styl';
-import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAppSelector } from 'ui/store';
 
-import { AuthCard } from './AuthCard';
-import { AuthInfo } from './AuthInfo';
+import { SignWrapper } from '../../pages/importEmail/signWrapper';
 import { ApproveBtn, Button } from '../../ui';
 import { TxHeader } from '../BaseTransaction';
-import { SignWrapper } from '../../pages/importEmail/signWrapper';
-import { useAppSelector } from 'ui/store';
 import { MessageComponentProps } from '../types';
+import * as styles from './auth.styl';
+import { AuthCard } from './AuthCard';
+import { AuthInfo } from './AuthInfo';
 
 export function Auth(props: MessageComponentProps) {
   const { t } = useTranslation();

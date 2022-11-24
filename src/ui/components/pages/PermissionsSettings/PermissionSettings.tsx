@@ -1,7 +1,8 @@
-import * as styles from './permissionsSettings.styl';
-import * as React from 'react';
-import { connect } from 'react-redux';
+import { BigNumber } from '@waves/bignumber';
+import cn from 'classnames';
+import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 import { setShowNotification } from 'ui/actions/notifications';
 import {
   allowOrigin,
@@ -9,8 +10,9 @@ import {
   disableOrigin,
   setAutoOrigin,
 } from 'ui/actions/permissions';
-import cn from 'classnames';
 import { Loader, Modal } from 'ui/components/ui';
+import { AppState } from 'ui/store';
+
 import {
   List,
   OriginSettings,
@@ -18,8 +20,7 @@ import {
   TAutoAuth,
   TPermission,
 } from './components';
-import { BigNumber } from '@waves/bignumber';
-import { AppState } from 'ui/store';
+import * as styles from './permissionsSettings.styl';
 
 interface StateProps {
   origins?: { [key: string]: TAutoAuth[] };
@@ -54,7 +55,7 @@ interface State {
   originalAutoSign: TAutoAuth | null;
 }
 
-class PermissionsSettingsComponent extends React.PureComponent<Props, State> {
+class PermissionsSettingsComponent extends PureComponent<Props, State> {
   state: State = {
     showSettings: false,
     originsList: 'customList',
@@ -185,14 +186,14 @@ class PermissionsSettingsComponent extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = function (store: AppState): StateProps {
+function mapStateToProps(store: AppState): StateProps {
   return {
     origins: store.origins,
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     ...store.permissions,
   };
-};
+}
 
 const actions = {
   allowOrigin,

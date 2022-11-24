@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-const package = require('../package');
+const pkg = require('../package');
 
 module.exports = () => {
-  const currentVersion = package.version;
+  const currentVersion = pkg.version;
   const newVersion = process.env.NODE_ENV_VER;
   const isValidCurrentVersion = isValidVersion(currentVersion);
 

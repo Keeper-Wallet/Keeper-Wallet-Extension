@@ -1,7 +1,7 @@
 import { MessageStoreItem } from 'messages/types';
-import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
+
 import * as styles from '../../pages/styles/transactions.styl';
 import { DateFormat } from '../../ui';
 import { TxFee } from './TxFee';
@@ -25,7 +25,6 @@ export interface BalanceAsset {
 
 interface Props {
   message?: Extract<MessageStoreItem, { type: 'transaction' }>;
-  sponsoredBalance?: BalanceAssets;
 }
 
 export function TxInfo({ message: messageProp }: Props) {

@@ -1,11 +1,12 @@
-import * as React from 'react';
-import { SignInForm } from './signInForm';
-import { CodeConfirmation } from './codeConfirmation';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import {
   CodeDelivery,
   IdentityUser,
 } from '../../../../controllers/IdentityController';
 import background from '../../../services/Background';
+import { CodeConfirmation } from './codeConfirmation';
+import { SignInForm } from './signInForm';
 
 type LoginStateType = 'sign-in' | 'confirm-sign-in';
 
@@ -27,15 +28,15 @@ export function Login({
   onConfirm,
   onSubmit,
 }: LoginProps) {
-  const [loginState, setLoginState] = React.useState<LoginStateType>('sign-in');
-  const [codeDelivery, setCodeDelivery] = React.useState<CodeDelivery>();
-  const userRef = React.useRef<UserData | undefined>(userData);
+  const [loginState, setLoginState] = useState<LoginStateType>('sign-in');
+  const [codeDelivery, setCodeDelivery] = useState<CodeDelivery>();
+  const userRef = useRef<UserData | undefined>(userData);
 
-  React.useEffect(() => {
+  useEffect(() => {
     background.identityClear();
   }, []);
 
-  const handleSuccess = React.useCallback(() => {
+  const handleSuccess = useCallback(() => {
     background.identityUser().then(identityUser => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const [name, domain] = userRef.current!.username.split('@');
@@ -46,7 +47,7 @@ export function Login({
     });
   }, [onConfirm]);
 
-  const signIn = React.useCallback(
+  const signIn = useCallback(
     async (username: string, password: string): Promise<void> => {
       userRef.current = { username, password };
 
@@ -72,7 +73,7 @@ export function Login({
     [onSubmit, handleSuccess]
   );
 
-  const confirmSignIn = React.useCallback(
+  const confirmSignIn = useCallback(
     async (code: string): Promise<void> => {
       try {
         await background.identityConfirmSignIn(code);
@@ -89,7 +90,7 @@ export function Login({
     [handleSuccess, signIn]
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (loginState !== 'confirm-sign-in') {
       setCodeDelivery(undefined);
     }
@@ -97,7 +98,7 @@ export function Login({
 
   return (
     <>
-      {loginState == 'sign-in' ? (
+      {loginState === 'sign-in' ? (
         <SignInForm className={className} userData={userData} signIn={signIn} />
       ) : loginState === 'confirm-sign-in' ? (
         <CodeConfirmation

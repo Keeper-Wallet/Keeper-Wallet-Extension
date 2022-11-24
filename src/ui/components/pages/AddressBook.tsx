@@ -1,13 +1,14 @@
-import * as styles from './AddressBook.module.css';
-import * as React from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from 'ui/store';
 import { icontains } from 'ui/components/pages/assets/helpers';
-import { Tooltip } from '../ui/tooltip';
+import { useAppSelector } from 'ui/store';
+
+import { Avatar, Button, Copy, Ellipsis, Modal, SearchInput } from '../ui';
 import { AddModal } from '../ui/Address/AddModal';
-import { EditModal } from '../ui/Address/EditModal';
 import { DeleteModal } from '../ui/Address/DeleteModal';
-import { Button, SearchInput, Copy, Modal, Avatar, Ellipsis } from '../ui';
+import { EditModal } from '../ui/Address/EditModal';
+import { Tooltip } from '../ui/tooltip';
+import * as styles from './AddressBook.module.css';
 import { MoreActions } from './assets/moreActions';
 
 interface AddressCardProps {
@@ -18,9 +19,9 @@ interface AddressCardProps {
 function AddressCard({ address, name }: AddressCardProps) {
   const { t } = useTranslation();
 
-  const [showEditModal, setShowEditModal] = React.useState(false);
-  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
-  const [showCopyNotification, setShowCopyNotification] = React.useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCopyNotification, setShowCopyNotification] = useState(false);
 
   return (
     <div className={styles.card}>
@@ -110,8 +111,8 @@ export function AddressBook() {
 
   const addresses = useAppSelector(state => state.addresses);
 
-  const [search, setSearch] = React.useState('');
-  const addressList = React.useMemo(
+  const [search, setSearch] = useState('');
+  const addressList = useMemo(
     () =>
       Object.entries(addresses)
         .filter(
@@ -124,7 +125,7 @@ export function AddressBook() {
     [addresses, search]
   );
 
-  const [showAddModal, setShowAddModal] = React.useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const addHandler = () => {
     setShowAddModal(true);

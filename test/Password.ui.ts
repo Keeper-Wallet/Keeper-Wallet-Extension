@@ -1,6 +1,7 @@
+import { expect } from 'chai';
 import * as mocha from 'mocha';
 import { By, until, WebElement } from 'selenium-webdriver';
-import { expect } from 'chai';
+
 import { clear } from './utils';
 import { App, CreateNewAccount, Windows } from './utils/actions';
 import { DEFAULT_PAGE_LOAD_DELAY } from './utils/constants';

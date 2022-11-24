@@ -1,12 +1,12 @@
-import * as styles from './styles/settings.styl';
-import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Button, PowerButton } from '../ui';
+import { useAppDispatch, useAppSelector } from 'ui/store';
+
 import { setUiState } from '../../actions/uiState';
 import { lock } from '../../actions/user';
+import { Button, PowerButton } from '../ui';
 import { Tooltip } from '../ui/tooltip';
-import { useAppDispatch, useAppSelector } from 'ui/store';
+import * as styles from './styles/settings.styl';
 
 export function Settings() {
   const navigate = useNavigate();

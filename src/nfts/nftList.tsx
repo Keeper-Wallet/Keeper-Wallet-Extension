@@ -1,14 +1,14 @@
-import * as React from 'react';
-import { CSSProperties } from 'react';
-import { VariableSizeList } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
-import * as styles from './nftList.module.css';
-import { nftRowFullHeight } from 'nfts/constants';
 import cn from 'classnames';
+import { nftRowFullHeight } from 'nfts/constants';
+import { BaseInfo, BaseNft, DisplayMode } from 'nfts/index';
 import { NftCard } from 'nfts/nftCard';
 import { Nft } from 'nfts/utils';
-import { BaseInfo, BaseNft, DisplayMode } from 'nfts/index';
+import { CSSProperties } from 'react';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { VariableSizeList } from 'react-window';
+
 import { Duckling } from './ducklings';
+import * as styles from './nftList.module.css';
 
 const Row = ({
   data,
@@ -75,7 +75,6 @@ export function NftList({
   mode: DisplayMode;
   nfts: Array<Duckling | BaseNft<BaseInfo>>;
   counters?: Record<string, number>;
-  hasMore?: boolean;
   onClick: (nft: Nft) => void;
   renderMore?: () => void;
 }) {

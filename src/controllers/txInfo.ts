@@ -1,4 +1,5 @@
 import { TransactionFromNode } from '@waves/ts-types';
+
 import { NetworkController } from './network';
 
 export class TxInfoController {

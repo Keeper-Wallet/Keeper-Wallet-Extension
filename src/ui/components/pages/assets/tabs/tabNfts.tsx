@@ -1,16 +1,17 @@
-import * as styles from 'ui/components/pages/styles/assets.styl';
-import { Trans, useTranslation } from 'react-i18next';
-import { SearchInput, TabPanel } from 'ui/components/ui';
-import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from 'ui/store';
-import { sortAndFilterNfts, useUiState } from './helpers';
 import cn from 'classnames';
-import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
+import { NftList } from 'nfts/nftList';
 import { createNft, Nft } from 'nfts/utils';
+import { useCallback } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import * as styles from 'ui/components/pages/styles/assets.styl';
+import { SearchInput, TabPanel } from 'ui/components/ui';
+import { useAppSelector } from 'ui/store';
 import { getNftsLink } from 'ui/urls';
+
 import { MAX_NFT_ITEMS } from '../../../../../constants';
+import { sortAndFilterNfts, useUiState } from './helpers';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
   key =>
@@ -40,7 +41,7 @@ export function TabNfts() {
 
   const nftConfig = useAppSelector(state => state.nftConfig);
 
-  const getNftDetails = React.useCallback(
+  const getNftDetails = useCallback(
     nft =>
       createNft({
         asset: nft,
@@ -59,6 +60,7 @@ export function TabNfts() {
   const [creatorNfts, creatorCounts] = sortedNfts.reduce<
     [Nft[], Record<string, number>]
   >(
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     ([creatorNfts, creatorCounts], current) => {
       const creator = current.creator;
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

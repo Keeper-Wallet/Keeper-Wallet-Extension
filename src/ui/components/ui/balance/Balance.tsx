@@ -1,13 +1,14 @@
-import * as React from 'react';
-import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
-import { Loader } from '../loader';
+import { Asset, Money } from '@waves/data-entities';
+import { AssetsRecord } from 'assets/types';
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
+import { AppState } from 'ui/store';
+
 import { getAsset } from '../../../actions/assets';
+import { Loader } from '../loader';
 import { UsdAmount } from '../UsdAmount';
 import * as styles from './Balance.module.css';
-import { AppState } from 'ui/store';
-import { AssetsRecord } from 'assets/types';
 
 const SEPARATOR = '.';
 
@@ -35,6 +36,7 @@ interface Props {
 const BalanceComponent = ({
   balance,
   split,
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   getAsset,
   addSign,
   className,
@@ -48,7 +50,7 @@ const BalanceComponent = ({
 }: Props) => {
   let balanceOut: Money;
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!assets[assetId]) {
       getAsset(assetId);
     }
@@ -62,10 +64,7 @@ const BalanceComponent = ({
       balanceOut = balance as Money;
       break;
     case new BigNumber(balance as string).isNaN() === false:
-      balanceOut = Money.fromTokens(
-        balance as string,
-        new Asset(assets['WAVES'])
-      );
+      balanceOut = Money.fromTokens(balance as string, new Asset(assets.WAVES));
       break;
     default:
       return <div>N/A</div>;

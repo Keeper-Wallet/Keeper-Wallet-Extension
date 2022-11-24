@@ -1,8 +1,9 @@
-import * as styles from './Tooltip.module.css';
-import * as React from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { Copy, Ellipsis, Modal } from '..';
 import { Tooltip } from '../tooltip';
-import { Modal, Copy, Ellipsis } from '..';
+import * as styles from './Tooltip.module.css';
 
 export interface Props {
   className?: string;
@@ -12,7 +13,7 @@ export interface Props {
 export function AddressTooltip({ className, address }: Props) {
   const { t } = useTranslation();
 
-  const [showCopyNotification, setShowCopyNotification] = React.useState(false);
+  const [showCopyNotification, setShowCopyNotification] = useState(false);
 
   return (
     <>

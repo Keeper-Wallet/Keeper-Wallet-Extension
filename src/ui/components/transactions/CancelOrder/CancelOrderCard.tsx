@@ -1,12 +1,13 @@
-import * as styles from './cancelOrder.styl';
-import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { messageType } from './parseTx';
-import { MessageCardComponentProps } from '../types';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-class CancelOrderCardComponent extends React.PureComponent<
+import { TxIcon } from '../BaseTransaction';
+import { MessageCardComponentProps } from '../types';
+import * as styles from './cancelOrder.styl';
+import { messageType } from './parseTx';
+
+class CancelOrderCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {

@@ -1,7 +1,7 @@
-import * as React from 'react';
+import { useAppSelector } from 'ui/store';
+
 import * as styles from './bottom.module.css';
 import { Network } from './components';
-import { useAppSelector } from 'ui/store';
 
 interface Props {
   allowChangingNetwork?: boolean;

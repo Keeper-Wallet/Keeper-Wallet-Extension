@@ -1,10 +1,8 @@
-import * as styles from './wavesAuth.styl';
-import * as React from 'react';
-
-import { WavesAuthCard } from './WavesAuthCard';
-import { WavesAuthInfo } from './WavesAuthInfo';
 import { TxFooter, TxHeader } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './wavesAuth.styl';
+import { WavesAuthCard } from './WavesAuthCard';
+import { WavesAuthInfo } from './WavesAuthInfo';
 
 export function WavesAuth(props: MessageComponentProps) {
   const { message, assets } = props;

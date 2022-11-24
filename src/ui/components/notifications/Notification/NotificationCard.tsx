@@ -1,11 +1,12 @@
-import * as styles from './index.styl';
-import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import { Button } from '../../ui';
 import cn from 'classnames';
 import { NotificationsStoreItem } from 'notifications/types';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-class NotificationCardComponent extends React.PureComponent<INotification> {
+import { Button } from '../../ui';
+import * as styles from './index.styl';
+
+class NotificationCardComponent extends PureComponent<INotification> {
   deleteHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     event.preventDefault();

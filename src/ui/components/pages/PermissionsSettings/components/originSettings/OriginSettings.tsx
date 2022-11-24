@@ -1,9 +1,10 @@
-import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import cn from 'classnames';
-import * as styles from './settings.styl';
-import { Button, Input, Select } from 'ui/components/ui';
 import { BigNumber } from '@waves/bignumber';
+import cn from 'classnames';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import { Button, Input, Select } from 'ui/components/ui';
+
+import * as styles from './settings.styl';
 
 const CONFIG = {
   list: [
@@ -34,7 +35,7 @@ const CONFIG = {
   ],
 };
 
-class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
+class OriginSettingsComponent extends PureComponent<IProps, IState> {
   state: IState = {
     interval: null,
     totalAmount: null,
@@ -83,7 +84,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
     return {
       ...state,
       interval,
-      totalAmount: totalAmount,
+      totalAmount,
       selected,
       notifications,
       canShowNotifications,
@@ -249,7 +250,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
           <div className="flex margin-main-big margin-main-big-top">
             <Input
               id="checkbox_noshow"
-              type={'checkbox'}
+              type="checkbox"
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               checked={this.state.canShowNotifications!}
               onChange={this.canUseNotificationsHandler}
@@ -317,7 +318,6 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
 export const OriginSettings = withTranslation()(OriginSettingsComponent);
 
 interface IProps extends WithTranslation {
-  className?: string;
   origins: Record<string, unknown[]>;
   autoSign: TAutoAuth;
   originalAutoSign: TAutoAuth;

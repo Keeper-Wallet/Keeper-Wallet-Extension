@@ -1,4 +1,5 @@
 import { NetworkName } from 'networks/types';
+
 import type { DebugWalletInput } from './debug';
 import type { EncodedSeedWalletInput } from './encodedSeed';
 import type { LedgerWalletInput } from './ledger';

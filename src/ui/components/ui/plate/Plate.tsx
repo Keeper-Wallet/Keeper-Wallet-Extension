@@ -1,10 +1,11 @@
-import * as styles from './plate.styl';
-import * as React from 'react';
 import cn from 'classnames';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { Children, PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
+
 import { Button } from '../buttons';
 import { Copy } from '../copy';
 import { Modal } from '../modal/Modal';
+import * as styles from './plate.styl';
 
 interface IPlateProps {
   className?: string;
@@ -34,7 +35,7 @@ interface IPlateCollapsableState {
   isCopied: boolean;
 }
 
-class PlateCollapsableComponent extends React.PureComponent<
+class PlateCollapsableComponent extends PureComponent<
   IPlateCollapsableProps,
   IPlateCollapsableState
 > {
@@ -87,7 +88,7 @@ class PlateCollapsableComponent extends React.PureComponent<
     const { t, className, children, showCopy } = this.props;
     const classNames = cn(className, { [styles.expanded]: isExpanded });
     const textToCopy = (
-      React.Children.only(children) as React.ReactElement<{ data: unknown }>
+      Children.only(children) as React.ReactElement<{ data: unknown }>
     ).props?.data;
 
     return (

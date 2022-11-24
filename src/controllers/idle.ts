@@ -1,7 +1,8 @@
 import { extension } from 'lib/extension';
-import { ExtensionStorage } from '../storage/storage';
 import ObservableStore from 'obs-store';
 import { IdleOptions } from 'preferences/types';
+
+import { ExtensionStorage } from '../storage/storage';
 import { PreferencesController } from './preferences';
 import { VaultController } from './VaultController';
 

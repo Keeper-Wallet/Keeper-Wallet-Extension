@@ -1,16 +1,17 @@
-import { ACTION } from '../actions/constants';
-import { UiAction, UiActionPayload } from 'ui/store';
-import { PreferencesAccount } from 'preferences/types';
-import { AssetBalance } from 'balances/types';
-import { NetworkName } from 'networks/types';
-import { MessageStoreItem } from 'messages/types';
 import { AssetsRecord } from 'assets/types';
+import { AssetBalance } from 'balances/types';
+import { MessageStoreItem } from 'messages/types';
+import { NetworkName } from 'networks/types';
+import { PreferencesAccount } from 'preferences/types';
+import { UiAction, UiActionPayload } from 'ui/store';
 
-export * from './localState';
+import { ACTION } from '../actions/constants';
+
 export * from './feeConfig';
+export * from './localState';
 export * from './nftConfig';
-export * from './remoteConfig';
 export * from './notifications';
+export * from './remoteConfig';
 
 function createSimpleReducer<TActionType extends UiAction['type']>(
   initialState: UiActionPayload<TActionType>,
@@ -65,6 +66,7 @@ export const allNetworksAccounts = createSimpleReducer(
 export const state = createSimpleReducer(null, ACTION.UPDATE_APP_STATE);
 
 export function selectedAccount(
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   state: Partial<PreferencesAccount> = {},
   action: UiAction
 ) {
@@ -102,6 +104,7 @@ export const idleOptions = createSimpleReducer(
   ACTION.REMOTE_CONFIG.UPDATE_IDLE
 );
 
+// eslint-disable-next-line @typescript-eslint/no-shadow
 export const messages = (state: MessageStoreItem[] = [], action: UiAction) => {
   if (action.type === ACTION.UPDATE_MESSAGES) {
     return [...action.payload.unapprovedMessages];
@@ -120,4 +123,5 @@ export const assetTickers = createSimpleReducer({}, ACTION.SET_ASSET_TICKERS);
 export const addresses = createSimpleReducer({}, ACTION.UPDATE_ADDRESSES);
 export const nfts = createSimpleReducer(null, ACTION.UPDATE_NFTS);
 
+// eslint-disable-next-line @typescript-eslint/no-shadow
 export const version = (state = '') => state;

@@ -1,14 +1,15 @@
-import * as styles from './issue.styl';
-import * as React from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { Balance, ShowScript } from '../../ui';
-import { getMoney } from '../../../utils/converters';
-import { getAmount, messageType } from './parseTx';
-import { MessageCardComponentProps } from '../types';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-class IssueCardComponent extends React.PureComponent<
+import { getMoney } from '../../../utils/converters';
+import { Balance, ShowScript } from '../../ui';
+import { TxIcon } from '../BaseTransaction';
+import { MessageCardComponentProps } from '../types';
+import * as styles from './issue.styl';
+import { getAmount, messageType } from './parseTx';
+
+class IssueCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
@@ -26,7 +27,7 @@ class IssueCardComponent extends React.PureComponent<
     const tx = { type: data?.type, ...data?.data };
     const amount = getMoney(getAmount(tx), assets);
     const decimals = tx.precision || tx.decimals || 0;
-    const isNFT = !tx.reissuable && !decimals && tx.quantity == 1;
+    const isNFT = !tx.reissuable && !decimals && tx.quantity === 1;
 
     return (
       <div className={className}>
@@ -47,8 +48,8 @@ class IssueCardComponent extends React.PureComponent<
             <h1 className="headline1">
               <Balance
                 data-testid="issueAmount"
-                split={true}
-                showAsset={true}
+                split
+                showAsset
                 balance={amount}
                 showUsdAmount
               />
@@ -102,8 +103,8 @@ class IssueCardComponent extends React.PureComponent<
               <div className={styles.txValue}>
                 <ShowScript
                   script={tx.script}
-                  showNotify={true}
-                  optional={true}
+                  showNotify
+                  optional
                   hideScript={this.props.collapsed}
                 />
               </div>

@@ -1,15 +1,16 @@
-import * as styles from './errorPage.module.css';
-import * as React from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { HeadLogo } from '../head';
 import {
   Button,
+  Copy,
   ExportButton,
-  ResetButton,
   Highlight,
   Modal,
-  Copy,
+  ResetButton,
 } from 'ui/components/ui';
+
+import { HeadLogo } from '../head';
+import * as styles from './errorPage.module.css';
 
 interface Props {
   error: Error;
@@ -20,8 +21,8 @@ interface Props {
 export function ErrorPage({ error, componentStack, resetError }: Props) {
   const { t } = useTranslation();
 
-  const [showDetails, setShowDetails] = React.useState(false);
-  const [copied, setCopied] = React.useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   return (
     <div className={styles.wrapper}>

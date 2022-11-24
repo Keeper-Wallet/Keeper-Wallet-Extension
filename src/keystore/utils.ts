@@ -1,7 +1,8 @@
 import { seedUtils } from '@waves/waves-transactions';
-import background from '../ui/services/Background';
-import { PreferencesAccount } from 'preferences/types';
 import { NetworkName } from 'networks/types';
+import { PreferencesAccount } from 'preferences/types';
+
+import background from '../ui/services/Background';
 import { KeystoreAccount, KeystoreProfiles } from './types';
 
 const encryptProfiles = async (

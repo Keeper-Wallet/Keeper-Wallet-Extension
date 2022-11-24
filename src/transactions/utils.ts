@@ -8,6 +8,7 @@ import {
   stringToBytes,
 } from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { InvokeScriptCallArgument } from '@waves/ts-types/dist/src/parts';
 import {
   alias,
   burn,
@@ -29,18 +30,18 @@ import {
   validators,
 } from '@waves/waves-transactions';
 import { TTxParamsWithType } from '@waves/waves-transactions/dist/make-tx';
+import { orderToProtoBytes } from '@waves/waves-transactions/dist/proto-serialize';
 import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
 import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
 import {
   TTransactionType,
   WithSender,
 } from '@waves/waves-transactions/dist/transactions';
-import { ERRORS } from '../lib/keeperError';
 import Long from 'long';
-import { getTxVersions } from 'wallets';
-import { InvokeScriptCallArgument } from '@waves/ts-types/dist/src/parts';
 import { PreferencesAccount } from 'preferences/types';
-import { orderToProtoBytes } from '@waves/waves-transactions/dist/proto-serialize';
+import { getTxVersions } from 'wallets';
+
+import { ERRORS } from '../lib/keeperError';
 
 type RawStringIn = string | number[];
 
@@ -361,6 +362,7 @@ function createDeepConverter<TFrom, TTo>(
 
     if (Object.prototype.toString.call(value) === '[object Object]') {
       return Object.fromEntries(
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         Object.entries(value).map(([key, value]) => [key, deepConvert(value)])
       );
     }
@@ -566,6 +568,7 @@ export const convertFromSa = {
           version: input.data.version || fallbackVersion,
           senderPublicKey: input.data.senderPublicKey,
           assetId: input.data.totalAmount.asset.id,
+          // eslint-disable-next-line @typescript-eslint/no-shadow
           transfers: input.data.transfers.map(transfer => ({
             amount: new BigNumber(transfer.amount),
             recipient: processAliasOrAddress(transfer.recipient, chainId),

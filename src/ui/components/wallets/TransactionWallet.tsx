@@ -1,10 +1,11 @@
-import * as React from 'react';
-import { Avatar, Button, Copy, Ellipsis, Modal } from '../ui';
 import cn from 'classnames';
-import * as styles from './wallet.styl';
-import { useTranslation } from 'react-i18next';
-import { Tooltip } from '../ui/tooltip';
 import { PreferencesAccount } from 'preferences/types';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { Avatar, Button, Copy, Ellipsis, Modal } from '../ui';
+import { Tooltip } from '../ui/tooltip';
+import * as styles from './wallet.styl';
 
 export const TransactionWallet = ({
   className = '',
@@ -17,7 +18,7 @@ export const TransactionWallet = ({
   type = 'small',
 }: ITransactionWalletProps) => {
   const { t } = useTranslation();
-  const [showCopied, setCopied] = React.useState(false);
+  const [showCopied, setCopied] = useState(false);
   let copyTimeout: ReturnType<typeof setTimeout>;
   const onCopy = () => {
     clearTimeout(copyTimeout);
@@ -29,7 +30,7 @@ export const TransactionWallet = ({
 
   const avatarSize = 28;
   className = cn(styles.wallet, className, {
-    [styles.walletClean]: type == 'clean',
+    [styles.walletClean]: type === 'clean',
     [styles.activeWallet]: active,
   });
 

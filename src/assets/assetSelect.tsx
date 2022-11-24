@@ -1,8 +1,9 @@
 import ColorHash from 'color-hash';
 import { NetworkName } from 'networks/types';
-import * as React from 'react';
+import { useState } from 'react';
 import { Modal } from 'ui/components/ui/modal/Modal';
 import { BalanceAssets } from 'ui/reducers/updateState';
+
 import * as styles from './assetSelect.module.css';
 import { AssetSelectModal, AssetSelectModalOption } from './selectModal';
 import { useAssetLogo } from './utils';
@@ -28,7 +29,7 @@ export function AssetSelect({
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const asset = options.find(o => o.id === value)!;
 
-  const [showModal, setShowModal] = React.useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <>

@@ -1,5 +1,6 @@
-import { By, until } from 'selenium-webdriver';
 import { expect } from 'chai';
+import { By, until } from 'selenium-webdriver';
+
 import { App, CreateNewAccount, Settings, Windows } from './utils/actions';
 import {
   CUSTOMLIST,

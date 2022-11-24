@@ -1,6 +1,6 @@
-import * as React from 'react';
 import { libs } from '@waves/waves-transactions';
 import cn from 'classnames';
+
 import * as styles from './attachment.styl';
 
 const { base58Encode } = libs.crypto;

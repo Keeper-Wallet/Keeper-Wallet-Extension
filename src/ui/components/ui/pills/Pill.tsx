@@ -1,6 +1,6 @@
-import * as React from 'react';
-import * as styles from './pills.styl';
 import cn from 'classnames';
+
+import * as styles from './pills.styl';
 
 const _onClick =
   (cb: (...args: unknown[]) => unknown) => (id: number | undefined) =>

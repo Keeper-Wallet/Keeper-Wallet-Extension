@@ -1,13 +1,14 @@
-import * as styles from './data.styl';
-import * as React from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { messageType } from './parseTx';
-import { ShowScript } from '../../ui';
-import { MessageCardComponentProps } from '../types';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-class DataCardComponent extends React.PureComponent<
+import { ShowScript } from '../../ui';
+import { TxIcon } from '../BaseTransaction';
+import { MessageCardComponentProps } from '../types';
+import * as styles from './data.styl';
+import { messageType } from './parseTx';
+
+class DataCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
@@ -44,9 +45,9 @@ class DataCardComponent extends React.PureComponent<
           <ShowScript
             className={styles.dataScript}
             data={tx.data || []}
-            isData={true}
-            optional={true}
-            showNotify={true}
+            isData
+            optional
+            showNotify
             hideScript={this.props.collapsed}
           />
         </div>

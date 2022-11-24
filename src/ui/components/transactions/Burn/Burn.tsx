@@ -1,9 +1,7 @@
-import * as styles from './burn.styl';
-import * as React from 'react';
-
-import { BurnCard } from './BurnCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './burn.styl';
+import { BurnCard } from './BurnCard';
 
 export function Burn(props: MessageComponentProps) {
   return (

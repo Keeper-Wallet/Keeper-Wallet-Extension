@@ -8,8 +8,10 @@ module.exports = (path, options = {}, to) => {
   remove.forEach(jsonPath => {
     let currentData = data;
     const arrayPath = jsonPath.split('.');
+    // eslint-disable-next-line no-shadow
     const path = arrayPath.slice(0, -1);
     const key = arrayPath[path.length];
+    // eslint-disable-next-line no-shadow
     for (const key of path) {
       currentData = currentData[key];
     }
@@ -19,8 +21,10 @@ module.exports = (path, options = {}, to) => {
   Object.entries(add).forEach(([jsonPath, jsonObject]) => {
     let currentData = data;
     const arrayPath = jsonPath.split('.');
+    // eslint-disable-next-line no-shadow
     const path = arrayPath.slice(0, -1);
     const key = arrayPath[path.length];
+    // eslint-disable-next-line no-shadow
     for (const key of path) {
       currentData = currentData[key];
     }

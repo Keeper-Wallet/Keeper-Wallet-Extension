@@ -1,10 +1,11 @@
-import * as React from 'react';
+import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
-import * as styles from './cancelOrder.styl';
+
 import { DateFormat } from '../../ui';
 import { MessageComponentProps } from '../types';
+import * as styles from './cancelOrder.styl';
 
-class CancelOrderInfoComponent extends React.PureComponent<
+class CancelOrderInfoComponent extends PureComponent<
   Pick<MessageComponentProps, 'message' | 'assets'> & WithTranslation
 > {
   render() {

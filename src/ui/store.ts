@@ -1,3 +1,11 @@
+import { AssetsRecord } from 'assets/types';
+import { BalancesItem } from 'balances/types';
+import { MessageStoreItem } from 'messages/types';
+import { NetworkName } from 'networks/types';
+import { NftInfo } from 'nfts';
+import { NotificationsStoreItem } from 'notifications/types';
+import { PermissionValue } from 'permissions/types';
+import { IdleOptions, PreferencesAccount } from 'preferences/types';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import {
   applyMiddleware,
@@ -9,25 +17,18 @@ import {
 } from 'redux';
 import { createLogger } from 'redux-logger';
 import thunk, { ThunkAction, ThunkDispatch } from 'redux-thunk';
+
+import { FeeConfig, NftConfig } from '../constants';
+import type { ACTION } from './actions/constants';
+import { KEEPERWALLET_DEBUG } from './appConfig';
+import * as middleware from './midleware';
 import * as reducers from './reducers/updateState';
 import { NewAccountState, UiState } from './reducers/updateState';
-import * as middleware from './midleware';
-import { KEEPERWALLET_DEBUG } from './appConfig';
-import type { ACTION } from './actions/constants';
 import {
   BackgroundGetStateResult,
   BackgroundUiApi,
 } from './services/Background';
-import { FeeConfig, NftConfig } from '../constants';
-import { IdleOptions, PreferencesAccount } from 'preferences/types';
-import { PermissionValue } from 'permissions/types';
-import { NotificationsStoreItem } from 'notifications/types';
-import { BalancesItem } from 'balances/types';
-import { NftInfo } from 'nfts';
 import { IMoneyLike } from './utils/converters';
-import { NetworkName } from 'networks/types';
-import { MessageStoreItem } from 'messages/types';
-import { AssetsRecord } from 'assets/types';
 
 const reducer = combineReducers(reducers);
 

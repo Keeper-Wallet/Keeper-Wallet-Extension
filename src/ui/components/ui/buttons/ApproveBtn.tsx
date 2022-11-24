@@ -1,8 +1,9 @@
-import * as React from 'react';
+import cn from 'classnames';
+import { PureComponent } from 'react';
+
+import { CONFIG } from '../../../appConfig';
 import * as styles from './approveButtons.styl';
 import { Button } from './Button';
-import { CONFIG } from '../../../appConfig';
-import cn from 'classnames';
 
 interface State {
   pending?: boolean;
@@ -19,7 +20,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   autoClickProtection?: boolean;
 }
 
-export class ApproveBtn extends React.PureComponent<Props, State> {
+export class ApproveBtn extends PureComponent<Props, State> {
   readonly state: State = {};
 
   updateInterval = () => this._updateInterval(Date.now());

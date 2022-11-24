@@ -1,15 +1,16 @@
-import * as React from 'react';
+import { seedUtils } from '@waves/waves-transactions';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { seedUtils } from '@waves/waves-transactions';
-import { ImportKeystoreChooseFile } from './chooseFile';
 import { setAddresses } from 'ui/actions/addresses';
-import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import {
   fromEthereumToWavesAddress,
   isEthereumAddress,
 } from 'ui/utils/ethereum';
+
+import { WalletTypes } from '../../../services/Background';
+import { ImportKeystoreChooseFile } from './chooseFile';
 
 interface EncryptedAddressBook {
   type: WalletTypes;
@@ -80,8 +81,8 @@ export function ImportAddressBook() {
   const dispatch = useAppDispatch();
   const addresses = useAppSelector(state => state.addresses);
   const { t } = useTranslation();
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <ImportKeystoreChooseFile

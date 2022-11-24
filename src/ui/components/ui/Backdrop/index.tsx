@@ -1,5 +1,6 @@
+import { forwardRef, useLayoutEffect, useRef } from 'react';
+
 import * as styles from './Backdrop.module.css';
-import * as React from 'react';
 
 function isClickOnScrollBar(e: MouseEvent | TouchEvent) {
   const target = e.target as Element;
@@ -35,9 +36,9 @@ function BackdropComponent(
   const touchCaptureProp =
     'ontouchstart' in window ? 'onTouchStartCapture' : 'onMouseDownCapture';
 
-  const isClickedInside = React.useRef(false);
+  const isClickedInside = useRef(false);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     function handleDocumentClick(e: MouseEvent | TouchEvent) {
       if (isClickedInside.current || isClickOnScrollBar(e)) {
         isClickedInside.current = false;
@@ -67,4 +68,4 @@ function BackdropComponent(
   );
 }
 
-export const Backdrop = React.forwardRef(BackdropComponent);
+export const Backdrop = forwardRef(BackdropComponent);

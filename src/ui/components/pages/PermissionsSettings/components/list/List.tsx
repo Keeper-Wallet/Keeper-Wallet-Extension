@@ -1,11 +1,12 @@
-import * as React from 'react';
-import { TFunction, withTranslation, WithTranslation } from 'react-i18next';
-import { ListItem } from './ListItem';
-import * as styles from './list.styl';
+import { PureComponent } from 'react';
+import { TFunction, WithTranslation, withTranslation } from 'react-i18next';
 import { TTabTypes } from 'ui/components/pages/PermissionsSettings/PermissionSettings';
-import { TAutoAuth } from '../originSettings';
 
-class ListComponent extends React.PureComponent<IProps> {
+import { TAutoAuth } from '../originSettings';
+import * as styles from './list.styl';
+import { ListItem } from './ListItem';
+
+class ListComponent extends PureComponent<IProps> {
   render(): React.ReactNode {
     const { t, origins, showType, showSettings, toggleApprove } = this.props;
     const originsNames = Object.keys(getFilteredOrigins(origins, showType));
@@ -54,7 +55,7 @@ class ListComponent extends React.PureComponent<IProps> {
     }
 
     return (
-      <React.Fragment>
+      <>
         {t(
           hasApproved
             ? 'permissionsSettings.approvedOrigin'
@@ -63,7 +64,7 @@ class ListComponent extends React.PureComponent<IProps> {
         {hasAuto ? (
           <span>{t('permissionsSettings.automaticOrigin')}</span>
         ) : null}
-      </React.Fragment>
+      </>
     );
   }
 }

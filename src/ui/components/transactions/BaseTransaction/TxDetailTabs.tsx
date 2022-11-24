@@ -1,5 +1,4 @@
 import cn from 'classnames';
-import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Highlight,
@@ -11,6 +10,7 @@ import {
   Tabs,
 } from 'ui/components/ui';
 import { useAppSelector } from 'ui/store';
+
 import * as styles from './txdetailtabs.styl';
 
 interface Props {

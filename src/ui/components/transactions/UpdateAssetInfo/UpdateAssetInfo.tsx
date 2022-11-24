@@ -1,10 +1,8 @@
-import * as styles from './index.styl';
-import * as React from 'react';
-
-import { UpdateAssetInfoCard } from './UpdateAssetInfoCard';
-import { UpdateAssetInfoInfo } from './UpdateAssetInfoInfo';
 import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './index.styl';
+import { UpdateAssetInfoCard } from './UpdateAssetInfoCard';
+import { UpdateAssetInfoInfo } from './UpdateAssetInfoInfo';
 
 export function UpdateAssetInfo(props: MessageComponentProps) {
   const { message, assets } = props;

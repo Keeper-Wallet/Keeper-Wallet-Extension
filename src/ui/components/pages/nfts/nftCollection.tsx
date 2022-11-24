@@ -1,19 +1,20 @@
-import { NftList } from 'nfts/nftList';
+import { AssetDetail } from 'assets/types';
 import { DisplayMode } from 'nfts';
-import * as React from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import * as styles from './nftCollection.module.css';
-import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
-import { useAppSelector } from 'ui/store';
-import { useTranslation } from 'react-i18next';
+import { NftList } from 'nfts/nftList';
 import { createNft, Nft } from 'nfts/utils';
+import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   sortAndFilterNfts,
   useUiState,
 } from 'ui/components/pages/assets/tabs/helpers';
+import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
 import { Tooltip } from 'ui/components/ui/tooltip';
+import { useAppSelector } from 'ui/store';
 import { getAccountLink } from 'ui/urls';
-import { AssetDetail } from 'assets/types';
+
+import * as styles from './nftCollection.module.css';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
   key =>
@@ -47,7 +48,7 @@ export function NftCollection() {
 
   const getNftDetails = (asset: AssetDetail) =>
     createNft({
-      asset: asset,
+      asset,
       info: nfts?.[asset.id],
       currentAddress,
       config: nftConfig,
@@ -60,7 +61,7 @@ export function NftCollection() {
       })
     : PLACEHOLDERS;
 
-  const creatorRef = React.useRef(creatorNfts[0] as Nft);
+  const creatorRef = useRef(creatorNfts[0]);
 
   const creatorUrl =
     creatorRef.current.creatorUrl ||
@@ -81,6 +82,7 @@ export function NftCollection() {
         <div>
           <Tooltip content={t('nftInfo.creatorUrlTooltip')}>
             {props => (
+              // eslint-disable-next-line react/jsx-no-target-blank
               <a
                 rel="noopener noreferrer"
                 className="link"

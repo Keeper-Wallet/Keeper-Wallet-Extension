@@ -1,3 +1,4 @@
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import {
   applyMiddleware,
   combineReducers,
@@ -6,11 +7,10 @@ import {
 } from 'redux';
 import { createLogger } from 'redux-logger';
 import thunk, { ThunkAction, ThunkDispatch } from 'redux-thunk';
-import * as reducers from 'ui/reducers/updateState';
-import * as middleware from 'ui/midleware';
-import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import { UiAction } from 'ui/store';
 import { KEEPERWALLET_DEBUG } from 'ui/appConfig';
+import * as middleware from 'ui/midleware';
+import * as reducers from 'ui/reducers/updateState';
+import { UiAction } from 'ui/store';
 
 const reducer = combineReducers({
   addresses: reducers.addresses,

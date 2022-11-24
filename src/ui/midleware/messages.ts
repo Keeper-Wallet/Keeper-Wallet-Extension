@@ -1,4 +1,8 @@
 import * as Sentry from '@sentry/react';
+import { PreferencesAccount } from 'preferences/types';
+import { UiMiddleware } from 'ui/store';
+
+import { MSG_STATUSES } from '../../constants';
 import { ACTION } from '../actions/constants';
 import {
   approveError,
@@ -7,10 +11,7 @@ import {
   rejectOk,
 } from '../actions/localState';
 import { setActiveMessage } from '../actions/notifications';
-import { MSG_STATUSES } from '../../constants';
 import background from '../services/Background';
-import { UiMiddleware } from 'ui/store';
-import { PreferencesAccount } from 'preferences/types';
 
 export const updateActiveMessageReducer: UiMiddleware =
   store => next => action => {
@@ -18,6 +19,7 @@ export const updateActiveMessageReducer: UiMiddleware =
     const activeMessage = activePopup && activePopup.msg;
 
     if (action.type === ACTION.UPDATE_MESSAGES) {
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       const { unapprovedMessages, messages } = action.payload;
 
       if (!activeMessage && unapprovedMessages.length) {
@@ -144,7 +146,7 @@ export const reject: UiMiddleware = store => next => action => {
 };
 
 export const rejectForever: UiMiddleware = store => next => action => {
-  if (action.type != ACTION.REJECT_FOREVER) {
+  if (action.type !== ACTION.REJECT_FOREVER) {
     return next(action);
   }
   const { messageId, forever } = action.payload;

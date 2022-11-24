@@ -1,12 +1,12 @@
 import { validators } from '@waves/waves-transactions';
-import { useAppDispatch, useAppSelector } from 'ui/store';
-import * as React from 'react';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { createAccount } from 'ui/actions/user';
-import { WalletTypes } from 'ui/services/Background';
-import { Button, ErrorMessage, Input } from 'ui/components/ui';
 import * as styles from 'ui/components/pages/importDebug.module.css';
-import { useTranslation } from 'react-i18next';
+import { Button, ErrorMessage, Input } from 'ui/components/ui';
+import { WalletTypes } from 'ui/services/Background';
+import { useAppDispatch, useAppSelector } from 'ui/store';
 
 export function ImportDebug() {
   const navigate = useNavigate();
@@ -21,10 +21,10 @@ export function ImportDebug() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     networks.find(n => currentNetwork === n.name)!.code;
 
-  const [name, setName] = React.useState('');
-  const [address, setAddress] = React.useState('');
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
 
-  const nameError = React.useMemo(() => {
+  const nameError = useMemo(() => {
     if (!name) {
       return t('importDebug.requiredError');
     }
@@ -36,7 +36,7 @@ export function ImportDebug() {
     return null;
   }, [name, accounts, t]);
 
-  const addressError = React.useMemo(() => {
+  const addressError = useMemo(() => {
     if (!address) {
       return t('importDebug.requiredError');
     }
@@ -54,7 +54,7 @@ export function ImportDebug() {
     return null;
   }, [address, accounts, currentNetwork, networkCode, t]);
 
-  const [showErrors, setShowErrors] = React.useState<boolean>(false);
+  const [showErrors, setShowErrors] = useState<boolean>(false);
 
   return (
     <div className={styles.content}>

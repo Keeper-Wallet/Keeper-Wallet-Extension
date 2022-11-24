@@ -1,13 +1,14 @@
 import { seedUtils } from '@waves/waves-transactions';
-import * as React from 'react';
+import { Component } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { NewAccountState } from 'ui/reducers/localState';
 import { AppState } from 'ui/store';
+
 import { newAccountSelect } from '../../actions/localState';
 import { WithNavigate, withNavigate } from '../../router';
 import { AvatarList, Button } from '../ui';
 import * as styles from './styles/newwallet.styl';
-import { NewAccountState } from 'ui/reducers/localState';
 
 interface NewWalletItem {
   seed: string;
@@ -49,7 +50,7 @@ export function generateNewWalletItems(networkCode: string) {
   generatedWalletItems = list;
 }
 
-class NewWalletComponent extends React.Component<Props, State> {
+class NewWalletComponent extends Component<Props, State> {
   state: State;
 
   constructor(props: Props) {
@@ -73,15 +74,15 @@ class NewWalletComponent extends React.Component<Props, State> {
     return (
       <div className={styles.content}>
         <div>
-          <h2 className={`title1 margin3 left`}>{t('newWallet.createNew')}</h2>
+          <h2 className="title1 margin3 left">{t('newWallet.createNew')}</h2>
         </div>
 
-        <div className={`margin3`}>
-          <div className={`body3`}>{t('newWallet.select')}</div>
-          <div className={`tag1 basic500`}>{t('newWallet.selectInfo')}</div>
+        <div className="margin3">
+          <div className="body3">{t('newWallet.select')}</div>
+          <div className="tag1 basic500">{t('newWallet.selectInfo')}</div>
         </div>
 
-        <div className={`margin4 avatar-list`}>
+        <div className="margin4 avatar-list">
           <AvatarList
             items={this.state.list}
             selected={this.props.account}
@@ -90,7 +91,7 @@ class NewWalletComponent extends React.Component<Props, State> {
           />
         </div>
 
-        <div className={`tag1 basic500 input-title`}>
+        <div className="tag1 basic500 input-title">
           {t('newWallet.address')}
         </div>
 
@@ -127,14 +128,14 @@ const actions = {
   newAccountSelect,
 };
 
-const mapStateToProps = function (store: AppState): StateProps {
+function mapStateToProps(store: AppState): StateProps {
   return {
     account: store.localState.newAccount as Extract<
       NewAccountState,
       { type: 'seed' }
     >,
   };
-};
+}
 
 export const NewWallet = connect(
   mapStateToProps,

@@ -1,19 +1,20 @@
-import * as styles from './Recipient.module.css';
-import * as React from 'react';
-import cn from 'classnames';
 import { validators } from '@waves/waves-transactions';
+import cn from 'classnames';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { processAliasOrAddress } from 'transactions/utils';
+import { useAppSelector } from 'ui/store';
 import {
-  isEthereumAddress,
-  isValidEthereumAddress,
   fromEthereumToWavesAddress,
   fromWavesToEthereumAddress,
+  isEthereumAddress,
+  isValidEthereumAddress,
 } from 'ui/utils/ethereum';
-import { processAliasOrAddress } from 'transactions/utils';
-import { useTranslation } from 'react-i18next';
-import { useAppSelector } from 'ui/store';
+
+import { Ellipsis } from '../../ui';
 import { Tooltip } from '../tooltip';
 import { AddModal } from './AddModal';
-import { Ellipsis } from '../../ui';
+import * as styles from './Recipient.module.css';
 import { AddressTooltip } from './Tooltip';
 
 export interface Props {
@@ -45,9 +46,9 @@ export function AddressRecipient({
     accounts.find(account => account.address === address)?.name ||
     addresses[address];
 
-  const [showAddModal, setShowAddModal] = React.useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
 
-  const [type, mirrorAddress] = React.useMemo(() => {
+  const [type, mirrorAddress] = useMemo(() => {
     switch (true) {
       case isValidEthereumAddress(address):
         return ['ethereum', fromEthereumToWavesAddress(address, chainId)];
@@ -64,6 +65,7 @@ export function AddressRecipient({
         <p
           className={styles.name}
           data-testid={testid}
+          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{
             __html: address.replace(/^alias:\w:/i, '<mark>$&</mark>'),
           }}

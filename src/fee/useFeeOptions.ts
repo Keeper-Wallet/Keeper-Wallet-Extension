@@ -1,5 +1,6 @@
 import { Money } from '@waves/data-entities';
 import { useAppSelector } from 'ui/store';
+
 import { getFeeOptions } from './utils';
 
 export function useFeeOptions({

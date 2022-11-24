@@ -1,3 +1,4 @@
+import { libs, seedUtils } from '@waves/waves-transactions';
 import {
   AuthenticationDetails,
   CognitoIdToken,
@@ -6,18 +7,18 @@ import {
   CognitoUserPool,
   ICognitoStorage,
 } from 'amazon-cognito-identity-js';
-import { libs, seedUtils } from '@waves/waves-transactions';
+import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
+
+import { DEFAULT_IDENTITY_CONFIG } from '../constants';
 import {
   ExtensionStorage,
   StorageLocalState,
   StorageSessionState,
 } from '../storage/storage';
-import { DEFAULT_IDENTITY_CONFIG } from '../constants';
-import { PreferencesController } from './preferences';
 import { NetworkController } from './network';
+import { PreferencesController } from './preferences';
 import { RemoteConfigController } from './remoteConfig';
-import { NetworkName } from 'networks/types';
 
 export type CodeDelivery = {
   type: 'SMS' | 'EMAIL' | string;
@@ -272,7 +273,7 @@ export class IdentityController implements IdentityApi {
     const currentNetwork = this.getNetwork();
     this.store.clear();
 
-    if (this.network != currentNetwork) {
+    if (this.network !== currentNetwork) {
       this.network = currentNetwork;
 
       const config = this.getIdentityConfig(currentNetwork);
@@ -330,58 +331,58 @@ export class IdentityController implements IdentityApi {
             this.userData = undefined;
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            delete (user as any)['challengeName'];
+            delete (user as any).challengeName;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            delete (user as any)['challengeParam'];
+            delete (user as any).challengeParam;
             resolve(user);
           },
 
           onFailure: err => {
             reject(err);
           },
-          customChallenge: function (challengeParam) {
+          customChallenge(challengeParam) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any)['challengeName'] = 'CUSTOM_CHALLENGE';
+            (user as any).challengeName = 'CUSTOM_CHALLENGE';
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any)['challengeParam'] = challengeParam;
+            (user as any).challengeParam = challengeParam;
             resolve(user);
           },
-          mfaRequired: function (challengeName, challengeParam) {
+          mfaRequired(challengeName, challengeParam) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any)['challengeName'] = challengeName;
+            (user as any).challengeName = challengeName;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any)['challengeParam'] = challengeParam;
+            (user as any).challengeParam = challengeParam;
             resolve(user);
           },
-          mfaSetup: function (challengeName, challengeParam) {
+          mfaSetup(challengeName, challengeParam) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any)['challengeName'] = challengeName;
+            (user as any).challengeName = challengeName;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any)['challengeParam'] = challengeParam;
+            (user as any).challengeParam = challengeParam;
             resolve(user);
           },
-          newPasswordRequired: function (userAttributes, requiredAttributes) {
+          newPasswordRequired(userAttributes, requiredAttributes) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any)['challengeName'] = 'NEW_PASSWORD_REQUIRED';
+            (user as any).challengeName = 'NEW_PASSWORD_REQUIRED';
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any)['challengeParam'] = {
-              userAttributes: userAttributes,
-              requiredAttributes: requiredAttributes,
+            (user as any).challengeParam = {
+              userAttributes,
+              requiredAttributes,
             };
             resolve(user);
           },
-          totpRequired: function (challengeName, challengeParam) {
+          totpRequired(challengeName, challengeParam) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any)['challengeName'] = challengeName;
+            (user as any).challengeName = challengeName;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any)['challengeParam'] = challengeParam;
+            (user as any).challengeParam = challengeParam;
             resolve(user);
           },
-          selectMFAType: function (challengeName, challengeParam) {
+          selectMFAType(challengeName, challengeParam) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any)['challengeName'] = challengeName;
+            (user as any).challengeName = challengeName;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any)['challengeParam'] = challengeParam;
+            (user as any).challengeParam = challengeParam;
             resolve(user);
           },
         }
@@ -404,9 +405,9 @@ export class IdentityController implements IdentityApi {
           onSuccess: async session => {
             if (this.user) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              delete (this.user as any)['challengeName'];
+              delete (this.user as any).challengeName;
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              delete (this.user as any)['challengeParam'];
+              delete (this.user as any).challengeParam;
             }
 
             if (session && !this.identity) {
@@ -487,6 +488,7 @@ export class IdentityController implements IdentityApi {
             this.persistSession(uuid);
             resolve(data);
           })
+          // eslint-disable-next-line @typescript-eslint/no-shadow
           .catch(err => reject(err));
       });
     });
@@ -542,6 +544,7 @@ export class IdentityController implements IdentityApi {
 
           this.user.refreshSession(
             refreshToken,
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             (err, data) => {
               if (err) {
                 return reject(err);

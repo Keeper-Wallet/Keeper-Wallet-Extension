@@ -1,8 +1,9 @@
-import * as React from 'react';
-import { VerifyCodeComponent } from './verifyCodeComponent';
-import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
+import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { CodeDelivery } from '../../../../controllers/IdentityController';
+import { VerifyCodeComponent } from './verifyCodeComponent';
 
 type CodeConfirmationProps = {
   className?: string;
@@ -16,9 +17,9 @@ export function CodeConfirmation({
   confirmCode,
 }: CodeConfirmationProps) {
   const { t } = useTranslation();
-  const [isPending, setIsPending] = React.useState<boolean>(false);
+  const [isPending, setIsPending] = useState<boolean>(false);
 
-  const handleConfirmCode = React.useCallback(
+  const handleConfirmCode = useCallback(
     async (code: string): Promise<boolean> => {
       try {
         await confirmCode(code);

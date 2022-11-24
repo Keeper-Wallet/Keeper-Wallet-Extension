@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import { ledgerService, LedgerServiceStatus } from 'ledger/service';
-import * as React from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { newAccountSelect } from 'ui/actions/localState';
@@ -8,6 +8,7 @@ import { Button } from 'ui/components/ui/buttons/Button';
 import { ErrorMessage } from 'ui/components/ui/error';
 import { Input } from 'ui/components/ui/input';
 import { useAppDispatch, useAppSelector } from 'ui/store';
+
 import { LedgerAvatarList } from './avatarList';
 import * as styles from './importLedger.module.css';
 
@@ -54,46 +55,42 @@ export function ImportLedger() {
   const customCodes = useAppSelector(state => state.customCodes);
   const networks = useAppSelector(state => state.networks);
 
-  const [isConnecting, setIsConnecting] = React.useState(false);
-  const [connectionError, setConnectionError] = React.useState<string | null>(
-    null
-  );
-  const [isReady, setIsReady] = React.useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
+  const [isReady, setIsReady] = useState(false);
 
-  const [getUsersError, setGetUsersError] = React.useState<
+  const [getUsersError, setGetUsersError] = useState<
     string | React.ReactElement | null
   >(null);
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = useState(0);
 
-  const getUsersPromiseRef = React.useRef(Promise.resolve());
-  const [ledgerUsersPages, setLedgerUsersPages] = React.useState<
+  const getUsersPromiseRef = useRef(Promise.resolve());
+  const [ledgerUsersPages, setLedgerUsersPages] = useState<
     Record<number, LedgerUser[]>
   >({});
 
-  const [selectAccountError, setSelectAccountError] = React.useState<
-    string | null
-  >(null);
-  const [selectedUserId, setSelectedUserId] = React.useState(0);
+  const [selectAccountError, setSelectAccountError] = useState<string | null>(
+    null
+  );
+  const [selectedUserId, setSelectedUserId] = useState(0);
 
   const selectedUser =
     ledgerUsersPages[Math.floor(selectedUserId / USERS_PER_PAGE)]?.[
       selectedUserId % USERS_PER_PAGE
     ];
 
-  const [userIdInputValue, setUserIdInputValue] = React.useState(
+  const [userIdInputValue, setUserIdInputValue] = useState(
     String(selectedUserId)
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     setUserIdInputValue(String(selectedUserId));
     setPage(Math.floor(selectedUserId / USERS_PER_PAGE));
   }, [selectedUserId]);
 
-  const [userIdInputError, setUserIdInputError] = React.useState<string | null>(
-    null
-  );
+  const [userIdInputError, setUserIdInputError] = useState<string | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!userIdInputValue) {
       return;
     }
@@ -128,7 +125,7 @@ export function ImportLedger() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     networks.find(n => currentNetwork === n.name)!.code;
 
-  const connectToLedger = React.useCallback(async () => {
+  const connectToLedger = useCallback(async () => {
     setConnectionError(null);
     setIsConnecting(true);
 
@@ -161,7 +158,7 @@ export function ImportLedger() {
     }
   }, [ledgerUsersPages, networkCode, t]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isReady) {
       return;
     }
@@ -169,7 +166,7 @@ export function ImportLedger() {
     connectToLedger();
   }, [connectToLedger, isReady]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       ledgerService.disconnect();
     };
@@ -177,7 +174,7 @@ export function ImportLedger() {
 
   const isCurPageLoaded = ledgerUsersPages[page] != null;
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isReady || isCurPageLoaded) {
       return;
     }

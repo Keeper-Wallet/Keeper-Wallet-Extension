@@ -4,6 +4,7 @@ import { MessageStoreItem } from 'messages/types';
 import { PreferencesAccount } from 'preferences/types';
 import { ComponentType } from 'react';
 import { IMoneyLike } from 'ui/utils/converters';
+
 import { PackageItem } from './Package/parseTx';
 
 export interface MessageComponentProps {

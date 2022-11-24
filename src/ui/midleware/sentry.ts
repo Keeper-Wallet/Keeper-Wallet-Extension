@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/react';
-import { ACTION } from '../actions/constants';
 import { UiMiddleware } from 'ui/store';
+
+import { ACTION } from '../actions/constants';
 
 export const sentryBreadcrumbs: UiMiddleware = () => next => action => {
   Sentry.addBreadcrumb({

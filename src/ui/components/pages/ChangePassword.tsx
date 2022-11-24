@@ -1,19 +1,14 @@
-import * as styles from './styles/changePassword.styl';
-import { connect } from 'react-redux';
-import { changePassword } from '../../actions/user';
-import * as React from 'react';
-import { Button, ErrorMessage, Input, Modal } from '../ui';
-import background from '../../services/Background';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
+
 import { CONFIG } from '../../appConfig';
+import background from '../../services/Background';
+import { Button, ErrorMessage, Input, Modal } from '../ui';
+import * as styles from './styles/changePassword.styl';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
-interface DispatchProps {
-  changePassword: (p1: string, p2: string) => void;
-}
-
-type Props = WithTranslation & DispatchProps;
+type Props = WithTranslation;
 
 interface State {
   firstValue: string;
@@ -28,7 +23,7 @@ interface State {
   oldEqualNewError: boolean | '';
 }
 
-class ChangePasswordComponent extends React.PureComponent<Props, State> {
+class ChangePasswordComponent extends PureComponent<Props, State> {
   state: State = {
     firstValue: '',
     secondValue: '',
@@ -69,7 +64,7 @@ class ChangePasswordComponent extends React.PureComponent<Props, State> {
                 value={this.state.oldValue}
                 type="password"
                 view="password"
-                autoFocus={true}
+                autoFocus
                 onChange={this.onChangeOld}
                 onBlur={this.onOldBlur}
                 error={!!(this.state.oldError || this.state.passwordError)}
@@ -292,6 +287,4 @@ class ChangePasswordComponent extends React.PureComponent<Props, State> {
   }
 }
 
-export const ChangePassword = connect(undefined, { changePassword })(
-  withTranslation()(ChangePasswordComponent)
-);
+export const ChangePassword = withTranslation()(ChangePasswordComponent);

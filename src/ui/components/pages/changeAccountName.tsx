@@ -1,8 +1,9 @@
 import { PreferencesAccount } from 'preferences/types';
-import * as React from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'ui/store';
+
 import { changeAccountName } from '../../actions/account';
 import { CONFIG } from '../../appConfig';
 import { Button, ErrorMessage, Input } from '../ui';
@@ -10,6 +11,7 @@ import * as styles from './styles/changeName.styl';
 
 function validateName(name: string, accounts: PreferencesAccount[]) {
   const errors: Array<{ code: number; key: string; msg: string }> = [];
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   const names = accounts.map(({ name }) => name);
 
   if (name.length < CONFIG.NAME_MIN_LENGTH) {
@@ -44,17 +46,15 @@ export function ChangeAccountName() {
     state.accounts.find(x => x.address === params.address)
   );
 
-  const [error, setError] = React.useState(false);
+  const [error, setError] = useState(false);
 
-  const [errors, setErrors] = React.useState<ReturnType<typeof validateName>>(
-    []
-  );
+  const [errors, setErrors] = useState<ReturnType<typeof validateName>>([]);
 
-  const [newName, setNewName] = React.useState('');
+  const [newName, setNewName] = useState('');
 
   return (
     <div className={styles.content}>
-      <h2 className={`title1 margin3 left`}>{t('changeName.title')}</h2>
+      <h2 className="title1 margin3 left">{t('changeName.title')}</h2>
 
       <div className="tag1 basic500 input-title">
         {t('changeName.currentName')}
@@ -96,12 +96,14 @@ export function ChangeAccountName() {
             maxLength={26}
             value={newName}
             onBlur={() => {
+              // eslint-disable-next-line @typescript-eslint/no-shadow
               const errors = validateName(newName, accounts);
 
               setErrors(errors);
               setError(errors.length !== 0);
             }}
             onChange={event => {
+              // eslint-disable-next-line @typescript-eslint/no-shadow
               const newName = event.currentTarget.value;
 
               setNewName(newName);

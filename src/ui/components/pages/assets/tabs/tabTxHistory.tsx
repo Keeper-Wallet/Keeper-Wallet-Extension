@@ -1,24 +1,24 @@
-import * as styles from 'ui/components/pages/styles/assets.styl';
-import { SearchInput, Select, TabPanel } from 'ui/components/ui';
+import { TRANSACTION_TYPE, TransactionFromNode } from '@waves/ts-types';
+import cn from 'classnames';
+import { CSSProperties, useEffect, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { VariableSizeList } from 'react-window';
 import { icontains } from 'ui/components/pages/assets/helpers';
 import { HistoryItem } from 'ui/components/pages/assets/historyItem';
-import * as React from 'react';
-import { CSSProperties } from 'react';
+import * as styles from 'ui/components/pages/styles/assets.styl';
+import { SearchInput, Select, TabPanel } from 'ui/components/ui';
+import { Tooltip } from 'ui/components/ui/tooltip';
 import { useAppSelector } from 'ui/store';
+import { getTxHistoryLink } from 'ui/urls';
+
+import { MAX_TX_HISTORY_ITEMS } from '../../../../../constants';
 import {
   buildTxTypeOptions,
   CARD_FULL_HEIGHT,
   FULL_GROUP_HEIGHT,
   useUiState,
 } from './helpers';
-import { TransactionFromNode, TRANSACTION_TYPE } from '@waves/ts-types';
-import { MAX_TX_HISTORY_ITEMS } from '../../../../../constants';
-import { Tooltip } from 'ui/components/ui/tooltip';
-import { VariableSizeList } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
-import cn from 'classnames';
-import { getTxHistoryLink } from 'ui/urls';
 
 const Row = ({
   data,
@@ -120,9 +120,9 @@ export function TabTxHistory() {
     (value: boolean) => setFilters({ ...filters, onlyOutgoing: value }),
   ];
 
-  const listRef = React.useRef<VariableSizeList | null>(null);
+  const listRef = useRef<VariableSizeList | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     listRef.current && listRef.current.resetAfterIndex(0);
   }, [txHistory]);
 
@@ -274,7 +274,7 @@ export function TabTxHistory() {
               selected={type}
               selectList={buildTxTypeOptions(t)}
               theme="underlined"
-              onSelectItem={(id, value) => {
+              onSelectItem={(_id, value) => {
                 listRef.current && listRef.current.resetAfterIndex(0);
                 setType(value);
               }}
@@ -382,6 +382,7 @@ export function TabTxHistory() {
                       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                       historyLink: getTxHistoryLink(networkCode!, address!),
                     }}
+                    // eslint-disable-next-line @typescript-eslint/no-shadow
                     itemKey={(index, { historyWithGroups }) =>
                       'groupName' in historyWithGroups[index]
                         ? // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,15 +1,15 @@
-import * as React from 'react';
-import * as styles from './assetItem.module.css';
-import { Balance, Loader } from '../../ui';
 import { Money } from '@waves/data-entities';
-import cn from 'classnames';
-import { AssetLogo } from './assetLogo';
-import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAppSelector } from '../../../store';
-import { favoriteAsset } from '../../../actions/assets';
-import { Tooltip } from '../../ui/tooltip';
-import { MoreActions } from './moreActions';
 import { isSwappableAsset } from 'assets/utils';
+import cn from 'classnames';
+import { useTranslation } from 'react-i18next';
+
+import { favoriteAsset } from '../../../actions/assets';
+import { useAppDispatch, useAppSelector } from '../../../store';
+import { Balance, Loader } from '../../ui';
+import { Tooltip } from '../../ui/tooltip';
+import * as styles from './assetItem.module.css';
+import { AssetLogo } from './assetLogo';
+import { MoreActions } from './moreActions';
 
 interface Props {
   balance: Money | undefined;
@@ -90,7 +90,7 @@ export function AssetItem({
         <div>
           <Balance
             isShortFormat={false}
-            split={true}
+            split
             balance={balance}
             assetId={isLoading ? 'WAVES' : assetId}
             showUsdAmount

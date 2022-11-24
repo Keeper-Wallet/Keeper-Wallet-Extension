@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import * as styles from './DateFormat.module.css';
 
 const DEFAULT_OPTIONS: Intl.DateTimeFormatOptions = {

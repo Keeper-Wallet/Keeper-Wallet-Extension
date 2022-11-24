@@ -1,16 +1,16 @@
-import * as React from 'react';
 import BigNumber from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
-import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
+import { PreferencesAccount } from 'preferences/types';
+import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
+
 import { Avatar } from '../ui/avatar/Avatar';
 import { Balance } from '../ui/balance/Balance';
 import { Copy } from '../ui/copy/Copy';
-import * as styles from './activeAccountCard.module.css';
-import { Tooltip } from '../ui/tooltip';
 import { Loader } from '../ui/loader';
-import { PreferencesAccount } from 'preferences/types';
+import { Tooltip } from '../ui/tooltip';
+import * as styles from './activeAccountCard.module.css';
 
 const UsdAmount = ({ amount }: { amount: BigNumber | null }) =>
   amount !== null ? (

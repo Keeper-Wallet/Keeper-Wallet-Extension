@@ -1,10 +1,8 @@
-import * as styles from './customData.styl';
-import * as React from 'react';
-
-import { CustomDataCard } from './CustomDataCard';
-import { CustomDataInfo } from './CustomDataInfo';
 import { TxFooter, TxHeader } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './customData.styl';
+import { CustomDataCard } from './CustomDataCard';
+import { CustomDataInfo } from './CustomDataInfo';
 
 export function CustomData(props: MessageComponentProps) {
   const { message, assets } = props;

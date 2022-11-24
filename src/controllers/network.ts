@@ -1,7 +1,8 @@
 import * as Sentry from '@sentry/react';
-import { ExtensionStorage } from '../storage/storage';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
+
+import { ExtensionStorage } from '../storage/storage';
 import { RemoteConfigController } from './remoteConfig';
 
 export class NetworkController {

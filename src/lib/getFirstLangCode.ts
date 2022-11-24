@@ -1,4 +1,5 @@
 import { extension } from 'lib/extension';
+
 import allLocales from '../copied/_locales/index.json';
 
 const existingLocaleCodes = allLocales.map(locale =>

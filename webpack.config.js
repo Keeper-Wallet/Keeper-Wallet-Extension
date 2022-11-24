@@ -13,7 +13,7 @@ module.exports = async (_, { mode }) => {
   const version = getVersion();
 
   if (!version) {
-    throw 'Build failed';
+    throw new Error('Build failed');
   }
 
   const dev = mode === 'development';
@@ -111,7 +111,7 @@ module.exports = async (_, { mode }) => {
               loader: MiniCssExtractPlugin.loader,
               options: {
                 publicPath: (resourcePath, context) =>
-                  path.relative(path.dirname(resourcePath), context) + '/',
+                  `${path.relative(path.dirname(resourcePath), context)}/`,
               },
             },
             {

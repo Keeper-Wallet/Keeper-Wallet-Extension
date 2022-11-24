@@ -4,8 +4,8 @@ import {
   isEnoughBalanceForFeeAndSpendingAmounts,
 } from 'fee/utils';
 import { MessageStoreItem } from 'messages/types';
-import * as React from 'react';
 import { useAppDispatch, useAppSelector } from 'ui/store';
+
 import { updateTransactionFee } from '../../../actions/messages';
 import { getMoney } from '../../../utils/converters';
 import { Balance, Select, SelectItem } from '../../ui';
@@ -63,7 +63,7 @@ export function TxFee({ message: messageProp }: Props) {
   return (
     <div data-testid="txFee">
       {feeOptions.length <= 1 ? (
-        <Balance isShortFormat={true} balance={fee} showAsset={true} />
+        <Balance isShortFormat balance={fee} showAsset />
       ) : (
         <Select
           fill
@@ -80,7 +80,7 @@ export function TxFee({ message: messageProp }: Props) {
           onSelectItem={(id, tokens) => {
             dispatch(
               updateTransactionFee(message.id, {
-                tokens: tokens,
+                tokens,
                 assetId: id as string,
               })
             );

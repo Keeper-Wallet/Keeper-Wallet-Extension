@@ -3,6 +3,7 @@ import * as Sentry from '@sentry/react';
 import WavesLedger from '@waves/ledger';
 import { PreferencesAccount } from 'preferences/types';
 import Background from 'ui/services/Background';
+
 import { LedgerSignRequest } from './types';
 
 export enum LedgerServiceStatus {

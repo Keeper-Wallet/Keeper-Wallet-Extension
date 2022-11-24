@@ -1,6 +1,7 @@
-import { assetIds, assetLogosByNetwork, swappableAssetIds } from './constants';
-import { useAppSelector } from 'ui/store';
 import { NetworkName } from 'networks/types';
+import { useAppSelector } from 'ui/store';
+
+import { assetIds, assetLogosByNetwork, swappableAssetIds } from './constants';
 
 export function useAssetLogo(network: NetworkName, assetId: string) {
   const logos = useAppSelector(state => state.assetLogos);

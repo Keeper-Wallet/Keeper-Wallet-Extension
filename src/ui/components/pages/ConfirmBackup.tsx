@@ -1,11 +1,12 @@
-import * as styles from './styles/confirmBackup.styl';
-import * as React from 'react';
-import { connect } from 'react-redux';
+import { Component } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
-import { Button, ErrorMessage, Pills, PillsListItem } from '../ui';
-import { AppState } from 'ui/store';
+import { connect } from 'react-redux';
 import { NewAccountState } from 'ui/reducers/localState';
-import { withNavigate, WithNavigate } from 'ui/router';
+import { WithNavigate, withNavigate } from 'ui/router';
+import { AppState } from 'ui/store';
+
+import { Button, ErrorMessage, Pills, PillsListItem } from '../ui';
+import * as styles from './styles/confirmBackup.styl';
 
 const SHUFFLE_COUNT = 500;
 
@@ -24,7 +25,7 @@ interface State {
   disabled: boolean;
 }
 
-class ConfirmBackupComponent extends React.Component<Props, State> {
+class ConfirmBackupComponent extends Component<Props, State> {
   state: State = {
     seed: null,
     list: [],
@@ -40,7 +41,7 @@ class ConfirmBackupComponent extends React.Component<Props, State> {
   ): Partial<State> | null {
     const { seed } = props.account;
 
-    if (seed == state.seed) {
+    if (seed === state.seed) {
       return null;
     }
 
@@ -74,7 +75,7 @@ class ConfirmBackupComponent extends React.Component<Props, State> {
 
     return (
       <div className={styles.content}>
-        <h2 className={`title1 margin1`}>{t('confirmBackup.confirmBackup')}</h2>
+        <h2 className="title1 margin1">{t('confirmBackup.confirmBackup')}</h2>
 
         <Pills
           className={`${styles.readSeed} plate body3`}
@@ -86,7 +87,7 @@ class ConfirmBackupComponent extends React.Component<Props, State> {
         <div className="center body3">
           {complete ? null : t('confirmBackup.selectWord')}
           {showClear ? (
-            <ErrorMessage show={true} className={styles.noMargin}>
+            <ErrorMessage show className={styles.noMargin}>
               {t('confirmBackup.wrongSeed')}
             </ErrorMessage>
           ) : null}
@@ -95,7 +96,7 @@ class ConfirmBackupComponent extends React.Component<Props, State> {
         <Pills
           className={styles.writeSeed}
           list={list}
-          selected={true}
+          selected
           onSelect={this.onSelect}
         />
         {showButton ? (

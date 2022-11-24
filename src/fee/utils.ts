@@ -1,20 +1,22 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { AssetDetail, AssetsRecord } from 'assets/types';
+import { AssetBalance, BalancesItem } from 'balances/types';
+import { MessageStoreItem } from 'messages/types';
 import { getMoney } from 'ui/utils/converters';
+
+import { FeeConfig } from '../constants';
 import * as invokeScriptParseTx from '../ui/components/transactions/ScriptInvocation/parseTx';
 import * as transferParseTx from '../ui/components/transactions/Transfer/parseTx';
-import { FeeConfig } from '../constants';
 import { SPONSORED_FEE_TX_TYPES } from './constants';
-import { AssetBalance, BalancesItem } from 'balances/types';
-import { AssetDetail, AssetsRecord } from 'assets/types';
-import { MessageStoreItem } from 'messages/types';
 
 export function convertFeeToAsset(
   fee: Money,
   asset: Asset,
   feeConfig: FeeConfig
 ) {
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   const minSponsoredFee = (asset: Asset) =>
     asset.id === 'WAVES'
       ? feeConfig.calculate_fee_rules.default.fee
@@ -49,7 +51,7 @@ export function getFeeOptions({
 }) {
   const feeInWaves = convertFeeToAsset(
     initialFee,
-    new Asset(assets['WAVES']),
+    new Asset(assets.WAVES),
     feeConfig
   );
 

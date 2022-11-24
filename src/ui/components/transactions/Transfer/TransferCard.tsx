@@ -1,16 +1,17 @@
-import * as styles from './transfer.styl';
-import * as React from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
+
+import { getMoney } from '../../../utils/converters';
+import { readAttachment } from '../../../utils/waves';
 import { Attachment, Balance } from '../../ui';
 import { AddressRecipient } from '../../ui/Address/Recipient';
-import { getMoney } from '../../../utils/converters';
-import { getAmount, messageType } from './parseTx';
-import { readAttachment } from '../../../utils/waves';
+import { TxIcon } from '../BaseTransaction';
 import { MessageCardComponentProps } from '../types';
+import { getAmount, messageType } from './parseTx';
+import * as styles from './transfer.styl';
 
-class TransferCardComponent extends React.PureComponent<
+class TransferCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
@@ -41,9 +42,9 @@ class TransferCardComponent extends React.PureComponent<
             <h1 className="headline1">
               <Balance
                 data-testid="transferAmount"
-                split={true}
+                split
                 addSign="-"
-                showAsset={true}
+                showAsset
                 balance={amount}
                 showUsdAmount
               />

@@ -1,9 +1,9 @@
-import * as React from 'react';
-import * as styles from './LangsSelect.module.css';
+import cn from 'classnames';
 import { useAppDispatch, useAppSelector } from 'ui/store';
+
 import { setLocale } from '../../../actions/user';
 import { Select } from '../';
-import cn from 'classnames';
+import * as styles from './LangsSelect.module.css';
 
 export function LangsSelect() {
   const dispatch = useAppDispatch();

@@ -1,5 +1,6 @@
-import { ACTION } from '../actions/constants';
 import { combineReducers } from 'redux';
+
+import { ACTION } from '../actions/constants';
 import { simpleFabric } from './utils';
 
 const pending = simpleFabric(false)(ACTION.PERMISSIONS.PENDING);

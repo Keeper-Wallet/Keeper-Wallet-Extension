@@ -1,7 +1,8 @@
 import cn from 'classnames';
 import * as avatar from 'identity-img';
 import { PreferencesAccount } from 'preferences/types';
-import * as React from 'react';
+import { Component } from 'react';
+
 import * as styles from './avatar.styl';
 
 const SIZE = 67;
@@ -18,7 +19,7 @@ interface State {
   src?: string;
 }
 
-export class Avatar extends React.Component<Props, State> {
+export class Avatar extends Component<Props, State> {
   state: State = {};
 
   static getDerivedStateFromProps(

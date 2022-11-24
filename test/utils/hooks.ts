@@ -1,12 +1,13 @@
-import { Builder, By, until, WebDriver } from 'selenium-webdriver';
-import * as chrome from 'selenium-webdriver/chrome';
 import * as mocha from 'mocha';
 import * as path from 'path';
+import { Builder, By, until, WebDriver } from 'selenium-webdriver';
+import * as chrome from 'selenium-webdriver/chrome';
 import {
   GenericContainer,
   Network,
   StartedTestContainer,
 } from 'testcontainers';
+
 import { App } from './actions';
 
 declare global {

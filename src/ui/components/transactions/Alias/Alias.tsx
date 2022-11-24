@@ -1,9 +1,7 @@
-import * as styles from './alias.styl';
-import * as React from 'react';
-
-import { AliasCard } from './AliasCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './alias.styl';
+import { AliasCard } from './AliasCard';
 
 export function Alias(props: MessageComponentProps) {
   return (

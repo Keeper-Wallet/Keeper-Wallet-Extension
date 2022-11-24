@@ -1,13 +1,13 @@
-import * as React from 'react';
-import * as styles from './nftInfo.module.css';
 import { NftCover } from 'nfts/nftCard';
+import { createNft } from 'nfts/utils';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAppSelector } from 'ui/store';
-import { createNft } from 'nfts/utils';
 import { Button, Ellipsis, Loader } from 'ui/components/ui';
 import { Tooltip } from 'ui/components/ui/tooltip';
+import { useAppSelector } from 'ui/store';
 import { getAccountLink, getAssetDetailLink } from 'ui/urls';
+
+import * as styles from './nftInfo.module.css';
 
 export function NftInfo() {
   const navigate = useNavigate();
@@ -88,6 +88,7 @@ export function NftInfo() {
           <div>
             <Tooltip content={t('nftInfo.creatorUrlTooltip')}>
               {props => (
+                // eslint-disable-next-line react/jsx-no-target-blank
                 <a
                   rel="noopener noreferrer"
                   className="link"

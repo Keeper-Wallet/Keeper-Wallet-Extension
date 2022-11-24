@@ -1,7 +1,8 @@
-import LocalMessageDuplexStream from 'post-message-stream';
-import { setupDnode, transformMethods, cbToPromise } from './lib/dnodeUtil';
-import { equals } from 'ramda';
 import EventEmitter from 'events';
+import LocalMessageDuplexStream from 'post-message-stream';
+import { equals } from 'ramda';
+
+import { cbToPromise, setupDnode, transformMethods } from './lib/dnodeUtil';
 
 function createDeffer<T>() {
   let resolve: (value: T) => void;
@@ -41,6 +42,7 @@ async function setupInpageApi() {
       }
 
       if (!cbs[prop] && prop !== 'on') {
+        // eslint-disable-next-line func-names, @typescript-eslint/no-shadow
         cbs[prop] = function (...args: unknown[]) {
           const def = createDeffer();
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,6 +54,7 @@ async function setupInpageApi() {
       }
 
       if (!cbs[prop] && prop === 'on') {
+        // eslint-disable-next-line @typescript-eslint/no-shadow, func-names
         cbs[prop] = function (...args: unknown[]) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (args as any)[prop] = (args as any)[prop] || [];
@@ -93,7 +96,7 @@ async function setupInpageApi() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const inpageApi = await new Promise<any>(resolve => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-shadow
     dnode.on('remote', (inpageApi: any) => {
       resolve(transformMethods(cbToPromise, inpageApi));
     });
@@ -159,7 +162,7 @@ function setupClickInterceptor(inpageApi: any) {
         e.preventDefault();
         e.stopPropagation();
       }
-    } catch (e) {
+    } catch {
       // ignore errors
     }
   });
@@ -168,6 +171,7 @@ function setupClickInterceptor(inpageApi: any) {
 function checkForPaymentApiLink(e: MouseEvent) {
   let node = e.target;
 
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   const check = (node: EventTarget) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const href = (node as any).href;
@@ -267,7 +271,7 @@ function processPaymentAPILink({ type, hash }: any, inpageApi: any) {
         successPath: apiData.referrer,
         data: {
           amount: {
-            assetId: assetId,
+            assetId,
             tokens: apiData.amount,
           },
           fee: {

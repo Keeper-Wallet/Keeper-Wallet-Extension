@@ -1,11 +1,12 @@
-import * as styles from './wavesAuth.styl';
-import * as React from 'react';
 import cn from 'classnames';
+import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
+
 import { TxIcon } from '../BaseTransaction';
 import { MessageCardComponentProps } from '../types';
+import * as styles from './wavesAuth.styl';
 
-class WavesAuthCardComponent extends React.PureComponent<
+class WavesAuthCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
@@ -23,10 +24,10 @@ class WavesAuthCardComponent extends React.PureComponent<
       <div className={className}>
         <div className={styles.cardHeader}>
           {collapsed ? (
-            <React.Fragment>
+            <>
               <div className={styles.smallCardContent}>
                 <div className={styles.wavesAuthTxIconSmall}>
-                  <TxIcon txType={'authOrigin'} small={true} />
+                  <TxIcon txType="authOrigin" small />
                 </div>
                 <div>
                   <div className="basic500 body3 margin-min origin-ellipsis">
@@ -37,10 +38,10 @@ class WavesAuthCardComponent extends React.PureComponent<
                   </h1>
                 </div>
               </div>
-            </React.Fragment>
+            </>
           ) : (
             <div className={styles.wavesAuthTxIcon}>
-              <TxIcon txType={'authOrigin'} />
+              <TxIcon txType="authOrigin" />
             </div>
           )}
         </div>

@@ -1,13 +1,14 @@
 import BigNumber from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
-import * as React from 'react';
+import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useIMask } from 'react-imask';
 import { BalanceAssets } from 'ui/reducers/updateState';
 import { useAppSelector } from 'ui/store';
-import * as styles from './amountInput.module.css';
-import { useTranslation } from 'react-i18next';
-import { AssetSelect, AssetSelectOption } from './assetSelect';
+
 import { UsdAmount } from '../ui/components/ui/UsdAmount';
+import * as styles from './amountInput.module.css';
+import { AssetSelect, AssetSelectOption } from './assetSelect';
 
 interface Props {
   assetBalances: BalanceAssets;
@@ -44,15 +45,15 @@ export function AssetAmountInput({
     thousandsSeparator: ' ',
   });
 
-  const valueRef = React.useRef(value);
-  const onChangeRef = React.useRef(onChange);
+  const valueRef = useRef(value);
+  const onChangeRef = useRef(onChange);
 
-  React.useEffect(() => {
+  useEffect(() => {
     valueRef.current = value;
     onChangeRef.current = onChange;
   }, [value, onChange]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const input = mask.ref.current;
     const maskInstance = mask.maskRef.current;
 
@@ -73,7 +74,7 @@ export function AssetAmountInput({
     };
   }, [mask.ref, mask.maskRef]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const input = mask.ref.current;
     const maskInstance = mask.maskRef.current;
 

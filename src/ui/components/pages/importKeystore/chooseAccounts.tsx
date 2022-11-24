@@ -1,12 +1,13 @@
-import * as styles from './chooseAccounts.styl';
 import cn from 'classnames';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Avatar } from 'ui/components/ui/avatar/Avatar';
-import { Button } from 'ui/components/ui';
-import { PreferencesAccount } from 'preferences/types';
-import { NetworkName } from 'networks/types';
 import { KeystoreAccount, KeystoreProfiles } from 'keystore/types';
+import { NetworkName } from 'networks/types';
+import { PreferencesAccount } from 'preferences/types';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button } from 'ui/components/ui';
+import { Avatar } from 'ui/components/ui/avatar/Avatar';
+
+import * as styles from './chooseAccounts.styl';
 
 const allNetworks: NetworkName[] = Object.values(NetworkName);
 
@@ -33,7 +34,7 @@ export function ImportKeystoreChooseAccounts({
   const { t } = useTranslation();
   const existingAccounts = new Set(allNetworksAccounts.map(acc => acc.address));
 
-  const [selected, setSelected] = React.useState(
+  const [selected, setSelected] = useState(
     () =>
       new Set(
         Object.values(profiles)

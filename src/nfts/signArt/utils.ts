@@ -1,5 +1,5 @@
-import { signArtDataUrl, signArtUserDataUrl } from 'nfts/signArt/constants';
 import { NftVendor } from 'nfts/index';
+import { signArtDataUrl, signArtUserDataUrl } from 'nfts/signArt/constants';
 import { SignArtInfo } from 'nfts/signArt/index';
 import { reduceDataEntries } from 'nfts/utils';
 

@@ -1,19 +1,20 @@
-import ObservableStore from 'obs-store';
 import { BigNumber } from '@waves/bignumber';
-import { uniq } from 'ramda';
-import { allowMatcher } from '../constants';
-import { ERRORS } from '../lib/keeperError';
-import { RemoteConfigController } from './remoteConfig';
-import { ExtensionStorage, StorageLocalState } from '../storage/storage';
-import { PreferencesController } from './preferences';
-import { IdentityController } from './IdentityController';
-import { IMoneyLike } from 'ui/utils/converters';
+import ObservableStore from 'obs-store';
+import { PERMISSIONS } from 'permissions/constants';
 import {
   PermissionObject,
   PermissionType,
   PermissionValue,
 } from 'permissions/types';
-import { PERMISSIONS } from 'permissions/constants';
+import { uniq } from 'ramda';
+import { IMoneyLike } from 'ui/utils/converters';
+
+import { allowMatcher } from '../constants';
+import { ERRORS } from '../lib/keeperError';
+import { ExtensionStorage, StorageLocalState } from '../storage/storage';
+import { IdentityController } from './IdentityController';
+import { PreferencesController } from './preferences';
+import { RemoteConfigController } from './remoteConfig';
 
 const findPermissionFabric =
   (permission: PermissionType) => (item: PermissionValue) => {
@@ -324,6 +325,7 @@ export class PermissionsController {
     approved = approved.filter(({ time }) => currentTime - time < interval);
     const total = new BigNumber(totalAmount);
     const amount = approved.reduce(
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       (acc, { amount }) => acc.add(new BigNumber(amount)),
       new BigNumber(0)
     );
@@ -411,6 +413,7 @@ export class PermissionsController {
   _updateByConfig() {
     const { blacklist, whitelist } = this.remoteConfig.store.getState();
     this.updateState({ blacklist, whitelist });
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     this.remoteConfig.store.subscribe(({ blacklist, whitelist }) => {
       this.updateState({ blacklist, whitelist });
       this._updateBlackWhitelist();

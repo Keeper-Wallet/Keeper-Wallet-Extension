@@ -1,8 +1,8 @@
-import * as React from 'react';
 import cn from 'classnames';
 import { Button } from 'ui/components/ui/buttons';
-import * as styles from './list.styl';
+
 import { TAutoAuth } from '../originSettings/OriginSettings';
+import * as styles from './list.styl';
 
 export const ListItem: React.FunctionComponent<IParams> = ({
   className,

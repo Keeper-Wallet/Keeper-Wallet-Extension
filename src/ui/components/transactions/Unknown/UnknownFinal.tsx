@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { TxStatus } from '../BaseTransaction';
 import { useTranslation } from 'react-i18next';
+
+import { TxStatus } from '../BaseTransaction';
 import { MessageFinalComponentProps } from '../types';
 
 export function UnknownFinal(props: MessageFinalComponentProps) {

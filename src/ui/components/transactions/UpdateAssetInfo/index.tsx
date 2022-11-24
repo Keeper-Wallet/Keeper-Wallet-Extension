@@ -1,8 +1,8 @@
+import { MessageConfig } from '../types';
+import * as utils from './parseTx';
 import { UpdateAssetInfo } from './UpdateAssetInfo';
 import { UpdateAssetInfoCard } from './UpdateAssetInfoCard';
 import { UpdateAssetInfoFinal } from './UpdateAssetInfoFinal';
-import * as utils from './parseTx';
-import { MessageConfig } from '../types';
 
 const updateAssetInfo: MessageConfig = {
   type: utils.messageType,

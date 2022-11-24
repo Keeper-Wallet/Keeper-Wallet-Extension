@@ -1,7 +1,8 @@
 import QrCode from 'qrcode';
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
+
 import { Button } from '../ui/buttons/Button';
 import { Loader } from '../ui/loader/Loader';
 import * as styles from './SelectedAccountQr.module.css';
@@ -13,10 +14,10 @@ export function SelectedAccountQr() {
   const address = selectedAccount?.address;
   const name = selectedAccount?.name;
 
-  const [qrSrc, setQrSrc] = React.useState<string>();
+  const [qrSrc, setQrSrc] = useState<string>();
   const qrSize = 200;
 
-  React.useEffect(() => {
+  useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     QrCode.toDataURL(address!, {
       errorCorrectionLevel: 'H',

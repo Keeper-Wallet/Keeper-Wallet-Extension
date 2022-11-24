@@ -1,10 +1,9 @@
-import { BaseInfo, BaseNft, NftVendor } from 'nfts/index';
-import { capitalize } from 'nfts/utils';
 import {
   DucklingAdjectives,
   DucklingsDescription,
 } from 'nfts/ducklings/constants';
-import * as React from 'react';
+import { BaseInfo, BaseNft, NftVendor } from 'nfts/index';
+import { capitalize } from 'nfts/utils';
 
 export interface DucklingInfo extends BaseInfo {
   vendor: NftVendor.Ducklings;

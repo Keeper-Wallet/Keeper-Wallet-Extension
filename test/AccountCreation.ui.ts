@@ -1,6 +1,7 @@
-import { By, Key, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import * as mocha from 'mocha';
+import { By, Key, until, WebElement } from 'selenium-webdriver';
+
 import { clear } from './utils';
 import {
   App,
@@ -277,8 +278,7 @@ describe('Account creation', function () {
               await this.driver
                 .findElement(
                   By.xpath(
-                    xpWriteVisiblePill +
-                      `//div[contains(@class, 'pills-text')][text()='${word}']`
+                    `${xpWriteVisiblePill}//div[contains(@class, 'pills-text')][text()='${word}']`
                   )
                 )
                 .click();
@@ -375,8 +375,7 @@ describe('Account creation', function () {
               await this.driver
                 .findElement(
                   By.xpath(
-                    xpWriteVisiblePill +
-                      `//div[contains(@class, 'pills-text')][text()='${word}']`
+                    `${xpWriteVisiblePill}//div[contains(@class, 'pills-text')][text()='${word}']`
                   )
                 )
                 .click();

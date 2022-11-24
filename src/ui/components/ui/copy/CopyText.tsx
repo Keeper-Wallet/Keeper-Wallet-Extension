@@ -1,12 +1,13 @@
-import * as React from 'react';
-import * as styles from './copy.styl';
-import copy from 'copy-to-clipboard';
 import cn from 'classnames';
+import copy from 'copy-to-clipboard';
+import { PureComponent } from 'react';
+
+import * as styles from './copy.styl';
 
 const DEFAULT_HIDDEN_CONTENT =
   '••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••';
 
-export class CopyText extends React.PureComponent<IProps> {
+export class CopyText extends PureComponent<IProps> {
   readonly state = { showText: false };
 
   showTextHandler = () => {

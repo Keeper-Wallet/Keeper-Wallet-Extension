@@ -1,16 +1,17 @@
-import { extension } from 'lib/extension';
-import ObservableStore from 'obs-store';
 import { BigNumber } from '@waves/bignumber';
-import { ExtensionStorage } from '../storage/storage';
-import { AssetInfoController } from './assetInfo';
-import { NftInfoController } from './NftInfoController';
-import { NetworkController } from './network';
-import { PreferencesController } from './preferences';
-import { VaultController } from './VaultController';
 import { TransactionFromNode } from '@waves/ts-types';
 import { AssetBalance, BalancesItem } from 'balances/types';
 import { collectBalances } from 'balances/utils';
+import { extension } from 'lib/extension';
+import ObservableStore from 'obs-store';
+
 import { MAX_NFT_ITEMS, MAX_TX_HISTORY_ITEMS } from '../constants';
+import { ExtensionStorage } from '../storage/storage';
+import { AssetInfoController } from './assetInfo';
+import { NetworkController } from './network';
+import { NftInfoController } from './NftInfoController';
+import { PreferencesController } from './preferences';
+import { VaultController } from './VaultController';
 
 const PERIOD_IN_SECONDS = 10;
 
@@ -284,13 +285,14 @@ export class CurrentAccountController {
     const leasedOut = regular.sub(available);
 
     const balance: BalancesItem = {
-      aliases: aliases,
+      aliases,
       available: available.toString(),
       leasedOut: leasedOut.toString(),
       network: currentNetwork,
       txHistory: txHistory[0],
 
       assets: myAssets.balances.reduce<Record<string, AssetBalance>>(
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         (assets, info) => {
           assets[info.assetId] = {
             minSponsoredAssetFee: info.minSponsoredAssetFee,

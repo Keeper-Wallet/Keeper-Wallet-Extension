@@ -1,9 +1,9 @@
-import * as styles from 'nfts/nftCard.module.css';
-import * as React from 'react';
 import cn from 'classnames';
-import { Ellipsis } from 'ui/components/ui';
-import { Nft } from 'nfts/utils';
 import { DisplayMode } from 'nfts/index';
+import * as styles from 'nfts/nftCard.module.css';
+import { Nft } from 'nfts/utils';
+import { useState } from 'react';
+import { Ellipsis } from 'ui/components/ui';
 
 export function NftCover({
   className,
@@ -12,13 +12,14 @@ export function NftCover({
   className?: string;
   nft: Nft | null | undefined;
 }) {
-  const [isLoading, setLoading] = React.useState(true);
+  const [isLoading, setLoading] = useState(true);
 
   return nft?.isVideo ? (
     <video
       autoPlay
       loop
       className={cn(styles.cover, className, isLoading && 'skeleton-glow')}
+      // eslint-disable-next-line react/no-unknown-property
       onLoad={() => nft?.foreground && setLoading(false)}
     >
       <source src={nft?.foreground as string | undefined} type="video/mp4" />

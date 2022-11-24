@@ -1,6 +1,6 @@
-import * as React from 'react';
-import * as styles from './powerBtn.styl';
 import cn from 'classnames';
+
+import * as styles from './powerBtn.styl';
 
 export function PowerButton({
   className,

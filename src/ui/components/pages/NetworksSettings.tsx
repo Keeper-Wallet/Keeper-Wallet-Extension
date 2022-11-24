@@ -1,16 +1,17 @@
-import * as React from 'react';
+import { NetworkName } from 'networks/types';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+import { AppState } from 'ui/store';
+import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
+
 import {
   setCustomCode,
   setCustomMatcher,
   setCustomNode,
 } from '../../actions/network';
-import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, Copy, ErrorMessage, Input, Modal } from '../ui';
 import * as styles from './styles/settings.styl';
-import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
-import { AppState } from 'ui/store';
-import { NetworkName } from 'networks/types';
 
 interface StateProps {
   networks: Array<{
@@ -64,7 +65,7 @@ interface State {
   validateData?: boolean;
 }
 
-class NetworksSettingsComponent extends React.PureComponent<Props, State> {
+class NetworksSettingsComponent extends PureComponent<Props, State> {
   state: State = {};
   _tCopy: ReturnType<typeof setTimeout> | undefined;
   _tSave: ReturnType<typeof setTimeout> | undefined;

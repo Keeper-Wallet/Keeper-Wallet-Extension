@@ -1,10 +1,8 @@
-import * as styles from './matcher.styl';
-import * as React from 'react';
-
-import { MatcherCard } from './MatcherCard';
-import { MatcherInfo } from './MatcherInfo';
 import { TxFooter, TxHeader } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './matcher.styl';
+import { MatcherCard } from './MatcherCard';
+import { MatcherInfo } from './MatcherInfo';
 
 export function MatcherOrders(props: MessageComponentProps) {
   const { message, assets } = props;

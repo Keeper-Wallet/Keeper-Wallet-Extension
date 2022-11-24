@@ -1,10 +1,12 @@
-import * as styles from './createOrder.styl';
-import * as React from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { Asset, Balance, DateFormat } from '../../ui';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
+
 import { getMoney } from '../../../utils/converters';
+import { Asset, Balance, DateFormat } from '../../ui';
+import { TxIcon } from '../BaseTransaction';
+import { MessageCardComponentProps } from '../types';
+import * as styles from './createOrder.styl';
 import {
   getAmount,
   getAmountSign,
@@ -13,9 +15,8 @@ import {
   getPriceSign,
   messageType,
 } from './parseTx';
-import { MessageCardComponentProps } from '../types';
 
-class CreateOrderCardComponent extends React.PureComponent<
+class CreateOrderCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
@@ -64,9 +65,9 @@ class CreateOrderCardComponent extends React.PureComponent<
             <h1 className="headline1 margin-min">
               <Balance
                 data-testid="createOrderTitleAmount"
-                split={true}
+                split
                 addSign={getAmountSign(tx)}
-                showAsset={true}
+                showAsset
                 balance={amount}
                 showUsdAmount
               />
@@ -74,9 +75,9 @@ class CreateOrderCardComponent extends React.PureComponent<
             <h1 className="headline1">
               <Balance
                 data-testid="createOrderTitlePrice"
-                split={true}
+                split
                 addSign={getPriceSign(tx)}
-                showAsset={true}
+                showAsset
                 balance={getPriceAmount(tx, assets)}
                 showUsdAmount
               />
@@ -92,9 +93,9 @@ class CreateOrderCardComponent extends React.PureComponent<
             <div className={styles.txValue}>
               <Balance
                 data-testid="createOrderPrice"
-                isShortFormat={true}
+                isShortFormat
                 balance={price}
-                showAsset={true}
+                showAsset
                 showUsdAmount
               />
             </div>

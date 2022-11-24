@@ -1,4 +1,5 @@
 import { UiAction } from 'ui/store';
+
 import { DEFAULT_MAIN_CONFIG, NftConfig } from '../../constants';
 import { ACTION } from '../actions/constants';
 

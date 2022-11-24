@@ -1,5 +1,6 @@
 import Background from 'ui/services/Background';
 import { UiAction, UiActionPayload, UiThunkAction } from 'ui/store';
+
 import { ACTION } from './constants';
 
 function createMVAction<TActionType extends UiAction['type']>(

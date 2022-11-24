@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/react';
-import * as React from 'react';
 import { RouteObject } from 'react-router-dom';
 import { ErrorPage } from 'ui/components/pages/errorPage';
 import { RootAccounts } from 'ui/components/RootAccounts';
+
 import { Bottom } from '../ui/components/bottom';
 import { Menu } from '../ui/components/menu/Menu';
 import { BackUpSeed } from '../ui/components/pages/BackupSeed';

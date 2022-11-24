@@ -1,12 +1,13 @@
-import * as styles from './customData.styl';
-import * as React from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { ShowScript } from '../../ui';
-import { MessageCardComponentProps } from '../types';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-class CustomDataCardComponent extends React.PureComponent<
+import { ShowScript } from '../../ui';
+import { TxIcon } from '../BaseTransaction';
+import { MessageCardComponentProps } from '../types';
+import * as styles from './customData.styl';
+
+class CustomDataCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
@@ -22,7 +23,7 @@ class CustomDataCardComponent extends React.PureComponent<
       <div className={className}>
         <div className={styles.cardHeader}>
           <div className={styles.dataTxIcon}>
-            <TxIcon txType={'authOrigin'} small={true} />
+            <TxIcon txType="authOrigin" small />
           </div>
           <div>
             <div className="basic500 body3 margin-min">
@@ -38,8 +39,8 @@ class CustomDataCardComponent extends React.PureComponent<
             data={(data.version === 2 && data.data) || []}
             script={(data.version === 1 && data.binary) || ''}
             isData={data.version === 2 && !!data.data}
-            optional={true}
-            showNotify={true}
+            optional
+            showNotify
             hideScript={this.props.collapsed}
           />
         </div>

@@ -1,9 +1,10 @@
 import ObservableStore from 'obs-store';
-import { ExtensionStorage } from '../storage/storage';
 import {
   fromEthereumToWavesAddress,
   isEthereumAddress,
 } from 'ui/utils/ethereum';
+
+import { ExtensionStorage } from '../storage/storage';
 
 export class AddressBookController {
   private store;

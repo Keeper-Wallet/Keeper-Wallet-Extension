@@ -1,8 +1,8 @@
-import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
+
 import { SwapAccountInfoHeader } from './accountInfoHeader';
 import * as styles from './layout.module.css';
-import { useTranslation } from 'react-i18next';
 
 interface Props {
   children: React.ReactNode;

@@ -1,14 +1,15 @@
-import * as styles from './script.styl';
-import * as React from 'react';
-import {
-  withTranslation,
-  WithTranslation,
-  useTranslation,
-} from 'react-i18next';
 import cn from 'classnames';
-import { Copy } from '../copy';
-import { Button } from '../buttons';
+import { Fragment, PureComponent } from 'react';
+import {
+  useTranslation,
+  WithTranslation,
+  withTranslation,
+} from 'react-i18next';
+
 import { Modal } from '..';
+import { Button } from '../buttons';
+import { Copy } from '../copy';
+import * as styles from './script.styl';
 
 const ContentScript = ({
   script,
@@ -143,17 +144,20 @@ const DataNoKey = ({
                     data-testid="invokeArgumentValue"
                   >
                     [
-                    {(itemValue as unknown[]).map((item, index) =>
-                      index === length - 1 ? (
-                        <>
-                          {JSON.stringify(item)}]<br />
-                        </>
-                      ) : (
-                        <>
-                          {JSON.stringify(item)},<br />
-                        </>
+                    {
+                      // eslint-disable-next-line @typescript-eslint/no-shadow
+                      (itemValue as unknown[]).map((item, index) =>
+                        index === length - 1 ? (
+                          <Fragment key={index}>
+                            {JSON.stringify(item)}]<br />
+                          </Fragment>
+                        ) : (
+                          <Fragment key={index}>
+                            {JSON.stringify(item)},<br />
+                          </Fragment>
+                        )
                       )
-                    )}
+                    }
                   </td>
                 ) : (
                   <td
@@ -190,7 +194,7 @@ interface State {
   showResizeBtn: boolean;
 }
 
-class ShowScriptComponent extends React.PureComponent<Props, State> {
+class ShowScriptComponent extends PureComponent<Props, State> {
   state: State = {
     showAllScript: false,
     showCopied: false,

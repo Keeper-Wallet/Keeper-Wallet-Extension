@@ -1,14 +1,15 @@
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import * as styles from './styles/import.styl';
 import cn from 'classnames';
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../ui';
+import background from 'ui/services/Background';
+
 import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { useAppSelector } from '../../store';
-import background from 'ui/services/Background';
+import { Button } from '../ui';
 import { generateNewWalletItems } from './NewWallet';
+import * as styles from './styles/import.styl';
 
 export function ImportPopup() {
   const { t } = useTranslation();
@@ -55,10 +56,10 @@ export function AccountsHome() {
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const networks = useAppSelector(state => state.networks);
 
-  const [isLedgerSupported, setIsLedgerSupported] = React.useState(false);
-  const [isDebug, setDebug] = React.useState(false);
+  const [isLedgerSupported, setIsLedgerSupported] = useState(false);
+  const [isDebug, setDebug] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     TransportWebUSB.isSupported().then(setIsLedgerSupported);
 
     const searchParams = new URLSearchParams(window.location.search);

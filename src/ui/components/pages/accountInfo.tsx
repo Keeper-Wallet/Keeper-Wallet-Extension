@@ -1,8 +1,9 @@
 import { Asset, Money } from '@waves/data-entities';
-import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'ui/store';
+
 import { getAsset } from '../../actions/assets';
 import Background from '../../services/Background';
 import { getAccountLink } from '../../urls';
@@ -33,19 +34,19 @@ export function AccountInfo() {
     state.accounts.find(x => x.address === params.address)
   );
 
-  const copiedTimerRef = React.useRef<ReturnType<typeof setTimeout>>();
+  const copiedTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const defferRef = React.useRef<{
+  const defferRef = useRef<{
     reject: () => void;
     resolve: (password: string) => void;
   }>();
 
-  const [password, setPassword] = React.useState<string | undefined>(undefined);
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [showCopied, setShowCopied] = React.useState(false);
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [password, setPassword] = useState<string | undefined>(undefined);
+  const [passwordError, setPasswordError] = useState(false);
+  const [showCopied, setShowCopied] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const wavesAsset = assets['WAVES'];
+  const wavesAsset = assets.WAVES;
 
   let balance: Money | undefined;
   let leaseBalance: Money | undefined;
@@ -61,7 +62,7 @@ export function AccountInfo() {
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!wavesAsset) {
       dispatch(getAsset('WAVES'));
     }
@@ -102,6 +103,7 @@ export function AccountInfo() {
     new Promise<string>((resolve, reject) => {
       defferRef.current = { resolve, reject };
     })
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       .then(password => request(password))
       .then(data => {
         setShowPassword(false);
@@ -123,6 +125,7 @@ export function AccountInfo() {
   const getSeed = (copyCallback: (text: string) => void) => {
     requestPrivateData({
       copyCallback,
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       request: password =>
         Background.getAccountSeed(account.address, currentNetwork, password),
       retry: () => getSeed(copyCallback),
@@ -132,6 +135,7 @@ export function AccountInfo() {
   const getEncodedSeed = (copyCallback: (text: string) => void) => {
     requestPrivateData({
       copyCallback,
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       request: password =>
         Background.getAccountEncodedSeed(
           account.address,
@@ -145,6 +149,7 @@ export function AccountInfo() {
   const getPrivateKey = (copyCallback: (text: string) => void) => {
     requestPrivateData({
       copyCallback,
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       request: password =>
         Background.getAccountPrivateKey(
           account.address,
@@ -176,7 +181,7 @@ export function AccountInfo() {
                   navigate(`/change-account-name/${params.address}`);
                 }}
               >
-                <span className={`basic500 body1`}>{account.name}</span>
+                <span className="basic500 body1">{account.name}</span>
                 <i className={styles.editIcon}> </i>
               </Button>
             </div>

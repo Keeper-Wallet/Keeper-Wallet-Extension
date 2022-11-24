@@ -1,15 +1,16 @@
-import * as styles from './lease.styl';
-import * as React from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { AddressRecipient } from '../../ui/Address/Recipient';
-import { Balance } from '../../ui';
-import { getMoney } from '../../../utils/converters';
-import { getAmount, messageType } from './parseTx';
-import { MessageCardComponentProps } from '../types';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-class LeaseCardComponent extends React.PureComponent<
+import { getMoney } from '../../../utils/converters';
+import { Balance } from '../../ui';
+import { AddressRecipient } from '../../ui/Address/Recipient';
+import { TxIcon } from '../BaseTransaction';
+import { MessageCardComponentProps } from '../types';
+import * as styles from './lease.styl';
+import { getAmount, messageType } from './parseTx';
+
+class LeaseCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
@@ -40,8 +41,8 @@ class LeaseCardComponent extends React.PureComponent<
             <h1 className="headline1">
               <Balance
                 data-testid="leaseAmount"
-                split={true}
-                showAsset={true}
+                split
+                showAsset
                 balance={amount}
                 showUsdAmount
               />

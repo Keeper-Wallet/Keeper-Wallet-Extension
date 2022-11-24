@@ -1,11 +1,12 @@
 import cn from 'classnames';
-import * as React from 'react';
-import { connect } from 'react-redux';
+import { NetworkName } from 'networks/types';
+import { PureComponent } from 'react';
 import {
-  withTranslation,
   useTranslation,
   WithTranslation,
+  withTranslation,
 } from 'react-i18next';
+import { connect } from 'react-redux';
 import { setLoading } from 'ui/actions/localState';
 import {
   setCustomCode,
@@ -14,12 +15,13 @@ import {
   setNetwork,
 } from 'ui/actions/network';
 import { Modal } from 'ui/components/ui';
-import { INetworkData, NetworkSettings } from '../NetworkSettings';
-import * as styles from './network.styl';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { AppState } from 'ui/store';
-import { NetworkName } from 'networks/types';
 
+import { INetworkData, NetworkSettings } from '../NetworkSettings';
+import * as styles from './network.styl';
+
+// eslint-disable-next-line @typescript-eslint/no-shadow
 const key = (key: string) => `bottom.${key}`;
 
 const Networks = ({
@@ -118,7 +120,7 @@ interface IState {
   showSettings?: boolean;
 }
 
-class NetworkComponent extends React.PureComponent<Props, IState> {
+class NetworkComponent extends PureComponent<Props, IState> {
   state: IState = {
     showNetworks: false,
     net: null,
@@ -136,8 +138,8 @@ class NetworkComponent extends React.PureComponent<Props, IState> {
       const { customMatcher, customNodes } = props;
 
       acc[name] = {
-        name: name,
-        code: code,
+        name,
+        code,
         server: customNodes[name] || server,
         matcher: customMatcher[name] || matcher,
       };

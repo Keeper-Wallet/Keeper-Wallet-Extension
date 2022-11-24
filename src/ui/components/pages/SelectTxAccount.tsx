@@ -1,22 +1,23 @@
-import * as styles from './styles/selectTxAccount.styl';
-import * as React from 'react';
+import { MessageStoreItem } from 'messages/types';
+import { NotificationsStoreItem } from 'notifications/types';
+import { PreferencesAccount } from 'preferences/types';
+import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
-import { Button } from '../ui';
 import { connect } from 'react-redux';
+import Background from 'ui/services/Background';
+import { AppState } from 'ui/store';
+
 import { clearMessagesStatus } from '../../actions/localState';
+import { clearMessages, reject } from '../../actions/messages';
 import {
   deleteNotifications,
   updateActiveState,
 } from '../../actions/notifications';
-import { clearMessages, reject } from '../../actions/messages';
 import { WithNavigate, withNavigate } from '../../router';
+import { Button } from '../ui';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import { LoadingScreen } from './loadingScreen';
-import { AppState } from 'ui/store';
-import { NotificationsStoreItem } from 'notifications/types';
-import { PreferencesAccount } from 'preferences/types';
-import { MessageStoreItem } from 'messages/types';
-import Background from 'ui/services/Background';
+import * as styles from './styles/selectTxAccount.styl';
 
 interface StateProps {
   selectAccount: Partial<PreferencesAccount>;
@@ -47,7 +48,7 @@ interface State {
   loading: boolean;
 }
 
-class SelectTxAccountComponent extends React.PureComponent<Props, State> {
+class SelectTxAccountComponent extends PureComponent<Props, State> {
   state: State = { loading: false };
 
   static getDerivedStateFromProps(
@@ -98,7 +99,7 @@ class SelectTxAccountComponent extends React.PureComponent<Props, State> {
       <div className={styles.content}>
         <TransactionWallet
           className={styles.userWallet}
-          hideButton={true}
+          hideButton
           account={this.props.selectAccount}
         >
           <div

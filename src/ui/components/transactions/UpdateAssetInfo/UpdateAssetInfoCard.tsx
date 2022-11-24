@@ -1,13 +1,14 @@
-import * as styles from './index.styl';
-import * as React from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { ShowScript } from '../../ui';
-import { messageType } from './parseTx';
-import { MessageCardComponentProps } from '../types';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-class UpdateAssetInfoCardComponent extends React.PureComponent<
+import { ShowScript } from '../../ui';
+import { TxIcon } from '../BaseTransaction';
+import { MessageCardComponentProps } from '../types';
+import * as styles from './index.styl';
+import { messageType } from './parseTx';
+
+class UpdateAssetInfoCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
@@ -45,8 +46,8 @@ class UpdateAssetInfoCardComponent extends React.PureComponent<
           {!!tx.script && (
             <ShowScript
               script={tx.script}
-              showNotify={true}
-              optional={true}
+              showNotify
+              optional
               hideScript={this.props.collapsed}
             />
           )}

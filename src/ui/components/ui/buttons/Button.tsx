@@ -1,6 +1,7 @@
-import * as React from 'react';
-import * as styles from './Button.module.css';
 import cn from 'classnames';
+import { useMemo } from 'react';
+
+import * as styles from './Button.module.css';
 
 type View =
   | 'custom'
@@ -39,7 +40,7 @@ export const Button: React.FC<Props> = ({
   children,
   ...props
 }) => {
-  const buttonClassName = React.useMemo(
+  const buttonClassName = useMemo(
     () => getClassName(className, view, loading),
     [className, view, loading]
   );

@@ -1,9 +1,7 @@
-import * as styles from './cancelLease.styl';
-import * as React from 'react';
-
-import { CancelLeaseCard } from './CancelLeaseCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './cancelLease.styl';
+import { CancelLeaseCard } from './CancelLeaseCard';
 
 export function CancelLease(props: MessageComponentProps) {
   return (

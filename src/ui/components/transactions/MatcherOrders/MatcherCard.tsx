@@ -1,12 +1,13 @@
-import * as styles from './matcher.styl';
-import * as React from 'react';
 import cn from 'classnames';
+import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
-import { messageType } from './parseTx';
-import { MessageCardComponentProps } from '../types';
 
-class MatcherCardComponent extends React.PureComponent<
+import { TxIcon } from '../BaseTransaction';
+import { MessageCardComponentProps } from '../types';
+import * as styles from './matcher.styl';
+import { messageType } from './parseTx';
+
+class MatcherCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
@@ -20,10 +21,10 @@ class MatcherCardComponent extends React.PureComponent<
       <div className={className}>
         <div>
           {collapsed ? (
-            <React.Fragment>
+            <>
               <div className={styles.smallCardContent}>
                 <div className={styles.matcherTxIconSmall}>
-                  <TxIcon txType={messageType} small={true} />
+                  <TxIcon txType={messageType} small />
                 </div>
                 <div>
                   <div className="basic500 body3 margin-min origin-ellipsis">
@@ -34,7 +35,7 @@ class MatcherCardComponent extends React.PureComponent<
                   </h1>
                 </div>
               </div>
-            </React.Fragment>
+            </>
           ) : (
             <div className={styles.matcherTxIcon}>
               <TxIcon txType={messageType} />

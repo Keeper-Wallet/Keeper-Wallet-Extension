@@ -1,12 +1,13 @@
-import * as styles from './originAuth.styl';
-import * as React from 'react';
 import cn from 'classnames';
+import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
-import { messageType } from './parseTx';
-import { MessageCardComponentProps } from '../types';
 
-class OriginAuthCardComponent extends React.PureComponent<
+import { TxIcon } from '../BaseTransaction';
+import { MessageCardComponentProps } from '../types';
+import * as styles from './originAuth.styl';
+import { messageType } from './parseTx';
+
+class OriginAuthCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
@@ -21,10 +22,10 @@ class OriginAuthCardComponent extends React.PureComponent<
       <div className={className}>
         <div className={styles.cardHeader}>
           {collapsed ? (
-            <React.Fragment>
+            <>
               <div className={styles.smallCardContent}>
                 <div className={styles.originAuthTxIconSmall}>
-                  <TxIcon txType={messageType} small={true} />
+                  <TxIcon txType={messageType} small />
                 </div>
                 <div>
                   <div className="basic500 body3 margin-min origin-ellipsis">
@@ -35,7 +36,7 @@ class OriginAuthCardComponent extends React.PureComponent<
                   </h1>
                 </div>
               </div>
-            </React.Fragment>
+            </>
           ) : (
             <div className={styles.originAuthTxIcon}>
               <TxIcon txType={messageType} />

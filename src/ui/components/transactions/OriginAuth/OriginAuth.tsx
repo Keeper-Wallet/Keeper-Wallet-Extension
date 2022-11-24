@@ -1,29 +1,29 @@
-import * as styles from './originAuth.styl';
-import * as React from 'react';
+import { BigNumber } from '@waves/bignumber';
+import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
-
-import { OriginAuthCard } from './OriginAuthCard';
-import { OriginAuthInfo } from './OriginAuthInfo';
+import { connect } from 'react-redux';
+import { TAutoAuth } from 'ui/components/pages/PermissionsSettings/components';
+import { ExtendedPermission } from 'ui/components/permissions';
 import {
   ApproveBtn,
   Button,
   CollapsedContent,
   DropdownButton,
 } from 'ui/components/ui';
-import { ExtendedPermission } from 'ui/components/permissions';
-import { connect } from 'react-redux';
-import { BigNumber } from '@waves/bignumber';
-import { TxHeader } from '../BaseTransaction';
 import { AppState } from 'ui/store';
-import { TAutoAuth } from 'ui/components/pages/PermissionsSettings/components';
+
+import { TxHeader } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './originAuth.styl';
+import { OriginAuthCard } from './OriginAuthCard';
+import { OriginAuthInfo } from './OriginAuthInfo';
 
 interface State extends Partial<TAutoAuth> {
   el?: HTMLDivElement | null;
   showNotify?: boolean | null;
 }
 
-class OriginAuthComponent extends React.PureComponent<
+class OriginAuthComponent extends PureComponent<
   MessageComponentProps & WithTranslation,
   State
 > {
@@ -87,7 +87,7 @@ class OriginAuthComponent extends React.PureComponent<
           <DropdownButton placement="top">
             <Button
               id="reject"
-              key={'reject'}
+              key="reject"
               onClick={this.props.reject}
               type="button"
               view="warning"
@@ -96,11 +96,11 @@ class OriginAuthComponent extends React.PureComponent<
             </Button>
             <Button
               id="rejectForever"
-              key={'rejectForever'}
+              key="rejectForever"
               onClick={this.props.rejectForever}
               type="button"
               view="danger"
-              className={'custom'}
+              className="custom"
             >
               {t('sign.blacklist')}
             </Button>

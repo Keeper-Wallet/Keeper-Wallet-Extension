@@ -1,6 +1,6 @@
-import * as React from 'react';
-import cn from 'classnames';
 import './head.styl';
+
+import cn from 'classnames';
 
 export function HeadLogo({
   className = '',

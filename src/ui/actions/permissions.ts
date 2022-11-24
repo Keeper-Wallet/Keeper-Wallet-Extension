@@ -1,4 +1,5 @@
 import { UiActionOfType } from 'ui/store';
+
 import { ACTION } from './constants';
 
 export const allowOrigin = (

@@ -1,7 +1,8 @@
-import * as React from 'react';
-import * as styles from './Spoiler.module.css';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { Button } from '../';
+import * as styles from './Spoiler.module.css';
 
 interface Props {
   className?: string;
@@ -20,7 +21,7 @@ export function Spoiler({
 }: Props) {
   const { t } = useTranslation();
 
-  const [showContent, setShowContent] = React.useState(!!expanded);
+  const [showContent, setShowContent] = useState(!!expanded);
 
   return (
     <div className={className}>

@@ -1,13 +1,14 @@
-import * as styles from './newWalletName.module.css';
-import * as React from 'react';
+import { useAccountsSelector, useAppDispatch } from 'accounts/store';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { newAccountName, selectAccount } from 'ui/actions/localState';
 import { createAccount } from 'ui/actions/user';
-import { Button, ErrorMessage, Input } from 'ui/components/ui';
 import { CONFIG } from 'ui/appConfig';
+import { Button, ErrorMessage, Input } from 'ui/components/ui';
 import { WalletTypes } from 'ui/services/Background';
-import { useAccountsSelector, useAppDispatch } from 'accounts/store';
+
+import * as styles from './newWalletName.module.css';
 
 export function NewWalletName() {
   const navigate = useNavigate();
@@ -16,15 +17,15 @@ export function NewWalletName() {
 
   const account = useAccountsSelector(state => state.localState.newAccount);
   const accounts = useAccountsSelector(state => state.accounts);
-  const [accountName, setAccountName] = React.useState('');
-  const [pending, setPending] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<string | null>('');
+  const [accountName, setAccountName] = useState('');
+  const [pending, setPending] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>('');
 
   const existingAccount = accounts.find(
     ({ address }) => address === account.address
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(newAccountName(accountName));
 
     setError(null);
@@ -48,7 +49,7 @@ export function NewWalletName() {
 
   return (
     <div data-testid="newWalletNameForm" className={styles.content}>
-      <h2 className={`title1 margin1`}>{t('newAccountName.accountName')}</h2>
+      <h2 className="title1 margin1">{t('newAccountName.accountName')}</h2>
 
       <form
         onSubmit={async e => {
@@ -99,7 +100,7 @@ export function NewWalletName() {
           </ErrorMessage>
         </div>
 
-        <div className={`basic500 tag1 margin2`}>
+        <div className="basic500 tag1 margin2">
           {t('newAccountName.nameInfo')}
         </div>
 
