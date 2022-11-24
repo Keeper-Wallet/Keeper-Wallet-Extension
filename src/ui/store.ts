@@ -36,11 +36,6 @@ export type AppState = ReturnType<typeof reducer>;
 
 export type UiAction =
   | {
-      type: typeof ACTION.UPDATE_LANGS;
-      payload: Array<{ id: string; name: string }>;
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.UPDATE_NETWORKS;
       payload: Awaited<ReturnType<BackgroundUiApi['getNetworks']>>;
       meta?: never;

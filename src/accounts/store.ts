@@ -23,7 +23,6 @@ const reducer = combineReducers({
   customNodes: reducers.customNodes,
   customMatcher: reducers.customMatcher,
   networks: reducers.networks,
-  langs: reducers.langs,
   idleOptions: reducers.idleOptions,
   version: reducers.version,
   localState: reducers.localState,

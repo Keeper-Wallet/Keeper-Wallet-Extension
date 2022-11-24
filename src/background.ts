@@ -4,8 +4,8 @@ import { TSignedData } from '@waves/waves-transactions/dist/requests/custom-data
 import { BalancesItem } from 'balances/types';
 import { collectBalances } from 'balances/utils';
 import EventEmitter from 'events';
+import { SUPPORTED_LANGUAGES } from 'i18n/constants';
 import { extension } from 'lib/extension';
-import { getFirstLangCode } from 'lib/getFirstLangCode';
 import { ERRORS } from 'lib/keeperError';
 import { PortStream } from 'lib/portStream';
 import { TabsManager } from 'lib/tabsManager';
@@ -22,6 +22,7 @@ import { IdleOptions, PreferencesAccount } from 'preferences/types';
 import { UiState } from 'ui/reducers/updateState';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateWalletInput } from 'wallets/types';
+import * as browser from 'webextension-polyfill';
 
 import {
   IgnoreErrorsContext,
@@ -136,8 +137,15 @@ extension.runtime.onInstalled.addListener(async details => {
 
 async function setupBackgroundService() {
   const extensionStorage = new ExtensionStorage();
-  await extensionStorage.create();
-  const initLangCode = await getFirstLangCode();
+
+  const [acceptLanguages] = await Promise.all([
+    browser.i18n.getAcceptLanguages(),
+    extensionStorage.create(),
+  ]);
+
+  const initLangCode = acceptLanguages.find(code =>
+    SUPPORTED_LANGUAGES.find(lang => lang.id === code.toLowerCase())
+  );
 
   const backgroundService = new BackgroundService({
     extensionStorage,

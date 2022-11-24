@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import { SUPPORTED_LANGUAGES } from 'i18n/constants';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 
 import { setLocale } from '../../../actions/user';
@@ -7,16 +8,13 @@ import * as styles from './LangsSelect.module.css';
 
 export function LangsSelect() {
   const dispatch = useAppDispatch();
-  const [langs, currentLocale] = useAppSelector(state => [
-    state.langs,
-    state.currentLocale,
-  ]);
+  const currentLocale = useAppSelector(state => state.currentLocale);
 
   return (
     <Select
       fill
       listPlacement="top"
-      selectList={langs.map(({ id, name }) => ({
+      selectList={SUPPORTED_LANGUAGES.map(({ id, name }) => ({
         id,
         value: id,
         text: name,

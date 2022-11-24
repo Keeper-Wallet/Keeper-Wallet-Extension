@@ -1,8 +1,8 @@
 import './ui/styles/global.css';
 import './ui/styles/app.styl';
 import './ui/styles/icons.styl';
-import './ui/i18n';
 
+import { i18nextInit } from 'i18n/init';
 import { render } from 'react-dom';
 import { initUiSentry } from 'sentry';
 
@@ -13,4 +13,6 @@ initUiSentry({
   source: 'popup',
 });
 
-render(<PopupRoot />, document.getElementById('app-content'));
+i18nextInit().then(() => {
+  render(<PopupRoot />, document.getElementById('app-content'));
+});
