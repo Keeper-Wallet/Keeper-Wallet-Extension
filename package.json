@@ -4,14 +4,14 @@
   "scripts": {
     "cleanup": "rimraf dist",
     "dev": "webpack --watch --mode development",
-    "dist": "NODE_OPTIONS=--max-old-space-size=8192 webpack --mode production",
     "lint:eslint": "eslint --ext .ts,.tsx,.js --max-warnings 0 .",
     "lint:prettier": "prettier . --check",
     "lint:prettier:fix": "prettier . --write",
     "lint:stylelint": "stylelint **/*.module.css",
     "lint:typescript": "tsc --noEmit",
     "test:dev": "mocha --inspect --watch",
-    "test": "mocha"
+    "test": "mocha",
+    "build": "NODE_OPTIONS=--max-old-space-size=8192 webpack --mode production"
   },
   "mocha": {
     "bail": true,

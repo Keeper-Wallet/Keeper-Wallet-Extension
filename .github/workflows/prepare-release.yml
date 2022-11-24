@@ -49,7 +49,7 @@ jobs:
           STATISTICS_TOKEN: ${{ secrets.METRICS_TOKEN }}
 
       - name: Build
-        run: yarn run dist
+        run: yarn run build
         env:
           NODE_ENV_VER: ${{ steps.tagInfo.outputs.VERSION }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
