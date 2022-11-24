@@ -5,11 +5,9 @@
     "dev": "webpack --watch --mode development",
     "dist": "NODE_OPTIONS=--max-old-space-size=8192 webpack --mode production",
     "lint:eslint": "eslint --ext .ts,.tsx,.js --max-warnings 0 .",
-    "lint:eslint:fix": "eslint --fix --ext .ts,.tsx,.js .",
     "lint:prettier": "prettier . --check",
     "lint:prettier:fix": "prettier . --write",
     "lint:stylelint": "stylelint **/*.module.css",
-    "lint:stylelint:fix": "stylelint **/*.module.css --fix",
     "lint:typescript": "tsc --noEmit",
     "test:dev": "mocha --watch",
     "test": "mocha"
