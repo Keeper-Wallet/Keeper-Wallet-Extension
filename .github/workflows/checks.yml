@@ -1,10 +1,10 @@
-name: Tests
+name: Checks
 on:
   push:
     branches-ignore:
       - master
 jobs:
-  tests:
+  checks:
     runs-on: ubuntu-latest
     steps:
       - uses: styfle/cancel-workflow-action@0.11.0
@@ -14,8 +14,8 @@ jobs:
           cache: yarn
           node-version-file: .nvmrc
       - run: yarn install --frozen-lockfile
+      - run: yarn run lint:prettier
+      - run: yarn run lint:eslint
+      - run: yarn run lint:stylelint
       - run: echo '{}' > config.json
-      - run: yarn run build
-      - run: yarn test
-        env:
-          DEBUG: testcontainers
+      - run: yarn run lint:typescript
