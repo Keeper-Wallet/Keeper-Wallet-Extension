@@ -1,0 +1,14 @@
+name: Merge
+on:
+  push:
+    branches:
+      - master
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: styfle/cancel-workflow-action@0.11.0
+      - uses: Keeper-Wallet/jira-action@v1
+        with:
+          hooks-url: ${{ secrets.HOOKS_URL }}
+          hook-merge: ${{ secrets.HOOK_MERGE }}
