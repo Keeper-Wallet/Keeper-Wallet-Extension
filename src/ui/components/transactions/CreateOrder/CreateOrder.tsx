@@ -1,10 +1,8 @@
-import * as styles from './createOrder.styl';
-import * as React from 'react';
-
-import { CreateOrderCard } from './CreateOrderCard';
-import { CreateOrderInfo } from './CreateOrderInfo';
 import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './createOrder.styl';
+import { CreateOrderCard } from './CreateOrderCard';
+import { CreateOrderInfo } from './CreateOrderInfo';
 
 export function CreateOrder(props: MessageComponentProps) {
   const { message, assets } = props;

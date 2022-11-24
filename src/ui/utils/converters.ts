@@ -1,5 +1,5 @@
-import { Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
+import { Money } from '@waves/data-entities';
 import { AssetsRecord } from 'assets/types';
 
 export const moneyLikeToMoney = (amount: IMoneyLike, assets: AssetsRecord) => {
@@ -31,7 +31,7 @@ export const getMoney = (
 
   if (amount instanceof BigNumber) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return new Money(amount, assets['WAVES'] as any);
+    return new Money(amount, assets.WAVES as any);
   }
 
   if (typeof amount === 'object') {
@@ -47,7 +47,7 @@ export const getMoney = (
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return new Money(new BigNumber(amount), assets['WAVES'] as any);
+  return new Money(new BigNumber(amount), assets.WAVES as any);
 };
 
 export interface IMoneyLike {

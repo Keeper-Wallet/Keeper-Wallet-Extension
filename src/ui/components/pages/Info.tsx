@@ -1,15 +1,16 @@
-import * as styles from './styles/info.styl';
-import * as React from 'react';
+import { Component } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
-import { BigLogo } from '../head';
 
-class InfoComponent extends React.Component<WithTranslation> {
+import { BigLogo } from '../head';
+import * as styles from './styles/info.styl';
+
+class InfoComponent extends Component<WithTranslation> {
   render() {
     const { t } = this.props;
 
     return (
       <div className={`${styles.content} body1`}>
-        <BigLogo className={`${styles.logoLeft} margin-main`} noTitle={true} />
+        <BigLogo className={`${styles.logoLeft} margin-main`} noTitle />
 
         <div className="margin-main basic500">{t('info.keepUp')}</div>
 

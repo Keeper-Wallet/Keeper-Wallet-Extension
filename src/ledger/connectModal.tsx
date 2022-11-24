@@ -1,9 +1,10 @@
-import * as React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { ErrorMessage } from 'ui/components/ui/error';
-import { ledgerService, LedgerServiceStatus } from './service';
+
 import * as styles from './connectModal.module.css';
+import { ledgerService, LedgerServiceStatus } from './service';
 
 interface Props {
   networkCode: string;
@@ -14,10 +15,10 @@ interface Props {
 export function LedgerConnectModal({ networkCode, onClose, onReady }: Props) {
   const { t } = useTranslation();
 
-  const [isConnecting, setIsConnecting] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const connectToLedger = React.useCallback(async () => {
+  const connectToLedger = useCallback(async () => {
     setError(null);
     setIsConnecting(true);
 
@@ -39,7 +40,7 @@ export function LedgerConnectModal({ networkCode, onClose, onReady }: Props) {
     }
   }, [networkCode, onReady, t]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       if (ledgerService.status !== LedgerServiceStatus.Ready) {
         ledgerService.disconnect();
@@ -47,7 +48,7 @@ export function LedgerConnectModal({ networkCode, onClose, onReady }: Props) {
     };
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     connectToLedger();
   }, [connectToLedger]);
 

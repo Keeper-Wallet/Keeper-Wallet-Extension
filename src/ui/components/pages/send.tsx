@@ -1,19 +1,20 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { validators } from '@waves/waves-transactions';
-import * as React from 'react';
+import { createNft } from 'nfts/utils';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
+import { getBalances } from 'ui/actions/balances';
+import Background from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { Input } from '../ui/input';
+
+import { AssetAmountInput } from '../../../assets/amountInput';
+import { ErrorMessage, Loader } from '../ui';
 import { AddressSuggestInput } from '../ui/Address/SuggestInput';
 import { Button } from '../ui/buttons/Button';
+import { Input } from '../ui/input';
 import * as styles from './send.module.css';
-import { getBalances } from 'ui/actions/balances';
-import { ErrorMessage, Loader } from '../ui';
-import { AssetAmountInput } from '../../../assets/amountInput';
-import { createNft } from 'nfts/utils';
-import Background from 'ui/services/Background';
 
 export function Send() {
   const params = useParams<{ assetId: string }>();
@@ -36,13 +37,13 @@ export function Send() {
   const asset = useAppSelector(state => state.assets[params.assetId!]);
 
   const isNft =
-    asset && asset.precision === 0 && asset.quantity == 1 && !asset.reissuable;
+    asset && asset.precision === 0 && asset.quantity === 1 && !asset.reissuable;
 
   const currentAddress = useAppSelector(state => state.selectedAccount.address);
   const nftInfo = useAppSelector(state => asset && state.nfts?.[asset.id]);
   const nftConfig = useAppSelector(state => state.nftConfig);
 
-  const displayName = React.useMemo(() => {
+  const displayName = useMemo(() => {
     if (!asset) {
       return null;
     }
@@ -60,7 +61,7 @@ export function Send() {
     return asset.displayName;
   }, [asset, currentAddress, isNft, nftConfig, nftInfo]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!assetBalances) {
       dispatch(getBalances());
     }
@@ -74,9 +75,9 @@ export function Send() {
       )
     : null;
 
-  const [isTriedToSubmit, setIsTriedToSubmit] = React.useState(false);
+  const [isTriedToSubmit, setIsTriedToSubmit] = useState(false);
 
-  const [recipientValue, setRecipientValue] = React.useState('');
+  const [recipientValue, setRecipientValue] = useState('');
   const recipientError = !recipientValue
     ? t('send.recipientRequiredError')
     : !(
@@ -87,22 +88,22 @@ export function Send() {
     : null;
   const showRecipientError = isTriedToSubmit && recipientError != null;
 
-  const [amountValue, setAmountValue] = React.useState(isNft ? '1' : '');
+  const [amountValue, setAmountValue] = useState(isNft ? '1' : '');
   const amountError =
-    !currentBalance || !amountValue || Number(amountValue) == 0
+    !currentBalance || !amountValue || Number(amountValue) === 0
       ? t('send.amountRequiredError')
       : !currentBalance.getTokens().gte(amountValue)
       ? t('send.insufficientFundsError')
       : null;
   const showAmountError = isTriedToSubmit && amountError != null;
 
-  const [attachmentValue, setAttachmentValue] = React.useState('');
+  const [attachmentValue, setAttachmentValue] = useState('');
   const attachmentByteCount = new TextEncoder().encode(attachmentValue).length;
   const attachmentError =
     attachmentByteCount > 140 ? t('send.attachmentMaxLengthError') : null;
   const showAttachmentError = isTriedToSubmit && attachmentError != null;
 
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
     <form
@@ -190,11 +191,12 @@ export function Send() {
                           assetBalances={assetBalances!}
                           assetOptions={Object.values(assets)
                             .filter(
+                              // eslint-disable-next-line @typescript-eslint/no-shadow
                               (asset): asset is NonNullable<typeof asset> =>
                                 asset != null
                             )
                             .filter(
-                              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-shadow
                               asset => assetBalances![asset.id] != null
                             )}
                           balance={balance}

@@ -1,14 +1,15 @@
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { SeedWallet } from './seed';
-import { EncodedSeedWallet } from './encodedSeed';
-import { PrivateKeyWallet } from './privateKey';
-import { LedgerApi, LedgerWallet } from './ledger';
-import { WxWallet } from './wx';
-import { IdentityApi } from '../controllers/IdentityController';
-import { DebugWallet } from 'wallets/debug';
-import { CreateWalletInput } from './types';
 import { AssetInfoController } from 'controllers/assetInfo';
 import { PreferencesAccount } from 'preferences/types';
+import { DebugWallet } from 'wallets/debug';
+
+import { IdentityApi } from '../controllers/IdentityController';
+import { EncodedSeedWallet } from './encodedSeed';
+import { LedgerApi, LedgerWallet } from './ledger';
+import { PrivateKeyWallet } from './privateKey';
+import { SeedWallet } from './seed';
+import { CreateWalletInput } from './types';
+import { WxWallet } from './wx';
 
 export function createWallet(
   input: CreateWalletInput,

@@ -1,14 +1,15 @@
-import * as styles from './scriptInvocation.styl';
-import * as React from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { Balance, PlateCollapsable, ShowScript } from '../../ui';
-import { getAmounts, messageType } from './parseTx';
-import { getMoney } from '../../../utils/converters';
-import { MessageCardComponentProps } from '../types';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-class ScriptInvocationCardComponent extends React.PureComponent<
+import { getMoney } from '../../../utils/converters';
+import { Balance, PlateCollapsable, ShowScript } from '../../ui';
+import { TxIcon } from '../BaseTransaction';
+import { MessageCardComponentProps } from '../types';
+import { getAmounts, messageType } from './parseTx';
+import * as styles from './scriptInvocation.styl';
+
+class ScriptInvocationCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
@@ -79,11 +80,11 @@ class ScriptInvocationCardComponent extends React.PureComponent<
             <div className={styles.txValue}>
               <ShowScript
                 className={styles.dataScript}
-                isData={true}
-                noKey={true}
+                isData
+                noKey
                 data={(tx.call && tx.call.args) || []}
-                optional={true}
-                showNotify={true}
+                optional
+                showNotify
                 hideScript={this.props.collapsed}
               />
             </div>

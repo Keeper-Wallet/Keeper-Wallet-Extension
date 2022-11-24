@@ -1,7 +1,8 @@
-import * as React from 'react';
+import { PureComponent } from 'react';
+
 import { MessageComponentProps } from '../types';
 
-export class UnknownInfo extends React.PureComponent<
+export class UnknownInfo extends PureComponent<
   Pick<MessageComponentProps, 'message' | 'assets'>
 > {
   render() {

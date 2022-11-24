@@ -1,8 +1,9 @@
-import * as styles from './auth.styl';
-import * as React from 'react';
 import cn from 'classnames';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
+
 import { MessageCardComponentProps } from '../types';
+import * as styles from './auth.styl';
 
 const Icon = ({
   icon,
@@ -36,7 +37,7 @@ interface State {
   icon: string | null;
 }
 
-class AuthCardComponent extends React.PureComponent<
+class AuthCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation,
   State
 > {
@@ -85,14 +86,14 @@ class AuthCardComponent extends React.PureComponent<
       <div className={className}>
         <div className={styles.cardHeader}>
           {collapsed ? (
-            <React.Fragment>
+            <>
               <div className={styles.smallCardContent}>
                 <div>
                   <Icon
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     icon={icon!}
                     canUseIcon={canUseIcon}
-                    small={true}
+                    small
                   />
                 </div>
                 <div>
@@ -104,7 +105,7 @@ class AuthCardComponent extends React.PureComponent<
                   </h1>
                 </div>
               </div>
-            </React.Fragment>
+            </>
           ) : (
             <div>
               <Icon

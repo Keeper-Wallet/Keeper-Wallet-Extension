@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export function TxStatus({ isApprove, isReject, isSend, messages }: IProps) {

@@ -1,16 +1,16 @@
-import cn from 'classnames';
-import * as styles from './historyItem.module.css';
-import { Balance, Loader } from '../../ui';
-import * as React from 'react';
-import { TxIcon } from '../../transactions/BaseTransaction';
-import { useAppSelector } from '../../../store';
-import { useTranslation } from 'react-i18next';
-import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
+import { Asset, Money } from '@waves/data-entities';
 import { Long, TRANSACTION_TYPE, TransactionFromNode } from '@waves/ts-types';
-import { Tooltip } from '../../ui/tooltip';
-import { AddressRecipient } from '../../ui/Address/Recipient';
+import cn from 'classnames';
+import { useTranslation } from 'react-i18next';
+
+import { useAppSelector } from '../../../store';
 import { getTxDetailLink } from '../../../urls';
+import { TxIcon } from '../../transactions/BaseTransaction';
+import { Balance, Loader } from '../../ui';
+import { AddressRecipient } from '../../ui/Address/Recipient';
+import { Tooltip } from '../../ui/tooltip';
+import * as styles from './historyItem.module.css';
 
 interface Props {
   tx: TransactionFromNode;
@@ -59,7 +59,7 @@ export function HistoryItem({ tx, className }: Props) {
       break;
     case TRANSACTION_TYPE.ISSUE: {
       const decimals = tx.decimals || 0;
-      const isNFT = !tx.reissuable && !decimals && tx.quantity == 1;
+      const isNFT = !tx.reissuable && !decimals && tx.quantity === 1;
       tooltip = t('historyCard.issue');
 
       label = isNFT
@@ -378,6 +378,7 @@ export function HistoryItem({ tx, className }: Props) {
           payment && fromCoins(payment.amount, payment.assetId);
 
         const incomingTransfer = tx.stateChanges.transfers.find(
+          // eslint-disable-next-line @typescript-eslint/no-shadow
           t => t.address === tx.sender
         );
 

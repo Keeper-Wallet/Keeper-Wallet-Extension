@@ -1,12 +1,13 @@
-import * as styles from './package.styl';
-import * as React from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
-import cn from 'classnames';
-import { getFees, getPackageAmounts, messageType } from './parseTx';
-import { Balance } from '../../ui';
 import { Money } from '@waves/data-entities';
+import cn from 'classnames';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
+
+import { Balance } from '../../ui';
+import { TxIcon } from '../BaseTransaction';
 import { MessageCardComponentProps } from '../types';
+import * as styles from './package.styl';
+import { getFees, getPackageAmounts, messageType } from './parseTx';
 
 const Fees = ({ fees }: { fees: Record<string, Money> }) => {
   const moneys = Object.values(fees);
@@ -19,8 +20,8 @@ const Fees = ({ fees }: { fees: Record<string, Money> }) => {
             <Balance
               data-testid="packageFeeItem"
               balance={fee}
-              isShortFormat={true}
-              showAsset={true}
+              isShortFormat
+              showAsset
             />
           </div>
         );
@@ -29,7 +30,7 @@ const Fees = ({ fees }: { fees: Record<string, Money> }) => {
   );
 };
 
-class PackageCardComponent extends React.PureComponent<
+class PackageCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {

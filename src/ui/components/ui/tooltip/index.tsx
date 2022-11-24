@@ -1,10 +1,11 @@
-import * as React from 'react';
-import * as Popper from 'react-popper';
-import * as modal from '../modal/modal.styl';
-import * as ReactDOM from 'react-dom';
-import * as styles from './tooltip.module.css';
 import { Placement } from '@popperjs/core';
 import cn from 'classnames';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import * as Popper from 'react-popper';
+
+import * as modal from '../modal/modal.styl';
+import * as styles from './tooltip.module.css';
 
 interface Props {
   className?: string;
@@ -25,10 +26,10 @@ export function Tooltip({
   placement = 'top-end',
   ...props
 }: Props) {
-  const [el, setEl] = React.useState<HTMLDivElement | null>(null);
-  const elRef = React.useRef(null);
-  const popperRef = React.useRef(null);
-  const [arrowRef, setArrowRef] = React.useState<HTMLElement | null>(null);
+  const [el, setEl] = useState<HTMLDivElement | null>(null);
+  const elRef = useRef(null);
+  const popperRef = useRef(null);
+  const [arrowRef, setArrowRef] = useState<HTMLElement | null>(null);
   const { styles: stylesP, attributes: attributesP } = Popper.usePopper(
     elRef.current,
     popperRef.current,
@@ -50,9 +51,9 @@ export function Tooltip({
       ],
     }
   );
-  const [showPopper, setShowPopper] = React.useState(false);
+  const [showPopper, setShowPopper] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const root = document.getElementById('app-modal')!;
 
@@ -75,7 +76,7 @@ export function Tooltip({
       })}
 
       {el &&
-        ReactDOM.createPortal(
+        createPortal(
           showPopper && (
             <div
               ref={popperRef}

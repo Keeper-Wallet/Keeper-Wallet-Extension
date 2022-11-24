@@ -1,7 +1,8 @@
 import ObservableStore from 'obs-store';
-import { WalletController } from './wallet';
-import { IdentityController } from './IdentityController';
+
 import { ExtensionStorage } from '../storage/storage';
+import { IdentityController } from './IdentityController';
+import { WalletController } from './wallet';
 
 export class VaultController {
   store;

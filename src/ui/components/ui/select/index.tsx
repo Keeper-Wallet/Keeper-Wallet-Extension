@@ -1,2 +1,2 @@
-export * from './Select';
 export * from './LangsSelect';
+export * from './Select';

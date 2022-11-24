@@ -1,24 +1,25 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
+import { AssetsRecord } from 'assets/types';
+import { MessageStoreItem } from 'messages/types';
+import { NotificationsStoreItem } from 'notifications/types';
+import { PreferencesAccount } from 'preferences/types';
+import { Component } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
+import { AppState } from 'ui/store';
+
+import { getAsset } from '../../actions/assets';
+import { approve, clearMessages } from '../../actions/messages';
 import {
   deleteNotifications,
   setActiveMessage,
   setActiveNotification,
 } from '../../actions/notifications';
-import { approve, clearMessages, reject } from '../../actions/messages';
-import { getAsset } from '../../actions/assets';
-import { LoadingScreen } from './loadingScreen';
-import { getConfigByTransaction } from '../transactions';
 import { NotificationCard } from '../notifications';
-import { TransactionWallet } from '../wallets/TransactionWallet';
-import * as styles from './styles/messageList.styl';
+import { getConfigByTransaction } from '../transactions';
 import { Button } from '../ui';
-import { AppState } from 'ui/store';
-import { NotificationsStoreItem } from 'notifications/types';
-import { PreferencesAccount } from 'preferences/types';
-import { MessageStoreItem } from 'messages/types';
-import { AssetsRecord } from 'assets/types';
+import { TransactionWallet } from '../wallets/TransactionWallet';
+import { LoadingScreen } from './loadingScreen';
+import * as styles from './styles/messageList.styl';
 
 const Messages = ({ messages, assets, onSelect }: IProps) => {
   return (
@@ -33,7 +34,7 @@ const Messages = ({ messages, assets, onSelect }: IProps) => {
                 className={styles.cardItem}
                 message={message}
                 assets={assets}
-                collapsed={true}
+                collapsed
               />
             </div>
           );
@@ -49,7 +50,6 @@ interface IProps {
   messages: MessageStoreItem[];
   assets: AssetsRecord;
   onSelect: (message: MessageStoreItem | null) => void;
-  onReject: (messageId: string) => void;
 }
 
 const Notifications = ({
@@ -71,7 +71,7 @@ const Notifications = ({
               <NotificationCard
                 onShow={onShow}
                 notifications={group}
-                collapsed={true}
+                collapsed
                 deleteNotifications={onDelete}
               />
             </div>
@@ -85,12 +85,10 @@ const Notifications = ({
 };
 
 interface StateProps {
-  balance: unknown;
   selectedAccount: Partial<PreferencesAccount>;
   assets: AssetsRecord;
   messages: MessageStoreItem[];
   notifications: NotificationsStoreItem[][];
-  hasNewMessages: boolean;
 }
 
 interface DispatchProps {
@@ -100,7 +98,6 @@ interface DispatchProps {
   setActiveMessage: (message: MessageStoreItem | null) => void;
   deleteNotifications: (ids: string[]) => void;
   getAsset: (assetId: string) => void;
-  reject: (messageId: string) => void;
 }
 
 type Props = WithTranslation & StateProps & DispatchProps;
@@ -112,7 +109,7 @@ interface State {
   loading: boolean;
 }
 
-class MessageListComponent extends React.Component<Props, State> {
+class MessageListComponent extends Component<Props, State> {
   state: State = { loading: true };
 
   static getDerivedStateFromProps(
@@ -192,13 +189,13 @@ class MessageListComponent extends React.Component<Props, State> {
           <TransactionWallet
             type="clean"
             account={this.props.selectedAccount}
-            hideButton={true}
+            hideButton
           />
         </div>
 
         <div className={styles.messageListScrollBox}>
           {hasNotifications && (
-            <React.Fragment>
+            <>
               <div className="flex basic500">
                 <div>{t('messageList.messages')}</div>
                 <Button
@@ -219,22 +216,21 @@ class MessageListComponent extends React.Component<Props, State> {
                   onDelete={this.deleteNotifications}
                 />
               </div>
-            </React.Fragment>
+            </>
           )}
 
           {hasMessages && (
-            <React.Fragment>
+            <>
               <div className="basic500">{t('messageList.pendingConfirm')}</div>
 
-              <div className={'basic-500 margin1'}>
+              <div className="basic-500 margin1">
                 <Messages
                   messages={messages}
                   assets={assets}
                   onSelect={this.selectMessageHandler}
-                  onReject={this.props.reject}
                 />
               </div>
-            </React.Fragment>
+            </>
           )}
         </div>
       </div>
@@ -242,17 +238,14 @@ class MessageListComponent extends React.Component<Props, State> {
   }
 }
 
-const mapStateToProps = function (store: AppState): StateProps {
+function mapStateToProps(store: AppState): StateProps {
   return {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    balance: store.balances[store.selectedAccount.address!],
     selectedAccount: store.selectedAccount,
     assets: store.assets,
     messages: store.messages,
     notifications: store.notifications,
-    hasNewMessages: store.messages.length > 0,
   };
-};
+}
 
 const actions = {
   setActiveNotification,
@@ -261,7 +254,6 @@ const actions = {
   clearMessages,
   getAsset,
   approve,
-  reject,
 };
 
 export const MessageList = connect(

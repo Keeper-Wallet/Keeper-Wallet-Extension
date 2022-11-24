@@ -7,6 +7,7 @@ import {
   BackgroundGetStateResult,
   BackgroundUiApi,
 } from 'ui/services/Background';
+
 import { UiStore } from '../store';
 import { ACTION } from './constants';
 
@@ -206,6 +207,7 @@ export function createUpdateState(store: UiStore) {
       (state.currentNetwork != null &&
         state.currentNetwork !== currentState.currentNetwork)
     ) {
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       const accounts = state.accounts || currentState.allNetworksAccounts;
       const network = state.currentNetwork || currentState.currentNetwork;
 

@@ -1,9 +1,7 @@
-import * as styles from './lease.styl';
-import * as React from 'react';
-
-import { LeaseCard } from './LeaseCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './lease.styl';
+import { LeaseCard } from './LeaseCard';
 
 export function Lease(props: MessageComponentProps) {
   return (

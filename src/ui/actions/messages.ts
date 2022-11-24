@@ -1,5 +1,5 @@
-import { ACTION } from './constants';
 import { IMoneyLike } from '../utils/converters';
+import { ACTION } from './constants';
 
 export const approve = (messageId: string) => ({
   type: ACTION.APPROVE,

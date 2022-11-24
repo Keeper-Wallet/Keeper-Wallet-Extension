@@ -1,15 +1,16 @@
-import ObservableStore from 'obs-store';
-import { extension } from 'lib/extension';
-import { MsgStatus, MSG_STATUSES } from '../constants';
-import { v4 as uuidv4 } from 'uuid';
-import log from 'loglevel';
 import EventEmitter from 'events';
+import { extension } from 'lib/extension';
+import log from 'loglevel';
+import { NotificationsStoreItem } from 'notifications/types';
+import ObservableStore from 'obs-store';
+import { PreferencesAccount } from 'preferences/types';
+import { v4 as uuidv4 } from 'uuid';
+
+import { MSG_STATUSES, MsgStatus } from '../constants';
 import { ERRORS } from '../lib/keeperError';
 import { ExtensionStorage } from '../storage/storage';
-import { RemoteConfigController } from './remoteConfig';
 import { PermissionsController } from './permissions';
-import { NotificationsStoreItem } from 'notifications/types';
-import { PreferencesAccount } from 'preferences/types';
+import { RemoteConfigController } from './remoteConfig';
 
 export class NotificationsController extends EventEmitter {
   private notifications;

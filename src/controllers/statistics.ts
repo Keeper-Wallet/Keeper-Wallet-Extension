@@ -1,14 +1,15 @@
 import * as Sentry from '@sentry/react';
-import ObservableStore from 'obs-store';
-import { libs } from '@waves/waves-transactions';
-import config from '../../config.json';
-import { extension } from 'lib/extension';
-import { detect } from '../lib/detectBrowser';
-import { KEEPERWALLET_ENV } from '../constants';
-import { NetworkController } from './network';
-import { ExtensionStorage } from '../storage/storage';
-import { MessageStoreItem } from 'messages/types';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { libs } from '@waves/waves-transactions';
+import { extension } from 'lib/extension';
+import { MessageStoreItem } from 'messages/types';
+import ObservableStore from 'obs-store';
+
+import config from '../../config.json';
+import { KEEPERWALLET_ENV } from '../constants';
+import { detect } from '../lib/detectBrowser';
+import { ExtensionStorage } from '../storage/storage';
+import { NetworkController } from './network';
 
 interface StatistictsEvent {
   user_id: unknown;
@@ -89,7 +90,7 @@ export class StatisticsController {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.browser!.version && this.browser!.version.split('.')[0],
       environment: KEEPERWALLET_ENV,
-      network: network,
+      network,
       chainId: networkCode ? networkCode.charCodeAt(0) : undefined,
       extensionId: this.id,
     };
@@ -138,7 +139,7 @@ export class StatisticsController {
           body: JSON.stringify({
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             api_key: (config as any).statisticsApiKey,
-            events: events,
+            events,
           }),
         })
           .then(response => {
@@ -190,7 +191,7 @@ export class StatisticsController {
     ms = ms || 60 * 60 * 1000; // default 1 event per hour
     storeKey =
       storeKey ||
-      'last' + eventType.charAt(0).toUpperCase() + eventType.slice(1);
+      `last${eventType.charAt(0).toUpperCase()}${eventType.slice(1)}`;
     const state = this.store.getState();
     const dateNow = new Date().getTime();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,9 +1,10 @@
 import * as Sentry from '@sentry/react';
 import { AssetDetail } from 'assets/types';
-import * as browser from 'webextension-polyfill';
-import { ExtensionStorage, StorageLocalState } from '../storage/storage';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
+import * as browser from 'webextension-polyfill';
+
+import { ExtensionStorage, StorageLocalState } from '../storage/storage';
 import { NetworkController } from './network';
 import { RemoteConfigController } from './remoteConfig';
 
@@ -341,7 +342,7 @@ export class AssetInfoController {
       assetId == null ||
       assetId.toUpperCase() === 'WAVES'
     ) {
-      return assets[network]['WAVES'];
+      return assets[network].WAVES;
     }
 
     const API_BASE = this.getNode();
@@ -393,7 +394,7 @@ export class AssetInfoController {
       precision: info.decimals,
       description: info.description,
       height: info.issueHeight,
-      timestamp: new Date(parseInt(info.issueTimestamp)).toJSON(),
+      timestamp: new Date(parseInt(info.issueTimestamp, 10)).toJSON(),
       sender: info.issuer,
       quantity: info.quantity,
       reissuable: info.reissuable,
@@ -490,6 +491,7 @@ export class AssetInfoController {
       const resp = await fetch(new URL(SUSPICIOUS_LIST_URL));
 
       if (resp.ok) {
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         const suspiciousAssets = (await resp.text()).split('\n').sort();
 
         if (suspiciousAssets) {
@@ -520,6 +522,7 @@ export class AssetInfoController {
           priceAssetID: string;
         }>;
 
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         const usdPrices = tickers.reduce<Record<string, string>>(
           (acc, ticker) => {
             if (

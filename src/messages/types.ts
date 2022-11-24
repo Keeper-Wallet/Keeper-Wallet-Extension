@@ -1,15 +1,16 @@
-import { MsgStatus } from '../constants';
-import { PreferencesAccount } from 'preferences/types';
-import { TransactionFromNode, TRANSACTION_TYPE } from '@waves/ts-types';
-import {
-  IWavesAuth,
-  IWavesAuthParams,
-} from '@waves/waves-transactions/dist/transactions';
-import { IMoneyLike } from 'ui/utils/converters';
+import { TRANSACTION_TYPE, TransactionFromNode } from '@waves/ts-types';
 import {
   TCustomData,
   TSignedData,
 } from '@waves/waves-transactions/dist/requests/custom-data';
+import {
+  IWavesAuth,
+  IWavesAuthParams,
+} from '@waves/waves-transactions/dist/transactions';
+import { PreferencesAccount } from 'preferences/types';
+import { IMoneyLike } from 'ui/utils/converters';
+
+import { MsgStatus } from '../constants';
 
 export type MessageInput = {
   connectionId?: string;

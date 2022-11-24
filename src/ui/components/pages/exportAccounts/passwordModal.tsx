@@ -1,11 +1,12 @@
-import * as styles from './passwordModal.styl';
 import cn from 'classnames';
-import * as React from 'react';
-import { Modal } from 'ui/components/ui/modal/Modal';
-import { useTranslation, Trans } from 'react-i18next';
-import { Input } from 'ui/components/ui/input';
-import { ErrorMessage } from 'ui/components/ui/error';
+import { useLayoutEffect, useRef, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui/components/ui/buttons/Button';
+import { ErrorMessage } from 'ui/components/ui/error';
+import { Input } from 'ui/components/ui/input';
+import { Modal } from 'ui/components/ui/modal/Modal';
+
+import * as styles from './passwordModal.styl';
 
 interface Props {
   showAttention?: boolean;
@@ -22,16 +23,16 @@ export function ExportPasswordModal({
 }: Props) {
   const { t } = useTranslation();
 
-  const passwordInputRef = React.useRef<HTMLInputElement | null>(null);
+  const passwordInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [password, setPassword] = React.useState('');
-  const [passwordError, setPasswordError] = React.useState(false);
+  const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
 
-  const [encrypted, setEncrypted] = React.useState(true);
+  const [encrypted, setEncrypted] = useState(true);
 
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     if (!passwordInputRef.current) {
       return;
     }

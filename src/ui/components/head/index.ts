@@ -1,2 +1,2 @@
-export * from './HeadLogo';
 export * from './BigLogo';
+export * from './HeadLogo';

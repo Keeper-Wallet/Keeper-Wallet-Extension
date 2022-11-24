@@ -1,6 +1,7 @@
 import { extension } from 'lib/extension';
-import { ExtensionStorage } from '../storage/storage';
 import ObservableStore from 'obs-store';
+
+import { ExtensionStorage } from '../storage/storage';
 
 export class TabsManager {
   private store;
@@ -17,7 +18,7 @@ export class TabsManager {
 
     const currentTab = tabs[key];
     const tabProps: chrome.tabs.UpdateProperties = { active: true };
-    if (url != currentTab?.url) {
+    if (url !== currentTab?.url) {
       tabProps.url = url;
     }
 
@@ -35,7 +36,7 @@ export class TabsManager {
         reject(err);
       }
     }).catch(() =>
-      extension.tabs.create({ url: url }, tab => {
+      extension.tabs.create({ url }, tab => {
         this.store.updateState({ tabs: { ...tabs, [key]: { ...tab, url } } });
       })
     );

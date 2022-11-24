@@ -1,20 +1,21 @@
-import * as styles from './styles/assets.styl';
-import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ActiveAccountCard } from '../accounts/activeAccountCard';
-import { useTranslation } from 'react-i18next';
-import { getBalances } from 'ui/actions/balances';
-import { Asset, Money } from '@waves/data-entities';
 import BigNumber from '@waves/bignumber';
+import { Asset, Money } from '@waves/data-entities';
+import { AssetDetail } from 'assets/types';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { getBalances } from 'ui/actions/balances';
+import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
 import { useAppDispatch, useAppSelector } from 'ui/store';
+
+import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { AssetInfo } from './assets/assetInfo';
 import { TabAssets } from './assets/tabs/tabAssets';
 import { TabNfts } from './assets/tabs/tabNfts';
 import { TabTxHistory } from './assets/tabs/tabTxHistory';
-import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 import { ImportPopup } from './Import';
-import { AssetDetail } from 'assets/types';
+import * as styles from './styles/assets.styl';
 
 export function PopupHome() {
   const navigate = useNavigate();
@@ -33,12 +34,12 @@ export function PopupHome() {
 
   const [activeTab, setActiveTab] = useUiState('assetsTab');
 
-  const [showAsset, setShowAsset] = React.useState(false);
-  const [showCopy, setShowCopy] = React.useState(false);
+  const [showAsset, setShowAsset] = useState(false);
+  const [showCopy, setShowCopy] = useState(false);
 
-  const [asset, setAsset] = React.useState<AssetDetail | null>(null);
+  const [asset, setAsset] = useState<AssetDetail | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
     if (!balances[activeAccount?.address!]) {
       dispatch(getBalances());
@@ -54,6 +55,7 @@ export function PopupHome() {
     ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       Object.entries(balances[activeAccount.address]!.assets!).reduce(
         (acc, [id, { balance }]) => {
+          // eslint-disable-next-line @typescript-eslint/no-shadow
           const asset = assets[id];
 
           if (asset && usdPrices[id]) {
@@ -73,10 +75,10 @@ export function PopupHome() {
         <ActiveAccountCard
           account={activeAccount}
           wavesBalance={
-            assets['WAVES'] &&
+            assets.WAVES &&
             new Money(
               balances[activeAccount.address]?.available || 0,
-              new Asset(assets['WAVES'])
+              new Asset(assets.WAVES)
             )
           }
           amountInUsd={amountInUsd}

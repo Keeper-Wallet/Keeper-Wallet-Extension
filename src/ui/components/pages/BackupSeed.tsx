@@ -1,15 +1,16 @@
-import * as styles from './styles/backupSeed.styl';
-import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Button, Copy, Modal } from '../ui';
 import { useAccountsSelector } from 'accounts/store';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { NewAccountState } from 'ui/reducers/localState';
+
+import { Button, Copy, Modal } from '../ui';
+import * as styles from './styles/backupSeed.styl';
 
 export function BackUpSeed() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [showCopy, setShowCopy] = React.useState<boolean>(false);
+  const [showCopy, setShowCopy] = useState<boolean>(false);
   const newAccount = useAccountsSelector(
     state =>
       state.localState.newAccount as Extract<NewAccountState, { type: 'seed' }>

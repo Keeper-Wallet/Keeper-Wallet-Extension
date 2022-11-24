@@ -1,10 +1,11 @@
-import * as React from 'react';
+import { AssetsRecord } from 'assets/types';
+import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
+
+import { TxIcon, TxInfo } from '../BaseTransaction';
+import { MessageComponentProps, MessageConfig } from '../types';
 import * as styles from './package.styl';
 import { getTransactionData } from './parseTx';
-import { TxIcon, TxInfo } from '../BaseTransaction';
-import { AssetsRecord } from 'assets/types';
-import { MessageComponentProps, MessageConfig } from '../types';
 
 const MessageItem = ({
   message,
@@ -34,7 +35,7 @@ type Props = Pick<MessageComponentProps, 'message' | 'assets'> &
     onToggle: (isOpen: boolean) => void;
   };
 
-class PackageInfoComponent extends React.PureComponent<Props, State> {
+class PackageInfoComponent extends PureComponent<Props, State> {
   state: State = { isOpened: false };
 
   toggleHandler = () => {
@@ -51,7 +52,8 @@ class PackageInfoComponent extends React.PureComponent<Props, State> {
   render() {
     const { t, message, assets } = this.props;
     const { isOpened } = this.state;
-    const { data = [] } = message;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data = [] as any } = message;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const txs = (data as any[]).map(getTransactionData);
     const hashes = message.messageHash;
@@ -59,6 +61,7 @@ class PackageInfoComponent extends React.PureComponent<Props, State> {
       <div>
         {isOpened
           ? txs.map(({ config, tx }, index) => {
+              // eslint-disable-next-line @typescript-eslint/no-shadow
               const message = {
                 data: { ...tx, data: tx },
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

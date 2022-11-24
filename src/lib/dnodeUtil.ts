@@ -1,6 +1,6 @@
 import Dnode from 'dnode/browser';
-import pump from 'pump';
 import ObjectMultiplex from 'obj-multiplex';
+import pump from 'pump';
 
 export function setupDnode(
   connectionStream: pump.Stream,

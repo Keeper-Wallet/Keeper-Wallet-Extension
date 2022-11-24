@@ -1,25 +1,26 @@
-import * as React from 'react';
 import * as Sentry from '@sentry/react';
+import { ledgerService } from 'ledger/service';
+import { LedgerSignRequest } from 'ledger/types';
+import { cbToPromise, setupDnode, transformMethods } from 'lib/dnodeUtil';
 import { extension } from 'lib/extension';
+import { PortStream } from 'lib/portStream';
 import log from 'loglevel';
+import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
-import { KEEPERWALLET_DEBUG } from './constants';
-import { cbToPromise, setupDnode, transformMethods } from 'lib/dnodeUtil';
-import { PortStream } from 'lib/portStream';
 import { setLangs } from 'ui/actions/localState';
-import { createUpdateState } from './accounts/updateState';
+import { LoadingScreen } from 'ui/components/pages/loadingScreen';
+import { RootWrapper } from 'ui/components/RootWrapper';
 import { LANGS } from 'ui/i18n';
 import backgroundService, {
   BackgroundGetStateResult,
   BackgroundUiApi,
 } from 'ui/services/Background';
-import { createAccountsStore } from './accounts/store';
-import { LedgerSignRequest } from 'ledger/types';
-import { ledgerService } from 'ledger/service';
-import { RootWrapper } from 'ui/components/RootWrapper';
-import { LoadingScreen } from 'ui/components/pages/loadingScreen';
+
 import { routes } from './accounts/routes';
+import { createAccountsStore } from './accounts/store';
+import { createUpdateState } from './accounts/updateState';
+import { KEEPERWALLET_DEBUG } from './constants';
 
 log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 
@@ -94,9 +95,9 @@ const router = createMemoryRouter(routes, {
 });
 
 export function AccountsRoot() {
-  const [isReady, setIsReady] = React.useState(false);
+  const [isReady, setIsReady] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function init() {
       const background = await connect();
 

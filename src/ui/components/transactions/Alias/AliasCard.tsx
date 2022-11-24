@@ -1,12 +1,13 @@
-import * as styles from './alias.styl';
-import * as React from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { messageType } from './parseTx';
-import { MessageCardComponentProps } from '../types';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-class AliasCardComponent extends React.PureComponent<
+import { TxIcon } from '../BaseTransaction';
+import { MessageCardComponentProps } from '../types';
+import * as styles from './alias.styl';
+import { messageType } from './parseTx';
+
+class AliasCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {

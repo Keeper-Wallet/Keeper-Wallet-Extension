@@ -1,12 +1,12 @@
-import cn from 'classnames';
-import * as styles from './nftItem.module.css';
-import { AssetLogo } from './assetLogo';
-import { Loader } from '../../ui';
-import * as React from 'react';
 import { Asset } from '@waves/data-entities';
+import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
+
+import { Loader } from '../../ui';
 import { Tooltip } from '../../ui/tooltip';
+import { AssetLogo } from './assetLogo';
 import { MoreActions } from './moreActions';
+import * as styles from './nftItem.module.css';
 
 interface Props {
   asset: Asset;

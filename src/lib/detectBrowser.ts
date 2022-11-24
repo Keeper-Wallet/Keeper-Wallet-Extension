@@ -37,7 +37,7 @@ export class NodeInfo
   implements DetectedInfo<'node', 'node', NodeJS.Platform, string>
 {
   public readonly type = 'node';
-  public readonly name: 'node' = 'node';
+  public readonly name = 'node' as const;
   public readonly os: NodeJS.Platform = process.platform;
 
   constructor(public readonly version: string) {}
@@ -59,8 +59,8 @@ export class SearchBotDeviceInfo
 
 export class BotInfo implements DetectedInfo<'bot', 'bot', null, null> {
   public readonly type = 'bot';
-  public readonly bot: true = true; // NOTE: deprecated test name instead
-  public readonly name: 'bot' = 'bot';
+  public readonly bot = true as const; // NOTE: deprecated test name instead
+  public readonly name = 'bot' as const;
   public readonly version: null = null;
   public readonly os: null = null;
 }
@@ -69,7 +69,7 @@ export class ReactNativeInfo
   implements DetectedInfo<'react-native', 'react-native', null, null>
 {
   public readonly type = 'react-native';
-  public readonly name: 'react-native' = 'react-native';
+  public readonly name = 'react-native' as const;
   public readonly version: null = null;
   public readonly os: null = null;
 }

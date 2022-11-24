@@ -8,6 +8,7 @@ import {
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
 import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
+import { NetworkName } from 'networks/types';
 import * as create from 'parse-json-bignumber';
 import {
   convertFromSa,
@@ -18,9 +19,9 @@ import {
   SaRequest,
   SaTransaction,
 } from 'transactions/utils';
-import { Wallet } from './wallet';
-import { NetworkName } from 'networks/types';
+
 import { WalletPrivateDataOfType } from './types';
+import { Wallet } from './wallet';
 
 const { stringify } = create({ BigNumber });
 

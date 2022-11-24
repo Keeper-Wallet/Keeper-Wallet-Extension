@@ -1,12 +1,13 @@
 import { BigNumber } from '@waves/bignumber';
 import * as crypto from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { FeeConfig } from '../constants';
+import { PreferencesAccount } from 'preferences/types';
 import { path } from 'ramda';
+
+import { FeeConfig } from '../constants';
 import { convertFromSa, makeBytes } from '../transactions/utils';
 import { AssetInfoController } from './assetInfo';
 import { NetworkController } from './network';
-import { PreferencesAccount } from 'preferences/types';
 
 const FEE_TYPES = [
   2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 1002,

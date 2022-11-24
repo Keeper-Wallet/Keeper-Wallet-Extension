@@ -1,7 +1,8 @@
-import * as React from 'react';
-import * as styles from './error.styl';
 import cn from 'classnames';
+import { PureComponent } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import * as styles from './error.styl';
 
 const Errors = ({
   errors,
@@ -41,13 +42,14 @@ interface State {
   showed: unknown;
 }
 
-export class ErrorMessage extends React.PureComponent<Props, State> {
+export class ErrorMessage extends PureComponent<Props, State> {
   state: State = { showed: false };
 
   static getDerivedStateFromProps(props: Props, state: State): State | null {
     const { showed } = state;
     const { show } = props;
 
+    // eslint-disable-next-line eqeqeq
     if (!state || showed != show) {
       return { ...state, showed: show };
     }

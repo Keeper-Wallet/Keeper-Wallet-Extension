@@ -1,8 +1,7 @@
-import * as React from 'react';
-import * as styles from './SetScriptCardHeader.module.css';
 import { useTranslation } from 'react-i18next';
 
 import { TxIcon } from '../BaseTransaction';
+import * as styles from './SetScriptCardHeader.module.css';
 
 interface Props {
   script?: string;

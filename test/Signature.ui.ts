@@ -6,11 +6,14 @@ import {
   verifySignature,
 } from '@waves/ts-lib-crypto';
 import { makeTxBytes, serializeCustomData } from '@waves/waves-transactions';
+import { orderToProtoBytes } from '@waves/waves-transactions/dist/proto-serialize';
 import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
 import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
 import { expect } from 'chai';
 import * as mocha from 'mocha';
 import * as create from 'parse-json-bignumber';
+import { By, until } from 'selenium-webdriver';
+
 import {
   App,
   CreateNewAccount,
@@ -19,7 +22,7 @@ import {
   Windows,
 } from './utils/actions';
 import { CUSTOMLIST, WHITELIST } from './utils/constants';
-import { By, until } from 'selenium-webdriver';
+import { CUSTOM_DATA_V1, CUSTOM_DATA_V2 } from './utils/customData';
 import {
   ALIAS,
   BURN,
@@ -47,8 +50,6 @@ import {
   TRANSFER_WITHOUT_ATTACHMENT,
   UPDATE_ASSET_INFO,
 } from './utils/transactions';
-import { CUSTOM_DATA_V1, CUSTOM_DATA_V2 } from './utils/customData';
-import { orderToProtoBytes } from '@waves/waves-transactions/dist/proto-serialize';
 
 const { parse } = create();
 
@@ -522,6 +523,7 @@ describe('Signature', function () {
     async function performMatcherRequest(this: mocha.Context) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         (senderPublicKey: string, timestamp: number) => {
           KeeperWallet.initialPromise
             .then(api =>
@@ -601,7 +603,7 @@ describe('Signature', function () {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async function performSignTransaction(this: mocha.Context, tx: any) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-shadow
       await this.driver.executeScript((tx: any) => {
         KeeperWallet.initialPromise
           .then(api => api.signTransaction(tx))
@@ -4059,6 +4061,7 @@ describe('Signature', function () {
     ) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         (tx: WavesKeeper.TSignTransactionData[], name: string) => {
           KeeperWallet.initialPromise
             .then(api => api.signTransactionPackage(tx, name))
@@ -4553,7 +4556,7 @@ describe('Signature', function () {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async function performSignCustomData(this: mocha.Context, data: any) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-shadow
       await this.driver.executeScript((data: any) => {
         KeeperWallet.initialPromise
           .then(api => api.signCustomData(data))

@@ -15,7 +15,7 @@ import cn from 'classnames';
 import { useDebouncedValue } from 'common/useDebouncedValue';
 import { useFeeOptions } from 'fee/useFeeOptions';
 import { convertFeeToAsset } from 'fee/utils';
-import * as React from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SwapVendor } from 'swap/constants';
 import { getSwapVendorLogo } from 'swap/utils';
@@ -27,6 +27,7 @@ import { Select } from 'ui/components/ui/select/Select';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { UsdAmount } from 'ui/components/ui/UsdAmount';
 import { useAppDispatch, useAppSelector } from 'ui/store';
+
 import * as styles from './form.module.css';
 import { SwapLayout } from './layout';
 
@@ -128,19 +129,19 @@ export function SwapForm({
 
   const feeConfig = useAppSelector(state => state.feeConfig);
 
-  const wavesFee = new Money(wavesFeeCoins, new Asset(assets['WAVES']));
+  const wavesFee = new Money(wavesFeeCoins, new Asset(assets.WAVES));
 
   const feeOptions = useFeeOptions({
     initialFee: wavesFee,
     txType: TRANSACTION_TYPE.INVOKE_SCRIPT,
   });
 
-  const [{ fromAssetId, toAssetId }, setAssetIds] = React.useState({
+  const [{ fromAssetId, toAssetId }, setAssetIds] = useState({
     fromAssetId: initialFromAssetId,
     toAssetId: initialToAssetId,
   });
 
-  const [feeAssetId, setFeeAssetId] = React.useState(() => {
+  const [feeAssetId, setFeeAssetId] = useState(() => {
     const defaultOption =
       feeOptions.find(option => option.money.asset.id === 'WAVES') ||
       feeOptions[0];
@@ -148,13 +149,13 @@ export function SwapForm({
     return defaultOption?.money.asset.id || 'WAVES';
   });
 
-  const fromAsset = React.useMemo(
+  const fromAsset = useMemo(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     () => new Asset(assets[fromAssetId]!),
     [assets, fromAssetId]
   );
 
-  const toAsset = React.useMemo(
+  const toAsset = useMemo(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     () => new Asset(assets[toAssetId]!),
     [assets, toAssetId]
@@ -170,7 +171,7 @@ export function SwapForm({
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const feeAssetBalance = getAssetBalance(feeAsset, accountBalance!);
 
-  const [fromAmountValue, setFromAmountValue] = React.useState('');
+  const [fromAmountValue, setFromAmountValue] = useState('');
   const fromAmountTokens = new BigNumber(fromAmountValue || '0');
 
   const finalFeeOptions = feeOptions
@@ -194,8 +195,8 @@ export function SwapForm({
     finalFeeOptions.push(wavesFee);
   }
 
-  const [swapVendor, setSwapVendor] = React.useState(SwapVendor.Keeper);
-  const [swapVendorTouched, setSwapVendorTouched] = React.useState(false);
+  const [swapVendor, setSwapVendor] = useState(SwapVendor.Keeper);
+  const [swapVendorTouched, setSwapVendorTouched] = useState(false);
 
   const slippageToleranceIndex = useAppSelector(
     state => state.uiState.slippageToleranceIndex ?? 2
@@ -207,13 +208,11 @@ export function SwapForm({
 
   const slippageTolerance = SLIPPAGE_TOLERANCE_OPTIONS[slippageToleranceIndex];
 
-  const [swapInfo, setSwapInfo] = React.useState(swapInfoLoadingState);
+  const [swapInfo, setSwapInfo] = useState(swapInfoLoadingState);
 
-  const [swapClient] = React.useState(() => new SwapClient());
+  const [swapClient] = useState(() => new SwapClient());
 
-  const [swapClientError, setSwapClientError] = React.useState<string | null>(
-    null
-  );
+  const [swapClientError, setSwapClientError] = useState<string | null>(null);
 
   const maxTokens = new Money(BigNumber.MAX_VALUE, fromAsset).getTokens();
 
@@ -225,7 +224,8 @@ export function SwapForm({
 
   const accountAddress = useAppSelector(state => state.selectedAccount.address);
 
-  const swapParams = React.useMemo(() => {
+  const swapParams = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     let fromAmountTokens = new BigNumber(fromAmountValue || '0');
 
     if (fromAmountTokens.eq(0)) {
@@ -253,7 +253,7 @@ export function SwapForm({
     toAsset.id,
   ]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setSwapVendorTouched(false);
 
     if (swapParams) {
@@ -265,7 +265,7 @@ export function SwapForm({
 
   const debouncedSwapParams = useDebouncedValue(swapParams, 500);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!debouncedSwapParams) {
       return;
     }
@@ -273,7 +273,7 @@ export function SwapForm({
     swapClient.setSwapParams(debouncedSwapParams);
   }, [debouncedSwapParams, swapClient]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!swapParams) {
       return;
     }
@@ -340,7 +340,7 @@ export function SwapForm({
       : null;
 
   const [showSlippageToleranceModal, setShowSlippageToleranceModal] =
-    React.useState(false);
+    useState(false);
 
   const swapVendorInfo = swapInfo[swapVendor];
 
@@ -349,10 +349,10 @@ export function SwapForm({
     +swapVendorInfo.toAmountTokens
       .div(fromAmountTokens.eq(0) ? 1 : fromAmountTokens)
       .toFixed(toAsset.precision, BigNumber.ROUND_MODE.ROUND_FLOOR) < 1;
-  const [isPriceDirectionSwapped, setIsPriceDirectionSwapped] = React.useState(
+  const [isPriceDirectionSwapped, setIsPriceDirectionSwapped] = useState(
     defaultPriceDirectionSwapped
   );
-  React.useEffect(() => {
+  useEffect(() => {
     setIsPriceDirectionSwapped(defaultPriceDirectionSwapped);
   }, [defaultPriceDirectionSwapped]);
 
@@ -401,13 +401,13 @@ export function SwapForm({
     [null, SwapVendor.Keeper]
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!swapVendorTouched) {
       setSwapVendor(profitVendor);
     }
   }, [swapVendorTouched, profitVendor]);
 
-  const fromSwappableAssets = React.useMemo(() => {
+  const fromSwappableAssets = useMemo(() => {
     const availableTickers = new Set(
       Object.values(swappableAssetTickersByVendor)
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -434,7 +434,7 @@ export function SwapForm({
       });
   }, [swappableAssets, toAsset, t]);
 
-  const toSwappableAssets = React.useMemo(() => {
+  const toSwappableAssets = useMemo(() => {
     const availableTickers = new Set(
       Object.values(swappableAssetTickersByVendor)
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -839,25 +839,23 @@ export function SwapForm({
                       }}
                     >
                       (
-                      {
-                        <Tooltip
-                          className={styles.tooltipContent}
-                          content={t('swap.priceImpactTooltip')}
-                        >
-                          {props => (
-                            <span
-                              className={styles.summaryTooltipTarget}
-                              {...props}
-                            >
-                              {priceImpact.toFixed(
-                                priceImpact.eq(100) ? 0 : 3,
-                                BigNumber.ROUND_MODE.ROUND_FLOOR
-                              )}
-                              %
-                            </span>
-                          )}
-                        </Tooltip>
-                      }
+                      <Tooltip
+                        className={styles.tooltipContent}
+                        content={t('swap.priceImpactTooltip')}
+                      >
+                        {props => (
+                          <span
+                            className={styles.summaryTooltipTarget}
+                            {...props}
+                          >
+                            {priceImpact.toFixed(
+                              priceImpact.eq(100) ? 0 : 3,
+                              BigNumber.ROUND_MODE.ROUND_FLOOR
+                            )}
+                            %
+                          </span>
+                        )}
+                      </Tooltip>
                       )
                     </span>
                   </div>
@@ -929,32 +927,35 @@ export function SwapForm({
               </p>
 
               <div className={styles.slippageToleranceControl}>
-                {SLIPPAGE_TOLERANCE_OPTIONS.map((slippageTolerance, index) => {
-                  const id = `slippageTolerance-${index}`;
+                {
+                  // eslint-disable-next-line @typescript-eslint/no-shadow
+                  SLIPPAGE_TOLERANCE_OPTIONS.map((slippageTolerance, index) => {
+                    const id = `slippageTolerance-${index}`;
 
-                  return (
-                    <React.Fragment key={index}>
-                      <input
-                        checked={index === slippageToleranceIndex}
-                        className={styles.slippageToleranceInput}
-                        id={id}
-                        name="slippageTolerance"
-                        type="radio"
-                        value={index}
-                        onChange={() => {
-                          setSlippageToleranceIndex(index);
-                        }}
-                      />
+                    return (
+                      <Fragment key={index}>
+                        <input
+                          checked={index === slippageToleranceIndex}
+                          className={styles.slippageToleranceInput}
+                          id={id}
+                          name="slippageTolerance"
+                          type="radio"
+                          value={index}
+                          onChange={() => {
+                            setSlippageToleranceIndex(index);
+                          }}
+                        />
 
-                      <label
-                        className={styles.slippageToleranceLabel}
-                        htmlFor={id}
-                      >
-                        {slippageTolerance.toString()}%
-                      </label>
-                    </React.Fragment>
-                  );
-                })}
+                        <label
+                          className={styles.slippageToleranceLabel}
+                          htmlFor={id}
+                        >
+                          {slippageTolerance.toString()}%
+                        </label>
+                      </Fragment>
+                    );
+                  })
+                }
               </div>
             </div>
           </div>

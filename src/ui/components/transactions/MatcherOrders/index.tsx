@@ -1,8 +1,8 @@
-import { MatcherOrders } from './MatcherOrders';
+import { MessageConfig } from '../types';
 import { MatcherCard } from './MatcherCard';
 import { MatcherFinal } from './MatcherFinal';
+import { MatcherOrders } from './MatcherOrders';
 import * as utils from './parseTx';
-import { MessageConfig } from '../types';
 
 const matcher: MessageConfig = {
   type: utils.messageType,

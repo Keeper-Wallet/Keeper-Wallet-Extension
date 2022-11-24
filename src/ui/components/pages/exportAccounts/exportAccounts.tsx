@@ -1,10 +1,11 @@
-import * as React from 'react';
+import { PreferencesAccount } from 'preferences/types';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from 'ui/store';
+
 import { downloadKeystore } from '../../../../keystore/utils';
 import { ExportKeystoreChooseItems } from './chooseItems';
 import { ExportPasswordModal } from './passwordModal';
-import { PreferencesAccount } from 'preferences/types';
 
 export function ExportAccounts() {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ export function ExportAccounts() {
     state => state.allNetworksAccounts
   );
 
-  const [accountsToExport, setAccountsToExport] = React.useState<
+  const [accountsToExport, setAccountsToExport] = useState<
     PreferencesAccount[] | null
   >(null);
 

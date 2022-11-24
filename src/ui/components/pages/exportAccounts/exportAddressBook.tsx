@@ -1,7 +1,8 @@
-import * as React from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from 'ui/store';
 import { getNetworkByAddress } from 'ui/utils/waves';
+
 import { downloadKeystore } from '../../../../keystore/utils';
 import { ExportKeystoreChooseItems } from './chooseItems';
 import { ExportPasswordModal } from './passwordModal';
@@ -10,7 +11,7 @@ export function ExportAddressBook() {
   const navigate = useNavigate();
   const addresses = useAppSelector(state => state.addresses);
 
-  const [addressesToExport, setAddressesToExport] = React.useState<Record<
+  const [addressesToExport, setAddressesToExport] = useState<Record<
     string,
     string
   > | null>(null);

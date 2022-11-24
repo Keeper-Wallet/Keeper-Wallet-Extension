@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { By, until } from 'selenium-webdriver';
+
 import {
   App,
   CreateNewAccount,
@@ -143,11 +144,11 @@ describe('Others', function () {
 
       expect(
         await this.driver.executeScript(function (
+          // eslint-disable-next-line @typescript-eslint/no-shadow
           amountInput: HTMLInputElement
         ) {
           return amountInput.value;
-        },
-        amountInput)
+        }, amountInput)
       ).to.equal('123 123 123.123');
 
       await amountInput.clear();

@@ -1,13 +1,13 @@
-import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
-import * as styles from './importEmail.module.css';
 import cn from 'classnames';
-
-import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAppSelector } from '../../../store';
-import { Login } from './login';
-import { newAccountSelect } from '../../../actions/localState';
 import { IdentityUser } from 'controllers/IdentityController';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+
+import { newAccountSelect } from '../../../actions/localState';
+import { useAppDispatch, useAppSelector } from '../../../store';
+import * as styles from './importEmail.module.css';
+import { Login } from './login';
 
 export function ImportEmail() {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export function ImportEmail() {
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
 
-  const handleSubmit = React.useCallback(
+  const handleSubmit = useCallback(
     userData => {
       if (
         accounts.find(
@@ -29,7 +29,7 @@ export function ImportEmail() {
     [accounts, t]
   );
 
-  const handleConfirm = React.useCallback(
+  const handleConfirm = useCallback(
     (userData: IdentityUser & { name: string }) => {
       dispatch(
         newAccountSelect({

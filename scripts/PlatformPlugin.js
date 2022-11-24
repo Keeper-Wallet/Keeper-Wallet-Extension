@@ -18,6 +18,7 @@ function zipFolder(from, to) {
       try {
         zip.writeToFileSync(to);
         resolve();
+        // eslint-disable-next-line no-shadow
       } catch (err) {
         reject(err);
       }
@@ -93,7 +94,7 @@ module.exports = class PlatformPlugin {
       compiler.hooks.done.tap('PerformanceSize', ({ compilation }) => {
         Object.entries(compilation.assets).forEach(([name, source]) => {
           if (name.endsWith('.js') && source.size() > MAX_ASSET_SIZE) {
-            throw `${name} is larger than 4 MB`;
+            throw new Error(`${name} is larger than 4 MB`);
           }
         });
       });

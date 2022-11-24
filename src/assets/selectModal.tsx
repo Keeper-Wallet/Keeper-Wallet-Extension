@@ -2,16 +2,17 @@ import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import cn from 'classnames';
 import ColorHash from 'color-hash';
-import * as React from 'react';
+import { NetworkName } from 'networks/types';
+import { cloneElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Input } from 'ui/components/ui/input';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { BalanceAssets } from 'ui/reducers/updateState';
-import { useAssetLogo } from './utils';
+
 import * as styles from './selectModal.module.css';
-import { NetworkName } from 'networks/types';
 import { AssetDetail } from './types';
+import { useAssetLogo } from './utils';
 
 export interface AssetSelectModalOption extends AssetDetail {
   disabled?: boolean;
@@ -72,10 +73,10 @@ function AssetSelectItem({
       className={styles.listItemTooltipContent}
       content={asset.disabledTooltip}
     >
-      {props => React.cloneElement(listItemEl, props)}
+      {props => cloneElement(listItemEl, props)}
     </Tooltip>
   ) : (
-    React.cloneElement(listItemEl, { key: asset.id })
+    cloneElement(listItemEl, { key: asset.id })
   );
 }
 
@@ -95,10 +96,10 @@ export function AssetSelectModal({
   onSelect,
 }: Props) {
   const { t } = useTranslation();
-  const [query, setQuery] = React.useState('');
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [query, setQuery] = useState('');
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const filteredAndSortedItems = React.useMemo(
+  const filteredAndSortedItems = useMemo(
     () =>
       assets
         .filter(
@@ -139,16 +140,16 @@ export function AssetSelectModal({
     [assetBalances, assets, query]
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     setSelectedIndex(
       filteredAndSortedItems.findIndex(item => !item.asset.disabled)
     );
   }, [filteredAndSortedItems]);
 
-  const listRef = React.useRef<HTMLUListElement | null>(null);
-  const listViewportRef = React.useRef<HTMLDivElement | null>(null);
+  const listRef = useRef<HTMLUListElement | null>(null);
+  const listViewportRef = useRef<HTMLDivElement | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const list = listRef.current;
     const listViewport = listViewportRef.current;
 

@@ -1,10 +1,10 @@
-import * as styles from './deleteAccount.module.css';
-import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button } from '../ui';
-import { deleteAccount } from '../../actions/localState';
 import { useAppDispatch } from 'ui/store';
+
+import { deleteAccount } from '../../actions/localState';
+import { Button } from '../ui';
+import * as styles from './deleteAccount.module.css';
 
 export function DeleteAccount() {
   const { t } = useTranslation();

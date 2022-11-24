@@ -1,7 +1,8 @@
-import * as React from 'react';
-import * as styles from './verifyCodeComponent.module.css';
-import { Button, ErrorMessage, Input } from '../../ui';
+import { createRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { Button, ErrorMessage, Input } from '../../ui';
+import * as styles from './verifyCodeComponent.module.css';
 
 type VerifyCodeComponentProps = {
   className: string;
@@ -19,13 +20,13 @@ export function VerifyCodeComponent({
   isPending,
 }: VerifyCodeComponentProps) {
   const { t } = useTranslation();
-  const [isIncorrectCode, setIsIncorrectCode] = React.useState<boolean>(false);
-  const refs = React.useMemo((): Array<React.RefObject<HTMLInputElement>> => {
-    return new Array(codeLength).fill(undefined).map(() => React.createRef());
+  const [isIncorrectCode, setIsIncorrectCode] = useState<boolean>(false);
+  const refs = useMemo((): Array<React.RefObject<HTMLInputElement>> => {
+    return new Array(codeLength).fill(undefined).map(() => createRef());
   }, [codeLength]);
-  const [values, setValues] = React.useState<string[]>(refs.map(() => ''));
+  const [values, setValues] = useState<string[]>(refs.map(() => ''));
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (values.length < codeLength || values.some(v => !v)) {
       return;
     }
@@ -54,7 +55,7 @@ export function VerifyCodeComponent({
     }
   }, [values, onApplyCode, refs, codeLength, onPending]);
 
-  const changeHandler = React.useCallback(
+  const changeHandler = useCallback(
     (value: string, index: number): void => {
       if (!value) {
         setValues(
@@ -84,11 +85,11 @@ export function VerifyCodeComponent({
     [refs, values, codeLength]
   );
 
-  const onFocus = React.useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+  const onFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
     e.currentTarget.select();
   }, []);
 
-  const onChange = React.useCallback(
+  const onChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>): void => {
       const value = e.currentTarget.value;
       const index = Number(e.currentTarget.dataset.index);
@@ -98,7 +99,7 @@ export function VerifyCodeComponent({
     [changeHandler]
   );
 
-  const onKeyDown = React.useCallback(
+  const onKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>): void => {
       const keyCode = e.keyCode;
       const i = Number(e.currentTarget.dataset.index);

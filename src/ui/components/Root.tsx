@@ -1,7 +1,8 @@
 import { useSentryNavigationBreadcrumbs } from 'common/useSentryNavigationBreadcrumbs';
-import * as React from 'react';
+import { useEffect, useRef } from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector } from 'ui/store';
+
 import { Login } from './pages/login';
 import { Welcome } from './pages/Welcome';
 
@@ -26,8 +27,8 @@ export function Root() {
   );
 
   const currentNetwork = useAppSelector(state => state.currentNetwork);
-  const prevNetworkRef = React.useRef(currentNetwork);
-  React.useEffect(() => {
+  const prevNetworkRef = useRef(currentNetwork);
+  useEffect(() => {
     if (currentNetwork === prevNetworkRef.current) {
       return;
     }

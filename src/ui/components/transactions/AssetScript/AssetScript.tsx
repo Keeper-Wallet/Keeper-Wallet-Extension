@@ -1,8 +1,7 @@
-import * as styles from './assetScript.styl';
-import * as React from 'react';
-import { AssetScriptCard } from './AssetScriptCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './assetScript.styl';
+import { AssetScriptCard } from './AssetScriptCard';
 
 export function AssetScript(props: MessageComponentProps) {
   return (

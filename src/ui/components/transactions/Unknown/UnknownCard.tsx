@@ -1,11 +1,12 @@
-import * as styles from './unknown.styl';
-import * as React from 'react';
 import cn from 'classnames';
-import { TxIcon } from '../BaseTransaction';
-import { messageType } from './parseTx';
-import { MessageCardComponentProps } from '../types';
+import { PureComponent } from 'react';
 
-export class UnknownCard extends React.PureComponent<MessageCardComponentProps> {
+import { TxIcon } from '../BaseTransaction';
+import { MessageCardComponentProps } from '../types';
+import { messageType } from './parseTx';
+import * as styles from './unknown.styl';
+
+export class UnknownCard extends PureComponent<MessageCardComponentProps> {
   render() {
     const className = cn(styles.unknownTransactionCard, this.props.className);
 

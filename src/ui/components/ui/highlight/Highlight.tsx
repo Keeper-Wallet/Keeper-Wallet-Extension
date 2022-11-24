@@ -1,6 +1,7 @@
-import * as React from 'react';
-import hljs from 'highlight.js';
 import 'highlight.js/styles/idea.css';
+
+import hljs from 'highlight.js';
+import { useLayoutEffect, useRef } from 'react';
 
 interface Props {
   data: string | null;
@@ -8,9 +9,9 @@ interface Props {
 }
 
 export function Highlight({ data, className }: Props) {
-  const preRef = React.useRef<HTMLPreElement | null>(null);
+  const preRef = useRef<HTMLPreElement | null>(null);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     if (!preRef.current) {
       return;
     }

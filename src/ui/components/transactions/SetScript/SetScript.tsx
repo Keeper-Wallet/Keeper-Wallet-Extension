@@ -1,9 +1,7 @@
-import * as styles from './setScript.styl';
-import * as React from 'react';
-
-import { SetScriptCard } from './SetScriptCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './setScript.styl';
+import { SetScriptCard } from './SetScriptCard';
 
 export function SetScript(props: MessageComponentProps) {
   return (

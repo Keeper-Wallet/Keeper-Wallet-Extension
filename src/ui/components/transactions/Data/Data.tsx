@@ -1,9 +1,7 @@
-import * as styles from './data.styl';
-import * as React from 'react';
-
-import { DataCard } from './DataCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './data.styl';
+import { DataCard } from './DataCard';
 
 export function Data(props: MessageComponentProps) {
   return (

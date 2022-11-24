@@ -1,6 +1,6 @@
 import { TransactionFromNode } from '@waves/ts-types';
-import { NetworkName } from 'networks/types';
 import { AssetDetail } from 'assets/types';
+import { NetworkName } from 'networks/types';
 
 export interface AssetBalance {
   balance: string;

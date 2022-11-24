@@ -1,14 +1,10 @@
-import ObservableStore from 'obs-store';
+import { TBinaryIn } from '@waves/ts-lib-crypto';
 import { seedUtils } from '@waves/waves-transactions';
-import { createWallet } from 'wallets';
+import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
+import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
 import { EventEmitter } from 'events';
-import { ExtensionStorage } from '../storage/storage';
-import { AssetInfoController } from './assetInfo';
-import { NetworkController } from './network';
-import { TrashController } from './trash';
-import { LedgerApi } from 'wallets/ledger';
-import { Wallet } from 'wallets/wallet';
-import { IdentityApi } from './IdentityController';
+import { NetworkName } from 'networks/types';
+import ObservableStore from 'obs-store';
 import {
   SaAuth,
   SaCancelOrder,
@@ -16,11 +12,16 @@ import {
   SaRequest,
   SaTransaction,
 } from 'transactions/utils';
-import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
-import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
-import { TBinaryIn } from '@waves/ts-lib-crypto';
-import { NetworkName } from 'networks/types';
+import { createWallet } from 'wallets';
+import { LedgerApi } from 'wallets/ledger';
 import { CreateWalletInput, WalletPrivateData } from 'wallets/types';
+import { Wallet } from 'wallets/wallet';
+
+import { ExtensionStorage } from '../storage/storage';
+import { AssetInfoController } from './assetInfo';
+import { IdentityApi } from './IdentityController';
+import { NetworkController } from './network';
+import { TrashController } from './trash';
 
 function encrypt(object: unknown, password: string) {
   const jsonObj = JSON.stringify(object);
@@ -118,6 +119,7 @@ export class WalletController extends EventEmitter {
 
   removeWallet(address: string, network: NetworkName) {
     const wallet = this.getWalletsByNetwork(network).find(
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       wallet => wallet.getAccount().address === address
     );
     this._walletToTrash(wallet);
@@ -417,6 +419,7 @@ export class WalletController extends EventEmitter {
 
   _findWallet(address: string, network: NetworkName) {
     const wallet = this.getWalletsByNetwork(network).find(
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       wallet => wallet.getAccount().address === address
     );
     if (!wallet) throw new Error(`Wallet not found for address ${address}`);

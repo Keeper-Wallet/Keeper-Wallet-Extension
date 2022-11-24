@@ -34,6 +34,7 @@ class KeeperError extends Error {
 export const ERRORS = Object.entries(ERRORS_DATA).reduce(
   (acc, [code, data]) => {
     const { msg, name } = data;
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     acc[name] = (message: unknown, data: unknown) =>
       new KeeperError(message ? `${msg}: ${message}` : msg, code, data);
     return acc;

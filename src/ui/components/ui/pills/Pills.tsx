@@ -1,8 +1,9 @@
-import * as React from 'react';
+import cn from 'classnames';
+import { PureComponent } from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+
 import { Pill } from './Pill';
 import * as styles from './pills.styl';
-import cn from 'classnames';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 export interface PillsListItem {
   id: number;
@@ -19,7 +20,7 @@ interface Props {
   onSelect: (item: PillsListItem) => void;
 }
 
-export class Pills extends React.PureComponent<Props> {
+export class Pills extends PureComponent<Props> {
   onSelect = (item: PillsListItem) => this._onSelect(item);
 
   render() {

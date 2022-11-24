@@ -1,8 +1,9 @@
-import * as React from 'react';
-import * as styles from './ResetButton.module.css';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { resetStorage } from '../../../../storage/storage';
 import { Button, Modal } from 'ui/components/ui';
+
+import { resetStorage } from '../../../../storage/storage';
+import * as styles from './ResetButton.module.css';
 
 interface Props {
   className?: string;
@@ -11,8 +12,8 @@ interface Props {
 export const ResetButton = ({ className }: Props) => {
   const { t } = useTranslation();
 
-  const [showResetModal, setShowResetModal] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   return (
     <>

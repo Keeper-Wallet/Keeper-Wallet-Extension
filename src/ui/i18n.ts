@@ -1,6 +1,7 @@
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
 import resourcesToBackend from 'i18next-resources-to-backend';
+import { initReactI18next } from 'react-i18next';
+
 import { I18N_NAME_SPACE, KEEPERWALLET_DEBUG } from './appConfig';
 
 const backend = resourcesToBackend((lng, ns, clb) => {

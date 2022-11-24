@@ -1,11 +1,11 @@
-import * as styles from './importSuccess.module.css';
+import { useAccountsSelector } from 'accounts/store';
 import cn from 'classnames';
-import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../ui';
-import { useAccountsSelector } from 'accounts/store';
 import background from 'ui/services/Background';
+
+import { Button } from '../ui';
+import * as styles from './importSuccess.module.css';
 
 export function ImportSuccessAddressBook() {
   const { t } = useTranslation();

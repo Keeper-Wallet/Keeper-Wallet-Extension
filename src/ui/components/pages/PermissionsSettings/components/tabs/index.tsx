@@ -1,8 +1,9 @@
-import * as React from 'react';
 import cn from 'classnames';
+import { PureComponent } from 'react';
+
 import * as styles from './index.styl';
 
-export class Tabs extends React.PureComponent<IProps> {
+export class Tabs extends PureComponent<IProps> {
   selectHandler = (name: string) => () => {
     if (this.props.currentTab !== name) {
       this.props.onSelectTab(name);

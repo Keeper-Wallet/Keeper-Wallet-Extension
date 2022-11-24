@@ -1,17 +1,18 @@
 import { CognitoUser } from 'amazon-cognito-identity-js';
-import { SwapVendor } from 'swap/constants';
+import { AssetDetail } from 'assets/types';
+import type { __BackgroundUiApiDirect } from 'background';
 import { AuthChallenge, IdentityUser } from 'controllers/IdentityController';
 import { SwapAssetsParams, SwapAssetsResult } from 'controllers/SwapController';
-import { IgnoreErrorsContext, KEEPERWALLET_DEBUG } from '../../constants';
-import type { __BackgroundUiApiDirect } from 'background';
+import { MessageInputOfType } from 'messages/types';
+import { NetworkName } from 'networks/types';
+import { PreferencesAccount } from 'preferences/types';
+import { SwapVendor } from 'swap/constants';
 import { UiState } from 'ui/reducers/updateState';
 import { IMoneyLike } from 'ui/utils/converters';
-import type { StorageLocalState } from '../../storage/storage';
-import { NetworkName } from 'networks/types';
-import { AssetDetail } from 'assets/types';
-import { MessageInputOfType } from 'messages/types';
 import { CreateWalletInput } from 'wallets/types';
-import { PreferencesAccount } from 'preferences/types';
+
+import { IgnoreErrorsContext, KEEPERWALLET_DEBUG } from '../../constants';
+import type { StorageLocalState } from '../../storage/storage';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function prepareErrorMessage(err: any) {
@@ -786,15 +787,15 @@ class Background {
     }
   }
 
-  async ledgerSignResponse(requestId: string, err: Error): Promise<void>;
+  async ledgerSignResponse(requestId: string, error: Error): Promise<void>;
   async ledgerSignResponse(
     requestId: string,
-    err: null,
+    error: null,
     signature: string
   ): Promise<void>;
   async ledgerSignResponse(
     requestId: string,
-    err: Error | null,
+    error: Error | null,
     signature?: string
   ) {
     try {
@@ -804,7 +805,7 @@ class Background {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return await this.background!.ledgerSignResponse(
         requestId,
-        err && err.message ? err.message : null,
+        error && error.message ? error.message : null,
         signature
       );
     } catch (err) {

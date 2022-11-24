@@ -1,6 +1,5 @@
-import { BaseInfo, BaseNft, NftVendor } from 'nfts/index';
 import { ArtefactNames } from 'nfts/duckArtifacts/constants';
-import * as React from 'react';
+import { BaseInfo, BaseNft, NftVendor } from 'nfts/index';
 
 export interface DucksArtefactInfo extends BaseInfo {
   vendor: NftVendor.DucksArtefact;

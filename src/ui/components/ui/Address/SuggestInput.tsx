@@ -1,17 +1,21 @@
-import * as styles from './SuggestInput.module.css';
-import * as React from 'react';
 import { libs, validators } from '@waves/waves-transactions';
+import { PreferencesAccount } from 'preferences/types';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from 'ui/store';
 import { icontains } from 'ui/components/pages/assets/helpers';
+import { useAppSelector } from 'ui/store';
+
+import { Backdrop, Button, InputProps, Modal, SearchInput } from '..';
 import { AddressTooltip } from '../Address/Tooltip';
 import { AddressInput } from './Input';
-import { Modal, Button, SearchInput, InputProps, Backdrop } from '..';
-import { PreferencesAccount } from 'preferences/types';
+import * as styles from './SuggestInput.module.css';
 
 interface SuggestProps {
+  // eslint-disable-next-line react/no-unused-prop-types
   className?: string;
+  // eslint-disable-next-line react/no-unused-prop-types
   paddingRight?: number;
+  // eslint-disable-next-line react/no-unused-prop-types
   paddingLeft?: number;
   accounts: PreferencesAccount[];
   addresses: Array<[string, string]>;
@@ -100,8 +104,8 @@ interface ModalProps extends SuggestProps {
 export function SuggestModal(props: ModalProps) {
   const { t } = useTranslation();
 
-  const [search, setSearch] = React.useState('');
-  const accounts = React.useMemo(
+  const [search, setSearch] = useState('');
+  const accounts = useMemo(
     () =>
       props.accounts.filter(
         account =>
@@ -109,7 +113,7 @@ export function SuggestModal(props: ModalProps) {
       ),
     [props.accounts, search]
   );
-  const addresses = React.useMemo(
+  const addresses = useMemo(
     () =>
       props.addresses.filter(
         ([address, name]) =>
@@ -191,10 +195,10 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
     }, {})
   );
 
-  const [value, setValue] = React.useState('');
-  const [address, setAddress] = React.useState('');
+  const [value, setValue] = useState('');
+  const [address, setAddress] = useState('');
 
-  const foundAccounts = React.useMemo(
+  const foundAccounts = useMemo(
     () =>
       value
         ? accounts.filter(
@@ -205,10 +209,11 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
         : [],
     [accounts, value]
   );
-  const foundAddresses = React.useMemo<Record<string, string>>(
+  const foundAddresses = useMemo<Record<string, string>>(
     () =>
       value
         ? Object.entries(addresses).reduce(
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             (acc, [address, name]) =>
               icontains(address, value) || icontains(name, value)
                 ? { ...acc, [address]: name }
@@ -219,12 +224,12 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
     [addresses, value]
   );
 
-  const [showSuggest, setShowSuggest] = React.useState(false);
-  const [showSuggestModal, setShowSuggestModal] = React.useState(false);
+  const [showSuggest, setShowSuggest] = useState(false);
+  const [showSuggestModal, setShowSuggestModal] = useState(false);
 
-  const [highlight, setHighlight] = React.useState('');
+  const [highlight, setHighlight] = useState('');
 
-  React.useEffect(() => {
+  useEffect(() => {
     const match = value.match(/^alias:\w:/i);
     setHighlight(match ? match[0] : '');
   }, [value]);

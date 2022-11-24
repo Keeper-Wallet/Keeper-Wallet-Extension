@@ -1,19 +1,20 @@
-import * as styles from './deleteAccounts.module.css';
-import * as React from 'react';
+import cn from 'classnames';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Button, ErrorMessage, Input } from 'ui/components/ui';
 import { deleteAllAccounts } from 'ui/actions/user';
-import cn from 'classnames';
+import { Button, ErrorMessage, Input } from 'ui/components/ui';
 import { useAppDispatch } from 'ui/store';
+
+import * as styles from './deleteAccounts.module.css';
 
 export function DeleteAllAccounts() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const [phrase, setPhrase] = React.useState<string | null>(null);
-  const [isBlur, setBlur] = React.useState(false);
+  const [phrase, setPhrase] = useState<string | null>(null);
+  const [isBlur, setBlur] = useState(false);
 
   const defaultPhrase = t('forgotPassword.phrase');
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain

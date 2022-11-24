@@ -1,6 +1,6 @@
-import * as React from 'react';
-import * as styles from './loader.styl';
 import cn from 'classnames';
+
+import * as styles from './loader.styl';
 
 export function Loader({
   hide,

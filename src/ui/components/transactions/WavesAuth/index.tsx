@@ -1,8 +1,8 @@
+import { MessageConfig } from '../types';
+import * as utils from './parseTx';
 import { WavesAuth } from './WavesAuth';
 import { WavesAuthCard } from './WavesAuthCard';
 import { WavesAuthFinal } from './WavesAuthFinal';
-import * as utils from './parseTx';
-import { MessageConfig } from '../types';
 
 const wavesAuth: MessageConfig = {
   type: utils.messageType,

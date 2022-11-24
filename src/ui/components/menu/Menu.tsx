@@ -1,7 +1,7 @@
-import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import * as styles from './menu.styl';
+
 import { HeadLogo } from '../head';
+import * as styles from './menu.styl';
 
 interface Props {
   hasLogo?: boolean;

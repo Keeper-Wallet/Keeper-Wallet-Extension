@@ -1,10 +1,11 @@
-import * as React from 'react';
+import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
-import * as styles from './wavesAuth.styl';
+
 import { DateFormat } from '../../ui';
 import { MessageComponentProps } from '../types';
+import * as styles from './wavesAuth.styl';
 
-class WavesAuthInfoComponent extends React.PureComponent<
+class WavesAuthInfoComponent extends PureComponent<
   Pick<MessageComponentProps, 'message' | 'assets'> & WithTranslation
 > {
   render() {
@@ -21,12 +22,12 @@ class WavesAuthInfoComponent extends React.PureComponent<
           <div className="tx-title body3 basic500">
             {t('transactions.wavesAuthTimeStamp')}
           </div>
-          <div className={'fullwidth'}>
+          <div className="fullwidth">
             <DateFormat
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               date={data.timestamp!}
-              showRaw={true}
-              className={'fullwidth'}
+              showRaw
+              className="fullwidth"
             />
           </div>
         </div>

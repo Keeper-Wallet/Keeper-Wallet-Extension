@@ -1,17 +1,17 @@
-import * as styles from './final.styl';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Button } from '../../ui';
-import cn from 'classnames';
-import originAuth from '../OriginAuth';
-import * as orderParseTx from '../CreateOrder/parseTx';
-import { TxHeader } from '../BaseTransaction';
-import { TransactionStatusState } from 'ui/reducers/localState';
-import { PreferencesAccount } from 'preferences/types';
-import { MessageStoreItem } from 'messages/types';
 import { AssetsRecord } from 'assets/types';
-import { MessageConfig } from '../types';
+import cn from 'classnames';
+import { MessageStoreItem } from 'messages/types';
 import { NotificationsStoreItem } from 'notifications/types';
+import { PreferencesAccount } from 'preferences/types';
+import { useTranslation } from 'react-i18next';
+import { TransactionStatusState } from 'ui/reducers/localState';
+
+import { Button } from '../../ui';
+import { TxHeader } from '../BaseTransaction';
+import * as orderParseTx from '../CreateOrder/parseTx';
+import originAuth from '../OriginAuth';
+import { MessageConfig } from '../types';
+import * as styles from './final.styl';
 
 interface Props {
   assets: AssetsRecord;

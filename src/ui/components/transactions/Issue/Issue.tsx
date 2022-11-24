@@ -1,9 +1,7 @@
-import * as styles from './issue.styl';
-import * as React from 'react';
-
-import { IssueCard } from './IssueCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './issue.styl';
+import { IssueCard } from './IssueCard';
 
 export function Issue(props: MessageComponentProps) {
   return (

@@ -1,6 +1,7 @@
-import { KEEPERWALLET_DEBUG } from '../constants';
 import * as Sentry from '@sentry/react';
 import backgroundService from 'ui/services/Background';
+
+import { KEEPERWALLET_DEBUG } from '../constants';
 
 export function initUiSentry({
   ignoreErrorContext,
@@ -17,7 +18,7 @@ export function initUiSentry({
     autoSessionTracking: false,
     initialScope: {
       tags: {
-        source: source,
+        source,
       },
     },
     integrations: [new Sentry.Integrations.Breadcrumbs({ dom: false })],

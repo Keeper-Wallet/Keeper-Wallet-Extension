@@ -1,22 +1,36 @@
 import * as Sentry from '@sentry/react';
-import log from 'loglevel';
+import { verifyCustomData } from '@waves/waves-transactions';
+import { TSignedData } from '@waves/waves-transactions/dist/requests/custom-data';
+import { BalancesItem } from 'balances/types';
+import { collectBalances } from 'balances/utils';
 import EventEmitter from 'events';
-import { v4 as uuidv4 } from 'uuid';
 import { extension } from 'lib/extension';
+import { getFirstLangCode } from 'lib/getFirstLangCode';
 import { ERRORS } from 'lib/keeperError';
 import { PortStream } from 'lib/portStream';
+import { TabsManager } from 'lib/tabsManager';
+import log from 'loglevel';
 import {
-  backupStorage,
-  ExtensionStorage,
-  StorageLocalState,
-} from './storage/storage';
-import { getFirstLangCode } from 'lib/getFirstLangCode';
+  MessageInput,
+  MessageInputOfType,
+  MessageStoreItem,
+} from 'messages/types';
+import { NetworkName } from 'networks/types';
+import { PERMISSIONS } from 'permissions/constants';
+import { PermissionObject } from 'permissions/types';
+import { IdleOptions, PreferencesAccount } from 'preferences/types';
+import { UiState } from 'ui/reducers/updateState';
+import { v4 as uuidv4 } from 'uuid';
+import { CreateWalletInput } from 'wallets/types';
+
 import {
   IgnoreErrorsContext,
   KEEPERWALLET_DEBUG,
   MSG_STATUSES,
 } from './constants';
+import { AddressBookController } from './controllers/AddressBookController';
 import { AssetInfoController } from './controllers/assetInfo';
+import { getExtraFee } from './controllers/calculateFee';
 import { CurrentAccountController } from './controllers/currentAccount';
 import { IdentityController } from './controllers/IdentityController';
 import { IdleController } from './controllers/idle';
@@ -28,33 +42,20 @@ import { PermissionsController } from './controllers/permissions';
 import { PreferencesController } from './controllers/preferences';
 import { RemoteConfigController } from './controllers/remoteConfig';
 import { StatisticsController } from './controllers/statistics';
+import { SwapController } from './controllers/SwapController';
 import { TrashController } from './controllers/trash';
 import { TxInfoController } from './controllers/txInfo';
 import { UiStateController } from './controllers/uiState';
+import { VaultController } from './controllers/VaultController';
 import { WalletController } from './controllers/wallet';
-import { AddressBookController } from './controllers/AddressBookController';
-import { SwapController } from './controllers/SwapController';
-import { getExtraFee } from './controllers/calculateFee';
 import { setupDnode } from './lib/dnodeUtil';
 import { WindowManager } from './lib/windowManager';
-import { verifyCustomData } from '@waves/waves-transactions';
-import { VaultController } from './controllers/VaultController';
-import { getTxVersions } from './wallets';
-import { TabsManager } from 'lib/tabsManager';
-import { UiState } from 'ui/reducers/updateState';
-import { IdleOptions, PreferencesAccount } from 'preferences/types';
-import { NetworkName } from 'networks/types';
-import { PERMISSIONS } from 'permissions/constants';
-import { PermissionObject } from 'permissions/types';
-import { TSignedData } from '@waves/waves-transactions/dist/requests/custom-data';
 import {
-  MessageInput,
-  MessageInputOfType,
-  MessageStoreItem,
-} from 'messages/types';
-import { CreateWalletInput } from 'wallets/types';
-import { collectBalances } from 'balances/utils';
-import { BalancesItem } from 'balances/types';
+  backupStorage,
+  ExtensionStorage,
+  StorageLocalState,
+} from './storage/storage';
+import { getTxVersions } from './wallets';
 
 log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 
@@ -491,7 +492,7 @@ class BackgroundService extends EventEmitter {
         ),
     });
 
-    //Statistics
+    // Statistics
     this.statisticsController = new StatisticsController({
       extensionStorage: this.extensionStorage,
       networkController: this.networkController,
@@ -1227,6 +1228,7 @@ class BackgroundService extends EventEmitter {
 
       msg = messages
         .filter(
+          // eslint-disable-next-line @typescript-eslint/no-shadow
           ({ account, origin }) =>
             account.address === address && origin === originReq
         )

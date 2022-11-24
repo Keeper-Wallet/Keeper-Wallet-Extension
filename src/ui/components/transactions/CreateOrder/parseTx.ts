@@ -1,4 +1,5 @@
 import { AssetsRecord } from 'assets/types';
+
 import { getMoney, IMoneyLike } from '../../../utils/converters';
 
 export const messageType = 'create-order';

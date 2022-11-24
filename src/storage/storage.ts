@@ -1,29 +1,30 @@
-import pump from 'pump';
-import debounceStream from 'debounce-stream';
-import asStream from 'obs-store/lib/asStream';
 import * as Sentry from '@sentry/react';
-import log from 'loglevel';
-import { extension } from 'lib/extension';
-import * as browser from 'webextension-polyfill';
-import { createStreamSink } from 'lib/createStreamSink';
-import type ObservableStore from 'obs-store';
-import { NftInfo } from 'nfts';
-import {
-  DEFAULT_LEGACY_CONFIG,
-  DEFAULT_IDENTITY_CONFIG,
-  FeeConfig,
-  NftConfig,
-  IgnoreErrorsConfig,
-  AssetsConfig,
-} from '../constants';
-import { TrashItem } from 'controllers/trash';
-import { UiState } from 'ui/reducers/updateState';
-import { IdleOptions, PreferencesAccount } from 'preferences/types';
-import { NotificationsStoreItem } from 'notifications/types';
-import { PermissionValue } from 'permissions/types';
-import { NetworkName } from 'networks/types';
-import { MessageStoreItem } from 'messages/types';
 import { AssetsRecord } from 'assets/types';
+import { TrashItem } from 'controllers/trash';
+import debounceStream from 'debounce-stream';
+import { createStreamSink } from 'lib/createStreamSink';
+import { extension } from 'lib/extension';
+import log from 'loglevel';
+import { MessageStoreItem } from 'messages/types';
+import { NetworkName } from 'networks/types';
+import { NftInfo } from 'nfts';
+import { NotificationsStoreItem } from 'notifications/types';
+import type ObservableStore from 'obs-store';
+import asStream from 'obs-store/lib/asStream';
+import { PermissionValue } from 'permissions/types';
+import { IdleOptions, PreferencesAccount } from 'preferences/types';
+import pump from 'pump';
+import { UiState } from 'ui/reducers/updateState';
+import * as browser from 'webextension-polyfill';
+
+import {
+  AssetsConfig,
+  DEFAULT_IDENTITY_CONFIG,
+  DEFAULT_LEGACY_CONFIG,
+  FeeConfig,
+  IgnoreErrorsConfig,
+  NftConfig,
+} from '../constants';
 import { MIGRATIONS } from './migrations';
 
 const CURRENT_MIGRATION_VERSION = 3;

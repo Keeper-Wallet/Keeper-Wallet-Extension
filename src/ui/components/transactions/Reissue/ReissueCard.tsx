@@ -1,14 +1,15 @@
-import * as styles from './reissue.styl';
-import * as React from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { Balance } from '../../ui';
-import { getMoney } from '../../../utils/converters';
-import { getAmount, messageType } from './parseTx';
-import { MessageCardComponentProps } from '../types';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-class ReissueCardComponent extends React.PureComponent<
+import { getMoney } from '../../../utils/converters';
+import { Balance } from '../../ui';
+import { TxIcon } from '../BaseTransaction';
+import { MessageCardComponentProps } from '../types';
+import { getAmount, messageType } from './parseTx';
+import * as styles from './reissue.styl';
+
+class ReissueCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
@@ -39,9 +40,9 @@ class ReissueCardComponent extends React.PureComponent<
             <h1 className="headline1">
               <Balance
                 data-testid="reissueAmount"
-                split={true}
+                split
                 addSign="+"
-                showAsset={true}
+                showAsset
                 balance={amount}
                 showUsdAmount
               />

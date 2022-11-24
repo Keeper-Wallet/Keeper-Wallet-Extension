@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
-import { ACTION } from '../actions/constants';
 import { UiAction } from 'ui/store';
+
+import { ACTION } from '../actions/constants';
 
 export type NewAccountState = {
   address: string | null;

@@ -56,6 +56,7 @@ class Extension {
   constructor() {
     const _this = this;
 
+    // eslint-disable-next-line func-names
     apis.forEach(function (api) {
       if (hasChrome) {
         try {

@@ -1,8 +1,9 @@
-import * as styles from './chooseFile.styl';
 import cn from 'classnames';
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { Button, ErrorMessage, Input } from '../../ui';
+import * as styles from './chooseFile.styl';
 
 interface Props {
   title: string;
@@ -24,13 +25,13 @@ export function ImportKeystoreChooseFile({
   onSubmit,
 }: Props) {
   const { t } = useTranslation();
-  const [keystoreFile, setKeystoreFile] = React.useState<File | null>(null);
-  const [result, setResult] = React.useState('');
+  const [keystoreFile, setKeystoreFile] = useState<File | null>(null);
+  const [result, setResult] = useState('');
 
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [password, setPassword] = React.useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState('');
 
-  React.useEffect(() => {
+  useEffect(() => {
     setError('');
 
     if (!keystoreFile) {
@@ -76,8 +77,8 @@ export function ImportKeystoreChooseFile({
         onSubmit(result, showPassword ? password : undefined);
       }}
     >
-      <h2 className={'title1 margin3 left'}>{title}</h2>
-      <p className={'tag1 basic500 input-title'}>{label}</p>
+      <h2 className="title1 margin3 left">{title}</h2>
+      <p className="tag1 basic500 input-title">{label}</p>
 
       <label className={cn(styles.keystoreFile, 'margin1')}>
         <span className={styles.keystoreFileButton}>
@@ -107,7 +108,7 @@ export function ImportKeystoreChooseFile({
 
       {showPassword && (
         <>
-          <div className={'tag1 basic500 input-title'}>
+          <div className="tag1 basic500 input-title">
             {t('importKeystore.passwordLabel')}
           </div>
           <Input

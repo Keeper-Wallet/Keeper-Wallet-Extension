@@ -1,9 +1,7 @@
-import * as styles from './transfer.styl';
-import * as React from 'react';
-
-import { TransferCard } from './TransferCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './transfer.styl';
+import { TransferCard } from './TransferCard';
 
 export function Transfer(props: MessageComponentProps) {
   return (

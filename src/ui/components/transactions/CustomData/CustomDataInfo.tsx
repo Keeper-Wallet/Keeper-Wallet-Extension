@@ -1,9 +1,10 @@
-import * as React from 'react';
+import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
+
 import { MessageComponentProps } from '../types';
 import * as styles from './customData.styl';
 
-class CustomDataInfoComponent extends React.PureComponent<
+class CustomDataInfoComponent extends PureComponent<
   Pick<MessageComponentProps, 'message' | 'assets'> & WithTranslation
 > {
   render() {

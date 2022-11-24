@@ -1,7 +1,8 @@
-import * as React from 'react';
 import cn from 'classnames';
-import * as styles from './dropdownButton.styl';
+import { PureComponent } from 'react';
+
 import { Button } from './Button';
+import * as styles from './dropdownButton.styl';
 
 interface Props extends React.ComponentProps<'div'> {
   children?: React.ReactElement[];
@@ -12,7 +13,7 @@ interface State {
   showList: boolean;
 }
 
-export class DropdownButton extends React.PureComponent<Props, State> {
+export class DropdownButton extends PureComponent<Props, State> {
   private element: HTMLDivElement | null | undefined;
 
   getRef = (element: HTMLDivElement | null) => (this.element = element);
@@ -74,7 +75,7 @@ export class DropdownButton extends React.PureComponent<Props, State> {
         className={cn(styles.splitButton, className, 'buttons-group')}
         ref={this.getRef}
       >
-        <div className={'relative flex'}>
+        <div className="relative flex">
           {defaultItem}
 
           <div className={cn(styles.arrowButton)}>

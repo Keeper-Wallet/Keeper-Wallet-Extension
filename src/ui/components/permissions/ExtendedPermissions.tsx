@@ -1,7 +1,8 @@
-import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import * as styles from './settings.styl';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { Input, Select } from 'ui/components/ui';
+
+import * as styles from './settings.styl';
 
 const CONFIG: {
   list: Array<{
@@ -39,7 +40,7 @@ const CONFIG: {
   ],
 };
 
-class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
+class ExtendedPermissionsComponent extends PureComponent<IProps, IState> {
   state: IState = {
     origin: null,
     interval: null,
@@ -76,7 +77,7 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
     return {
       ...state,
       interval,
-      totalAmount: totalAmount,
+      totalAmount,
       selected,
       origin: originName,
       showNotify,
@@ -172,7 +173,7 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
         <div className="flex margin-main-big margin-main-big-top">
           <Input
             id="checkbox_noshow"
-            type={'checkbox'}
+            type="checkbox"
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             checked={this.state.showNotify!}
             onChange={this.changeShowNotifyHandler}

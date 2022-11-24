@@ -1,18 +1,19 @@
+import { EventEmitter } from 'events';
+import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
+import { equals } from 'ramda';
 import * as browser from 'webextension-polyfill';
+
 import {
+  DEFAULT_IDENTITY_CONFIG,
   DEFAULT_LEGACY_CONFIG,
   DEFAULT_MAIN_CONFIG,
-  DEFAULT_IDENTITY_CONFIG,
-  STATUS,
-  MainConfig,
   IgnoreErrorsContext,
+  MainConfig,
+  STATUS,
 } from '../constants';
-import { EventEmitter } from 'events';
-import { equals } from 'ramda';
 import { ExtensionStorage } from '../storage/storage';
 import { IdentityConfig } from './IdentityController';
-import { NetworkName } from 'networks/types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const extendValues = (defaultValues: any, newValues: any) => {

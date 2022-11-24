@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { DuckInfo } from 'nfts/ducks/utils';
-import { DucklingInfo } from 'nfts/ducklings';
-import { DucksArtefactInfo } from 'nfts/duckArtifacts';
-import { SignArtInfo } from 'nfts/signArt';
 import { AssetDetail } from 'assets/types';
+import { DucksArtefactInfo } from 'nfts/duckArtifacts';
+import { DucklingInfo } from 'nfts/ducklings';
+import { DuckInfo } from 'nfts/ducks/utils';
+import { SignArtInfo } from 'nfts/signArt';
+
 import { NftConfig } from '../constants';
 
 export type NftInfo = DuckInfo | DucklingInfo | DucksArtefactInfo | SignArtInfo;

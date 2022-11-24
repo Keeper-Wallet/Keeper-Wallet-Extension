@@ -1,9 +1,7 @@
-import * as styles from './massTransfer.styl';
-import * as React from 'react';
-
-import { MassTransferCard } from './MassTransferCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './massTransfer.styl';
+import { MassTransferCard } from './MassTransferCard';
 
 export function MassTransfer(props: MessageComponentProps) {
   return (

@@ -1,17 +1,18 @@
-import * as styles from './massTransfer.styl';
-import * as React from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import { validators } from '@waves/waves-transactions';
-import { processAliasOrAddress } from 'transactions/utils';
-import { TxIcon } from '../BaseTransaction';
-import cn from 'classnames';
-import { AddressRecipient } from '../../ui/Address/Recipient';
-import { Attachment, Balance, Spoiler } from '../../ui';
-import { getMoney, IMoneyLike } from '../../../utils/converters';
-import { getAmount, getTransferAmount, messageType } from './parseTx';
-import { readAttachment } from '../../../utils/waves';
 import { Money } from '@waves/data-entities';
+import { validators } from '@waves/waves-transactions';
+import cn from 'classnames';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import { processAliasOrAddress } from 'transactions/utils';
+
+import { getMoney, IMoneyLike } from '../../../utils/converters';
+import { readAttachment } from '../../../utils/waves';
+import { Attachment, Balance, Spoiler } from '../../ui';
+import { AddressRecipient } from '../../ui/Address/Recipient';
+import { TxIcon } from '../BaseTransaction';
 import { MessageCardComponentProps } from '../types';
+import * as styles from './massTransfer.styl';
+import { getAmount, getTransferAmount, messageType } from './parseTx';
 
 interface ITransfer {
   recipient: string;
@@ -63,7 +64,7 @@ const Transfers = ({
             <div className="body3 submit400">
               <Balance
                 data-testid="massTransferItemAmount"
-                isShortFormat={true}
+                isShortFormat
                 balance={money}
                 showAsset={false}
                 showUsdAmount
@@ -76,14 +77,10 @@ const Transfers = ({
   );
 };
 
-class MassTransferCardComponent extends React.PureComponent<
+class MassTransferCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   state = Object.create(null);
-
-  private toggleShowRecipients = (count: unknown) => {
-    this.setState({ count });
-  };
 
   render() {
     const className = cn(
@@ -117,9 +114,9 @@ class MassTransferCardComponent extends React.PureComponent<
             <h1 className="headline1">
               <Balance
                 data-testid="massTransferAmount"
-                split={true}
+                split
                 addSign="-"
-                showAsset={true}
+                showAsset
                 balance={amount}
                 showUsdAmount
               />

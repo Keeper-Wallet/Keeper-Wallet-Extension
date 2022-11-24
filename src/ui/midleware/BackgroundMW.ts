@@ -1,13 +1,14 @@
+import { NotificationsStoreItem } from 'notifications/types';
+import { UiMiddleware } from 'ui/store';
+
 import { ACTION } from '../actions/constants';
 import {
   notificationChangeName,
   notificationSelect,
 } from '../actions/localState';
 import { setActiveNotification } from '../actions/notifications';
-import background from '../services/Background';
 import i18n from '../i18n';
-import { UiMiddleware } from 'ui/store';
-import { NotificationsStoreItem } from 'notifications/types';
+import background from '../services/Background';
 
 export const changeLang: UiMiddleware = store => next => action => {
   if (

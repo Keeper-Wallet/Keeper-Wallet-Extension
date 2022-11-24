@@ -1,12 +1,13 @@
-import * as styles from './NewAccount.module.css';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import * as React from 'react';
 import { Navigate } from 'react-router-dom';
-import { Button, ErrorMessage, Input, LangsSelect } from '../ui';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import { CONFIG } from '../../appConfig';
-import { AppState } from 'ui/store';
 import Background from 'ui/services/Background';
+import { AppState } from 'ui/store';
+
+import { CONFIG } from '../../appConfig';
+import { Button, ErrorMessage, Input, LangsSelect } from '../ui';
+import * as styles from './NewAccount.module.css';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
@@ -16,7 +17,7 @@ const mapStateToProps = (state: AppState) => ({
 
 type Props = WithTranslation & ReturnType<typeof mapStateToProps>;
 
-class NewAccountComponent extends React.PureComponent<Props> {
+class NewAccountComponent extends PureComponent<Props> {
   state = {
     firstValue: '',
     secondValue: '',
@@ -126,7 +127,7 @@ class NewAccountComponent extends React.PureComponent<Props> {
 
           <div className={styles.inner}>
             <div className="margin1 relative">
-              <div className={`basic500 tag1 left input-title`}>
+              <div className="basic500 tag1 left input-title">
                 {t('newAccount.createPassword')}
               </div>
               <Input
@@ -137,7 +138,7 @@ class NewAccountComponent extends React.PureComponent<Props> {
                 onBlur={this.onFirstBlur}
                 onChange={this.onChangeFist}
                 error={!!this.state.firstError}
-                autoFocus={true}
+                autoFocus
                 autoComplete="off"
               />
 
@@ -149,7 +150,7 @@ class NewAccountComponent extends React.PureComponent<Props> {
               </ErrorMessage>
             </div>
             <div className="margin1 relative">
-              <div className={`basic500 tag1 left input-title`}>
+              <div className="basic500 tag1 left input-title">
                 {t('newAccount.confirmPassword')}
               </div>
               <Input

@@ -1,5 +1,5 @@
-import { NftVendor } from 'nfts/index';
 import { DucksArtefactInfo } from 'nfts/duckArtifacts/index';
+import { NftVendor } from 'nfts/index';
 
 export async function fetchAll(
   nfts: Array<{ assetId: string }>

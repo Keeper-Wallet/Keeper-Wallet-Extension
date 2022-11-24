@@ -6,14 +6,15 @@ import { swappableAssetIds } from 'assets/constants';
 import { AssetDetail } from 'assets/types';
 import { useAssetIdByTicker } from 'assets/utils';
 import { convertFeeToAsset } from 'fee/utils';
-import * as React from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { updateAssets } from 'ui/actions/assets';
 import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
 import background from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { SwapForm, OnSwapParams } from './form';
+
+import { OnSwapParams, SwapForm } from './form';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
 
@@ -35,10 +36,8 @@ export function Swap() {
   const initialToAssetId =
     initialFromAssetId === usdnAssetId ? 'WAVES' : usdnAssetId;
 
-  const [isSwapInProgress, setIsSwapInProgress] = React.useState(false);
-  const [swapErrorMessage, setSwapErrorMessage] = React.useState<string | null>(
-    null
-  );
+  const [isSwapInProgress, setIsSwapInProgress] = useState(false);
+  const [swapErrorMessage, setSwapErrorMessage] = useState<string | null>(null);
 
   const rules = feeConfig.calculate_fee_rules;
 
@@ -46,9 +45,9 @@ export function Swap() {
     ? rules[TRANSACTION_TYPE.INVOKE_SCRIPT].fee
     : rules.default.fee;
 
-  const [wavesFeeCoins, setWavesFeeCoins] = React.useState(minimumFee);
+  const [wavesFeeCoins, setWavesFeeCoins] = useState(minimumFee);
 
-  React.useEffect(() => {
+  useEffect(() => {
     let cancelled = false;
     let timeout: number;
 
@@ -72,7 +71,7 @@ export function Swap() {
 
   const assets = useAppSelector(state => state.assets);
 
-  const swappableAssetEntries = React.useMemo(
+  const swappableAssetEntries = useMemo(
     () =>
       swappableAssetIds.mainnet.map((assetId): [string, AssetDetail] => [
         assetId,
@@ -82,7 +81,7 @@ export function Swap() {
     [assets]
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const assetsToUpdate = Array.from(
       new Set(
         swappableAssetEntries
@@ -101,7 +100,7 @@ export function Swap() {
     state => state.balances[state.selectedAccount.address!]
   );
 
-  const [performedSwapData, setPerformedSwapData] = React.useState<{
+  const [performedSwapData, setPerformedSwapData] = useState<{
     fromMoney: Money;
     transactionId: string;
   } | null>(null);
@@ -141,7 +140,7 @@ export function Swap() {
           setSwapErrorMessage(null);
           setIsSwapInProgress(true);
 
-          const wavesFee = new Money(wavesFeeCoins, new Asset(assets['WAVES']));
+          const wavesFee = new Money(wavesFeeCoins, new Asset(assets.WAVES));
           const fee = convertFeeToAsset(
             wavesFee,
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

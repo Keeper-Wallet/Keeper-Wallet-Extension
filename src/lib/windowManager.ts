@@ -1,5 +1,6 @@
 import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
+
 import { ExtensionStorage } from '../storage/storage';
 
 const height = 622;
@@ -54,6 +55,7 @@ export class WindowManager {
     this.store.updateState({ inShowMode: false });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   async resizeWindow(width: number, height: number) {
     const notificationWindow = await this._getNotificationWindow();
     if (notificationWindow) {
@@ -74,6 +76,7 @@ export class WindowManager {
   async _getNotificationWindow() {
     // get all extension windows
     const windows = await new Promise<chrome.windows.Window[]>(resolve =>
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       extension.windows.getAll({}, windows => {
         resolve(windows || []);
       })

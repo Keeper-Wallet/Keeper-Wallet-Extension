@@ -1,14 +1,15 @@
 import * as Sentry from '@sentry/react';
 import { Asset, Money } from '@waves/data-entities';
 import cn from 'classnames';
-import * as React from 'react';
+import { NetworkName } from 'networks/types';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui/components/ui/buttons/Button';
 import { Balance } from 'ui/components/ui/balance/Balance';
+import { Button } from 'ui/components/ui/buttons/Button';
 import { useAppSelector } from 'ui/store';
+
 import { SwapLayout } from './layout';
 import * as styles from './result.module.css';
-import { NetworkName } from 'networks/types';
 
 interface Props {
   fromMoney: Money;
@@ -53,10 +54,10 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
       state.networks.find(net => net.name === state.currentNetwork)!.server
   );
 
-  const [swapStatus, setSwapStatus] = React.useState(SwapStatus.Pending);
-  const [receivedMoney, setReceivedMoney] = React.useState<Money | null>(null);
+  const [swapStatus, setSwapStatus] = useState(SwapStatus.Pending);
+  const [receivedMoney, setReceivedMoney] = useState<Money | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     let cancelled = false;
 
     const txStatusUrl = new URL('/transactions/status', server);
@@ -98,6 +99,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
 
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const transfer = txInfo.stateChanges.transfers.find(
+              // eslint-disable-next-line @typescript-eslint/no-shadow
               t => t.address === selectedAccount.address
             )!;
 

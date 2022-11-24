@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { useAppSelector } from 'ui/store';
+
 import { LoadingScreen } from './pages/loadingScreen';
 
 interface Props {

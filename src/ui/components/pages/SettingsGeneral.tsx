@@ -1,11 +1,11 @@
-import * as styles from './styles/settings.styl';
-import * as React from 'react';
+import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Button, Select } from '../ui';
-import { setIdle } from '../../actions/localState';
-import cn from 'classnames';
 import { useAppDispatch, useAppSelector } from 'ui/store';
+
+import { setIdle } from '../../actions/localState';
+import { Button, Select } from '../ui';
+import * as styles from './styles/settings.styl';
 
 export function SettingsGeneral() {
   const navigate = useNavigate();

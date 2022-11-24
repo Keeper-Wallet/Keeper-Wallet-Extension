@@ -1,7 +1,8 @@
-import * as mocha from 'mocha';
-import { App, CreateNewAccount, Settings, Windows } from './utils/actions';
-import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
+import * as mocha from 'mocha';
+import { By, until, WebElement } from 'selenium-webdriver';
+
+import { App, CreateNewAccount, Settings, Windows } from './utils/actions';
 import {
   CUSTOMLIST,
   DEFAULT_ANIMATION_DELAY,

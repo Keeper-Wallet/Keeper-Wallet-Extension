@@ -1,11 +1,12 @@
-import { AccountsStore } from './store';
-import { ACTION } from 'ui/actions/constants';
 import { equals } from 'ramda';
+import { ACTION } from 'ui/actions/constants';
 import {
   BackgroundGetStateResult,
   BackgroundUiApi,
 } from 'ui/services/Background';
 import { UiAction } from 'ui/store';
+
+import { AccountsStore } from './store';
 
 function getParam<S, D>(param: S, defaultParam: D) {
   if (param) {
@@ -108,6 +109,7 @@ export function createUpdateState(store: AccountsStore) {
       (state.currentNetwork != null &&
         state.currentNetwork !== currentState.currentNetwork)
     ) {
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       const accounts = state.accounts || currentState.allNetworksAccounts;
       const network = state.currentNetwork || currentState.currentNetwork;
 

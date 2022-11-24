@@ -1,13 +1,14 @@
-import { useAppSelector } from 'ui/store';
-import * as React from 'react';
-import background from 'ui/services/Background';
-import { Button, Modal } from 'ui/components/ui';
 import cn from 'classnames';
-import { Login } from './login';
-import { useTranslation } from 'react-i18next';
-import * as styles from './signWrapper.module.css';
 import { LedgerConnectModal } from 'ledger/connectModal';
 import { ledgerService, LedgerServiceStatus } from 'ledger/service';
+import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, Modal } from 'ui/components/ui';
+import background from 'ui/services/Background';
+import { useAppSelector } from 'ui/store';
+
+import { Login } from './login';
+import * as styles from './signWrapper.module.css';
 
 type Props = {
   onConfirm: (...args: unknown[]) => void;
@@ -21,14 +22,14 @@ export function SignWrapper({ onConfirm, children }: Props) {
   const { t } = useTranslation();
   const account = useAppSelector(state => state.selectedAccount);
 
-  const [showModal, setShowModal] = React.useState(false);
-  const [pending, setPending] = React.useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [pending, setPending] = useState(false);
 
   let onReadyHandler: (() => void) | undefined;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const onReady = React.useCallback(() => onReadyHandler!(), [onReadyHandler]);
+  const onReady = useCallback(() => onReadyHandler!(), [onReadyHandler]);
 
-  const onPrepare = React.useCallback(
+  const onPrepare = useCallback(
     (...args: unknown[]) => {
       switch (account.type) {
         case 'wx':

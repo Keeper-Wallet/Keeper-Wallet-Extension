@@ -1,8 +1,8 @@
+import { MessageConfig } from '../types';
+import * as utils from './parseTx';
 import { ScriptInvocation } from './ScriptInvocation';
 import { ScriptInvocationCard } from './ScriptInvocationCard';
 import { ScriptInvocationFinal } from './ScriptInvocationFinal';
-import * as utils from './parseTx';
-import { MessageConfig } from '../types';
 
 const scriptInvocation: MessageConfig = {
   type: utils.messageType,

@@ -1,6 +1,4 @@
-import { BaseNft } from 'nfts/index';
-import { capitalize } from 'nfts/utils';
-import { DuckInfo } from 'nfts/ducks/utils';
+import { AssetDetail } from 'assets/types';
 import {
   duckColors,
   duckGenerationNames,
@@ -8,8 +6,10 @@ import {
   ducksDAppBreeder,
   ducksDAppIncubator,
 } from 'nfts/ducks/constants';
-import * as React from 'react';
-import { AssetDetail } from 'assets/types';
+import { DuckInfo } from 'nfts/ducks/utils';
+import { BaseNft } from 'nfts/index';
+import { capitalize } from 'nfts/utils';
+
 import { NftConfig } from '../../constants';
 
 export class Duck extends BaseNft<DuckInfo> {

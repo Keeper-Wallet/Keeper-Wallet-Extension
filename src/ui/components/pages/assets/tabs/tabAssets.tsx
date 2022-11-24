@@ -1,19 +1,19 @@
-import * as styles from 'ui/components/pages/styles/assets.styl';
-import { icontains } from 'ui/components/pages/assets/helpers';
-import { useTranslation } from 'react-i18next';
-import { AssetItem } from 'ui/components/pages/assets//assetItem';
-import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
-import * as React from 'react';
-import { SearchInput, TabPanel } from 'ui/components/ui';
-import { useAppSelector } from 'ui/store';
-import { CARD_FULL_HEIGHT, sortAssetEntries, useUiState } from './helpers';
-import { FixedSizeList as List } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
-import { BalanceAssets } from 'ui/reducers/updateState';
-import { Tooltip } from 'ui/components/ui/tooltip';
-import cn from 'classnames';
+import { Asset, Money } from '@waves/data-entities';
 import { AssetsRecord } from 'assets/types';
+import cn from 'classnames';
+import { useTranslation } from 'react-i18next';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeList as List } from 'react-window';
+import { AssetItem } from 'ui/components/pages/assets//assetItem';
+import { icontains } from 'ui/components/pages/assets/helpers';
+import * as styles from 'ui/components/pages/styles/assets.styl';
+import { SearchInput, TabPanel } from 'ui/components/ui';
+import { Tooltip } from 'ui/components/ui/tooltip';
+import { BalanceAssets } from 'ui/reducers/updateState';
+import { useAppSelector } from 'ui/store';
+
+import { CARD_FULL_HEIGHT, sortAssetEntries, useUiState } from './helpers';
 
 const Row = ({
   data,

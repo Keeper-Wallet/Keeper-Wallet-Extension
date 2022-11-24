@@ -1,12 +1,13 @@
 import * as Sentry from '@sentry/react';
-import { compareAccountsByLastUsed } from 'preferences/utils';
-import ObservableStore from 'obs-store';
 import EventEmitter from 'events';
+import { NetworkName } from 'networks/types';
+import ObservableStore from 'obs-store';
+import { IdleOptions } from 'preferences/types';
+import { compareAccountsByLastUsed } from 'preferences/utils';
+import { WalletAccount } from 'wallets/types';
+
 import { ExtensionStorage } from '../storage/storage';
 import { NetworkController } from './network';
-import { IdleOptions } from 'preferences/types';
-import { WalletAccount } from 'wallets/types';
-import { NetworkName } from 'networks/types';
 
 export class PreferencesController extends EventEmitter {
   store;

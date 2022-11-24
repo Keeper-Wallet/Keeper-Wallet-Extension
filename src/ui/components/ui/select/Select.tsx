@@ -1,5 +1,6 @@
 import cn from 'classnames';
-import * as React from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import * as styles from './Select.module.css';
 
 type TText = string | React.ReactNode;
@@ -46,10 +47,10 @@ export function Select<T>({
   onSelectItem,
   ...otherProps
 }: Props<T>) {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const rootRef = React.useRef<HTMLDivElement | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isOpen) {
       return;
     }
@@ -77,7 +78,7 @@ export function Select<T>({
     };
   }, [isOpen]);
 
-  const getRef = React.useCallback(
+  const getRef = useCallback(
     (element: HTMLDivElement) => {
       forwardRef && (forwardRef.current = element);
       rootRef.current = element;

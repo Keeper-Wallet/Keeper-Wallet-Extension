@@ -1,0 +1,31 @@
+{
+  "root": true,
+  "extends": "@faergeek",
+  "globals": {
+    "__SENTRY_DSN__": "readonly",
+    "__SENTRY_ENVIRONMENT__": "readonly",
+    "__SENTRY_RELEASE__": "readonly"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts", "**/*.tsx"],
+      "extends": "@faergeek/eslint-config/typescript"
+    },
+    {
+      "files": ["src/**/*"],
+      "extends": "@faergeek/eslint-config/react"
+    },
+    {
+      "files": ["scripts/*", "webpack.config.js"],
+      "extends": "@faergeek/eslint-config/node"
+    },
+    {
+      "files": ["test/**/*"],
+      "extends": "@faergeek/eslint-config/node",
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off",
+        "func-names": "off"
+      }
+    }
+  ]
+}

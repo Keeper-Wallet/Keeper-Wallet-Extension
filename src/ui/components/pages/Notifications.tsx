@@ -1,11 +1,18 @@
-import * as React from 'react';
+import { MessageStoreItem } from 'messages/types';
+import { NotificationsStoreItem } from 'notifications/types';
+import { PermissionObject, PermissionValue } from 'permissions/types';
+import { PreferencesAccount } from 'preferences/types';
+import { Component } from 'react';
+import {
+  useTranslation,
+  WithTranslation,
+  withTranslation,
+} from 'react-i18next';
 import { connect } from 'react-redux';
 import { Button, DateFormat, Input } from 'ui/components/ui';
-import {
-  withTranslation,
-  WithTranslation,
-  useTranslation,
-} from 'react-i18next';
+import Background from 'ui/services/Background';
+import { AppState } from 'ui/store';
+
 import {
   deleteNotifications,
   setActiveNotification,
@@ -13,14 +20,8 @@ import {
 } from '../../actions/notifications';
 import { WithNavigate, withNavigate } from '../../router';
 import { TransactionWallet } from '../wallets/TransactionWallet';
-import * as styles from './styles/messageList.styl';
 import { LoadingScreen } from './loadingScreen';
-import { AppState } from 'ui/store';
-import { NotificationsStoreItem } from 'notifications/types';
-import { PreferencesAccount } from 'preferences/types';
-import { PermissionObject, PermissionValue } from 'permissions/types';
-import { MessageStoreItem } from 'messages/types';
-import Background from 'ui/services/Background';
+import * as styles from './styles/messageList.styl';
 
 const NotificationItem = ({
   notification,
@@ -29,7 +30,7 @@ const NotificationItem = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className={`margin-main-big`}>
+    <div className="margin-main-big">
       <div className={`${styles.messageItemInner} margin-2`}>
         <div className="flex">
           <div className={styles.messageIcon} />
@@ -90,7 +91,7 @@ interface State {
   loading?: boolean;
 }
 
-class NotificationsComponent extends React.Component<Props, State> {
+class NotificationsComponent extends Component<Props, State> {
   state: State = {};
 
   static getDerivedStateFromProps(
@@ -205,7 +206,7 @@ class NotificationsComponent extends React.Component<Props, State> {
           >
             <Input
               id="checkbox_noshow"
-              type={'checkbox'}
+              type="checkbox"
               checked={this.state.canShowNotify}
               onChange={this.toggleCanShowHandler}
             />
@@ -259,7 +260,7 @@ class NotificationsComponent extends React.Component<Props, State> {
   }
 }
 
-const mapStateToProps = function (store: AppState): StateProps {
+function mapStateToProps(store: AppState): StateProps {
   return {
     selectedAccount: store.selectedAccount,
     activeNotification: store.activePopup && store.activePopup.notify,
@@ -267,7 +268,7 @@ const mapStateToProps = function (store: AppState): StateProps {
     messages: store.messages,
     notifications: store.notifications,
   };
-};
+}
 
 const actions = {
   setActiveNotification,

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import BigNumber from '@waves/bignumber';
 import { useAppSelector } from 'ui/store';
 

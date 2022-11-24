@@ -1,10 +1,10 @@
-import { useTranslation } from 'react-i18next';
-import { Balance, Button, Copy, DateFormat, Ellipsis } from '../../ui';
-import * as React from 'react';
 import { Asset, Money } from '@waves/data-entities';
+import { AssetDetail } from 'assets/types';
+import { useTranslation } from 'react-i18next';
+
 import { useAppSelector } from '../../../store';
 import { getAssetDetailLink } from '../../../urls';
-import { AssetDetail } from 'assets/types';
+import { Balance, Button, Copy, DateFormat, Ellipsis } from '../../ui';
 
 interface Props {
   asset: AssetDetail;

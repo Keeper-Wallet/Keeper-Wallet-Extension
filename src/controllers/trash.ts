@@ -1,6 +1,7 @@
-import { ExtensionStorage } from '../storage/storage';
 import ObservableStore from 'obs-store';
 import { PreferencesAccount } from 'preferences/types';
+
+import { ExtensionStorage } from '../storage/storage';
 
 const MAX_ITEMS = 200;
 

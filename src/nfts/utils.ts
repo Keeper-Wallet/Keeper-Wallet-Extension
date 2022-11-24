@@ -1,20 +1,20 @@
-import { fetchAll as fetchAllSignArts } from 'nfts/signArt/utils';
-import { DuckInfo, fetchAll as fetchAllDucks } from 'nfts/ducks/utils';
-import { fetchAll as fetchAllDucklings } from 'nfts/ducklings/utils';
-
-import { signArtDApp } from 'nfts/signArt/constants';
-import { ducksDApps } from 'nfts/ducks/constants';
-import { ducklingsDApp } from 'nfts/ducklings/constants';
-import { ducksArtefactsDApp } from 'nfts/duckArtifacts/constants';
-import { fetchAll as fetchAllArtefacts } from 'nfts/duckArtifacts/utils';
-import { BaseNft, NftInfo, NftVendor } from 'nfts/index';
-import { Duckling, DucklingInfo } from 'nfts/ducklings';
-import { Duck } from 'nfts/ducks';
-import { SignArt, SignArtInfo } from 'nfts/signArt';
-import { DucksArtefact } from 'nfts/duckArtifacts';
-import { MyNFT, Unknown } from 'nfts/unknown';
 import { DataTransactionEntry, Long } from '@waves/ts-types';
 import { AssetDetail } from 'assets/types';
+import { DucksArtefact } from 'nfts/duckArtifacts';
+import { ducksArtefactsDApp } from 'nfts/duckArtifacts/constants';
+import { fetchAll as fetchAllArtefacts } from 'nfts/duckArtifacts/utils';
+import { Duckling, DucklingInfo } from 'nfts/ducklings';
+import { ducklingsDApp } from 'nfts/ducklings/constants';
+import { fetchAll as fetchAllDucklings } from 'nfts/ducklings/utils';
+import { Duck } from 'nfts/ducks';
+import { ducksDApps } from 'nfts/ducks/constants';
+import { DuckInfo, fetchAll as fetchAllDucks } from 'nfts/ducks/utils';
+import { BaseNft, NftInfo, NftVendor } from 'nfts/index';
+import { SignArt, SignArtInfo } from 'nfts/signArt';
+import { signArtDApp } from 'nfts/signArt/constants';
+import { fetchAll as fetchAllSignArts } from 'nfts/signArt/utils';
+import { MyNFT, Unknown } from 'nfts/unknown';
+
 import { NftConfig } from '../constants';
 
 export type Nft = ReturnType<typeof createNft>;

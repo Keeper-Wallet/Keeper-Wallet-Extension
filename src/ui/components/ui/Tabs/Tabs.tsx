@@ -1,6 +1,7 @@
-import * as styles from './tabs.styl';
-import * as React from 'react';
 import cn from 'classnames';
+import { Children, cloneElement, useState } from 'react';
+
+import * as styles from './tabs.styl';
 
 interface TabProps {
   className?: string;
@@ -39,9 +40,9 @@ export function TabList({
 }: TabListProps) {
   return (
     <ol className={cn(styles.tabList, className)}>
-      {React.Children.map(children, (child, index) =>
-        React.cloneElement(child, {
-          isActive: index == activeIndex,
+      {Children.map(children, (child, index) =>
+        cloneElement(child, {
+          isActive: index === activeIndex,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           onActivate: () => onActiveTab!(index),
         })
@@ -61,7 +62,7 @@ export function TabPanels({
   children,
   className,
 }: TabPanelsProps) {
-  const childArray = React.Children.toArray(children);
+  const childArray = Children.toArray(children);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return <div className={className}>{childArray[activeIndex!]}</div>;
@@ -87,20 +88,18 @@ export function Tabs({
   activeTab: activeTabProp,
   onTabChange,
 }: TabsProps) {
-  const [activeTabState, setActiveTabState] = React.useState(
-    activeTabProp ?? 0
-  );
+  const [activeTabState, setActiveTabState] = useState(activeTabProp ?? 0);
 
   const activeTab = activeTabProp ?? activeTabState;
 
   return (
     <>
-      {React.Children.map(children, child => {
+      {Children.map(children, child => {
         switch (child.type) {
           case TabPanels:
-            return React.cloneElement(child, { activeIndex: activeTab });
+            return cloneElement(child, { activeIndex: activeTab });
           case TabList:
-            return React.cloneElement(child, {
+            return cloneElement(child, {
               activeIndex: activeTab,
               onActiveTab: (activeIndex: number) => {
                 if (onTabChange) {

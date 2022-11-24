@@ -1,14 +1,15 @@
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Asset, Money } from '@waves/data-entities';
 import { compareAccountsByLastUsed } from 'preferences/utils';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { selectAccount } from 'ui/actions/localState';
-import { AccountCard } from '../accounts/accountCard';
-import * as styles from './otherAccounts.module.css';
 import { SearchInput } from 'ui/components/ui/searchInput/searchInput';
 import background from 'ui/services/Background';
+import { useAppDispatch, useAppSelector } from 'ui/store';
+
+import { AccountCard } from '../accounts/accountCard';
+import * as styles from './otherAccounts.module.css';
 
 export function OtherAccountsPage() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export function OtherAccountsPage() {
   const assets = useAppSelector(state => state.assets);
   const balances = useAppSelector(state => state.balances);
 
-  const [term, setTerm] = React.useState<string>('');
+  const [term, setTerm] = useState<string>('');
 
   const otherAccounts = accounts
     .filter(
@@ -40,7 +41,7 @@ export function OtherAccountsPage() {
 
   const balancesMoney: Record<string, Money> = {};
 
-  const assetInfo = assets['WAVES'];
+  const assetInfo = assets.WAVES;
 
   if (assetInfo) {
     const asset = new Asset(assetInfo);
@@ -84,12 +85,12 @@ export function OtherAccountsPage() {
               key={account.address}
               account={account}
               balance={balancesMoney[account.address]}
-              onClick={account => {
-                dispatch(selectAccount(account));
+              onClick={clickedAccount => {
+                dispatch(selectAccount(clickedAccount));
                 navigate('/', { replace: true });
               }}
-              onInfoClick={account => {
-                navigate(`/account-info/${account.address}`);
+              onInfoClick={clickedAccount => {
+                navigate(`/account-info/${clickedAccount.address}`);
               }}
             />
           ))

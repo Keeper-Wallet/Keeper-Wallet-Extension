@@ -1,14 +1,15 @@
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { seedUtils } from '@waves/waves-transactions';
 import { KeystoreProfiles } from 'keystore/types';
-import { getNetworkByNetworkCode } from 'ui/utils/waves';
-import { ImportKeystoreChooseFile } from './chooseFile';
-import { ImportKeystoreChooseAccounts } from './chooseAccounts';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { batchAddAccounts } from 'ui/actions/user';
-import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
+import { getNetworkByNetworkCode } from 'ui/utils/waves';
+
+import { WalletTypes } from '../../../services/Background';
+import { ImportKeystoreChooseAccounts } from './chooseAccounts';
+import { ImportKeystoreChooseFile } from './chooseFile';
 
 type ExchangeKeystoreAccount = {
   address: string;
@@ -67,6 +68,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
                 seedUtils.decryptSeed(saveUsers, password, encryptionRounds)
               );
 
+              // eslint-disable-next-line @typescript-eslint/no-shadow
               const profiles: KeystoreProfiles = {
                 custom: { accounts: [] },
                 mainnet: { accounts: [] },
@@ -120,10 +122,10 @@ export function ImportKeystore() {
     state => state.allNetworksAccounts
   );
   const { t } = useTranslation();
-  const [error, setError] = React.useState<string | null>(null);
-  const [loading, setLoading] = React.useState(false);
-  const [profiles, setProfiles] = React.useState<KeystoreProfiles | null>(null);
-  const [walletType, setWalletType] = React.useState<WalletTypes | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [profiles, setProfiles] = useState<KeystoreProfiles | null>(null);
+  const [walletType, setWalletType] = useState<WalletTypes | null>(null);
 
   if (profiles == null) {
     return (

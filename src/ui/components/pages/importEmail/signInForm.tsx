@@ -1,10 +1,11 @@
-import * as styles from './importEmail.module.css';
 import cn from 'classnames';
-import { useTranslation } from 'react-i18next';
-import { Button, ErrorMessage, Input } from '../../ui';
-import * as React from 'react';
-import { useAppSelector } from '../../../store';
 import { NetworkName } from 'networks/types';
+import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { useAppSelector } from '../../../store';
+import { Button, ErrorMessage, Input } from '../../ui';
+import * as styles from './importEmail.module.css';
 
 const baseByNetwork: Partial<Record<NetworkName, string>> = {
   [NetworkName.Mainnet]: 'https://waves.exchange',
@@ -21,20 +22,18 @@ export function SignInForm({ className, userData, signIn }: Props) {
   const { t } = useTranslation();
   const networkId = useAppSelector(state => state.currentNetwork);
 
-  const [pending, setPending] = React.useState<boolean>(false);
-  const [errors, setErrors] = React.useState<Record<string, string | null>>({
+  const [pending, setPending] = useState<boolean>(false);
+  const [errors, setErrors] = useState<Record<string, string | null>>({
     _form: null,
     emailRequired: null,
     passwordRequired: null,
   });
-  const [email, setEmail] = React.useState<string>(userData?.username ?? '');
+  const [email, setEmail] = useState<string>(userData?.username ?? '');
   const [name, domain] = email.split('@');
   const maskedEmail = `${name[0]}******@${domain}`;
-  const [password, setPassword] = React.useState<string>(
-    userData?.password ?? ''
-  );
+  const [password, setPassword] = useState<string>(userData?.password ?? '');
 
-  const handleEmailChange = React.useCallback(
+  const handleEmailChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setEmail(event.target.value.trim());
       setErrors(prev => ({
@@ -46,7 +45,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
     []
   );
 
-  const handleEmailBlur = React.useCallback(() => {
+  const handleEmailBlur = useCallback(() => {
     setErrors(prev => ({
       ...prev,
       emailRequired:
@@ -56,7 +55,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
     }));
   }, [email, t]);
 
-  const handlePasswordChange = React.useCallback(
+  const handlePasswordChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setPassword(event.target.value);
       setErrors(prev => ({
@@ -68,7 +67,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
     []
   );
 
-  const handlePasswordBlur = React.useCallback(() => {
+  const handlePasswordBlur = useCallback(() => {
     setErrors(prev => ({
       ...prev,
       passwordRequired:
@@ -76,7 +75,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
     }));
   }, [password.length, t]);
 
-  const handleSubmit = React.useCallback(
+  const handleSubmit = useCallback(
     async event => {
       event.preventDefault();
 
@@ -116,7 +115,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
   return (
     <form className={className} onSubmit={handleSubmit}>
       <div className="margin1">
-        <div className={'tag1 basic500 input-title'}>
+        <div className="tag1 basic500 input-title">
           {t('importEmail.emailLabel')}
         </div>
 
@@ -140,7 +139,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
       </div>
 
       <div className="margin4">
-        <div className={'tag1 basic500 input-title'}>
+        <div className="tag1 basic500 input-title">
           {t('importEmail.passwordLabel')}
         </div>
 

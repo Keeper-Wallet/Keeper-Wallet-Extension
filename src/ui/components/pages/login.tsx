@@ -1,7 +1,8 @@
-import * as React from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Background from 'ui/services/Background';
+
 import { BigLogo } from '../head';
 import { Button, ErrorMessage, Input } from '../ui';
 import * as styles from './styles/login.styl';
@@ -9,8 +10,8 @@ import * as styles from './styles/login.styl';
 export function Login() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [password, setPassword] = React.useState('');
-  const [error, setError] = React.useState(false);
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(false);
 
   return (
     <div className={styles.content}>

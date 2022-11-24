@@ -1,11 +1,12 @@
-import * as styles from './AddModal.module.css';
-import * as React from 'react';
 import { validators } from '@waves/waves-transactions';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector, useAppDispatch } from 'ui/store';
 import { setAddress } from 'ui/actions/addresses';
+import { useAppDispatch, useAppSelector } from 'ui/store';
+
+import { Button, ErrorMessage, Input, Modal } from '../';
+import * as styles from './AddModal.module.css';
 import { AddressInput } from './Input';
-import { Modal, Input, ErrorMessage, Button } from '../';
 
 interface Props {
   showModal: boolean;
@@ -19,16 +20,16 @@ export function AddModal({ showModal, setShowModal, address }: Props) {
   const dispatch = useAppDispatch();
   const addresses = useAppSelector(state => state.addresses);
 
-  const [loading, setLoading] = React.useState(false);
-  const [showNotification, setShowNotification] = React.useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
 
-  const [name, setName] = React.useState('');
-  const [nameError, setNameError] = React.useState('');
+  const [name, setName] = useState('');
+  const [nameError, setNameError] = useState('');
 
-  const [addressValue, setAddressValue] = React.useState('');
-  const [addressError, setAddressError] = React.useState('');
+  const [addressValue, setAddressValue] = useState('');
+  const [addressError, setAddressError] = useState('');
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (showModal) {
       return;
     }
@@ -40,7 +41,7 @@ export function AddModal({ showModal, setShowModal, address }: Props) {
     setAddressError('');
   }, [showModal, setShowModal]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!loading) {
       return;
     }

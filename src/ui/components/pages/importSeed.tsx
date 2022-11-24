@@ -1,11 +1,12 @@
 import * as libCrypto from '@waves/ts-lib-crypto';
 import { validators } from '@waves/waves-transactions';
 import cn from 'classnames';
-import * as React from 'react';
-import { useTranslation, Trans } from 'react-i18next';
+import { useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from 'ui/store';
 import { newAccountSelect, selectAccount } from 'ui/actions/localState';
+import { useAppDispatch, useAppSelector } from 'ui/store';
+
 import {
   Button,
   ErrorMessage,
@@ -16,8 +17,8 @@ import {
   TabPanels,
   Tabs,
 } from '../ui';
-import * as styles from './importSeed.module.css';
 import { InlineButton } from '../ui/buttons/inlineButton';
+import * as styles from './importSeed.module.css';
 
 const SEED_MIN_LENGTH = 24;
 const ENCODED_SEED_MIN_LENGTH = 16;
@@ -48,13 +49,13 @@ export function ImportSeed() {
   const customCodes = useAppSelector(state => state.customCodes);
   const networks = useAppSelector(state => state.networks);
 
-  const [activeTab, setActiveTab] = React.useState(SEED_TAB_INDEX);
+  const [activeTab, setActiveTab] = useState(SEED_TAB_INDEX);
 
-  const [showValidationError, setShowValidationError] = React.useState(false);
+  const [showValidationError, setShowValidationError] = useState(false);
 
-  const [seedValue, setSeedValue] = React.useState<string>('');
-  const [encodedSeedValue, setEncodedSeedValue] = React.useState<string>('');
-  const [privateKeyValue, setPrivateKeyValue] = React.useState<string>('');
+  const [seedValue, setSeedValue] = useState<string>('');
+  const [encodedSeedValue, setEncodedSeedValue] = useState<string>('');
+  const [privateKeyValue, setPrivateKeyValue] = useState<string>('');
 
   const networkCode =
     customCodes[currentNetwork] ||

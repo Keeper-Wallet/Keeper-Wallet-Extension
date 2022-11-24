@@ -1,9 +1,10 @@
-import * as React from 'react';
+import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
+
 import { MessageComponentProps } from '../types';
 import * as styles from './auth.styl';
 
-class AuthInfoComponent extends React.PureComponent<
+class AuthInfoComponent extends PureComponent<
   Pick<MessageComponentProps, 'message' | 'assets'> & WithTranslation
 > {
   render() {

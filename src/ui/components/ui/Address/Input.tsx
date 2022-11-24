@@ -1,6 +1,5 @@
-import * as React from 'react';
+import { ErrorMessage, Input, InputProps } from '..';
 import * as styles from './Input.module.css';
-import { Input, InputProps, ErrorMessage } from '..';
 
 type Props = Extract<InputProps, { multiLine?: false }> & {
   value: string;

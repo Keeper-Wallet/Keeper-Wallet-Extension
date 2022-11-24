@@ -1,12 +1,13 @@
-import * as styles from './setScript.styl';
-import * as React from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
 import cn from 'classnames';
-import { ShowScript } from '../../ui';
-import { SetScriptCardHeader } from './SetScriptCardHeader';
-import { MessageCardComponentProps } from '../types';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-class SetScriptCardComponent extends React.PureComponent<
+import { ShowScript } from '../../ui';
+import { MessageCardComponentProps } from '../types';
+import * as styles from './setScript.styl';
+import { SetScriptCardHeader } from './SetScriptCardHeader';
+
+class SetScriptCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
@@ -39,7 +40,7 @@ class SetScriptCardComponent extends React.PureComponent<
           >
             <ShowScript
               script={script}
-              showNotify={true}
+              showNotify
               hideScript={this.props.collapsed}
             />
           </div>

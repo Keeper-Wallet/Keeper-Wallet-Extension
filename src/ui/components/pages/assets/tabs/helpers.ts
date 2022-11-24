@@ -1,20 +1,21 @@
-import { useAppDispatch, useAppSelector } from '../../../../store';
-import { setUiState } from '../../../../actions/uiState';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { UiState } from '../../../../reducers/updateState';
-import * as React from 'react';
-import { equals } from 'ramda';
-import { Nft } from 'nfts/utils';
-import { NftVendorKeys } from 'nfts';
-import { TFunction } from 'react-i18next';
 import { AssetsRecord } from 'assets/types';
+import { NftVendorKeys } from 'nfts';
+import { Nft } from 'nfts/utils';
+import { equals } from 'ramda';
+import { useState } from 'react';
+import { TFunction } from 'react-i18next';
+
+import { setUiState } from '../../../../actions/uiState';
+import { UiState } from '../../../../reducers/updateState';
+import { useAppDispatch, useAppSelector } from '../../../../store';
 
 export function useUiState<T extends keyof UiState>(
   key: T
 ): [UiState[T] | null, (newState: UiState[T] | null) => void] {
   const dispatch = useAppDispatch();
   const initialValue = useAppSelector(state => state.uiState[key]);
-  const [state, setState] = React.useState<UiState[T] | null>(initialValue);
+  const [state, setState] = useState<UiState[T] | null>(initialValue);
   return [
     state,
     newState => {

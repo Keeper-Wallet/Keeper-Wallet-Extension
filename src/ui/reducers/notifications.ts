@@ -1,6 +1,7 @@
 import { MessageStoreItem } from 'messages/types';
 import { NotificationsStoreItem } from 'notifications/types';
 import { UiAction } from 'ui/store';
+
 import { ACTION } from '../actions/constants';
 
 export function notifications(
@@ -72,6 +73,7 @@ const getActiveFromState = (
   state: ActivePopupState | null,
   messages: MessageStoreItem[] = [],
   allMessages: MessageStoreItem[] = [],
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   notifications: NotificationsStoreItem[][] = []
 ): ActivePopupState | null => {
   // Can activeMessage

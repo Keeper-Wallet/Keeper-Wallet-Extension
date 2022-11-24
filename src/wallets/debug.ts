@@ -2,6 +2,7 @@ import { TSignedData } from '@waves/waves-transactions/dist/requests/custom-data
 import { IWavesAuth } from '@waves/waves-transactions/dist/transactions';
 import { NetworkName } from 'networks/types';
 import { Wallet } from 'wallets/wallet';
+
 import { WalletPrivateDataOfType } from './types';
 
 export interface DebugWalletInput {

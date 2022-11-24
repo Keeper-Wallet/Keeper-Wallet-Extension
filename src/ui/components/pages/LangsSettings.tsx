@@ -1,10 +1,11 @@
-import * as styles from './LangsSettings.module.css';
-import * as React from 'react';
-import { useAppDispatch, useAppSelector } from 'ui/store';
-import { useTranslation } from 'react-i18next';
-import { Button } from '../ui';
-import { setLocale } from '../../actions/user';
 import cn from 'classnames';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAppDispatch, useAppSelector } from 'ui/store';
+
+import { setLocale } from '../../actions/user';
+import { Button } from '../ui';
+import * as styles from './LangsSettings.module.css';
 
 interface LangProps {
   id: string;
@@ -46,7 +47,7 @@ export const LangsSettings = () => {
     state.currentLocale,
   ]);
 
-  const [selected, setSelected] = React.useState(currentLocale);
+  const [selected, setSelected] = useState(currentLocale);
 
   return (
     <div className={styles.content}>

@@ -1,6 +1,6 @@
 import { PreferencesAccount } from 'preferences/types';
-import * as React from 'react';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
+
 import * as styles from './accountInfoHeader.module.css';
 
 interface Props {

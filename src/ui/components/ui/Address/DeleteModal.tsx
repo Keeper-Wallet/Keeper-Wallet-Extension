@@ -1,9 +1,9 @@
-import * as styles from './DeleteModal.module.css';
-import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch } from 'ui/store';
 import { removeAddress } from 'ui/actions/addresses';
-import { Modal, Button } from '..';
+import { useAppDispatch } from 'ui/store';
+
+import { Button, Modal } from '..';
+import * as styles from './DeleteModal.module.css';
 
 interface Props {
   address: string;

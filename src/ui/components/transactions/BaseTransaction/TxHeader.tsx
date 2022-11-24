@@ -1,10 +1,10 @@
-import { TransactionWallet } from '../../wallets/TransactionWallet';
-import * as styles from '../../pages/styles/transactions.styl';
-import * as React from 'react';
 import cn from 'classnames';
-import { useTranslation } from 'react-i18next';
-import { PreferencesAccount } from 'preferences/types';
 import { MessageStoreItem } from 'messages/types';
+import { PreferencesAccount } from 'preferences/types';
+import { useTranslation } from 'react-i18next';
+
+import * as styles from '../../pages/styles/transactions.styl';
+import { TransactionWallet } from '../../wallets/TransactionWallet';
 
 const OriginWarning = ({ message }: { message: MessageStoreItem }) => {
   const { t } = useTranslation();

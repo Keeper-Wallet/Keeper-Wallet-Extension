@@ -1,5 +1,6 @@
 import { MessageStoreItem } from 'messages/types';
 import { NotificationsStoreItem } from 'notifications/types';
+
 import { ACTION } from './constants';
 
 export function setNotifications(notifications: NotificationsStoreItem[][]) {

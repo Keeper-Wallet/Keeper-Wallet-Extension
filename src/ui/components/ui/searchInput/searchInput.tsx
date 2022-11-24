@@ -1,7 +1,8 @@
-import * as React from 'react';
-import * as styles from './searchInput.module.css';
-import { Button, Input } from 'ui/components/ui';
 import cn from 'classnames';
+import { createRef } from 'react';
+import { Button, Input } from 'ui/components/ui';
+
+import * as styles from './searchInput.module.css';
 
 interface Props extends React.HTMLProps<HTMLInputElement> {
   className?: string;
@@ -16,7 +17,7 @@ export function SearchInput({
   onClear,
   ...restProps
 }: Props) {
-  const inputRef = React.createRef<HTMLInputElement>();
+  const inputRef = createRef<HTMLInputElement>();
 
   return (
     <div className={cn(styles.searchWrapper, className)}>

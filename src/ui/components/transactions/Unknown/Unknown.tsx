@@ -1,12 +1,11 @@
-import * as styles from './unknown.styl';
-import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { UnknownCard } from './UnknownCard';
-import { UnknownInfo } from './UnknownInfo';
 import { ApproveBtn, Button } from '../../ui';
 import { TxHeader } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './unknown.styl';
+import { UnknownCard } from './UnknownCard';
+import { UnknownInfo } from './UnknownInfo';
 
 export function Unknown(props: MessageComponentProps) {
   const { t } = useTranslation();

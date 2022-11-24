@@ -1,9 +1,10 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as styles from './modal.styl';
+import { PureComponent } from 'react';
+import { createPortal } from 'react-dom';
 import { CSSTransition } from 'react-transition-group';
 
-const ModalWrapper = (props: IProps) => {
+import * as styles from './modal.styl';
+
+const ModalWrapper = (props: Props) => {
   return (
     <CSSTransition
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -18,7 +19,14 @@ const ModalWrapper = (props: IProps) => {
   );
 };
 
-export class Modal extends React.PureComponent<IProps> {
+interface Props {
+  showModal?: boolean | null;
+  children?: React.ReactNode;
+  animation?: string;
+  onExited?: () => void;
+}
+
+export class Modal extends PureComponent<Props> {
   static modalRoot: HTMLElement;
   static ANIMATION = {
     FLASH: 'flash_modal',
@@ -26,7 +34,7 @@ export class Modal extends React.PureComponent<IProps> {
   };
   el: HTMLDivElement;
 
-  constructor(props: IProps) {
+  constructor(props: Props) {
     super(props);
     this.el = document.createElement('div');
     this.el.classList.add(styles.modalWrapper);
@@ -42,7 +50,7 @@ export class Modal extends React.PureComponent<IProps> {
   }
 
   render() {
-    return ReactDOM.createPortal(
+    return createPortal(
       <ModalWrapper
         onExited={this.props.onExited}
         animation={this.props.animation}
@@ -53,12 +61,4 @@ export class Modal extends React.PureComponent<IProps> {
       this.el
     );
   }
-}
-
-interface IProps {
-  showModal?: boolean | null;
-  children?: React.ReactNode;
-  animation?: string;
-  onClose?: () => void;
-  onExited?: () => void;
 }

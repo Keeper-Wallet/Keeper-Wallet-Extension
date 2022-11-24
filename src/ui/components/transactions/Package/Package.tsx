@@ -1,17 +1,17 @@
-import * as styles from './package.styl';
-import * as React from 'react';
+import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 
-import { PackageCard } from './PackageCard';
-import { PackageInfo } from './PackageInfo';
 import { TxFooter, TxHeader } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
+import * as styles from './package.styl';
+import { PackageCard } from './PackageCard';
+import { PackageInfo } from './PackageInfo';
 
 interface State {
   needScroll: boolean;
 }
 
-class PackageComponent extends React.PureComponent<
+class PackageComponent extends PureComponent<
   MessageComponentProps & WithTranslation
 > {
   readonly state: State = { needScroll: false };
@@ -53,7 +53,7 @@ class PackageComponent extends React.PureComponent<
           className={`${styles.dataTxScrollBox} transactionContent`}
           ref={this.getContainerRef}
         >
-          <div className={`margin-main`}>
+          <div className="margin-main">
             <PackageCard {...this.props} />
           </div>
 

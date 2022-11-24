@@ -1,7 +1,8 @@
 import { expect } from 'chai';
+import { By, until, WebElement } from 'selenium-webdriver';
+
 import { clear } from './utils';
 import { App, CreateNewAccount, Network, Windows } from './utils/actions';
-import { By, until, WebElement } from 'selenium-webdriver';
 import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 
 describe('Network management', function () {

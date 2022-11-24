@@ -1,12 +1,13 @@
-import * as React from 'react';
+import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
-import * as styles from './index.styl';
-import { Balance, DateFormat } from '../../ui';
-import { getFee } from './parseTx';
-import { getMoney } from '../../../utils/converters';
-import { MessageComponentProps } from '../types';
 
-class UpdateAssetInfoInfoComponent extends React.PureComponent<
+import { getMoney } from '../../../utils/converters';
+import { Balance, DateFormat } from '../../ui';
+import { MessageComponentProps } from '../types';
+import * as styles from './index.styl';
+import { getFee } from './parseTx';
+
+class UpdateAssetInfoInfoComponent extends PureComponent<
   Pick<MessageComponentProps, 'message' | 'assets'> & WithTranslation
 > {
   render() {
@@ -65,9 +66,9 @@ class UpdateAssetInfoInfoComponent extends React.PureComponent<
           <div className={styles.txValue}>
             <Balance
               data-testid="updateAssetInfoFee"
-              isShortFormat={true}
+              isShortFormat
               balance={fee}
-              showAsset={true}
+              showAsset
             />
           </div>
         </div>

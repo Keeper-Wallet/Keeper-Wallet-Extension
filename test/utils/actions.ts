@@ -1,14 +1,15 @@
 import { seedUtils } from '@waves/waves-transactions';
+import { expect } from 'chai';
 import * as mocha from 'mocha';
 import { By, until, WebElement } from 'selenium-webdriver';
+
 import {
   DEFAULT_ANIMATION_DELAY,
-  DEFAULT_SWITCH_NETWORK_DELAY,
-  STORAGE_SET_DEBOUNCE_DELAY,
-  SERVICE_WORKER_INSTALLATION_DELAY,
   DEFAULT_PASSWORD,
+  DEFAULT_SWITCH_NETWORK_DELAY,
+  SERVICE_WORKER_INSTALLATION_DELAY,
+  STORAGE_SET_DEBOUNCE_DELAY,
 } from './constants';
-import { expect } from 'chai';
 
 interface VaultEntry {
   seed: string;
@@ -21,10 +22,7 @@ interface VaultEntry {
 }
 
 export const App = {
-  initVault: async function (
-    this: mocha.Context,
-    password: string = DEFAULT_PASSWORD
-  ) {
+  async initVault(this: mocha.Context, password: string = DEFAULT_PASSWORD) {
     const tabKeeper = await this.driver.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
@@ -82,7 +80,7 @@ export const App = {
     await this.driver.switchTo().window(tabKeeper);
   },
 
-  resetVault: async function (this: mocha.Context) {
+  async resetVault(this: mocha.Context) {
     await App.open.call(this);
 
     await this.driver
@@ -128,10 +126,7 @@ export const App = {
     await this.driver.sleep(STORAGE_SET_DEBOUNCE_DELAY);
   },
 
-  decryptVault: async function (
-    this: mocha.Context,
-    password = DEFAULT_PASSWORD
-  ) {
+  async decryptVault(this: mocha.Context, password = DEFAULT_PASSWORD) {
     const encryptedVault = await this.driver.executeAsyncScript<string>(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       function (...args: any[]) {
@@ -150,7 +145,7 @@ export const App = {
     return vault;
   },
 
-  open: async function (this: mocha.Context) {
+  async open(this: mocha.Context) {
     await this.driver.get(this.extensionUrl);
     await this.driver.wait(
       until.elementIsVisible(
@@ -159,7 +154,7 @@ export const App = {
       this.wait
     );
   },
-  openServiceWorkerTab: async function (this: mocha.Context) {
+  async openServiceWorkerTab(this: mocha.Context) {
     await this.driver.switchTo().newWindow('tab');
     const extensionPanelHandle = await this.driver.getWindowHandle();
 
@@ -193,7 +188,7 @@ export const App = {
     await this.driver.close();
     await this.driver.switchTo().window(handles[0]);
   },
-  restartServiceWorker: async function (this: mocha.Context) {
+  async restartServiceWorker(this: mocha.Context) {
     const currentHandle = await this.driver.getWindowHandle();
 
     await this.driver.switchTo().newWindow('tab');
@@ -207,7 +202,7 @@ export const App = {
     await this.driver.close();
     await this.driver.switchTo().window(currentHandle);
   },
-  closeBgTabs: async function (this: mocha.Context, foreground: string) {
+  async closeBgTabs(this: mocha.Context, foreground: string) {
     for (const handle of await this.driver.getAllWindowHandles()) {
       if (handle !== foreground && handle !== this.serviceWorkerTab) {
         await this.driver.switchTo().window(handle);
@@ -219,7 +214,7 @@ export const App = {
 };
 
 export const Assets = {
-  addAccount: async function (this: mocha.Context) {
+  async addAccount(this: mocha.Context) {
     await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
     await this.driver
@@ -240,7 +235,7 @@ export const Assets = {
       )
       .click();
   },
-  getActiveAccountName: async function (this: mocha.Context) {
+  async getActiveAccountName(this: mocha.Context) {
     return this.driver
       .wait(
         until.elementLocated(
@@ -253,7 +248,7 @@ export const Assets = {
       )
       .getText();
   },
-  getOtherAccountNames: async function (this: mocha.Context) {
+  async getOtherAccountNames(this: mocha.Context) {
     await this.driver
       .wait(
         until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
@@ -278,7 +273,7 @@ export const Assets = {
 
     return accountNames;
   },
-  getAllAccountNames: async function (this: mocha.Context) {
+  async getAllAccountNames(this: mocha.Context) {
     return [
       await Assets.getActiveAccountName.call(this),
       ...(await Assets.getOtherAccountNames.call(this)),
@@ -287,11 +282,7 @@ export const Assets = {
 };
 
 export const CreateNewAccount = {
-  importAccount: async function (
-    this: mocha.Context,
-    name: string,
-    seed: string
-  ) {
+  async importAccount(this: mocha.Context, name: string, seed: string) {
     await this.driver
       .wait(
         until.elementIsVisible(
@@ -350,7 +341,7 @@ export const CreateNewAccount = {
 };
 
 export const Settings = {
-  rootSettings: async function (this: mocha.Context) {
+  async rootSettings(this: mocha.Context) {
     await this.driver
       .wait(
         until.elementLocated(
@@ -360,14 +351,14 @@ export const Settings = {
       )
       .click();
   },
-  generalSettings: async function (this: mocha.Context) {
+  async generalSettings(this: mocha.Context) {
     await Settings.rootSettings.call(this);
     await this.driver
       .wait(until.elementLocated(By.css('button#settingsGeneral')), this.wait)
       .click();
   },
 
-  setSessionTimeout: async function (this: mocha.Context, index: number) {
+  async setSessionTimeout(this: mocha.Context, index: number) {
     // refresh timeout by focus window
     await this.driver.executeScript(() => {
       window.focus();
@@ -395,17 +386,17 @@ export const Settings = {
       .click();
   },
 
-  setMinSessionTimeout: async function (this: mocha.Context) {
+  async setMinSessionTimeout(this: mocha.Context) {
     const FIRST = 1;
     await Settings.setSessionTimeout.call(this, FIRST);
   },
 
-  setMaxSessionTimeout: async function (this: mocha.Context) {
+  async setMaxSessionTimeout(this: mocha.Context) {
     const LAST = -1;
     await Settings.setSessionTimeout.call(this, LAST);
   },
 
-  permissionSettings: async function (this: mocha.Context) {
+  async permissionSettings(this: mocha.Context) {
     await Settings.rootSettings.call(this);
     await this.driver
       .wait(
@@ -415,7 +406,7 @@ export const Settings = {
       .click();
   },
 
-  clearCustomList: async function (this: mocha.Context) {
+  async clearCustomList(this: mocha.Context) {
     await Settings.permissionSettings.call(this);
 
     for (const originEl of await this.driver.findElements(
@@ -440,7 +431,7 @@ export const Settings = {
 };
 
 export const Network = {
-  switchTo: async function (this: mocha.Context, network: string) {
+  async switchTo(this: mocha.Context, network: string) {
     await this.driver.sleep(DEFAULT_SWITCH_NETWORK_DELAY);
 
     await this.driver
@@ -470,7 +461,7 @@ export const Network = {
       )
     );
   },
-  checkNetwork: async function (this: mocha.Context, network: string) {
+  async checkNetwork(this: mocha.Context, network: string) {
     await this.driver.wait(
       until.elementLocated(By.xpath("//div[contains(@class, 'intro-loader')]")),
       this.wait
@@ -497,7 +488,7 @@ export const Network = {
         .getText()
     ).matches(new RegExp(network, 'i'));
   },
-  switchToAndCheck: async function (this: mocha.Context, network: string) {
+  async switchToAndCheck(this: mocha.Context, network: string) {
     await Network.switchTo.call(this, network);
     await Network.checkNetwork.call(this, network);
   },

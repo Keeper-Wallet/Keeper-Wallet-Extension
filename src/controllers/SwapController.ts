@@ -1,7 +1,8 @@
+import { SwapClientInvokeTransaction } from '@keeper-wallet/swap-client';
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { SwapClientInvokeTransaction } from '@keeper-wallet/swap-client';
+
 import { AssetInfoController } from './assetInfo';
 import { NetworkController } from './network';
 import { PreferencesController } from './preferences';

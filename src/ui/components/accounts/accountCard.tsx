@@ -1,12 +1,12 @@
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
+import { Money } from '@waves/data-entities';
+import { PreferencesAccount } from 'preferences/types';
+import { useTranslation } from 'react-i18next';
+
 import { Avatar } from '../ui/avatar/Avatar';
 import { Balance } from '../ui/balance/Balance';
-import * as styles from './accountCard.module.css';
 import { Tooltip } from '../ui/tooltip';
-import { PreferencesAccount } from 'preferences/types';
+import * as styles from './accountCard.module.css';
 
 interface Props {
   account: PreferencesAccount;

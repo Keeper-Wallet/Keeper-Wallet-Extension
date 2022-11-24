@@ -1,3 +1,7 @@
+import { expect } from 'chai';
+import { By, until, WebElement } from 'selenium-webdriver';
+
+import { clear } from './utils';
 import {
   App,
   Assets,
@@ -6,9 +10,6 @@ import {
   Settings,
   Windows,
 } from './utils/actions';
-import { By, until, WebElement } from 'selenium-webdriver';
-import { clear } from './utils';
-import { expect } from 'chai';
 import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './utils/constants';
 
 describe('Account management', function () {
@@ -161,7 +162,7 @@ describe('Account management', function () {
       });
 
       it('By existing account name', async function () {
-        await searchInput.sendKeys(/*r*/ 'ic' /*h*/);
+        await searchInput.sendKeys(/* r */ 'ic' /* h */);
         expect(
           await this.driver
             .wait(

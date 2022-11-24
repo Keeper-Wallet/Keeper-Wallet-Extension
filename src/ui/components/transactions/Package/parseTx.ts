@@ -1,8 +1,9 @@
 import { BigNumber } from '@waves/bignumber';
-import { getMoney, IMoneyLike } from '../../../utils/converters';
-import { getConfigByTransaction } from '../index';
 import { Money } from '@waves/data-entities';
 import { AssetsRecord } from 'assets/types';
+
+import { getMoney, IMoneyLike } from '../../../utils/converters';
+import { getConfigByTransaction } from '../index';
 
 export const messageType = 'transactionPackage';
 export const txType = 'transactionPackage';
@@ -25,7 +26,9 @@ export function getAssetsId(tx: PackageItem[]): string[] {
   }
 
   const assets = tx.reduce((acc, item) => {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     const { tx, config } = getTransactionData(item);
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     config.getAssetsId(tx).forEach(item => acc.add(item));
     return acc;
   }, new Set(['WAVES']));
@@ -45,6 +48,7 @@ export function getFees(tx: PackageItem[], assets: AssetsRecord) {
   }
 
   const fees = tx.reduce((acc, item) => {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     const { tx, config } = getTransactionData(item);
     const fee = config.getFee(tx);
     const accFee = acc[fee.assetId] || {
@@ -60,6 +64,7 @@ export function getFees(tx: PackageItem[], assets: AssetsRecord) {
     return acc;
   }, Object.create(null));
 
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   return Object.entries(fees).reduce((fees, [assetId, moneyLike]) => {
     fees[assetId] = getMoney(moneyLike as AnyMoney, assets);
     return fees;
@@ -73,6 +78,7 @@ export function getPackageAmounts(tx: PackageItem[], assets: AssetsRecord) {
 
   return tx.reduce<Array<{ amount: Money; sign: '-' | '+' | '' }>>(
     (acc, item) => {
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       const { tx, config } = getTransactionData(item);
 
       function addAmount(amount: IMoneyLike | Money) {
@@ -106,6 +112,6 @@ export function getAmountSign() {
   return '' as const;
 }
 
-export function isMe(tx: unknown, type: string | null) {
+export function isMe(_tx: unknown, type: string | null) {
   return type === txType;
 }

@@ -1,6 +1,7 @@
-import { ExtensionStorage } from '../storage/storage';
 import ObservableStore from 'obs-store';
 import { UiState } from 'ui/reducers/updateState';
+
+import { ExtensionStorage } from '../storage/storage';
 
 export class UiStateController {
   private store;

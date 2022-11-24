@@ -1,9 +1,10 @@
-import { ACTION } from './constants';
-import Background, { WalletTypes } from '../services/Background';
-import { NetworkName } from 'networks/types';
 import { AccountsThunkAction } from 'accounts/store';
-import { selectAccount } from './localState';
+import { NetworkName } from 'networks/types';
 import { UiThunkAction } from 'ui/store';
+
+import Background, { WalletTypes } from '../services/Background';
+import { ACTION } from './constants';
+import { selectAccount } from './localState';
 import { updateActiveState } from './notifications';
 
 export function deleteAllAccounts(): UiThunkAction<Promise<void>> {

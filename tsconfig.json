@@ -3,11 +3,12 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./src",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "lib": ["esnext", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",
     "noErrorTruncation": true,
+    "noUnusedLocals": true,
     "pretty": true,
     "resolveJsonModule": true,
     "sourceMap": true,

@@ -1,38 +1,39 @@
-import ObservableStore from 'obs-store';
-import { extension } from 'lib/extension';
-import { MSG_STATUSES } from '../constants';
-import { v4 as uuidv4 } from 'uuid';
-import log from 'loglevel';
-import EventEmitter from 'events';
-import { Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
+import { Money } from '@waves/data-entities';
 import { address } from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { customData, wavesAuth } from '@waves/waves-transactions';
-import { networkByteFromAddress } from '../lib/cryptoUtil';
-import { ERRORS, ERRORS_DATA } from '../lib/keeperError';
-import { PermissionsController } from './permissions';
-import { calculateFeeFabric } from './calculateFee';
-import { clone } from 'ramda';
+import EventEmitter from 'events';
+import { extension } from 'lib/extension';
+import log from 'loglevel';
+import { MessageInput, MessageStoreItem } from 'messages/types';
+import ObservableStore from 'obs-store';
 import create from 'parse-json-bignumber';
+import { PERMISSIONS } from 'permissions/constants';
+import { PreferencesAccount } from 'preferences/types';
+import { clone } from 'ramda';
+import { v4 as uuidv4 } from 'uuid';
+
+import { MSG_STATUSES } from '../constants';
 import {
   getFeeOptions,
   getSpendingAmountsForSponsorableTx,
   isEnoughBalanceForFeeAndSpendingAmounts,
 } from '../fee/utils';
+import { networkByteFromAddress } from '../lib/cryptoUtil';
+import { ERRORS, ERRORS_DATA } from '../lib/keeperError';
+import { ExtensionStorage } from '../storage/storage';
 import { convertFromSa, getHash, makeBytes } from '../transactions/utils';
 import { getMoney, IMoneyLike } from '../ui/utils/converters';
 import { getTxVersions } from '../wallets';
-import { ExtensionStorage } from '../storage/storage';
-import { WalletController } from './wallet';
 import { AssetInfoController } from './assetInfo';
+import { calculateFeeFabric } from './calculateFee';
+import { CurrentAccountController } from './currentAccount';
 import { NetworkController } from './network';
+import { PermissionsController } from './permissions';
 import { RemoteConfigController } from './remoteConfig';
 import { TxInfoController } from './txInfo';
-import { CurrentAccountController } from './currentAccount';
-import { PERMISSIONS } from 'permissions/constants';
-import { PreferencesAccount } from 'preferences/types';
-import { MessageInput, MessageStoreItem } from 'messages/types';
+import { WalletController } from './wallet';
 
 const { stringify } = create({ BigNumber });
 
@@ -125,7 +126,7 @@ export class MessageController extends EventEmitter {
     // Get assetInfo method from AssetInfoController
     this.assetInfo = assetInfoController.assetInfo.bind(assetInfoController);
     this.assetInfoController = assetInfoController;
-    //tx by txId
+    // tx by txId
     this.txInfo = txInfo;
 
     // permissions
@@ -384,6 +385,7 @@ export class MessageController extends EventEmitter {
   _updateMessage(message: MessageStoreItem) {
     const messages = this.store.getState().messages;
     const id = message.id;
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     const index = messages.findIndex(message => message.id === id);
     messages[index] = message;
     this._updateStore(messages);
@@ -624,7 +626,7 @@ export class MessageController extends EventEmitter {
           successPath = message.data.successPath
             ? new URL(
                 message.data.successPath,
-                message.data.referrer || 'https://' + message.origin
+                message.data.referrer || `https://${message.origin}`
               ).href
             : null;
         } catch {
@@ -639,7 +641,7 @@ export class MessageController extends EventEmitter {
             data: message.data.data,
             prefix: 'WavesWalletAuthentication',
             host:
-              message.data.host || new URL('https://' + message.origin).host,
+              message.data.host || new URL(`https://${message.origin}`).host,
             name: message.data.name,
             icon: message.data.icon,
           },
@@ -679,6 +681,7 @@ export class MessageController extends EventEmitter {
           message.data.map(async txParams => {
             this._validateTx(txParams, message.account);
 
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             const data = {
               timestamp: Date.now(),
               senderPublicKey: message.account.publicKey,

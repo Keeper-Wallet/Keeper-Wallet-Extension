@@ -1,14 +1,15 @@
-import * as styles from './styles/intro.styl';
-import * as React from 'react';
-import { BigLogo } from '../head';
+import { useEffect, useState } from 'react';
 import { ExportButton, ResetButton } from 'ui/components/ui';
+
+import { BigLogo } from '../head';
+import * as styles from './styles/intro.styl';
 
 const DEFAULT_TIMEOUT = 5000;
 
 export function LoadingScreen() {
-  const [showReset, setShowReset] = React.useState(false);
+  const [showReset, setShowReset] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const timeout = setTimeout(() => {
       setShowReset(true);
     }, DEFAULT_TIMEOUT);

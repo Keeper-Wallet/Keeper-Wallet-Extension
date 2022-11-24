@@ -1,6 +1,7 @@
-import * as React from 'react';
-import * as styles from './Input.module.css';
 import cn from 'classnames';
+import { useCallback, useRef, useState } from 'react';
+
+import * as styles from './Input.module.css';
 
 type View = 'default' | 'password';
 
@@ -45,12 +46,10 @@ export function Input({
   forwardRef,
   ...props
 }: InputProps) {
-  const [rootType, setRootType] = React.useState(type);
+  const [rootType, setRootType] = useState(type);
 
-  const rootRef = React.useRef<HTMLInputElement | HTMLTextAreaElement | null>(
-    null
-  );
-  const getRef = React.useCallback(
+  const rootRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const getRef = useCallback(
     (element: HTMLInputElement | HTMLTextAreaElement | null) => {
       forwardRef && (forwardRef.current = element);
       rootRef.current = element;

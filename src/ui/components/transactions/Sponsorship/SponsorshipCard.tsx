@@ -1,14 +1,15 @@
-import * as styles from './sponsorship.styl';
-import * as React from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { Asset, Balance } from '../../ui';
-import { getMoney } from '../../../utils/converters';
-import { getAssetFee, SPONSOR_MODE } from './parseTx';
-import { MessageCardComponentProps } from '../types';
+import { PureComponent } from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
-class SponsorshipCardComponent extends React.PureComponent<
+import { getMoney } from '../../../utils/converters';
+import { Asset, Balance } from '../../ui';
+import { TxIcon } from '../BaseTransaction';
+import { MessageCardComponentProps } from '../types';
+import { getAssetFee, SPONSOR_MODE } from './parseTx';
+import * as styles from './sponsorship.styl';
+
+class SponsorshipCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
@@ -58,8 +59,8 @@ class SponsorshipCardComponent extends React.PureComponent<
                 {isSetSponsored ? (
                   <Balance
                     data-testid="sponsorshipAmount"
-                    split={true}
-                    showAsset={true}
+                    split
+                    showAsset
                     balance={assetFee}
                     showUsdAmount
                   />

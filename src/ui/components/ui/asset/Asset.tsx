@@ -1,11 +1,12 @@
 import { AssetsRecord } from 'assets/types';
-import * as React from 'react';
 import { connect } from 'react-redux';
 import { AppState } from 'ui/store';
+
 import { getAsset } from '../../../actions/assets';
 import { Loader } from '../loader';
 
 const AssetComponent = ({
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   getAsset,
   children,
   assets,

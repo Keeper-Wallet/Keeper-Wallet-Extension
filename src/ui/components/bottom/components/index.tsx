@@ -1,2 +1,2 @@
-export * from './NetworkSettings';
 export * from './Network';
+export * from './NetworkSettings';

@@ -1,8 +1,8 @@
+import { MessageConfig } from '../types';
+import * as utils from './parseTx';
 import { Sponsorship } from './Sponsorship';
 import { SponsorshipCard } from './SponsorshipCard';
 import { SponsorshipFinal } from './SponsorshipFinal';
-import * as utils from './parseTx';
-import { MessageConfig } from '../types';
 
 const sponsorShip: MessageConfig = {
   type: utils.messageType,

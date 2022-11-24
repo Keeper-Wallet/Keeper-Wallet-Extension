@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react';
-import * as React from 'react';
 import { RouteObject } from 'react-router-dom';
+
 import { Bottom } from './components/bottom';
 import { Menu } from './components/menu/Menu';
 import { AccountInfo } from './components/pages/accountInfo';

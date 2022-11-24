@@ -20,6 +20,7 @@ import {
   SaRequest,
   SaTransaction,
 } from 'transactions/utils';
+
 import { WalletAccount, WalletPrivateData } from './types';
 
 export abstract class Wallet<TData extends WalletPrivateData> {
@@ -69,7 +70,7 @@ export abstract class Wallet<TData extends WalletPrivateData> {
     const privateKey = this.getPrivateKey();
 
     return base58Encode(
-      sharedKey(privateKey, publicKey, (prefix || '') + 'waves')
+      sharedKey(privateKey, publicKey, `${prefix || ''}waves`)
     );
   }
   abstract signTx(tx: SaTransaction): Promise<string>;
