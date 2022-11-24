@@ -1,6 +1,7 @@
-import 'ui/styles/app.styl';
-import 'ui/styles/icons.styl';
-import 'ui/i18n';
+import '../ui/styles/global.css';
+import '../ui/styles/app.styl';
+import '../ui/styles/icons.styl';
+import '../ui/i18n';
 
 import * as Sentry from '@sentry/react';
 import { extension } from 'lib/extension';

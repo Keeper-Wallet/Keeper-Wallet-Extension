@@ -1,0 +1,212 @@
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 100;
+  src: local('Roboto Thin'), local('Roboto-Thin'),
+    url('./fonts/roboto-thin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 100;
+  font-style: italic;
+  src: local('Roboto Thin Italic'), local('Roboto-ThinItalic'),
+    url('./fonts/roboto-thin-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 300;
+  src: local('Roboto Light'), local('Roboto-Light'),
+    url('./fonts/roboto-light.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 300;
+  font-style: italic;
+  src: local('Roboto Light Italic'), local('Roboto-LightItalic'),
+    url('./fonts/roboto-light-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 400;
+  src: local('Roboto Regular'), local('Roboto-Regular'),
+    url('./fonts/roboto-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: italic;
+  src: local('Roboto Regular Italic'), local('Roboto-RegularItalic'),
+    url('./fonts/roboto-regular-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 500;
+  src: local('Roboto Medium'), local('Roboto-Medium'),
+    url('./fonts/roboto-medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 500;
+  font-style: italic;
+  src: local('Roboto Medium Italic'), local('Roboto-MediumItalic'),
+    url('./fonts/roboto-medium-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 700;
+  src: local('Roboto Bold'), local('Roboto-Bold'),
+    url('./fonts/roboto-bold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 700;
+  font-style: italic;
+  src: local('Roboto Bold Italic'), local('Roboto-BoldItalic'),
+    url('./fonts/roboto-bold-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 900;
+  font-style: normal;
+  src: local('Roboto Black'), local('Roboto-Black'),
+    url('./fonts/roboto-black.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 900;
+  font-style: italic;
+  src: local('Roboto Black Italic'), local('Roboto-BlackItalic'),
+    url('./fonts/roboto-black-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Th';
+  font-weight: 100;
+  src: local('Noto-Sans-Th Thin'), local('Noto-Sans-Th-Thin'),
+    url('./fonts/noto-sans-th-thin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Th';
+  font-weight: 300;
+  src: local('Noto-Sans-Th Light'), local('Noto-Sans-Th-Light'),
+    url('./fonts/noto-sans-th-light.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Th';
+  src: local('Noto-Sans-Th Regular'), local('Noto-Sans-Th-Regular'),
+    url('./fonts/noto-sans-th-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Th';
+  font-weight: 500;
+  src: local('Noto-Sans-Th Medium'), local('Noto-Sans-Th-Medium'),
+    url('./fonts/noto-sans-th-medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Th';
+  font-weight: 700;
+  src: local('Noto-Sans-Th Bold'), local('Noto-Sans-Th-Bold'),
+    url('./fonts/noto-sans-th-bold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Th';
+  font-weight: 900;
+  src: local('Noto-Sans-Th Black'), local('Noto-Sans-Th-Black'),
+    url('./fonts/noto-sans-th-black.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Ja';
+  font-weight: 100;
+  src: local('Noto-Sans-Ja Thin'), local('Noto-Sans-Ja-Thin'),
+    url('./fonts/noto-sans-ja-thin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Ja';
+  font-weight: 300;
+  src: local('Noto-Sans-Ja Light'), local('Noto-Sans-Ja-Light'),
+    url('./fonts/noto-sans-ja-light.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Ja';
+  src: local('Noto-Sans-Ja Regular'), local('Noto-Sans-Ja-Regular'),
+    url('./fonts/noto-sans-ja-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Ja';
+  font-weight: 500;
+  src: local('Noto-Sans-Ja Medium'), local('Noto-Sans-Ja-Medium'),
+    url('./fonts/noto-sans-ja-medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Ja';
+  font-weight: 700;
+  src: local('Noto-Sans-Ja Bold'), local('Noto-Sans-Ja-Bold'),
+    url('./fonts/noto-sans-ja-bold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Ja';
+  font-weight: 900;
+  src: local('Noto-Sans-Ja Black'), local('Noto-Sans-Ja-Black'),
+    url('./fonts/noto-sans-ja-black.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Zh';
+  font-weight: 100;
+  src: local('Noto-Sans-Zh Thin'), local('Noto-Sans-Zh-Thin'),
+    url('./fonts/noto-sans-zh-thin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Zh';
+  font-weight: 300;
+  src: local('Noto-Sans-Zh Light'), local('Noto-Sans-Zh-Light'),
+    url('./fonts/noto-sans-zh-light.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Zh';
+  src: local('Noto-Sans-Zh Regular'), local('Noto-Sans-Zh-Regular'),
+    url('./fonts/noto-sans-zh-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Zh';
+  font-weight: 500;
+  src: local('Noto-Sans-Zh Medium'), local('Noto-Sans-Zh-Medium'),
+    url('./fonts/noto-sans-zh-medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Zh';
+  font-weight: 700;
+  src: local('Noto-Sans-Zh Bold'), local('Noto-Sans-Zh-Bold'),
+    url('./fonts/noto-sans-zh-bold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto-Sans-Zh';
+  font-weight: 900;
+  src: local('Noto-Sans-Zh Black'), local('Noto-Sans-Zh-Black'),
+    url('./fonts/noto-sans-zh-black.woff2') format('woff2');
+}
