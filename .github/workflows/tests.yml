@@ -40,7 +40,7 @@ jobs:
         run: yarn run lint:stylelint
 
       - name: Build
-        run: yarn run dist
+        run: yarn run build
 
       - name: Run tests
         run: yarn test
