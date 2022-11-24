@@ -89,20 +89,15 @@ module.exports = (_, { mode }) => {
           use: 'babel-loader',
         },
         {
-          test: /\.styl/,
+          test: /\.(css|styl)$/,
           use: [
-            isProduction
-              ? {
-                  loader: MiniCssExtractPlugin.loader,
-                  options: {
-                    publicPath: (resourcePath, context) => {
-                      return (
-                        path.relative(path.dirname(resourcePath), context) + '/'
-                      );
-                    },
-                  },
-                }
-              : 'style-loader',
+            {
+              loader: MiniCssExtractPlugin.loader,
+              options: {
+                publicPath: (resourcePath, context) =>
+                  path.relative(path.dirname(resourcePath), context) + '/',
+              },
+            },
             {
               loader: 'css-loader',
               options: {
@@ -112,35 +107,10 @@ module.exports = (_, { mode }) => {
                 },
               },
             },
-            'stylus-loader',
+            'postcss-loader',
           ],
         },
-        {
-          test: /\.css/,
-          use: [
-            isProduction
-              ? {
-                  loader: MiniCssExtractPlugin.loader,
-                  options: {
-                    publicPath: (resourcePath, context) => {
-                      return (
-                        path.relative(path.dirname(resourcePath), context) + '/'
-                      );
-                    },
-                  },
-                }
-              : 'style-loader',
-            {
-              loader: 'css-loader',
-              options: {
-                modules: {
-                  localIdentName: '[name]-[local]-[hash:base64:6]',
-                  namedExport: true,
-                },
-              },
-            },
-          ],
-        },
+        { test: /\.styl/, use: 'stylus-loader' },
       ],
     },
     plugins: [
