@@ -38,10 +38,7 @@ textarea {
   background: var(--color-basic50);
 }
 
-.input[disabled]::-webkit-input-placeholder,
-.input[disabled]::-moz-placeholder,
-.input[disabled]:-moz-placeholder,
-.input[disabled]:-ms-input-placeholder {
+.input[disabled]::placeholder {
   color: var(--color-basic500);
 }
 
