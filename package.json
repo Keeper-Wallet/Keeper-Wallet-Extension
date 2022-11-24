@@ -2,6 +2,7 @@
   "private": true,
   "version": "2.11.1",
   "scripts": {
+    "cleanup": "rimraf dist",
     "dev": "webpack --watch --mode development",
     "dist": "NODE_OPTIONS=--max-old-space-size=8192 webpack --mode production",
     "lint:eslint": "eslint --ext .ts,.tsx,.js --max-warnings 0 .",
@@ -127,6 +128,7 @@
     "react-router-dom": "^6.4.0",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.4.1",
+    "rimraf": "^3.0.2",
     "selenium-webdriver": "^4.1.2",
     "style-loader": "^3.3.1",
     "stylelint": "^14.9.1",
