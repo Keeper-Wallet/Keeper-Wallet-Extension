@@ -36,6 +36,12 @@ module.exports = async (_, { mode }) => {
       contentscript: './src/contentscript',
       inpage: './src/inpage',
     },
+    cache: {
+      type: 'filesystem',
+      buildDependencies: {
+        config: [__filename],
+      },
+    },
     output: {
       filename: '[name].js',
       path: path.resolve(__dirname, 'dist/build'),
