@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import { SUPPORTED_LANGUAGES } from 'i18n/constants';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
@@ -42,10 +43,7 @@ export const LangsSettings = () => {
   const { t } = useTranslation();
 
   const dispatch = useAppDispatch();
-  const [langs, currentLocale] = useAppSelector(state => [
-    state.langs,
-    state.currentLocale,
-  ]);
+  const currentLocale = useAppSelector(state => state.currentLocale);
 
   const [selected, setSelected] = useState(currentLocale);
 
@@ -53,7 +51,7 @@ export const LangsSettings = () => {
     <div className={styles.content}>
       <h2 className="title1 margin-main-big">{t('langsSettings.title')}</h2>
       <div className={styles.langsList}>
-        {langs.map(({ id, name }) => {
+        {SUPPORTED_LANGUAGES.map(({ id, name }) => {
           return (
             <Lang
               id={id}

@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import { NotificationsStoreItem } from 'notifications/types';
 import { UiMiddleware } from 'ui/store';
 
@@ -7,7 +8,6 @@ import {
   notificationSelect,
 } from '../actions/localState';
 import { setActiveNotification } from '../actions/notifications';
-import i18n from '../i18n';
 import background from '../services/Background';
 
 export const changeLang: UiMiddleware = store => next => action => {
@@ -59,7 +59,7 @@ export const updateLang: UiMiddleware = store => next => action => {
     action.type === ACTION.UPDATE_FROM_LNG &&
     action.payload !== store.getState().currentLocale
   ) {
-    i18n.changeLanguage(action.payload);
+    i18next.changeLanguage(action.payload);
   }
   return next(action);
 };

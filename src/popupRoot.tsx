@@ -12,9 +12,7 @@ import { ledgerService } from './ledger/service';
 import { LedgerSignRequest } from './ledger/types';
 import { cbToPromise, setupDnode, transformMethods } from './lib/dnodeUtil';
 import { PortStream } from './lib/portStream';
-import { setLangs } from './ui/actions/localState';
 import { createUpdateState } from './ui/actions/updateState';
-import { LANGS } from './ui/i18n';
 import { routes } from './ui/routes';
 import backgroundService, {
   BackgroundGetStateResult,
@@ -29,8 +27,6 @@ const isNotificationWindow = window.location.pathname === '/notification.html';
 const store = createUiStore({
   version: extension.runtime.getManifest().version,
 });
-
-store.dispatch(setLangs(LANGS));
 
 const router = createMemoryRouter(routes);
 

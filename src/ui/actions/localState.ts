@@ -30,7 +30,6 @@ export function deleteAccount(address: string): UiThunkAction<Promise<void>> {
   };
 }
 
-export const setLangs = createMVAction(ACTION.UPDATE_LANGS);
 export const setLoading = createMVAction(ACTION.SET_LOADING);
 export const notificationSelect = createMVAction(ACTION.NOTIFICATION_SELECT);
 

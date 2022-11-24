@@ -8,10 +8,8 @@ import log from 'loglevel';
 import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
-import { setLangs } from 'ui/actions/localState';
 import { LoadingScreen } from 'ui/components/pages/loadingScreen';
 import { RootWrapper } from 'ui/components/RootWrapper';
-import { LANGS } from 'ui/i18n';
 import backgroundService, {
   BackgroundGetStateResult,
   BackgroundUiApi,
@@ -27,8 +25,6 @@ log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 const store = createAccountsStore({
   version: extension.runtime.getManifest().version,
 });
-
-store.dispatch(setLangs(LANGS));
 
 const updateState = createUpdateState(store);
 
