@@ -1248,14 +1248,13 @@
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
 "@keeper-wallet/swap-client@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@keeper-wallet/swap-client/-/swap-client-0.1.2.tgz#9ebcb85c6a551d2ce0ab59bbd50babe1f9469ffc"
-  integrity sha512-yloVw/0SmhkI8lAERHe9KXJSJRehyacg7vNjOKw7a5lz5U7rZLgjdxUu4LA+rGgEfqJC+B+KFDenBbJjNYCfiw==
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@keeper-wallet/swap-client/-/swap-client-0.1.9.tgz#d750cd847b1daf1173197e2fa09e9a1c92064343"
+  integrity sha512-dl6CAzcZuRDcwVaJe5Bo2mhxTwdqoLsTj+MtZVi7N+1kDfD06/Zvxb1EyijMAKeaVSQ3NPled0AFXVZAp+mptg==
   dependencies:
+    "@types/long" "^4.0.2"
     "@waves/bignumber" "^1.1.1"
-    "@waves/ts-lib-crypto" "^1.4.4-beta.1"
     long "^5.2.0"
-    protobufjs "^6.11.3"
 
 "@ledgerhq/devices@^5.51.1":
   version "5.51.1"
@@ -1678,7 +1677,7 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==
 
-"@types/long@^4.0.0", "@types/long@^4.0.1":
+"@types/long@^4.0.0", "@types/long@^4.0.1", "@types/long@^4.0.2":
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.2.tgz#b74129719fc8d11c01868010082d483b7545591a"
   integrity sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==
@@ -2085,14 +2084,6 @@
   dependencies:
     js-sha3 "^0.8.0"
     node-forge "^0.8.5"
-
-"@waves/ts-lib-crypto@^1.4.4-beta.1":
-  version "1.4.4-beta.1"
-  resolved "https://registry.yarnpkg.com/@waves/ts-lib-crypto/-/ts-lib-crypto-1.4.4-beta.1.tgz#5a494f5ff3128b2f80c1890b1fb13d8ba2cb8c53"
-  integrity sha512-tlvThkMCoCDicOznW82wDZWQqfAWcm6ulQnuNzR++X9o0EOHM3Cj8LlS2pkgF0YjZrqEYHTp/4e0RXXYVY+dpw==
-  dependencies:
-    js-sha3 "^0.8.0"
-    node-forge "^0.10.0"
 
 "@waves/ts-types@1.1.0":
   version "1.1.0"
@@ -6964,11 +6955,6 @@ node-fetch@^2.6.1, node-fetch@^2.6.7:
   integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
   dependencies:
     whatwg-url "^5.0.0"
-
-node-forge@^0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.10.0.tgz#32dea2afb3e9926f02ee5ce8794902691a676bf3"
-  integrity sha512-PPmu8eEeG9saEUvI97fm4OYxXVB6bFvyNTyiUOBichBpFG8A1Ljw3bY62+5oOjDEMHRnd0Y7HQ+x7uzxOzC6JA==
 
 node-forge@^0.8.5:
   version "0.8.5"
