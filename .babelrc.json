@@ -8,5 +8,15 @@
       }
     ],
     "@babel/typescript"
+  ],
+  "plugins": [
+    [
+      "prismjs",
+      {
+        "languages": ["json"],
+        "theme": "okaidia",
+        "css": true
+      }
+    ]
   ]
 }

@@ -1,7 +1,5 @@
-import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import {
-  Highlight,
   PlateCollapsable,
   Tab,
   TabList,
@@ -9,9 +7,8 @@ import {
   TabPanels,
   Tabs,
 } from 'ui/components/ui';
+import { Highlight } from 'ui/components/ui/highlight/highlight';
 import { useAppSelector } from 'ui/store';
-
-import * as styles from './txdetailtabs.styl';
 
 interface Props {
   children?: React.ReactNode;
@@ -19,25 +16,25 @@ interface Props {
 
 export function TxDetailTabs({ children }: Props) {
   const { t } = useTranslation();
-  const message = useAppSelector(state => state.activePopup?.msg);
+  const json = useAppSelector(state => state.activePopup?.msg?.json);
 
   return (
     <Tabs>
       <TabList className="body3">
         <Tab>{t('transactions.details')}</Tab>
-        <Tab>{t('transactions.json')}</Tab>
+        {json && <Tab>{t('transactions.json')}</Tab>}
       </TabList>
+
       <TabPanels>
         <TabPanel>{children}</TabPanel>
-        <TabPanel>
-          <PlateCollapsable showExpand showCopy>
-            <Highlight
-              className={cn('json', 'body3', styles.code)}
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              data={message!.json!}
-            />
-          </PlateCollapsable>
-        </TabPanel>
+
+        {json && (
+          <TabPanel>
+            <PlateCollapsable showExpand showCopy>
+              <Highlight code={json} language="json" />
+            </PlateCollapsable>
+          </TabPanel>
+        )}
       </TabPanels>
     </Tabs>
   );

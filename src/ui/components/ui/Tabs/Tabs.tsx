@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { Children, cloneElement, useState } from 'react';
+import { Children, cloneElement, isValidElement, useState } from 'react';
 
 import * as styles from './tabs.styl';
 
@@ -27,7 +27,7 @@ export function Tab({ className, children, isActive, onActivate }: TabProps) {
 
 interface TabListProps {
   activeIndex?: number;
-  children: React.ReactElement | React.ReactElement[];
+  children: React.ReactNode;
   className?: string;
   onActiveTab?: (index: number) => void;
 }
@@ -40,12 +40,15 @@ export function TabList({
 }: TabListProps) {
   return (
     <ol className={cn(styles.tabList, className)}>
-      {Children.map(children, (child, index) =>
-        cloneElement(child, {
-          isActive: index === activeIndex,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          onActivate: () => onActiveTab!(index),
-        })
+      {Children.map(
+        children,
+        (child, index) =>
+          isValidElement(child) &&
+          cloneElement(child, {
+            isActive: index === activeIndex,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            onActivate: () => onActiveTab!(index),
+          })
       )}
     </ol>
   );
@@ -53,7 +56,7 @@ export function TabList({
 
 interface TabPanelsProps {
   activeIndex?: number;
-  children: React.ReactElement | React.ReactElement[];
+  children: React.ReactNode;
   className?: string;
 }
 
