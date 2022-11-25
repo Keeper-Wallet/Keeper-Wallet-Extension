@@ -5,7 +5,7 @@
     "baseUrl": "./src",
     "jsx": "react-jsx",
     "lib": ["esnext", "dom"],
-    "module": "commonjs",
+    "module": "esnext",
     "moduleResolution": "node",
     "noErrorTruncation": true,
     "noUnusedLocals": true,
