@@ -113,14 +113,32 @@ module.exports = async (_, { mode }) => {
         },
         {
           test: /\.(css|styl)$/,
+          use: {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: (resourcePath, context) =>
+                `${path.relative(path.dirname(resourcePath), context)}/`,
+            },
+          },
+        },
+        {
+          test: /\.css$/,
           use: [
             {
-              loader: MiniCssExtractPlugin.loader,
+              loader: 'css-loader',
               options: {
-                publicPath: (resourcePath, context) =>
-                  `${path.relative(path.dirname(resourcePath), context)}/`,
+                modules: {
+                  auto: true,
+                  localIdentName: '[name]-[local]-[hash:base64:6]',
+                  namedExport: true,
+                },
               },
             },
+          ],
+        },
+        {
+          test: /\.styl$/,
+          use: [
             {
               loader: 'css-loader',
               options: {
@@ -130,9 +148,9 @@ module.exports = async (_, { mode }) => {
                 },
               },
             },
-            'postcss-loader',
           ],
         },
+        { test: /\.(css|styl)$/, use: 'postcss-loader' },
         { test: /\.styl/, use: 'stylus-loader' },
       ],
     },
