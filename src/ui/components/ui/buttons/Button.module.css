@@ -40,10 +40,6 @@
   transition: all 0.3s;
 }
 
-.button:focus {
-  outline: none;
-}
-
 .custom {
   width: auto;
   height: auto;

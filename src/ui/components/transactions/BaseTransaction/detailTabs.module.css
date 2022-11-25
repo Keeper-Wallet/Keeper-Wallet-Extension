@@ -1,0 +1,29 @@
+.root {
+  position: relative;
+}
+
+.inner {
+  overflow: auto;
+}
+
+.copyBtn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 14px;
+  height: 14px;
+  margin-right: 0;
+  color: var(--color-basic500);
+  background: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+}
+
+.root:hover .copyBtn,
+.copyBtn:focus {
+  opacity: 1;
+}
+
+.copyBtn_feedback {
+  color: var(--color-success400);
+}
