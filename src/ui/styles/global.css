@@ -11,6 +11,12 @@
   --color-submit200: #bacaf4;
   --color-submit300: #5a81ea;
   --color-submit400: #1f5af6;
+  --color-success400: #4aad02;
   --color-error400: #e5494d;
   --color-warning400: #e5be4d;
+}
+
+button,
+label {
+  cursor: pointer;
 }

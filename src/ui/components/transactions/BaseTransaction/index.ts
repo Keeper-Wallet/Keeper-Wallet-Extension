@@ -1,4 +1,4 @@
-export * from './TxDetailTabs';
+export * from './detailTabs';
 export * from './TxFooter';
 export * from './TxHeader';
 export * from './TxIcon';

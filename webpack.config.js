@@ -134,6 +134,7 @@ module.exports = async (_, { mode }) => {
               options: {
                 modules: {
                   auto: true,
+                  exportLocalsConvention: 'dashesOnly',
                   localIdentName: '[local]@[name]#[contenthash:base64:5]',
                   namedExport: true,
                 },
