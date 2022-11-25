@@ -66,6 +66,10 @@ export async function mochaGlobalSetup(this: GlobalFixturesContext) {
       {
         container: 5900,
         host: 5900,
+      },
+      {
+        container: 7900,
+        host: 7900,
       }
     )
     .withNetworkMode(host.getName())
