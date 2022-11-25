@@ -1,10 +1,10 @@
 .tooltip {
-  max-width: 360px;
   padding: 8px 14px;
+  max-width: 360px;
+  border-radius: 2px;
+  background-color: #000;
   color: #fff;
   font-size: 14px;
-  background-color: #000;
-  border-radius: 2px;
 }
 
 .tooltip[data-popper-reference-hidden='true'],
@@ -20,11 +20,11 @@
 }
 .arrow:after {
   position: absolute;
+  content: ' ';
   width: 10px;
   height: 10px;
   background-color: black;
   transform: rotate(45deg);
-  content: ' ';
 }
 
 .tooltip[data-popper-placement^='top'] > .arrow {

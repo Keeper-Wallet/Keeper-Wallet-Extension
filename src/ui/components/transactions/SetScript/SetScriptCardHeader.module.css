@@ -4,9 +4,9 @@
 }
 
 .icon {
+  margin-right: 10px;
   width: 48px;
   height: 48px;
-  margin-right: 10px;
 }
 
 .data {
@@ -16,6 +16,6 @@
 }
 
 .title {
-  font-weight: 500;
   font-size: 18px;
+  font-weight: 500;
 }

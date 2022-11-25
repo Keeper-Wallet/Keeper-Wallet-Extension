@@ -4,9 +4,9 @@
   align-items: center;
   margin-bottom: 8px;
   padding: 14px;
-  background: #fff;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(155, 166, 178, 0.4);
+  background: #fff;
   cursor: pointer;
 }
 
@@ -41,14 +41,14 @@
 .infoButton {
   position: relative;
   margin-left: auto;
-  background: none;
   border-radius: 2px;
+  background: none;
   cursor: pointer;
 }
 
 .infoIcon {
-  width: 28px;
   vertical-align: middle;
+  width: 28px;
   fill: #dae1e9;
 }
 

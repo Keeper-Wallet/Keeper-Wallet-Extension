@@ -7,22 +7,22 @@
 
 .wrapper {
   display: flex;
-  flex: 1 1 0;
   flex-direction: column;
+  flex: 1 1 0;
 }
 
 .header {
   position: sticky;
-  top: 0;
   z-index: 1;
+  top: 0;
+  border-bottom: 1px solid #edf0f4;
   padding: 14px;
   background: #fff;
-  border-bottom: 1px solid #edf0f4;
 }
 
 .title {
-  font-weight: normal;
   font-size: 24px;
+  font-weight: normal;
 }
 
 .fields {
@@ -34,9 +34,9 @@
 
 .submitButtonWrapper {
   position: sticky;
-  bottom: 0;
   z-index: 1;
+  bottom: 0;
+  border-top: 1px solid #edf0f4;
   padding: 14px;
   background: #fff;
-  border-top: 1px solid #edf0f4;
 }

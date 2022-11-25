@@ -5,8 +5,8 @@
 }
 
 mark {
-  color: #ffaf00;
   background-color: transparent;
+  color: #ffaf00;
 }
 
 .recipientWrapper {
@@ -32,26 +32,26 @@ mark {
 .recipient::before,
 .mirrorAddress::before {
   display: block;
+  content: '';
   flex-shrink: 0;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  content: '';
 }
 
 .ethereum.recipient::before,
 .waves.mirrorAddress::before {
+  margin-right: 5px;
   width: 14px;
   height: 14px;
-  margin-right: 5px;
   background-image: url(../../../assets/img/ethereum.svg);
 }
 
 .waves.recipient::before,
 .ehereum.mirrorAddress::before {
+  margin-right: 5px;
   width: 12px;
   height: 12px;
-  margin-right: 5px;
   background-image: url(../../../assets/img/waves.svg);
 }
 
@@ -67,18 +67,18 @@ mark {
 .name {
   margin-right: 8px;
   overflow: hidden;
-  font-weight: 500;
   font-size: 14px;
+  font-weight: 500;
   line-height: 17px;
-  white-space: nowrap;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .warningAlias {
   margin-top: 4px;
+  border: 1px dashed #ffaf00;
   padding: 12px 14px;
+  border-radius: 2px;
   color: #9ba6b2;
   font-size: 11px;
-  border: 1px dashed #ffaf00;
-  border-radius: 2px;
 }

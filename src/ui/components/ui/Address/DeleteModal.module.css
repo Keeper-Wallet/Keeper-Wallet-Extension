@@ -8,10 +8,10 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 284px;
   padding: 24px;
-  background: var(--color-white);
+  width: 284px;
   border-radius: 2px;
+  background: var(--color-white);
 }
 
 .title {
@@ -25,11 +25,11 @@
 }
 
 .cancelButton {
-  width: auto;
   margin: 0 40px 14px;
+  width: auto;
 }
 
 .button {
-  width: auto;
   margin: 0 40px;
+  width: auto;
 }

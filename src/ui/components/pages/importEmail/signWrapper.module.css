@@ -8,8 +8,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 329px;
   padding: 28px;
-  background: var(--color-white);
+  width: 329px;
   border-radius: 4px;
+  background: var(--color-white);
 }

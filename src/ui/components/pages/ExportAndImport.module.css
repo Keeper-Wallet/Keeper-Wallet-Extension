@@ -2,9 +2,9 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  padding: 64px 0 0;
   width: 100%;
   height: calc(100% - 48px);
-  padding: 64px 0 0;
   overflow: auto;
 }
 
@@ -25,12 +25,12 @@
   position: absolute;
   top: 15px;
   right: 0;
+  content: '';
   width: 11px;
   height: 15px;
   background-image: url(../../assets/img/arrow-right-14-basic-200.svg);
   background-repeat: no-repeat;
   background-size: cover;
-  content: '';
 }
 
 .exportBtn:hover,
@@ -47,9 +47,9 @@
   display: flex;
   justify-content: center;
   margin-top: auto;
+  border-top: 1px solid #edf0f4;
   padding: 24px;
   background-color: #f8f9fb;
-  border-top: 1px solid #edf0f4;
 }
 
 .exportAll {
@@ -62,9 +62,9 @@
 
 .exportAllIcon {
   display: block;
+  margin-bottom: 6px;
   width: 18px;
   height: 18px;
-  margin-bottom: 6px;
   background-image: url(../../assets/img/export.svg);
   background-size: cover;
 }

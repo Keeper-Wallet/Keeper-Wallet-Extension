@@ -8,10 +8,10 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 284px;
   padding: 24px;
-  background: var(--color-white);
+  width: 284px;
   border-radius: 2px;
+  background: var(--color-white);
 }
 
 .form {
@@ -41,7 +41,7 @@
 }
 
 .button {
-  width: auto;
   margin: 60px auto 0;
   padding: 0 36px;
+  width: auto;
 }

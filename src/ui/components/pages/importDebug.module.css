@@ -2,8 +2,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 100%;
   padding: 40px 60px;
+  height: 100%;
 }
 
 .continueBtn {

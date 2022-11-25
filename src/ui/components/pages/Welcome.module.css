@@ -1,19 +1,19 @@
 .content {
   display: flex;
   flex-direction: column;
+  margin: 0;
   width: 100%;
   height: 100%;
-  margin: 0;
 }
 
 .logo {
-  width: auto;
   margin: 186px 48px 44px;
+  width: auto;
 }
 
 button.button {
-  width: auto;
   margin: 0 48px 24px;
+  width: auto;
 }
 
 .text {
@@ -22,7 +22,7 @@ button.button {
 
 .footer {
   margin-top: auto;
+  border-top: 1px solid #edf0f4;
   padding: 13px 48px 14px;
   background-color: var(--color-basic50);
-  border-top: 1px solid #edf0f4;
 }

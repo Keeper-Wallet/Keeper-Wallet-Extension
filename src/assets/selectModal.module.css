@@ -8,11 +8,11 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  padding: 14px 0;
   width: 329px;
   height: 572px;
-  padding: 14px 0;
-  background: var(--color-white);
   border-radius: 4px;
+  background: var(--color-white);
 }
 
 .header {
@@ -68,24 +68,24 @@
 .logoPlaceholder {
   width: 24px;
   height: 24px;
+  border-radius: 50%;
   color: #fff;
-  font-weight: bold;
   font-size: 14px;
+  font-weight: bold;
   line-height: 24px;
   text-align: center;
-  border-radius: 50%;
 }
 
 .listItemName {
   flex: 1 1 0;
   overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .listItemBalance {
   flex: 0 0 auto;
   overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }

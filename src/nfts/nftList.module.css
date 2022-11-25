@@ -5,8 +5,8 @@
 
 .nftRow {
   display: flex;
-  flex-basis: 50%;
   gap: 8px;
+  flex-basis: 50%;
   margin-right: 8px;
 }
 

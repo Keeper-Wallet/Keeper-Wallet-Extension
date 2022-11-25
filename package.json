@@ -140,7 +140,6 @@
     "selenium-webdriver": "^4.1.2",
     "stylelint": "^14.9.1",
     "stylelint-config-prettier": "^9.0.3",
-    "stylelint-config-rational-order": "^0.1.2",
     "stylelint-order": "^5.0.0",
     "stylus": "^0.58.1",
     "stylus-loader": "^7.0.0",

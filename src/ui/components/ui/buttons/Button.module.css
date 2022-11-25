@@ -26,16 +26,16 @@
 }
 
 .button {
+  padding: 0 20px;
   width: 100%;
   height: 40px;
-  padding: 0 20px;
   overflow: hidden;
-  font-weight: 300;
+  border-radius: 4px;
   font-size: 14px;
-  white-space: nowrap;
+  font-weight: 300;
   text-align: center;
   text-overflow: ellipsis;
-  border-radius: 4px;
+  white-space: nowrap;
   cursor: pointer;
   transition: all 0.3s;
 }
@@ -43,18 +43,18 @@
 .custom {
   width: auto;
   height: auto;
-  white-space: normal;
+  border-radius: 0;
   text-align: inherit;
   text-decoration: none;
-  border-radius: 0;
+  white-space: normal;
   transition: none;
 }
 
 .defaultView {
+  border: 1px solid #dae1e9;
+  background-color: #ffffff;
   color: #000000;
   font-weight: 300;
-  background-color: #ffffff;
-  border: 1px solid #dae1e9;
 }
 
 .defaultView:hover {
@@ -63,8 +63,8 @@
 
 .submit,
 .submitTiny {
-  color: #ffffff;
   background-color: #1f5af6;
+  color: #ffffff;
 }
 
 .submitTiny {
@@ -103,23 +103,23 @@
 
 .icon {
   display: inline-block;
-  width: auto;
   padding: 0 16px 0 36px;
+  width: auto;
 }
 
 .transparent {
   width: auto;
   height: auto;
-  white-space: normal;
-  text-align: inherit;
-  background-color: transparent;
   border-radius: 0;
+  background-color: transparent;
+  text-align: inherit;
+  white-space: normal;
   transition: none;
 }
 
 .transparent:hover {
-  text-decoration: none;
   background-color: transparent;
+  text-decoration: none;
 }
 
 .transparent.disabled {
@@ -135,9 +135,9 @@
 }
 
 .warning {
+  background-color: #e5494d;
   color: #ffffff;
   font-weight: 300;
-  background-color: #e5494d;
 }
 
 .warning:hover {
@@ -158,9 +158,9 @@
 }
 
 .danger {
+  background-color: #e53935;
   color: #ffffff;
   font-weight: 300;
-  background-color: #e53935;
 }
 
 .danger:hover {
@@ -169,15 +169,15 @@
 
 .interfaced {
   flex-basis: auto;
+  margin: 0;
+  border: 0.5px solid transparent;
+  padding: 0 14px;
   width: auto;
   height: 32px;
-  margin: 0;
-  padding: 0 14px;
+  box-shadow: 0 2px 4px 0 #9ba6b266;
+  background-color: #ffffff;
   font-weight: 400;
   line-height: 32px;
-  background-color: #ffffff;
-  border: 0.5px solid transparent;
-  box-shadow: 0 2px 4px 0 #9ba6b266;
 }
 
 .interfaced:not(:last-child) {
@@ -191,9 +191,9 @@
 .interfaced.disabled,
 .interfaced:disabled,
 .interfaced[disabled] {
-  background-color: transparent;
   border: 0.5px solid #dae1e9;
   box-shadow: none;
+  background-color: transparent;
 }
 
 .loading {
@@ -205,15 +205,15 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 16px;
-  height: 16px;
+  content: '';
   margin-top: -8px;
   margin-left: -8px;
   border: 2px solid #edf0f4;
   border-right-color: #1f5af6;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   animation: rotate-spinner 0.6s linear infinite;
-  content: '';
 }
 
 @keyframes rotate-spinner {

@@ -5,21 +5,21 @@
 
 .item {
   display: flex;
-  flex: 0 0 60px;
   flex-direction: column;
   gap: 10px;
   align-items: center;
-  min-width: 0;
-  padding: 4px;
-  overflow: hidden;
+  flex: 0 0 60px;
   border: 1px solid transparent;
+  padding: 4px;
+  min-width: 0;
+  overflow: hidden;
   border-radius: 2px;
   cursor: pointer;
 }
 
 .itemSelected {
-  background-color: rgba(31, 90, 246, 0.1);
   border-color: var(--color-submit400);
+  background-color: rgba(31, 90, 246, 0.1);
 }
 
 .itemLabel {
@@ -27,6 +27,6 @@
   overflow: hidden;
   color: var(--color-basic500);
   font-size: 10px;
-  white-space: nowrap;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }

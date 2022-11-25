@@ -1,7 +1,7 @@
 .root {
   display: flex;
-  flex: 1;
   flex-direction: column;
+  flex: 1;
   padding: 40px 60px;
   overflow: auto;
 }

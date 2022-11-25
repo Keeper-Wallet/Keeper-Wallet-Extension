@@ -8,10 +8,10 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 284px;
   padding: 24px;
-  background: var(--color-white);
+  width: 284px;
   border-radius: 2px;
+  background: var(--color-white);
 }
 
 .form {
@@ -41,11 +41,11 @@
 }
 
 .button {
-  width: auto;
   margin: 60px 40px 0;
+  width: auto;
 }
 
 .deleteButton {
-  width: auto;
   margin: 14px 40px 0;
+  width: auto;
 }
