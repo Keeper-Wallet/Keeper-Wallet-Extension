@@ -164,9 +164,6 @@
     "warn": "Menghapus akun dapat menyebabkan hilangnya akses ke dana yang tidak dapat diperbaiki! Selalu pastikan Anda telah mencadangkan SEED Anda."
   },
   "errorPage": {
-    "copied": "Disalin!",
-    "copyToClipboard": "Salin ke papan klip",
-    "detail": "Detail kesalahan",
     "export": "Ekspor akun dan buku alamat",
     "sembunyikan": "Sembunyikan",
     "reload": "Coba muat ulang",
@@ -174,7 +171,6 @@
     "resetButton": "Setel ulang dompet",
     "resetDescription": "Setelah tindakan ini kami menghapus semua informasi sekunder (misalnya token favorit). Anda juga harus Masuk sekali lagi .",
     "resetTitle": "Perhatian",
-    "show": "Lihat",
     "title": "Ada yang tidak beres"
   },
   "exportAndImport": {

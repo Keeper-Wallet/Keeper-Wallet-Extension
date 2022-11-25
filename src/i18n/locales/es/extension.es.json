@@ -164,17 +164,12 @@
     "warn": "¡Eliminar una cuenta puede conducir a una pérdida irrecuperable de acceso a los fondos! Siempre asegúrese de haber realizado una copia de seguridad de su SEED."
   },
   "errorPage": {
-    "copied": "¡Copiado!",
-    "copyToClipboard": "Copiar al portapapeles",
-    "details": "Detalles del error",
     "export": "Exportar cuentas y libreta de direcciones",
-    "hide": "Ocultar",
     "reload": "Intenta Recargar",
     "reset": "Restablecimiento de la extensión",
     "resetButton": "Reiniciar la wallet",
     "resetDescription": "Después de esta acción eliminamos toda la información secundaria (Por ejemplo: Los tokens favoritos). También tendrá que iniciar la sesión una vez más.",
     "resetTitle": "Atención",
-    "show": "Mostrar",
     "title": "Algo salió mal"
   },
   "exportAndImport": {

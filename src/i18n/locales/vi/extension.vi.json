@@ -158,17 +158,12 @@
     "warn": "Xóa tài khoản có thể dẫn đến mất quyền truy cập vào quỹ! Luôn đảm bảo rằng bạn đã sao lưu SEED của mình."
   },
   "errorPage": {
-    "copied": "Đã sao chép!",
-    "copyToClipboard": "Sao chép vào clipboard",
-    "details": "Chi tiết lỗi",
     "export": "Xuất tài khoản và sổ địa chỉ",
-    "hide": "Ẩn",
     "reload": "Cố gắng tải lại",
     "reset": "Đặt lại tiện ích mở rộng",
     "resetButton": "Đặt lại ví",
     "resetDescription": "Sau hành động này, chúng tôi xóa tất cả thông tin phụ (ví dụ: token yêu thích). Ngoài ra, bạn sẽ cần phải Đăng nhập lại một lần nữa.",
     "resetTitle": "Chú ý",
-    "show": "Hiển thị",
     "title": "Đã có lỗi sảy ra"
   },
   "exportAndImport": {
