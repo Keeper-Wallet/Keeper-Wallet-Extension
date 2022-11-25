@@ -1,4 +1,5 @@
 import { NetworkName } from 'networks/types';
+import { NftAssetDetail } from 'nfts/types';
 import { fetchAllNfts } from 'nfts/utils';
 import ObservableStore from 'obs-store';
 
@@ -31,22 +32,23 @@ export class NftInfoController {
     return this.store.getState().nfts;
   }
 
-  async updateNfts(
-    nfts: Array<{ assetId: string; issuer: string | undefined }>
-  ) {
-    if (nfts.length === 0) {
-      return;
-    }
-
+  async updateNfts(nfts: NftAssetDetail[]) {
     if (this.getNetwork() !== NetworkName.Mainnet) {
       return;
     }
 
     const storeNfts = this.getNfts();
-    const fetchNfts = nfts.filter(nft => !storeNfts[nft.assetId]);
-    const infoNfts = await fetchAllNfts(this.getNode(), fetchNfts);
+    const nftsToFetch = nfts.filter(nft => !storeNfts[nft.assetId]);
 
-    infoNfts.forEach(info => (storeNfts[info.id] = info));
+    if (nftsToFetch.length === 0) {
+      return;
+    }
+
+    const nftInfos = await fetchAllNfts(this.getNode(), nftsToFetch);
+
+    nftInfos.forEach(info => {
+      storeNfts[info.id] = info;
+    });
 
     this.store.updateState({ nfts: storeNfts });
   }

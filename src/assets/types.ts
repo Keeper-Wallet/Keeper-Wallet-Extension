@@ -7,7 +7,7 @@ export interface AssetDetail {
   height: number;
   id: string;
   isFavorite?: boolean;
-  issuer?: string;
+  issuer: string;
   isSuspicious?: boolean;
   lastUpdated?: number;
   minSponsoredFee?: BigNumber | string | number;

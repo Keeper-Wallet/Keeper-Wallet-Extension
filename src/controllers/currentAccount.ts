@@ -3,6 +3,7 @@ import { TransactionFromNode } from '@waves/ts-types';
 import { AssetBalance, BalancesItem } from 'balances/types';
 import { collectBalances } from 'balances/utils';
 import { extension } from 'lib/extension';
+import { NftAssetDetail } from 'nfts/types';
 import ObservableStore from 'obs-store';
 
 import { MAX_NFT_ITEMS, MAX_TX_HISTORY_ITEMS } from '../constants';
@@ -137,21 +138,7 @@ export class CurrentAccountController {
       },
     });
 
-    const json = (await response.json()) as Array<{
-      assetId: string;
-      decimals: number;
-      description: string;
-      issueHeight: number;
-      issuer: string;
-      issuerPublicKey: string;
-      issueTimestamp: number;
-      minSponsoredAssetFee: string | null;
-      name: string;
-      originTransactionId: string;
-      quantity: string;
-      reissuable: boolean;
-      scripted: boolean;
-    }>;
+    const json: NftAssetDetail[] = await response.json();
 
     return json;
   }

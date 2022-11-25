@@ -16,6 +16,7 @@ const WAVES: AssetDetail = {
   precision: 8,
   description: '',
   height: 0,
+  issuer: '',
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   timestamp: '2016-04-11T21:00:00.000Z' as any,
   sender: '',

@@ -16,6 +16,7 @@ import { fetchAll as fetchAllSignArts } from 'nfts/signArt/utils';
 import { MyNFT, Unknown } from 'nfts/unknown';
 
 import { NftConfig } from '../constants';
+import { NftAssetDetail } from './types';
 
 export type Nft = ReturnType<typeof createNft>;
 
@@ -50,31 +51,31 @@ export function createNft({
   }
 }
 
-export function nftType(nft: { issuer?: string }): NftVendor {
+export function nftType(nft: { issuer: string }): NftVendor {
   if (nft.issuer === signArtDApp) {
     return NftVendor.SignArt;
   }
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  if (ducksDApps.includes(nft.issuer!)) {
+
+  if (ducksDApps.includes(nft.issuer)) {
     return NftVendor.Ducks;
   }
+
   if (nft.issuer === ducklingsDApp) {
     return NftVendor.Ducklings;
   }
+
   if (nft.issuer === ducksArtefactsDApp) {
     return NftVendor.DucksArtefact;
   }
+
   return NftVendor.Unknown;
 }
 
-export async function fetchAllNfts(
-  nodeUrl: string,
-  nfts: Array<{ assetId: string; issuer: string | undefined }>
-) {
-  const ducks: typeof nfts = [];
-  const babyDucks: typeof nfts = [];
-  const ducksArtefacts: typeof nfts = [];
-  const signArts: typeof nfts = [];
+export async function fetchAllNfts(nodeUrl: string, nfts: NftAssetDetail[]) {
+  const ducks: NftAssetDetail[] = [];
+  const babyDucks: NftAssetDetail[] = [];
+  const ducksArtefacts: NftAssetDetail[] = [];
+  const signArts: NftAssetDetail[] = [];
 
   for (const nft of nfts) {
     switch (nftType(nft)) {
@@ -93,14 +94,14 @@ export async function fetchAllNfts(
     }
   }
 
-  return Array.prototype.flat.call(
-    await Promise.all([
-      fetchAllSignArts(nodeUrl, signArts).catch(() => []),
-      fetchAllDucks(ducks).catch(() => []),
-      fetchAllArtefacts(ducksArtefacts).catch(() => []),
-      fetchAllDucklings(nodeUrl, babyDucks).catch(() => []),
-    ])
-  ) as NftInfo[];
+  const allNfts = await Promise.all([
+    fetchAllSignArts(nodeUrl, signArts).catch(() => []),
+    fetchAllDucks(ducks),
+    fetchAllArtefacts(ducksArtefacts),
+    fetchAllDucklings(nodeUrl, babyDucks).catch(() => []),
+  ]);
+
+  return allNfts.flat();
 }
 
 export function capitalize(str: string): string {
