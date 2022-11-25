@@ -1,11 +1,8 @@
 import { BaseInfo, BaseNft, NftVendor } from 'nfts/index';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const unknownLogo = require('../logos/unknown.svg');
-
 export class Unknown extends BaseNft<BaseInfo> {
   get foreground(): string {
-    return unknownLogo;
+    return new URL('../logos/unknown.svg', import.meta.url).toString();
   }
 }
 
