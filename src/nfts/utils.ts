@@ -1,6 +1,6 @@
 import { DataTransactionEntry, Long } from '@waves/ts-types';
 import { AssetDetail } from 'assets/types';
-import { DucksArtefact } from 'nfts/duckArtifacts';
+import { DucksArtefact, DucksArtefactInfo } from 'nfts/duckArtifacts';
 import { ducksArtefactsDApp } from 'nfts/duckArtifacts/constants';
 import { fetchAll as fetchAllArtefacts } from 'nfts/duckArtifacts/utils';
 import { Duckling, DucklingInfo } from 'nfts/ducklings';
@@ -37,7 +37,11 @@ export function createNft({
     case NftVendor.Ducks:
       return new Duck({ asset, info: info as DuckInfo, config });
     case NftVendor.DucksArtefact:
-      return new DucksArtefact({ asset, info: info as DucksArtefact, config });
+      return new DucksArtefact({
+        asset,
+        info: info as DucksArtefactInfo,
+        config,
+      });
     case NftVendor.SignArt:
       return new SignArt({ asset, info: info as SignArtInfo, config });
     case NftVendor.Unknown: {
