@@ -9,7 +9,6 @@ export * from './copy';
 export * from './Date/DateFormat';
 export * from './ellipsis';
 export * from './error';
-export * from './highlight';
 export * from './input';
 export * from './loader';
 export * from './modal/Modal';
