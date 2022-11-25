@@ -1,7 +1,7 @@
 .content {
   display: flex;
-  flex: 1;
   flex-direction: column;
+  flex: 1;
   overflow: auto;
   word-break: break-word;
 }
@@ -14,9 +14,9 @@
 
 .successIcon {
   flex-shrink: 0;
+  margin: 48px auto 24px;
   width: 80px;
   height: 80px;
-  margin: 48px auto 24px;
 }
 
 .address {
@@ -35,8 +35,8 @@
 
 .footer {
   margin: auto 0 0;
-  padding: 20px 48px;
   border: 1px solid var(--color-basic100);
+  padding: 20px 48px;
 }
 
 .button:not(:last-child) {

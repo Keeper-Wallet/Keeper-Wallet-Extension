@@ -17,15 +17,15 @@
 
 .title {
   margin: 64px 48px 30px;
-  font-weight: 400;
   font-size: 24px;
+  font-weight: 400;
   line-height: 28px;
 }
 
 .name {
   margin: 0 48px 24px;
-  font-weight: 700;
   font-size: 18px;
+  font-weight: 700;
   line-height: 21px;
 }
 
@@ -36,8 +36,8 @@
 
 .buttons {
   display: flex;
-  padding: 14px;
   border-top: 1px solid var(--color-basic100);
+  padding: 14px;
 }
 
 .reset {
@@ -55,16 +55,16 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 284px;
   padding: 24px;
-  background: var(--color-white);
+  width: 284px;
   border-radius: 2px;
+  background: var(--color-white);
 }
 
 .resetModalTitle {
   margin-bottom: 14px;
-  font-weight: 700;
   font-size: 18px;
+  font-weight: 700;
   line-height: 21px;
   text-align: center;
 }

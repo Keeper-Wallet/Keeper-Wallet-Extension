@@ -2,10 +2,10 @@
   display: inline-flex;
   gap: 6px;
   align-items: center;
-  box-sizing: content-box;
   padding: 6px;
-  background: none;
+  box-sizing: content-box;
   border-radius: 10px;
+  background: none;
   cursor: pointer;
 }
 
@@ -22,10 +22,10 @@
 .logoPlaceholder {
   width: 24px;
   height: 24px;
+  border-radius: 50%;
   color: #fff;
-  font-weight: bold;
   font-size: 14px;
+  font-weight: bold;
   line-height: 24px;
   text-align: center;
-  border-radius: 50%;
 }

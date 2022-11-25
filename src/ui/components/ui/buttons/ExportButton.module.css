@@ -2,11 +2,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-top: 1px solid var(--color-basic100);
   padding: 14px 48px;
   color: var(--color-basic500);
   font-size: 12px;
   line-height: 14px;
-  border-top: 1px solid var(--color-basic100);
   cursor: pointer;
 }
 

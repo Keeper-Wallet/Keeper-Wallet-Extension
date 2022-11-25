@@ -8,25 +8,25 @@
 
 .wrapper {
   display: flex;
-  flex: 1 1 0;
   flex-direction: column;
+  flex: 1 1 0;
 }
 
 .header {
   position: sticky;
-  top: 0;
   z-index: 1;
+  top: 0;
   display: flex;
   gap: 8px;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid var(--color-basic100);
   padding: 14px;
   background: var(--color-white);
-  border-bottom: 1px solid var(--color-basic100);
 }
 
 .title {
   flex-shrink: 0;
-  font-weight: normal;
   font-size: 24px;
+  font-weight: normal;
 }

@@ -3,13 +3,13 @@
   z-index: 1;
   display: flex;
   flex-wrap: wrap;
-  width: 325px;
-  height: 64px;
   margin-bottom: 8px;
   padding: 8px;
-  background: #fff;
+  width: 325px;
+  height: 64px;
   border-radius: 4px;
   box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
+  background: #fff;
   cursor: default;
 }
 
@@ -26,8 +26,8 @@
   height: 24px;
   overflow: hidden;
   line-height: 24px;
-  white-space: nowrap;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .recipient {
@@ -41,14 +41,14 @@
 }
 
 .historyIconWrapper {
+  margin-right: 8px;
   width: 48px;
   height: 48px;
-  margin-right: 8px;
+  border-radius: 50%;
   color: #edf0f4;
   font-size: 1rem;
   line-height: 48px;
   text-align: center;
-  border-radius: 50%;
 }
 
 .historyIcon {
@@ -60,16 +60,16 @@
   position: absolute;
   right: 10px;
   bottom: 19px;
-  padding: 0;
-  background: none;
   border: 0;
+  padding: 0;
   border-radius: 2px;
+  background: none;
   cursor: pointer;
 }
 
 .infoIcon {
-  width: 28px;
   vertical-align: middle;
+  width: 28px;
   fill: var(--color-basic200);
 }
 
@@ -87,14 +87,14 @@
   position: absolute;
   right: 0;
   bottom: 0;
+  border: 1px solid rgb(229, 57, 53);
   width: 18px;
   height: 18px;
+  border-radius: 50%;
+  background-color: rgb(255, 255, 255);
   font-size: 0.75rem;
   line-height: 18px;
   text-align: center;
-  background-color: rgb(255, 255, 255);
-  border: 1px solid rgb(229, 57, 53);
-  border-radius: 50%;
 }
 
 .txSubIconSvg {

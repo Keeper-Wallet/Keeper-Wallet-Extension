@@ -1,8 +1,8 @@
 .searchWrapper {
   position: relative;
   display: flex;
-  flex-grow: 1;
   align-items: center;
+  flex-grow: 1;
 }
 
 .searchInputWrapper {
@@ -10,13 +10,13 @@
 }
 
 .searchInput {
-  height: 32px;
-  padding: 0 32px;
-  background: url(../../../assets/img/search-14-basic200.svg) no-repeat scroll
-    8px;
   border: none;
   border-bottom: solid 1px var(--color-basic500);
+  padding: 0 32px;
+  height: 32px;
   border-radius: unset;
+  background: url(../../../assets/img/search-14-basic200.svg) no-repeat scroll
+    8px;
 }
 
 .searchInput:hover {
@@ -25,18 +25,18 @@
 }
 
 .searchInput:focus {
+  outline: none;
   border: none;
   border-bottom: 1px solid var(--color-submit400);
-  outline: none;
 }
 
 .searchClear {
   position: absolute;
   right: 0;
-  height: 32px;
   padding: 0 9px;
-  color: var(--color-basic200);
+  height: 32px;
   background: none;
+  color: var(--color-basic200);
 }
 
 .searchClear:hover {

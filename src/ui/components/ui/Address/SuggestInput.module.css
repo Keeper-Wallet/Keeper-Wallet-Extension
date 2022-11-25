@@ -1,21 +1,21 @@
 .suggest {
   position: absolute;
+  z-index: 1;
   top: 41px;
   right: 0;
   left: 0;
-  z-index: 1;
   max-height: 300px;
   overflow-y: auto;
-  background: var(--color-white);
   border-radius: 4px;
   box-shadow: 0px 4px 6px rgb(155, 166, 178, 0.4);
+  background: var(--color-white);
 }
 
 .title {
   padding: 8px 14px 0;
   color: #c5d0de;
-  font-weight: 500;
   font-size: 11px;
+  font-weight: 500;
   line-height: 13px;
   text-transform: uppercase;
 }
@@ -47,9 +47,9 @@
 }
 
 .buttonIcon {
+  margin-left: 14px;
   width: 18px;
   height: 18px;
-  margin-left: 14px;
   background-color: var(--color-white);
   background-image: url(../../../assets/img/search-user.svg);
   background-size: cover;
@@ -60,10 +60,10 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 284px;
   padding: 24px 0 4px;
-  background: var(--color-white);
+  width: 284px;
   border-radius: 2px;
+  background: var(--color-white);
 }
 
 .modalTitle {
@@ -91,16 +91,16 @@
   position: absolute;
   left: 15px;
   color: #ffaf00;
-  font-weight: 500;
   font-size: 14px;
+  font-weight: 500;
   pointer-events: none;
 }
 
 .warningAlias {
   margin-top: 4px;
+  border: 1px dashed #ffaf00;
   padding: 12px 14px;
+  border-radius: 2px;
   color: #9ba6b2;
   font-size: 11px;
-  border: 1px dashed #ffaf00;
-  border-radius: 2px;
 }

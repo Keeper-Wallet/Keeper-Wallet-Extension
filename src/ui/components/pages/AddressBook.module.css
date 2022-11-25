@@ -2,9 +2,9 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  padding: 20px 0 0;
   width: 100%;
   height: calc(100% - 48px);
-  padding: 20px 0 0;
   overflow: auto;
 }
 
@@ -36,11 +36,11 @@
 .empty::before {
   position: absolute;
   top: 124px;
+  content: '';
   width: 80px;
   height: 80px;
   background-image: url(../../assets/img/users.svg);
   background-size: cover;
-  content: '';
 }
 
 .emptyTitle {
@@ -54,8 +54,8 @@
 }
 
 .addButton {
-  width: auto;
   padding: 0 40px;
+  width: auto;
 }
 
 .serp {
@@ -85,13 +85,13 @@
   position: relative;
   display: flex;
   align-items: center;
-  height: 56px;
   margin: 14px 14px 0;
   padding: 8px 14px;
+  height: 56px;
   overflow: hidden;
-  background-color: var(--color-white);
   border-radius: 4px;
   box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
+  background-color: var(--color-white);
 }
 
 .cardContent {
@@ -104,13 +104,13 @@
 
 .cardName {
   display: inline-block;
-  max-width: 220px;
   margin-bottom: 6px;
+  max-width: 220px;
   overflow: hidden;
-  font-weight: 700;
   font-size: 14px;
-  white-space: nowrap;
+  font-weight: 700;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cardAddress {
@@ -129,9 +129,9 @@
 .copyIcon,
 .editIcon,
 .deleteIcon {
+  vertical-align: middle;
   width: 18px;
   height: 18px;
-  vertical-align: middle;
   fill: var(--color-basic200);
 }
 

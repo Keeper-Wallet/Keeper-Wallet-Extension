@@ -16,19 +16,19 @@
 
 .title {
   overflow: hidden;
-  font-weight: 700;
   font-size: 18px;
+  font-weight: 700;
   font-style: normal;
   line-height: 21px;
-  white-space: nowrap;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .content {
   display: flex;
   flex-direction: column;
-  height: 100%;
   padding: 0 24px;
+  height: 100%;
   overflow: auto;
 }
 
@@ -61,11 +61,11 @@
 
 .stickyBottomPanel {
   position: sticky;
-  bottom: 0;
   z-index: 1;
+  bottom: 0;
   display: flex;
   gap: 14px;
+  border-top: 1px solid #edf0f4;
   padding: 14px;
   background: #fff;
-  border-top: 1px solid #edf0f4;
 }

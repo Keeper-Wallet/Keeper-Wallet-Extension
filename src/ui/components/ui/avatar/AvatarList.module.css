@@ -7,12 +7,12 @@
 
 .avatarListItem {
   display: flex;
-  padding: 4px;
   border: 1px solid transparent;
+  padding: 4px;
 }
 
 .avatarListItemSelected {
-  background-color: rgba(31, 90, 246, 0.1);
   border-color: var(--color-submit400);
   border-radius: 2px;
+  background-color: rgba(31, 90, 246, 0.1);
 }

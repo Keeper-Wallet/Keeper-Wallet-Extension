@@ -13,16 +13,16 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 284px;
   padding: 24px;
-  background: var(--color-white);
+  width: 284px;
   border-radius: 2px;
+  background: var(--color-white);
 }
 
 .resetModalTitle {
   margin-bottom: 14px;
-  font-weight: 700;
   font-size: 18px;
+  font-weight: 700;
   line-height: 21px;
   text-align: center;
 }
@@ -35,9 +35,9 @@
 }
 
 .resetModalLoader {
+  margin: auto;
   width: 40px;
   height: 40px;
-  margin: auto;
   background: url(../../../../ui/assets/img/loader.gif) center no-repeat;
   background-size: 40px;
 }

@@ -8,17 +8,17 @@
 
 .error {
   flex-shrink: 0;
-  min-height: 1rem;
-  color: var(--color-error400);
-  background: none;
   border-color: var(--color-error400);
+  min-height: 1rem;
+  background: none;
+  color: var(--color-error400);
 }
 
 .errorIcon {
   display: block;
   flex-shrink: 0;
+  margin: 0 auto 24px auto;
   width: 48px;
   height: 48px;
-  margin: 0 auto 24px auto;
   background-size: cover;
 }

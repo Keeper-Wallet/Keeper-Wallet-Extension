@@ -1,8 +1,8 @@
 .content {
   position: relative;
   display: block;
-  height: calc(100% - 180px);
   margin: 84px 60px 0;
+  height: calc(100% - 180px);
 }
 
 .greyLine {

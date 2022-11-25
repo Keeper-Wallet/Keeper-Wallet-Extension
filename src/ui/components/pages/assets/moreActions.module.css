@@ -4,11 +4,11 @@
   gap: 4px;
   align-items: center;
   justify-content: center;
-  height: 64px;
   margin-right: -14px;
   padding: 0 8px;
-  background-color: var(--color-white);
+  height: 64px;
   border-radius: 4px;
+  background-color: var(--color-white);
 }
 
 .content {
@@ -17,10 +17,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
   padding: 0 8px;
-  background-color: var(--color-white);
+  height: 100%;
   box-shadow: -4px 0px 4px rgba(0, 0, 0, 0.07);
+  background-color: var(--color-white);
 }
 
 .moreBtn {
@@ -29,7 +29,7 @@
 }
 
 .moreIcon {
-  height: 28px;
   vertical-align: middle;
+  height: 28px;
   fill: var(--color-basic200);
 }

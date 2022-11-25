@@ -31,8 +31,8 @@
 
 .button {
   flex-shrink: 0;
-  width: auto;
   margin: 0 48px 14px;
+  width: auto;
 }
 
 .text {
@@ -41,7 +41,7 @@
 
 .footer {
   margin-top: auto;
+  border-top: 1px solid #edf0f4;
   padding: 13px 48px 14px;
   background-color: var(--color-basic50);
-  border-top: 1px solid #edf0f4;
 }

@@ -2,14 +2,14 @@
   position: relative;
   z-index: 1;
   display: flex;
-  width: 325px;
-  height: 64px;
   margin-bottom: 8px;
   padding: 14px;
+  width: 325px;
+  height: 64px;
   overflow: hidden;
-  background: #fff;
   border-radius: 4px;
   box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
+  background: #fff;
 }
 
 .nftIcon {
@@ -36,9 +36,9 @@
 
 .sendIcon,
 .infoIcon {
+  vertical-align: middle;
   width: 28px;
   height: 28px;
-  vertical-align: middle;
 }
 
 .sendIcon,
