@@ -7,6 +7,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const PlatformPlugin = require('./scripts/PlatformPlugin');
 
 module.exports = async (_, { mode }) => {
@@ -137,13 +138,25 @@ module.exports = async (_, { mode }) => {
     },
     plugins: (process.stdout.isTTY ? [new webpack.ProgressPlugin()] : [])
       .concat(
-        mode === 'development'
+        dev
           ? [
               new webpack.HotModuleReplacementPlugin(),
               new TinyBrowserHmrWebpackPlugin({ hostname: 'localhost' }),
               new ReactRefreshWebpackPlugin({ overlay: false }),
             ]
-          : []
+          : [
+              new BundleAnalyzerPlugin({
+                analyzerMode: 'static',
+                defaultSizes: 'gzip',
+                generateStatsFile: true,
+                openAnalyzer: false,
+                reportFilename: path.resolve(
+                  __dirname,
+                  'dist/webpack-bundle-analyzer.html'
+                ),
+                statsFilename: path.resolve(__dirname, 'dist/stats.json'),
+              }),
+            ]
       )
       .concat([
         new webpack.ProvidePlugin({
