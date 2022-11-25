@@ -1,6 +1,7 @@
 import { NftVendor } from 'nfts/index';
 import { signArtDataUrl, signArtUserDataUrl } from 'nfts/signArt/constants';
 import { SignArtInfo } from 'nfts/signArt/index';
+import { NftAssetDetail } from 'nfts/types';
 import { reduceDataEntries } from 'nfts/utils';
 
 export const artworkInfoMask = /art_sold_\d+_of_\d+_(\w+)_(\w+)/i;
@@ -9,10 +10,7 @@ function nftIdKey(id: string) {
   return `nft_${id}`;
 }
 
-export async function fetchAll(
-  nodeUrl: string,
-  nfts: Array<{ assetId: string }>
-): Promise<SignArtInfo[]> {
+export async function fetchAll(nodeUrl: string, nfts: NftAssetDetail[]) {
   if (nfts.length === 0) {
     return [];
   }
@@ -89,7 +87,7 @@ export async function fetchAll(
       ])
     )
     .then(([artworksEntries, userNameEntries]) =>
-      nftIds.map((id, index) => {
+      nftIds.map((id, index): SignArtInfo => {
         const entriesPerAsset = 4;
         const artName = artworksEntries[entriesPerAsset * index];
         const artDesc = artworksEntries[entriesPerAsset * index + 1];

@@ -1,15 +1,12 @@
 import { DucksArtefactInfo } from 'nfts/duckArtifacts/index';
 import { NftVendor } from 'nfts/index';
+import { NftAssetDetail } from 'nfts/types';
 
-export async function fetchAll(
-  nfts: Array<{ assetId: string }>
-): Promise<DucksArtefactInfo[]> {
-  if (nfts.length === 0) {
-    return [];
-  }
-
-  return nfts.map(nft => ({
-    id: nft.assetId,
-    vendor: NftVendor.DucksArtefact,
-  }));
+export function fetchAll(nfts: NftAssetDetail[]) {
+  return nfts.map(
+    (nft): DucksArtefactInfo => ({
+      id: nft.assetId,
+      vendor: NftVendor.DucksArtefact,
+    })
+  );
 }
