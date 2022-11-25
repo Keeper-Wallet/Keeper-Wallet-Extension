@@ -8,10 +8,7 @@ export function i18nextInit() {
   return i18next
     .use(
       resourcesToBackend((lng, ns, clb) => {
-        import(
-          /* webpackMode: 'eager' */
-          `./locales/${lng}/${ns}.${lng}.json`
-        )
+        import(`./locales/${lng}/${ns}.${lng}.json`)
           .then(resources => clb(null, resources))
           .catch(err => clb(err, null));
       })
