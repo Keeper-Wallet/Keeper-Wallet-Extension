@@ -158,17 +158,12 @@
     "warn": "Herhangi bir hesabın silinmesi, fonlara olan erişimin geri alınamaz şekilde kaybolmasına neden olabilir! Her zaman 'ANAHTAR KELİMELER' inizi yedeklediğinizden emin olun."
   },
   "errorPage": {
-    "copied": "Kopyalandı!",
-    "copyToClipboard": "Panoya kopyala",
-    "details": "Hata detayları",
     "export": "Hesapları ve adres defterini dışa aktar",
-    "hide": "Gizle",
     "reload": "Yeniden yüklemeyi dene",
     "reset": "Uzantı sıfırlama",
     "resetButton": "Cüzdanı sıfırla",
     "resetDescription": "Bu işlemden sonra tüm ikincil bilgileri sileriz (ör. favori tokenler). Ek olarak, bir kez daha “Giriş Yapmanız” gerekecektir.",
     "resetTitle": "Dikkat",
-    "show": "Göster",
     "title": "Bir şeyler yanlış gitti"
   },
   "exportAndImport": {

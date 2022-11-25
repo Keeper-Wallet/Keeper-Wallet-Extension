@@ -1,28 +1,16 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Button,
-  Copy,
-  ExportButton,
-  Highlight,
-  Modal,
-  ResetButton,
-} from 'ui/components/ui';
+import { Button, ExportButton, ResetButton } from 'ui/components/ui';
 
 import { HeadLogo } from '../head';
 import * as styles from './errorPage.module.css';
 
 interface Props {
   error: Error;
-  componentStack: string | null;
   resetError(): void;
 }
 
-export function ErrorPage({ error, componentStack, resetError }: Props) {
+export function ErrorPage({ error, resetError }: Props) {
   const { t } = useTranslation();
-
-  const [showDetails, setShowDetails] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   return (
     <div className={styles.wrapper}>
@@ -30,49 +18,14 @@ export function ErrorPage({ error, componentStack, resetError }: Props) {
       <div className={styles.content}>
         <h2 className={styles.title}>{t('errorPage.title')}</h2>
         <p className={styles.name}>{error.toString()}</p>
-        <div className={styles.details}>
-          <p className={styles.detailsTitle}>{t('errorPage.details')}</p>
-          <button
-            className={styles.detailsButton}
-            onClick={() => {
-              setShowDetails(!showDetails);
-            }}
-          >
-            {t(showDetails ? 'errorPage.hide' : 'errorPage.show')}
-          </button>
-        </div>
-        {showDetails ? (
-          <div className={styles.plate}>
-            <Highlight
-              className={`${styles.highlight} json`}
-              data={componentStack}
-            />
-            <Copy
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              text={componentStack!}
-              onCopy={() => {
-                setCopied(true);
-                setTimeout(() => setCopied(false), 1000);
-              }}
-            >
-              <button className={styles.copy}>
-                {t('errorPage.copyToClipboard')}
-              </button>
-            </Copy>
-          </div>
-        ) : (
-          <div className={styles.plate} />
-        )}
-
-        <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={copied}>
-          <p className="modal notification">{t('errorPage.copied')}</p>
-        </Modal>
       </div>
 
       <div className={styles.footer}>
         <ExportButton />
+
         <div className={styles.buttons}>
           <ResetButton />
+
           <Button
             view="submit"
             onClick={() => {
