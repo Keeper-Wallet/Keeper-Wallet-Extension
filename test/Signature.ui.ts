@@ -11,7 +11,7 @@ import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth'
 import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
 import { expect } from 'chai';
 import * as mocha from 'mocha';
-import * as create from 'parse-json-bignumber';
+import create from 'parse-json-bignumber';
 import { By, until } from 'selenium-webdriver';
 
 import {
