@@ -77,7 +77,7 @@ describe('Settings', function () {
     await this.driver
       .wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, 'menu-settingsIcon')]")
+          By.xpath("//div[contains(@class, 'settingsIcon@menu')]")
         ),
         this.wait
       )
@@ -85,7 +85,7 @@ describe('Settings', function () {
 
     await this.driver.wait(
       until.elementLocated(
-        By.xpath("//div[contains(@class, 'settings-content')]")
+        By.xpath("//div[contains(@class, 'content@settings')]")
       ),
       this.wait
     );
@@ -128,7 +128,7 @@ describe('Settings', function () {
         .click();
       await this.driver.wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, 'settings-content')]")
+          By.xpath("//div[contains(@class, 'content@settings')]")
         ),
         this.wait
       );
@@ -151,7 +151,7 @@ describe('Settings', function () {
         until.elementIsVisible(
           this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'settings-networkTab')]")
+              By.xpath("//div[contains(@class, 'networkTab@settings')]")
             ),
             this.wait
           )
@@ -236,7 +236,7 @@ describe('Settings', function () {
             .wait(
               until.elementLocated(
                 By.xpath(
-                  "//div[contains(@class, 'list-permissionItem')]//button[contains(@class, 'list-settings')]"
+                  "//div[contains(@class, 'permissionItem@list')]//button[contains(@class, 'settings@list')]"
                 )
               ),
               this.wait
@@ -260,8 +260,8 @@ describe('Settings', function () {
             .wait(
               until.elementLocated(
                 By.xpath(
-                  "//div[contains(@class, 'settings-selectTime')]" +
-                    "//div[contains(@class, 'Select-module-trigger')]"
+                  "//div[contains(@class, 'selectTime@settings')]" +
+                    "//div[contains(@class, 'trigger@Select-module')]"
                 )
               ),
               this.wait
@@ -271,7 +271,7 @@ describe('Settings', function () {
             .wait(
               until.elementLocated(
                 By.xpath(
-                  "//div[contains(@class, 'Select-module-item')][last()]"
+                  "//div[contains(@class, 'item@Select-module')][last()]"
                 )
               ),
               this.wait
@@ -281,7 +281,7 @@ describe('Settings', function () {
             .wait(
               until.elementIsEnabled(
                 this.driver.findElement(
-                  By.xpath("//input[contains(@class, 'settings-amountInput')]")
+                  By.xpath("//input[contains(@class, 'amountInput@settings')]")
                 )
               ),
               this.wait
@@ -301,8 +301,8 @@ describe('Settings', function () {
               .wait(
                 until.elementLocated(
                   By.xpath(
-                    "//div[contains(@class, 'list-permissionItem')]" +
-                      "//div[contains(@class, 'list-statusColor')]" +
+                    "//div[contains(@class, 'permissionItem@list')]" +
+                      "//div[contains(@class, 'statusColor@list')]" +
                       '//span'
                   )
                 ),
@@ -317,8 +317,8 @@ describe('Settings', function () {
             .wait(
               until.elementLocated(
                 By.xpath(
-                  "//div[contains(@class, 'settings-selectTime')]" +
-                    "//div[contains(@class, 'Select-module-trigger')]"
+                  "//div[contains(@class, 'selectTime@settings')]" +
+                    "//div[contains(@class, 'trigger@Select-module')]"
                 )
               ),
               this.wait
@@ -327,7 +327,7 @@ describe('Settings', function () {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, 'Select-module-item')]")
+                By.xpath("//div[contains(@class, 'item@Select-module')]")
               ),
               this.wait
             )
@@ -345,14 +345,14 @@ describe('Settings', function () {
             await this.driver
               .wait(
                 until.elementLocated(
-                  By.xpath("//div[contains(@class, 'list-permissionList')]")
+                  By.xpath("//div[contains(@class, 'permissionList@list')]")
                 ),
                 this.wait
               )
               .findElements(
                 By.xpath(
-                  "//div[contains(@class, 'list-permissionItem')]" +
-                    "//div[contains(@class, 'list-statusColor')]" +
+                  "//div[contains(@class, 'permissionItem@list')]" +
+                    "//div[contains(@class, 'statusColor@list')]" +
                     '//span'
                 )
               )
@@ -370,7 +370,7 @@ describe('Settings', function () {
         await this.driver.wait(
           until.elementLocated(
             By.xpath(
-              "//div[@id='whiteListTab'][contains(@class, 'index-selected')]"
+              "//div[@id='whiteListTab'][contains(@class, 'selected@index')]"
             )
           )
         );
@@ -382,13 +382,13 @@ describe('Settings', function () {
             await this.driver
               .wait(
                 until.elementLocated(
-                  By.xpath("//div[contains(@class, 'list-permissionList')]")
+                  By.xpath("//div[contains(@class, 'permissionList@list')]")
                 ),
                 this.wait
               )
               .findElements(
                 By.xpath(
-                  `//div[contains(@class, 'list-permissionItem')]//div[text()='${origin}']`
+                  `//div[contains(@class, 'permissionItem@list')]//div[text()='${origin}']`
                 )
               )
           ).length(1);
@@ -447,7 +447,7 @@ describe('Settings', function () {
 
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'originAuth-transaction')]")
+              By.xpath("//div[contains(@class, 'transaction@originAuth')]")
             ),
             this.wait
           );
@@ -455,7 +455,7 @@ describe('Settings', function () {
 
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'final-transaction')]")
+              By.xpath("//div[contains(@class, 'transaction@final')]")
             ),
             this.wait
           );
@@ -467,7 +467,7 @@ describe('Settings', function () {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, 'menu-settingsIcon')]")
+                By.xpath("//div[contains(@class, 'settingsIcon@menu')]")
               ),
               this.wait
             )
@@ -475,7 +475,7 @@ describe('Settings', function () {
 
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'settings-content')]")
+              By.xpath("//div[contains(@class, 'content@settings')]")
             ),
             this.wait
           );
@@ -489,13 +489,13 @@ describe('Settings', function () {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, 'list-permissionList')]")
+                By.xpath("//div[contains(@class, 'permissionList@list')]")
               ),
               this.wait
             )
             .findElements(
               By.xpath(
-                `//div[contains(@class, 'list-permissionItem')]//div[text()='${origin}']`
+                `//div[contains(@class, 'permissionItem@list')]//div[text()='${origin}']`
               )
             );
         });
@@ -515,7 +515,7 @@ describe('Settings', function () {
             .wait(
               until.elementLocated(
                 By.xpath(
-                  "//div[contains(@class, 'originAuth-collapsed')]//div[contains(@class, 'index-title')]"
+                  "//div[contains(@class, 'collapsed@originAuth')]//div[contains(@class, 'title@index')]"
                 )
               ),
               this.wait
@@ -527,8 +527,8 @@ describe('Settings', function () {
           await this.driver
             .findElement(
               By.xpath(
-                "//div[contains(@class, 'settings-selectTime')]" +
-                  "//div[contains(@class, 'Select-module-trigger')]"
+                "//div[contains(@class, 'selectTime@settings')]" +
+                  "//div[contains(@class, 'trigger@Select-module')]"
               )
             )
             .click();
@@ -537,7 +537,7 @@ describe('Settings', function () {
             .wait(
               until.elementLocated(
                 By.xpath(
-                  "//div[contains(@class, 'Select-module-item')][last()]"
+                  "//div[contains(@class, 'item@Select-module')][last()]"
                 )
               ),
               this.wait
@@ -548,7 +548,7 @@ describe('Settings', function () {
             .wait(
               until.elementIsEnabled(
                 this.driver.findElement(
-                  By.xpath("//input[contains(@class, 'settings-amountInput')]")
+                  By.xpath("//input[contains(@class, 'amountInput@settings')]")
                 )
               ),
               this.wait
@@ -559,7 +559,7 @@ describe('Settings', function () {
 
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'final-transaction')]")
+              By.xpath("//div[contains(@class, 'transaction@final')]")
             ),
             this.wait
           );
@@ -571,7 +571,7 @@ describe('Settings', function () {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, 'menu-settingsIcon')]")
+                By.xpath("//div[contains(@class, 'settingsIcon@menu')]")
               ),
               this.wait
             )
@@ -579,7 +579,7 @@ describe('Settings', function () {
 
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'settings-content')]")
+              By.xpath("//div[contains(@class, 'content@settings')]")
             ),
             this.wait
           );
@@ -594,13 +594,13 @@ describe('Settings', function () {
             await this.driver
               .wait(
                 until.elementLocated(
-                  By.xpath("//div[contains(@class, 'list-permissionList')]")
+                  By.xpath("//div[contains(@class, 'permissionList@list')]")
                 ),
                 this.wait
               )
               .findElements(
                 By.xpath(
-                  `//div[contains(@class, 'list-permissionItem')][./div[text()='${origin}']]//span`
+                  `//div[contains(@class, 'permissionItem@list')][./div[text()='${origin}']]//span`
                 )
               )
           ).length(1);
@@ -614,7 +614,7 @@ describe('Settings', function () {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, 'menu-settingsIcon')]")
+                By.xpath("//div[contains(@class, 'settingsIcon@menu')]")
               ),
               this.wait
             )
@@ -622,7 +622,7 @@ describe('Settings', function () {
 
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'settings-content')]")
+              By.xpath("//div[contains(@class, 'content@settings')]")
             ),
             this.wait
           );
@@ -637,19 +637,19 @@ describe('Settings', function () {
         it('Block all messages from origin in custom list', async function () {
           // here we have 2 enabled origins
           const originEl: WebElement = await this.driver.findElement(
-            By.xpath("//div[contains(@class, 'list-permissionItem')]")
+            By.xpath("//div[contains(@class, 'permissionItem@list')]")
           );
           const origin: string = await originEl
             .findElement(By.css('div'))
             .getText();
 
           await originEl
-            .findElement(By.xpath("//button[contains(@class, 'list-enable')]"))
+            .findElement(By.xpath("//button[contains(@class, 'enable@list')]"))
             .click();
 
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//button[contains(@class, 'list-disable')]")
+              By.xpath("//button[contains(@class, 'disable@list')]")
             ),
             this.wait
           );
@@ -673,7 +673,7 @@ describe('Settings', function () {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, 'menu-settingsIcon')]")
+                By.xpath("//div[contains(@class, 'settingsIcon@menu')]")
               ),
               this.wait
             )
@@ -681,7 +681,7 @@ describe('Settings', function () {
 
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'settings-content')]")
+              By.xpath("//div[contains(@class, 'content@settings')]")
             ),
             this.wait
           );
@@ -697,7 +697,7 @@ describe('Settings', function () {
           // here we have 2 origins, the first one is disabled, so we will delete it
           const originEl: WebElement = await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'list-permissionItem')]")
+              By.xpath("//div[contains(@class, 'permissionItem@list')]")
             ),
             this.wait
           );
@@ -707,7 +707,7 @@ describe('Settings', function () {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//button[contains(@class, 'list-settings')]")
+                By.xpath("//button[contains(@class, 'settings@list')]")
               ),
               this.wait
             )
@@ -736,7 +736,7 @@ describe('Settings', function () {
 
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'originAuth-transaction')]")
+              By.xpath("//div[contains(@class, 'transaction@originAuth')]")
             ),
             this.wait
           );
@@ -780,7 +780,7 @@ describe('Settings', function () {
 
         await this.driver.wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'settings-content')]")
+            By.xpath("//div[contains(@class, 'content@settings')]")
           ),
           this.wait
         );
@@ -793,7 +793,7 @@ describe('Settings', function () {
         expect(
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'login-content')]")
+              By.xpath("//div[contains(@class, 'content@login')]")
             ),
             BROWSER_TIMEOUT_DELAY
           )
@@ -809,7 +809,7 @@ describe('Settings', function () {
       before(async function () {
         await this.driver.wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'settings-content-')]")
+            By.xpath("//div[contains(@class, 'content@settings')]")
           ),
           this.wait
         );
@@ -826,7 +826,7 @@ describe('Settings', function () {
 
         await this.driver.wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'settings-content-')]")
+            By.xpath("//div[contains(@class, 'content@settings')]")
           ),
           this.wait
         );
@@ -864,7 +864,7 @@ describe('Settings', function () {
 
         await this.driver.wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'settings-content-')]")
+            By.xpath("//div[contains(@class, 'content@settings')]")
           ),
           this.wait
         );
@@ -918,7 +918,7 @@ describe('Settings', function () {
       before(async function () {
         await this.driver.wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'settings-content-')]")
+            By.xpath("//div[contains(@class, 'content@settings')]")
           ),
           this.wait
         );
@@ -937,7 +937,7 @@ describe('Settings', function () {
 
         await this.driver.wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'settings-content-')]")
+            By.xpath("//div[contains(@class, 'content@settings')]")
           ),
           this.wait
         );
@@ -981,7 +981,7 @@ describe('Settings', function () {
 
         await this.driver.wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'settings-content-')]")
+            By.xpath("//div[contains(@class, 'content@settings')]")
           ),
           this.wait
         );
@@ -1044,7 +1044,7 @@ describe('Settings', function () {
         await this.driver
           .wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'menu-settingsIcon')]")
+              By.xpath("//div[contains(@class, 'settingsIcon@menu')]")
             ),
             this.wait
           )
@@ -1053,13 +1053,13 @@ describe('Settings', function () {
 
       it('Exit to the login screen', async function () {
         await this.driver
-          .findElement(By.xpath("//div[contains(@class, 'settings-logout')]"))
+          .findElement(By.xpath("//div[contains(@class, 'logout@settings')]"))
           .click();
 
         expect(
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'login-content')]")
+              By.xpath("//div[contains(@class, 'content@login')]")
             ),
             this.wait
           )
@@ -1072,7 +1072,7 @@ describe('Settings', function () {
         await this.driver
           .wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'settings-deleteAccounts')]")
+              By.xpath("//div[contains(@class, 'deleteAccounts@settings')]")
             ),
             this.wait
           )
@@ -1087,7 +1087,7 @@ describe('Settings', function () {
       it('Account deletion warning displays', async function () {
         await this.driver
           .findElement(
-            By.xpath("//div[contains(@class, 'settings-deleteAccounts')]")
+            By.xpath("//div[contains(@class, 'deleteAccounts@settings')]")
           )
           .click();
 
@@ -1105,7 +1105,7 @@ describe('Settings', function () {
         expect(
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'settings-content')]")
+              By.xpath("//div[contains(@class, 'content@settings')]")
             ),
             this.wait
           )
@@ -1122,7 +1122,7 @@ describe('Settings', function () {
         expect(
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'settings-content')]")
+              By.xpath("//div[contains(@class, 'content@settings')]")
             ),
             this.wait
           )
@@ -1179,7 +1179,7 @@ describe('Settings', function () {
         expect(
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'Welcome-module-content')]")
+              By.xpath("//div[contains(@class, 'content@Welcome-module')]")
             ),
             this.wait
           )
