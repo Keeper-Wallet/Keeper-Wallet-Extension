@@ -1,30 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
-const FolderZip = require('folder-zip');
+const { zip } = require('zip-a-folder');
 const cpy = require('cpy');
 const del = require('del');
 const metaConf = require('./meta.conf');
 const updateManifest = require('./updateManifest');
-
-function zipFolder(from, to) {
-  return new Promise((resolve, reject) => {
-    const zip = new FolderZip();
-
-    zip.zipFolder(from, { excludeParentFolder: true }, err => {
-      if (err) {
-        return reject(err);
-      }
-
-      try {
-        zip.writeToFileSync(to);
-        resolve();
-        // eslint-disable-next-line no-shadow
-      } catch (err) {
-        reject(err);
-      }
-    });
-  });
-}
 
 const DIST_FOLDER = path.resolve(__dirname, '../', 'dist');
 const BUILD_FOLDER = path.resolve(DIST_FOLDER, 'build');
@@ -82,10 +62,7 @@ module.exports = class PlatformPlugin {
 
           report(`creating ${zipFilename}`);
 
-          await zipFolder(
-            platformFolder,
-            path.resolve(DIST_FOLDER, zipFilename)
-          );
+          await zip(platformFolder, path.resolve(DIST_FOLDER, zipFilename));
         }
       }
     });
