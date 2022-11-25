@@ -60,7 +60,12 @@ module.exports = async (_, { mode }) => {
     devtool: dev ? 'cheap-module-source-map' : 'source-map',
     stats: 'errors-warnings',
     optimization: {
-      minimizer: ['...', new CssMinimizerPlugin()],
+      minimizer: [
+        '...',
+        new CssMinimizerPlugin({
+          minify: CssMinimizerPlugin.lightningCssMinify,
+        }),
+      ],
       splitChunks: {
         cacheGroups: {
           commons: {
