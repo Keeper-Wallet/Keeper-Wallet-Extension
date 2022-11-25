@@ -134,7 +134,7 @@ module.exports = async (_, { mode }) => {
               options: {
                 modules: {
                   auto: true,
-                  localIdentName: '[name]-[local]-[hash:base64:6]',
+                  localIdentName: '[local]@[name]#[contenthash:base64:5]',
                   namedExport: true,
                 },
               },
@@ -148,7 +148,7 @@ module.exports = async (_, { mode }) => {
               loader: 'css-loader',
               options: {
                 modules: {
-                  localIdentName: '[name]-[local]-[hash:base64:6]',
+                  localIdentName: '[local]@[name]#[contenthash:base64:5]',
                   namedExport: true,
                 },
               },

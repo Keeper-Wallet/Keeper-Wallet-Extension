@@ -103,7 +103,7 @@ describe('Account management', function () {
 
         await this.driver.wait(
           until.elementLocated(
-            By.css('[class^="SelectedAccountQr-module-content"]')
+            By.css('[class^="content@SelectedAccountQr-module"]')
           ),
           this.wait
         );
@@ -222,7 +222,7 @@ describe('Account management', function () {
           await this.driver
             .findElement(
               By.xpath(
-                "//div[@id='accountInfoAddress']//div[contains(@class, 'copy-copyTextOverflow')]"
+                "//div[@id='accountInfoAddress']//div[contains(@class, 'copyTextOverflow@copy')]"
               )
             )
             .getText()
@@ -238,7 +238,7 @@ describe('Account management', function () {
           await this.driver
             .findElement(
               By.xpath(
-                "//div[@id='accountInfoPublicKey']//div[contains(@class, 'copy-copyTextOverflow')]"
+                "//div[@id='accountInfoPublicKey']//div[contains(@class, 'copyTextOverflow@copy')]"
               )
             )
             .getText()
@@ -254,7 +254,7 @@ describe('Account management', function () {
           await this.driver
             .findElement(
               By.xpath(
-                "//div[@id='accountInfoPrivateKey']//div[contains(@class, 'copy-copyTextOverflow')]"
+                "//div[@id='accountInfoPrivateKey']//div[contains(@class, 'copyTextOverflow@copy')]"
               )
             )
             .getText()
@@ -266,7 +266,7 @@ describe('Account management', function () {
           await this.driver
             .findElement(
               By.xpath(
-                "//div[@id='accountInfoPrivateKey']//div[contains(@class, 'copy-lastIcon')]"
+                "//div[@id='accountInfoPrivateKey']//div[contains(@class, 'lastIcon@copy')]"
               )
             )
             .click();
@@ -294,7 +294,7 @@ describe('Account management', function () {
           await this.driver
             .findElement(
               By.xpath(
-                "//div[@id='accountInfoBackupPhrase']//div[contains(@class, 'copy-copyTextOverflow')]"
+                "//div[@id='accountInfoBackupPhrase']//div[contains(@class, 'copyTextOverflow@copy')]"
               )
             )
             .getText()
@@ -306,7 +306,7 @@ describe('Account management', function () {
           await this.driver
             .findElement(
               By.xpath(
-                "//div[@id='accountInfoBackupPhrase']//div[contains(@class, 'copy-lastIcon')]"
+                "//div[@id='accountInfoBackupPhrase']//div[contains(@class, 'lastIcon@copy')]"
               )
             )
             .click();
@@ -339,7 +339,7 @@ describe('Account management', function () {
         await this.driver
           .wait(
             until.elementLocated(
-              By.xpath("//button[contains(@class, 'accountInfo-accountName')]")
+              By.xpath("//button[contains(@class, 'accountName@accountInfo')]")
             ),
             this.wait
           )
@@ -396,7 +396,7 @@ describe('Account management', function () {
             .wait(
               until.elementLocated(
                 By.xpath(
-                  "//button[contains(@class, 'accountInfo-accountName')]//span"
+                  "//button[contains(@class, 'accountName@accountInfo')]//span"
                 )
               ),
               this.wait
@@ -411,14 +411,14 @@ describe('Account management', function () {
         await this.driver
           .wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'accountInfo-deleteButton')]")
+              By.xpath("//div[contains(@class, 'deleteButton@accountInfo')]")
             ),
             this.wait
           )
           .click();
         await this.driver.wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'deleteAccount-module-content')]")
+            By.xpath("//div[contains(@class, 'content@deleteAccount-module')]")
           ),
           this.wait
         );
@@ -430,7 +430,7 @@ describe('Account management', function () {
         expect(
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'accountInfo-content')]")
+              By.xpath("//div[contains(@class, 'content@accountInfo')]")
             ),
             this.wait
           )
@@ -473,7 +473,7 @@ describe('Account management', function () {
       expect(
         await this.driver.wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'accountInfo-content')]")
+            By.xpath("//div[contains(@class, 'content@accountInfo')]")
           ),
           this.wait
         )
@@ -495,7 +495,7 @@ describe('Account management', function () {
       expect(
         await this.driver.wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'accountInfo-content')]")
+            By.xpath("//div[contains(@class, 'content@accountInfo')]")
           ),
           this.wait
         )

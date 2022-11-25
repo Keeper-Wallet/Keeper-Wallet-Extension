@@ -107,7 +107,7 @@ describe('Signature', function () {
 
   async function checkOrigin(this: mocha.Context, expectedOrigin: string) {
     const originEl = await this.driver.wait(
-      until.elementLocated(By.css('[class^="transactions-originAddress"]')),
+      until.elementLocated(By.css('[class^="originAddress@transactions"]')),
       this.wait
     );
 
@@ -121,7 +121,7 @@ describe('Signature', function () {
     expectedAccountName: string
   ) {
     const accountNameEl = await this.driver.wait(
-      until.elementLocated(By.css('[class^="wallet-accountName"]')),
+      until.elementLocated(By.css('[class^="accountName@wallet"]')),
       this.wait
     );
 
@@ -135,7 +135,7 @@ describe('Signature', function () {
     expectedNetworkName: string
   ) {
     const networkNameEl = await this.driver.wait(
-      until.elementLocated(By.css('[class^="transactions-originNetwork"]')),
+      until.elementLocated(By.css('[class^="originNetwork@transactions"]')),
       this.wait
     );
 
@@ -199,7 +199,7 @@ describe('Signature', function () {
 
       await this.driver.wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, 'assets-assets')]")
+          By.xpath("//div[contains(@class, 'assets@assets')]")
         ),
         this.wait
       );
@@ -236,7 +236,7 @@ describe('Signature', function () {
 
       await this.driver.wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, 'assets-assets')]")
+          By.xpath("//div[contains(@class, 'assets@assets')]")
         ),
         this.wait
       );
@@ -271,14 +271,14 @@ describe('Signature', function () {
 
       await this.driver.wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, 'messageList-messageList')]")
+          By.xpath("//div[contains(@class, 'messageList@messageList')]")
         ),
         this.wait
       );
 
       expect(
         await this.driver.findElements(
-          By.xpath("//div[contains(@class, 'messageList-cardItem')]")
+          By.xpath("//div[contains(@class, 'cardItem@messageList')]")
         )
       ).to.have.length(2);
 
@@ -357,7 +357,7 @@ describe('Signature', function () {
       await this.driver
         .wait(
           until.elementLocated(
-            By.css('[class^="dropdownButton-dropdownButton"]')
+            By.css('[class^="dropdownButton@dropdownButton"]')
           ),
           this.wait
         )

@@ -69,7 +69,7 @@ describe('Network management', function () {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, 'copy-copyTextOverflow')]")
+                By.xpath("//div[contains(@class, 'copyTextOverflow@copy')]")
               ),
               this.wait
             )
@@ -79,7 +79,7 @@ describe('Network management', function () {
         await this.driver.findElement(By.css('div.arrow-back-icon')).click();
         this.driver.wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'assets-assets')]")
+            By.xpath("//div[contains(@class, 'assets@assets')]")
           ),
           this.wait
         );
@@ -123,7 +123,7 @@ describe('Network management', function () {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, 'network-editBtn')]")
+                By.xpath("//div[contains(@class, 'editBtn@network')]")
               )
             )
             .click();
@@ -187,7 +187,7 @@ describe('Network management', function () {
           expect(
             await this.driver.wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, 'network-editBtn')]")
+                By.xpath("//div[contains(@class, 'editBtn@network')]")
               )
             )
           ).not.to.be.throw;

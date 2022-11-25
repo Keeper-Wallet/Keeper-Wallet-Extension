@@ -82,12 +82,12 @@ describe('Messages', function () {
         await this.driver
           .wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'messageList-messageList')]")
+              By.xpath("//div[contains(@class, 'messageList@messageList')]")
             ),
             this.wait
           )
           .findElements(
-            By.xpath("//div[contains(@class, 'messageList-messageItemInner')]")
+            By.xpath("//div[contains(@class, 'messageItemInner@messageList')]")
           )
       ).not.to.be.empty;
 
@@ -110,7 +110,7 @@ describe('Messages', function () {
     // permission request is shown
     await this.driver.wait(
       until.elementLocated(
-        By.xpath("//div[contains(@class, 'originAuth-transaction')]")
+        By.xpath("//div[contains(@class, 'transaction@originAuth')]")
       ),
       this.wait
     );
@@ -123,7 +123,7 @@ describe('Messages', function () {
         until.elementIsVisible(
           this.driver.findElement(
             By.xpath(
-              "//div[contains(@class, 'originAuth-collapsed')]//div[contains(@class, 'index-title')]"
+              "//div[contains(@class, 'collapsed')]//div[contains(@class, 'title@index')]"
             )
           )
         ),
@@ -146,12 +146,12 @@ describe('Messages', function () {
       await this.driver
         .wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'messageList-messageList')]")
+            By.xpath("//div[contains(@class, 'messageList@messageList')]")
           ),
           this.wait
         )
         .findElements(
-          By.xpath("//div[contains(@class, 'messageList-messageItemInner')]")
+          By.xpath("//div[contains(@class, 'messageItemInner@messageList')]")
         )
     ).not.to.be.empty;
 
@@ -175,7 +175,7 @@ describe('Messages', function () {
     // permission request is shown
     await this.driver.wait(
       until.elementLocated(
-        By.xpath("//div[contains(@class, 'originAuth-transaction')]")
+        By.xpath("//div[contains(@class, 'transaction@originAuth')]")
       ),
       this.wait
     );
@@ -190,7 +190,7 @@ describe('Messages', function () {
 
     await this.driver.wait(
       until.elementLocated(
-        By.xpath("//div[contains(@class, 'final-transaction')]")
+        By.xpath("//div[contains(@class, 'transaction@final')]")
       ),
       this.wait
     );
@@ -207,7 +207,7 @@ describe('Messages', function () {
     await this.driver
       .wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, 'menu-settingsIcon')]")
+          By.xpath("//div[contains(@class, 'settingsIcon@menu')]")
         ),
         this.wait
       )
@@ -224,8 +224,8 @@ describe('Messages', function () {
       .wait(
         until.elementLocated(
           By.xpath(
-            "//div[contains(@class, 'list-permissionItem')][last()]" +
-              "//button[contains(@class, 'list-settings')]"
+            "//div[contains(@class, 'permissionItem@list')][last()]" +
+              "//button[contains(@class, 'settings@list')]"
           )
         ),
         this.wait
@@ -249,12 +249,12 @@ describe('Messages', function () {
       await this.driver
         .wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'messageList-messageList')]")
+            By.xpath("//div[contains(@class, 'messageList@messageList')]")
           ),
           this.wait
         )
         .findElements(
-          By.xpath("//div[contains(@class, 'messageList-messageItemInner')]")
+          By.xpath("//div[contains(@class, 'messageItemInner@messageList')]")
         )
     ).not.to.be.empty;
 
@@ -288,12 +288,12 @@ describe('Messages', function () {
       await this.driver
         .wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'messageList-messageList')]")
+            By.xpath("//div[contains(@class, 'messageList@messageList')]")
           ),
           this.wait
         )
         .findElements(
-          By.xpath("//div[contains(@class, 'messageList-messageItemInner')]")
+          By.xpath("//div[contains(@class, 'messageItemInner@messageList')]")
         )
     ).length(2);
     // do not clear messages for next test
@@ -313,12 +313,12 @@ describe('Messages', function () {
       await this.driver
         .wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'messageList-messageList')]")
+            By.xpath("//div[contains(@class, 'messageList@messageList')]")
           ),
           this.wait
         )
         .findElements(
-          By.xpath("//div[contains(@class, 'messageList-cardItem')]")
+          By.xpath("//div[contains(@class, 'cardItem@messageList')]")
         )
     ).length(2);
     // do not clear messages for next test
@@ -331,8 +331,8 @@ describe('Messages', function () {
     expect(
       await this.driver.findElements(
         By.xpath(
-          "//div[contains(@class, 'messageList-messageList')]" +
-            "//div[contains(@class, 'messageList-cardItem')]"
+          "//div[contains(@class, 'messageList@messageList')]" +
+            "//div[contains(@class, 'cardItem@messageList')]"
         )
       )
     ).to.be.empty;
