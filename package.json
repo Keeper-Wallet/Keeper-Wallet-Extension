@@ -11,7 +11,7 @@
     "lint:typescript": "tsc --noEmit",
     "test:dev": "mocha --inspect --watch",
     "test": "mocha",
-    "build": "NODE_OPTIONS=--max-old-space-size=8192 webpack --mode production"
+    "build": "webpack --mode production"
   },
   "mocha": {
     "bail": true,
