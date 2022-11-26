@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const getVersion = require('./scripts/getVersion');
 const svgToMiniDataURI = require('mini-svg-data-uri');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -10,13 +9,16 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const PlatformPlugin = require('./scripts/PlatformPlugin');
 
-module.exports = async (_, { mode }) => {
-  const version = getVersion();
-
-  if (!version) {
-    throw new Error('Build failed');
-  }
-
+async function makeConfig({
+  entry,
+  hmr,
+  mode,
+  name,
+  optimization,
+  plugins,
+  reactRefresh,
+  target,
+}) {
   const dev = mode === 'development';
 
   const { TinyBrowserHmrWebpackPlugin } = await import(
@@ -24,32 +26,32 @@ module.exports = async (_, { mode }) => {
   );
 
   return {
-    entry: {
-      popup: (dev
-        ? ['@faergeek/tiny-browser-hmr-webpack-plugin/client']
-        : []
-      ).concat('./src/popup'),
-      accounts: (dev
-        ? ['@faergeek/tiny-browser-hmr-webpack-plugin/client']
-        : []
-      ).concat('./src/accounts'),
-      background: './src/background',
-      contentscript: './src/contentscript',
-      inpage: './src/inpage',
-    },
+    name,
+    target,
+    devtool: dev ? 'cheap-module-source-map' : 'source-map',
+    stats: 'errors-warnings',
+    entry: Object.fromEntries(
+      Object.entries(entry).map(([key, value]) => {
+        const hmrClient = '@faergeek/tiny-browser-hmr-webpack-plugin/client';
+
+        return [
+          key,
+          dev && hmr
+            ? Array.isArray(value)
+              ? [hmrClient, ...value]
+              : [hmrClient, value]
+            : value,
+        ];
+      })
+    ),
     cache: {
       type: 'filesystem',
       buildDependencies: {
         config: [__filename],
       },
     },
-    output: {
-      filename: '[name].js',
-      path: path.resolve(__dirname, 'dist/build'),
-      publicPath: './',
-    },
     resolve: {
-      modules: [path.resolve(__dirname, 'src'), './node_modules'],
+      modules: [path.resolve(__dirname, 'src'), 'node_modules'],
       extensions: ['.ts', '.tsx', '.js'],
       fallback: {
         assert: require.resolve('assert'),
@@ -57,25 +59,10 @@ module.exports = async (_, { mode }) => {
         stream: require.resolve('stream-browserify'),
       },
     },
-    devtool: dev ? 'cheap-module-source-map' : 'source-map',
-    stats: 'errors-warnings',
-    optimization: {
-      minimizer: [
-        '...',
-        new CssMinimizerPlugin({
-          minify: CssMinimizerPlugin.lightningCssMinify,
-        }),
-      ],
-      splitChunks: {
-        cacheGroups: {
-          commons: {
-            name: 'commons',
-            test: /.js$/,
-            maxSize: 4000000,
-            chunks: chunk => ['popup', 'accounts'].includes(chunk.name),
-          },
-        },
-      },
+    output: {
+      filename: '[name].js',
+      path: path.resolve(__dirname, 'dist/build'),
+      publicPath: './',
     },
     module: {
       strictExportPresence: true,
@@ -108,7 +95,8 @@ module.exports = async (_, { mode }) => {
           use: {
             loader: 'babel-loader',
             options: {
-              plugins: dev ? ['react-refresh/babel'] : [],
+              plugins:
+                dev && hmr && reactRefresh ? ['react-refresh/babel'] : [],
             },
           },
         },
@@ -160,82 +148,124 @@ module.exports = async (_, { mode }) => {
         { test: /\.styl/, use: 'stylus-loader' },
       ],
     },
-    plugins: (process.stdout.isTTY ? [new webpack.ProgressPlugin()] : [])
-      .concat(
-        dev
-          ? [
-              new webpack.HotModuleReplacementPlugin(),
-              new TinyBrowserHmrWebpackPlugin({ hostname: 'localhost' }),
-              new ReactRefreshWebpackPlugin({ overlay: false }),
-            ]
-          : [
-              new BundleAnalyzerPlugin({
-                analyzerMode: 'static',
-                defaultSizes: 'gzip',
-                generateStatsFile: true,
-                openAnalyzer: false,
-                reportFilename: path.resolve(
-                  __dirname,
-                  'dist/webpack-bundle-analyzer.html'
-                ),
-                statsFilename: path.resolve(__dirname, 'dist/stats.json'),
-              }),
-            ]
-      )
-      .concat([
-        new webpack.ProvidePlugin({
-          Buffer: ['buffer', 'Buffer'],
-          process: 'process/browser',
-        }),
-        new CopyWebpackPlugin({
-          patterns: [
-            {
-              from: path.resolve(__dirname, 'src/copied'),
-              to: path.resolve(__dirname, 'dist/build'),
-            },
-          ],
-        }),
-        new HtmlWebpackPlugin({
-          title: 'Keeper Wallet',
-          filename: 'popup.html',
-          template: path.resolve(__dirname, 'src/popup.html'),
-          hash: true,
-          chunks: ['commons', 'popup'],
-        }),
-        new HtmlWebpackPlugin({
-          title: 'Keeper Wallet',
-          filename: 'notification.html',
-          template: path.resolve(__dirname, 'src/notification.html'),
-          hash: true,
-          chunks: ['commons', 'popup'],
-        }),
-        new HtmlWebpackPlugin({
-          title: 'Keeper Wallet',
-          filename: 'accounts.html',
-          template: path.resolve(__dirname, 'src/accounts.html'),
-          hash: true,
-          chunks: ['commons', 'accounts'],
-        }),
-        new webpack.NormalModuleReplacementPlugin(
-          /@sentry\/browser\/esm\/helpers.js/,
-          path.resolve(__dirname, 'src/_sentryHelpersReplacement.js')
-        ),
-        new webpack.DefinePlugin({
-          'process.env.NODE_ENV': JSON.stringify(mode),
-          __SENTRY_DSN__: JSON.stringify(process.env.SENTRY_DSN),
-          __SENTRY_ENVIRONMENT__: JSON.stringify(
-            process.env.SENTRY_ENVIRONMENT
+    plugins: [
+      process.stdout.isTTY && new webpack.ProgressPlugin(),
+      dev && hmr && new webpack.HotModuleReplacementPlugin(),
+      dev && hmr && new TinyBrowserHmrWebpackPlugin({ hostname: 'localhost' }),
+      dev &&
+        hmr &&
+        reactRefresh &&
+        new ReactRefreshWebpackPlugin({ overlay: false }),
+      !dev &&
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          defaultSizes: 'gzip',
+          generateStatsFile: true,
+          openAnalyzer: false,
+          reportFilename: path.resolve(
+            __dirname,
+            `dist/webpack-bundle-analyzer/${name}.html`
           ),
-          __SENTRY_RELEASE__: JSON.stringify(process.env.SENTRY_RELEASE),
+          statsFilename: path.resolve(__dirname, `dist/stats/${name}.json`),
         }),
-        new MiniCssExtractPlugin(),
-        new PlatformPlugin({
-          platforms: ['chrome', 'firefox', 'opera', 'edge'],
-          version,
-          clear: !dev,
-          compress: !dev,
-          performance: !dev,
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+        process: 'process/browser',
+      }),
+      new webpack.NormalModuleReplacementPlugin(
+        /@sentry\/browser\/esm\/helpers.js/,
+        path.resolve(__dirname, 'src/_sentryHelpersReplacement.js')
+      ),
+      new webpack.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify(mode),
+        __SENTRY_DSN__: JSON.stringify(process.env.SENTRY_DSN),
+        __SENTRY_ENVIRONMENT__: JSON.stringify(process.env.SENTRY_ENVIRONMENT),
+        __SENTRY_RELEASE__: JSON.stringify(process.env.SENTRY_RELEASE),
+      }),
+      new MiniCssExtractPlugin(),
+      new PlatformPlugin({
+        clear: !dev,
+        performance: !dev,
+      }),
+    ]
+      .concat(plugins)
+      .filter(Boolean),
+    optimization: {
+      ...optimization,
+      minimizer: [
+        '...',
+        new CssMinimizerPlugin({
+          minify: CssMinimizerPlugin.lightningCssMinify,
         }),
-      ]),
+      ],
+    },
   };
-};
+}
+
+module.exports = async (_, { mode }) => [
+  await makeConfig({
+    mode,
+    name: 'background',
+    target: 'webworker',
+    entry: {
+      background: './src/background',
+    },
+    plugins: [
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: path.resolve(__dirname, 'src/copied'),
+            to: path.resolve(__dirname, 'dist/build'),
+          },
+        ],
+      }),
+    ],
+  }),
+  await makeConfig({
+    mode,
+    name: 'contentscript',
+    entry: {
+      contentscript: './src/contentscript',
+      inpage: './src/inpage',
+    },
+  }),
+  await makeConfig({
+    mode,
+    name: 'ui',
+    hmr: true,
+    reactRefresh: true,
+    entry: {
+      accounts: './src/accounts',
+      popup: './src/popup',
+    },
+    plugins: [
+      new HtmlWebpackPlugin({
+        filename: 'popup.html',
+        template: 'src/index.html',
+        chunks: ['commons', 'popup'],
+      }),
+      new HtmlWebpackPlugin({
+        filename: 'notification.html',
+        template: 'src/index.html',
+        chunks: ['commons', 'popup'],
+      }),
+      new HtmlWebpackPlugin({
+        filename: 'accounts.html',
+        template: 'src/index.html',
+        chunks: ['commons', 'accounts'],
+      }),
+    ],
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          commons: {
+            name: 'commons',
+            test: /.js$/,
+            maxSize: 4000000,
+            chunks: chunk => ['popup', 'accounts'].includes(chunk.name),
+          },
+        },
+      },
+    },
+  }),
+];
