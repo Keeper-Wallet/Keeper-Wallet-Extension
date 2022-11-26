@@ -7,7 +7,7 @@ import { extension } from 'lib/extension';
 import log from 'loglevel';
 import { MessageStoreItem } from 'messages/types';
 import { NetworkName } from 'networks/types';
-import { NftInfo } from 'nfts';
+import { NftInfo } from 'nfts/nfts';
 import { NotificationsStoreItem } from 'notifications/types';
 import type ObservableStore from 'obs-store';
 import asStream from 'obs-store/lib/asStream';

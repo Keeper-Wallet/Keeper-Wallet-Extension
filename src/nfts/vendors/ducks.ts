@@ -1,4 +1,106 @@
-export const duckColors: Record<string, string> = {
+import {
+  CreateParams,
+  FetchInfoParams,
+  NftAssetDetail,
+  NftVendor,
+  NftVendorId,
+} from '../types';
+import { capitalize } from '../utils';
+
+const DUCKS_DAPP_BREADER = '3PDVuU45H7Eh5dmtNbnRNRStGwULA7NY6Hb';
+const DUCKS_DAPP_INCUBATOR = '3PEktVux2RhchSN63DsDo4b4mz4QqzKSeDv';
+const DUCKS_DAPPS = [DUCKS_DAPP_BREADER, DUCKS_DAPP_INCUBATOR];
+
+const displayCreatorByCreator: Record<string, string | undefined> = {
+  [DUCKS_DAPP_BREADER]: 'Ducks Breeder',
+  [DUCKS_DAPP_INCUBATOR]: 'Ducks Incubator',
+};
+
+interface DucksNftInfo {
+  id: string;
+  vendor: NftVendorId.Ducks;
+}
+
+function assetIdAsFloat(assetId: string): number {
+  let i = 0;
+  let hash = 0;
+  if (!assetId) return 0;
+  while (i < assetId.length)
+    hash = (hash << 5) + hash + assetId.charCodeAt(i++);
+
+  return Math.abs(((hash * 10) % 0x7fffffff) / 0x7fffffff);
+}
+
+export class DucksNftVendor implements NftVendor<DucksNftInfo> {
+  id = NftVendorId.Ducks as const;
+
+  is(nft: NftAssetDetail) {
+    return DUCKS_DAPPS.includes(nft.issuer);
+  }
+
+  fetchInfo({ nfts }: FetchInfoParams) {
+    return nfts.map(
+      (nft): DucksNftInfo => ({
+        id: nft.assetId,
+        vendor: NftVendorId.Ducks,
+      })
+    );
+  }
+
+  create({ asset }: CreateParams<DucksNftInfo>) {
+    const [, genoType, generation] = asset.name.split('-');
+    const duckNameEntry = DUCK_NAMES[genoType];
+
+    return {
+      background: {
+        backgroundImage:
+          genoType === 'WWWWLUCK'
+            ? 'url("https://wavesducks.com/ducks/pokras-background.svg")'
+            : undefined,
+        backgroundColor: generation[1] && `#${DUCK_COLORS[generation[1]]}`,
+      },
+
+      creator: asset.issuer,
+      displayCreator: displayCreatorByCreator[asset.issuer],
+
+      displayName: `${capitalize(
+        DUCK_GENERATION_NAMES[generation[0]] ?? generation[0]
+      )} ${capitalize(
+        duckNameEntry
+          ? Array.isArray(duckNameEntry)
+            ? undefined
+            : duckNameEntry.name
+          : genoType
+              .split('')
+              .map((gene, index) => {
+                const genes = DUCK_NAMES[gene];
+
+                return Array.isArray(genes) ? genes[index] : undefined;
+              })
+              .join('')
+              .toLowerCase()
+      )}`,
+
+      foreground:
+        `https://wavesducks.com/api/v1/ducks/${genoType}.svg` +
+        `?color=${generation[1]}` +
+        `&druck=${
+          genoType.indexOf('I') !== -1
+            ? assetIdAsFloat(asset.id) > 0.5
+              ? '1'
+              : '2'
+            : null
+        }`,
+
+      id: asset.id,
+      marketplaceUrl: `https://wavesducks.com/duck/${asset.id}`,
+      name: asset.name,
+      vendor: NftVendorId.Ducks,
+    };
+  }
+}
+
+const DUCK_COLORS: Partial<Record<string, string>> = {
   B: 'ADD8E6',
   R: 'FFA07A',
   Y: 'F8EE9D',
@@ -6,7 +108,7 @@ export const duckColors: Record<string, string> = {
   U: 'CD6F86',
 };
 
-export const duckGenerationNames: Record<string, string> = {
+const DUCK_GENERATION_NAMES: Partial<Record<string, string>> = {
   H: 'Hero',
   I: 'Ideal',
   J: 'Jackpot',
@@ -18,9 +120,8 @@ export const duckGenerationNames: Record<string, string> = {
   G: 'Genesis',
 };
 
-export const duckNames: Record<
-  string,
-  { name: string; unique?: boolean } | string[]
+const DUCK_NAMES: Partial<
+  Record<string, { name: string; unique?: boolean } | string[]>
 > = {
   AAAAAAAA: { name: 'Elon' },
   BBBBBBBB: { name: 'Satoshi' },
@@ -97,7 +198,3 @@ export const duckNames: Record<
   T: ['Xmax '],
   W: ['S', 'a', 's', 'h', 'a', 'g', 'o', 'd'],
 };
-
-export const ducksDAppBreeder = '3PDVuU45H7Eh5dmtNbnRNRStGwULA7NY6Hb';
-export const ducksDAppIncubator = '3PEktVux2RhchSN63DsDo4b4mz4QqzKSeDv';
-export const ducksDApps = [ducksDAppBreeder, ducksDAppIncubator];

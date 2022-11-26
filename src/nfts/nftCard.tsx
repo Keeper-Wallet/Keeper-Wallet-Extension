@@ -1,20 +1,21 @@
 import cn from 'classnames';
-import { DisplayMode } from 'nfts/index';
-import * as styles from 'nfts/nftCard.module.css';
-import { Nft } from 'nfts/utils';
 import { useState } from 'react';
 import { Ellipsis } from 'ui/components/ui';
+
+import * as styles from './nftCard.module.css';
+import { DisplayMode, Nft } from './types';
 
 export function NftCover({
   className,
   nft,
 }: {
   className?: string;
-  nft: Nft | null | undefined;
+  nft: Nft | undefined;
 }) {
   const [isLoading, setLoading] = useState(true);
+  const isVideo = nft?.foreground ? /\.mp4$/.test(nft?.foreground) : false;
 
-  return nft?.isVideo ? (
+  return isVideo ? (
     <video
       autoPlay
       loop
@@ -22,13 +23,13 @@ export function NftCover({
       // eslint-disable-next-line react/no-unknown-property
       onLoad={() => nft?.foreground && setLoading(false)}
     >
-      <source src={nft?.foreground as string | undefined} type="video/mp4" />
+      <source src={nft?.foreground} type="video/mp4" />
     </video>
   ) : (
     <img
-      src={nft?.foreground as string | undefined}
+      src={nft?.foreground}
       className={cn(styles.cover, className, isLoading && 'skeleton-glow')}
-      style={nft?.background as React.CSSProperties | undefined}
+      style={nft?.background}
       onLoad={() => nft?.foreground && setLoading(false)}
     />
   );
@@ -45,9 +46,9 @@ export function NftCard({
   count?: number;
   mode?: DisplayMode;
   className?: string;
-  onClick: (asset: Nft) => void;
+  onClick: (nft: Nft) => void;
 }) {
-  const isPlaceholder = !nft?.displayCreator;
+  const isPlaceholder = !nft.displayCreator;
 
   return (
     <div
@@ -57,15 +58,15 @@ export function NftCard({
       <NftCover className={styles.withTitle} nft={nft} />
       <div className={cn(styles.footer, isPlaceholder && 'skeleton-glow')}>
         {mode === DisplayMode.Name && (
-          <div className={styles.title}>{nft?.displayName}</div>
+          <div className={styles.title}>{nft.displayName}</div>
         )}
         {mode === DisplayMode.Creator && (
           <>
             <div className={styles.title}>
-              {nft?.creator === nft?.displayCreator ? (
-                <Ellipsis text={nft?.creator} size={6} />
+              {nft.creator === nft.displayCreator ? (
+                <Ellipsis text={nft.creator} size={6} />
               ) : (
-                nft?.displayCreator
+                nft.displayCreator
               )}
             </div>
             <div>{count}</div>

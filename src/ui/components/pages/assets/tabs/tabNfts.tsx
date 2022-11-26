@@ -1,8 +1,7 @@
 import cn from 'classnames';
-import { DisplayMode } from 'nfts';
 import { NftList } from 'nfts/nftList';
-import { createNft, Nft } from 'nfts/utils';
-import { useCallback } from 'react';
+import { createNft } from 'nfts/nfts';
+import { DisplayMode, Nft } from 'nfts/types';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import * as styles from 'ui/components/pages/styles/assets.styl';
@@ -25,12 +24,16 @@ export function TabNfts() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const currentAddress = useAppSelector(state => state.selectedAccount.address);
+  const userAddress = useAppSelector(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    state => state.selectedAccount.address!
+  );
+
   const networkCode = useAppSelector(
     state => state.selectedAccount.networkCode
   );
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const myNfts = useAppSelector(state => state.balances[currentAddress!]?.nfts);
+
+  const myNfts = useAppSelector(state => state.balances[userAddress]?.nfts);
   const nfts = useAppSelector(state => state.nfts);
 
   const [filters, setFilters] = useUiState('nftFilters');
@@ -41,20 +44,19 @@ export function TabNfts() {
 
   const nftConfig = useAppSelector(state => state.nftConfig);
 
-  const getNftDetails = useCallback(
-    nft =>
-      createNft({
-        asset: nft,
-        info: nfts?.[nft.id],
-        currentAddress,
-        config: nftConfig,
-      }),
-    [nfts, currentAddress, nftConfig]
-  );
-
   const sortedNfts =
     myNfts && nfts
-      ? sortAndFilterNfts(myNfts.map(getNftDetails), { term })
+      ? sortAndFilterNfts(
+          myNfts.map(nft =>
+            createNft({
+              asset: nft,
+              config: nftConfig,
+              info: nfts?.[nft.id],
+              userAddress,
+            })
+          ),
+          { term }
+        )
       : PLACEHOLDERS;
 
   const [creatorNfts, creatorCounts] = sortedNfts.reduce<
@@ -141,7 +143,7 @@ export function TabNfts() {
                 <a
                   className="blue link"
                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  href={getNftsLink(networkCode!, currentAddress!)}
+                  href={getNftsLink(networkCode!, userAddress)}
                   rel="noopener noreferrer"
                   target="_blank"
                 >

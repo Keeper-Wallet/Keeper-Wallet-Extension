@@ -1,7 +1,6 @@
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { AssetsRecord } from 'assets/types';
-import { NftVendorKeys } from 'nfts';
-import { Nft } from 'nfts/utils';
+import { Nft, NftVendorId } from 'nfts/types';
 import { equals } from 'ramda';
 import { useState } from 'react';
 import { TFunction } from 'react-i18next';
@@ -77,6 +76,8 @@ export function sortAndFilterNfts<T extends Nft>(
         nft.displayName.toLowerCase().indexOf(term.toLowerCase()) !== -1
     );
   }
+
+  const NftVendorKeys = Object.values(NftVendorId);
 
   return nfts.sort((a, b) => {
     return NftVendorKeys.indexOf(a.vendor) - NftVendorKeys.indexOf(b.vendor);

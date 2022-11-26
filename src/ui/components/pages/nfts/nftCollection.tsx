@@ -1,7 +1,7 @@
 import { AssetDetail } from 'assets/types';
-import { DisplayMode } from 'nfts';
 import { NftList } from 'nfts/nftList';
-import { createNft, Nft } from 'nfts/utils';
+import { createNft } from 'nfts/nfts';
+import { DisplayMode, Nft } from 'nfts/types';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -28,12 +28,16 @@ export function NftCollection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const currentAddress = useAppSelector(state => state.selectedAccount.address);
+  const userAddress = useAppSelector(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    state => state.selectedAccount.address!
+  );
+
   const networkCode = useAppSelector(
     state => state.selectedAccount.networkCode
   );
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const myNfts = useAppSelector(state => state.balances[currentAddress!]?.nfts);
+
+  const myNfts = useAppSelector(state => state.balances[userAddress]?.nfts);
   const nfts = useAppSelector(state => state.nfts);
 
   const [filters, setFilters] = useUiState('nftFilters');
@@ -49,9 +53,9 @@ export function NftCollection() {
   const getNftDetails = (asset: AssetDetail) =>
     createNft({
       asset,
-      info: nfts?.[asset.id],
-      currentAddress,
       config: nftConfig,
+      info: nfts?.[asset.id],
+      userAddress,
     });
 
   const creatorNfts = myNfts
@@ -133,7 +137,7 @@ export function NftCollection() {
             mode={DisplayMode.Name}
             nfts={creatorNfts}
             onClick={nft => {
-              navigate(`/nft/${nft.asset.id}`);
+              navigate(`/nft/${nft.id}`);
             }}
           />
         )}

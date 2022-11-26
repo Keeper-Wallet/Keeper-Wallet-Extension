@@ -1,5 +1,5 @@
 import { NftCover } from 'nfts/nftCard';
-import { createNft } from 'nfts/utils';
+import { createNft } from 'nfts/nfts';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Ellipsis, Loader } from 'ui/components/ui';
@@ -18,7 +18,11 @@ export function NftInfo() {
   const networkCode = useAppSelector(
     state => state.selectedAccount.networkCode
   );
-  const currentAddress = useAppSelector(state => state.selectedAccount.address);
+
+  const userAddress = useAppSelector(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    state => state.selectedAccount.address!
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const asset = useAppSelector(state => state.assets[params.assetId!]);
@@ -30,9 +34,9 @@ export function NftInfo() {
     asset &&
     createNft({
       asset,
-      info: nftInfo,
-      currentAddress,
       config: nftConfig,
+      info: nftInfo,
+      userAddress,
     });
 
   const creatorUrl =
@@ -130,7 +134,7 @@ export function NftInfo() {
           type="submit"
           view="submit"
           onClick={() => {
-            navigate(`/send/${nft?.asset.id}`);
+            navigate(`/send/${nft?.id}`);
           }}
         >
           {t('nftInfo.sendBtn')}
