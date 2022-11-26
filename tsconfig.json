@@ -18,7 +18,8 @@
       "long",
       "@waves/waveskeeper-types",
       "chrome",
-      "firefox-webext-browser"
+      "firefox-webext-browser",
+      "webpack/module"
     ]
   }
 }

@@ -11,7 +11,8 @@
     "lint:typescript": "tsc --noEmit",
     "test:dev": "mocha --inspect --watch",
     "test": "mocha",
-    "build": "webpack --mode production"
+    "build": "webpack --mode production",
+    "zip": "node scripts/zip.js"
   },
   "mocha": {
     "bail": true,
@@ -113,7 +114,6 @@
     "browserslist": "^4.21.2",
     "chai": "^4.3.4",
     "copy-webpack-plugin": "^11.0.0",
-    "cpy": "^8.1.2",
     "css-loader": "^6.7.1",
     "css-minimizer-webpack-plugin": "^4.0.0",
     "del": "^6.1.1",

@@ -56,6 +56,8 @@ jobs:
           SENTRY_ENVIRONMENT: ${{ steps.tagInfo.outputs.ENVIRONMENT }}
           SENTRY_RELEASE: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
 
+      - run: yarn run zip
+
       - name: Create Sentry Release
         uses: getsentry/action-release@v1
         env:
