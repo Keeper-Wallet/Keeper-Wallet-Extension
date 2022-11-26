@@ -1,8 +1,56 @@
-export const ducksArtefactsDApp = '3P5E9xamcWoymiqLx8ZdmR7o4fJSRMGp1WR';
+import {
+  CreateParams,
+  FetchInfoParams,
+  NftAssetDetail,
+  NftVendor,
+  NftVendorId,
+} from '../types';
 
-export const ArtefactNames: Record<
-  string,
-  { title: string; description: string }
+const DUCKS_ARTEFACTS_DAPP = '3P5E9xamcWoymiqLx8ZdmR7o4fJSRMGp1WR';
+
+interface DucksArtefactsNftInfo {
+  id: string;
+  vendor: NftVendorId.DucksArtefact;
+}
+
+export class DucksArtefactsNftVendor
+  implements NftVendor<DucksArtefactsNftInfo>
+{
+  id = NftVendorId.DucksArtefact as const;
+
+  is(nft: NftAssetDetail) {
+    return nft.issuer === DUCKS_ARTEFACTS_DAPP;
+  }
+
+  fetchInfo({ nfts }: FetchInfoParams) {
+    return nfts.map(
+      (nft): DucksArtefactsNftInfo => ({
+        id: nft.assetId,
+        vendor: NftVendorId.DucksArtefact,
+      })
+    );
+  }
+
+  create({ asset }: CreateParams<DucksArtefactsNftInfo>) {
+    const name = asset.name.toLowerCase().replace(/-/, '_');
+
+    return {
+      background: { backgroundColor: '#e6d4ef' },
+      creator: asset.issuer,
+      description: DUCK_ARTEFACTS_INFO[name]?.description,
+      displayCreator: 'Ducks Artefacts',
+      displayName: DUCK_ARTEFACTS_INFO[name]?.title || asset.name,
+      foreground: `https://wavesducks.com/ducks/artefacts/${asset.name}.svg`,
+      id: asset.id,
+      marketplaceUrl: `https://wavesducks.com/item/${asset.id}`,
+      name: asset.name,
+      vendor: NftVendorId.DucksArtefact,
+    };
+  }
+}
+
+const DUCK_ARTEFACTS_INFO: Partial<
+  Record<string, { title: string; description: string }>
 > = {
   art_lake: {
     title: 'Lake',

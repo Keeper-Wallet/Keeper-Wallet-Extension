@@ -1,6 +1,6 @@
 import { NetworkName } from 'networks/types';
+import { fetchNftInfo } from 'nfts/nfts';
 import { NftAssetDetail } from 'nfts/types';
-import { fetchAllNfts } from 'nfts/utils';
 import ObservableStore from 'obs-store';
 
 import { ExtensionStorage } from '../storage/storage';
@@ -44,7 +44,7 @@ export class NftInfoController {
       return;
     }
 
-    const nftInfos = await fetchAllNfts(this.getNode(), nftsToFetch);
+    const nftInfos = await fetchNftInfo(this.getNode(), nftsToFetch);
 
     nftInfos.forEach(info => {
       storeNfts[info.id] = info;

@@ -2,7 +2,7 @@ import { AssetsRecord } from 'assets/types';
 import { BalancesItem } from 'balances/types';
 import { MessageStoreItem } from 'messages/types';
 import { NetworkName } from 'networks/types';
-import { NftInfo } from 'nfts';
+import { NftInfo } from 'nfts/nfts';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PermissionValue } from 'permissions/types';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';

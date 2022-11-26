@@ -1,9 +1,115 @@
-export const ducklingsDApp = '3PKmLiGEfqLWMC1H9xhzqvAZKUXfFm8uoeg';
+import {
+  CreateParams,
+  FetchInfoParams,
+  NftAssetDetail,
+  NftVendor,
+  NftVendorId,
+} from '../types';
+import { capitalize, reduceDataEntries } from '../utils';
 
-export const ducklingsDataUrl = (nodeUrl: string) =>
-  new URL(`addresses/data/${ducklingsDApp}`, nodeUrl).toString();
+const DUCKLINGS_DAPP = '3PKmLiGEfqLWMC1H9xhzqvAZKUXfFm8uoeg';
 
-export const DucklingAdjectives = [
+interface DucklingsNftInfo {
+  growthLevel: number;
+  id: string;
+  vendor: NftVendorId.Ducklings;
+}
+
+function ducklingDataUrl(nodeUrl: string) {
+  return new URL(`addresses/data/${DUCKLINGS_DAPP}`, nodeUrl).toString();
+}
+
+function ducklingLevelKey(id: string) {
+  return `duckling_${id}_level`;
+}
+
+export class DucklingsNftVendor implements NftVendor<DucklingsNftInfo> {
+  id = NftVendorId.Ducklings as const;
+
+  is(nft: NftAssetDetail) {
+    return nft.issuer === DUCKLINGS_DAPP;
+  }
+
+  fetchInfo({ nfts, nodeUrl }: FetchInfoParams) {
+    if (nfts.length === 0) {
+      return [];
+    }
+
+    const nftIds = nfts.map(nft => nft.assetId);
+
+    return fetch(ducklingDataUrl(nodeUrl), {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        keys: nftIds.map(ducklingLevelKey),
+      }),
+    })
+      .then(response =>
+        response.ok
+          ? response.json()
+          : response.text().then(text => Promise.reject(new Error(text)))
+      )
+      .then(reduceDataEntries)
+      .then(dataEntries =>
+        nftIds.map((id): DucklingsNftInfo => {
+          // eslint-disable-next-line radix
+          const level = parseInt(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (dataEntries[ducklingLevelKey(id)] as any) ?? 0
+          );
+
+          return {
+            growthLevel: level > 0 ? level / 1e14 : 0,
+            id,
+            vendor: NftVendorId.Ducklings,
+          };
+        })
+      );
+  }
+
+  create({ asset, info }: CreateParams<DucklingsNftInfo>) {
+    const nameIndex = [10, 4, 2, 0, 2, 1].reduce(
+      (acc, index) => acc + asset.id.charCodeAt(index),
+      0
+    );
+
+    const ducklingNames = Object.keys(DUCKLING_DESCRIPTIONS);
+    const name = ducklingNames[nameIndex % ducklingNames.length];
+
+    const adjectiveIndex = [16, 10, 1, 9, 9, 7].reduce(
+      (acc, index) => acc + asset.id.charCodeAt(index),
+      0
+    );
+
+    return {
+      background: { backgroundColor: '#f0e7d5' },
+      creator: asset.issuer,
+      description: DUCKLING_DESCRIPTIONS[name],
+      displayCreator: 'Ducklings',
+
+      displayName: `${capitalize(
+        DUCKLING_ADJECTIVES[adjectiveIndex % DUCKLING_ADJECTIVES.length]
+      )} ${capitalize(name)}`,
+
+      foreground: info
+        ? `https://wavesducks.com/ducks/ducklings/duckling-${Math.min(
+            Math.trunc(info.growthLevel / 25),
+            3
+          )}.svg`
+        : undefined,
+
+      id: asset.id,
+      marketplaceUrl: `https://wavesducks.com/duckling/${asset.id}`,
+      name: asset.name,
+      vendor: NftVendorId.Ducklings,
+    };
+  }
+}
+
+const DUCKLING_ADJECTIVES = [
   'admiring',
   'adoring',
   'affectionate',
@@ -114,7 +220,7 @@ export const DucklingAdjectives = [
   'zen',
 ];
 
-export const DucklingsDescription: Record<string, string> = {
+const DUCKLING_DESCRIPTIONS: Partial<Record<string, string>> = {
   agnesi:
     'Maria Gaetana Agnesi - Italian mathematician, philosopher, theologian and humanitarian. She was the first woman to write a mathematics handbook and the first woman appointed as a Mathematics Professor at a University.',
   albattani:

@@ -1,14 +1,15 @@
 import cn from 'classnames';
-import { nftRowFullHeight } from 'nfts/constants';
-import { BaseInfo, BaseNft, DisplayMode } from 'nfts/index';
-import { NftCard } from 'nfts/nftCard';
-import { Nft } from 'nfts/utils';
 import { CSSProperties } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { VariableSizeList } from 'react-window';
 
-import { Duckling } from './ducklings';
+import { NftCard } from './nftCard';
 import * as styles from './nftList.module.css';
+import { DisplayMode, Nft } from './types';
+
+const NFT_ROW_HEIGHT = 162;
+const NFT_ROW_MARGIN_BOTTOM = 8;
+const NFT_ROW_FULL_HEIGHT = NFT_ROW_HEIGHT + NFT_ROW_MARGIN_BOTTOM;
 
 const Row = ({
   data,
@@ -21,7 +22,7 @@ const Row = ({
     mode: DisplayMode;
     len: number;
     onClick: (nft: Nft) => void;
-    renderMore: () => void;
+    renderMore?: () => void;
   };
   index: number;
   style: CSSProperties;
@@ -30,13 +31,11 @@ const Row = ({
 
   const leftIndex = 2 * index;
   const leftNft = rows[leftIndex];
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-  const leftCount = counts[leftNft?.creator!] || 0;
+  const leftCount = (leftNft?.creator && counts[leftNft.creator]) || 0;
 
   const rightIndex = leftIndex + 1;
   const rightNft = rows[rightIndex];
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-  const rightCount = counts[rightNft?.creator!] || 0;
+  const rightCount = (rightNft?.creator && counts[rightNft.creator]) || 0;
 
   return (
     <div style={style}>
@@ -73,7 +72,7 @@ export function NftList({
   renderMore,
 }: {
   mode: DisplayMode;
-  nfts: Array<Duckling | BaseNft<BaseInfo>>;
+  nfts: Nft[];
   counters?: Record<string, number>;
   onClick: (nft: Nft) => void;
   renderMore?: () => void;
@@ -88,15 +87,14 @@ export function NftList({
               height={height}
               width={width}
               itemCount={len}
-              itemSize={() => nftRowFullHeight}
+              itemSize={() => NFT_ROW_FULL_HEIGHT}
               itemData={{
                 rows: nfts,
                 counts: counters,
                 mode,
                 len,
                 onClick,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                renderMore: renderMore as any,
+                renderMore,
               }}
               itemKey={(index, { rows }) => rows[index].id}
             >

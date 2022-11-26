@@ -1,7 +1,7 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { validators } from '@waves/waves-transactions';
-import { createNft } from 'nfts/utils';
+import { createNft } from 'nfts/nfts';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -39,7 +39,11 @@ export function Send() {
   const isNft =
     asset && asset.precision === 0 && asset.quantity === 1 && !asset.reissuable;
 
-  const currentAddress = useAppSelector(state => state.selectedAccount.address);
+  const userAddress = useAppSelector(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    state => state.selectedAccount.address!
+  );
+
   const nftInfo = useAppSelector(state => asset && state.nfts?.[asset.id]);
   const nftConfig = useAppSelector(state => state.nftConfig);
 
@@ -50,16 +54,16 @@ export function Send() {
     if (isNft) {
       const nft = createNft({
         asset,
-        info: nftInfo,
-        currentAddress,
         config: nftConfig,
+        info: nftInfo,
+        userAddress,
       });
 
       return nft.displayName;
     }
 
     return asset.displayName;
-  }, [asset, currentAddress, isNft, nftConfig, nftInfo]);
+  }, [asset, userAddress, isNft, nftConfig, nftInfo]);
 
   useEffect(() => {
     if (!assetBalances) {
