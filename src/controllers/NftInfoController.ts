@@ -28,28 +28,19 @@ export class NftInfoController {
     this.getNode = getNode;
   }
 
-  getNfts() {
-    return this.store.getState().nfts;
-  }
-
-  async updateNfts(nfts: NftAssetDetail[]) {
+  async updateNfts(nftsAssetDetails: NftAssetDetail[]) {
     if (this.getNetwork() !== NetworkName.Mainnet) {
       return;
     }
 
-    const storeNfts = this.getNfts();
-    const nftsToFetch = nfts.filter(nft => !storeNfts[nft.assetId]);
-
-    if (nftsToFetch.length === 0) {
-      return;
-    }
-
+    const { nfts } = this.store.getState();
+    const nftsToFetch = nftsAssetDetails.filter(nft => !nfts[nft.assetId]);
     const nftInfos = await fetchNftInfo(this.getNode(), nftsToFetch);
 
     nftInfos.forEach(info => {
-      storeNfts[info.id] = info;
+      nfts[info.id] = info;
     });
 
-    this.store.updateState({ nfts: storeNfts });
+    this.store.updateState({ nfts });
   }
 }
