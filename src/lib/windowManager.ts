@@ -1,5 +1,5 @@
-import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
+import Browser from 'webextension-polyfill';
 
 import { ExtensionStorage } from '../storage/storage';
 
@@ -7,86 +7,74 @@ const height = 622;
 const width = 357;
 
 export class WindowManager {
-  private store;
+  #store;
 
   constructor({ extensionStorage }: { extensionStorage: ExtensionStorage }) {
-    this.store = new ObservableStore(
+    this.#store = new ObservableStore(
       extensionStorage.getInitState({
         notificationWindowId: undefined,
         inShowMode: undefined,
       })
     );
 
-    extensionStorage.subscribe(this.store);
+    extensionStorage.subscribe(this.#store);
   }
 
   async showWindow() {
-    const { inShowMode } = this.store.getState();
+    const { inShowMode } = this.#store.getState();
 
     if (inShowMode) {
       return null;
     }
 
-    this.store.updateState({ inShowMode: true });
-    const notificationWindow = await this._getNotificationWindow();
+    this.#store.updateState({ inShowMode: true });
 
-    if (notificationWindow) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      extension.windows.update(notificationWindow.id!, { focused: true });
+    const notificationWindow = await this.#getNotificationWindow();
+
+    if (notificationWindow?.id) {
+      await Browser.windows.update(notificationWindow.id, { focused: true });
     } else {
-      // create new notification popup
-      await new Promise<void>(resolve => {
-        extension.windows.create(
-          {
-            url: 'notification.html',
-            type: 'popup',
-            focused: true,
-            width,
-            height,
-          },
-          window => {
-            this.store.updateState({ notificationWindowId: window?.id });
-            resolve();
-          }
-        );
+      const { id: notificationWindowId } = await Browser.windows.create({
+        url: 'notification.html',
+        type: 'popup',
+        focused: true,
+        width,
+        height,
       });
+
+      this.#store.updateState({ notificationWindowId });
     }
 
-    this.store.updateState({ inShowMode: false });
+    this.#store.updateState({ inShowMode: false });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-shadow
-  async resizeWindow(width: number, height: number) {
-    const notificationWindow = await this._getNotificationWindow();
-    if (notificationWindow) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      await extension.windows.update(notificationWindow.id!, { width, height });
+  async #getNotificationWindow() {
+    const windows =
+      (await Browser.windows.getAll({ windowTypes: ['popup'] })) ?? [];
+
+    const { notificationWindowId } = this.#store.getState();
+
+    return windows.find(window => window.id === notificationWindowId);
+  }
+
+  async resizeWindow(newWidth: number, newHeight: number) {
+    const notificationWindow = await this.#getNotificationWindow();
+
+    if (notificationWindow?.id) {
+      await Browser.windows.update(notificationWindow.id, {
+        width: newWidth,
+        height: newHeight,
+      });
     }
   }
 
   async closeWindow() {
-    const notificationWindow = await this._getNotificationWindow();
-    if (notificationWindow) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, no-console
-      extension.windows.remove(notificationWindow.id!, console.error);
-      this.store.updateState({ notificationWindowId: undefined });
+    const notificationWindow = await this.#getNotificationWindow();
+
+    if (notificationWindow?.id) {
+      await Browser.windows.remove(notificationWindow.id);
     }
-  }
 
-  async _getNotificationWindow() {
-    // get all extension windows
-    const windows = await new Promise<chrome.windows.Window[]>(resolve =>
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      extension.windows.getAll({}, windows => {
-        resolve(windows || []);
-      })
-    );
-
-    const { notificationWindowId } = this.store.getState();
-
-    // find our ui window
-    return windows.find(
-      window => window.type === 'popup' && window.id === notificationWindowId
-    );
+    this.#store.updateState({ notificationWindowId: undefined });
   }
 }

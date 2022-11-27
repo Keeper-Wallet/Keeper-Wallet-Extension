@@ -1,11 +1,11 @@
 import * as Sentry from '@sentry/react';
-import { extension } from 'lib/extension';
 import log from 'loglevel';
 import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { LoadingScreen } from 'ui/components/pages/loadingScreen';
 import { RootWrapper } from 'ui/components/RootWrapper';
+import Browser from 'webextension-polyfill';
 
 import { KEEPERWALLET_DEBUG } from './constants';
 import { ledgerService } from './ledger/service';
@@ -25,14 +25,14 @@ log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 const isNotificationWindow = window.location.pathname === '/notification.html';
 
 const store = createUiStore({
-  version: extension.runtime.getManifest().version,
+  version: Browser.runtime.getManifest().version,
 });
 
 const router = createMemoryRouter(routes);
 
 const updateState = createUpdateState(store);
 
-extension.storage.onChanged.addListener(async (changes, area) => {
+Browser.storage.onChanged.addListener(async (changes, area) => {
   if (area !== 'local') {
     return;
   }
@@ -53,7 +53,7 @@ extension.storage.onChanged.addListener(async (changes, area) => {
 
 const emitterApi = {
   closePopupWindow: async () => {
-    const popup = extension.extension
+    const popup = Browser.extension
       .getViews({ type: 'popup' })
       .find(w => w.location.pathname === '/popup.html');
 
@@ -69,7 +69,7 @@ const emitterApi = {
 };
 
 const connect = async () => {
-  const port = extension.runtime.connect();
+  const port = Browser.runtime.connect();
 
   port.onDisconnect.addListener(() => {
     backgroundService.setConnect(async () => {
@@ -97,7 +97,7 @@ export function PopupRoot() {
       const background = await connect();
 
       // If popup is opened close notification window
-      if (extension.extension.getViews({ type: 'popup' }).length > 0) {
+      if (Browser.extension.getViews({ type: 'popup' }).length > 0) {
         await background.closeNotificationWindow();
       }
 

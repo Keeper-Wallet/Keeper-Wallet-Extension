@@ -11,10 +11,7 @@ import {
   Settings,
   Windows,
 } from './utils/actions';
-import {
-  SEND_UPDATE_DEBOUNCE_DELAY,
-  STORAGE_SET_DEBOUNCE_DELAY,
-} from './utils/constants';
+import { SEND_UPDATE_DEBOUNCE_DELAY } from './utils/constants';
 
 describe('Account creation', function () {
   this.timeout(60 * 1000);
@@ -986,29 +983,6 @@ describe('Account creation', function () {
           expect(
             await Assets.getAllAccountNames.call(this)
           ).to.have.ordered.members(['test4']);
-
-          await this.driver.sleep(STORAGE_SET_DEBOUNCE_DELAY);
-
-          expect(await App.decryptVault.call(this)).to.deep.equal([
-            {
-              seed: 'once green grace barrel tray ethics stock wedding visit puzzle multiply pulp donor organ cluster',
-              publicKey: '7cdJyEuasmgDvWUcPSfq6JG9yJYLEHy1XQ1xeUoPJefz',
-              address: '3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D',
-              networkCode: 'S',
-              network: 'stagenet',
-              type: 'seed',
-              name: 'test4',
-            },
-            {
-              seed: 'side angry perfect sight capital absurd stuff pulp climb jealous onion address speed portion category',
-              publicKey: '3Z1t3d8pyJU3R9ZqonaJsBT9XuDVbf5xoECFgudtKGTw',
-              address: '3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h',
-              networkCode: 'T',
-              network: 'testnet',
-              type: 'seed',
-              name: 'test',
-            },
-          ]);
         });
       });
 
@@ -1105,47 +1079,6 @@ describe('Account creation', function () {
           expect(
             await Assets.getAllAccountNames.call(this)
           ).to.have.ordered.members(['test2']);
-
-          await this.driver.sleep(STORAGE_SET_DEBOUNCE_DELAY);
-
-          expect(await App.decryptVault.call(this)).to.deep.equal([
-            {
-              seed: 'once green grace barrel tray ethics stock wedding visit puzzle multiply pulp donor organ cluster',
-              publicKey: '7cdJyEuasmgDvWUcPSfq6JG9yJYLEHy1XQ1xeUoPJefz',
-              address: '3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D',
-              networkCode: 'S',
-              network: 'stagenet',
-              type: 'seed',
-              name: 'test4',
-            },
-            {
-              seed: 'side angry perfect sight capital absurd stuff pulp climb jealous onion address speed portion category',
-              publicKey: '3Z1t3d8pyJU3R9ZqonaJsBT9XuDVbf5xoECFgudtKGTw',
-              address: '3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h',
-              networkCode: 'T',
-              network: 'testnet',
-              type: 'seed',
-              name: 'test',
-            },
-            {
-              address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
-              name: 'test2',
-              network: 'mainnet',
-              networkCode: 'W',
-              publicKey: '57tdgQxNNfehn9BQQm834NMiesYzXFEhnPaw1z5yNzHD',
-              seed: 'odor refuse imitate busy purity where capital rebuild follow foil sorry tornado dress boring envelope',
-              type: 'seed',
-            },
-            {
-              address: '3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi',
-              name: 'test3',
-              network: 'testnet',
-              networkCode: 'T',
-              publicKey: '3ufbp8wCLhWqbXtbakBR95FgqSdm66UYaNieuoEKyztS',
-              seed: 'defy credit shoe expect pair gun future slender escape visa test book tone patient vibrant',
-              type: 'seed',
-            },
-          ]);
         });
       });
 
@@ -1285,20 +1218,6 @@ describe('Account creation', function () {
           expect(
             await Assets.getAllAccountNames.call(this)
           ).to.have.ordered.members(['test2', 'test2 (1)']);
-
-          await this.driver.sleep(STORAGE_SET_DEBOUNCE_DELAY);
-
-          expect(await App.decryptVault.call(this)).to.include.deep.members([
-            {
-              address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
-              name: 'test2 (1)',
-              network: 'mainnet',
-              networkCode: 'W',
-              publicKey: '57tdgQxNNfehn9BQQm834NMiesYzXFEhnPaw1z5yNzHD',
-              seed: 'odor refuse imitate busy purity where capital rebuild follow foil sorry tornado dress boring envelope',
-              type: 'seed',
-            },
-          ]);
         });
 
         it('increments the number in suffix if it already exists', async function () {
@@ -1367,20 +1286,6 @@ describe('Account creation', function () {
           expect(
             await Assets.getAllAccountNames.call(this)
           ).to.have.ordered.members(['test2 (1)', 'test2', 'test2 (2)']);
-
-          await this.driver.sleep(STORAGE_SET_DEBOUNCE_DELAY);
-
-          expect(await App.decryptVault.call(this)).to.include.deep.members([
-            {
-              address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
-              name: 'test2 (2)',
-              network: 'mainnet',
-              networkCode: 'W',
-              publicKey: '57tdgQxNNfehn9BQQm834NMiesYzXFEhnPaw1z5yNzHD',
-              seed: 'odor refuse imitate busy purity where capital rebuild follow foil sorry tornado dress boring envelope',
-              type: 'seed',
-            },
-          ]);
         });
       });
     });

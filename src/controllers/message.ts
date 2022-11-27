@@ -4,7 +4,6 @@ import { address } from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import EventEmitter from 'events';
-import { extension } from 'lib/extension';
 import log from 'loglevel';
 import { MessageInput, MessageStoreItem } from 'messages/types';
 import ObservableStore from 'obs-store';
@@ -13,6 +12,7 @@ import { PERMISSIONS } from 'permissions/constants';
 import { PreferencesAccount } from 'preferences/types';
 import { clone } from 'ramda';
 import { v4 as uuidv4 } from 'uuid';
+import Browser from 'webextension-polyfill';
 
 import { MSG_STATUSES } from '../constants';
 import {
@@ -138,7 +138,7 @@ export class MessageController extends EventEmitter {
 
     this.rejectAllByTime();
 
-    extension.alarms.onAlarm.addListener(({ name }) => {
+    Browser.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'rejectMessages') {
         this.rejectAllByTime();
       }
@@ -377,7 +377,7 @@ export class MessageController extends EventEmitter {
 
   _updateMessagesByTimeout() {
     const { update_messages_ms } = this.getMessagesConfig();
-    extension.alarms.create('rejectMessages', {
+    Browser.alarms.create('rejectMessages', {
       delayInMinutes: update_messages_ms / 1000 / 60,
     });
   }

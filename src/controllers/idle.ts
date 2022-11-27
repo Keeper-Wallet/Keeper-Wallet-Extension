@@ -1,6 +1,6 @@
-import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
 import { IdleOptions } from 'preferences/types';
+import Browser from 'webextension-polyfill';
 
 import { ExtensionStorage } from '../storage/storage';
 import { PreferencesController } from './preferences';
@@ -24,7 +24,7 @@ export class IdleController {
     preferencesController: PreferencesController;
     vaultController: VaultController;
   }) {
-    extension.idle.setDetectionInterval(IDLE_INTERVAL);
+    Browser.idle.setDetectionInterval(IDLE_INTERVAL);
     this.options = {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -43,7 +43,7 @@ export class IdleController {
     extensionStorage.subscribe(this.store);
     this.start();
 
-    extension.alarms.onAlarm.addListener(({ name }) => {
+    Browser.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'idle') {
         this.start();
       }
@@ -77,16 +77,16 @@ export class IdleController {
       this._lock('locked');
     }
 
-    extension.alarms.create('idle', {
+    Browser.alarms.create('idle', {
       delayInMinutes: 5 / 60,
     });
   }
 
   _idleMode() {
     if (this.options.type !== 'idle') {
-      extension.idle.onStateChanged.removeListener(this._lock);
+      Browser.idle.onStateChanged.removeListener(this._lock);
     } else {
-      extension.idle.onStateChanged.addListener(this._lock);
+      Browser.idle.onStateChanged.addListener(this._lock);
     }
   }
 

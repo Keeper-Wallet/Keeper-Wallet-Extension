@@ -1,4 +1,3 @@
-import { seedUtils } from '@waves/waves-transactions';
 import { expect } from 'chai';
 import * as mocha from 'mocha';
 import { By, until, WebElement } from 'selenium-webdriver';
@@ -10,16 +9,6 @@ import {
   SERVICE_WORKER_INSTALLATION_DELAY,
   STORAGE_SET_DEBOUNCE_DELAY,
 } from './constants';
-
-interface VaultEntry {
-  seed: string;
-  publicKey: string;
-  address: string;
-  networkCode: string;
-  network: string;
-  type: string;
-  name: string;
-}
 
 export const App = {
   async initVault(this: mocha.Context, password: string = DEFAULT_PASSWORD) {
@@ -124,25 +113,6 @@ export const App = {
       .click();
 
     await this.driver.sleep(STORAGE_SET_DEBOUNCE_DELAY);
-  },
-
-  async decryptVault(this: mocha.Context, password = DEFAULT_PASSWORD) {
-    const encryptedVault = await this.driver.executeAsyncScript<string>(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      function (...args: any[]) {
-        const cb = args[args.length - 1];
-
-        chrome.storage.local.get('WalletController', ({ WalletController }) =>
-          cb(WalletController.vault)
-        );
-      }
-    );
-
-    const vault: VaultEntry[] = JSON.parse(
-      seedUtils.decryptSeed(encryptedVault, password)
-    );
-
-    return vault;
   },
 
   async open(this: mocha.Context) {

@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 import { AssetDetail } from 'assets/types';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
-import * as browser from 'webextension-polyfill';
+import Browser from 'webextension-polyfill';
 
 import { ExtensionStorage, StorageLocalState } from '../storage/storage';
 import { NetworkController } from './network';
@@ -257,17 +257,17 @@ export class AssetInfoController {
       this.updateInfo();
     }
 
-    browser.alarms.create('updateSuspiciousAssets', {
+    Browser.alarms.create('updateSuspiciousAssets', {
       periodInMinutes: SUSPICIOUS_PERIOD_IN_MINUTES,
     });
-    browser.alarms.create('updateUsdPrices', {
+    Browser.alarms.create('updateUsdPrices', {
       periodInMinutes: MARKETDATA_PERIOD_IN_MINUTES,
     });
-    browser.alarms.create('updateInfo', {
+    Browser.alarms.create('updateInfo', {
       periodInMinutes: INFO_PERIOD_IN_MINUTES,
     });
 
-    browser.alarms.onAlarm.addListener(({ name }) => {
+    Browser.alarms.onAlarm.addListener(({ name }) => {
       switch (name) {
         case 'updateSuspiciousAssets':
           this.updateSuspiciousAssets();
