@@ -51,12 +51,14 @@ export function NftCard({
   const isPlaceholder = !nft.displayCreator;
 
   return (
-    <div
+    <figure
       className={cn(styles.card, className)}
       onClick={() => !isPlaceholder && onClick(nft)}
     >
-      <NftCover className={styles.withTitle} nft={nft} />
-      <div className={cn(styles.footer, isPlaceholder && 'skeleton-glow')}>
+      <NftCover nft={nft} />
+      <figcaption
+        className={cn(styles.footer, isPlaceholder && 'skeleton-glow')}
+      >
         {mode === DisplayMode.Name && (
           <div className={styles.title}>{nft.displayName}</div>
         )}
@@ -69,10 +71,11 @@ export function NftCard({
                 nft.displayCreator
               )}
             </div>
+
             <div>{count}</div>
           </>
         )}
-      </div>
-    </div>
+      </figcaption>
+    </figure>
   );
 }
