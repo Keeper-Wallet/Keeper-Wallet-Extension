@@ -17,5 +17,4 @@ jobs:
       - run: yarn run lint:prettier
       - run: yarn run lint:eslint
       - run: yarn run lint:stylelint
-      - run: echo '{}' > config.json
       - run: yarn run lint:typescript

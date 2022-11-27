@@ -117,6 +117,7 @@
     "css-loader": "^6.7.1",
     "css-minimizer-webpack-plugin": "^4.0.0",
     "del": "^6.1.1",
+    "dotenv-flow": "^3.2.0",
     "esbuild": "^0.15.15",
     "esbuild-register": "^3.4.1",
     "eslint": "^8.28.0",

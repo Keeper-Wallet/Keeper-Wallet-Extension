@@ -1,3 +1,4 @@
+require('dotenv-flow/config');
 const path = require('path');
 const webpack = require('webpack');
 const svgToMiniDataURI = require('mini-svg-data-uri');
@@ -178,6 +179,7 @@ async function makeConfig({
       ),
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(mode),
+        __AMPLITUDE_API_KEY__: JSON.stringify(process.env.AMPLITUDE_API_KEY),
         __SENTRY_DSN__: JSON.stringify(process.env.SENTRY_DSN),
         __SENTRY_ENVIRONMENT__: JSON.stringify(process.env.SENTRY_ENVIRONMENT),
         __SENTRY_RELEASE__: JSON.stringify(process.env.SENTRY_RELEASE),

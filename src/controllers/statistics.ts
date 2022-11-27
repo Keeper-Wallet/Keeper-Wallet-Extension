@@ -5,7 +5,6 @@ import { extension } from 'lib/extension';
 import { MessageStoreItem } from 'messages/types';
 import ObservableStore from 'obs-store';
 
-import config from '../../config.json';
 import { KEEPERWALLET_ENV } from '../constants';
 import { detect } from '../lib/detectBrowser';
 import { ExtensionStorage } from '../storage/storage';
@@ -115,8 +114,7 @@ export class StatisticsController {
   }
 
   sendEvents(delay = 5000) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (!(config as any).statisticsApiKey) {
+    if (!__AMPLITUDE_API_KEY__) {
       return;
     }
 
@@ -137,8 +135,7 @@ export class StatisticsController {
             Accept: '*/*',
           },
           body: JSON.stringify({
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            api_key: (config as any).statisticsApiKey,
+            api_key: __AMPLITUDE_API_KEY__,
             events,
           }),
         })

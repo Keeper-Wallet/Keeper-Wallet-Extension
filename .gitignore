@@ -1,5 +1,6 @@
+/.env.local
+/.env.*.local
 /.idea
 /.vscode
-/config.json
 /dist
 /node_modules

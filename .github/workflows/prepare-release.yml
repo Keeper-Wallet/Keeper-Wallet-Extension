@@ -34,19 +34,10 @@ jobs:
           echo ::set-output name=SENTRY_RELEASE::extension@$VERSION
         id: tagInfo
 
-      - name: Create empty config.json
-        run: echo '{}' > config.json
-
-      - name: Create config.json for production
-        run: |
-          cat > config.json << EOF
-          {
-            "statisticsApiKey": "$STATISTICS_TOKEN"
-          }
-          EOF
-        if: steps.tagInfo.outputs.ENVIRONMENT == 'production'
+      - if: steps.tagInfo.outputs.ENVIRONMENT == 'production'
+        run: echo AMPLITUDE_API_KEY=$AMPLITUDE_API_KEY >> $GITHUB_ENV
         env:
-          STATISTICS_TOKEN: ${{ secrets.METRICS_TOKEN }}
+          AMPLITUDE_API_KEY: ${{ secrets.METRICS_TOKEN }}
 
       - name: Build
         run: yarn run build
