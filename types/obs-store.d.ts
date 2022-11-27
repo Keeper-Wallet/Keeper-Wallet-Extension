@@ -7,10 +7,3 @@ declare module 'obs-store' {
     subscribe(subscriber: (state: T) => void): void;
   }
 }
-
-declare module 'obs-store/lib/asStream' {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const asStream: any;
-
-  export default asStream;
-}
