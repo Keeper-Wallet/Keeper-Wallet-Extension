@@ -20,9 +20,11 @@ jobs:
         id: tagInfo
         run: |
           VERSION=$(echo $GITHUB_REF_NAME | sed -e 's/^v//')
-          echo ::set-output name=VERSION::$VERSION
-          echo ::set-output name=ENVIRONMENT::$(echo $VERSION | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' && echo "production" || echo "staging")
-          echo ::set-output name=SENTRY_RELEASE::extension@$VERSION
+          cat >> $GITHUB_OUTPUT << EOF
+          ENVIRONMENT=$(echo $VERSION | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' && echo "production" || echo "staging")
+          SENTRY_RELEASE=extension@$VERSION
+          VERSION=$VERSION
+          EOF
       - if: steps.tagInfo.outputs.ENVIRONMENT == 'production'
         run: echo AMPLITUDE_API_KEY=$AMPLITUDE_API_KEY >> $GITHUB_ENV
         env:
