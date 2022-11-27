@@ -1,4 +1,4 @@
-import * as browser from 'webextension-polyfill';
+import Browser from 'webextension-polyfill';
 
 interface Migration {
   migrate: () => Promise<void>;
@@ -8,12 +8,12 @@ interface Migration {
 const flatState: Migration = {
   migrate: async () => {
     // this should potentially fix FILE_ERROR_NO_SPACE error
-    await browser.storage.local.remove([
+    await Browser.storage.local.remove([
       'AssetInfoController',
       'CurrentAccountController',
     ]);
 
-    const state = await browser.storage.local.get();
+    const state = await Browser.storage.local.get();
 
     const CONTROLLERS = [
       'AssetInfoController',
@@ -38,7 +38,7 @@ const flatState: Migration = {
       return;
     }
 
-    await browser.storage.local.set(
+    await Browser.storage.local.set(
       migrateFields.reduce(
         (acc, field) => ({
           ...acc,
@@ -48,7 +48,7 @@ const flatState: Migration = {
       )
     );
 
-    await browser.storage.local.remove(migrateFields);
+    await Browser.storage.local.remove(migrateFields);
   },
 
   rollback: async () => {
@@ -92,9 +92,9 @@ const flatState: Migration = {
       VaultController: ['locked', 'initialized'],
     };
 
-    const state = await browser.storage.local.get();
+    const state = await Browser.storage.local.get();
 
-    await browser.storage.local.set(
+    await Browser.storage.local.set(
       Object.entries(CONTROLLERS_STATE).reduce(
         (acc, [controller, fields]) => ({
           ...acc,
@@ -114,7 +114,7 @@ const flatState: Migration = {
 
 const removeCurrentNetworkAccounts: Migration = {
   migrate: async () => {
-    await browser.storage.local.remove(['currentNetworkAccounts']);
+    await Browser.storage.local.remove(['currentNetworkAccounts']);
   },
   rollback: async () => {
     // noop, they're restored on unlock
@@ -123,15 +123,15 @@ const removeCurrentNetworkAccounts: Migration = {
 
 const flattenBalances: Migration = {
   migrate: async () => {
-    const { balances } = await browser.storage.local.get('balances');
+    const { balances } = await Browser.storage.local.get('balances');
 
     if (!balances) {
       return;
     }
 
-    await browser.storage.local.remove('balances');
+    await Browser.storage.local.remove('balances');
 
-    await browser.storage.local.set(
+    await Browser.storage.local.set(
       Object.fromEntries(
         Object.entries(balances).map(([address, balance]) => {
           return [`balance_${address}`, balance];
@@ -141,7 +141,7 @@ const flattenBalances: Migration = {
   },
 
   rollback: async () => {
-    const state = await browser.storage.local.get();
+    const state = await Browser.storage.local.get();
 
     const balances = Object.fromEntries(
       Object.entries(state)
@@ -159,11 +159,11 @@ const flattenBalances: Migration = {
         .filter((entry): entry is NonNullable<typeof entry> => entry != null)
     );
 
-    await browser.storage.local.remove(
+    await Browser.storage.local.remove(
       Object.keys(state).filter(key => key.startsWith('balance_'))
     );
 
-    await browser.storage.local.set({ balances });
+    await Browser.storage.local.set({ balances });
   },
 };
 

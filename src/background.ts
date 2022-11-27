@@ -5,7 +5,6 @@ import { BalancesItem } from 'balances/types';
 import { collectBalances } from 'balances/utils';
 import EventEmitter from 'events';
 import { SUPPORTED_LANGUAGES } from 'i18n/constants';
-import { extension } from 'lib/extension';
 import { ERRORS } from 'lib/keeperError';
 import { PortStream } from 'lib/portStream';
 import { TabsManager } from 'lib/tabsManager';
@@ -22,7 +21,7 @@ import { IdleOptions, PreferencesAccount } from 'preferences/types';
 import { UiState } from 'ui/reducers/updateState';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateWalletInput } from 'wallets/types';
-import * as browser from 'webextension-polyfill';
+import Browser from 'webextension-polyfill';
 
 import {
   IgnoreErrorsContext,
@@ -53,6 +52,7 @@ import { setupDnode } from './lib/dnodeUtil';
 import { WindowManager } from './lib/windowManager';
 import {
   backupStorage,
+  createExtensionStorage,
   ExtensionStorage,
   StorageLocalState,
 } from './storage/storage';
@@ -104,7 +104,7 @@ Sentry.init({
   },
 });
 
-extension.runtime.onConnect.addListener(async remotePort => {
+Browser.runtime.onConnect.addListener(async remotePort => {
   const bgService = await bgPromise;
 
   if (remotePort.name === 'contentscript') {
@@ -114,20 +114,15 @@ extension.runtime.onConnect.addListener(async remotePort => {
   }
 });
 
-extension.runtime.onConnectExternal.addListener(async remotePort => {
-  const bgService = await bgPromise;
-  bgService.setupPageConnection(remotePort);
-});
-
-extension.runtime.onUpdateAvailable.addListener(async () => {
+Browser.runtime.onUpdateAvailable.addListener(async () => {
   await backupStorage();
-  extension.runtime.reload();
+  Browser.runtime.reload();
 });
 
-extension.runtime.onInstalled.addListener(async details => {
+Browser.runtime.onInstalled.addListener(async details => {
   const bgService = await bgPromise;
 
-  if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
+  if (details.reason === 'update') {
     bgService.assetInfoController.addTickersForExistingAssets();
     bgService.vaultController.migrate();
     bgService.addressBookController.migrate();
@@ -136,11 +131,9 @@ extension.runtime.onInstalled.addListener(async details => {
 });
 
 async function setupBackgroundService() {
-  const extensionStorage = new ExtensionStorage();
-
-  const [acceptLanguages] = await Promise.all([
-    browser.i18n.getAcceptLanguages(),
-    extensionStorage.create(),
+  const [acceptLanguages, extensionStorage] = await Promise.all([
+    Browser.i18n.getAcceptLanguages(),
+    createExtensionStorage(),
   ]);
 
   const initLangCode = acceptLanguages.find(code =>
@@ -169,7 +162,7 @@ async function setupBackgroundService() {
     const msg = notifications.length + messages.length;
     const text = msg ? String(msg) : '';
 
-    const action = extension.action || extension.browserAction;
+    const action = Browser.action || Browser.browserAction;
     action.setBadgeText({ text });
     action.setBadgeBackgroundColor({ color: '#768FFF' });
   };
@@ -180,7 +173,7 @@ async function setupBackgroundService() {
   updateBadge();
   // open new tab
   backgroundService.messageController.on('Open new tab', url => {
-    extension.tabs.create({ url });
+    Browser.tabs.create({ url });
   });
 
   // Notification window management
@@ -199,7 +192,7 @@ async function setupBackgroundService() {
   const tabsManager = new TabsManager({ extensionStorage });
   backgroundService.on('Show tab', async (url, name) => {
     backgroundService.emit('closePopupWindow');
-    return tabsManager.getOrCreate(url, name);
+    tabsManager.getOrCreate(url, name);
   });
   backgroundService.on('Close current tab', async () => {
     return tabsManager.closeCurrentTab();
@@ -1141,7 +1134,7 @@ class BackgroundService extends EventEmitter {
     };
   }
 
-  setupUiConnection(remotePort: chrome.runtime.Port) {
+  setupUiConnection(remotePort: Browser.Runtime.Port) {
     const dnode = setupDnode(new PortStream(remotePort), this.getApi(), 'api');
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1163,7 +1156,7 @@ class BackgroundService extends EventEmitter {
     dnode.on('remote', remoteHandler);
   }
 
-  setupPageConnection(remotePort: chrome.runtime.Port) {
+  setupPageConnection(remotePort: Browser.Runtime.Port) {
     const { sender } = remotePort;
 
     if (!sender || !sender.url) {
@@ -1244,7 +1237,7 @@ class BackgroundService extends EventEmitter {
     }
 
     return {
-      version: extension.runtime.getManifest().version,
+      version: Browser.runtime.getManifest().version,
       initialized,
       locked,
       account,

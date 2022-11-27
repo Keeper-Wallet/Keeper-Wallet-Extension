@@ -2,9 +2,9 @@ import { BigNumber } from '@waves/bignumber';
 import { TransactionFromNode } from '@waves/ts-types';
 import { AssetBalance, BalancesItem } from 'balances/types';
 import { collectBalances } from 'balances/utils';
-import { extension } from 'lib/extension';
 import { NftAssetDetail } from 'nfts/types';
 import ObservableStore from 'obs-store';
+import Browser from 'webextension-polyfill';
 
 import { MAX_NFT_ITEMS, MAX_TX_HISTORY_ITEMS } from '../constants';
 import { ExtensionStorage } from '../storage/storage';
@@ -73,16 +73,17 @@ export class CurrentAccountController {
     this.getSelectedAccount = getSelectedAccount;
     this.isLocked = isLocked;
 
-    extension.alarms.onAlarm.addListener(({ name }) => {
+    Browser.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'updateBalances') {
         this.updateBalances();
       }
     });
+
     this.restartPolling();
   }
 
   restartPolling() {
-    extension.alarms.create('updateBalances', {
+    Browser.alarms.create('updateBalances', {
       periodInMinutes: PERIOD_IN_SECONDS / 60,
     });
   }

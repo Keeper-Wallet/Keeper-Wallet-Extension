@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import { equals } from 'ramda';
-import * as browser from 'webextension-polyfill';
+import Browser from 'webextension-polyfill';
 
 import {
   DEFAULT_IDENTITY_CONFIG,
@@ -82,7 +82,7 @@ export class RemoteConfigController extends EventEmitter {
     this.#updateMainConfig();
     this.#updateIdentityConfig();
 
-    browser.alarms.onAlarm.addListener(({ name }) => {
+    Browser.alarms.onAlarm.addListener(({ name }) => {
       switch (name) {
         case 'updateLegacyConfig':
           this.#updateLegacyConfig();
@@ -244,7 +244,7 @@ export class RemoteConfigController extends EventEmitter {
       // ignore sentry errors
     }
 
-    browser.alarms.create('updateLegacyConfig', {
+    Browser.alarms.create('updateLegacyConfig', {
       delayInMinutes: DEFAULT_LEGACY_CONFIG.CONFIG.update_ms / 1000 / 60,
     });
   }
@@ -270,7 +270,7 @@ export class RemoteConfigController extends EventEmitter {
       // ignore errors
     }
 
-    browser.alarms.create('updateMainConfig', { delayInMinutes: 1 });
+    Browser.alarms.create('updateMainConfig', { delayInMinutes: 1 });
   }
 
   async #updateIdentityConfig() {
@@ -328,7 +328,7 @@ export class RemoteConfigController extends EventEmitter {
       })
       .catch(() => undefined) // ignore
       .then(() =>
-        browser.alarms.create('updateIdentityConfig', { delayInMinutes: 1 })
+        Browser.alarms.create('updateIdentityConfig', { delayInMinutes: 1 })
       );
   }
 }

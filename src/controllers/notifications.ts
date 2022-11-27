@@ -1,10 +1,10 @@
 import EventEmitter from 'events';
-import { extension } from 'lib/extension';
 import log from 'loglevel';
 import { NotificationsStoreItem } from 'notifications/types';
 import ObservableStore from 'obs-store';
 import { PreferencesAccount } from 'preferences/types';
 import { v4 as uuidv4 } from 'uuid';
+import Browser from 'webextension-polyfill';
 
 import { MSG_STATUSES, MsgStatus } from '../constants';
 import { ERRORS } from '../lib/keeperError';
@@ -45,7 +45,7 @@ export class NotificationsController extends EventEmitter {
 
     this.deleteAllByTime();
 
-    extension.alarms.onAlarm.addListener(({ name }) => {
+    Browser.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'deleteMessages') {
         this.deleteAllByTime();
       }
@@ -244,7 +244,8 @@ export class NotificationsController extends EventEmitter {
 
   _updateMessagesByTimeout() {
     const { update_messages_ms } = this.getMessagesConfig();
-    extension.alarms.create('deleteMessages', {
+
+    Browser.alarms.create('deleteMessages', {
       delayInMinutes: update_messages_ms / 1000 / 60,
     });
   }

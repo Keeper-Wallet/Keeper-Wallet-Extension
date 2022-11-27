@@ -1,9 +1,10 @@
 import { Duplex } from 'readable-stream';
+import type Browser from 'webextension-polyfill';
 
 export class PortStream extends Duplex {
-  private _port: chrome.runtime.Port;
+  private _port;
 
-  constructor(port: chrome.runtime.Port) {
+  constructor(port: Browser.Runtime.Port) {
     super({ objectMode: true });
     this._port = port;
 

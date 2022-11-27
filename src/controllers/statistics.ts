@@ -1,9 +1,9 @@
 import * as Sentry from '@sentry/react';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { libs } from '@waves/waves-transactions';
-import { extension } from 'lib/extension';
 import { MessageStoreItem } from 'messages/types';
 import ObservableStore from 'obs-store';
+import Browser from 'webextension-polyfill';
 
 import { KEEPERWALLET_ENV } from '../constants';
 import { detect } from '../lib/detectBrowser';
@@ -54,13 +54,13 @@ export class StatisticsController {
     extensionStorage.subscribe(this.store);
 
     this.networkController = networkController;
-    this.version = extension.runtime.getManifest().version;
-    this.id = extension.runtime.id;
+    this.version = Browser.runtime.getManifest().version;
+    this.id = Browser.runtime.id;
     this.browser = detect();
     this.sendInstallEvent();
     this.sendIdleEvent();
 
-    extension.alarms.onAlarm.addListener(({ name }) => {
+    Browser.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'idleEvent') {
         this.sendIdleEvent();
       }
@@ -239,7 +239,8 @@ export class StatisticsController {
   sendIdleEvent() {
     // sends `idleKeeper` event once per hour until browser is running
     this.addEventOnce('idleKeeper');
-    extension.alarms.create('idleEvent', {
+
+    Browser.alarms.create('idleEvent', {
       delayInMinutes: 1,
     });
   }

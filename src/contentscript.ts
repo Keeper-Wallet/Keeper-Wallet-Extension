@@ -1,5 +1,5 @@
-import { extension } from 'lib/extension';
 import LocalMessageDuplexStream from 'post-message-stream';
+import Browser from 'webextension-polyfill';
 
 import { PortStream } from './lib/portStream';
 
@@ -11,7 +11,7 @@ if (shouldInject()) {
 function injectBundle() {
   const container = document.head || document.documentElement;
   const script = document.createElement('script');
-  script.src = extension.runtime.getURL('inpage.js');
+  script.src = Browser.runtime.getURL('inpage.js');
   container.insertBefore(script, container.children[0]);
 
   script.onload = () => {
@@ -26,17 +26,17 @@ function setupConnection() {
     target: 'waves_keeper_page',
   });
 
-  extension.storage.onChanged.addListener(() => {
+  Browser.storage.onChanged.addListener(() => {
     pageStream.write({ name: 'updatePublicState' });
   });
 
   const connect = () => {
-    const pluginPort = extension.runtime.connect({ name: 'contentscript' });
+    const pluginPort = Browser.runtime.connect({ name: 'contentscript' });
     const pluginStream = new PortStream(pluginPort);
 
     pageStream.pipe(pluginStream).pipe(pageStream);
 
-    const onDisconnect = (port: chrome.runtime.Port) => {
+    const onDisconnect = (port: Browser.Runtime.Port) => {
       port.onDisconnect.removeListener(onDisconnect);
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
