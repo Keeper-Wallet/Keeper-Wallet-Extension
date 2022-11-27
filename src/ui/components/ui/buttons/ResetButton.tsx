@@ -1,9 +1,20 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui/components/ui';
+import Browser from 'webextension-polyfill';
 
-import { resetStorage } from '../../../../storage/storage';
 import * as styles from './ResetButton.module.css';
+
+const SAFE_FIELDS = new Set([
+  'WalletController',
+  'accounts',
+  'addresses',
+  'backup',
+  'lastIdleKeeper',
+  'lastInstallKeeper',
+  'lastOpenKeeper',
+  'userId',
+]);
 
 interface Props {
   className?: string;
@@ -48,9 +59,20 @@ export const ResetButton = ({ className }: Props) => {
             ) : (
               <Button
                 view="submit"
-                onClick={() => {
-                  resetStorage();
+                onClick={async () => {
                   setLoading(true);
+
+                  const state = await Browser.storage.local.get();
+
+                  await Browser.storage.local.remove(
+                    Object.keys(state).reduce<string[]>(
+                      (acc, key) =>
+                        SAFE_FIELDS.has(key) ? acc : [...acc, key],
+                      []
+                    )
+                  );
+
+                  Browser.runtime.reload();
                 }}
               >
                 {t('errorPage.resetButton')}

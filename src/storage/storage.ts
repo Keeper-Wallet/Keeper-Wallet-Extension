@@ -45,28 +45,6 @@ export async function backupStorage() {
   }
 }
 
-const SAFE_FIELDS = new Set([
-  'WalletController',
-  'accounts',
-  'addresses',
-  'backup',
-  'lastIdleKeeper',
-  'lastInstallKeeper',
-  'lastOpenKeeper',
-  'userId',
-]);
-
-export async function resetStorage() {
-  const state = await Browser.storage.local.get();
-  await Browser.storage.local.remove(
-    Object.keys(state).reduce<string[]>(
-      (acc, key) => (SAFE_FIELDS.has(key) ? acc : [...acc, key]),
-      []
-    )
-  );
-  Browser.runtime.reload();
-}
-
 export interface StorageLocalState {
   accounts: PreferencesAccount[];
   addresses: Record<string, string>;
