@@ -4,53 +4,37 @@ on:
     tags:
       - v[0-9]+\.[0-9]+\.[0-9]+
       - v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+
-
 jobs:
   prepare-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Get sources
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-
-      - name: Read .nvmrc for Node.js version
-        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
-        id: nvm
-
-      - name: Setup NodeJS
-        uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: '${{ steps.nvm.outputs.NODE_VERSION }}'
-
-      - name: Install dependencies
-        run: yarn --frozen-lockfile
-
+          cache: yarn
+          node-version-file: .nvmrc
+      - run: yarn --frozen-lockfile
       - name: Extract info from tag
+        id: tagInfo
         run: |
           VERSION=$(echo $GITHUB_REF_NAME | sed -e 's/^v//')
           echo ::set-output name=VERSION::$VERSION
           echo ::set-output name=ENVIRONMENT::$(echo $VERSION | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' && echo "production" || echo "staging")
           echo ::set-output name=SENTRY_RELEASE::extension@$VERSION
-        id: tagInfo
-
       - if: steps.tagInfo.outputs.ENVIRONMENT == 'production'
         run: echo AMPLITUDE_API_KEY=$AMPLITUDE_API_KEY >> $GITHUB_ENV
         env:
           AMPLITUDE_API_KEY: ${{ secrets.METRICS_TOKEN }}
-
-      - name: Build
-        run: yarn run build
+      - run: yarn run build
         env:
           NODE_ENV_VER: ${{ steps.tagInfo.outputs.VERSION }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           SENTRY_ENVIRONMENT: ${{ steps.tagInfo.outputs.ENVIRONMENT }}
           SENTRY_RELEASE: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
-
       - run: yarn run zip
-
-      - name: Create Sentry Release
-        uses: getsentry/action-release@v1
+      - uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: waves-keeper
@@ -62,9 +46,7 @@ jobs:
           sourcemaps: dist/build
           url_prefix: ~/
           version: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v1
         with:
           draft: true
           fail_on_unmatched_files: true
