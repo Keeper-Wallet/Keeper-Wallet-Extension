@@ -1,8 +1,8 @@
 {
   "manifest_version": null,
-  "name": "__MSG_appName__",
-  "short_name": "__MSG_appShortName__",
-  "description": "__MSG_appDescription__",
+  "name": "Keeper Wallet",
+  "short_name": "The short name of the application",
+  "description": "Keeper Wallet is your entry point to the Waves blockchain and Waves-powered web services",
   "version": null,
   "author": "support@waves.tech",
   "commands": {
@@ -27,7 +27,6 @@
     "256": "images/icon_256.png",
     "512": "images/icon_512.png"
   },
-  "default_locale": "en",
   "content_scripts": [
     {
       "matches": ["file://*/*", "http://*/*", "https://*/*"],
