@@ -6,12 +6,14 @@ import { DucklingsNftVendor } from './vendors/ducklings';
 import { DucksNftVendor } from './vendors/ducks';
 import { DucksArtefactsNftVendor } from './vendors/ducksArtefacts';
 import { SignArtNftVendor } from './vendors/signArt';
+import { WavesDomainsNftVendor } from './vendors/wavesDomains';
 
 const vendors = {
   [NftVendorId.DucksArtefact]: new DucksArtefactsNftVendor(),
   [NftVendorId.Ducklings]: new DucklingsNftVendor(),
   [NftVendorId.Ducks]: new DucksNftVendor(),
   [NftVendorId.SignArt]: new SignArtNftVendor(),
+  [NftVendorId.WavesDomains]: new WavesDomainsNftVendor(),
 };
 
 export type NftInfo = typeof vendors[keyof typeof vendors] extends NftVendor<
