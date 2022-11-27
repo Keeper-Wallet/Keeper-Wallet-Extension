@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/react';
 import { AssetsRecord } from 'assets/types';
 import create from 'callbag-create';
-import forEach from 'callbag-for-each';
 import pipe from 'callbag-pipe';
+import subscribe from 'callbag-subscribe';
 import { TrashItem } from 'controllers/trash';
 import { MessageStoreItem } from 'messages/types';
 import { NetworkName } from 'networks/types';
@@ -164,7 +164,7 @@ export class ExtensionStorage {
   subscribe<T extends Record<string, unknown>>(store: ObservableStore<T>) {
     pipe(
       create<T>(next => store.subscribe(next)),
-      forEach(state => {
+      subscribe(state => {
         const newState = Object.entries(state).reduce(
           (acc, [key, value]) => ({
             ...acc,
