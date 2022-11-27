@@ -1,18 +1,16 @@
 import * as Sentry from '@sentry/react';
 import { AssetsRecord } from 'assets/types';
+import create from 'callbag-create';
+import forEach from 'callbag-for-each';
+import pipe from 'callbag-pipe';
 import { TrashItem } from 'controllers/trash';
-import debounceStream from 'debounce-stream';
-import { createStreamSink } from 'lib/createStreamSink';
-import log from 'loglevel';
 import { MessageStoreItem } from 'messages/types';
 import { NetworkName } from 'networks/types';
 import { NftInfo } from 'nfts/nfts';
 import { NotificationsStoreItem } from 'notifications/types';
 import type ObservableStore from 'obs-store';
-import asStream from 'obs-store/lib/asStream';
 import { PermissionValue } from 'permissions/types';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';
-import pump from 'pump';
 import { UiState } from 'ui/reducers/updateState';
 import Browser from 'webextension-polyfill';
 
@@ -185,30 +183,21 @@ export class ExtensionStorage {
     await Browser.storage.local.remove(keysToRemove);
   }
 
-  subscribe(store: ObservableStore<unknown>) {
-    pump(
-      asStream(store),
-      debounceStream(200),
-      createStreamSink(async (state: Record<string, unknown>) => {
-        try {
-          const newState = Object.entries(state).reduce(
-            (acc, [key, value]) => ({
-              ...acc,
-              [key]: value === undefined ? null : value,
-            }),
-            {}
-          );
+  subscribe<T extends Record<string, unknown>>(store: ObservableStore<T>) {
+    pipe(
+      create<T>(next => store.subscribe(next)),
+      forEach(state => {
+        const newState = Object.entries(state).reduce(
+          (acc, [key, value]) => ({
+            ...acc,
+            [key]: value === undefined ? null : value,
+          }),
+          {}
+        );
 
-          this.#state = { ...this.#state, ...newState };
-          await Browser.storage.local.set(newState);
-        } catch (err) {
-          // log error so we dont break the pipeline
-          log.error('error setting state in local store:', err);
-        }
-      }),
-      error => {
-        log.error('Persistence pipeline failed', error);
-      }
+        this.#state = { ...this.#state, ...newState };
+        Browser.storage.local.set(newState);
+      })
     );
   }
 

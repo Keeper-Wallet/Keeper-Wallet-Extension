@@ -11,7 +11,6 @@ import {
   Settings,
   Windows,
 } from './utils/actions';
-import { SEND_UPDATE_DEBOUNCE_DELAY } from './utils/constants';
 
 describe('Account creation', function () {
   this.timeout(60 * 1000);
@@ -1162,8 +1161,6 @@ describe('Account creation', function () {
             'this is the seed for the test account'
           );
 
-          await this.driver.sleep(SEND_UPDATE_DEBOUNCE_DELAY);
-
           await this.driver
             .wait(
               until.elementLocated(By.css('[data-testid="importKeystore"]')),
@@ -1213,8 +1210,6 @@ describe('Account creation', function () {
           await this.driver.switchTo().window(tabKeeper);
           await App.open.call(this);
 
-          await this.driver.sleep(SEND_UPDATE_DEBOUNCE_DELAY);
-
           expect(
             await Assets.getAllAccountNames.call(this)
           ).to.have.ordered.members(['test2', 'test2 (1)']);
@@ -1232,8 +1227,6 @@ describe('Account creation', function () {
             'test2 (1)',
             'this is an another seed for the test account'
           );
-
-          await this.driver.sleep(SEND_UPDATE_DEBOUNCE_DELAY);
 
           await this.driver
             .findElement(By.css('[data-testid="importKeystore"]'))
@@ -1263,8 +1256,6 @@ describe('Account creation', function () {
           await this.driver
             .findElement(By.css('[data-testid="submitButton"]'))
             .click();
-
-          await this.driver.sleep(SEND_UPDATE_DEBOUNCE_DELAY);
 
           await this.driver.wait(
             until.elementLocated(By.css('[data-testid="importSuccessForm"]')),

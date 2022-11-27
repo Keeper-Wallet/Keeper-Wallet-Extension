@@ -7,7 +7,6 @@ import {
   DEFAULT_PASSWORD,
   DEFAULT_SWITCH_NETWORK_DELAY,
   SERVICE_WORKER_INSTALLATION_DELAY,
-  STORAGE_SET_DEBOUNCE_DELAY,
 } from './constants';
 
 export const App = {
@@ -111,8 +110,6 @@ export const App = {
         this.wait
       )
       .click();
-
-    await this.driver.sleep(STORAGE_SET_DEBOUNCE_DELAY);
   },
 
   async open(this: mocha.Context) {
