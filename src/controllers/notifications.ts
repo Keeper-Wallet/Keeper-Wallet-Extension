@@ -1,9 +1,9 @@
 import EventEmitter from 'events';
 import log from 'loglevel';
+import { nanoid } from 'nanoid';
 import { NotificationsStoreItem } from 'notifications/types';
 import ObservableStore from 'obs-store';
 import { PreferencesAccount } from 'preferences/types';
-import { v4 as uuidv4 } from 'uuid';
 import Browser from 'webextension-polyfill';
 
 import { MSG_STATUSES, MsgStatus } from '../constants';
@@ -201,7 +201,7 @@ export class NotificationsController extends EventEmitter {
       origin,
       address,
       message,
-      id: uuidv4(),
+      id: nanoid(),
       timestamp: timestamp || Date.now(),
       status: MSG_STATUSES.NEW_NOTIFICATION,
     };
