@@ -32,18 +32,13 @@ async function makeConfig({
     devtool: dev ? 'cheap-module-source-map' : 'source-map',
     stats: 'errors-warnings',
     entry: Object.fromEntries(
-      Object.entries(entry).map(([key, value]) => {
-        const hmrClient = '@faergeek/tiny-browser-hmr-webpack-plugin/client';
-
-        return [
-          key,
-          dev && hmr
-            ? Array.isArray(value)
-              ? [hmrClient, ...value]
-              : [hmrClient, value]
-            : value,
-        ];
-      })
+      Object.entries(entry).map(([key, value]) => [
+        key,
+        [
+          dev && hmr && '@faergeek/tiny-browser-hmr-webpack-plugin/client',
+          ...(Array.isArray(value) ? value : [value]),
+        ].filter(Boolean),
+      ])
     ),
     cache: {
       type: 'filesystem',
