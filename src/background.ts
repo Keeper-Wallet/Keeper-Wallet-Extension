@@ -14,12 +14,12 @@ import {
   MessageInputOfType,
   MessageStoreItem,
 } from 'messages/types';
+import { nanoid } from 'nanoid';
 import { NetworkName } from 'networks/types';
 import { PERMISSIONS } from 'permissions/constants';
 import { PermissionObject } from 'permissions/types';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';
 import { UiState } from 'ui/reducers/updateState';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateWalletInput } from 'wallets/types';
 import Browser from 'webextension-polyfill';
 
@@ -1164,7 +1164,7 @@ class BackgroundService extends EventEmitter {
     }
 
     const origin = new URL(sender.url).hostname;
-    const connectionId = uuidv4();
+    const connectionId = nanoid();
     const inpageApi = this.getInpageApi(origin, connectionId);
 
     const dnode = setupDnode(
@@ -1249,7 +1249,7 @@ class BackgroundService extends EventEmitter {
 
   ledgerSign(type: string, data: unknown) {
     return new Promise<string>((resolve, reject) => {
-      const requestId = uuidv4();
+      const requestId = nanoid();
 
       this.emit('ledger:signRequest', { id: requestId, type, data });
 

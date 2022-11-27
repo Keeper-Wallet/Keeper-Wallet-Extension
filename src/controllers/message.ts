@@ -6,12 +6,12 @@ import { customData, wavesAuth } from '@waves/waves-transactions';
 import EventEmitter from 'events';
 import log from 'loglevel';
 import { MessageInput, MessageStoreItem } from 'messages/types';
+import { nanoid } from 'nanoid';
 import ObservableStore from 'obs-store';
 import create from 'parse-json-bignumber';
 import { PERMISSIONS } from 'permissions/constants';
 import { PreferencesAccount } from 'preferences/types';
 import { clone } from 'ramda';
-import { v4 as uuidv4 } from 'uuid';
 import Browser from 'webextension-polyfill';
 
 import { MSG_STATUSES } from '../constants';
@@ -584,7 +584,7 @@ export class MessageController extends EventEmitter {
   async _generateMessage(messageData: MessageInput): Promise<MessageStoreItem> {
     const message = {
       ...messageData,
-      id: uuidv4(),
+      id: nanoid(),
       timestamp: Date.now(),
       ext_uuid: messageData.options && messageData.options.uid,
       status: MSG_STATUSES.UNAPPROVED,
