@@ -14,7 +14,6 @@ jobs:
           cache: yarn
           node-version-file: .nvmrc
       - run: yarn install --frozen-lockfile
-      - run: echo '{}' > config.json
       - run: yarn run build
       - run: yarn test
         env:
