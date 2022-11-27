@@ -1,290 +1,110 @@
-import EventEmitter from 'events';
-import LocalMessageDuplexStream from 'post-message-stream';
+import filter from 'callbag-filter';
+import pipe from 'callbag-pipe';
+import subscribe from 'callbag-subscribe';
 import { equals } from 'ramda';
 
-import { cbToPromise, setupDnode, transformMethods } from './lib/dnodeUtil';
+import type { __BackgroundPageApiDirect } from './background';
+import {
+  createMethodCallRequest,
+  fromPostMessage,
+  handleMethodCallResponse,
+} from './ipc/ipc';
 
-function createDeffer<T>() {
-  let resolve: (value: T) => void;
-  let reject: (reason?: unknown) => void;
-
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return {
-    promise,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    resolve: resolve!,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    reject: reject!,
-  };
-}
-
-setupInpageApi();
-
-async function setupInpageApi() {
-  let cbs: Record<string, unknown> = {};
-  let args: Record<string, unknown[]> | unknown[] = {};
-  const wavesAppDef = createDeffer();
-  const wavesApp = {};
-  const eventEmitter = new EventEmitter();
-  const wavesApi: Record<string, unknown> = {
-    initialPromise: wavesAppDef.promise,
-    on: eventEmitter.on.bind(eventEmitter),
-  };
-  const proxyApi = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    get(_: any, prop: string) {
-      if (wavesApi[prop]) {
-        return wavesApi[prop];
-      }
-
-      if (!cbs[prop] && prop !== 'on') {
-        // eslint-disable-next-line func-names, @typescript-eslint/no-shadow
-        cbs[prop] = function (...args: unknown[]) {
-          const def = createDeffer();
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (args as any)[prop] = (args as any)[prop] || [];
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (args as any)[prop].push({ args, def });
-          return def.promise;
-        };
-      }
-
-      if (!cbs[prop] && prop === 'on') {
-        // eslint-disable-next-line @typescript-eslint/no-shadow, func-names
-        cbs[prop] = function (...args: unknown[]) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (args as any)[prop] = (args as any)[prop] || [];
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (args as any)[prop].push({ args });
-        };
-      }
-
-      return cbs[prop];
-    },
-
-    set() {
-      throw new Error('Not permitted');
-    },
-
-    has() {
-      return true;
-    },
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (global as any).KeeperWallet =
-    global.WavesKeeper =
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (global as any).Waves =
-      new Proxy(wavesApp, proxyApi);
-
-  const connectionStream = new LocalMessageDuplexStream({
-    name: 'waves_keeper_page',
-    target: 'waves_keeper_content',
-  });
-
-  const dnode = setupDnode(
-    connectionStream,
-    {},
-    'inpageApi',
-    'updatePublicState'
-  );
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const inpageApi = await new Promise<any>(resolve => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-shadow
-    dnode.on('remote', (inpageApi: any) => {
-      resolve(transformMethods(cbToPromise, inpageApi));
-    });
-  });
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Object.entries(args).forEach(([prop, data]: [string, any]) => {
-    if (data.def) {
-      inpageApi[prop](...data.args).then(data.def.resolve, data.def.reject);
-    } else {
-      inpageApi[prop](...data.args);
-    }
-  });
-
-  args = [];
-  cbs = {};
-  Object.assign(wavesApi, inpageApi);
-  wavesAppDef.resolve(wavesApi);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (global as any).KeeperWallet =
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (global as any).WavesKeeper =
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (global as any).Waves =
-      wavesApi;
-  let publicState = {};
-  connectionStream.on('data', async ({ name }) => {
-    if (name !== 'updatePublicState') {
-      return;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const isApproved = await (wavesApi as any).resourceIsApproved();
-    if (!isApproved) {
-      return;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updatedPublicState = await (wavesApi as any).publicState();
-    if (!equals(updatedPublicState, publicState)) {
-      publicState = updatedPublicState;
-      eventEmitter.emit('update', updatedPublicState);
-    }
-  });
-  setupClickInterceptor(inpageApi);
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function setupClickInterceptor(inpageApi: any) {
-  const excludeSites = ['waves.exchange'];
-
-  if (excludeSites.includes(location.host)) {
-    return false;
+declare global {
+  interface KeeperApi extends __BackgroundPageApiDirect {
+    on(
+      event: 'update',
+      cb: (
+        state: Awaited<ReturnType<__BackgroundPageApiDirect['publicState']>>
+      ) => void
+    ): void;
+    initialPromise: Promise<typeof KeeperWallet>;
   }
 
-  document.addEventListener('click', e => {
-    const paymentApiResult = checkForPaymentApiLink(e);
-    try {
-      if (
-        paymentApiResult &&
-        processPaymentAPILink(paymentApiResult, inpageApi)
-      ) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    } catch {
-      // ignore errors
-    }
-  });
+  // eslint-disable-next-line no-var
+  var KeeperWallet: KeeperApi;
 }
 
-function checkForPaymentApiLink(e: MouseEvent) {
-  let node = e.target;
+function callBackground<K extends keyof __BackgroundPageApiDirect>(method: K) {
+  return (...args: Parameters<__BackgroundPageApiDirect[K]>) => {
+    const request = createMethodCallRequest(method, ...args);
 
-  // eslint-disable-next-line @typescript-eslint/no-shadow
-  const check = (node: EventTarget) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const href = (node as any).href;
+    postMessage(request, location.origin);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (!(node as any).href) {
-      return false;
-    }
-
-    try {
-      const url = new URL(href);
-
-      if (
-        ![
-          'client.wavesplatform.com',
-          'dex.wavesplatform.com',
-          'waves.exchange',
-        ].find(item => url.host === item)
-      ) {
-        return false;
-      }
-
-      if (!url.hash.indexOf('#gateway/auth')) {
-        return {
-          type: 'auth',
-          hash: url.hash,
-        };
-      }
-
-      if (!url.hash.indexOf('#send/') && url.hash.includes('strict=true')) {
-        return {
-          type: 'send',
-          hash: url.hash,
-        };
-      }
-
-      return false;
-    } catch (err) {
-      return false;
-    }
-  };
-
-  while (node) {
-    const result = check(node);
-    if (result) {
-      return result;
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    node = (node as any).parentElement;
-  }
-
-  return false;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function processPaymentAPILink({ type, hash }: any, inpageApi: any) {
-  const apiData = hash
-    .split('?')[1]
-    .split('&')
-    .reduce(
-      (obj: Record<string, string>, data: string) => {
-        const item = data.split('=');
-        obj[item[0]] = decodeURIComponent(item[1].trim());
-        return obj;
-      },
-      { type }
+    return pipe(
+      fromPostMessage(),
+      handleMethodCallResponse<
+        Awaited<ReturnType<__BackgroundPageApiDirect[K]>>
+      >(request)
     );
-
-  switch (apiData.type) {
-    case 'auth':
-      if (
-        !apiData.n ||
-        !apiData.d ||
-        !apiData.r ||
-        apiData.r.indexOf('https') !== 0
-      ) {
-        return false;
-      }
-
-      inpageApi.auth({
-        name: apiData.n,
-        data: apiData.d,
-        icon: apiData.i || '',
-        referrer: apiData.r || `${location.origin}`,
-        successPath: apiData.s || '/',
-      });
-      break;
-    case 'send': {
-      const assetId = hash.split('?')[0].replace('#send/', '');
-
-      if (!assetId || !apiData.amount) {
-        return false;
-      }
-
-      inpageApi.signAndPublishTransaction({
-        type: 4,
-        successPath: apiData.referrer,
-        data: {
-          amount: {
-            assetId,
-            tokens: apiData.amount,
-          },
-          fee: {
-            assetId: 'WAVES',
-            tokens: '0.00100000',
-          },
-          recipient: apiData.recipient,
-          attachment: apiData.attachment || '',
-        },
-      });
-      break;
-    }
-  }
-
-  return true;
+  };
 }
+
+global.KeeperWallet = {
+  auth: callBackground('auth'),
+  decryptMessage: callBackground('decryptMessage'),
+  encryptMessage: callBackground('encryptMessage'),
+  getKEK: callBackground('getKEK'),
+  notification: callBackground('notification'),
+  publicState: callBackground('publicState'),
+  resourceIsApproved: callBackground('resourceIsApproved'),
+  resourceIsBlocked: callBackground('resourceIsBlocked'),
+  signAndPublishCancelOrder: callBackground('signAndPublishCancelOrder'),
+  signAndPublishOrder: callBackground('signAndPublishOrder'),
+  signAndPublishTransaction: callBackground('signAndPublishTransaction'),
+  signCancelOrder: callBackground('signCancelOrder'),
+  signCustomData: callBackground('signCustomData'),
+  signOrder: callBackground('signOrder'),
+  signRequest: callBackground('signRequest'),
+  signTransaction: callBackground('signTransaction'),
+  signTransactionPackage: callBackground('signTransactionPackage'),
+  verifyCustomData: callBackground('verifyCustomData'),
+  wavesAuth: callBackground('wavesAuth'),
+  get initialPromise() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "You don't need to use initialPromise anymore. If KeeperWallet variable is defined, you can call any api it right away"
+    );
+    return Promise.resolve(global.KeeperWallet);
+  },
+  on: (event, cb) => {
+    let lastPublicState:
+      | Awaited<ReturnType<typeof KeeperWallet['publicState']>>
+      | undefined;
+
+    pipe(
+      fromPostMessage(),
+      filter(data => data.keeperMethod === 'updatePublicState'),
+      subscribe(async () => {
+        const isApproved = await KeeperWallet.resourceIsApproved();
+
+        if (!isApproved) {
+          return;
+        }
+
+        const updatedPublicState = await KeeperWallet.publicState();
+
+        if (!equals(updatedPublicState, lastPublicState)) {
+          lastPublicState = updatedPublicState;
+          cb(updatedPublicState);
+        }
+      })
+    );
+  },
+};
+
+function defineDeprecatedName(name: string) {
+  Object.defineProperty(window, name, {
+    configurable: true,
+    get() {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `${name} global variable is deprecated and will be removed in future releases, please update to use KeeperWallet instead`
+      );
+      return KeeperWallet;
+    },
+  });
+}
+
+defineDeprecatedName('WavesKeeper');
+defineDeprecatedName('Waves');

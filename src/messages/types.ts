@@ -114,10 +114,17 @@ export type MessageInput = {
         successPath?: string;
         type: typeof TRANSACTION_TYPE[keyof typeof TRANSACTION_TYPE];
         data: {
-          amount: IMoneyLike;
-          attachment: string;
+          alias?: string;
+          amount?: IMoneyLike | number;
+          attachment?: string;
+          data?: unknown;
           fee?: IMoneyLike;
-          recipient: string;
+          leaseId?: string;
+          minSponsoredAssetFee?: unknown;
+          name?: string;
+          recipient?: string;
+          reissuable?: boolean;
+          script?: string;
         };
       };
     }

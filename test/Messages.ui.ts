@@ -14,15 +14,12 @@ describe('Messages', function () {
   let tabOrigin: string;
   let messageWindow: string | null = null;
 
-  const sendNotification = (...args: unknown[]) => {
+  const sendNotification = (...args: [done: () => void]) => {
     const done = args[args.length - 1];
 
-    KeeperWallet.initialPromise.then(api => {
-      api
-        .notification({ title: 'Hello!', message: 'World!' })
-        .then(done)
-        .catch(done);
-    });
+    KeeperWallet.notification({ title: 'Hello!', message: 'World!' })
+      .then(done)
+      .catch(done);
   };
 
   before(async function () {

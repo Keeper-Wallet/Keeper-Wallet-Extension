@@ -14,8 +14,6 @@ Keeper Wallet разработан для удобства, чтобы поль�
 
 На страницах браузера, работающих по протоколу `http/https` (но не на локальных страницах с протоколом `file://`), с установленным расширением Keeper Wallet становится доступным глобальный объект `KeeperWallet`.
 
-> Глобальный объект `WavesKeeper` является **устаревшим** и не рекомендуется к использованию в будущем.
-
 В объекте `KeeperWallet` вы найдете следующие методы:
 
 - [publicState](#publicstate)
@@ -355,7 +353,7 @@ const authValidate = (
 };
 
 // Получение подписи
-const data = await WavesKeeper.auth({ data: '123' });
+const data = await KeeperWallet.auth({ data: '123' });
 
 authValidate(data, { host: data.host, data: '123' }); // true
 ```
@@ -373,7 +371,7 @@ const authValidate = (signature, data, publicKey, chainId) => {
 };
 
 // Получение подписи
-const data = await WavesKeeper.auth({ data: '123' });
+const data = await KeeperWallet.auth({ data: '123' });
 
 authValidate(data, { host: data.host, data: '123' }); // true
 ```
@@ -1300,7 +1298,7 @@ KeeperWallet.signAndPublishTransaction({
 Пример:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 17,
   data: {
     name: 'New name',

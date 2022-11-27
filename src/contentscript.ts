@@ -1,91 +1,54 @@
-import LocalMessageDuplexStream from 'post-message-stream';
+import pipe from 'callbag-pipe';
+import subscribe from 'callbag-subscribe';
+import {
+  filterMethodCallRequests,
+  fromPort,
+  fromPostMessage,
+  MethodCallResponsePayload,
+} from 'ipc/ipc';
 import Browser from 'webextension-polyfill';
 
-import { PortStream } from './lib/portStream';
+if (document.documentElement.tagName === 'HTML') {
+  const getPort = (() => {
+    let port: Browser.Runtime.Port | undefined;
 
-if (shouldInject()) {
-  injectBundle();
-  setupConnection();
-}
+    return () => {
+      if (!port) {
+        port = Browser.runtime.connect({ name: 'contentscript' });
 
-function injectBundle() {
-  const container = document.head || document.documentElement;
-  const script = document.createElement('script');
-  script.src = Browser.runtime.getURL('inpage.js');
-  container.insertBefore(script, container.children[0]);
+        pipe(
+          fromPort<MethodCallResponsePayload>(port),
+          subscribe({
+            next: message => {
+              postMessage(message, location.origin);
+            },
+            complete: () => {
+              port = undefined;
+            },
+          })
+        );
+      }
 
-  script.onload = () => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    script.parentElement!.removeChild(script);
-  };
-}
-
-function setupConnection() {
-  const pageStream = new LocalMessageDuplexStream({
-    name: 'waves_keeper_content',
-    target: 'waves_keeper_page',
-  });
-
-  Browser.storage.onChanged.addListener(() => {
-    pageStream.write({ name: 'updatePublicState' });
-  });
-
-  const connect = () => {
-    const pluginPort = Browser.runtime.connect({ name: 'contentscript' });
-    const pluginStream = new PortStream(pluginPort);
-
-    pageStream.pipe(pluginStream).pipe(pageStream);
-
-    const onDisconnect = (port: Browser.Runtime.Port) => {
-      port.onDisconnect.removeListener(onDisconnect);
-
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      pageStream.unpipe(pluginStream);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      pluginStream.unpipe(pageStream);
-
-      pluginStream.destroy();
-      connect();
+      return port;
     };
+  })();
 
-    pluginPort.onDisconnect.addListener(onDisconnect);
-  };
+  document.head.appendChild(
+    Object.assign(document.createElement('script'), {
+      src: Browser.runtime.getURL('inpage.js'),
+      onload: () => {
+        pipe(
+          fromPostMessage(),
+          filterMethodCallRequests,
+          subscribe(data => {
+            getPort().postMessage(data);
+          })
+        );
 
-  connect();
-}
-
-function shouldInject() {
-  return doctypeCheck() && suffixCheck() && documentElementCheck();
-}
-
-function doctypeCheck() {
-  const doctype = window.document.doctype;
-  if (doctype) {
-    return doctype.name === 'html';
-  } else {
-    return true;
-  }
-}
-
-function suffixCheck() {
-  const prohibitedTypes = ['xml', 'pdf'];
-  const currentUrl = window.location.href;
-  let currentRegex;
-  for (let i = 0; i < prohibitedTypes.length; i++) {
-    currentRegex = new RegExp(`\\.${prohibitedTypes[i]}$`);
-    if (currentRegex.test(currentUrl)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-function documentElementCheck() {
-  const documentElement = document.documentElement.nodeName;
-  if (documentElement) {
-    return documentElement.toLowerCase() === 'html';
-  }
-  return true;
+        Browser.storage.onChanged.addListener(() => {
+          postMessage({ keeperMethod: 'updatePublicState' }, location.origin);
+        });
+      },
+    })
+  );
 }
