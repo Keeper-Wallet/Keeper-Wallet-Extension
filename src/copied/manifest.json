@@ -29,9 +29,9 @@
   },
   "content_scripts": [
     {
-      "matches": ["file://*/*", "http://*/*", "https://*/*"],
+      "matches": ["http://*/*", "https://*/*"],
       "js": ["contentscript.js"],
-      "run_at": "document_start",
+      "run_at": "document_end",
       "all_frames": true
     }
   ],

@@ -179,7 +179,7 @@ describe('Signature', function () {
     it('removes messages and closes window when tab is reloaded', async function () {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(() => {
-        KeeperWallet.initialPromise.then(api => api.auth({ data: 'hello' }));
+        KeeperWallet.auth({ data: 'hello' });
       });
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
@@ -215,7 +215,7 @@ describe('Signature', function () {
 
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(() => {
-        KeeperWallet.initialPromise.then(api => api.auth({ data: 'hello' }));
+        KeeperWallet.auth({ data: 'hello' });
       });
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
@@ -248,7 +248,7 @@ describe('Signature', function () {
     it('does not close message window, if there are other messages left', async function () {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(() => {
-        KeeperWallet.initialPromise.then(api => api.auth({ data: 'hello' }));
+        KeeperWallet.auth({ data: 'hello' });
       });
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
@@ -263,7 +263,7 @@ describe('Signature', function () {
       await this.driver.get(`https://${CUSTOMLIST[1]}`);
 
       await this.driver.executeScript(() => {
-        KeeperWallet.initialPromise.then(api => api.auth({ data: 'hello' }));
+        KeeperWallet.auth({ data: 'hello' });
       });
 
       await this.driver.switchTo().window(messageWindow);
@@ -298,16 +298,14 @@ describe('Signature', function () {
     async function performPermissionRequest(this: mocha.Context) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(() => {
-        KeeperWallet.initialPromise
-          .then(api => api.publicState())
-          .then(
-            result => {
-              window.result = JSON.stringify(['RESOLVED', result]);
-            },
-            err => {
-              window.result = JSON.stringify(['REJECTED', err]);
-            }
-          );
+        KeeperWallet.publicState().then(
+          result => {
+            window.result = JSON.stringify(['RESOLVED', result]);
+          },
+          err => {
+            window.result = JSON.stringify(['REJECTED', err]);
+          }
+        );
       });
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
@@ -444,16 +442,14 @@ describe('Signature', function () {
     async function performAuthRequest(this: mocha.Context) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(() => {
-        KeeperWallet.initialPromise
-          .then(api => api.auth({ data: 'generated auth data' }))
-          .then(
-            result => {
-              window.result = JSON.stringify(['RESOLVED', result]);
-            },
-            err => {
-              window.result = JSON.stringify(['REJECTED', err]);
-            }
-          );
+        KeeperWallet.auth({ data: 'generated auth data' }).then(
+          result => {
+            window.result = JSON.stringify(['RESOLVED', result]);
+          },
+          err => {
+            window.result = JSON.stringify(['REJECTED', err]);
+          }
+        );
       });
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
@@ -525,24 +521,19 @@ describe('Signature', function () {
       await this.driver.executeScript(
         // eslint-disable-next-line @typescript-eslint/no-shadow
         (senderPublicKey: string, timestamp: number) => {
-          KeeperWallet.initialPromise
-            .then(api =>
-              api.signRequest({
-                type: 1001,
-                data: {
-                  senderPublicKey,
-                  timestamp,
-                },
-              })
-            )
-            .then(
-              result => {
-                window.result = JSON.stringify(['RESOLVED', result]);
-              },
-              err => {
-                window.result = JSON.stringify(['REJECTED', err]);
-              }
-            );
+          KeeperWallet.signRequest({
+            data: {
+              senderPublicKey,
+              timestamp,
+            },
+          }).then(
+            result => {
+              window.result = JSON.stringify(['RESOLVED', result]);
+            },
+            err => {
+              window.result = JSON.stringify(['REJECTED', err]);
+            }
+          );
         },
         senderPublicKey,
         timestamp
@@ -605,16 +596,14 @@ describe('Signature', function () {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-shadow
       await this.driver.executeScript((tx: any) => {
-        KeeperWallet.initialPromise
-          .then(api => api.signTransaction(tx))
-          .then(
-            result => {
-              window.result = JSON.stringify(['RESOLVED', result]);
-            },
-            err => {
-              window.result = JSON.stringify(['REJECTED', err]);
-            }
-          );
+        KeeperWallet.signTransaction(tx).then(
+          result => {
+            window.result = JSON.stringify(['RESOLVED', result]);
+          },
+          err => {
+            window.result = JSON.stringify(['REJECTED', err]);
+          }
+        );
       }, tx);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
@@ -632,7 +621,7 @@ describe('Signature', function () {
     }
 
     function setTxVersion(
-      tx: WavesKeeper.TSignTransactionData,
+      tx: Parameters<typeof KeeperWallet['signTransaction']>[0],
       version: number
     ) {
       return { ...tx, data: { ...tx.data, version } };
@@ -3397,35 +3386,33 @@ describe('Signature', function () {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const createOrder = (tx: any) => {
-      KeeperWallet.initialPromise
-        .then(api => api.signOrder(tx))
-        .then(
-          result => {
-            window.result = result;
-          },
-          () => {
-            window.result = null;
-          }
-        );
+      KeeperWallet.signOrder(tx).then(
+        result => {
+          window.result = result;
+        },
+        () => {
+          window.result = null;
+        }
+      );
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const cancelOrder = (tx: any) => {
-      KeeperWallet.initialPromise
-        .then(api => api.signCancelOrder(tx))
-        .then(
-          result => {
-            window.result = result;
-          },
-          () => {
-            window.result = null;
-          }
-        );
+      KeeperWallet.signCancelOrder(tx).then(
+        result => {
+          window.result = result;
+        },
+        () => {
+          window.result = null;
+        }
+      );
     };
 
     async function performSignOrder(
       this: mocha.Context,
-      script: (tx: WavesKeeper.TSignTransactionData) => void,
+      script: (
+        tx: Parameters<typeof KeeperWallet['signTransaction']>[0]
+      ) => void,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       tx: any
     ) {
@@ -4056,23 +4043,25 @@ describe('Signature', function () {
   describe('Multiple transactions package', function () {
     async function performSignTransactionPackage(
       this: mocha.Context,
-      tx: WavesKeeper.TSignTransactionData[],
+      tx: Array<Parameters<typeof KeeperWallet['signTransaction']>[0]>,
       name: string
     ) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        (tx: WavesKeeper.TSignTransactionData[], name: string) => {
-          KeeperWallet.initialPromise
-            .then(api => api.signTransactionPackage(tx, name))
-            .then(
-              result => {
-                window.result = result;
-              },
-              () => {
-                window.result = null;
-              }
-            );
+        (
+          // eslint-disable-next-line @typescript-eslint/no-shadow
+          tx: Array<Parameters<typeof KeeperWallet['signTransaction']>[0]>,
+          // eslint-disable-next-line @typescript-eslint/no-shadow
+          name: string
+        ) => {
+          KeeperWallet.signTransactionPackage(tx, name).then(
+            result => {
+              window.result = result;
+            },
+            () => {
+              window.result = null;
+            }
+          );
         },
         tx,
         name
@@ -4558,16 +4547,14 @@ describe('Signature', function () {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-shadow
       await this.driver.executeScript((data: any) => {
-        KeeperWallet.initialPromise
-          .then(api => api.signCustomData(data))
-          .then(
-            result => {
-              window.result = JSON.stringify(result);
-            },
-            () => {
-              window.result = null;
-            }
-          );
+        KeeperWallet.signCustomData(data).then(
+          result => {
+            window.result = JSON.stringify(result);
+          },
+          () => {
+            window.result = null;
+          }
+        );
       }, data);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);

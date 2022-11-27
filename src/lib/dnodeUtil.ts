@@ -5,18 +5,13 @@ import pump from 'pump';
 export function setupDnode(
   connectionStream: pump.Stream,
   api: Record<string, unknown>,
-  name: string,
-  additional?: string
+  name: string
 ) {
   const mux = new ObjectMultiplex();
   pump(connectionStream, mux, connectionStream);
 
   const apiStream = mux.createStream(name);
   const dnode = Dnode(transformMethods(promiseToCb, api));
-
-  if (additional) {
-    mux.createStream(additional);
-  }
 
   pump(apiStream, dnode, apiStream);
 

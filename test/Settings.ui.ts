@@ -412,16 +412,14 @@ describe('Settings', function () {
       ) {
         // this requests permission first
         const permissionRequest = () => {
-          KeeperWallet.initialPromise.then(api => {
-            api.publicState().then(
-              (resolved: unknown) => {
-                window.result = resolved;
-              },
-              (rejected: unknown) => {
-                window.result = rejected;
-              }
-            );
-          });
+          KeeperWallet.publicState().then(
+            resolved => {
+              window.result = resolved;
+            },
+            rejected => {
+              window.result = rejected;
+            }
+          );
         };
 
         await this.driver.get(`https://${origin}`);

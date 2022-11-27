@@ -14,8 +14,6 @@ Keeper Wallet is designed for convenience, so users can sign transactions with j
 
 On browser pages that operate under `http/https` (not local pages with `file://` protocol) with Keeper Wallet extension installed, `KeeperWallet` global object becomes available.
 
-> `WavesKeeper` global object is **deprecated** and is not recommended for future use.
-
 In `KeeperWallet` you will find the following methods:
 
 - [publicState](#publicstate)
@@ -344,7 +342,7 @@ const authValidate = (
 };
 
 // Obtaining the signature
-const data = await WavesKeeper.auth({ data: '123' });
+const data = await KeeperWallet.auth({ data: '123' });
 
 authValidate(data, { host: data.host, data: '123' }); // true
 ```
@@ -362,7 +360,7 @@ const authValidate = (signature, data, publicKey, chainId) => {
 };
 
 // Obtaining the signature
-const data = await WavesKeeper.auth({ data: '123' });
+const data = await KeeperWallet.auth({ data: '123' });
 
 authValidate(data, { host: data.host, data: '123' }); // true
 ```

@@ -3,8 +3,15 @@ import { verifyCustomData } from '@waves/waves-transactions';
 import { TSignedData } from '@waves/waves-transactions/dist/requests/custom-data';
 import { BalancesItem } from 'balances/types';
 import { collectBalances } from 'balances/utils';
+import pipe from 'callbag-pipe';
+import subscribe from 'callbag-subscribe';
 import EventEmitter from 'events';
 import { SUPPORTED_LANGUAGES } from 'i18n/constants';
+import {
+  fromPort,
+  handleMethodCallRequests,
+  MethodCallRequestPayload,
+} from 'ipc/ipc';
 import { ERRORS } from 'lib/keeperError';
 import { PortStream } from 'lib/portStream';
 import { TabsManager } from 'lib/tabsManager';
@@ -911,11 +918,9 @@ class BackgroundService extends EventEmitter {
     };
 
     return {
-      // api
-
       signOrder: async (
         data: MessageInputOfType<'order'>['data'],
-        options: MessageInputOfType<'order'>['options']
+        options?: MessageInputOfType<'order'>['options']
       ) => {
         return await newMessage(data, 'order', options, false);
       },
@@ -927,7 +932,7 @@ class BackgroundService extends EventEmitter {
       },
       signCancelOrder: async (
         data: MessageInputOfType<'cancelOrder'>['data'],
-        options: MessageInputOfType<'cancelOrder'>['options']
+        options?: MessageInputOfType<'cancelOrder'>['options']
       ) => {
         return await newMessage(data, 'cancelOrder', options, false);
       },
@@ -939,14 +944,14 @@ class BackgroundService extends EventEmitter {
       },
       signTransaction: async (
         data: MessageInputOfType<'transaction'>['data'],
-        options: MessageInputOfType<'transaction'>['options']
+        options?: MessageInputOfType<'transaction'>['options']
       ) => {
         return await newMessage(data, 'transaction', options, false);
       },
       signTransactionPackage: async (
         data: MessageInputOfType<'transactionPackage'>['data'],
         title: string | undefined,
-        options: MessageInputOfType<'transactionPackage'>['options']
+        options?: MessageInputOfType<'transactionPackage'>['options']
       ) => {
         return await newMessage(
           data,
@@ -958,19 +963,19 @@ class BackgroundService extends EventEmitter {
       },
       signAndPublishTransaction: async (
         data: MessageInputOfType<'transaction'>['data'],
-        options: MessageInputOfType<'transaction'>['options']
+        options?: MessageInputOfType<'transaction'>['options']
       ) => {
         return await newMessage(data, 'transaction', options, true);
       },
       auth: async (
         data: MessageInputOfType<'auth'>['data'],
-        options: MessageInputOfType<'auth'>['options']
+        options?: MessageInputOfType<'auth'>['options']
       ) => {
         return await newMessage(data, 'auth', options, false);
       },
       wavesAuth: async (
         data: MessageInputOfType<'wavesAuth'>['data'],
-        options: MessageInputOfType<'wavesAuth'>['options']
+        options?: MessageInputOfType<'wavesAuth'>['options']
       ) => {
         const publicKey = data && data.publicKey;
         const timestamp = (data && data.timestamp) || Date.now();
@@ -983,13 +988,13 @@ class BackgroundService extends EventEmitter {
       },
       signRequest: async (
         data: MessageInputOfType<'request'>['data'],
-        options: MessageInputOfType<'request'>['options']
+        options?: MessageInputOfType<'request'>['options']
       ) => {
         return await newMessage(data, 'request', options, false);
       },
       signCustomData: async (
         data: MessageInputOfType<'customData'>['data'],
-        options: MessageInputOfType<'customData'>['options']
+        options?: MessageInputOfType<'customData'>['options']
       ) => {
         return await newMessage(data, 'customData', options, false);
       },
@@ -1156,8 +1161,8 @@ class BackgroundService extends EventEmitter {
     dnode.on('remote', remoteHandler);
   }
 
-  setupPageConnection(remotePort: Browser.Runtime.Port) {
-    const { sender } = remotePort;
+  setupPageConnection(port: Browser.Runtime.Port) {
+    const { sender } = port;
 
     if (!sender || !sender.url) {
       return;
@@ -1167,26 +1172,26 @@ class BackgroundService extends EventEmitter {
     const connectionId = nanoid();
     const inpageApi = this.getInpageApi(origin, connectionId);
 
-    const dnode = setupDnode(
-      new PortStream(remotePort),
-      inpageApi,
-      'inpageApi'
+    pipe(
+      fromPort<MethodCallRequestPayload<keyof typeof inpageApi>>(port),
+      handleMethodCallRequests(inpageApi, result => port.postMessage(result)),
+      subscribe({
+        complete: () => {
+          this.messageController.removeMessagesFromConnection(connectionId);
+
+          const messages = this.messageController.getUnapproved();
+
+          const notifications =
+            this.notificationsController.getGroupNotificationsByAccount(
+              this.preferencesController.getSelectedAccount()
+            );
+
+          if (messages.length === 0 && notifications.length === 0) {
+            this.emit('Close notification');
+          }
+        },
+      })
     );
-
-    dnode.once('end', () => {
-      this.messageController.removeMessagesFromConnection(connectionId);
-
-      const messages = this.messageController.getUnapproved();
-
-      const notifications =
-        this.notificationsController.getGroupNotificationsByAccount(
-          this.preferencesController.getSelectedAccount()
-        );
-
-      if (messages.length === 0 && notifications.length === 0) {
-        this.emit('Close notification');
-      }
-    });
   }
 
   _getCurrentNetwork(account: PreferencesAccount | undefined) {
@@ -1268,3 +1273,7 @@ class BackgroundService extends EventEmitter {
 }
 
 export type __BackgroundUiApiDirect = ReturnType<BackgroundService['getApi']>;
+
+export type __BackgroundPageApiDirect = ReturnType<
+  BackgroundService['getInpageApi']
+>;
