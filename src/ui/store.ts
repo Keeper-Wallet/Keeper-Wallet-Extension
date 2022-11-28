@@ -1,15 +1,6 @@
-import { AssetsRecord } from 'assets/types';
-import { BalancesItem } from 'balances/types';
-import { MessageStoreItem } from 'messages/types';
-import { NetworkName } from 'networks/types';
-import { NftInfo } from 'nfts/nfts';
-import { NotificationsStoreItem } from 'notifications/types';
-import { PermissionValue } from 'permissions/types';
-import { IdleOptions, PreferencesAccount } from 'preferences/types';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import {
   applyMiddleware,
-  combineReducers,
   createStore,
   Dispatch,
   MiddlewareAPI,
@@ -18,19 +9,25 @@ import {
 import { createLogger } from 'redux-logger';
 import thunk, { ThunkAction, ThunkDispatch } from 'redux-thunk';
 
-import { FeeConfig, NftConfig } from '../constants';
+import type { AssetsRecord } from '../assets/types';
+import type { BalancesItem } from '../balances/types';
+import type { FeeConfig, NftConfig } from '../constants';
+import type { MessageStoreItem } from '../messages/types';
+import type { NetworkName } from '../networks/types';
+import type { NftInfo } from '../nfts/nfts';
+import type { NotificationsStoreItem } from '../notifications/types';
+import type { PermissionValue } from '../permissions/types';
+import type { IdleOptions, PreferencesAccount } from '../preferences/types';
 import type { ACTION } from './actions/constants';
 import { KEEPERWALLET_DEBUG } from './appConfig';
 import * as middleware from './midleware';
-import * as reducers from './reducers/updateState';
-import { NewAccountState, UiState } from './reducers/updateState';
-import {
+import { reducer } from './reducer';
+import type { NewAccountState, UiState } from './reducers/updateState';
+import type {
   BackgroundGetStateResult,
   BackgroundUiApi,
 } from './services/Background';
-import { IMoneyLike } from './utils/converters';
-
-const reducer = combineReducers(reducers);
+import type { IMoneyLike } from './utils/converters';
 
 export type AppState = ReturnType<typeof reducer>;
 
@@ -82,7 +79,7 @@ export type UiAction =
     }
   | {
       type: typeof ACTION.UPDATE_UI_STATE;
-      payload: reducers.UiState;
+      payload: UiState;
       meta?: never;
     }
   | {
@@ -458,7 +455,7 @@ export type UiActionPayload<T extends UiAction['type']> =
 export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
 
 export function createUiStore(preloadedState: PreloadedState<AppState>) {
-  return createStore<
+  const store = createStore<
     AppState,
     UiAction,
     {
@@ -481,6 +478,14 @@ export function createUiStore(preloadedState: PreloadedState<AppState>) {
         : [])
     )
   );
+
+  if (import.meta.webpackHot) {
+    import.meta.webpackHot.accept('./reducer', () => {
+      store.replaceReducer(reducer);
+    });
+  }
+
+  return store;
 }
 
 export type UiStore = ReturnType<typeof createUiStore>;
