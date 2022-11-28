@@ -26,7 +26,7 @@ const proxy = createIpcCallProxy<
   __BackgroundPageApiDirect
 >(request => postMessage(request, location.origin), fromPostMessage());
 
-global.KeeperWallet = {
+globalThis.KeeperWallet = {
   auth: proxy.auth,
   decryptMessage: proxy.decryptMessage,
   encryptMessage: proxy.encryptMessage,
@@ -51,7 +51,7 @@ global.KeeperWallet = {
     console.warn(
       "You don't need to use initialPromise anymore. If KeeperWallet variable is defined, you can call any api it right away"
     );
-    return Promise.resolve(global.KeeperWallet);
+    return Promise.resolve(globalThis.KeeperWallet);
   },
   on: (event, cb) => {
     let lastPublicState:
