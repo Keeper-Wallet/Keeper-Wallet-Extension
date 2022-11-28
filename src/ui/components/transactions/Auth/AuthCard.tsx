@@ -114,7 +114,7 @@ class AuthCardComponent extends PureComponent<
                 canUseIcon={canUseIcon}
               />
               <div>
-                <div className="body1 font600 margin-min">{name}</div>
+                <div className="body1 font700 margin-min">{name}</div>
               </div>
             </div>
           )}

@@ -1,0 +1,88 @@
+@import 'normalize.css';
+@import './fonts/_fonts.css';
+
+:root {
+  --color-black: #000;
+  --color-white: #fff;
+  --color-accent50: #e9e9eb;
+  --color-basic50: #f8f9fb;
+  --color-basic100: #edf0f4;
+  --color-basic200: #dae1e9;
+  --color-basic500: #9ba6b2;
+  --color-disabled500: #999;
+  --color-submit200: #bacaf4;
+  --color-submit300: #5a81ea;
+  --color-submit400: #1f5af6;
+  --color-success400: #4aad02;
+  --color-error400: #e5494d;
+  --color-warning400: #e5be4d;
+  box-sizing: border-box;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 600px;
+  background: var(--color-accent50);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+* {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+*::-webkit-scrollbar {
+  position: relative;
+  z-index: 4;
+  width: 4px;
+  height: 8px;
+  background-color: var(--color-white);
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  background: var(--color-black);
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 357px;
+  height: 100%;
+  min-height: 600px;
+  overflow: hidden;
+  font-family: Roboto, Noto-Sans-Th, Noto-Sans-Zh, Noto-Sans-Ja, system-ui,
+    sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  line-height: normal;
+}
+
+#app-content {
+  position: absolute;
+  margin: auto;
+  background-color: var(--color-white);
+}
+
+#app-content,
+.app {
+  width: 357px;
+  height: 600px;
+  overflow: hidden;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+button,
+label {
+  cursor: pointer;
+}

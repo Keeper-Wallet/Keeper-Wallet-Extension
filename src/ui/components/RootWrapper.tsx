@@ -7,14 +7,11 @@ interface Props {
 }
 
 export function RootWrapper({ children }: Props) {
-  const currentLocale = useAppSelector(state => state.currentLocale);
   const isLoading = useAppSelector(state => state.localState.loading);
 
   return (
     <div className="app">
-      <div className={`height ${currentLocale}`}>
-        {isLoading ? <LoadingScreen /> : children}
-      </div>
+      <div className="height">{isLoading ? <LoadingScreen /> : children}</div>
     </div>
   );
 }

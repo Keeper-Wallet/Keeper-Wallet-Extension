@@ -34,7 +34,7 @@
   display: flex;
   align-items: center;
   height: 44px;
-  font-weight: 400;
+  font-weight: normal;
   cursor: pointer;
 }
 

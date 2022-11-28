@@ -96,7 +96,7 @@ const BalanceComponent = ({
     <>
       <div {...props} className={`${styles.amount} ${className}`}>
         {addSign ? <span>{addSign}</span> : null}
-        <span className="font600">{tokens[0]}</span>
+        <span className="font700">{tokens[0]}</span>
         {tokens[1] ? (
           <span className="font400">
             {SEPARATOR}

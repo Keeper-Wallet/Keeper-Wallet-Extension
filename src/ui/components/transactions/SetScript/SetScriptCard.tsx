@@ -47,7 +47,7 @@ class SetScriptCardComponent extends PureComponent<
         </div>
         {!collapsed ? (
           <>
-            <div className="font600 tag1 basic500 margin-min margin-main-top">
+            <div className="font700 tag1 basic500 margin-min margin-main-top">
               {t('transactions.scriptWarningHeader')}
             </div>
 

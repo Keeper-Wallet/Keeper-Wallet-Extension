@@ -17,7 +17,7 @@
 .title {
   overflow: hidden;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: bold;
   font-style: normal;
   line-height: 21px;
   text-overflow: ellipsis;

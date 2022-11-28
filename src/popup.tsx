@@ -1,4 +1,4 @@
-import './ui/styles/global.css';
+import './global.css';
 import './ui/styles/app.styl';
 import './ui/styles/icons.styl';
 
