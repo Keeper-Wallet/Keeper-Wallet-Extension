@@ -29,8 +29,8 @@ function startsWith(source: string, target: string, flags = 'i'): boolean {
   return !!source.match(new RegExp(`^${target}`, flags));
 }
 
-const fetch = global.fetch;
-global.fetch = (
+const fetch = globalThis.fetch;
+globalThis.fetch = (
   endpoint: RequestInfo | URL,
   { headers = {}, ...options }: RequestInit = {}
 ) => {
