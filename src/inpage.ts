@@ -4,11 +4,7 @@ import subscribe from 'callbag-subscribe';
 import { equals } from 'ramda';
 
 import type { __BackgroundPageApiDirect } from './background';
-import {
-  createMethodCallRequest,
-  fromPostMessage,
-  handleMethodCallResponse,
-} from './ipc/ipc';
+import { createIpcCallProxy, fromPostMessage } from './ipc/ipc';
 
 declare global {
   interface KeeperApi extends __BackgroundPageApiDirect {
@@ -25,41 +21,31 @@ declare global {
   var KeeperWallet: KeeperApi;
 }
 
-function callBackground<K extends keyof __BackgroundPageApiDirect>(method: K) {
-  return (...args: Parameters<__BackgroundPageApiDirect[K]>) => {
-    const request = createMethodCallRequest(method, ...args);
-
-    postMessage(request, location.origin);
-
-    return pipe(
-      fromPostMessage(),
-      handleMethodCallResponse<
-        Awaited<ReturnType<__BackgroundPageApiDirect[K]>>
-      >(request)
-    );
-  };
-}
+const proxy = createIpcCallProxy<__BackgroundPageApiDirect>(
+  request => postMessage(request, location.origin),
+  fromPostMessage()
+);
 
 global.KeeperWallet = {
-  auth: callBackground('auth'),
-  decryptMessage: callBackground('decryptMessage'),
-  encryptMessage: callBackground('encryptMessage'),
-  getKEK: callBackground('getKEK'),
-  notification: callBackground('notification'),
-  publicState: callBackground('publicState'),
-  resourceIsApproved: callBackground('resourceIsApproved'),
-  resourceIsBlocked: callBackground('resourceIsBlocked'),
-  signAndPublishCancelOrder: callBackground('signAndPublishCancelOrder'),
-  signAndPublishOrder: callBackground('signAndPublishOrder'),
-  signAndPublishTransaction: callBackground('signAndPublishTransaction'),
-  signCancelOrder: callBackground('signCancelOrder'),
-  signCustomData: callBackground('signCustomData'),
-  signOrder: callBackground('signOrder'),
-  signRequest: callBackground('signRequest'),
-  signTransaction: callBackground('signTransaction'),
-  signTransactionPackage: callBackground('signTransactionPackage'),
-  verifyCustomData: callBackground('verifyCustomData'),
-  wavesAuth: callBackground('wavesAuth'),
+  auth: proxy.auth,
+  decryptMessage: proxy.decryptMessage,
+  encryptMessage: proxy.encryptMessage,
+  getKEK: proxy.getKEK,
+  notification: proxy.notification,
+  publicState: proxy.publicState,
+  resourceIsApproved: proxy.resourceIsApproved,
+  resourceIsBlocked: proxy.resourceIsBlocked,
+  signAndPublishCancelOrder: proxy.signAndPublishCancelOrder,
+  signAndPublishOrder: proxy.signAndPublishOrder,
+  signAndPublishTransaction: proxy.signAndPublishTransaction,
+  signCancelOrder: proxy.signCancelOrder,
+  signCustomData: proxy.signCustomData,
+  signOrder: proxy.signOrder,
+  signRequest: proxy.signRequest,
+  signTransaction: proxy.signTransaction,
+  signTransactionPackage: proxy.signTransactionPackage,
+  verifyCustomData: proxy.verifyCustomData,
+  wavesAuth: proxy.wavesAuth,
   get initialPromise() {
     // eslint-disable-next-line no-console
     console.warn(
