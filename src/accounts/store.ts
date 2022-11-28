@@ -1,34 +1,12 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import {
-  applyMiddleware,
-  combineReducers,
-  createStore,
-  PreloadedState,
-} from 'redux';
+import { applyMiddleware, createStore, PreloadedState } from 'redux';
 import { createLogger } from 'redux-logger';
 import thunk, { ThunkAction, ThunkDispatch } from 'redux-thunk';
-import { KEEPERWALLET_DEBUG } from 'ui/appConfig';
-import * as middleware from 'ui/midleware';
-import * as reducers from 'ui/reducers/updateState';
-import { UiAction } from 'ui/store';
 
-const reducer = combineReducers({
-  addresses: reducers.addresses,
-  accounts: reducers.accounts,
-  currentLocale: reducers.currentLocale,
-  state: reducers.state,
-  selectedAccount: reducers.selectedAccount,
-  currentNetwork: reducers.currentNetwork,
-  customCodes: reducers.customCodes,
-  customNodes: reducers.customNodes,
-  customMatcher: reducers.customMatcher,
-  networks: reducers.networks,
-  idleOptions: reducers.idleOptions,
-  version: reducers.version,
-  localState: reducers.localState,
-  uiState: reducers.uiState,
-  allNetworksAccounts: reducers.allNetworksAccounts,
-});
+import { KEEPERWALLET_DEBUG } from '../ui/appConfig';
+import * as middleware from '../ui/midleware';
+import type { UiAction } from '../ui/store';
+import { reducer } from './reducer';
 
 export type AccountsState = ReturnType<typeof reducer>;
 
@@ -38,7 +16,7 @@ export const useAccountsSelector: TypedUseSelectorHook<AccountsState> =
 export function createAccountsStore(
   preloadedState: PreloadedState<AccountsState>
 ) {
-  return createStore<
+  const store = createStore<
     AccountsState,
     UiAction,
     {
@@ -61,6 +39,14 @@ export function createAccountsStore(
         : [])
     )
   );
+
+  if (import.meta.webpackHot) {
+    import.meta.webpackHot.accept('./reducer', () => {
+      store.replaceReducer(reducer);
+    });
+  }
+
+  return store;
 }
 
 export type AccountsStore = ReturnType<typeof createAccountsStore>;
