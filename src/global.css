@@ -33,18 +33,17 @@
   margin: 0;
   border: 0;
   padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-black) var(--color-white);
 }
 
 *::-webkit-scrollbar {
-  position: relative;
-  z-index: 4;
-  width: 4px;
-  height: 8px;
+  width: 5px;
   background-color: var(--color-white);
 }
 
 *::-webkit-scrollbar-thumb {
-  border-radius: 2px;
+  border-radius: 5px;
   background: var(--color-black);
 }
 
