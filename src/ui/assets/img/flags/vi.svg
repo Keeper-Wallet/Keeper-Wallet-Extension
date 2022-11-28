@@ -1,4 +1,1 @@
-<svg width="18"  height="18" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
-    <rect width="30" height="20" fill="#da251d"/>
-    <polygon points="15,4 11.47,14.85 20.71,8.15 9.29,8.15 18.53,14.85" fill="#ff0"/>
-</svg>
+<svg height="18" viewBox="0 0 30 20" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h30v20H0z" fill="#da251d"/><path d="m15 4-3.53 10.85 9.24-6.7H9.29l9.24 6.7z" fill="#ff0"/></svg>
