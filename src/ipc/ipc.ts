@@ -85,9 +85,33 @@ export function handleMethodCallRequests<K extends string>(
     const { id, method, args } = data.keeperMethodCallRequest;
 
     try {
-      sendResult({
-        keeperMethodCallResponse: { id, data: await api[method](...args) },
-      });
+      const result = await api[method](...args);
+
+      try {
+        sendResult({
+          keeperMethodCallResponse: { id, data: result },
+        });
+      } catch (err) {
+        if (
+          err instanceof DOMException &&
+          (err.code === 25 || err.name === 'DataCloneError')
+        ) {
+          // eslint-disable-next-line no-console
+          console.error(
+            `Method ${method} returned not clonable response, fix it please: ${err}`
+          );
+
+          sendResult({
+            keeperMethodCallResponse: {
+              id,
+              data: JSON.parse(JSON.stringify(result)),
+            },
+          });
+          return;
+        }
+
+        throw err;
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       sendResult({
