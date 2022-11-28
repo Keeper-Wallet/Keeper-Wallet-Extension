@@ -100,7 +100,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const transfer = txInfo.stateChanges.transfers.find(
               // eslint-disable-next-line @typescript-eslint/no-shadow
-              t => t.address === selectedAccount.address
+              t => t.address === selectedAccount?.address
             )!;
 
             setReceivedMoney(
@@ -159,7 +159,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAccount.address, server, transactionId]);
+  }, [selectedAccount?.address, server, transactionId]);
 
   const explorerBaseUrl = explorerBaseUrlsByNetwork[currentNetwork];
 

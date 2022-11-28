@@ -24,11 +24,11 @@ export function Send() {
   const dispatch = useAppDispatch();
   const chainId = useAppSelector(state =>
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state.selectedAccount.networkCode!.charCodeAt(0)
+    state.selectedAccount?.networkCode!.charCodeAt(0)
   );
   const accountBalance = useAppSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state => state.balances[state.selectedAccount.address!]
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+    state => state.balances[state.selectedAccount?.address!]
   );
   const assetBalances = accountBalance?.assets;
   const assets = useAppSelector(state => state.assets);
@@ -40,8 +40,8 @@ export function Send() {
     asset && asset.precision === 0 && asset.quantity === 1 && !asset.reissuable;
 
   const userAddress = useAppSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state => state.selectedAccount.address!
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+    state => state.selectedAccount?.address!
   );
 
   const nftInfo = useAppSelector(state => asset && state.nfts?.[asset.id]);

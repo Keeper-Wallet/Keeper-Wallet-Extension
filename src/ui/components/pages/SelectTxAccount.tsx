@@ -20,7 +20,7 @@ import { LoadingScreen } from './loadingScreen';
 import * as styles from './styles/selectTxAccount.styl';
 
 interface StateProps {
-  selectAccount: Partial<PreferencesAccount>;
+  selectAccount: PreferencesAccount | undefined;
   messages: MessageStoreItem[];
   notifications: NotificationsStoreItem[][];
   activeMessage: MessageStoreItem | null;
@@ -100,7 +100,8 @@ class SelectTxAccountComponent extends PureComponent<Props, State> {
         <TransactionWallet
           className={styles.userWallet}
           hideButton
-          account={this.props.selectAccount}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          account={this.props.selectAccount!}
         >
           <div
             className={styles.closeIcon}

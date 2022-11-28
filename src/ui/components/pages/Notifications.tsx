@@ -54,7 +54,7 @@ const NotificationItem = ({
 };
 
 interface StateProps {
-  selectedAccount: Partial<PreferencesAccount>;
+  selectedAccount: PreferencesAccount | undefined;
   activeNotification: NotificationsStoreItem[] | null;
   origins: Record<string, PermissionValue[]>;
   messages: MessageStoreItem[];
@@ -185,7 +185,8 @@ class NotificationsComponent extends Component<Props, State> {
             onSelect={() => {
               this.props.navigate('/change-tx-account');
             }}
-            account={this.props.selectedAccount}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            account={this.props.selectedAccount!}
             hideButton={false}
           />
         </div>

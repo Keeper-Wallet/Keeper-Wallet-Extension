@@ -67,9 +67,9 @@ export const state = createSimpleReducer(null, ACTION.UPDATE_APP_STATE);
 
 export function selectedAccount(
   // eslint-disable-next-line @typescript-eslint/no-shadow
-  state: Partial<PreferencesAccount> = {},
+  state: PreferencesAccount | undefined = {} as unknown as undefined,
   action: UiAction
-) {
+): PreferencesAccount | undefined {
   switch (action.type) {
     case ACTION.SELECT_ACCOUNT:
     case ACTION.UPDATE_SELECTED_ACCOUNT:

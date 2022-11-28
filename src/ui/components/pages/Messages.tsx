@@ -28,7 +28,7 @@ interface StateProps {
   balance: BalancesItem | undefined;
   messages: MessageStoreItem[];
   notifications: NotificationsStoreItem[][];
-  selectedAccount: Partial<PreferencesAccount>;
+  selectedAccount: PreferencesAccount | undefined;
   transactionStatus: TransactionStatusState;
 }
 
@@ -37,8 +37,8 @@ function mapStateToProps(state: AppState): StateProps {
     activeMessage: state.activePopup && state.activePopup.msg,
     assets: state.assets,
     autoClickProtection: state.uiState && state.uiState.autoClickProtection,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    balance: state.balances[state.selectedAccount.address!],
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+    balance: state.balances[state.selectedAccount?.address!],
     messages: state.messages,
     notifications: state.notifications,
     selectedAccount: state.selectedAccount,
@@ -87,7 +87,7 @@ interface State {
   loading: boolean;
   messages: MessageStoreItem[];
   notifications: NotificationsStoreItem[][];
-  selectedAccount: Partial<PreferencesAccount>;
+  selectedAccount: PreferencesAccount;
   transactionStatus: TransactionStatusState;
   txHash: string | string[];
 }

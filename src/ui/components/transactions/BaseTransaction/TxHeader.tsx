@@ -30,7 +30,7 @@ export function TxHeader({
   message,
   hideButton = false,
 }: {
-  selectedAccount?: Partial<PreferencesAccount>;
+  selectedAccount: PreferencesAccount;
   message?: MessageStoreItem;
   hideButton?: boolean;
   selectAccount?: (account: Partial<PreferencesAccount>) => void;
@@ -46,8 +46,7 @@ export function TxHeader({
 
       <TransactionWallet
         type="clean"
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        account={selectedAccount!}
+        account={selectedAccount}
         hideButton={hideButton}
         onSelect={selectAccount}
       />

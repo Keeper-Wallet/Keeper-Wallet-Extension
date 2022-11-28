@@ -182,7 +182,10 @@ export function createUpdateState(store: UiStore) {
       });
     }
 
-    const selectedAccount = getParam(state.selectedAccount, {});
+    const selectedAccount = getParam(
+      state.selectedAccount,
+      {} as unknown as undefined
+    );
     if (
       selectedAccount &&
       !equals(selectedAccount, currentState.selectedAccount)

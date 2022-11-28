@@ -70,7 +70,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
   const showSuspiciousAssets = useAppSelector(
     state => state.uiState?.showSuspiciousAssets
   );
-  const address = useAppSelector(state => state.selectedAccount.address);
+  const address = useAppSelector(state => state.selectedAccount?.address);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const myAssets = useAppSelector(state => state.balances[address!]?.assets);
 

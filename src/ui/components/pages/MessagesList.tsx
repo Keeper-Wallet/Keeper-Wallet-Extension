@@ -85,7 +85,7 @@ const Notifications = ({
 };
 
 interface StateProps {
-  selectedAccount: Partial<PreferencesAccount>;
+  selectedAccount: PreferencesAccount | undefined;
   assets: AssetsRecord;
   messages: MessageStoreItem[];
   notifications: NotificationsStoreItem[][];
@@ -188,7 +188,8 @@ class MessageListComponent extends Component<Props, State> {
         <div className={styles.walletWrapper}>
           <TransactionWallet
             type="clean"
-            account={this.props.selectedAccount}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            account={this.props.selectedAccount!}
             hideButton
           />
         </div>

@@ -180,7 +180,7 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
 
   const chainId = useAppSelector(state =>
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state.selectedAccount.networkCode!.charCodeAt(0)
+    state.selectedAccount?.networkCode!.charCodeAt(0)
   );
   const accounts = useAppSelector(state => state.accounts);
   const addresses = useAppSelector<Record<string, string>>(state =>

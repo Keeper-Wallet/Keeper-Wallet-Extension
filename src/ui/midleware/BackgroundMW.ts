@@ -75,7 +75,7 @@ export const updateBalances: UiMiddleware = () => next => action => {
 export const selectAccount: UiMiddleware = store => next => action => {
   if (
     action.type === ACTION.SELECT_ACCOUNT &&
-    store.getState().selectedAccount.address !== action.payload.address
+    store.getState().selectedAccount?.address !== action.payload.address
   ) {
     const { currentNetwork } = store.getState();
     background

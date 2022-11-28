@@ -16,7 +16,7 @@ export interface MessageComponentProps {
   txHash: string | string[];
   assets: AssetsRecord;
   message: MessageStoreItem;
-  selectedAccount: Partial<PreferencesAccount>;
+  selectedAccount: PreferencesAccount;
 
   approve: (
     event: React.MouseEvent<HTMLButtonElement> | null | undefined,
