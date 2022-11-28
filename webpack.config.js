@@ -1,7 +1,6 @@
 require('dotenv-flow/config');
 const path = require('path');
 const webpack = require('webpack');
-const svgToMiniDataURI = require('mini-svg-data-uri');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
@@ -54,6 +53,7 @@ async function makeConfig({
       },
     },
     output: {
+      assetModuleFilename: 'assets/[hash][ext]',
       filename: '[name].js',
       path: path.resolve(__dirname, 'dist/build'),
       publicPath: './',
@@ -61,28 +61,6 @@ async function makeConfig({
     module: {
       strictExportPresence: true,
       rules: [
-        {
-          test: /\.svg$/,
-          type: 'asset',
-          generator: {
-            filename: 'assets/img/[name].[ext]',
-            dataUrl: content => svgToMiniDataURI(content.toString()),
-          },
-        },
-        {
-          test: /\.(png|jpe?g|gif)$/,
-          type: 'asset/resource',
-          generator: {
-            filename: 'assets/img/[name][ext]',
-          },
-        },
-        {
-          test: /\.(woff2?|ttf)$/,
-          type: 'asset/resource',
-          generator: {
-            filename: 'assets/fonts/[name][ext]',
-          },
-        },
         {
           test: /\.(js|tsx?)$/,
           include: path.resolve(__dirname, 'src'),
@@ -140,6 +118,10 @@ async function makeConfig({
         },
         { test: /\.(css|styl)$/, use: 'postcss-loader' },
         { test: /\.styl/, use: 'stylus-loader' },
+        {
+          test: /\.(gif|png|jpe?g|svg|woff2)$/,
+          type: 'asset/resource',
+        },
       ],
     },
     plugins: [
