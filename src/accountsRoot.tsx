@@ -3,7 +3,6 @@ import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
 import { ledgerService } from 'ledger/service';
 import { LedgerSignRequest } from 'ledger/types';
-import log from 'loglevel';
 import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
@@ -19,15 +18,12 @@ import { routes } from './accounts/routes';
 import { createAccountsStore } from './accounts/store';
 import { createUpdateState } from './accounts/updateState';
 import type { UiApi } from './background';
-import { KEEPERWALLET_DEBUG } from './constants';
 import {
   createIpcCallProxy,
   fromPort,
   handleMethodCallRequests,
   MethodCallRequestPayload,
 } from './ipc/ipc';
-
-log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 
 const store = createAccountsStore({
   version: Browser.runtime.getManifest().version,
