@@ -16,16 +16,16 @@
     }
   },
   "icons": {
-    "16": "images/icon_16.png",
-    "24": "images/icon_24.png",
-    "32": "images/icon_32.png",
-    "48": "images/icon_48.png",
-    "64": "images/icon_64.png",
-    "96": "images/icon_96.png",
-    "128": "images/icon_128.png",
-    "192": "images/icon_192.png",
-    "256": "images/icon_256.png",
-    "512": "images/icon_512.png"
+    "16": "icons/icon_16.png",
+    "24": "icons/icon_24.png",
+    "32": "icons/icon_32.png",
+    "48": "icons/icon_48.png",
+    "64": "icons/icon_64.png",
+    "96": "icons/icon_96.png",
+    "128": "icons/icon_128.png",
+    "192": "icons/icon_192.png",
+    "256": "icons/icon_256.png",
+    "512": "icons/icon_512.png"
   },
   "content_scripts": [
     {

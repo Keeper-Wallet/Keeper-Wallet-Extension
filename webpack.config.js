@@ -119,7 +119,7 @@ async function makeConfig({
         { test: /\.(css|styl)$/, use: 'postcss-loader' },
         { test: /\.styl/, use: 'stylus-loader' },
         {
-          test: /\.(gif|png|jpe?g|svg|woff2)$/,
+          test: /\.(gif|png|jpe?g|svg|webp|woff2)$/,
           type: 'asset/resource',
         },
       ],
