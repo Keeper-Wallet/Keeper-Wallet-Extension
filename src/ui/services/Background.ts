@@ -11,7 +11,7 @@ import { UiState } from 'ui/reducers/updateState';
 import { IMoneyLike } from 'ui/utils/converters';
 import { CreateWalletInput } from 'wallets/types';
 
-import { IgnoreErrorsContext, KEEPERWALLET_DEBUG } from '../../constants';
+import { IgnoreErrorsContext } from '../../constants';
 import type { StorageLocalState } from '../../storage/storage';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,12 +46,6 @@ class Background {
 
   init(background: BackgroundUiApi) {
     this.background = background;
-
-    // global access to service on debug
-    if (KEEPERWALLET_DEBUG) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (global as any).background = background;
-    }
 
     this._connect = () => {
       // do nothing
