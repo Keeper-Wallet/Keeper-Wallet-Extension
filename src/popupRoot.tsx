@@ -1,7 +1,6 @@
 import * as Sentry from '@sentry/react';
 import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
-import log from 'loglevel';
 import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
@@ -10,7 +9,6 @@ import { RootWrapper } from 'ui/components/RootWrapper';
 import Browser from 'webextension-polyfill';
 
 import type { UiApi } from './background';
-import { KEEPERWALLET_DEBUG } from './constants';
 import {
   createIpcCallProxy,
   fromPort,
@@ -26,8 +24,6 @@ import backgroundService, {
   BackgroundUiApi,
 } from './ui/services/Background';
 import { createUiStore } from './ui/store';
-
-log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 
 const isNotificationWindow = window.location.pathname === '/notification.html';
 
