@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/react';
+import pipe from 'callbag-pipe';
+import subscribe from 'callbag-subscribe';
 import { ledgerService } from 'ledger/service';
 import { LedgerSignRequest } from 'ledger/types';
-import { cbToPromise, setupDnode, transformMethods } from 'lib/dnodeUtil';
-import { PortStream } from 'lib/portStream';
 import log from 'loglevel';
 import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
@@ -18,7 +18,14 @@ import Browser from 'webextension-polyfill';
 import { routes } from './accounts/routes';
 import { createAccountsStore } from './accounts/store';
 import { createUpdateState } from './accounts/updateState';
+import type { UiApi } from './background';
 import { KEEPERWALLET_DEBUG } from './constants';
+import {
+  createIpcCallProxy,
+  fromPort,
+  handleMethodCallRequests,
+  MethodCallRequestPayload,
+} from './ipc/ipc';
 
 log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 
@@ -46,7 +53,7 @@ Browser.storage.onChanged.addListener(async (changes, area) => {
   updateState(stateChanges);
 });
 
-const emitterApi = {
+const uiApi: UiApi = {
   closePopupWindow: async () => {
     const popup = Browser.extension
       .getViews({ type: 'popup' })
@@ -63,26 +70,28 @@ const emitterApi = {
   },
 };
 
-const connect = async () => {
+function connect() {
   const port = Browser.runtime.connect();
 
-  port.onDisconnect.addListener(() => {
-    backgroundService.setConnect(async () => {
-      const newBackground = await connect();
-      backgroundService.init(newBackground);
-    });
-  });
+  pipe(
+    fromPort<MethodCallRequestPayload<keyof UiApi>>(port),
+    handleMethodCallRequests(uiApi, result => port.postMessage(result)),
+    subscribe({
+      complete: () => {
+        backgroundService.setConnect(() => {
+          backgroundService.init(connect());
+        });
+      },
+    })
+  );
 
-  const connectionStream = new PortStream(port);
-  const dnode = setupDnode(connectionStream, emitterApi, 'api');
+  return createIpcCallProxy<keyof BackgroundUiApi, BackgroundUiApi>(
+    request => port.postMessage(request),
+    fromPort(port)
+  );
+}
 
-  return await new Promise<BackgroundUiApi>(resolve => {
-    dnode.once('remote', (background: Record<string, unknown>) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      resolve(transformMethods(cbToPromise, background) as any);
-    });
-  });
-};
+const background = connect();
 
 const pageFromHash = window.location.hash.split('#')[1];
 
@@ -95,8 +104,6 @@ export function AccountsRoot() {
 
   useEffect(() => {
     async function init() {
-      const background = await connect();
-
       const [state, networks] = await Promise.all([
         background.getState(),
         background.getNetworks(),

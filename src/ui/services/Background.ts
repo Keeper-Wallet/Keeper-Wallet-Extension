@@ -26,7 +26,7 @@ class Background {
   background: BackgroundUiApi | undefined;
   initPromise: Promise<void>;
   updatedByUser = false;
-  _connect: (() => void | Promise<void>) | undefined;
+  _connect: (() => void) | undefined;
   _defer: {
     resolve?: () => void;
     reject?: () => void;
@@ -60,7 +60,7 @@ class Background {
     this._defer.resolve!();
   }
 
-  setConnect(connect: () => Promise<void>) {
+  setConnect(connect: () => void) {
     this._connect = connect;
   }
 

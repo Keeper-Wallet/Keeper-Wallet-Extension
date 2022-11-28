@@ -67,6 +67,14 @@ type ApiObject<K extends string> = Record<
   (...args: any[]) => Promise<unknown>
 >;
 
+type MethodCallResponse<T> =
+  | { id: string; isError?: never; data: T }
+  | { id: string; isError: true; error: { message: string } };
+
+export interface MethodCallResponsePayload<T = unknown> {
+  keeperMethodCallResponse: MethodCallResponse<T>;
+}
+
 export function handleMethodCallRequests<K extends string>(
   api: ApiObject<K>,
   sendResult: (result: MethodCallResponsePayload<unknown>) => void
@@ -85,6 +93,7 @@ export function handleMethodCallRequests<K extends string>(
       sendResult({
         keeperMethodCallResponse: {
           id,
+          isError: true,
           error: { ...err, message: err.message ?? String(err) },
         },
       });
@@ -103,54 +112,48 @@ export function filterMethodCallRequests<K>(
   );
 }
 
-type MethodCallResponse<T> =
-  | { id: string; data: T }
-  | { id: string; error: { message: string } };
-
-export interface MethodCallResponsePayload<T = unknown> {
-  keeperMethodCallResponse: MethodCallResponse<T>;
-}
-
-export function createIpcCallProxy<T extends ApiObject<string>>(
+export function createIpcCallProxy<K extends string, T extends ApiObject<K>>(
   sendRequest: (payload: MethodCallRequestPayload<string>) => void,
   responseSource: Source<
     MethodCallResponsePayload<Awaited<ReturnType<T[keyof T]>>>
   >
 ) {
-  return new Proxy(
-    {},
-    {
-      get:
-        (target, method: string) =>
-        (...args: Parameters<T[keyof T]>) => {
-          const id = nanoid();
-          const request = { keeperMethodCallRequest: { id, method, args } };
+  function getIpcMethod<Method extends K>(method: Method) {
+    return (...args: Parameters<T[Method]>) => {
+      const id = nanoid();
+      const request = { keeperMethodCallRequest: { id, method, args } };
 
-          sendRequest(request);
+      sendRequest(request);
 
-          return new Promise<Awaited<ReturnType<T[keyof T]>>>(
-            (resolve, reject) => {
-              pipe(
-                responseSource,
-                map(data => data.keeperMethodCallResponse),
-                filter(
-                  response =>
-                    response?.id === request.keeperMethodCallRequest.id
-                ),
-                take(1),
-                subscribe(response => {
-                  invariant(response);
+      return new Promise<Awaited<ReturnType<T[Method]>>>((resolve, reject) => {
+        pipe(
+          responseSource,
+          map(data => data.keeperMethodCallResponse),
+          filter(
+            response => response?.id === request.keeperMethodCallRequest.id
+          ),
+          take(1),
+          subscribe(response => {
+            invariant(response);
 
-                  if ('data' in response) {
-                    resolve(response.data);
-                  } else {
-                    reject(response.error);
-                  }
-                })
-              );
+            if (response.isError) {
+              reject(response.error);
+            } else {
+              resolve(response.data);
             }
-          );
-        },
-    }
-  ) as T;
+          })
+        );
+      });
+    };
+  }
+
+  return new Proxy({} as T, {
+    get: (target, method: K) => {
+      if (!target[method]) {
+        target[method] = getIpcMethod(method) as T[K];
+      }
+
+      return target[method];
+    },
+  });
 }

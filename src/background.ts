@@ -8,12 +8,13 @@ import subscribe from 'callbag-subscribe';
 import EventEmitter from 'events';
 import { SUPPORTED_LANGUAGES } from 'i18n/constants';
 import {
+  createIpcCallProxy,
   fromPort,
   handleMethodCallRequests,
   MethodCallRequestPayload,
 } from 'ipc/ipc';
+import { LedgerSignRequest } from 'ledger/types';
 import { ERRORS } from 'lib/keeperError';
-import { PortStream } from 'lib/portStream';
 import { TabsManager } from 'lib/tabsManager';
 import log from 'loglevel';
 import {
@@ -55,7 +56,6 @@ import { TxInfoController } from './controllers/txInfo';
 import { UiStateController } from './controllers/uiState';
 import { VaultController } from './controllers/VaultController';
 import { WalletController } from './controllers/wallet';
-import { setupDnode } from './lib/dnodeUtil';
 import { WindowManager } from './lib/windowManager';
 import {
   backupStorage,
@@ -1139,26 +1139,32 @@ class BackgroundService extends EventEmitter {
     };
   }
 
-  setupUiConnection(remotePort: Browser.Runtime.Port) {
-    const dnode = setupDnode(new PortStream(remotePort), this.getApi(), 'api');
+  setupUiConnection(port: Browser.Runtime.Port) {
+    const api = this.getApi();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const remoteHandler = (remote: any) => {
-      const ledgerSignRequest = remote.ledgerSignRequest.bind(remote);
-      this.on('ledger:signRequest', ledgerSignRequest);
+    pipe(
+      fromPort<MethodCallRequestPayload<keyof typeof api>>(port),
+      handleMethodCallRequests(api, result => port.postMessage(result)),
+      subscribe({})
+    );
 
-      const closePopupWindow = remote.closePopupWindow.bind(remote);
-      this.on('closePopupWindow', closePopupWindow);
+    const ui = createIpcCallProxy<keyof UiApi, UiApi>(
+      request => port.postMessage(request),
+      fromPort(port)
+    );
 
-      dnode.on('end', () => {
-        this.removeListener('ledger:signRequest', ledgerSignRequest);
-        this.removeListener('closePopupWindow', closePopupWindow);
-      });
-
-      this.statisticsController.sendOpenEvent();
+    const handleDisconnect = () => {
+      port.onDisconnect.removeListener(handleDisconnect);
+      this.off('ledger:signRequest', ui.ledgerSignRequest);
+      this.off('closePopupWindow', ui.closePopupWindow);
     };
 
-    dnode.on('remote', remoteHandler);
+    this.on('ledger:signRequest', ui.ledgerSignRequest);
+    this.on('closePopupWindow', ui.closePopupWindow);
+
+    port.onDisconnect.addListener(handleDisconnect);
+
+    this.statisticsController.sendOpenEvent();
   }
 
   setupPageConnection(port: Browser.Runtime.Port) {
@@ -1270,6 +1276,11 @@ class BackgroundService extends EventEmitter {
       );
     });
   }
+}
+
+export interface UiApi {
+  closePopupWindow: () => Promise<void>;
+  ledgerSignRequest: (request: LedgerSignRequest) => Promise<void>;
 }
 
 export type __BackgroundUiApiDirect = ReturnType<BackgroundService['getApi']>;

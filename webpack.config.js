@@ -50,9 +50,7 @@ async function makeConfig({
       modules: [path.resolve(__dirname, 'src'), 'node_modules'],
       extensions: ['.ts', '.tsx', '.js'],
       fallback: {
-        assert: require.resolve('assert'),
-        buffer: require.resolve('buffer'),
-        stream: require.resolve('stream-browserify'),
+        stream: 'stream-browserify',
       },
     },
     output: {
@@ -166,7 +164,7 @@ async function makeConfig({
         }),
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
-        process: 'process/browser',
+        process: 'process',
       }),
       new webpack.NormalModuleReplacementPlugin(
         /@sentry\/browser\/esm\/helpers.js/,
