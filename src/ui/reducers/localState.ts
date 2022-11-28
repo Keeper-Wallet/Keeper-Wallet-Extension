@@ -54,12 +54,8 @@ function newAccount(
   return state;
 }
 
-function loading(state = false, { type, payload }: UiAction) {
-  if (type === ACTION.SET_LOADING) {
-    return payload;
-  }
-
-  return state;
+function loading(state = true, { type, payload }: UiAction) {
+  return type === ACTION.SET_LOADING ? payload : state;
 }
 
 export interface NotificationsState {
