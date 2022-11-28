@@ -688,10 +688,6 @@ describe('Signature', function () {
         ).to.equal(script);
       }
 
-      before(async function () {
-        await App.restartServiceWorker.call(this);
-      });
-
       it('Rejected', async function () {
         await performSignTransaction.call(this, ISSUE);
         await checkOrigin.call(this, WHITELIST[3]);
@@ -1517,10 +1513,6 @@ describe('Signature', function () {
             .getText()
         ).to.equal(recipient);
       }
-
-      before(async function () {
-        await App.restartServiceWorker.call(this);
-      });
 
       it('Rejected', async function () {
         await performSignTransaction.call(this, LEASE);
@@ -2480,10 +2472,6 @@ describe('Signature', function () {
         ).to.equal(title);
       }
 
-      before(async function () {
-        await App.restartServiceWorker.call(this);
-      });
-
       it('Rejected', async function () {
         await performSignTransaction.call(this, SET_SCRIPT);
         await checkOrigin.call(this, WHITELIST[3]);
@@ -3380,10 +3368,6 @@ describe('Signature', function () {
   });
 
   describe('Order', function () {
-    before(async function () {
-      await App.restartServiceWorker.call(this);
-    });
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const createOrder = (tx: any) => {
       KeeperWallet.signOrder(tx).then(
