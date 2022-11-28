@@ -73,7 +73,6 @@ Sentry.init({
   dsn: __SENTRY_DSN__,
   environment: __SENTRY_ENVIRONMENT__,
   release: __SENTRY_RELEASE__,
-  debug: KEEPERWALLET_DEBUG,
   autoSessionTracking: false,
   initialScope: {
     tags: {
