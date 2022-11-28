@@ -34,7 +34,6 @@ export function ImportPopup() {
       </p>
       <Button
         data-testid="addAccountBtn"
-        type="submit"
         view="submit"
         onClick={() =>
           background.showTab(
@@ -80,7 +79,6 @@ export function AccountsHome() {
 
       <Button
         data-testid="createNewAccountBtn"
-        type="submit"
         view="submit"
         onClick={() => {
           const networkCode =
@@ -104,7 +102,6 @@ export function AccountsHome() {
             <Button
               className={styles.importButton}
               data-testid="importDebug"
-              type="button"
               view="transparent"
               onClick={() => {
                 navigate('/import-debug');
@@ -128,7 +125,6 @@ export function AccountsHome() {
           <Button
             className={styles.importButton}
             data-testid="importSeed"
-            type="button"
             view="transparent"
             onClick={() => {
               navigate('/import-seed');
@@ -157,7 +153,6 @@ export function AccountsHome() {
           <Button
             className={styles.importButton}
             disabled={!isLedgerSupported}
-            type="button"
             view="transparent"
             onClick={() => {
               navigate('/import-ledger');
@@ -188,7 +183,6 @@ export function AccountsHome() {
           <Button
             className={styles.importButton}
             data-testid="importKeystore"
-            type="button"
             view="transparent"
             onClick={() => {
               navigate('/import-keystore');
@@ -243,7 +237,6 @@ export function AccountsHome() {
             <Button
               className={styles.importButton}
               data-testid="importEmail"
-              type="button"
               view="transparent"
               onClick={() => {
                 navigate('/import-email');
