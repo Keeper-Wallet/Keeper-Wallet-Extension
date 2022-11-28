@@ -121,8 +121,8 @@ export function SwapForm({
   const assets = useAppSelector(state => state.assets);
   const usdPrices = useAppSelector(state => state.usdPrices);
   const accountBalance = useAppSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state => state.balances[state.selectedAccount.address!]
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+    state => state.balances[state.selectedAccount?.address!]
   );
 
   const currentNetwork = useAppSelector(state => state.currentNetwork);
@@ -222,7 +222,9 @@ export function SwapForm({
       })
     : null;
 
-  const accountAddress = useAppSelector(state => state.selectedAccount.address);
+  const accountAddress = useAppSelector(
+    state => state.selectedAccount?.address
+  );
 
   const swapParams = useMemo(() => {
     // eslint-disable-next-line @typescript-eslint/no-shadow

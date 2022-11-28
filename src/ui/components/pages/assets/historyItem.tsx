@@ -19,13 +19,13 @@ interface Props {
 
 export function HistoryItem({ tx, className }: Props) {
   const { t } = useTranslation();
-  const address = useAppSelector(state => state.selectedAccount.address);
+  const address = useAppSelector(state => state.selectedAccount?.address);
   const networkCode = useAppSelector(
-    state => state.selectedAccount.networkCode
+    state => state.selectedAccount?.networkCode
   );
   const chainId = useAppSelector(state =>
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state.selectedAccount.networkCode!.charCodeAt(0)
+    state.selectedAccount?.networkCode!.charCodeAt(0)
   );
   const assets = useAppSelector(state => state.assets);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -86,7 +86,8 @@ export function HistoryItem({ tx, className }: Props) {
         <AddressRecipient
           className={styles.recipient}
           recipient={tx.recipient}
-          chainId={chainId}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          chainId={chainId!}
           showAliasWarning={false}
         />
       );
@@ -102,7 +103,8 @@ export function HistoryItem({ tx, className }: Props) {
           <AddressRecipient
             className={styles.recipient}
             recipient={tx.sender}
-            chainId={chainId}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            chainId={chainId!}
             showAliasWarning={false}
           />
         );
@@ -119,7 +121,8 @@ export function HistoryItem({ tx, className }: Props) {
           <AddressRecipient
             className={styles.recipient}
             recipient={tx.sender}
-            chainId={chainId}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            chainId={chainId!}
             showAliasWarning={false}
           />
         );
@@ -209,7 +212,8 @@ export function HistoryItem({ tx, className }: Props) {
         <AddressRecipient
           className={styles.recipient}
           recipient={tx.recipient}
-          chainId={chainId}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          chainId={chainId!}
           showAliasWarning={false}
         />
       );
@@ -221,7 +225,8 @@ export function HistoryItem({ tx, className }: Props) {
           <AddressRecipient
             className={styles.recipient}
             recipient={tx.sender}
-            chainId={chainId}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            chainId={chainId!}
             showAliasWarning={false}
           />
         );
@@ -244,7 +249,8 @@ export function HistoryItem({ tx, className }: Props) {
         <AddressRecipient
           className={styles.recipient}
           recipient={tx.lease.recipient}
-          chainId={chainId}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          chainId={chainId!}
           showAliasWarning={false}
         />
       );
@@ -255,7 +261,8 @@ export function HistoryItem({ tx, className }: Props) {
           <AddressRecipient
             className={styles.recipient}
             recipient={tx.lease.sender}
-            chainId={chainId}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            chainId={chainId!}
             showAliasWarning={false}
           />
         );
@@ -283,7 +290,8 @@ export function HistoryItem({ tx, className }: Props) {
         <AddressRecipient
           className={styles.recipient}
           recipient={tx.sender}
-          chainId={chainId}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          chainId={chainId!}
           showAliasWarning={false}
         />
       );
@@ -395,7 +403,8 @@ export function HistoryItem({ tx, className }: Props) {
           <AddressRecipient
             className={styles.recipient}
             recipient={tx.dApp}
-            chainId={chainId}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            chainId={chainId!}
             showAliasWarning={false}
           />
         );
@@ -418,7 +427,8 @@ export function HistoryItem({ tx, className }: Props) {
             <AddressRecipient
               className={styles.recipient}
               recipient={tx.sender}
-              chainId={chainId}
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              chainId={chainId!}
               showAliasWarning={false}
               showMirrorAddress
             />
@@ -440,7 +450,8 @@ export function HistoryItem({ tx, className }: Props) {
             <AddressRecipient
               className={styles.recipient}
               recipient={payload.dApp}
-              chainId={chainId}
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              chainId={chainId!}
               showAliasWarning={false}
             />
           );

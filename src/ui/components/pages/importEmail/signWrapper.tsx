@@ -31,7 +31,7 @@ export function SignWrapper({ onConfirm, children }: Props) {
 
   const onPrepare = useCallback(
     (...args: unknown[]) => {
-      switch (account.type) {
+      switch (account?.type) {
         case 'wx':
           setPending(true);
 
@@ -89,7 +89,7 @@ export function SignWrapper({ onConfirm, children }: Props) {
     <>
       {children({ onPrepare, pending })}
 
-      {account.type === 'wx' && (
+      {account?.type === 'wx' && (
         <Modal showModal={showModal} animation={Modal.ANIMATION.FLASH}>
           <div className={cn('modal', 'cover', styles.root)}>
             <div className={styles.content}>
@@ -117,11 +117,11 @@ export function SignWrapper({ onConfirm, children }: Props) {
         </Modal>
       )}
 
-      {account.type === 'ledger' && (
+      {account?.type === 'ledger' && (
         <Modal animation={Modal.ANIMATION.FLASH} showModal={showModal}>
           <LedgerConnectModal
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            networkCode={account.networkCode!}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+            networkCode={account?.networkCode!}
             onClose={() => {
               setShowModal(false);
               setPending(false);

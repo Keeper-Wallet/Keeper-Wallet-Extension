@@ -15,7 +15,7 @@ interface Props {
 export function AssetInfo({ asset, onCopy, onClose }: Props) {
   const { t } = useTranslation();
   const networkCode = useAppSelector(
-    state => state.selectedAccount.networkCode
+    state => state.selectedAccount?.networkCode
   );
 
   return (

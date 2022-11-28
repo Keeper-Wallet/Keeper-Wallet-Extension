@@ -53,7 +53,7 @@ export function ImportSuccess({
       <p className={cn(styles.title, 'headline2')}>
         {t(
           isKeystoreImport ? 'import.readyToUseKeystore' : 'import.readyToUse',
-          { name: account.name }
+          { name: account?.name }
         )}
       </p>
 
@@ -67,7 +67,7 @@ export function ImportSuccess({
             {t('newAccountName.accountAddress')}
           </div>
 
-          <div className="grey-line">{account.address}</div>
+          <div className="grey-line">{account?.address}</div>
         </>
       )}
 

@@ -16,12 +16,12 @@ export function NftInfo() {
   const { t } = useTranslation();
 
   const networkCode = useAppSelector(
-    state => state.selectedAccount.networkCode
+    state => state.selectedAccount?.networkCode
   );
 
   const userAddress = useAppSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state => state.selectedAccount.address!
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+    state => state.selectedAccount?.address!
   );
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

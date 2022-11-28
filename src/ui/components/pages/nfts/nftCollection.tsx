@@ -29,12 +29,12 @@ export function NftCollection() {
   const { t } = useTranslation();
 
   const userAddress = useAppSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state => state.selectedAccount.address!
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+    state => state.selectedAccount?.address!
   );
 
   const networkCode = useAppSelector(
-    state => state.selectedAccount.networkCode
+    state => state.selectedAccount?.networkCode
   );
 
   const myNfts = useAppSelector(state => state.balances[userAddress]?.nfts);

@@ -111,11 +111,11 @@ class LedgerService {
   }
 
   private async sendSignRequest(
-    selectedAccount: Partial<PreferencesAccount>,
+    selectedAccount: PreferencesAccount | undefined,
     request: LedgerSignRequest
   ) {
     try {
-      if (selectedAccount.type !== 'ledger') {
+      if (selectedAccount?.type !== 'ledger') {
         throw new Error('Active account is not a ledger account');
       }
 
@@ -201,7 +201,7 @@ class LedgerService {
   }
 
   async queueSignRequest(
-    selectedAccount: Partial<PreferencesAccount>,
+    selectedAccount: PreferencesAccount | undefined,
     request: LedgerSignRequest
   ) {
     try {

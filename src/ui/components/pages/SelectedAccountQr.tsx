@@ -54,7 +54,7 @@ export function SelectedAccountQr() {
 
           const link = document.createElement('a');
           link.setAttribute('href', qrSrc);
-          link.setAttribute('download', `${selectedAccount.address}.png`);
+          link.setAttribute('download', `${selectedAccount?.address}.png`);
           link.click();
         }}
       >

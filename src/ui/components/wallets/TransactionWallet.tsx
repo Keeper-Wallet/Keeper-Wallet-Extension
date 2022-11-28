@@ -41,6 +41,7 @@ export const TransactionWallet = ({
       onSelect(account);
     }
   };
+
   const selectHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (onActive) {
       e.preventDefault();
@@ -101,9 +102,9 @@ export const TransactionWallet = ({
 
 interface ITransactionWalletProps {
   className?: string;
-  onSelect?: (account: Partial<PreferencesAccount>) => void;
-  onActive?: (account: Partial<PreferencesAccount>) => void;
-  account: Partial<PreferencesAccount>;
+  onSelect?: (account: PreferencesAccount) => void;
+  onActive?: (account: PreferencesAccount) => void;
+  account: PreferencesAccount;
   active?: boolean;
   hideButton?: boolean;
   children?: React.ReactNode;

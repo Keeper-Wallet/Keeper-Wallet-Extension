@@ -52,8 +52,8 @@ export function Swap() {
     let timeout: number;
 
     background
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .getExtraFee(selectedAccount.address!, currentNetwork)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+      .getExtraFee(selectedAccount?.address!, currentNetwork)
       .then(feeExtra => {
         if (!cancelled) {
           setWavesFeeCoins(minimumFee + feeExtra);
@@ -67,7 +67,7 @@ export function Swap() {
         window.clearTimeout(timeout);
       }
     };
-  }, [currentNetwork, minimumFee, selectedAccount.address]);
+  }, [currentNetwork, minimumFee, selectedAccount?.address]);
 
   const assets = useAppSelector(state => state.assets);
 
@@ -96,8 +96,8 @@ export function Swap() {
   }, [swappableAssetEntries, dispatch]);
 
   const accountBalance = useAppSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state => state.balances[state.selectedAccount.address!]
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+    state => state.balances[state.selectedAccount?.address!]
   );
 
   const [performedSwapData, setPerformedSwapData] = useState<{

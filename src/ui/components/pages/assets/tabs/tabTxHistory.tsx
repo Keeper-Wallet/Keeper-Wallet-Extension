@@ -81,13 +81,13 @@ const PLACEHOLDERS = [...Array(4).keys()].map<TransactionFromNode>(
 export function TabTxHistory() {
   const { t, i18n } = useTranslation();
   const networkCode = useAppSelector(
-    state => state.selectedAccount.networkCode
+    state => state.selectedAccount?.networkCode
   );
   const assets = useAppSelector(state => state.assets);
   const showSuspiciousAssets = useAppSelector(
     state => !!state.uiState?.showSuspiciousAssets
   );
-  const address = useAppSelector(state => state.selectedAccount.address);
+  const address = useAppSelector(state => state.selectedAccount?.address);
   const aliases = useAppSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     state => state.balances[address!]?.aliases || []

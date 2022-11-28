@@ -124,7 +124,7 @@ export type UiAction =
     }
   | {
       type: typeof ACTION.UPDATE_SELECTED_ACCOUNT;
-      payload: Partial<PreferencesAccount>;
+      payload: PreferencesAccount;
       meta?: never;
     }
   | {

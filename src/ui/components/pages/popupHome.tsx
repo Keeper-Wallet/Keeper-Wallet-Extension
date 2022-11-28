@@ -24,7 +24,7 @@ export function PopupHome() {
 
   const activeAccount = useAppSelector(state =>
     state.accounts.find(
-      ({ address }) => address === state.selectedAccount.address
+      ({ address }) => address === state.selectedAccount?.address
     )
   );
   const assets = useAppSelector(state => state.assets);

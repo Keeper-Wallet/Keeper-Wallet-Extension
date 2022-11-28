@@ -19,7 +19,7 @@ interface Props {
   message: MessageStoreItem;
   messages: MessageStoreItem[];
   notifications: NotificationsStoreItem[][];
-  selectedAccount: Partial<PreferencesAccount>;
+  selectedAccount: PreferencesAccount | undefined;
   transactionStatus: TransactionStatusState;
   onClose: () => void;
   onList: () => void;
@@ -57,7 +57,7 @@ export function FinalTransaction({
   const Card = config.card;
   const isOrder = orderParseTx.isMe(message.data, message.type);
 
-  const networkCode = selectedAccount && selectedAccount.networkCode;
+  const networkCode = selectedAccount?.networkCode;
 
   const explorerUrls = new Map([
     ['W', 'wavesexplorer.com'],
@@ -86,7 +86,8 @@ export function FinalTransaction({
       <TxHeader
         hideButton
         message={message}
-        selectedAccount={selectedAccount}
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        selectedAccount={selectedAccount!}
       />
 
       <div className={cn(styles.finalTxScrollBox, 'transactionContent')}>

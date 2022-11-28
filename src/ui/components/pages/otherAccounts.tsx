@@ -18,7 +18,7 @@ export function OtherAccountsPage() {
   const accounts = useAppSelector(state => state.accounts);
   const activeAccount = useAppSelector(state =>
     state.accounts.find(
-      ({ address }) => address === state.selectedAccount.address
+      ({ address }) => address === state.selectedAccount?.address
     )
   );
   const assets = useAppSelector(state => state.assets);
