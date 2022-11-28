@@ -30,10 +30,7 @@ function startsWith(source: string, target: string, flags = 'i'): boolean {
 }
 
 const fetch = globalThis.fetch;
-globalThis.fetch = (
-  endpoint: RequestInfo | URL,
-  { headers = {}, ...options }: RequestInit = {}
-) => {
+globalThis.fetch = (endpoint: RequestInfo | URL, options?: RequestInit) => {
   if (
     typeof endpoint === 'string' &&
     (startsWith(endpoint, DEFAULT_IDENTITY_CONFIG.mainnet.cognito.endpoint) ||
@@ -41,7 +38,7 @@ globalThis.fetch = (
   ) {
     return fetch(endpoint, {
       ...options,
-      headers: { ...headers, 'X-Application': 'waveskeeper' },
+      headers: { ...options?.headers, 'X-Application': 'waveskeeper' },
     }).then(async response => {
       if (response.status === 403) {
         const err = await response.json();
@@ -54,7 +51,7 @@ globalThis.fetch = (
     });
   }
 
-  return fetch(endpoint, { headers, ...options });
+  return fetch(endpoint, options);
 };
 
 export type MFAType = 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
