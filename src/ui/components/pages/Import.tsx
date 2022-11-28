@@ -21,8 +21,8 @@ export function ImportPopup() {
         className={styles.importIcon}
         src={keeperWalletLock}
         alt=""
-        width={220}
-        height={200}
+        width={216}
+        height={137}
       />
 
       <p className="body1 disabled500 font300 center margin-main-big-top margin-main-large">
@@ -73,8 +73,8 @@ export function AccountsHome() {
         className={styles.importIcon}
         src={keeperWalletLock}
         alt=""
-        width={220}
-        height={200}
+        width={216}
+        height={137}
       />
 
       <Button
