@@ -6,6 +6,7 @@
   box-sizing: content-box;
   border-radius: 10px;
   background: none;
+  text-align: start;
   cursor: pointer;
 }
 
@@ -13,15 +14,17 @@
   background: var(--color-basic100);
 }
 
-.logoImg {
+.logo {
+  flex: 0 0 auto;
   width: 24px;
   height: 24px;
+}
+
+.logo_img {
   object-fit: contain;
 }
 
-.logoPlaceholder {
-  width: 24px;
-  height: 24px;
+.logo_placeholder {
   border-radius: 50%;
   color: #fff;
   font-size: 14px;
