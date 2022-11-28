@@ -61,22 +61,14 @@ export interface MethodCallRequestPayload<K> {
   keeperMethodCallRequest: MethodCallRequest<K>;
 }
 
-export function createMethodCallRequest<K>(
-  method: K,
-  ...args: unknown[]
-): MethodCallRequestPayload<K> {
-  const id = nanoid();
-
-  return { keeperMethodCallRequest: { id, method, args } };
-}
-
-type MethodCallResponse<T> =
-  | { id: string; data: T }
-  | { id: string; error: { message: string } };
+type ApiObject<K extends string> = Record<
+  K,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (...args: any[]) => Promise<unknown>
+>;
 
 export function handleMethodCallRequests<K extends string>(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  api: Record<K, (...args: any[]) => Promise<unknown>>,
+  api: ApiObject<K>,
   sendResult: (result: MethodCallResponsePayload<unknown>) => void
 ) {
   return tap<MethodCallRequestPayload<K>>(async data => {
@@ -111,29 +103,54 @@ export function filterMethodCallRequests<K>(
   );
 }
 
+type MethodCallResponse<T> =
+  | { id: string; data: T }
+  | { id: string; error: { message: string } };
+
 export interface MethodCallResponsePayload<T = unknown> {
   keeperMethodCallResponse: MethodCallResponse<T>;
 }
 
-export function handleMethodCallResponse<T>(
-  request: MethodCallRequestPayload<string>
+export function createIpcCallProxy<T extends ApiObject<string>>(
+  sendRequest: (payload: MethodCallRequestPayload<string>) => void,
+  responseSource: Source<
+    MethodCallResponsePayload<Awaited<ReturnType<T[keyof T]>>>
+  >
 ) {
-  return (source: Source<MethodCallResponsePayload<T>>) =>
-    new Promise<T>((resolve, reject) => {
-      pipe(
-        source,
-        map(data => data.keeperMethodCallResponse),
-        filter(response => response?.id === request.keeperMethodCallRequest.id),
-        take(1),
-        subscribe(response => {
-          invariant(response);
+  return new Proxy(
+    {},
+    {
+      get:
+        (target, method: string) =>
+        (...args: Parameters<T[keyof T]>) => {
+          const id = nanoid();
+          const request = { keeperMethodCallRequest: { id, method, args } };
 
-          if ('data' in response) {
-            resolve(response.data);
-          } else {
-            reject(response.error);
-          }
-        })
-      );
-    });
+          sendRequest(request);
+
+          return new Promise<Awaited<ReturnType<T[keyof T]>>>(
+            (resolve, reject) => {
+              pipe(
+                responseSource,
+                map(data => data.keeperMethodCallResponse),
+                filter(
+                  response =>
+                    response?.id === request.keeperMethodCallRequest.id
+                ),
+                take(1),
+                subscribe(response => {
+                  invariant(response);
+
+                  if ('data' in response) {
+                    resolve(response.data);
+                  } else {
+                    reject(response.error);
+                  }
+                })
+              );
+            }
+          );
+        },
+    }
+  ) as T;
 }
