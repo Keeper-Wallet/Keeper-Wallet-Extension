@@ -3,7 +3,6 @@
   display: flex;
   align-items: center;
   padding: 10px;
-  box-sizing: border-box;
   width: 100%;
   transition: border-color 0.3s;
 }
@@ -44,7 +43,6 @@
   border-bottom: 1px solid #dae1e9;
   border-left: 1px solid #dae1e9;
   padding: 4px 0 6px;
-  box-sizing: border-box;
   border-radius: 0 0 4px 4px;
   transition: border-color 0.3s;
 }

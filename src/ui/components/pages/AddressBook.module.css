@@ -108,7 +108,7 @@
   max-width: 220px;
   overflow: hidden;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: bold;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
