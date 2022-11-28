@@ -34,7 +34,7 @@ describe('Tabs manipulation', function () {
       await this.driver.navigate().refresh();
 
       await this.driver.wait(
-        async () => (await this.driver.getAllWindowHandles()).length === 3,
+        async () => (await this.driver.getAllWindowHandles()).length === 2,
         this.wait
       );
     });
@@ -128,7 +128,7 @@ describe('Tabs manipulation', function () {
       await this.driver.navigate().refresh();
 
       await this.driver.wait(
-        async () => (await this.driver.getAllWindowHandles()).length === 3,
+        async () => (await this.driver.getAllWindowHandles()).length === 2,
         this.wait
       );
     });
@@ -227,7 +227,7 @@ describe('Tabs manipulation', function () {
         .click();
 
       await this.driver.wait(
-        async () => (await this.driver.getAllWindowHandles()).length === 2,
+        async () => (await this.driver.getAllWindowHandles()).length === 1,
         this.wait
       );
     });
@@ -238,7 +238,7 @@ describe('Tabs manipulation', function () {
       await Assets.addAccount.call(this);
 
       await this.driver.wait(
-        async () => (await this.driver.getAllWindowHandles()).length === 3,
+        async () => (await this.driver.getAllWindowHandles()).length === 2,
         this.wait
       );
     });
@@ -249,7 +249,7 @@ describe('Tabs manipulation', function () {
       await Assets.addAccount.call(this);
 
       await this.driver.wait(
-        async () => (await this.driver.getAllWindowHandles()).length === 3,
+        async () => (await this.driver.getAllWindowHandles()).length === 2,
         this.wait
       );
     });

@@ -6,7 +6,6 @@ import {
   DEFAULT_ANIMATION_DELAY,
   DEFAULT_PASSWORD,
   DEFAULT_SWITCH_NETWORK_DELAY,
-  SERVICE_WORKER_INSTALLATION_DELAY,
 } from './constants';
 
 export const App = {
@@ -121,57 +120,9 @@ export const App = {
       this.wait
     );
   },
-  async openServiceWorkerTab(this: mocha.Context) {
-    await this.driver.switchTo().newWindow('tab');
-    const extensionPanelHandle = await this.driver.getWindowHandle();
-
-    await this.driver.get(this.extensionPanel);
-
-    const extensionsManager = await (
-      await this.driver.findElement(By.css('extensions-manager'))
-    ).getShadowRoot();
-
-    const extensionsToolbar = await (
-      await extensionsManager.findElement(By.css('extensions-toolbar'))
-    ).getShadowRoot();
-    const devMode = await extensionsToolbar.findElement(By.id('devMode'));
-    const isDevMode = await devMode.getAttribute('checked');
-    if (!isDevMode) {
-      await devMode.click();
-    }
-
-    const extensionsDetailView = await (
-      await extensionsManager.findElement(By.css('extensions-detail-view'))
-    ).getShadowRoot();
-    const bg = await extensionsDetailView.findElements(
-      By.css('a.inspectable-view')
-    );
-    await bg[bg.length - 1].click();
-
-    const handles = await this.driver.getAllWindowHandles();
-    this.serviceWorkerTab = handles[handles.length - 1];
-
-    await this.driver.switchTo().window(extensionPanelHandle);
-    await this.driver.close();
-    await this.driver.switchTo().window(handles[0]);
-  },
-  async restartServiceWorker(this: mocha.Context) {
-    const currentHandle = await this.driver.getWindowHandle();
-
-    await this.driver.switchTo().newWindow('tab');
-    await this.driver.get('chrome://serviceworker-internals');
-
-    const buttons = await this.driver.findElements(By.css('button.stop'));
-    await buttons[buttons.length - 1].click();
-
-    await this.driver.sleep(SERVICE_WORKER_INSTALLATION_DELAY);
-
-    await this.driver.close();
-    await this.driver.switchTo().window(currentHandle);
-  },
   async closeBgTabs(this: mocha.Context, foreground: string) {
     for (const handle of await this.driver.getAllWindowHandles()) {
-      if (handle !== foreground && handle !== this.serviceWorkerTab) {
+      if (handle !== foreground) {
         await this.driver.switchTo().window(handle);
         await this.driver.close();
       }

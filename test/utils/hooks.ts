@@ -8,8 +8,6 @@ import {
   StartedTestContainer,
 } from 'testcontainers';
 
-import { App } from './actions';
-
 declare global {
   interface Window {
     result: unknown;
@@ -18,7 +16,6 @@ declare global {
 
 declare module 'mocha' {
   interface Context {
-    serviceWorkerTab: string;
     driver: WebDriver;
     extensionUrl: string;
     extensionPanel: string;
@@ -116,7 +113,6 @@ export const mochaHooks = () => ({
 
     // this helps extension to be ready
     await this.driver.get('chrome://new-tab-page');
-    await App.openServiceWorkerTab.call(this);
   },
 
   async afterAll(this: mocha.Context) {
