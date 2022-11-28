@@ -1,3 +1,10 @@
+.root {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
 .suggest {
   position: absolute;
   z-index: 1;
@@ -39,6 +46,14 @@
   word-break: break-all;
 }
 
+.item_wavesDomains .name {
+  margin: -2px;
+  padding: 2px;
+  border-radius: 2px;
+  background: var(--color-basic50);
+  color: var(--color-submit400);
+}
+
 .tooltip {
   position: absolute;
   top: 12px;
@@ -47,7 +62,6 @@
 }
 
 .buttonIcon {
-  margin-left: 14px;
   width: 18px;
   height: 18px;
   background-color: var(--color-white);
@@ -87,13 +101,35 @@
   text-align: center;
 }
 
-.highlight {
-  position: absolute;
-  left: 15px;
-  color: #ffaf00;
+.inputWithOverlaidText {
+  position: relative;
+  flex: 1 1 0;
   font-size: 14px;
-  font-weight: 500;
+}
+
+.addressInput {
+  color: transparent;
+  caret-color: #000;
+  font: inherit;
+}
+
+.overlaidText {
+  position: absolute;
+  inset: 12px 15px;
+  overflow: hidden;
   pointer-events: none;
+}
+
+.overlaidText > mark {
+  background-color: transparent;
+}
+
+.aliasMark {
+  color: #ffaf00;
+}
+
+.wavesDomainsMark {
+  color: var(--color-submit400);
 }
 
 .warningAlias {

@@ -1,28 +1,37 @@
 import { libs, validators } from '@waves/waves-transactions';
+import { WavesDomainsClient } from '@waves-domains/client';
+import cn from 'classnames';
+import { useDebouncedValue } from 'common/useDebouncedValue';
+import { NetworkName } from 'networks/types';
 import { PreferencesAccount } from 'preferences/types';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { icontains } from 'ui/components/pages/assets/helpers';
 import { useAppSelector } from 'ui/store';
 
-import { Backdrop, Button, InputProps, Modal, SearchInput } from '..';
+import { Button, InputProps, Modal, SearchInput } from '..';
 import { AddressTooltip } from '../Address/Tooltip';
 import { AddressInput } from './Input';
 import * as styles from './SuggestInput.module.css';
 
+const ALIAS_RE = /^alias:\w:/i;
+
+interface WavesDomainsResolveResult {
+  name: string;
+  address: string;
+}
+
 interface SuggestProps {
-  // eslint-disable-next-line react/no-unused-prop-types
   className?: string;
-  // eslint-disable-next-line react/no-unused-prop-types
   paddingRight?: number;
-  // eslint-disable-next-line react/no-unused-prop-types
   paddingLeft?: number;
   accounts: PreferencesAccount[];
   addresses: Array<[string, string]>;
   setValue: (value: string) => void;
   setAddress: (value: string) => void;
   setShowSuggest: (show: boolean) => void;
-  onSuggest?: (value?: string) => void;
+  wdResolveResult?: WavesDomainsResolveResult | null;
+  onSuggest?: (value: string) => void;
 }
 
 function Suggest({
@@ -34,6 +43,7 @@ function Suggest({
   setValue,
   setAddress,
   setShowSuggest,
+  wdResolveResult,
   onSuggest,
 }: SuggestProps) {
   const { t } = useTranslation();
@@ -50,7 +60,7 @@ function Suggest({
               className={styles.item}
               style={{ paddingRight, paddingLeft }}
               key={account.address}
-              onClick={() => {
+              onMouseDown={() => {
                 setValue(account.name);
                 setAddress(account.address);
                 setShowSuggest(false);
@@ -76,7 +86,7 @@ function Suggest({
               className={styles.item}
               style={{ paddingRight, paddingLeft }}
               key={address}
-              onClick={() => {
+              onMouseDown={() => {
                 setValue(name);
                 setAddress(address);
                 setShowSuggest(false);
@@ -92,11 +102,40 @@ function Suggest({
           ))}
         </>
       )}
+      {wdResolveResult && (
+        <>
+          <p className={styles.title} style={{ paddingRight, paddingLeft }}>
+            Waves domains
+          </p>
+
+          <div
+            className={cn(styles.item, styles.item_wavesDomains)}
+            style={{ paddingRight, paddingLeft }}
+            onMouseDown={() => {
+              setAddress(wdResolveResult.address);
+              setShowSuggest(false);
+
+              if (onSuggest) {
+                onSuggest(wdResolveResult.address);
+              }
+            }}
+          >
+            <p className={styles.name}>{wdResolveResult.name}</p>
+            <AddressTooltip address={wdResolveResult.address} />
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
-interface ModalProps extends SuggestProps {
+interface ModalProps {
+  accounts: PreferencesAccount[];
+  addresses: Array<[string, string]>;
+  setValue: (value: string) => void;
+  setAddress: (value: string) => void;
+  setShowSuggest: (show: boolean) => void;
+  onSuggest?: (value: string) => void;
   showModal: boolean;
   setShowModal: (showModal: boolean) => void;
 }
@@ -172,12 +211,13 @@ export function SuggestModal(props: ModalProps) {
 }
 
 export type Props = Extract<InputProps, { multiLine?: false }> & {
-  onSuggest: (value?: string) => void;
+  onSuggest: (value: string) => void;
 };
 
 export function AddressSuggestInput({ onSuggest, ...props }: Props) {
   const { t } = useTranslation();
 
+  const currentNetwork = useAppSelector(state => state.currentNetwork);
   const chainId = useAppSelector(state =>
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     state.selectedAccount?.networkCode!.charCodeAt(0)
@@ -227,37 +267,91 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
   const [showSuggest, setShowSuggest] = useState(false);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
 
-  const [highlight, setHighlight] = useState('');
-
+  const debouncedValue = useDebouncedValue(value, 500);
+  const [wdResolveResult, setWdResolveResult] =
+    useState<WavesDomainsResolveResult | null>(null);
   useEffect(() => {
-    const match = value.match(/^alias:\w:/i);
-    setHighlight(match ? match[0] : '');
-  }, [value]);
+    if (
+      ![NetworkName.Mainnet, NetworkName.Testnet].includes(currentNetwork) ||
+      !debouncedValue
+    ) {
+      setWdResolveResult(null);
+      return;
+    }
+
+    const wdClient = new WavesDomainsClient({
+      network: currentNetwork === NetworkName.Mainnet ? 'mainnet' : 'testnet',
+    });
+
+    wdClient.resolve(debouncedValue).then(resolvedAddress => {
+      setWdResolveResult(
+        resolvedAddress
+          ? { name: debouncedValue, address: resolvedAddress }
+          : null
+      );
+    });
+  }, [currentNetwork, debouncedValue]);
+
+  const isAlias = useMemo(() => ALIAS_RE.test(value), [value]);
+
+  const freshWdResolveResult =
+    wdResolveResult?.name === value ? wdResolveResult : null;
+
+  const overlaidTextRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <>
-      <Backdrop
-        onClick={() => {
-          setShowSuggest(false);
-        }}
-      >
-        <AddressInput
-          {...props}
-          autoComplete="off"
-          autoFocus
-          spellCheck={false}
-          value={value}
-          onChange={event => {
-            setShowSuggest(true);
-            setValue(event.currentTarget.value);
-            setAddress('');
+      <div className={styles.root}>
+        <div className={styles.inputWithOverlaidText}>
+          <AddressInput
+            {...props}
+            autoComplete="off"
+            autoFocus
+            className={styles.addressInput}
+            spellCheck={false}
+            value={value}
+            onBlur={() => {
+              setShowSuggest(false);
+            }}
+            onChange={event => {
+              setValue(event.currentTarget.value);
+              setAddress('');
 
-            if (props.onChange) {
-              props.onChange(event);
-            }
-          }}
-        />
-        {highlight && <p className={styles.highlight}>{highlight}</p>}
+              if (props.onChange) {
+                props.onChange(event);
+              }
+            }}
+            onFocus={() => {
+              setShowSuggest(true);
+            }}
+            onScroll={event => {
+              const overlaidText = overlaidTextRef.current;
+
+              if (!overlaidText) {
+                return;
+              }
+
+              overlaidText.scrollLeft = event.currentTarget.scrollLeft;
+            }}
+          />
+
+          <div
+            ref={overlaidTextRef}
+            className={styles.overlaidText}
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{
+              __html: isAlias
+                ? value.replace(
+                    ALIAS_RE,
+                    `<mark class=${styles.aliasMark}>$&</mark>`
+                  )
+                : freshWdResolveResult
+                ? `<mark class=${styles.wavesDomainsMark}>${freshWdResolveResult.name}</mark>`
+                : value,
+            }}
+          />
+        </div>
+
         <button
           className={styles.buttonIcon}
           onClick={() => {
@@ -265,6 +359,7 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
           }}
           type="button"
         />
+
         <SuggestModal
           showModal={showSuggestModal}
           setShowModal={setShowSuggestModal}
@@ -278,9 +373,11 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
           setShowSuggest={setShowSuggest}
           onSuggest={onSuggest}
         />
+
         {address && (
           <AddressTooltip className={styles.tooltip} address={address} />
         )}
+
         {showSuggest && (
           <Suggest
             accounts={foundAccounts}
@@ -291,11 +388,13 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
             setValue={setValue}
             setAddress={setAddress}
             setShowSuggest={setShowSuggest}
+            wdResolveResult={freshWdResolveResult}
             onSuggest={onSuggest}
           />
         )}
-      </Backdrop>
-      {highlight && (
+      </div>
+
+      {isAlias && (
         <p className={styles.warningAlias}>{t('address.warningAlias')}</p>
       )}
     </>

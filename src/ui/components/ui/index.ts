@@ -1,7 +1,6 @@
 export * from './asset/Asset';
 export * from './attachment/Attachment';
 export * from './avatar';
-export * from './Backdrop';
 export * from './balance/Balance';
 export * from './buttons';
 export * from './CollapsedContent/CollapsedContent';
