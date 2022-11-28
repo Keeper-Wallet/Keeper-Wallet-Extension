@@ -37,7 +37,10 @@ export function Send() {
   const asset = useAppSelector(state => state.assets[params.assetId!]);
 
   const isNft =
-    asset && asset.precision === 0 && asset.quantity === 1 && !asset.reissuable;
+    asset &&
+    asset.precision === 0 &&
+    new BigNumber(asset.quantity).eq(1) &&
+    !asset.reissuable;
 
   const userAddress = useAppSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
@@ -173,58 +176,56 @@ export function Send() {
           </div>
 
           {!isNft && (
-            <>
-              <div className="margin-main-big">
-                {!asset ||
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                !assetBalances![asset.id] ? (
-                  <Loader />
-                ) : (
-                  (() => {
-                    const balance = new Money(
-                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                      new BigNumber(assetBalances![asset.id].balance),
-                      new Asset(asset)
-                    );
+            <div className="margin-main-big">
+              {!asset ||
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              !assetBalances![asset.id] ? (
+                <Loader />
+              ) : (
+                (() => {
+                  const balance = new Money(
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    new BigNumber(assetBalances![asset.id].balance),
+                    new Asset(asset)
+                  );
 
-                    return (
-                      <>
-                        <AssetAmountInput
-                          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                          assetBalances={assetBalances!}
-                          assetOptions={Object.values(assets)
-                            .filter(
-                              // eslint-disable-next-line @typescript-eslint/no-shadow
-                              (asset): asset is NonNullable<typeof asset> =>
-                                asset != null
-                            )
-                            .filter(
-                              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-shadow
-                              asset => assetBalances![asset.id] != null
-                            )}
-                          balance={balance}
-                          label={t('send.amountInputLabel')}
-                          showUsdAmount
-                          value={amountValue}
-                          onAssetChange={assetId => {
-                            navigate(`/send/${assetId}`, { replace: true });
-                          }}
-                          onBalanceClick={() => {
-                            setAmountValue(balance.toTokens());
-                          }}
-                          onChange={value => {
-                            setAmountValue(value);
-                          }}
-                        />
-                        <ErrorMessage show={showAmountError}>
-                          {amountError}
-                        </ErrorMessage>
-                      </>
-                    );
-                  })()
-                )}
-              </div>
-            </>
+                  return (
+                    <>
+                      <AssetAmountInput
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        assetBalances={assetBalances!}
+                        assetOptions={Object.values(assets)
+                          .filter(
+                            // eslint-disable-next-line @typescript-eslint/no-shadow
+                            (asset): asset is NonNullable<typeof asset> =>
+                              asset != null
+                          )
+                          .filter(
+                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-shadow
+                            asset => assetBalances![asset.id] != null
+                          )}
+                        balance={balance}
+                        label={t('send.amountInputLabel')}
+                        showUsdAmount
+                        value={amountValue}
+                        onAssetChange={assetId => {
+                          navigate(`/send/${assetId}`, { replace: true });
+                        }}
+                        onBalanceClick={() => {
+                          setAmountValue(balance.toTokens());
+                        }}
+                        onChange={value => {
+                          setAmountValue(value);
+                        }}
+                      />
+                      <ErrorMessage show={showAmountError}>
+                        {amountError}
+                      </ErrorMessage>
+                    </>
+                  );
+                })()
+              )}
+            </div>
           )}
 
           <div className="input-title basic500 tag1">
