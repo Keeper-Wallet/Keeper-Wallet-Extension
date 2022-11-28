@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import ColorHash from 'color-hash';
 import { NetworkName } from 'networks/types';
 import { useState } from 'react';
@@ -41,10 +42,14 @@ export function AssetSelect({
         }}
       >
         {logoSrc ? (
-          <img className={styles.logoImg} src={logoSrc} alt="" />
+          <img
+            className={cn(styles.logo, styles.logo_img)}
+            src={logoSrc}
+            alt=""
+          />
         ) : (
           <div
-            className={styles.logoPlaceholder}
+            className={cn(styles.logo, styles.logo_placeholder)}
             style={{
               backgroundColor: new ColorHash().hex(value),
             }}
