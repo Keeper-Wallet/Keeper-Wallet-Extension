@@ -55,15 +55,13 @@ describe('Password management', () => {
 
       // Protect Your Account page
       firstPasswordInput = this.driver.wait(
-        until.elementLocated(By.css('.app input#first[type=password]')),
+        until.elementLocated(By.css('#first')),
         this.wait
       );
       firstPasswordErrorDiv = this.driver.findElement(
         By.css('[data-testid="firstError"]')
       );
-      secondPasswordInput = this.driver.findElement(
-        By.css('.app input#second[type=password]')
-      );
+      secondPasswordInput = this.driver.findElement(By.css('#second'));
       secondPasswordErrorDiv = this.driver.findElement(
         By.css('[data-testid="secondError"]')
       );
@@ -101,16 +99,12 @@ describe('Password management', () => {
     it('Successful password creation', async function () {
       await firstPasswordInput.sendKeys(PASSWORD.DEFAULT);
       await secondPasswordInput.sendKeys(PASSWORD.DEFAULT);
-      await this.driver
-        .findElement(By.css('.app input#termsAccepted[type=checkbox]'))
-        .click();
-      await this.driver
-        .findElement(By.css('.app input#conditionsAccepted[type=checkbox]'))
-        .click();
+      await this.driver.findElement(By.css('#termsAccepted')).click();
+      await this.driver.findElement(By.css('#conditionsAccepted')).click();
       await this.driver
         .wait(
           until.elementIsEnabled(
-            this.driver.findElement(By.css('.app button[type=submit]'))
+            this.driver.findElement(By.css('button[type=submit]'))
           ),
           this.wait
         )
@@ -238,7 +232,7 @@ describe('Password management', () => {
       await this.driver
         .wait(
           until.elementIsEnabled(
-            this.driver.findElement(By.css('.app button[type=submit]'))
+            this.driver.findElement(By.css('button[type=submit]'))
           ),
           this.wait
         )
@@ -460,7 +454,7 @@ describe('Password management', () => {
                 ),
                 this.wait
               )
-              .findElement(By.css('.app button[type=submit]'))
+              .findElement(By.css('button[type=submit]'))
               .getText()
           ).matches(/Get started/i);
         });
