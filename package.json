@@ -29,6 +29,7 @@
     ]
   },
   "dependencies": {
+    "@ethereumjs/util": "^8.0.2",
     "@popperjs/core": "^2.11.0",
     "@waves-domains/client": "^0.3.0",
     "@waves/bignumber": "^1.0.0",
@@ -50,7 +51,6 @@
     "color-hash": "^2.0.1",
     "copy-to-clipboard": "^3.3.1",
     "debounce": "^1.2.1",
-    "ethereumjs-util": "^7.1.5",
     "events": "^3.3.0",
     "i18next": "^20.6.1",
     "i18next-resources-to-backend": "^1.0.0",

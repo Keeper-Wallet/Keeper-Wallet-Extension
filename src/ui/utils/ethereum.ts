@@ -1,4 +1,9 @@
 import {
+  isHexString,
+  isValidAddress,
+  isValidChecksumAddress,
+} from '@ethereumjs/util';
+import {
   base16Decode,
   base16Encode,
   base58Decode,
@@ -6,11 +11,6 @@ import {
   blake2b,
   keccak,
 } from '@waves/ts-lib-crypto';
-import {
-  isHexString,
-  isValidAddress,
-  isValidChecksumAddress,
-} from 'ethereumjs-util';
 
 export function fromWavesToEthereumAddress(address: string) {
   const bytes = base58Decode(address);
