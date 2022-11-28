@@ -1895,6 +1895,11 @@
   resolved "https://registry.yarnpkg.com/@ungap/promise-all-settled/-/promise-all-settled-1.1.2.tgz#aa58042711d6e3275dd37dc597e5d31e8c290a44"
   integrity sha512-sL/cEvJWAnClXw0wHk85/2L0G6Sj8UB0Ctc1TEMbKSsmpRosqhwj9gWgFRZSrBr2f9tiXISwNhCPmlfqUqyb9Q==
 
+"@waves-domains/client@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@waves-domains/client/-/client-0.3.0.tgz#e2e7d464917c514bae64fed6e6230c4f0f019181"
+  integrity sha512-fmfD3eWzT9KO0ya6iYP7QPBdp5YtXEVGceBkYRdUWWwgx3ZfhoY3vqGI4y+rPDE5Vj1IPGGnQbgp7AAOLgJBkw==
+
 "@waves/bignumber@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@waves/bignumber/-/bignumber-1.0.0.tgz#b7e4ef0afb9d9e41863707b76239d8134f8266a7"

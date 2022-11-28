@@ -163,8 +163,7 @@ export function Send() {
                 setRecipientValue(event.currentTarget.value);
               }}
               onSuggest={value => {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                setRecipientValue(value!);
+                setRecipientValue(value);
               }}
             />
 

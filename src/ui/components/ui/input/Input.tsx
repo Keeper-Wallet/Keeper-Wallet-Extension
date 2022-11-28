@@ -11,6 +11,7 @@ interface InputEvents<E extends HTMLTextAreaElement | HTMLInputElement> {
   onFocus?: (event: React.FocusEvent<E>) => void;
   onKeyDown?: (event: React.KeyboardEvent<E>) => void;
   onInput?: (event: React.FormEvent<E>) => void;
+  onScroll?: (event: React.UIEvent<E>) => void;
 }
 
 export type InputProps = {

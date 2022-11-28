@@ -4,11 +4,6 @@
   justify-content: space-between;
 }
 
-mark {
-  background-color: transparent;
-  color: #ffaf00;
-}
-
 .recipientWrapper {
   max-width: calc(100% - 20px);
   overflow: hidden;
@@ -72,6 +67,11 @@ mark {
   line-height: 17px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.name > mark {
+  background-color: transparent;
+  color: #ffaf00;
 }
 
 .warningAlias {

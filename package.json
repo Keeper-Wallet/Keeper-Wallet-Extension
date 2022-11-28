@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.0",
+    "@waves-domains/client": "^0.3.0",
     "@waves/bignumber": "^1.0.0",
     "@waves/data-entities": "^2.0.4",
     "@waves/marshall": "^0.14.0",
