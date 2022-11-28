@@ -43,7 +43,7 @@ export class WavesDomainsNftVendor implements NftVendor<WavesDomainsNftInfo> {
         /\.waves$/,
         ''
       )}`,
-      name: asset.name,
+      name: asset.description,
       vendor: NftVendorId.WavesDomains,
     };
   }
