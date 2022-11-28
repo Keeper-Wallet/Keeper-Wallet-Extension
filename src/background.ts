@@ -151,12 +151,6 @@ async function setupBackgroundService() {
     initLangCode,
   });
 
-  // global access to service on debug
-  if (KEEPERWALLET_DEBUG) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (global as any).background = backgroundService;
-  }
-
   const updateBadge = () => {
     const selectedAccount =
       backgroundService.preferencesController.getSelectedAccount();
