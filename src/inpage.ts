@@ -21,10 +21,10 @@ declare global {
   var KeeperWallet: KeeperApi;
 }
 
-const proxy = createIpcCallProxy<__BackgroundPageApiDirect>(
-  request => postMessage(request, location.origin),
-  fromPostMessage()
-);
+const proxy = createIpcCallProxy<
+  keyof __BackgroundPageApiDirect,
+  __BackgroundPageApiDirect
+>(request => postMessage(request, location.origin), fromPostMessage());
 
 global.KeeperWallet = {
   auth: proxy.auth,

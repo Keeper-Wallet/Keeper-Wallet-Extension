@@ -1,4 +1,6 @@
 import * as Sentry from '@sentry/react';
+import pipe from 'callbag-pipe';
+import subscribe from 'callbag-subscribe';
 import log from 'loglevel';
 import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
@@ -7,11 +9,16 @@ import { LoadingScreen } from 'ui/components/pages/loadingScreen';
 import { RootWrapper } from 'ui/components/RootWrapper';
 import Browser from 'webextension-polyfill';
 
+import type { UiApi } from './background';
 import { KEEPERWALLET_DEBUG } from './constants';
+import {
+  createIpcCallProxy,
+  fromPort,
+  handleMethodCallRequests,
+  MethodCallRequestPayload,
+} from './ipc/ipc';
 import { ledgerService } from './ledger/service';
 import { LedgerSignRequest } from './ledger/types';
-import { cbToPromise, setupDnode, transformMethods } from './lib/dnodeUtil';
-import { PortStream } from './lib/portStream';
 import { createUpdateState } from './ui/actions/updateState';
 import { routes } from './ui/routes';
 import backgroundService, {
@@ -51,7 +58,7 @@ Browser.storage.onChanged.addListener(async (changes, area) => {
   updateState(stateChanges);
 });
 
-const emitterApi = {
+const uiApi: UiApi = {
   closePopupWindow: async () => {
     const popup = Browser.extension
       .getViews({ type: 'popup' })
@@ -68,34 +75,34 @@ const emitterApi = {
   },
 };
 
-const connect = async () => {
+function connect() {
   const port = Browser.runtime.connect();
 
-  port.onDisconnect.addListener(() => {
-    backgroundService.setConnect(async () => {
-      const newBackground = await connect();
-      backgroundService.init(newBackground);
-    });
-  });
+  pipe(
+    fromPort<MethodCallRequestPayload<keyof UiApi>>(port),
+    handleMethodCallRequests(uiApi, result => port.postMessage(result)),
+    subscribe({
+      complete: () => {
+        backgroundService.setConnect(() => {
+          backgroundService.init(connect());
+        });
+      },
+    })
+  );
 
-  const connectionStream = new PortStream(port);
-  const dnode = setupDnode(connectionStream, emitterApi, 'api');
+  return createIpcCallProxy<keyof BackgroundUiApi, BackgroundUiApi>(
+    request => port.postMessage(request),
+    fromPort(port)
+  );
+}
 
-  return await new Promise<BackgroundUiApi>(resolve => {
-    dnode.once('remote', (background: Record<string, unknown>) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      resolve(transformMethods(cbToPromise, background) as any);
-    });
-  });
-};
+const background = connect();
 
 export function PopupRoot() {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     async function init() {
-      const background = await connect();
-
       // If popup is opened close notification window
       if (Browser.extension.getViews({ type: 'popup' }).length > 0) {
         await background.closeNotificationWindow();
