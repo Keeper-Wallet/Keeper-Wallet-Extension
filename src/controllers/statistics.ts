@@ -5,7 +5,6 @@ import { MessageStoreItem } from 'messages/types';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
-import { KEEPERWALLET_ENV } from '../constants';
 import { detect } from '../lib/detectBrowser';
 import { ExtensionStorage } from '../storage/storage';
 import { NetworkController } from './network';
@@ -88,7 +87,7 @@ export class StatisticsController {
       browser_version_major:
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.browser!.version && this.browser!.version.split('.')[0],
-      environment: KEEPERWALLET_ENV,
+      environment: process.env.NODE_ENV,
       network,
       chainId: networkCode ? networkCode.charCodeAt(0) : undefined,
       extensionId: this.id,
