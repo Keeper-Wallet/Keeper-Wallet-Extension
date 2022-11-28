@@ -60,24 +60,17 @@ describe('Tabs manipulation', function () {
         this.wait
       );
       await this.driver
-        .wait(
-          until.elementLocated(By.css('.app input#first[type=password]')),
-          this.wait
-        )
+        .wait(until.elementLocated(By.css('#first')), this.wait)
         .sendKeys(DEFAULT_PASSWORD);
       await this.driver
-        .findElement(By.css('.app input#second[type=password]'))
+        .findElement(By.css('#second'))
         .sendKeys(DEFAULT_PASSWORD);
-      await this.driver
-        .findElement(By.css('.app input#termsAccepted[type=checkbox]'))
-        .click();
-      await this.driver
-        .findElement(By.css('.app input#conditionsAccepted[type=checkbox]'))
-        .click();
+      await this.driver.findElement(By.css('#termsAccepted')).click();
+      await this.driver.findElement(By.css('#conditionsAccepted')).click();
       await this.driver
         .wait(
           until.elementIsEnabled(
-            this.driver.findElement(By.css('.app button[type=submit]'))
+            this.driver.findElement(By.css('button[type=submit]'))
           ),
           this.wait
         )

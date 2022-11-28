@@ -64,16 +64,14 @@ body {
 }
 
 #app-content {
-  position: absolute;
+  position: relative;
+  display: flex;
+  flex-direction: column;
   margin: auto;
-  background-color: var(--color-white);
-}
-
-#app-content,
-.app {
   width: 357px;
   height: 600px;
   overflow: hidden;
+  background: var(--color-white);
 }
 
 ul {

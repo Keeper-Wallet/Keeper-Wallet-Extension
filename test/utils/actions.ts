@@ -36,24 +36,15 @@ export const App = {
       this.wait
     );
     await this.driver
-      .wait(
-        until.elementLocated(By.css('.app input#first[type=password]')),
-        this.wait
-      )
+      .wait(until.elementLocated(By.css('#first')), this.wait)
       .sendKeys(password);
-    await this.driver
-      .findElement(By.css('.app input#second[type=password]'))
-      .sendKeys(password);
-    await this.driver
-      .findElement(By.css('.app input#termsAccepted[type=checkbox]'))
-      .click();
-    await this.driver
-      .findElement(By.css('.app input#conditionsAccepted[type=checkbox]'))
-      .click();
+    await this.driver.findElement(By.css('#second')).sendKeys(password);
+    await this.driver.findElement(By.css('#termsAccepted')).click();
+    await this.driver.findElement(By.css('#conditionsAccepted')).click();
     await this.driver
       .wait(
         until.elementIsEnabled(
-          this.driver.findElement(By.css('.app button[type=submit]'))
+          this.driver.findElement(By.css('button[type=submit]'))
         ),
         this.wait
       )
@@ -113,13 +104,8 @@ export const App = {
 
   async open(this: mocha.Context) {
     await this.driver.get(this.extensionUrl);
-    await this.driver.wait(
-      until.elementIsVisible(
-        this.driver.wait(until.elementLocated(By.css('.app')), this.wait)
-      ),
-      this.wait
-    );
   },
+
   async closeBgTabs(this: mocha.Context, foreground: string) {
     for (const handle of await this.driver.getAllWindowHandles()) {
       if (handle !== foreground) {
