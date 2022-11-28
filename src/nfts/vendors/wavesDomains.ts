@@ -34,7 +34,7 @@ export class WavesDomainsNftVendor implements NftVendor<WavesDomainsNftInfo> {
     return {
       creator: asset.issuer,
       creatorUrl: 'https://app.waves.domains',
-      description: asset.description,
+      description: 'Decentralized naming protocol for Waves ecosystem',
       displayCreator: 'Waves Domains',
       displayName: asset.description,
       foreground: `https://app.waves.domains/api/v1/nft-img/${asset.id}`,
