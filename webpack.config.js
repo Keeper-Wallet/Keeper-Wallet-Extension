@@ -238,16 +238,19 @@ module.exports = async (_, { mode }) => [
         filename: 'popup.html',
         template: 'src/index.html',
         chunks: ['commons', 'popup'],
+        hash: true,
       }),
       new HtmlWebpackPlugin({
         filename: 'notification.html',
         template: 'src/index.html',
         chunks: ['commons', 'popup'],
+        hash: true,
       }),
       new HtmlWebpackPlugin({
         filename: 'accounts.html',
         template: 'src/index.html',
         chunks: ['commons', 'accounts'],
+        hash: true,
       }),
     ],
     optimization: {
