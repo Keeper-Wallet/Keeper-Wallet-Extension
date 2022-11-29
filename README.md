@@ -39,18 +39,6 @@ All methods except for `on` operate asynchronously and return [Promises](https:/
 
 In code, you can use [TypeScript types](https://github.com/wavesplatform/waveskeeper-types).
 
-On initialize `window.KeeperWallet` has no API methods.
-You can use `KeeperWallet.initialPromise` to wait for API initialization to complete.
-
-Example:
-
-```js
-KeeperWallet.initialPromise.then(keeperApi => {
-  /*...init app*/
-  keeperApi.publicState().then(state => startApp(state));
-});
-```
-
 In Keeper Wallet, for greater security and ease of use, each new website using API has to be allowed by the user. At the first attempt to use API (except `on`), the user will see a request to allow the website to access Keeper Wallet. If the user agrees to allow access, the website is considered trusted and can use API on its pages. Otherwise, the website is blocked, and the error message `{message: "Api rejected by user", code: 12}` will be displayed in response to all requests. The user won't see new notifications. To grant access, the user has to mark the website as trusted in the interface.
 
 ### Description of methods
