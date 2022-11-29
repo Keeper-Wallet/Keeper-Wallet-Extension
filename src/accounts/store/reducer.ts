@@ -15,7 +15,6 @@ import {
   selectedAccount,
   state,
   uiState,
-  version,
 } from '../../store/reducers/updateState';
 
 export const reducer = combineReducers({
@@ -33,5 +32,4 @@ export const reducer = combineReducers({
   selectedAccount,
   state,
   uiState,
-  version,
 });

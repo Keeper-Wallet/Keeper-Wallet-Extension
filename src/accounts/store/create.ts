@@ -1,4 +1,4 @@
-import { applyMiddleware, createStore, PreloadedState } from 'redux';
+import { applyMiddleware, createStore } from 'redux';
 import { createLogger } from 'redux-logger';
 import thunk, { ThunkDispatch } from 'redux-thunk';
 
@@ -8,9 +8,7 @@ import { KEEPERWALLET_DEBUG } from '../../ui/appConfig';
 import { reducer } from './reducer';
 import type { AccountsState } from './types';
 
-export function createAccountsStore(
-  preloadedState: PreloadedState<AccountsState>
-) {
+export function createAccountsStore() {
   const store = createStore<
     AccountsState,
     AppAction,
@@ -18,7 +16,6 @@ export function createAccountsStore(
     Record<never, unknown>
   >(
     reducer,
-    preloadedState,
     applyMiddleware(
       thunk,
       ...Object.values(middleware),
