@@ -21,7 +21,7 @@
   border-top: 0;
 }
 
-.resetButton {
+.resetButton.resetButton {
   margin: 14px;
   width: auto;
 }
