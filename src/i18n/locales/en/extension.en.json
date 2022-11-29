@@ -170,7 +170,6 @@
   },
   "errorPage": {
     "export": "Export accounts and address book",
-    "reload": "Try to reload",
     "reset": "Extension reset",
     "resetButton": "Reset the wallet",
     "resetDescription": "After this action we delete all secondary information (e.g. favorite tokens). Also you will need to Log In once again.",

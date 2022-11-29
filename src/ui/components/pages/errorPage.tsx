@@ -1,15 +1,14 @@
 import { useTranslation } from 'react-i18next';
-import { Button, ExportButton, ResetButton } from 'ui/components/ui';
+import { ExportButton, ResetButton } from 'ui/components/ui';
 
 import { HeadLogo } from '../head';
 import * as styles from './errorPage.module.css';
 
 interface Props {
   error: Error;
-  resetError(): void;
 }
 
-export function ErrorPage({ error, resetError }: Props) {
+export function ErrorPage({ error }: Props) {
   const { t } = useTranslation();
 
   return (
@@ -25,15 +24,6 @@ export function ErrorPage({ error, resetError }: Props) {
 
         <div className={styles.buttons}>
           <ResetButton />
-
-          <Button
-            view="submit"
-            onClick={() => {
-              resetError();
-            }}
-          >
-            {t('errorPage.reload')}
-          </Button>
         </div>
       </div>
     </div>
