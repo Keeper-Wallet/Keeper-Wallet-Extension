@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react';
 import { RouteObject } from 'react-router-dom';
 import { ErrorPage } from 'ui/components/pages/errorPage';
 import { RootAccounts } from 'ui/components/RootAccounts';
@@ -25,13 +24,8 @@ import { NewWalletName } from '../ui/components/pages/NewWalletName';
 
 export const routes: RouteObject[] = [
   {
-    element: (
-      <Sentry.ErrorBoundary
-        fallback={errorData => <ErrorPage {...errorData} />}
-      >
-        <RootAccounts />
-      </Sentry.ErrorBoundary>
-    ),
+    element: <RootAccounts />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: '/',

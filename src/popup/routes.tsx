@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react';
 import { RouteObject } from 'react-router-dom';
 
 import { Bottom } from '../ui/components/bottom/bottom';
@@ -34,13 +33,8 @@ import { Root } from '../ui/components/Root';
 
 export const routes: RouteObject[] = [
   {
-    element: (
-      <Sentry.ErrorBoundary
-        fallback={errorData => <ErrorPage {...errorData} />}
-      >
-        <Root />
-      </Sentry.ErrorBoundary>
-    ),
+    element: <Root />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: '/',
