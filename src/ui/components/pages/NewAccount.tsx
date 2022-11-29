@@ -1,9 +1,9 @@
+import { AccountsState } from 'accounts/store/types';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import Background from 'ui/services/Background';
-import { AppState } from 'ui/store';
 
 import { CONFIG } from '../../appConfig';
 import { Button, ErrorMessage, Input, LangsSelect } from '../ui';
@@ -11,7 +11,7 @@ import * as styles from './NewAccount.module.css';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: AccountsState) => ({
   initialized: state.state?.initialized,
 });
 

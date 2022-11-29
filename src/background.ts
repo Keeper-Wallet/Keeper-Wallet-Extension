@@ -27,7 +27,7 @@ import { NetworkName } from 'networks/types';
 import { PERMISSIONS } from 'permissions/constants';
 import { PermissionObject } from 'permissions/types';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';
-import { UiState } from 'ui/reducers/updateState';
+import { UiState } from 'store/reducers/updateState';
 import { CreateWalletInput } from 'wallets/types';
 import Browser from 'webextension-polyfill';
 

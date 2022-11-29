@@ -2,16 +2,16 @@ import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { AssetsRecord } from 'assets/types';
 import cn from 'classnames';
+import { useAppSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList as List } from 'react-window';
+import { BalanceAssets } from 'store/reducers/updateState';
 import { AssetItem } from 'ui/components/pages/assets//assetItem';
 import { icontains } from 'ui/components/pages/assets/helpers';
 import * as styles from 'ui/components/pages/styles/assets.styl';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import { Tooltip } from 'ui/components/ui/tooltip';
-import { BalanceAssets } from 'ui/reducers/updateState';
-import { useAppSelector } from 'ui/store';
 
 import { CARD_FULL_HEIGHT, sortAssetEntries, useUiState } from './helpers';
 

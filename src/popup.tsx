@@ -19,23 +19,23 @@ import {
 } from './ipc/ipc';
 import { ledgerService } from './ledger/service';
 import { LedgerSignRequest } from './ledger/types';
+import { createPopupStore } from './popup/store/create';
+import { createUpdateState } from './popup/updateState';
 import { PopupRoot } from './popupRoot';
 import { initUiSentry } from './sentry';
-import { setLoading } from './ui/actions/localState';
-import { createUpdateState } from './ui/actions/updateState';
+import { setLoading } from './store/actions/localState';
 import { RootWrapper } from './ui/components/RootWrapper';
 import Background, {
   BackgroundGetStateResult,
   BackgroundUiApi,
 } from './ui/services/Background';
-import { createUiStore } from './ui/store';
 
 initUiSentry({
   ignoreErrorContext: 'beforeSendPopup',
   source: 'popup',
 });
 
-const store = createUiStore({
+const store = createPopupStore({
   version: Browser.runtime.getManifest().version,
 });
 

@@ -1,6 +1,6 @@
+import { useAppSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from 'ui/store';
 import { getNetworkByAddress } from 'ui/utils/waves';
 
 import { downloadKeystore } from '../../../../keystore/utils';

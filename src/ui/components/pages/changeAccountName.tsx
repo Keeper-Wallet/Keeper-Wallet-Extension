@@ -1,10 +1,10 @@
+import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { PreferencesAccount } from 'preferences/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from 'ui/store';
 
-import { changeAccountName } from '../../actions/account';
+import { changeAccountName } from '../../../store/actions/account';
 import { CONFIG } from '../../appConfig';
 import { Button, ErrorMessage, Input } from '../ui';
 import * as styles from './styles/changeName.styl';

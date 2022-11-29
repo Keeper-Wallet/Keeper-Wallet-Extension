@@ -1,10 +1,10 @@
 import cn from 'classnames';
+import { useAppDispatch } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { deleteAllAccounts } from 'ui/actions/user';
+import { deleteAllAccounts } from 'store/actions/user';
 import { Button, ErrorMessage, Input } from 'ui/components/ui';
-import { useAppDispatch } from 'ui/store';
 
 import * as styles from './deleteAccounts.module.css';
 

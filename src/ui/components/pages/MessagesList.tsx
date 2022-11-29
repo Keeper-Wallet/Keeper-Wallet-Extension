@@ -1,19 +1,19 @@
 import { AssetsRecord } from 'assets/types';
 import { MessageStoreItem } from 'messages/types';
 import { NotificationsStoreItem } from 'notifications/types';
+import { PopupState } from 'popup/store/types';
 import { PreferencesAccount } from 'preferences/types';
 import { Component } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { AppState } from 'ui/store';
 
-import { getAsset } from '../../actions/assets';
-import { approve, clearMessages } from '../../actions/messages';
+import { getAsset } from '../../../store/actions/assets';
+import { approve, clearMessages } from '../../../store/actions/messages';
 import {
   deleteNotifications,
   setActiveMessage,
   setActiveNotification,
-} from '../../actions/notifications';
+} from '../../../store/actions/notifications';
 import { NotificationCard } from '../notifications';
 import { getConfigByTransaction } from '../transactions';
 import { Button } from '../ui';
@@ -239,7 +239,7 @@ class MessageListComponent extends Component<Props, State> {
   }
 }
 
-function mapStateToProps(store: AppState): StateProps {
+function mapStateToProps(store: PopupState): StateProps {
   return {
     selectedAccount: store.selectedAccount,
     assets: store.assets,

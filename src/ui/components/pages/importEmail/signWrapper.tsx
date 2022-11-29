@@ -1,11 +1,11 @@
 import cn from 'classnames';
 import { LedgerConnectModal } from 'ledger/connectModal';
 import { ledgerService, LedgerServiceStatus } from 'ledger/service';
+import { useAppSelector } from 'popup/store/react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui/components/ui';
 import background from 'ui/services/Background';
-import { useAppSelector } from 'ui/store';
 
 import { Login } from './login';
 import * as styles from './signWrapper.module.css';

@@ -1,10 +1,10 @@
 import { seedUtils } from '@waves/waves-transactions';
 import { KeystoreProfiles } from 'keystore/types';
+import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { batchAddAccounts } from 'ui/actions/user';
-import { useAppDispatch, useAppSelector } from 'ui/store';
+import { batchAddAccounts } from 'store/actions/user';
 import { getNetworkByNetworkCode } from 'ui/utils/waves';
 
 import { WalletTypes } from '../../../services/Background';

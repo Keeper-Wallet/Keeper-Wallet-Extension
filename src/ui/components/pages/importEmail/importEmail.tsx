@@ -4,8 +4,8 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { newAccountSelect } from '../../../actions/localState';
-import { useAppDispatch, useAppSelector } from '../../../store';
+import { useAppDispatch, useAppSelector } from '../../../../popup/store/react';
+import { newAccountSelect } from '../../../../store/actions/localState';
 import * as styles from './importEmail.module.css';
 import { Login } from './login';
 

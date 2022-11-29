@@ -6,8 +6,8 @@ import { SwapAssetsParams, SwapAssetsResult } from 'controllers/SwapController';
 import { MessageInputOfType } from 'messages/types';
 import { NetworkName } from 'networks/types';
 import { PreferencesAccount } from 'preferences/types';
+import { UiState } from 'store/reducers/updateState';
 import { SwapVendor } from 'swap/constants';
-import { UiState } from 'ui/reducers/updateState';
 import { IMoneyLike } from 'ui/utils/converters';
 import { CreateWalletInput } from 'wallets/types';
 

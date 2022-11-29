@@ -1,11 +1,11 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { AssetsRecord } from 'assets/types';
+import { PopupState } from 'popup/store/types';
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { AppState } from 'ui/store';
 
-import { getAsset } from '../../../actions/assets';
+import { getAsset } from '../../../../store/actions/assets';
 import { Loader } from '../loader';
 import { UsdAmount } from '../UsdAmount';
 import * as styles from './Balance.module.css';
@@ -118,6 +118,6 @@ const BalanceComponent = ({
   );
 };
 
-export const Balance = connect(({ assets }: AppState) => ({ assets }), {
+export const Balance = connect(({ assets }: PopupState) => ({ assets }), {
   getAsset,
 })(BalanceComponent);

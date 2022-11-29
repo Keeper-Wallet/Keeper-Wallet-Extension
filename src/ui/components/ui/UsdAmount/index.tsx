@@ -1,5 +1,5 @@
 import BigNumber from '@waves/bignumber';
-import { useAppSelector } from 'ui/store';
+import { useAppSelector } from 'popup/store/react';
 
 interface Props {
   id: string;

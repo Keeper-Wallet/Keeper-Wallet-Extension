@@ -1,17 +1,17 @@
 import { BigNumber } from '@waves/bignumber';
 import cn from 'classnames';
+import { PopupState } from 'popup/store/types';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { setShowNotification } from 'ui/actions/notifications';
+import { setShowNotification } from 'store/actions/notifications';
 import {
   allowOrigin,
   deleteOrigin,
   disableOrigin,
   setAutoOrigin,
-} from 'ui/actions/permissions';
+} from 'store/actions/permissions';
 import { Loader, Modal } from 'ui/components/ui';
-import { AppState } from 'ui/store';
 
 import {
   List,
@@ -186,7 +186,7 @@ class PermissionsSettingsComponent extends PureComponent<Props, State> {
   }
 }
 
-function mapStateToProps(store: AppState): StateProps {
+function mapStateToProps(store: PopupState): StateProps {
   return {
     origins: store.origins,
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment

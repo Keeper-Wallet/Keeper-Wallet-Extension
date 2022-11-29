@@ -1,9 +1,9 @@
 import { validators } from '@waves/waves-transactions';
 import cn from 'classnames';
+import { useAppSelector } from 'popup/store/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { processAliasOrAddress } from 'transactions/utils';
-import { useAppSelector } from 'ui/store';
 import {
   fromEthereumToWavesAddress,
   fromWavesToEthereumAddress,

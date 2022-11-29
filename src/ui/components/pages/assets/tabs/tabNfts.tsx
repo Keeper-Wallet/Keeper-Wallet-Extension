@@ -2,11 +2,11 @@ import cn from 'classnames';
 import { NftList } from 'nfts/nftList';
 import { createNft } from 'nfts/nfts';
 import { DisplayMode, Nft } from 'nfts/types';
+import { useAppSelector } from 'popup/store/react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import * as styles from 'ui/components/pages/styles/assets.styl';
 import { SearchInput, TabPanel } from 'ui/components/ui';
-import { useAppSelector } from 'ui/store';
 import { getNftsLink } from 'ui/urls';
 
 import { MAX_NFT_ITEMS } from '../../../../../constants';

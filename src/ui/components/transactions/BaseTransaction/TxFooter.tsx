@@ -1,8 +1,8 @@
+import { useAppSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
 import * as styles from 'ui/components/pages/styles/transactions.styl';
 import { ApproveBtn, Button } from 'ui/components/ui';
-import { useAppSelector } from 'ui/store';
 
 import { MessageComponentProps } from '../types';
 

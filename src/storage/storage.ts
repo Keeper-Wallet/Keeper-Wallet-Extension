@@ -11,7 +11,7 @@ import { NotificationsStoreItem } from 'notifications/types';
 import type ObservableStore from 'obs-store';
 import { PermissionValue } from 'permissions/types';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';
-import { UiState } from 'ui/reducers/updateState';
+import { UiState } from 'store/reducers/updateState';
 import Browser from 'webextension-polyfill';
 
 import {

@@ -1,9 +1,9 @@
 import cn from 'classnames';
+import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from 'ui/store';
 
-import { setIdle } from '../../actions/localState';
+import { setIdle } from '../../../store/actions/localState';
 import { Button, Select } from '../ui';
 import * as styles from './styles/settings.styl';
 

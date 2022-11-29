@@ -1,4 +1,4 @@
-import { useAppSelector } from 'ui/store';
+import { useAppSelector } from 'popup/store/react';
 
 import * as styles from './bottom.module.css';
 import { Network } from './components';

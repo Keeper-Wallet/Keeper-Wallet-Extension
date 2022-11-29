@@ -3,11 +3,11 @@ import { WavesDomainsClient } from '@waves-domains/client';
 import cn from 'classnames';
 import { useDebouncedValue } from 'common/useDebouncedValue';
 import { NetworkName } from 'networks/types';
+import { useAppSelector } from 'popup/store/react';
 import { PreferencesAccount } from 'preferences/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { icontains } from 'ui/components/pages/assets/helpers';
-import { useAppSelector } from 'ui/store';
 
 import { Button, InputProps, Modal, SearchInput } from '..';
 import { AddressTooltip } from '../Address/Tooltip';

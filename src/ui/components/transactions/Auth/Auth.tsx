@@ -1,5 +1,5 @@
+import { useAppSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from 'ui/store';
 
 import { SignWrapper } from '../../pages/importEmail/signWrapper';
 import { ApproveBtn, Button } from '../../ui';

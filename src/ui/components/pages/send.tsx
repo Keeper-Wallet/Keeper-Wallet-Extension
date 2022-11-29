@@ -2,12 +2,12 @@ import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { validators } from '@waves/waves-transactions';
 import { createNft } from 'nfts/nfts';
+import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getBalances } from 'ui/actions/balances';
+import { getBalances } from 'store/actions/balances';
 import Background from 'ui/services/Background';
-import { useAppDispatch, useAppSelector } from 'ui/store';
 
 import { AssetAmountInput } from '../../../assets/amountInput';
 import { ErrorMessage, Loader } from '../ui';

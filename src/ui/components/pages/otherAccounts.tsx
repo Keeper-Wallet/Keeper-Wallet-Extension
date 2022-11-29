@@ -1,12 +1,12 @@
 import { Asset, Money } from '@waves/data-entities';
+import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { compareAccountsByLastUsed } from 'preferences/utils';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { selectAccount } from 'ui/actions/localState';
+import { selectAccount } from 'store/actions/localState';
 import { SearchInput } from 'ui/components/ui/searchInput/searchInput';
 import background from 'ui/services/Background';
-import { useAppDispatch, useAppSelector } from 'ui/store';
 
 import { AccountCard } from '../accounts/accountCard';
 import * as styles from './otherAccounts.module.css';

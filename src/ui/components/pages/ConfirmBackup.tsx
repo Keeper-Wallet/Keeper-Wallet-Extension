@@ -1,9 +1,9 @@
+import { AccountsState } from 'accounts/store/types';
 import { Component } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { NewAccountState } from 'ui/reducers/localState';
+import { NewAccountState } from 'store/reducers/localState';
 import { WithNavigate, withNavigate } from 'ui/router';
-import { AppState } from 'ui/store';
 
 import { Button, ErrorMessage, Pills, PillsListItem } from '../ui';
 import * as styles from './styles/confirmBackup.styl';
@@ -162,7 +162,7 @@ class ConfirmBackupComponent extends Component<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState): StateProps => {
+const mapStateToProps = (state: AccountsState): StateProps => {
   return {
     account: state.localState.newAccount as Extract<
       NewAccountState,

@@ -1,6 +1,7 @@
 import { MessageStoreItem } from 'messages/types';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PermissionObject, PermissionValue } from 'permissions/types';
+import { PopupState } from 'popup/store/types';
 import { PreferencesAccount } from 'preferences/types';
 import { Component } from 'react';
 import {
@@ -11,13 +12,12 @@ import {
 import { connect } from 'react-redux';
 import { Button, DateFormat, Input } from 'ui/components/ui';
 import Background from 'ui/services/Background';
-import { AppState } from 'ui/store';
 
 import {
   deleteNotifications,
   setActiveNotification,
   setShowNotification,
-} from '../../actions/notifications';
+} from '../../../store/actions/notifications';
 import { WithNavigate, withNavigate } from '../../router';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import { LoadingScreen } from './loadingScreen';
@@ -261,7 +261,7 @@ class NotificationsComponent extends Component<Props, State> {
   }
 }
 
-function mapStateToProps(store: AppState): StateProps {
+function mapStateToProps(store: PopupState): StateProps {
   return {
     selectedAccount: store.selectedAccount,
     activeNotification: store.activePopup && store.activePopup.notify,

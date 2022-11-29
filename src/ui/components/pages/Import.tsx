@@ -5,8 +5,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import background from 'ui/services/Background';
 
+import { useAppSelector } from '../../../popup/store/react';
 import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
-import { useAppSelector } from '../../store';
 import { Button } from '../ui';
 import { generateNewWalletItems } from './NewWallet';
 import * as styles from './styles/import.styl';

@@ -9,7 +9,7 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import Browser from 'webextension-polyfill';
 
-import { createAccountsStore } from './accounts/store';
+import { createAccountsStore } from './accounts/store/create';
 import { createUpdateState } from './accounts/updateState';
 import { AccountsRoot } from './accountsRoot';
 import type { UiApi } from './background';
@@ -23,7 +23,7 @@ import {
 import { ledgerService } from './ledger/service';
 import { LedgerSignRequest } from './ledger/types';
 import { initUiSentry } from './sentry';
-import { setLoading } from './ui/actions/localState';
+import { setLoading } from './store/actions/localState';
 import { RootWrapper } from './ui/components/RootWrapper';
 import Background, {
   BackgroundGetStateResult,

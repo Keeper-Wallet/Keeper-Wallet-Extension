@@ -1,15 +1,15 @@
 import { NetworkName } from 'networks/types';
+import { PopupState } from 'popup/store/types';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { AppState } from 'ui/store';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
 
 import {
   setCustomCode,
   setCustomMatcher,
   setCustomNode,
-} from '../../actions/network';
+} from '../../../store/actions/network';
 import { Button, Copy, ErrorMessage, Input, Modal } from '../ui';
 import * as styles from './styles/settings.styl';
 
@@ -384,7 +384,7 @@ class NetworksSettingsComponent extends PureComponent<Props, State> {
   }
 }
 
-const mapToProps = (store: AppState): StateProps => {
+const mapToProps = (store: PopupState): StateProps => {
   return {
     networks: store.networks,
     currentNetwork: store.currentNetwork,

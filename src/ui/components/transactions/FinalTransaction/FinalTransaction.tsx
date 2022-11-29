@@ -4,7 +4,7 @@ import { MessageStoreItem } from 'messages/types';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PreferencesAccount } from 'preferences/types';
 import { useTranslation } from 'react-i18next';
-import { TransactionStatusState } from 'ui/reducers/localState';
+import { TransactionStatusState } from 'store/reducers/localState';
 
 import { Button } from '../../ui';
 import { TxHeader } from '../BaseTransaction';
