@@ -1,4 +1,4 @@
-import { useAccountsSelector } from 'accounts/store';
+import { useAccountsSelector } from 'accounts/store/react';
 import { useSentryNavigationBreadcrumbs } from 'common/useSentryNavigationBreadcrumbs';
 import { useEffect, useRef } from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';

@@ -1,11 +1,11 @@
 import { seedUtils } from '@waves/waves-transactions';
+import { PopupState } from 'popup/store/types';
 import { Component } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { NewAccountState } from 'ui/reducers/localState';
-import { AppState } from 'ui/store';
+import { NewAccountState } from 'store/reducers/localState';
 
-import { newAccountSelect } from '../../actions/localState';
+import { newAccountSelect } from '../../../store/actions/localState';
 import { WithNavigate, withNavigate } from '../../router';
 import { AvatarList, Button } from '../ui';
 import * as styles from './styles/newwallet.styl';
@@ -128,7 +128,7 @@ const actions = {
   newAccountSelect,
 };
 
-function mapStateToProps(store: AppState): StateProps {
+function mapStateToProps(store: PopupState): StateProps {
   return {
     account: store.localState.newAccount as Extract<
       NewAccountState,

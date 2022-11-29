@@ -5,9 +5,12 @@ import { equals } from 'ramda';
 import { useState } from 'react';
 import { TFunction } from 'react-i18next';
 
-import { setUiState } from '../../../../actions/uiState';
-import { UiState } from '../../../../reducers/updateState';
-import { useAppDispatch, useAppSelector } from '../../../../store';
+import {
+  useAppDispatch,
+  useAppSelector,
+} from '../../../../../popup/store/react';
+import { setUiState } from '../../../../../store/actions/uiState';
+import { UiState } from '../../../../../store/reducers/updateState';
 
 export function useUiState<T extends keyof UiState>(
   key: T

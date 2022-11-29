@@ -1,18 +1,18 @@
 import { MessageStoreItem } from 'messages/types';
 import { NotificationsStoreItem } from 'notifications/types';
+import { PopupState } from 'popup/store/types';
 import { PreferencesAccount } from 'preferences/types';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import Background from 'ui/services/Background';
-import { AppState } from 'ui/store';
 
-import { clearMessagesStatus } from '../../actions/localState';
-import { clearMessages, reject } from '../../actions/messages';
+import { clearMessagesStatus } from '../../../store/actions/localState';
+import { clearMessages, reject } from '../../../store/actions/messages';
 import {
   deleteNotifications,
   updateActiveState,
-} from '../../actions/notifications';
+} from '../../../store/actions/notifications';
 import { WithNavigate, withNavigate } from '../../router';
 import { Button } from '../ui';
 import { TransactionWallet } from '../wallets/TransactionWallet';
@@ -128,7 +128,7 @@ class SelectTxAccountComponent extends PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState): StateProps => {
+const mapStateToProps = (state: PopupState): StateProps => {
   return {
     selectAccount: state.selectedAccount,
     messages: state.messages,

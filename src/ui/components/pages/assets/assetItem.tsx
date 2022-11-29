@@ -3,8 +3,8 @@ import { isSwappableAsset } from 'assets/utils';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 
-import { favoriteAsset } from '../../../actions/assets';
-import { useAppDispatch, useAppSelector } from '../../../store';
+import { useAppDispatch, useAppSelector } from '../../../../popup/store/react';
+import { favoriteAsset } from '../../../../store/actions/assets';
 import { Balance, Loader } from '../../ui';
 import { Tooltip } from '../../ui/tooltip';
 import * as styles from './assetItem.module.css';

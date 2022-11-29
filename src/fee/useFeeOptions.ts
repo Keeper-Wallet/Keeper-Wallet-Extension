@@ -1,5 +1,5 @@
 import { Money } from '@waves/data-entities';
-import { useAppSelector } from 'ui/store';
+import { useAppSelector } from 'popup/store/react';
 
 import { getFeeOptions } from './utils';
 

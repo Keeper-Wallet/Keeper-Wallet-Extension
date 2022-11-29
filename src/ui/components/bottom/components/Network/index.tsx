@@ -1,5 +1,6 @@
 import cn from 'classnames';
 import { NetworkName } from 'networks/types';
+import { PopupState } from 'popup/store/types';
 import { PureComponent } from 'react';
 import {
   useTranslation,
@@ -7,16 +8,15 @@ import {
   withTranslation,
 } from 'react-i18next';
 import { connect } from 'react-redux';
-import { setLoading } from 'ui/actions/localState';
+import { setLoading } from 'store/actions/localState';
 import {
   setCustomCode,
   setCustomMatcher,
   setCustomNode,
   setNetwork,
-} from 'ui/actions/network';
+} from 'store/actions/network';
 import { Modal } from 'ui/components/ui';
 import { Tooltip } from 'ui/components/ui/tooltip';
-import { AppState } from 'ui/store';
 
 import { INetworkData, NetworkSettings } from '../NetworkSettings';
 import * as styles from './network.styl';
@@ -315,7 +315,7 @@ const mapStateToProps = ({
   customNodes,
   customMatcher,
   customCodes,
-}: AppState): StateProps => ({
+}: PopupState): StateProps => ({
   currentNetwork,
   customMatcher,
   customCodes,

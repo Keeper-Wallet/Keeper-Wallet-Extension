@@ -2,11 +2,11 @@ import * as Sentry from '@sentry/react';
 import { Asset, Money } from '@waves/data-entities';
 import cn from 'classnames';
 import { NetworkName } from 'networks/types';
+import { useAppSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Balance } from 'ui/components/ui/balance/Balance';
 import { Button } from 'ui/components/ui/buttons/Button';
-import { useAppSelector } from 'ui/store';
 
 import { SwapLayout } from './layout';
 import * as styles from './result.module.css';

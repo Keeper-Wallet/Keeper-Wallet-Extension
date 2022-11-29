@@ -1,5 +1,5 @@
 import { NetworkName } from 'networks/types';
-import { useAppSelector } from 'ui/store';
+import { useAppSelector } from 'popup/store/react';
 
 import { assetIds, assetLogosByNetwork, swappableAssetIds } from './constants';
 

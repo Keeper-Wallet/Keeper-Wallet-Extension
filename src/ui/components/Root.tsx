@@ -1,7 +1,7 @@
 import { useSentryNavigationBreadcrumbs } from 'common/useSentryNavigationBreadcrumbs';
+import { useAppSelector } from 'popup/store/react';
 import { useEffect, useRef } from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useAppSelector } from 'ui/store';
 
 import { Login } from './pages/login';
 import { Welcome } from './pages/Welcome';

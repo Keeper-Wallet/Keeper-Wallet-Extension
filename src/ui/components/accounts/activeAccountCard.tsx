@@ -1,9 +1,9 @@
 import BigNumber from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
 import cn from 'classnames';
+import { useAppSelector } from 'popup/store/react';
 import { PreferencesAccount } from 'preferences/types';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from 'ui/store';
 
 import { Avatar } from '../ui/avatar/Avatar';
 import { Balance } from '../ui/balance/Balance';

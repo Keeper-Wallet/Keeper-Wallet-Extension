@@ -1,8 +1,8 @@
 import { validators } from '@waves/waves-transactions';
+import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { setAddress } from 'ui/actions/addresses';
-import { useAppDispatch, useAppSelector } from 'ui/store';
+import { setAddress } from 'store/actions/addresses';
 
 import { Button, ErrorMessage, Input, Modal } from '../';
 import * as styles from './AddModal.module.css';

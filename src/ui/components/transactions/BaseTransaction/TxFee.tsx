@@ -4,9 +4,9 @@ import {
   isEnoughBalanceForFeeAndSpendingAmounts,
 } from 'fee/utils';
 import { MessageStoreItem } from 'messages/types';
-import { useAppDispatch, useAppSelector } from 'ui/store';
+import { useAppDispatch, useAppSelector } from 'popup/store/react';
 
-import { updateTransactionFee } from '../../../actions/messages';
+import { updateTransactionFee } from '../../../../store/actions/messages';
 import { getMoney } from '../../../utils/converters';
 import { Balance, Select, SelectItem } from '../../ui';
 import { getFee } from './parseTx';

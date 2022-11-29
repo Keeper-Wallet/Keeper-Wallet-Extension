@@ -1,10 +1,10 @@
 import cn from 'classnames';
 import { SUPPORTED_LANGUAGES } from 'i18n/constants';
+import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAppSelector } from 'ui/store';
 
-import { setLocale } from '../../actions/user';
+import { setLocale } from '../../../store/actions/user';
 import { Button } from '../ui';
 import * as styles from './LangsSettings.module.css';
 

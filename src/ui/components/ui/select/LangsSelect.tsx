@@ -1,8 +1,8 @@
 import cn from 'classnames';
 import { SUPPORTED_LANGUAGES } from 'i18n/constants';
-import { useAppDispatch, useAppSelector } from 'ui/store';
+import { useAppDispatch, useAppSelector } from 'popup/store/react';
 
-import { setLocale } from '../../../actions/user';
+import { setLocale } from '../../../../store/actions/user';
 import { Select } from '../';
 import * as styles from './LangsSelect.module.css';
 

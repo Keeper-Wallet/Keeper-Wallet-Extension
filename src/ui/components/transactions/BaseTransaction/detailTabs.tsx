@@ -2,11 +2,11 @@ import cn from 'classnames';
 import copy from 'copy-to-clipboard';
 import { CheckIcon } from 'icons/check';
 import { CopyIcon } from 'icons/copy';
+import { useAppSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'ui/components/ui';
 import { Highlight } from 'ui/components/ui/highlight/highlight';
-import { useAppSelector } from 'ui/store';
 
 import * as styles from './detailTabs.module.css';
 

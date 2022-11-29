@@ -6,13 +6,13 @@ import { swappableAssetIds } from 'assets/constants';
 import { AssetDetail } from 'assets/types';
 import { useAssetIdByTicker } from 'assets/utils';
 import { convertFeeToAsset } from 'fee/utils';
+import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { updateAssets } from 'ui/actions/assets';
+import { updateAssets } from 'store/actions/assets';
 import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
 import background from 'ui/services/Background';
-import { useAppDispatch, useAppSelector } from 'ui/store';
 
 import { OnSwapParams, SwapForm } from './form';
 import { SwapResult } from './result';

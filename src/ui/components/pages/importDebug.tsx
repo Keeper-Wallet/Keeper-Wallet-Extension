@@ -1,12 +1,12 @@
 import { validators } from '@waves/waves-transactions';
+import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { createAccount } from 'ui/actions/user';
+import { createAccount } from 'store/actions/user';
 import * as styles from 'ui/components/pages/importDebug.module.css';
 import { Button, ErrorMessage, Input } from 'ui/components/ui';
 import { WalletTypes } from 'ui/services/Background';
-import { useAppDispatch, useAppSelector } from 'ui/store';
 
 export function ImportDebug() {
   const navigate = useNavigate();

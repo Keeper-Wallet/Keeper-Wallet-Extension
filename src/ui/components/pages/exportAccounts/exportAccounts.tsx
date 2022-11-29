@@ -1,7 +1,7 @@
+import { useAppSelector } from 'popup/store/react';
 import { PreferencesAccount } from 'preferences/types';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from 'ui/store';
 
 import { downloadKeystore } from '../../../../keystore/utils';
 import { ExportKeystoreChooseItems } from './chooseItems';

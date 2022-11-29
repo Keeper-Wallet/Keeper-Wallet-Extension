@@ -1,8 +1,8 @@
 import { AssetsRecord } from 'assets/types';
+import { PopupState } from 'popup/store/types';
 import { connect } from 'react-redux';
-import { AppState } from 'ui/store';
 
-import { getAsset } from '../../../actions/assets';
+import { getAsset } from '../../../../store/actions/assets';
 import { Loader } from '../loader';
 
 const AssetComponent = ({
@@ -34,7 +34,7 @@ const AssetComponent = ({
   );
 };
 
-export const Asset = connect(({ assets }: AppState) => ({ assets }), {
+export const Asset = connect(({ assets }: PopupState) => ({ assets }), {
   getAsset,
 })(AssetComponent);
 

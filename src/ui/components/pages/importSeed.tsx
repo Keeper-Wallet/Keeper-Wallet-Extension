@@ -1,11 +1,11 @@
 import * as libCrypto from '@waves/ts-lib-crypto';
 import { validators } from '@waves/waves-transactions';
 import cn from 'classnames';
+import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { newAccountSelect, selectAccount } from 'ui/actions/localState';
-import { useAppDispatch, useAppSelector } from 'ui/store';
+import { newAccountSelect, selectAccount } from 'store/actions/localState';
 
 import {
   Button,

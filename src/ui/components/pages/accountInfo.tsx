@@ -1,10 +1,10 @@
 import { Asset, Money } from '@waves/data-entities';
+import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from 'ui/store';
 
-import { getAsset } from '../../actions/assets';
+import { getAsset } from '../../../store/actions/assets';
 import Background from '../../services/Background';
 import { getAccountLink } from '../../urls';
 import {

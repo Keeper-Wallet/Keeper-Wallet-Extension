@@ -4,7 +4,7 @@ import { Long, TRANSACTION_TYPE, TransactionFromNode } from '@waves/ts-types';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 
-import { useAppSelector } from '../../../store';
+import { useAppSelector } from '../../../../popup/store/react';
 import { getTxDetailLink } from '../../../urls';
 import { TxIcon } from '../../transactions/BaseTransaction';
 import { Balance, Loader } from '../../ui';

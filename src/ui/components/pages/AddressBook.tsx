@@ -1,7 +1,7 @@
+import { useAppSelector } from 'popup/store/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { icontains } from 'ui/components/pages/assets/helpers';
-import { useAppSelector } from 'ui/store';
 
 import { Avatar, Button, Copy, Ellipsis, Modal, SearchInput } from '../ui';
 import { AddModal } from '../ui/Address/AddModal';

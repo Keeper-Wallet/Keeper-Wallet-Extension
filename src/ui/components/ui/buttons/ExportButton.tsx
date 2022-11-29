@@ -1,6 +1,6 @@
+import { useAppSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from 'ui/store';
 
 import { downloadKeystore } from '../../../../keystore/utils';
 import { isExportable } from '../../pages/exportAccounts/chooseItems';

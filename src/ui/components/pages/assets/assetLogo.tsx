@@ -2,7 +2,7 @@ import cn from 'classnames';
 import ColorHash from 'color-hash';
 
 import { useAssetLogo } from '../../../../assets/utils';
-import { useAppSelector } from '../../../store';
+import { useAppSelector } from '../../../../popup/store/react';
 import * as styles from './assetLogo.module.css';
 
 interface Props {

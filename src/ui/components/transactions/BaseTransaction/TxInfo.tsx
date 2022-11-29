@@ -1,6 +1,6 @@
 import { MessageStoreItem } from 'messages/types';
+import { useAppSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from 'ui/store';
 
 import * as styles from '../../pages/styles/transactions.styl';
 import { DateFormat } from '../../ui';

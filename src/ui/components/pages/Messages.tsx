@@ -3,18 +3,22 @@ import { AssetsRecord } from 'assets/types';
 import { BalancesItem } from 'balances/types';
 import { MessageStoreItem } from 'messages/types';
 import { NotificationsStoreItem } from 'notifications/types';
+import { PopupState } from 'popup/store/types';
 import { PreferencesAccount } from 'preferences/types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { TransactionStatusState } from 'ui/reducers/updateState';
+import { TransactionStatusState } from 'store/reducers/updateState';
 import Background from 'ui/services/Background';
-import { AppState } from 'ui/store';
 
-import { getAsset } from '../../actions/assets';
-import { clearMessagesStatus } from '../../actions/localState';
-import { approve, reject, rejectForever } from '../../actions/messages';
-import { setShowNotification } from '../../actions/notifications';
-import { setAutoOrigin } from '../../actions/permissions';
+import { getAsset } from '../../../store/actions/assets';
+import { clearMessagesStatus } from '../../../store/actions/localState';
+import {
+  approve,
+  reject,
+  rejectForever,
+} from '../../../store/actions/messages';
+import { setShowNotification } from '../../../store/actions/notifications';
+import { setAutoOrigin } from '../../../store/actions/permissions';
 import { WithNavigate, withNavigate } from '../../router';
 import { getConfigByTransaction } from '../transactions';
 import { FinalTransaction } from '../transactions/FinalTransaction/FinalTransaction';
@@ -32,7 +36,7 @@ interface StateProps {
   transactionStatus: TransactionStatusState;
 }
 
-function mapStateToProps(state: AppState): StateProps {
+function mapStateToProps(state: PopupState): StateProps {
   return {
     activeMessage: state.activePopup && state.activePopup.msg,
     assets: state.assets,

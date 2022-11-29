@@ -1,4 +1,5 @@
 import { BigNumber } from '@waves/bignumber';
+import { PopupState } from 'popup/store/types';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -10,7 +11,6 @@ import {
   CollapsedContent,
   DropdownButton,
 } from 'ui/components/ui';
-import { AppState } from 'ui/store';
 
 import { TxHeader } from '../BaseTransaction';
 import { MessageComponentProps } from '../types';
@@ -119,7 +119,7 @@ class OriginAuthComponent extends PureComponent<
   }
 }
 
-const mapsToProps = (state: AppState) => ({
+const mapsToProps = (state: PopupState) => ({
   origins: state.origins,
 });
 

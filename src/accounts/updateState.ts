@@ -1,12 +1,12 @@
 import { equals } from 'ramda';
-import { ACTION } from 'ui/actions/constants';
+import { ACTION } from 'store/actions/constants';
+import { AppAction } from 'store/types';
 import {
   BackgroundGetStateResult,
   BackgroundUiApi,
 } from 'ui/services/Background';
-import { UiAction } from 'ui/store';
 
-import { AccountsStore } from './store';
+import { AccountsStore } from './store/types';
 
 function getParam<S, D>(param: S, defaultParam: D) {
   if (param) {
@@ -24,7 +24,7 @@ type UpdateStateInput = Partial<
 
 export function createUpdateState(store: AccountsStore) {
   return (state: UpdateStateInput) => {
-    const actions: UiAction[] = [];
+    const actions: AppAction[] = [];
     const currentState = store.getState();
 
     if (state.networks && state.networks.length) {

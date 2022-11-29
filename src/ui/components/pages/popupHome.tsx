@@ -1,13 +1,13 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { AssetDetail } from 'assets/types';
+import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { getBalances } from 'ui/actions/balances';
+import { getBalances } from 'store/actions/balances';
 import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
-import { useAppDispatch, useAppSelector } from 'ui/store';
 
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { AssetInfo } from './assets/assetInfo';

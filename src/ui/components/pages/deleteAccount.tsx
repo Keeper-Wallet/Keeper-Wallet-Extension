@@ -1,8 +1,8 @@
+import { useAppDispatch } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAppDispatch } from 'ui/store';
 
-import { deleteAccount } from '../../actions/localState';
+import { deleteAccount } from '../../../store/actions/localState';
 import { Button } from '../ui';
 import * as styles from './deleteAccount.module.css';
 

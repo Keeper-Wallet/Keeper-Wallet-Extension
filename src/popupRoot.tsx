@@ -1,6 +1,6 @@
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 
-import { routes } from './ui/routes';
+import { routes } from './popup/routes';
 
 const router = createMemoryRouter(routes);
 

@@ -1,10 +1,10 @@
 import BigNumber from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
+import { useAppSelector } from 'popup/store/react';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useIMask } from 'react-imask';
-import { BalanceAssets } from 'ui/reducers/updateState';
-import { useAppSelector } from 'ui/store';
+import { BalanceAssets } from 'store/reducers/updateState';
 
 import { UsdAmount } from '../ui/components/ui/UsdAmount';
 import * as styles from './amountInput.module.css';

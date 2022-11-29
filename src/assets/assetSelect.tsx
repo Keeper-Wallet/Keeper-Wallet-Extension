@@ -2,8 +2,8 @@ import cn from 'classnames';
 import ColorHash from 'color-hash';
 import { NetworkName } from 'networks/types';
 import { useState } from 'react';
+import { BalanceAssets } from 'store/reducers/updateState';
 import { Modal } from 'ui/components/ui/modal/Modal';
-import { BalanceAssets } from 'ui/reducers/updateState';
 
 import * as styles from './assetSelect.module.css';
 import { AssetSelectModal, AssetSelectModalOption } from './selectModal';

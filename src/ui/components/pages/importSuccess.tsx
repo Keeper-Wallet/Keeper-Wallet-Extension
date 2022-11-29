@@ -1,4 +1,4 @@
-import { useAccountsSelector } from 'accounts/store';
+import { useAccountsSelector } from 'accounts/store/react';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';

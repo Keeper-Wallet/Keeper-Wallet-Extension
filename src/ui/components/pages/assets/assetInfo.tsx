@@ -2,7 +2,7 @@ import { Asset, Money } from '@waves/data-entities';
 import { AssetDetail } from 'assets/types';
 import { useTranslation } from 'react-i18next';
 
-import { useAppSelector } from '../../../store';
+import { useAppSelector } from '../../../../popup/store/react';
 import { getAssetDetailLink } from '../../../urls';
 import { Balance, Button, Copy, DateFormat, Ellipsis } from '../../ui';
 
