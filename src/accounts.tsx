@@ -5,6 +5,7 @@ import './ui/styles/icons.styl';
 import * as Sentry from '@sentry/react';
 import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
+import i18next from 'i18next';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import Browser from 'webextension-polyfill';
@@ -37,91 +38,98 @@ initUiSentry({
 
 const store = createAccountsStore();
 
-const updateState = createUpdateState(store);
+Promise.all([
+  Browser.storage.local
+    .get('currentLocale')
+    .then(({ currentLocale }) => i18next.changeLanguage(currentLocale)),
+  i18nextInit(),
+])
+  .then(() => {
+    render(
+      <Provider store={store}>
+        <RootWrapper>
+          <AccountsRoot />
+        </RootWrapper>
+      </Provider>,
+      document.getElementById('app-content')
+    );
+  })
+  .then(() => {
+    const updateState = createUpdateState(store);
 
-Browser.storage.onChanged.addListener(async (changes, area) => {
-  if (area !== 'local') {
-    return;
-  }
-
-  const stateChanges: Partial<Record<string, unknown>> &
-    Partial<BackgroundGetStateResult> = await Background.getState([
-    'initialized',
-    'locked',
-  ]);
-
-  for (const key in changes) {
-    stateChanges[key] = changes[key].newValue;
-  }
-
-  updateState(stateChanges);
-});
-
-function connect() {
-  const uiApi: UiApi = {
-    closePopupWindow: async () => {
-      const popup = Browser.extension
-        .getViews({ type: 'popup' })
-        .find(w => w.location.pathname === '/popup.html');
-
-      if (popup) {
-        popup.close();
+    Browser.storage.onChanged.addListener(async (changes, area) => {
+      if (area !== 'local') {
+        return;
       }
-    },
-    ledgerSignRequest: async (request: LedgerSignRequest) => {
-      const { selectedAccount } = store.getState();
 
-      return ledgerService.queueSignRequest(selectedAccount, request);
-    },
-  };
+      const stateChanges: Partial<Record<string, unknown>> &
+        Partial<BackgroundGetStateResult> = await Background.getState([
+        'initialized',
+        'locked',
+      ]);
 
-  const port = Browser.runtime.connect();
+      for (const key in changes) {
+        stateChanges[key] = changes[key].newValue;
+      }
 
-  pipe(
-    fromPort<MethodCallRequestPayload<keyof UiApi>>(port),
-    handleMethodCallRequests(uiApi, result => port.postMessage(result)),
-    subscribe({
-      complete: () => {
-        Background.setConnect(() => {
-          Background.init(connect());
-        });
-      },
-    })
-  );
+      updateState(stateChanges);
+    });
 
-  return createIpcCallProxy<keyof BackgroundUiApi, BackgroundUiApi>(
-    request => port.postMessage(request),
-    fromPort(port)
-  );
-}
+    function connect() {
+      const uiApi: UiApi = {
+        closePopupWindow: async () => {
+          const popup = Browser.extension
+            .getViews({ type: 'popup' })
+            .find(w => w.location.pathname === '/popup.html');
 
-const background = connect();
+          if (popup) {
+            popup.close();
+          }
+        },
+        ledgerSignRequest: async (request: LedgerSignRequest) => {
+          const { selectedAccount } = store.getState();
 
-Promise.all([background.getState(), background.getNetworks()]).then(
-  ([state, networks]) => {
-    updateState({ ...state, networks });
+          return ledgerService.queueSignRequest(selectedAccount, request);
+        },
+      };
 
-    Sentry.setUser({ id: state.userId });
-    Sentry.setTag('network', state.currentNetwork);
+      const port = Browser.runtime.connect();
 
-    Background.init(background);
+      pipe(
+        fromPort<MethodCallRequestPayload<keyof UiApi>>(port),
+        handleMethodCallRequests(uiApi, result => port.postMessage(result)),
+        subscribe({
+          complete: () => {
+            Background.setConnect(() => {
+              Background.init(connect());
+            });
+          },
+        })
+      );
 
-    document.addEventListener('mousemove', () => Background.updateIdle());
-    document.addEventListener('keyup', () => Background.updateIdle());
-    document.addEventListener('mousedown', () => Background.updateIdle());
-    document.addEventListener('focus', () => Background.updateIdle());
+      return createIpcCallProxy<keyof BackgroundUiApi, BackgroundUiApi>(
+        request => port.postMessage(request),
+        fromPort(port)
+      );
+    }
 
-    store.dispatch(setLoading(false));
-  }
-);
+    const background = connect();
 
-i18nextInit().then(() => {
-  render(
-    <Provider store={store}>
-      <RootWrapper>
-        <AccountsRoot />
-      </RootWrapper>
-    </Provider>,
-    document.getElementById('app-content')
-  );
-});
+    Promise.all([background.getState(), background.getNetworks()]).then(
+      ([state, networks]) => {
+        updateState({ ...state, networks });
+
+        Sentry.setUser({ id: state.userId });
+        Sentry.setTag('network', state.currentNetwork);
+
+        Background.init(background);
+
+        document.addEventListener('mousemove', () => Background.updateIdle());
+        document.addEventListener('keyup', () => Background.updateIdle());
+        document.addEventListener('mousedown', () => Background.updateIdle());
+        document.addEventListener('focus', () => Background.updateIdle());
+
+        store.dispatch(setLoading(false));
+      }
+    );
+  });
