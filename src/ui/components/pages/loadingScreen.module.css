@@ -1,0 +1,27 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: url(../../assets/img/loader.gif) no-repeat center;
+  background-size: 28px;
+}
+
+.logo {
+  margin: 164px 60px 0 60px;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+}
+
+.exportButton {
+  border-top: 0;
+  padding: 8px 48px;
+}
+
+.resetButton {
+  margin: 14px;
+  width: auto;
+}

@@ -2,9 +2,7 @@ import { useEffect, useState } from 'react';
 import { ExportButton, ResetButton } from 'ui/components/ui';
 
 import { BigLogo } from '../head';
-import * as styles from './styles/intro.styl';
-
-const DEFAULT_TIMEOUT = 5000;
+import * as styles from './loadingScreen.module.css';
 
 export function LoadingScreen() {
   const [showReset, setShowReset] = useState(false);
@@ -12,7 +10,7 @@ export function LoadingScreen() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setShowReset(true);
-    }, DEFAULT_TIMEOUT);
+    }, 5000);
 
     return () => {
       clearTimeout(timeout);
@@ -20,15 +18,16 @@ export function LoadingScreen() {
   }, []);
 
   return (
-    <div className={styles.intro}>
-      <BigLogo />
-      <div className={styles.loader}></div>
+    <div className={styles.root}>
+      <div className={styles.logo}>
+        <BigLogo />
+      </div>
 
       {showReset && (
-        <div className={styles.footer}>
+        <footer className={styles.footer}>
           <ExportButton className={styles.exportButton} />
-          <ResetButton className={styles.reset} />
-        </div>
+          <ResetButton className={styles.resetButton} />
+        </footer>
       )}
     </div>
   );
