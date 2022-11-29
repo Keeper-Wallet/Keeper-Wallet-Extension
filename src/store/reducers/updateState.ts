@@ -120,6 +120,3 @@ export const assetLogos = createSimpleReducer({}, ACTION.SET_ASSET_LOGOS);
 export const assetTickers = createSimpleReducer({}, ACTION.SET_ASSET_TICKERS);
 export const addresses = createSimpleReducer({}, ACTION.UPDATE_ADDRESSES);
 export const nfts = createSimpleReducer(null, ACTION.UPDATE_NFTS);
-
-// eslint-disable-next-line @typescript-eslint/no-shadow
-export const version = (state = '') => state;

@@ -35,9 +35,7 @@ initUiSentry({
   source: 'popup',
 });
 
-const store = createPopupStore({
-  version: Browser.runtime.getManifest().version,
-});
+const store = createPopupStore();
 
 const updateState = createUpdateState(store);
 

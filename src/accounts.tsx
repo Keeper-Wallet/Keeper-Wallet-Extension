@@ -35,9 +35,7 @@ initUiSentry({
   source: 'accounts',
 });
 
-const store = createAccountsStore({
-  version: Browser.runtime.getManifest().version,
-});
+const store = createAccountsStore();
 
 const updateState = createUpdateState(store);
 
