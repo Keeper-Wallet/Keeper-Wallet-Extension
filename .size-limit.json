@@ -1,0 +1,26 @@
+[
+  {
+    "name": "css",
+    "path": "dist/build/*.css",
+    "limit": 49526
+  },
+  {
+    "name": "background",
+    "path": "dist/build/background.js",
+    "limit": 289171
+  },
+  {
+    "name": "ui",
+    "path": [
+      "dist/build/accounts.js",
+      "dist/build/commons.js",
+      "dist/build/popup.js"
+    ],
+    "limit": 567990
+  },
+  {
+    "name": "contentscript",
+    "path": ["dist/build/contentscript.js", "dist/build/inpage.js"],
+    "limit": 6592
+  }
+]
