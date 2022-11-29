@@ -1,6 +1,12 @@
 {
   "private": true,
   "version": "2.11.1",
+  "sideEffects": [
+    "src/fonts/_fonts.css",
+    "src/global.css",
+    "src/ui/styles/app.styl",
+    "src/ui/styles/icons.styl"
+  ],
   "scripts": {
     "cleanup": "rimraf dist",
     "dev": "webpack --watch --mode development",
