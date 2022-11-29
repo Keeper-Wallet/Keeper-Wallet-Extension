@@ -3,7 +3,7 @@ import { RouteObject } from 'react-router-dom';
 import { ErrorPage } from 'ui/components/pages/errorPage';
 import { RootAccounts } from 'ui/components/RootAccounts';
 
-import { Bottom } from '../ui/components/bottom';
+import { Bottom } from '../ui/components/bottom/bottom';
 import { Menu } from '../ui/components/menu/Menu';
 import { BackUpSeed } from '../ui/components/pages/BackupSeed';
 import { ConfirmBackup } from '../ui/components/pages/ConfirmBackup';
