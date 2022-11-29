@@ -103,8 +103,6 @@ input[type='checkbox'] {
   height: 22px;
   border-radius: 4px;
   background: url(../../../assets/img/check-12-basic-200.svg) center no-repeat;
-  -moz-appearance: none;
-  -webkit-appearance: none;
   appearance: none;
 }
 
