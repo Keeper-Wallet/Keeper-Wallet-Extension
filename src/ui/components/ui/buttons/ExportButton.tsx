@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import { useAppSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,15 +22,15 @@ export const ExportButton = ({ className }: Props) => {
 
   return accounts.length !== 0 || Object.keys(addresses).length !== 0 ? (
     <>
-      <div
-        className={`${styles.exportWrapper} ${className}`}
+      <button
+        className={cn(className, styles.root)}
         onClick={() => {
           setShowExportModal(true);
         }}
       >
         <span>{t('errorPage.export')}</span>
         <i className={styles.exportIcon} />
-      </div>
+      </button>
 
       {showExportModal && (
         <ExportPasswordModal
