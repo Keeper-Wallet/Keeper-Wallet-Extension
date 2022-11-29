@@ -166,7 +166,6 @@
   "errorPage": {
     "export": "Ekspor akun dan buku alamat",
     "sembunyikan": "Sembunyikan",
-    "reload": "Coba muat ulang",
     "reset": "Setel ulang ekstensi",
     "resetButton": "Setel ulang dompet",
     "resetDescription": "Setelah tindakan ini kami menghapus semua informasi sekunder (misalnya token favorit). Anda juga harus Masuk sekali lagi .",

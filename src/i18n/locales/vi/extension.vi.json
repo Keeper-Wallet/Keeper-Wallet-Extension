@@ -159,7 +159,6 @@
   },
   "errorPage": {
     "export": "Xuất tài khoản và sổ địa chỉ",
-    "reload": "Cố gắng tải lại",
     "reset": "Đặt lại tiện ích mở rộng",
     "resetButton": "Đặt lại ví",
     "resetDescription": "Sau hành động này, chúng tôi xóa tất cả thông tin phụ (ví dụ: token yêu thích). Ngoài ra, bạn sẽ cần phải Đăng nhập lại một lần nữa.",

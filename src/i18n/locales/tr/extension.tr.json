@@ -159,7 +159,6 @@
   },
   "errorPage": {
     "export": "Hesapları ve adres defterini dışa aktar",
-    "reload": "Yeniden yüklemeyi dene",
     "reset": "Uzantı sıfırlama",
     "resetButton": "Cüzdanı sıfırla",
     "resetDescription": "Bu işlemden sonra tüm ikincil bilgileri sileriz (ör. favori tokenler). Ek olarak, bir kez daha “Giriş Yapmanız” gerekecektir.",

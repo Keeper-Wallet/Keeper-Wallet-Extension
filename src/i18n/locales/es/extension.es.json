@@ -165,7 +165,6 @@
   },
   "errorPage": {
     "export": "Exportar cuentas y libreta de direcciones",
-    "reload": "Intenta Recargar",
     "reset": "Restablecimiento de la extensión",
     "resetButton": "Reiniciar la wallet",
     "resetDescription": "Después de esta acción eliminamos toda la información secundaria (Por ejemplo: Los tokens favoritos). También tendrá que iniciar la sesión una vez más.",

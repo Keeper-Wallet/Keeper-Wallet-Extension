@@ -157,7 +157,6 @@
   },
   "errorPage": {
     "export": "导出账户和地址簿",
-    "reload": "尝试重新加载",
     "reset": "重置插件",
     "resetButton": "重置钱包",
     "resetDescription": "如果您执行此操作，所有二级信息（如喜欢的代币等）都将被删除。您将需要重新登陆。",

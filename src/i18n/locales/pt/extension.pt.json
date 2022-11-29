@@ -165,7 +165,6 @@
   },
   "errorPage": {
     "export": "Exportar contas e livro de endereços",
-    "reload": "Tente recarregar",
     "reset": "Redefinição de extensão",
     "resetButton": "Redefinir a carteira",
     "resetDescription": "Após esta ação, excluímos todas as informações secundárias (por exemplo, tokens favoritos). Além disso, você precisará fazer login novamente.",
