@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react';
 import { RouteObject } from 'react-router-dom';
 
-import { Bottom } from '../ui/components/bottom';
+import { Bottom } from '../ui/components/bottom/bottom';
 import { Menu } from '../ui/components/menu/Menu';
 import { AccountInfo } from '../ui/components/pages/accountInfo';
 import { AddressBook } from '../ui/components/pages/AddressBook';
