@@ -1,15 +1,15 @@
 .root {
   position: relative;
-  display: flex;
-  flex-direction: column;
   flex: 1 0 auto;
   padding: 14px;
+  display: flex;
+  flex-direction: column;
 }
 
 .content {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
   height: 100%;
 }
 
@@ -29,10 +29,10 @@
 }
 
 .card {
+  padding: 10px;
   display: flex;
   gap: 8px;
   align-items: center;
-  padding: 10px;
   border-radius: 4px;
   box-shadow: 0 2px 4px #9ba6b2;
   background: #fff;

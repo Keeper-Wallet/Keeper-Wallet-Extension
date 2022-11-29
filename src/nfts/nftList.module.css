@@ -4,10 +4,10 @@
 }
 
 .nftRow {
-  display: flex;
-  gap: 8px;
   flex-basis: 50%;
   margin-right: 8px;
+  display: flex;
+  gap: 8px;
 }
 
 .nftRow.noScroll {

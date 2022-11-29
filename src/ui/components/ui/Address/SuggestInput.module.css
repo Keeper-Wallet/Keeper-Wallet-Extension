@@ -28,10 +28,10 @@
 }
 
 .item {
-  display: flex;
-  justify-content: space-between;
   margin: 4px 0;
   padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
   cursor: pointer;
 }
 
@@ -72,9 +72,9 @@
 
 .modalContent {
   position: relative;
+  padding: 24px 0 4px;
   display: flex;
   flex-direction: column;
-  padding: 24px 0 4px;
   width: 284px;
   border-radius: 2px;
   background: var(--color-white);
@@ -134,8 +134,8 @@
 
 .warningAlias {
   margin-top: 4px;
-  border: 1px dashed #ffaf00;
   padding: 12px 14px;
+  border: 1px dashed #ffaf00;
   border-radius: 2px;
   color: #9ba6b2;
   font-size: 11px;

@@ -11,14 +11,14 @@
 }
 
 .footer {
+  margin-top: auto;
   display: flex;
   flex-direction: column;
-  margin-top: auto;
 }
 
 .exportButton {
-  border-top: 0;
   padding: 8px 48px;
+  border-top: 0;
 }
 
 .resetButton {

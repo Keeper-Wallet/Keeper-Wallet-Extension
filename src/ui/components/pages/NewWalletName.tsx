@@ -132,7 +132,6 @@ export function NewWalletName() {
           ) : (
             <Button
               data-testid="continueBtn"
-              className={styles.continueBtn}
               id="continue"
               type="submit"
               view="submit"

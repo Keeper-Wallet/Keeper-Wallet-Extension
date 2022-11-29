@@ -10,25 +10,25 @@
 }
 
 .recipient {
+  margin-right: 8px;
   display: flex;
   align-items: center;
-  margin-right: 8px;
   font-size: 12px;
   line-height: 14px;
 }
 
 .ethereum.mirrorAddress,
 .waves.mirrorAddress {
+  padding: 8px;
   display: flex;
   align-items: center;
-  padding: 8px;
 }
 
 .recipient::before,
 .mirrorAddress::before {
+  flex-shrink: 0;
   display: block;
   content: '';
-  flex-shrink: 0;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -76,8 +76,8 @@
 
 .warningAlias {
   margin-top: 4px;
-  border: 1px dashed #ffaf00;
   padding: 12px 14px;
+  border: 1px dashed #ffaf00;
   border-radius: 2px;
   color: #9ba6b2;
   font-size: 11px;

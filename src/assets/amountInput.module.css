@@ -1,8 +1,8 @@
 .root {
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
   border: solid 1px var(--color-basic100);
-  padding: 12px 14px;
   border-radius: 4px;
   background: #fff;
 }

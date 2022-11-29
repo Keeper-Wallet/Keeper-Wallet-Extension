@@ -6,9 +6,9 @@
 }
 
 .avatarListItem {
+  padding: 4px;
   display: flex;
   border: 1px solid transparent;
-  padding: 4px;
 }
 
 .avatarListItemSelected {

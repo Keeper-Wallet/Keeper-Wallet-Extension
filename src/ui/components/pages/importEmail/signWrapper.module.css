@@ -6,9 +6,9 @@
 
 .content {
   position: relative;
+  padding: 28px;
   display: flex;
   flex-direction: column;
-  padding: 28px;
   width: 329px;
   border-radius: 4px;
   background: var(--color-white);

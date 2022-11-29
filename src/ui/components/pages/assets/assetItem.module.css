@@ -1,9 +1,9 @@
 .assetCard {
   position: relative;
   z-index: 1;
-  display: flex;
   margin: 0 14px 8px 14px;
   padding: 8px 14px;
+  display: flex;
   width: 325px;
   height: 64px;
   overflow: hidden;
@@ -24,9 +24,9 @@
 }
 
 .assetTitle {
+  margin-bottom: 4px;
   display: flex;
   gap: 4px;
-  margin-bottom: 4px;
   line-height: 17px;
 }
 

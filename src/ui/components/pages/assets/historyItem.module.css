@@ -1,10 +1,10 @@
 .historyCard {
   position: relative;
   z-index: 1;
-  display: flex;
-  flex-wrap: wrap;
   margin-bottom: 8px;
   padding: 8px;
+  display: flex;
+  flex-wrap: wrap;
   width: 325px;
   height: 64px;
   border-radius: 4px;
@@ -60,8 +60,8 @@
   position: absolute;
   right: 10px;
   bottom: 19px;
-  border: 0;
   padding: 0;
+  border: 0;
   border-radius: 2px;
   background: none;
   cursor: pointer;

@@ -1,15 +1,10 @@
 .bottom {
-  position: absolute;
   z-index: 10;
-  bottom: 0;
+  flex: 0 0 34px;
+  margin-top: auto;
+  padding: 0 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 14px;
-  width: 100%;
-  height: 34px;
   box-shadow: 0 -1px 4px 0 #00000019;
-  background: var(--color-basic50);
-  font-size: 12px;
-  white-space: nowrap;
 }

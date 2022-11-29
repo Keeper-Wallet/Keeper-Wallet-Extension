@@ -1,8 +1,8 @@
 .codeWrapper {
+  margin-bottom: 10px;
   display: flex;
   gap: 1px;
   justify-content: center;
-  margin-bottom: 10px;
 }
 
 .codeInput {

@@ -32,8 +32,8 @@
 .otherAccountsButton {
   position: relative;
   z-index: 1;
-  align-self: center;
   margin-left: auto;
+  align-self: center;
   width: 24px;
   height: 24px;
   background: url(../../assets/img/changeaccount-18-submit-400.svg) no-repeat
@@ -51,8 +51,8 @@
 
 .controls {
   position: relative;
-  display: flex;
   margin-top: 18px;
+  display: flex;
   width: 100%;
   height: 26px;
   font-size: 12px;
@@ -63,11 +63,11 @@
 }
 
 .button {
+  padding: 6px 8px;
   display: inline-flex;
   gap: 6px;
   align-items: center;
   border: 1px solid;
-  padding: 6px 8px;
   border-radius: 2px;
   background: none;
   color: var(--color-submit400);

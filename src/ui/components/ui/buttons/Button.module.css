@@ -37,7 +37,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
-  transition: all 0.3s;
 }
 
 .custom {
@@ -47,7 +46,6 @@
   text-align: inherit;
   text-decoration: none;
   white-space: normal;
-  transition: none;
 }
 
 .defaultView {
@@ -102,8 +100,8 @@
 }
 
 .icon {
-  display: inline-block;
   padding: 0 16px 0 36px;
+  display: inline-block;
   width: auto;
 }
 
@@ -114,7 +112,6 @@
   background-color: transparent;
   text-align: inherit;
   white-space: normal;
-  transition: none;
 }
 
 .transparent:hover {
@@ -170,8 +167,8 @@
 .interfaced {
   flex-basis: auto;
   margin: 0;
-  border: 0.5px solid transparent;
   padding: 0 14px;
+  border: 0.5px solid transparent;
   width: auto;
   height: 32px;
   box-shadow: 0 2px 4px 0 #9ba6b266;
@@ -205,9 +202,9 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  content: '';
   margin-top: -8px;
   margin-left: -8px;
+  content: '';
   border: 2px solid #edf0f4;
   border-right-color: #1f5af6;
   width: 16px;

@@ -7,11 +7,11 @@
 }
 
 .header {
+  padding: 14px 24px;
   display: flex;
   gap: 8px;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 24px;
 }
 
 .title {
@@ -25,9 +25,9 @@
 }
 
 .content {
+  padding: 0 24px;
   display: flex;
   flex-direction: column;
-  padding: 0 24px;
   height: 100%;
   overflow: auto;
 }
@@ -38,9 +38,9 @@
 }
 
 .links {
+  padding: 24px 0;
   display: flex;
   justify-content: space-between;
-  padding: 24px 0;
   line-height: 14px;
 }
 
@@ -50,11 +50,11 @@
 }
 
 .fieldContent {
+  margin-bottom: 24px;
   display: flex;
   gap: 8px;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
   font-size: 14px;
   word-break: break-word;
 }
@@ -63,9 +63,9 @@
   position: sticky;
   z-index: 1;
   bottom: 0;
+  padding: 14px;
   display: flex;
   gap: 14px;
   border-top: 1px solid #edf0f4;
-  padding: 14px;
   background: #fff;
 }

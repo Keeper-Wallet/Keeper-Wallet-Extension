@@ -1,11 +1,11 @@
 .moreActions {
   position: relative;
+  margin-right: -14px;
+  padding: 0 8px;
   display: flex;
   gap: 4px;
   align-items: center;
   justify-content: center;
-  margin-right: -14px;
-  padding: 0 8px;
   height: 64px;
   border-radius: 4px;
   background-color: var(--color-white);
@@ -14,10 +14,10 @@
 .content {
   position: absolute;
   right: 32px;
+  padding: 0 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 8px;
   height: 100%;
   box-shadow: -4px 0px 4px rgba(0, 0, 0, 0.07);
   background-color: var(--color-white);
