@@ -19,9 +19,7 @@ export function createPopupStore() {
     applyMiddleware(
       thunk,
       ...Object.values(middleware),
-      ...(KEEPERWALLET_DEBUG
-        ? [createLogger({ collapsed: true, diff: true })]
-        : [])
+      ...(KEEPERWALLET_DEBUG ? [createLogger({ collapsed: true })] : [])
     )
   );
 
