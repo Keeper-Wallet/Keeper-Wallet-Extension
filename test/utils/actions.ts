@@ -367,7 +367,9 @@ export const Network = {
   },
   async checkNetwork(this: mocha.Context, network: string) {
     await this.driver.wait(
-      until.elementLocated(By.xpath("//div[contains(@class, 'loader@intro')]")),
+      until.elementLocated(
+        By.xpath("//div[contains(@class, 'root@loadingScreen-module')]")
+      ),
       this.wait
     );
 
