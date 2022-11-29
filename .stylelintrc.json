@@ -6,6 +6,7 @@
     "order/properties-order": [
       "position",
       "z-index",
+      "inset",
       "top",
       "right",
       "bottom",
