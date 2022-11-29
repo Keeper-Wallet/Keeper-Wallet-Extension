@@ -1,9 +1,9 @@
 .card {
   position: relative;
   z-index: 1;
+  margin-bottom: 8px;
   display: flex;
   flex-direction: column;
-  margin-bottom: 8px;
   width: 162px;
   height: 162px;
   overflow: hidden;
@@ -26,11 +26,11 @@
   position: absolute;
   bottom: 4px;
   left: 4px;
+  padding: 4px;
   display: flex;
   gap: 4px;
   align-items: center;
   justify-content: space-between;
-  padding: 4px;
   width: calc(100% - 8px);
   overflow: hidden;
   border-radius: 4px;

@@ -4,13 +4,13 @@
 }
 
 .item {
+  flex: 0 0 60px;
+  padding: 4px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   align-items: center;
-  flex: 0 0 60px;
   border: 1px solid transparent;
-  padding: 4px;
   min-width: 0;
   overflow: hidden;
   border-radius: 2px;

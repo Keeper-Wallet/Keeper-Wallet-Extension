@@ -1,7 +1,7 @@
 .account {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
 }
 
 .content {
@@ -20,9 +20,9 @@
 }
 
 .checkboxWrapper {
+  margin: 0 48px 14px;
   display: flex;
   align-items: center;
-  margin: 0 48px 14px;
 }
 
 .checkbox {
@@ -41,7 +41,7 @@
 
 .footer {
   margin-top: auto;
-  border-top: 1px solid #edf0f4;
   padding: 13px 48px 14px;
+  border-top: 1px solid #edf0f4;
   background-color: var(--color-basic50);
 }

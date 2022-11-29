@@ -120,10 +120,9 @@ export function ImportDebug() {
           </ErrorMessage>
         </div>
 
-        <div className="margin4">
+        <div>
           <Button
             data-testid="continueBtn"
-            className={styles.continueBtn}
             id="continue"
             type="submit"
             view="submit"

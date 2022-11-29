@@ -52,9 +52,9 @@
   right: 0;
   bottom: 72px;
   left: 60px;
+  margin-left: -60px;
   display: block;
   content: '';
-  margin-left: -60px;
   height: 60px;
   background: linear-gradient(
     to bottom,

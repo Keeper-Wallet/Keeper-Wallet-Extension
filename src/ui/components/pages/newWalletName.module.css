@@ -1,7 +1,7 @@
 .content {
   position: relative;
-  display: block;
   margin: 84px 60px 0;
+  display: block;
   height: calc(100% - 180px);
 }
 
@@ -10,12 +10,5 @@
 }
 
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-}
-
-.continueBtn {
-  margin-top: 40px;
-  margin-bottom: 42px;
+  margin-top: auto;
 }

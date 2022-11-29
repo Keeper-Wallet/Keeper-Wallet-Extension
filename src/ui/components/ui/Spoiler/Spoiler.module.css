@@ -1,8 +1,8 @@
 .button {
   position: relative;
+  padding: 10px;
   display: flex;
   align-items: center;
-  padding: 10px;
   width: 100%;
   transition: border-color 0.3s;
 }
@@ -38,11 +38,11 @@
 }
 
 .content {
+  padding: 4px 0 6px;
   border-top: 0;
   border-right: 1px solid #dae1e9;
   border-bottom: 1px solid #dae1e9;
   border-left: 1px solid #dae1e9;
-  padding: 4px 0 6px;
   border-radius: 0 0 4px 4px;
   transition: border-color 0.3s;
 }

@@ -1,8 +1,8 @@
 .content {
   position: relative;
+  padding: 64px 0 0;
   display: flex;
   flex-direction: column;
-  padding: 64px 0 0;
   width: 100%;
   height: calc(100% - 48px);
   overflow: auto;
@@ -44,11 +44,11 @@
 }
 
 .footer {
+  margin-top: auto;
+  padding: 24px;
   display: flex;
   justify-content: center;
-  margin-top: auto;
   border-top: 1px solid #edf0f4;
-  padding: 24px;
   background-color: #f8f9fb;
 }
 
@@ -61,8 +61,8 @@
 }
 
 .exportAllIcon {
-  display: block;
   margin-bottom: 6px;
+  display: block;
   width: 18px;
   height: 18px;
   background-image: url(../../assets/img/export.svg);

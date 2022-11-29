@@ -1,9 +1,9 @@
 .root {
   position: relative;
-  display: flex;
-  align-items: center;
   margin-bottom: 8px;
   padding: 14px;
+  display: flex;
+  align-items: center;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(155, 166, 178, 0.4);
   background: #fff;

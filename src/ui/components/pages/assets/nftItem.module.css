@@ -1,9 +1,9 @@
 .nftCard {
   position: relative;
   z-index: 1;
-  display: flex;
   margin-bottom: 8px;
   padding: 14px;
+  display: flex;
   width: 325px;
   height: 64px;
   overflow: hidden;

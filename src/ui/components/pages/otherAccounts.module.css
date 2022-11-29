@@ -9,8 +9,8 @@
   position: sticky;
   z-index: 2;
   top: 0;
-  border-bottom: 1px solid #edf0f4;
   padding: 14px;
+  border-bottom: 1px solid #edf0f4;
   background: #fff;
 }
 
@@ -39,8 +39,8 @@
 
 .addAccountButton {
   margin: 20px 0 40px;
-  border: 1px dashed #dae1e9;
   padding: 0 14px 0 34px;
+  border: 1px dashed #dae1e9;
   height: 32px;
   border-radius: 4px;
   background: url(../../assets/img/add-14-basic-500.svg) 13px center no-repeat;

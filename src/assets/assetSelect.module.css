@@ -1,8 +1,8 @@
 .button {
+  padding: 6px;
   display: inline-flex;
   gap: 6px;
   align-items: center;
-  padding: 6px;
   border-radius: 10px;
   background: none;
   text-align: start;

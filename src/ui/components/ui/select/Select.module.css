@@ -15,8 +15,8 @@
 }
 
 .trigger:after {
-  content: '';
   margin-left: auto;
+  content: '';
   width: 14px;
   height: 14px;
   background: url(../../../assets/img/select-14-black.svg) center no-repeat;
@@ -66,8 +66,8 @@
 /* Compact theme */
 
 .themeCompact .trigger {
-  border-bottom: 1px dotted var(--color-basic500);
   padding: 1px 14px 0 0;
+  border-bottom: 1px dotted var(--color-basic500);
   border-radius: 0;
   background: none;
 }
@@ -84,8 +84,8 @@
 /* Solid theme */
 
 .themeSolid .trigger {
-  border: 1px solid var(--color-basic100);
   padding: 10px 14px;
+  border: 1px solid var(--color-basic100);
   border-radius: 4px;
   background: var(--color-white);
   font-size: 14px;
@@ -101,8 +101,8 @@
 /* Underlined theme */
 
 .themeUnderlined .trigger {
-  border-bottom: 1px solid var(--color-basic500);
   padding: 7px 14px 6px 8px;
+  border-bottom: 1px solid var(--color-basic500);
   border-radius: 0;
   background: none;
   font-size: 14px;
