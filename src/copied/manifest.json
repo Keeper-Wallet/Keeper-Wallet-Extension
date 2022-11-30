@@ -1,7 +1,7 @@
 {
   "manifest_version": null,
   "name": "Keeper Wallet",
-  "short_name": "The short name of the application",
+  "short_name": "Keeper",
   "description": "Keeper Wallet is your entry point to the Waves blockchain and Waves-powered web services",
   "version": null,
   "author": "support@waves.tech",
