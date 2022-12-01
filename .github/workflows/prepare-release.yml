@@ -27,13 +27,13 @@ jobs:
       - run: yarn run build
         env:
           AMPLITUDE_API_KEY: ${{ secrets.METRICS_TOKEN }}
-          NODE_ENV_VER: ${{ steps.tagInfo.outputs.VERSION }}
+          KEEPER_VERSION: ${{ steps.tagInfo.outputs.VERSION }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           SENTRY_ENVIRONMENT: ${{ steps.tagInfo.outputs.SENTRY_ENVIRONMENT }}
           SENTRY_RELEASE: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
       - run: yarn run zip
         env:
-          NODE_ENV_VER: ${{ steps.tagInfo.outputs.VERSION }}
+          KEEPER_VERSION: ${{ steps.tagInfo.outputs.VERSION }}
       - uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

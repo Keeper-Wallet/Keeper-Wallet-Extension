@@ -57,7 +57,7 @@ module.exports = (buffer, platformName, to) =>
     JSON.stringify(
       {
         ...JSON.parse(buffer.toString('utf-8')),
-        version: process.env.NODE_ENV_VER,
+        version: process.env.KEEPER_VERSION,
         ...platformValues[platformName],
       },
       null,

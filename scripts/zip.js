@@ -9,7 +9,7 @@ platforms.forEach(async platformName => {
     path.resolve(DIST_FOLDER, platformName),
     path.resolve(
       DIST_FOLDER,
-      `keeper-wallet-${process.env.NODE_ENV_VER}-${platformName}.zip`
+      `keeper-wallet-${process.env.KEEPER_VERSION}-${platformName}.zip`
     )
   );
 });
