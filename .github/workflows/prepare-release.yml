@@ -3,7 +3,6 @@ on:
   push:
     tags:
       - v[0-9]+\.[0-9]+\.[0-9]+
-      - v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+
 jobs:
   prepare-release:
     runs-on: ubuntu-latest
@@ -19,37 +18,35 @@ jobs:
       - name: Extract info from tag
         id: tagInfo
         run: |
-          VERSION=$(echo $GITHUB_REF_NAME | sed -e 's/^v//')
+          VERSION=$(echo ${GITHUB_REF_NAME#v})
           cat >> $GITHUB_OUTPUT << EOF
-          ENVIRONMENT=$(echo $VERSION | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' && echo "production" || echo "staging")
+          SENTRY_ENVIRONMENT=production
           SENTRY_RELEASE=extension@$VERSION
           VERSION=$VERSION
           EOF
-      - if: steps.tagInfo.outputs.ENVIRONMENT == 'production'
-        run: echo AMPLITUDE_API_KEY=$AMPLITUDE_API_KEY >> $GITHUB_ENV
-        env:
-          AMPLITUDE_API_KEY: ${{ secrets.METRICS_TOKEN }}
       - run: yarn run build
         env:
-          NODE_ENV_VER: ${{ steps.tagInfo.outputs.VERSION }}
+          AMPLITUDE_API_KEY: ${{ secrets.METRICS_TOKEN }}
+          KEEPER_VERSION: ${{ steps.tagInfo.outputs.VERSION }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          SENTRY_ENVIRONMENT: ${{ steps.tagInfo.outputs.ENVIRONMENT }}
+          SENTRY_ENVIRONMENT: ${{ steps.tagInfo.outputs.SENTRY_ENVIRONMENT }}
           SENTRY_RELEASE: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
       - run: yarn run zip
         env:
-          NODE_ENV_VER: ${{ steps.tagInfo.outputs.VERSION }}
+          KEEPER_VERSION: ${{ steps.tagInfo.outputs.VERSION }}
       - uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: waves-keeper
           SENTRY_PROJECT: extension
         with:
-          environment: ${{ steps.tagInfo.outputs.ENVIRONMENT }}
+          environment: ${{ steps.tagInfo.outputs.SENTRY_ENVIRONMENT }}
           sourcemaps: dist/build
           url_prefix: ~/
           version: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
       - uses: softprops/action-gh-release@v1
         with:
+          body: Version ${{ steps.tagInfo.outputs.VERSION }}
           draft: true
           fail_on_unmatched_files: true
           files: dist/*.zip
