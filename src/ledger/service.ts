@@ -77,7 +77,7 @@ class LedgerService {
       const msg = String(err);
 
       if (
-        /no device selected|device was disconnected|user gesture to show a permission request|unable to release interface/i.test(
+        /access denied|no device selected|device was disconnected|user gesture to show a permission request|unable to release interface/i.test(
           msg
         )
       ) {
