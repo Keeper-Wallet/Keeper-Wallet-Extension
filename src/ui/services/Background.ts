@@ -1,8 +1,10 @@
-import { CognitoUser } from 'amazon-cognito-identity-js';
 import { AssetDetail } from 'assets/types';
 import type { __BackgroundUiApiDirect } from 'background';
-import { AuthChallenge, IdentityUser } from 'controllers/IdentityController';
-import { SwapAssetsParams, SwapAssetsResult } from 'controllers/SwapController';
+import type { IdentityUser } from 'controllers/IdentityController';
+import type {
+  SwapAssetsParams,
+  SwapAssetsResult,
+} from 'controllers/SwapController';
 import { MessageInputOfType } from 'messages/types';
 import { NetworkName } from 'networks/types';
 import { PreferencesAccount } from 'preferences/types';
@@ -686,13 +688,7 @@ class Background {
     }
   }
 
-  async identitySignIn(
-    username: string,
-    password: string
-  ): Promise<
-    CognitoUser &
-      Partial<{ challengeName: AuthChallenge; challengeParam: unknown }>
-  > {
+  async identitySignIn(username: string, password: string) {
     try {
       await this.initPromise;
       this._connect();

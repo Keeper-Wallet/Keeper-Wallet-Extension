@@ -56,13 +56,6 @@ globalThis.fetch = (endpoint: RequestInfo | URL, options?: RequestInit) => {
 
 export type MFAType = 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
 
-export type AuthChallenge =
-  | 'SMS_MFA'
-  | 'SOFTWARE_TOKEN_MFA'
-  | 'NEW_PASSWORD_REQUIRED'
-  | 'MFA_SETUP'
-  | 'CUSTOM_CHALLENGE';
-
 export type IdentityUser = {
   address: string;
   publicKey: string;
@@ -283,108 +276,94 @@ export class IdentityController implements IdentityApi {
     }
   }
 
-  async signIn(
-    username: string,
-    password: string
-  ): Promise<
-    CognitoUser &
-      Partial<{ challengeName: AuthChallenge; challengeParam: unknown }>
-  > {
+  async signIn(username: string, password: string) {
     this.clearSession();
 
-    return new Promise<
-      CognitoUser &
-        Partial<{ challengeName: AuthChallenge; challengeParam: unknown }>
-    >((resolve, reject) => {
-      if (!this.userPool) {
-        return reject(new Error('No UserPool'));
-      }
-
-      const user = new CognitoUser({
-        Username: username,
-        Pool: this.userPool,
-        Storage: this.store,
-      });
-
-      this.user = user;
-      this.userData = { username, password };
-
-      this.user.authenticateUser(
-        new AuthenticationDetails({
-          Username: username,
-          Password: password,
-          ClientMetadata: {
-            'custom:encryptionKey': this.seed.keyPair.publicKey,
-          },
-        }),
-        {
-          onSuccess: async () => {
-            this.identity = await this.fetchIdentityUser();
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            this.identity.uuid = this.user!.getUsername();
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            this.identity.username = this.userData!.username;
-            this.user = undefined;
-            this.userData = undefined;
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            delete (user as any).challengeName;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            delete (user as any).challengeParam;
-            resolve(user);
-          },
-
-          onFailure: err => {
-            reject(err);
-          },
-          customChallenge(challengeParam) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any).challengeName = 'CUSTOM_CHALLENGE';
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any).challengeParam = challengeParam;
-            resolve(user);
-          },
-          mfaRequired(challengeName, challengeParam) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any).challengeName = challengeName;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any).challengeParam = challengeParam;
-            resolve(user);
-          },
-          mfaSetup(challengeName, challengeParam) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any).challengeName = challengeName;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any).challengeParam = challengeParam;
-            resolve(user);
-          },
-          newPasswordRequired(userAttributes, requiredAttributes) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any).challengeName = 'NEW_PASSWORD_REQUIRED';
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any).challengeParam = {
-              userAttributes,
-              requiredAttributes,
-            };
-            resolve(user);
-          },
-          totpRequired(challengeName, challengeParam) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any).challengeName = challengeName;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any).challengeParam = challengeParam;
-            resolve(user);
-          },
-          selectMFAType(challengeName, challengeParam) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any).challengeName = challengeName;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (user as any).challengeParam = challengeParam;
-            resolve(user);
-          },
+    return new Promise<CognitoUser & Partial<{ challengeParam: unknown }>>(
+      (resolve, reject) => {
+        if (!this.userPool) {
+          return reject(new Error('No UserPool'));
         }
-      );
-    });
+
+        const user = new CognitoUser({
+          Username: username,
+          Pool: this.userPool,
+          Storage: this.store,
+        });
+
+        this.user = user;
+        this.userData = { username, password };
+
+        this.user.authenticateUser(
+          new AuthenticationDetails({
+            Username: username,
+            Password: password,
+            ClientMetadata: {
+              'custom:encryptionKey': this.seed.keyPair.publicKey,
+            },
+          }),
+          {
+            onSuccess: async () => {
+              this.identity = await this.fetchIdentityUser();
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              this.identity.uuid = this.user!.getUsername();
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              this.identity.username = this.userData!.username;
+              this.user = undefined;
+              this.userData = undefined;
+
+              delete user.challengeName;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              delete (user as any).challengeParam;
+              resolve(user);
+            },
+
+            onFailure: err => {
+              reject(err);
+            },
+            customChallenge(challengeParam) {
+              user.challengeName = 'CUSTOM_CHALLENGE';
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (user as any).challengeParam = challengeParam;
+              resolve(user);
+            },
+            mfaRequired(challengeName, challengeParam) {
+              user.challengeName = challengeName;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (user as any).challengeParam = challengeParam;
+              resolve(user);
+            },
+            mfaSetup(challengeName, challengeParam) {
+              user.challengeName = challengeName;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (user as any).challengeParam = challengeParam;
+              resolve(user);
+            },
+            newPasswordRequired(userAttributes, requiredAttributes) {
+              user.challengeName = 'NEW_PASSWORD_REQUIRED';
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (user as any).challengeParam = {
+                userAttributes,
+                requiredAttributes,
+              };
+              resolve(user);
+            },
+            totpRequired(challengeName, challengeParam) {
+              user.challengeName = challengeName;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (user as any).challengeParam = challengeParam;
+              resolve(user);
+            },
+            selectMFAType(challengeName, challengeParam) {
+              user.challengeName = challengeName;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (user as any).challengeParam = challengeParam;
+              resolve(user);
+            },
+          }
+        );
+      }
+    );
   }
 
   async confirmSignIn(
@@ -401,8 +380,7 @@ export class IdentityController implements IdentityApi {
         {
           onSuccess: async session => {
             if (this.user) {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              delete (this.user as any).challengeName;
+              delete this.user.challengeName;
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               delete (this.user as any).challengeParam;
             }

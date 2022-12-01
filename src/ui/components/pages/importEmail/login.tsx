@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import {
+import type {
   CodeDelivery,
   IdentityUser,
 } from '../../../../controllers/IdentityController';
