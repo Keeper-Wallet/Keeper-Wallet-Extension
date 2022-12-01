@@ -46,6 +46,7 @@ jobs:
           version: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
       - uses: softprops/action-gh-release@v1
         with:
+          body: Version ${{ steps.tagInfo.outputs.VERSION }}
           draft: true
           fail_on_unmatched_files: true
           files: dist/*.zip
