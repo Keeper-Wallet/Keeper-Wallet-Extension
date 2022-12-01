@@ -1,8 +1,10 @@
 import { expect } from 'chai';
+import * as mocha from 'mocha';
 import { By, until } from 'selenium-webdriver';
 
 import {
   App,
+  Assets,
   CreateNewAccount,
   Network,
   Settings,
@@ -11,17 +13,42 @@ import {
 import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 
 describe('Others', function () {
-  let tabKeeper: string;
-
   before(async function () {
     await App.initVault.call(this);
     await Settings.setMaxSessionTimeout.call(this);
     await App.open.call(this);
-    tabKeeper = await this.driver.getWindowHandle();
+
+    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    await this.driver
+      .wait(
+        until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
+        this.wait
+      )
+      .click();
+    const [tabAccounts] = await waitForNewWindows(1);
+    await this.driver.close();
+
+    await this.driver.switchTo().window(tabAccounts);
+    await this.driver.navigate().refresh();
+
+    await Network.switchToAndCheck.call(this, 'Testnet');
+
+    await CreateNewAccount.importAccount.call(
+      this,
+      'rich',
+      'waves private node seed with waves tokens'
+    );
+
+    await this.driver.switchTo().newWindow('tab');
+    const newTab = await this.driver.getWindowHandle();
+    await this.driver.switchTo().window(tabAccounts);
+    await this.driver.close();
+    await this.driver.switchTo().window(newTab);
   });
 
   after(async function () {
-    await App.closeBgTabs.call(this, tabKeeper);
+    await App.open.call(this);
+    await Network.switchToAndCheck.call(this, 'Mainnet');
     await App.resetVault.call(this);
   });
 
@@ -38,32 +65,7 @@ describe('Others', function () {
   it('Send more transactions for signature when different screens are open');
 
   describe('Send WAVES', function () {
-    before(async function () {
-      await Network.switchToAndCheck.call(this, 'Testnet');
-
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
-          this.wait
-        )
-        .click();
-      const [tabAccounts] = await waitForNewWindows(1);
-
-      await this.driver.switchTo().window(tabAccounts);
-      await this.driver.navigate().refresh();
-
-      await CreateNewAccount.importAccount.call(
-        this,
-        'rich',
-        'waves private node seed with waves tokens'
-      );
-      await this.driver.switchTo().window(tabKeeper);
-    });
-
-    after(async function () {
-      await Network.switchToAndCheck.call(this, 'Mainnet');
-    });
+    before(App.open);
 
     beforeEach(async function () {
       await this.driver
@@ -238,6 +240,100 @@ describe('Others', function () {
           )
           .getText()
       ).to.equal('This is an attachment');
+    });
+  });
+
+  describe('Connection', () => {
+    async function stopServiceWorker(this: mocha.Context) {
+      await this.driver.get('chrome://serviceworker-internals');
+
+      await this.driver
+        .wait(
+          until.elementIsEnabled(
+            this.driver.wait(
+              until.elementLocated(By.css('.content .stop')),
+              this.wait
+            )
+          ),
+          this.wait
+        )
+        .click();
+    }
+
+    it('ui waits until connection with background is established before trying to call methods', async function () {
+      await stopServiceWorker.call(this);
+      await App.open.call(this);
+
+      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      await Assets.addAccount.call(this);
+      const [tabAccounts] = await waitForNewWindows(1);
+      await stopServiceWorker.call(this);
+      await this.driver.close();
+
+      await this.driver.switchTo().window(tabAccounts);
+      await this.driver.navigate().refresh();
+
+      await this.driver.wait(
+        until.elementLocated(By.css('[data-testid="importForm"]')),
+        this.wait
+      );
+
+      await this.driver.switchTo().newWindow('tab');
+      const newTab = await this.driver.getWindowHandle();
+      await this.driver.switchTo().window(tabAccounts);
+      await this.driver.close();
+      await this.driver.switchTo().window(newTab);
+    });
+
+    it('contentscript waits until connection is established before trying to call methods', async function () {
+      await this.driver.get('https://example.com');
+
+      const prevHandle = await this.driver.getWindowHandle();
+      await this.driver.switchTo().newWindow('tab');
+      await stopServiceWorker.call(this);
+      await this.driver.close();
+      await this.driver.switchTo().window(prevHandle);
+
+      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      await this.driver.executeScript(() => {
+        KeeperWallet.auth({ data: 'hello' });
+      });
+      const [messageWindow] = await waitForNewWindows(1);
+      await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
+
+      expect(
+        await this.driver
+          .wait(
+            until.elementLocated(
+              By.css('[class^="originAddress@transactions"]')
+            ),
+            this.wait
+          )
+          .getText()
+      ).to.equal('example.com');
+
+      expect(
+        await this.driver
+          .findElement(By.css('[class^="accountName@wallet"]'))
+          .getText()
+      ).to.equal('rich');
+
+      const networkName = await this.driver
+        .findElement(By.css('[class^="originNetwork@transactions"]'))
+        .getText();
+
+      expect(networkName).to.equal('Testnet');
+
+      await this.driver.findElement(By.css('#reject')).click();
+
+      await this.driver
+        .wait(until.elementLocated(By.css('#close')), this.wait)
+        .click();
+
+      await Windows.waitForWindowToClose.call(this, messageWindow);
+      await this.driver.switchTo().window(prevHandle);
+      await this.driver.navigate().refresh();
     });
   });
 });

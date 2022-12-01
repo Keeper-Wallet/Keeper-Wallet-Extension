@@ -73,14 +73,21 @@ type MethodCallResponse<T> =
   | { id: string; isError: true; error: { message: string } };
 
 export interface MethodCallResponsePayload<T = unknown> {
-  keeperMethodCallResponse: MethodCallResponse<T>;
+  keeperMethodCallResponse?: MethodCallResponse<T>;
 }
 
 export function handleMethodCallRequests<K extends string>(
   api: ApiObject<K>,
-  sendResult: (result: MethodCallResponsePayload<unknown>) => void
+  sendResponse: (
+    result: 'KEEPER_PONG' | MethodCallResponsePayload<unknown>
+  ) => void
 ) {
-  return tap<MethodCallRequestPayload<K>>(async data => {
+  return tap<'KEEPER_PING' | MethodCallRequestPayload<K>>(async data => {
+    if (data === 'KEEPER_PING') {
+      sendResponse('KEEPER_PONG');
+      return;
+    }
+
     if (!data.keeperMethodCallRequest) return;
 
     const { id, method, args } = data.keeperMethodCallRequest;
@@ -89,7 +96,7 @@ export function handleMethodCallRequests<K extends string>(
       const result = await api[method](...args);
 
       try {
-        sendResult({
+        sendResponse({
           keeperMethodCallResponse: { id, data: result },
         });
       } catch (err) {
@@ -103,7 +110,7 @@ export function handleMethodCallRequests<K extends string>(
             )
           );
 
-          sendResult({
+          sendResponse({
             keeperMethodCallResponse: {
               id,
               data: JSON.parse(JSON.stringify(result)),
@@ -116,7 +123,7 @@ export function handleMethodCallRequests<K extends string>(
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      sendResult({
+      sendResponse({
         keeperMethodCallResponse: {
           id,
           isError: true,
@@ -127,25 +134,66 @@ export function handleMethodCallRequests<K extends string>(
   });
 }
 
-export function filterMethodCallRequests<K>(
+export function filterIpcRequests<K>(
   source: Source<MethodCallRequestPayload<K>>
 ) {
   return pipe(
     source,
-    filter<MethodCallRequestPayload<K>>(
-      data => data.keeperMethodCallRequest != null
+    filter<'KEEPER_PONG' | 'KEEPER_PING' | MethodCallRequestPayload<K>>(
+      data =>
+        data === 'KEEPER_PING' ||
+        data === 'KEEPER_PONG' ||
+        data.keeperMethodCallRequest != null
     )
   );
 }
 
 export function createIpcCallProxy<K extends string, T extends ApiObject<K>>(
-  sendRequest: (payload: MethodCallRequestPayload<string>) => void,
+  sendRequest: (
+    payload: 'KEEPER_PING' | MethodCallRequestPayload<string>
+  ) => void,
   responseSource: Source<
-    MethodCallResponsePayload<Awaited<ReturnType<T[keyof T]>>>
+    'KEEPER_PONG' | MethodCallResponsePayload<Awaited<ReturnType<T[keyof T]>>>
   >
 ) {
+  let connectionPromise: Promise<void> | null = null;
+
+  function ensureConnection() {
+    connectionPromise ??= new Promise<void>(resolve => {
+      let retryTimeout: ReturnType<typeof setTimeout>;
+
+      function sendPing() {
+        sendRequest('KEEPER_PING');
+        retryTimeout = setTimeout(sendPing, 1000);
+      }
+
+      pipe(
+        responseSource,
+        subscribe({
+          next: response => {
+            if (response !== 'KEEPER_PONG') {
+              return;
+            }
+
+            clearTimeout(retryTimeout);
+            resolve();
+          },
+          complete: () => {
+            connectionPromise = null;
+          },
+        })
+      );
+
+      sendPing();
+    });
+
+    return connectionPromise;
+  }
+
   function getIpcMethod<Method extends K>(method: Method) {
-    return (...args: Parameters<T[Method]>) => {
+    return async (...args: Parameters<T[Method]>) => {
+      await ensureConnection();
+
       const id = nanoid();
       const request = { keeperMethodCallRequest: { id, method, args } };
 
@@ -154,7 +202,9 @@ export function createIpcCallProxy<K extends string, T extends ApiObject<K>>(
       return new Promise<Awaited<ReturnType<T[Method]>>>((resolve, reject) => {
         pipe(
           responseSource,
-          map(data => data.keeperMethodCallResponse),
+          map(data =>
+            typeof data === 'object' ? data.keeperMethodCallResponse : undefined
+          ),
           filter(
             response => response?.id === request.keeperMethodCallRequest.id
           ),
