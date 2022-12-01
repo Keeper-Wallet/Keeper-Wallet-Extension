@@ -92,7 +92,6 @@
     "@types/react-transition-group": "^4.4.3",
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
-    "@types/readable-stream": "^2.3.14",
     "@types/redux-logger": "^3.0.9",
     "@types/selenium-webdriver": "^4.0.19",
     "@types/w3c-web-usb": "^1.0.5",
