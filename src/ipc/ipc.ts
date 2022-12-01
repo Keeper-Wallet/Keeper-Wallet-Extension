@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react';
 import { Source } from 'callbag';
 import create from 'callbag-create';
 import filter from 'callbag-filter';
@@ -96,9 +97,10 @@ export function handleMethodCallRequests<K extends string>(
           err instanceof DOMException &&
           (err.code === 25 || err.name === 'DataCloneError')
         ) {
-          // eslint-disable-next-line no-console
-          console.error(
-            `Method ${method} returned not clonable response, fix it please: ${err}`
+          captureException(
+            new Error(
+              `Method ${method} returned not clonable response, fix it please: ${err}`
+            )
           );
 
           sendResult({
