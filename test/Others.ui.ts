@@ -27,21 +27,6 @@ describe('Others', function () {
     await App.resetVault.call(this);
   });
 
-  it('The current version of the extension is displayed', async function () {
-    const { version } = require('../package.json');
-
-    await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
-
-    expect(
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="currentVersion"]')),
-          this.wait
-        )
-        .getText()
-    ).matches(new RegExp(version, 'g'));
-  });
-
   it(
     'After signAndPublishTransaction() "View transaction" button leads to the correct Explorer'
   );

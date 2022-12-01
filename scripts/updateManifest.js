@@ -1,5 +1,4 @@
 const fs = require('fs/promises');
-const version = require('./version');
 
 const action = {
   default_title: 'Keeper Wallet',
@@ -58,7 +57,7 @@ module.exports = (buffer, platformName, to) =>
     JSON.stringify(
       {
         ...JSON.parse(buffer.toString('utf-8')),
-        version,
+        version: process.env.NODE_ENV_VER,
         ...platformValues[platformName],
       },
       null,
