@@ -55,8 +55,10 @@ export function Login({
         onSubmit(userRef.current);
       }
 
-      const cognitoUser = await background.identitySignIn(username, password);
-      const challengeName = cognitoUser.challengeName;
+      const { challengeName } = await background.identitySignIn(
+        username,
+        password
+      );
 
       switch (challengeName) {
         case 'SOFTWARE_TOKEN_MFA':
