@@ -23,7 +23,6 @@
       "files": ["test/**/*"],
       "extends": "@faergeek/eslint-config/node",
       "rules": {
-        "@typescript-eslint/no-var-requires": "off",
         "func-names": "off"
       }
     }
