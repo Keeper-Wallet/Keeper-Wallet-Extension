@@ -1,5 +1,5 @@
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import * as Sentry from '@sentry/react';
+import { captureException } from '@sentry/react';
 import WavesLedger from '@waves/ledger';
 import { PreferencesAccount } from 'preferences/types';
 import Background from 'ui/services/Background';
@@ -74,37 +74,25 @@ class LedgerService {
         this._connectionRetryIsNeeded = true;
       }
     } catch (err) {
-      if (err instanceof Error) {
-        if (
-          /No device selected|device was disconnected|user gesture to show a permission request/i.test(
-            err.message
-          )
-        ) {
-          this.disconnect();
-        } else if (/Unable to claim interface/i.test(err.message)) {
-          this.disconnect(LedgerServiceStatus.UsedBySomeOtherApp);
-        } else if (
-          /An operation that changes the device state is in progress/i.test(
-            err.message
-          )
-        ) {
-          this._connectionRetryIsNeeded = true;
-        } else {
-          // eslint-disable-next-line no-console
-          console.error('NO MATCH FOR ERROR', err);
-          Sentry.captureException(err);
-        }
-      } else {
-        // eslint-disable-next-line no-console
-        console.error('NON-ERROR THROWN', err);
+      const msg = String(err);
 
-        Sentry.captureException(
-          new Error('Non-Error was thrown, trying to connect to ledger'),
-          {
-            extra: {
-              thrownValue: err,
-            },
-          }
+      if (
+        /no device selected|device was disconnected|user gesture to show a permission request/i.test(
+          msg
+        )
+      ) {
+        this.disconnect();
+      } else if (/unable to claim interface/i.test(msg)) {
+        this.disconnect(LedgerServiceStatus.UsedBySomeOtherApp);
+      } else if (
+        /an operation that changes the device state is in progress/i.test(msg)
+      ) {
+        this._connectionRetryIsNeeded = true;
+      } else {
+        captureException(
+          new Error(`ledger probeDevice failed: ${err}`, {
+            cause: err instanceof Error ? err : undefined,
+          })
         );
       }
     }
