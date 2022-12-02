@@ -21,9 +21,13 @@
     },
     {
       "files": ["test/**/*"],
-      "extends": "@faergeek/eslint-config/node",
+      "extends": ["@faergeek/eslint-config/node", "plugin:mocha/recommended"],
       "rules": {
-        "func-names": "off"
+        "func-names": "off",
+        "mocha/no-async-describe": "off",
+        "mocha/no-mocha-arrows": "off",
+        "mocha/no-pending-tests": "off",
+        "mocha/no-setup-in-describe": "off"
       }
     }
   ]

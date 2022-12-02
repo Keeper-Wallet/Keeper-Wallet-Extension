@@ -125,6 +125,7 @@
     "esbuild-register": "^3.4.1",
     "eslint": "^8.28.0",
     "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-mocha": "^10.1.0",
     "html-webpack-plugin": "^5.5.0",
     "lightningcss": "^1.16.1",
     "mini-css-extract-plugin": "^2.6.1",
