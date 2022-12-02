@@ -29,6 +29,7 @@
       "test/utils/hooks.ts"
     ],
     "slow": 10000,
+    "timeout": 300000,
     "watchFiles": [
       "dist",
       "test"

@@ -11,8 +11,6 @@ import {
 import { DEFAULT_PAGE_LOAD_DELAY } from './utils/constants';
 
 describe('Others', function () {
-  this.timeout(60 * 1000);
-
   let tabKeeper: string;
 
   before(async function () {

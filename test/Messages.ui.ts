@@ -9,8 +9,6 @@ import {
 } from './utils/constants';
 
 describe('Messages', function () {
-  this.timeout(5 * 60 * 1000);
-
   let tabOrigin: string;
   let messageWindow: string | null = null;
 

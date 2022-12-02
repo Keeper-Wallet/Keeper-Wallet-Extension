@@ -13,8 +13,6 @@ import {
 import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './utils/constants';
 
 describe('Account management', function () {
-  this.timeout(60 * 1000);
-
   let tabKeeper: string, tabAccounts: string;
 
   before(async function () {
