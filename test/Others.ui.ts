@@ -8,6 +8,7 @@ import {
   Settings,
   Windows,
 } from './utils/actions';
+import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 
 describe('Others', function () {
   let tabKeeper: string;
@@ -76,6 +77,8 @@ describe('Others', function () {
           ),
         })
         .perform();
+
+      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
       await this.driver
         .wait(
