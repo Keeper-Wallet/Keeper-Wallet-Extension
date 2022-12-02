@@ -14,8 +14,6 @@ const SPENDING_LIMIT = '1',
   BROWSER_TIMEOUT_DELAY = 60 * 1000 + DEFAULT_ANIMATION_DELAY;
 
 describe('Settings', function () {
-  this.timeout(BROWSER_TIMEOUT_DELAY + 60 * 1000);
-
   let tabKeeper: string;
 
   async function performLogin(this: mocha.Context, password: string) {

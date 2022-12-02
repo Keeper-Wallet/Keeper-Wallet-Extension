@@ -6,8 +6,6 @@ import { App, CreateNewAccount, Network, Windows } from './utils/actions';
 import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 
 describe('Network management', function () {
-  this.timeout(60 * 1000);
-
   let tabKeeper: string;
 
   before(async function () {
