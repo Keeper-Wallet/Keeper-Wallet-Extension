@@ -1152,7 +1152,7 @@ describe('Account creation', function () {
           await this.driver.switchTo().window(tabKeeper);
         });
 
-        this.beforeEach(deleteEachAndSwitchToAccounts);
+        beforeEach(deleteEachAndSwitchToAccounts);
 
         it('adds suffix to the name', async function () {
           await CreateNewAccount.importAccount.call(
