@@ -2,12 +2,9 @@ import * as mocha from 'mocha';
 import * as path from 'path';
 import { Session, WebDriver } from 'selenium-webdriver';
 import { Executor, HttpClient } from 'selenium-webdriver/http';
-import {
-  GenericContainer,
-  Network,
-  StartedTestContainer,
-} from 'testcontainers';
+import { GenericContainer, Network, StartedTestContainer } from 'testcontainers';
 import { remote } from 'webdriverio';
+import { configure, setupBrowser, WebdriverIOQueries, WebdriverIOQueriesChainable } from '@testing-library/webdriverio';
 
 declare global {
   interface Window {
@@ -15,17 +12,20 @@ declare global {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace NodeJS {
-    interface Global {
-      browser: typeof browser;
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace WebdriverIO {
-    interface Browser {
+    interface Browser extends WebdriverIOQueries, WebdriverIOQueriesChainable<Browser> {
       openKeeperPopup: () => Promise<void>;
     }
+
+    interface Element extends WebdriverIOQueries, WebdriverIOQueriesChainable<Element> {
+    }
+  }
+}
+
+declare module 'webdriverio' {
+  // eslint-disable-next-line
+  interface ChainablePromiseElement<T extends WebdriverIO.Element | undefined>
+    extends WebdriverIOQueriesChainable<T> {
   }
 }
 
@@ -91,7 +91,7 @@ export const mochaHooks = () => ({
     this.wait = 15 * 1000;
     this.nodeUrl = 'http://waves-private-node:6869';
 
-    global.browser = await remote({
+    const browser = await remote({
       logLevel: 'warn',
       capabilities: {
         browserName: 'chrome',
@@ -99,13 +99,19 @@ export const mochaHooks = () => ({
           args: [
             '--load-extension=/app/dist/chrome',
             '--disable-dev-shm-usage',
-            '--disable-web-security',
-          ],
-        },
+            '--disable-web-security'
+          ]
+        }
       },
       path: '/wd/hub',
-      waitforTimeout: this.wait,
+      waitforTimeout: this.wait
     });
+    Object.defineProperty(global, 'browser', { value: browser });
+    configure({
+      asyncUtilTimeout: 15 * 1000
+    });
+    const queries = setupBrowser(browser);
+    Object.defineProperty(global, 'queries', { value: queries });
 
     global.$ = browser.$.bind(browser);
     global.$$ = browser.$$.bind(browser);
@@ -138,7 +144,7 @@ export const mochaHooks = () => ({
     // https://github.com/webdriverio/webdriverio/issues/5869#issuecomment-964012560
     browser.overwriteCommand(
       'clearValue',
-      async function (this: WebdriverIO.Element) {
+      async function(this: WebdriverIO.Element) {
         // https://w3c.github.io/webdriver/#keyboard-actions
         await this.elementSendKeys(this.elementId, '\uE009a'); // Ctrl+a
         await this.elementSendKeys(this.elementId, '\uE003'); // Backspace
@@ -148,7 +154,7 @@ export const mochaHooks = () => ({
 
     browser.addCommand(
       'openKeeperPopup',
-      async function (this: WebdriverIO.Browser) {
+      async function(this: WebdriverIO.Browser) {
         await this.navigateTo(
           `chrome-extension://${keeperExtensionId}/popup.html`
         );
@@ -160,5 +166,5 @@ export const mochaHooks = () => ({
     if (typeof browser !== 'undefined') {
       browser.deleteSession();
     }
-  },
+  }
 });

@@ -1,6 +1,17 @@
-import { expect } from 'chai';
+import { expect } from "expect-webdriverio";
 
-import { DEFAULT_PASSWORD } from './constants';
+import { Common } from "../pageobject/Common";
+import { EmptyHomeScreen } from "../pageobject/EmptyHomeScreen";
+import { GetStartedScreen } from "../pageobject/GetStartedScreen";
+import { HomeScreen } from "../pageobject/HomeScreen";
+import { ImportFormScreen } from "../pageobject/ImportFormScreen";
+import { ImportSuccessScreen } from "../pageobject/ImportSuccessScreen";
+import { ImportUsingSeedScreen } from "../pageobject/ImportUsingSeedScreen";
+import { NewAccountScreen } from "../pageobject/NewAccountScreen";
+import { NewWalletNameScreen } from "../pageobject/NewWalletNameScreen";
+import { OtherAccountsScreen } from "../pageobject/OtherAccountsScreen";
+import { GeneralSettingsScreen, SettingsScreen } from "../pageobject/SettingsScreen";
+import { DEFAULT_PASSWORD } from "./constants";
 
 export const App = {
   initVault: async (password = DEFAULT_PASSWORD) => {
@@ -12,16 +23,13 @@ export const App = {
     await browser.switchToWindow(tabAccounts);
     await browser.refresh();
 
-    await $('[data-testid="getStartedBtn"]').click();
-
-    await $('[data-testid="newAccountForm"]').waitForDisplayed();
-    await $('#first').setValue(password);
-    await $('#second').setValue(password);
-    await $('#termsAccepted').click();
-    await $('#conditionsAccepted').click();
-    await $('button[type=submit]').click();
-
-    await $('[data-testid="importForm"]').waitForDisplayed();
+    await GetStartedScreen.getStartedButton.click();
+    await NewAccountScreen.passwordInput.setValue(password);
+    await NewAccountScreen.passwordConfirmationInput.setValue(password);
+    await NewAccountScreen.termsAndConditionsLine.click();
+    await NewAccountScreen.privacyPolicyLine.click();
+    await NewAccountScreen.continueButton.click();
+    expect(await ImportFormScreen.root.isDisplayed()).toBe(true);
 
     await browser.closeWindow();
     await browser.switchToWindow(tabKeeper);
@@ -32,10 +40,10 @@ export const App = {
 
     await $("//div[contains(@class, 'settingsIcon@menu')]").click();
     await $("//div[contains(@class, 'deleteAccounts@settings')]").click();
-    await $('[data-testid="confirmPhrase"]').setValue('DELETE ALL ACCOUNTS');
-    await $('[data-testid="resetConfirm"]').click();
+    await $("[data-testid=\"confirmPhrase\"]").setValue("DELETE ALL ACCOUNTS");
+    await $("[data-testid=\"resetConfirm\"]").click();
 
-    await $('[data-testid="getStartedBtn"]').waitForExist();
+    await $("[data-testid=\"getStartedBtn\"]").waitForExist();
   },
 
   closeBgTabs: async (foreground: string) => {
@@ -47,52 +55,45 @@ export const App = {
     }
 
     await browser.switchToWindow(foreground);
-  },
+  }
 };
 
 export const PopupHome = {
   addAccount: async () => {
-    await $('[data-testid="otherAccountsButton"]').click();
-    await $('[data-testid="addAccountButton"]').click();
+    await HomeScreen.otherAccountsButton.click();
+    await OtherAccountsScreen.addAccountButton.click();
   },
 
   getActiveAccountName: async () =>
-    $(
-      '[data-testid="activeAccountCard"] [data-testid="accountName"]'
-    ).getText(),
+    await browser.findByTestId$("activeAccountCard").findByTestId$("accountName").getText(),
 
   getOtherAccountNames: async () => {
-    await $('[data-testid="otherAccountsButton"]').click();
-    await $('[data-testid="otherAccountsPage"]').waitForDisplayed();
+    await $("[data-testid=\"otherAccountsButton\"]").click();
+    await $("[data-testid=\"otherAccountsPage\"]").waitForDisplayed();
 
     const accountNames = await $$(
-      '[data-testid="accountCard"] [data-testid="accountName"]'
+      "[data-testid=\"accountCard\"] [data-testid=\"accountName\"]"
     ).map(accName => accName.getText());
 
-    await $('div.arrow-back-icon').click();
+    await $("div.arrow-back-icon").click();
 
     return accountNames;
   },
-
-  getAllAccountNames: async () => [
-    await PopupHome.getActiveAccountName(),
-    ...(await PopupHome.getOtherAccountNames()),
-  ],
 };
 
 export const AccountsHome = {
   importAccount: async (name: string, seed: string) => {
-    await $('[data-testid="importSeed"]').click();
+    await ImportFormScreen.importBySeedButton.click();
 
-    await $('[data-testid="seedInput"]').setValue(seed);
-    await $('[data-testid="continueBtn"]').click();
+    await ImportUsingSeedScreen.seedInput.setValue(seed);
+    await ImportUsingSeedScreen.importAccountButton.click();
 
-    await $('[data-testid="newAccountNameInput"]').setValue(name);
-    await $('[data-testid="continueBtn"]').click();
+    await NewWalletNameScreen.nameInput.setValue(name);
+    await NewWalletNameScreen.continueButton.click();
 
-    await $('[data-testid="addAnotherAccountBtn"]').click();
-    await $('[data-testid="importForm"]').waitForDisplayed();
-  },
+    await ImportSuccessScreen.addAnotherAccountButton.click();
+    await ImportFormScreen.root.waitForDisplayed();
+  }
 };
 
 export const Settings = {
@@ -102,15 +103,9 @@ export const Settings = {
       window.focus();
     });
 
-    await $("//div[contains(@class, 'settingsIcon@menu')]").click();
-    await $('button#settingsGeneral').click();
-    await $("//div[contains(@class, 'trigger@Select-module')]").click();
-
-    const position = index === -1 ? 'last()' : `position()=${index}`;
-
-    await $(
-      `//div[contains(@class, 'item@Select-module')][${position}]`
-    ).click();
+    await EmptyHomeScreen.settingsButton.click();
+    await SettingsScreen.generalSectionLink.click();
+    await GeneralSettingsScreen.setSessionTimeoutByIndex(index);
   },
 
   setMinSessionTimeout: async () => {
@@ -123,58 +118,34 @@ export const Settings = {
 
   clearCustomList: async () => {
     await $("//div[contains(@class, 'settingsIcon@menu')]").click();
-    await $('#settingsPermission').click();
+    await $("#settingsPermission").click();
 
     for (const originEl of await $$(
       "//div[contains(@class, 'permissionItem@list')]"
     )) {
       await originEl.$("//button[contains(@class, 'settings@list')]").click();
-      await $('#delete').click();
+      await $("#delete").click();
     }
-  },
+  }
 };
 
 export const Network = {
   switchTo: async (network: string) => {
-    const networkMenuBtn = await $(
-      "//div[contains(@class, 'network@network')]//div[contains(@class, 'basic500 flex')]"
-    );
-    await networkMenuBtn.waitForExist();
-    await networkMenuBtn.waitForDisplayed();
-    await networkMenuBtn.click();
-
-    const networkMenu = await $("//div[contains(@class, 'isShow@network')]");
-    await networkMenu.waitForExist();
-    await networkMenu.waitForDisplayed();
-
-    const networkMenuItem = await networkMenu.$(
-      `//div[contains(@class, 'chooseNetwork@network')][contains(text(), '${network}')]`
-    );
-    await networkMenuItem.waitForExist();
-    await networkMenuItem.waitForDisplayed();
-    await networkMenuItem.click();
+    await Common.networkMenuButton.click();
+    const networksMenu = await Common.getNetworksMenu();
+    (await networksMenu.networkByName(network)).click();
   },
 
   checkNetwork: async (network: string) => {
-    await $(
-      "//div[contains(@class, 'root@loadingScreen-module')]"
-    ).waitForExist();
-
-    await $(
-      '[data-testid="importForm"], [data-testid="assetsForm"]'
-    ).waitForExist();
-
-    expect(
-      await $(
-        "//div[contains(@class, 'network@network')]//span[contains(@class, 'networkBottom@network')]"
-      ).getText()
-    ).matches(new RegExp(network, 'i'));
+    const networkMenuButton = Common.networkMenuButton;
+    await networkMenuButton.waitForDisplayed();
+    expect(networkMenuButton).toHaveText(network);
   },
 
   switchToAndCheck: async (network: string) => {
     await Network.switchTo(network);
     await Network.checkNetwork(network);
-  },
+  }
 };
 
 export const Windows = {
@@ -194,12 +165,12 @@ export const Windows = {
             return newHandles.length >= count;
           },
           {
-            timeoutMsg: 'waiting for new windows to appear',
+            timeoutMsg: "waiting for new windows to appear"
           }
         );
 
         return newHandles;
-      },
+      }
     };
   },
 
@@ -211,8 +182,8 @@ export const Windows = {
         return !handles.includes(handle);
       },
       {
-        timeoutMsg: 'waiting for window to close',
+        timeoutMsg: "waiting for window to close"
       }
     );
-  },
+  }
 };
