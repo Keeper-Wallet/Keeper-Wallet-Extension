@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { Button } from 'ui/components/ui/buttons';
 
 import { TAutoAuth } from '../originSettings/OriginSettings';
@@ -13,7 +13,7 @@ export const ListItem: React.FunctionComponent<IParams> = ({
   permissionsText,
 }) => (
   <div
-    className={cn(className, styles.permissionItem, {
+    className={clsx(className, styles.permissionItem, {
       [styles.approved]: permissions.includes('approved'),
     })}
   >
@@ -38,7 +38,7 @@ const ItemButton: React.FunctionComponent<{
   }
   const isApproved = permissions.includes('approved');
   const status = isApproved ? 'enable' : 'disable';
-  const className = cn(styles.button, styles[status]);
+  const className = clsx(styles.button, styles[status]);
   return (
     <Button
       type="button"
@@ -49,7 +49,7 @@ const ItemButton: React.FunctionComponent<{
   );
 };
 
-const Icon = () => <div className={cn(styles.icon, styles.button)} />;
+const Icon = () => <div className={clsx(styles.icon, styles.button)} />;
 
 const SettingsButton: React.FunctionComponent<{
   onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -59,7 +59,7 @@ const SettingsButton: React.FunctionComponent<{
       type="button"
       view="transparent"
       onClick={props.onClick}
-      className={cn(styles.button, styles.settings)}
+      className={clsx(styles.button, styles.settings)}
     />
   );
 };

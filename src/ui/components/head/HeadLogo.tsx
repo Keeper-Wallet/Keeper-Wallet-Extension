@@ -1,6 +1,6 @@
 import './head.styl';
 
-import cn from 'classnames';
+import clsx from 'clsx';
 
 export function HeadLogo({
   className = '',
@@ -10,7 +10,7 @@ export function HeadLogo({
   className?: string;
   children?: React.ReactNode;
 }) {
-  const newClassName = cn(className, 'logo');
+  const newClassName = clsx(className, 'logo');
   return (
     <div className={newClassName} {...props}>
       {children}

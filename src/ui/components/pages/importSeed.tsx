@@ -1,6 +1,6 @@
 import * as libCrypto from '@waves/ts-lib-crypto';
 import { validators } from '@waves/waves-transactions';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -324,7 +324,10 @@ export function ImportSeed() {
           {t('importSeed.address')}
         </div>
 
-        <div className={cn(styles.greyLine, 'grey-line')} data-testid="address">
+        <div
+          className={clsx(styles.greyLine, 'grey-line')}
+          data-testid="address"
+        >
           {address}
         </div>
 

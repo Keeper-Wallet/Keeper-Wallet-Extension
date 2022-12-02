@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
@@ -25,7 +25,7 @@ export class Pills extends PureComponent<Props> {
 
   render() {
     const { className, onSelect, list, ...props } = this.props;
-    const myClassName = cn(styles.pills, className);
+    const myClassName = clsx(styles.pills, className);
     return (
       <TransitionGroup className={myClassName}>
         {list.map(item => (

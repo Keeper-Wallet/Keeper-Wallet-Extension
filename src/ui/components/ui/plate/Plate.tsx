@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { Children, PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 
@@ -16,7 +16,9 @@ export const Plate = ({
   children,
 }: React.PropsWithChildren<IPlateProps>) => {
   return (
-    <div className={cn('plate', 'plate-with-controls', 'break-all', className)}>
+    <div
+      className={clsx('plate', 'plate-with-controls', 'break-all', className)}
+    >
       {children}
     </div>
   );
@@ -86,7 +88,7 @@ class PlateCollapsableComponent extends PureComponent<
   render() {
     const { showExpand, isExpanded, isCopied } = this.state;
     const { t, className, children, showCopy } = this.props;
-    const classNames = cn(className, { [styles.expanded]: isExpanded });
+    const classNames = clsx(className, { [styles.expanded]: isExpanded });
     const textToCopy = (
       Children.only(children) as React.ReactElement<{ data: unknown }>
     ).props?.data;

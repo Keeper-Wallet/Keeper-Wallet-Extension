@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 
 import { Button } from './Button';
@@ -72,25 +72,25 @@ export class DropdownButton extends PureComponent<Props, State> {
 
     return (
       <div
-        className={cn(styles.splitButton, className, 'buttons-group')}
+        className={clsx(styles.splitButton, className, 'buttons-group')}
         ref={this.getRef}
       >
         <div className="relative flex">
           {defaultItem}
 
-          <div className={cn(styles.arrowButton)}>
+          <div className={clsx(styles.arrowButton)}>
             <Button
               type="button"
               view={defaultItem.props.view}
               onClick={this.clickHandler}
-              className={cn(styles.dropdownButton)}
+              className={clsx(styles.dropdownButton)}
             />
           </div>
         </div>
 
         {this.state.showList && (
           <div
-            className={cn(
+            className={clsx(
               styles.list,
               placement === 'top' && styles.listPlacementTop
             )}

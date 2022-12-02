@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import copy from 'copy-to-clipboard';
 import { PureComponent } from 'react';
 
@@ -20,11 +20,11 @@ export class CopyText extends PureComponent<IProps> {
     this._copyText(event);
 
   render() {
-    const iconClass = cn(styles.firstIcon, {
+    const iconClass = clsx(styles.firstIcon, {
       'password-icon': this.props.type === 'key',
     });
 
-    const copyIcon = cn(styles.lastIcon, 'copy-icon');
+    const copyIcon = clsx(styles.lastIcon, 'copy-icon');
 
     const toggleHandler = this.props.toggleText
       ? this.showTextHandler

@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react';
 import { Asset, Money } from '@waves/data-entities';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { NetworkName } from 'networks/types';
 import { useAppSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
@@ -170,7 +170,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
           <div className={styles.statusBox}>
             {swapStatus === SwapStatus.Pending ? (
               <>
-                <div className={cn(styles.statusIcon, 'tx-waiting-icon')} />
+                <div className={clsx(styles.statusIcon, 'tx-waiting-icon')} />
 
                 <div className="margin-main-top margin-main-big headline2 center">
                   {t('swap.statusInProgress')}
@@ -178,7 +178,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
               </>
             ) : swapStatus === SwapStatus.Failed ? (
               <>
-                <div className={cn(styles.statusIcon, 'tx-reject-icon')} />
+                <div className={clsx(styles.statusIcon, 'tx-reject-icon')} />
 
                 <div className="margin-main-top margin-main-big headline2 center">
                   {t('swap.statusFailed')}
@@ -186,7 +186,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
               </>
             ) : (
               <>
-                <div className={cn(styles.statusIcon, 'tx-approve-icon')} />
+                <div className={clsx(styles.statusIcon, 'tx-approve-icon')} />
 
                 <div className="margin-main-top margin-main-big headline2 center">
                   {t('swap.statusSucceeded')}
@@ -198,7 +198,10 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
           <div className={styles.main}>
             <div className={styles.card}>
               <div
-                className={cn(styles.cardIcon, 'create-order-transaction-icon')}
+                className={clsx(
+                  styles.cardIcon,
+                  'create-order-transaction-icon'
+                )}
               />
 
               <div className={styles.cardText}>

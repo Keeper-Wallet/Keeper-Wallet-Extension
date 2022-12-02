@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -77,7 +77,7 @@ export class ErrorMessage extends PureComponent<Props, State> {
 
     return (
       <div
-        className={cn(styles.error, className, {
+        className={clsx(styles.error, className, {
           [styles.modalError]: type && type === 'modal',
         })}
         onClick={this.onClick}

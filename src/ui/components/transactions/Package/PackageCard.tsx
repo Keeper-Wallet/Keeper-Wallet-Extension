@@ -1,5 +1,5 @@
 import { Money } from '@waves/data-entities';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 
@@ -44,7 +44,7 @@ class PackageCardComponent extends PureComponent<
     const tx = [...data];
     const fees = getFees(tx, assets);
     const amounts = getPackageAmounts(tx, assets);
-    const myClassName = cn(styles.dataTransactionCard, className, {
+    const myClassName = clsx(styles.dataTransactionCard, className, {
       [styles.dataCardCollapsed]: collapsed,
     });
 

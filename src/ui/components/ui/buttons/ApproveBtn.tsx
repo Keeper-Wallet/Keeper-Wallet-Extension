@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 
 import { CONFIG } from '../../../appConfig';
@@ -39,7 +39,11 @@ export class ApproveBtn extends PureComponent<Props, State> {
         {...restProps}
         disabled={disabled || loading || pending}
         loading={loading}
-        className={cn(restProps.className, styles.hideText, styles.svgWrapper)}
+        className={clsx(
+          restProps.className,
+          styles.hideText,
+          styles.svgWrapper
+        )}
       >
         {!loading && this.props.children}
       </Button>

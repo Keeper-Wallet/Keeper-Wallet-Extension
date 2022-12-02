@@ -1,5 +1,5 @@
 import { Asset } from '@waves/data-entities';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
 import { Loader } from '../../ui';
@@ -19,17 +19,17 @@ export function NftItem({ asset, className, onInfoClick, onSendClick }: Props) {
   const { t } = useTranslation();
   const isLoading = !asset.displayName;
   return (
-    <div className={cn(styles.nftCard, className, 'flex')}>
+    <div className={clsx(styles.nftCard, className, 'flex')}>
       <AssetLogo
-        className={cn(styles.nftIcon, isLoading && 'skeleton-glow')}
+        className={clsx(styles.nftIcon, isLoading && 'skeleton-glow')}
         assetId={asset.id}
         name={asset.displayName}
         hasScript={asset.hasScript}
         hasSponsorship={!!asset.minSponsoredFee}
       />
 
-      <div className={cn('body1', styles.nftData)}>
-        <div className={cn('basic500', styles.nftName)}>
+      <div className={clsx('body1', styles.nftData)}>
+        <div className={clsx('basic500', styles.nftName)}>
           {!isLoading ? asset.displayName : <Loader />}
         </div>
       </div>

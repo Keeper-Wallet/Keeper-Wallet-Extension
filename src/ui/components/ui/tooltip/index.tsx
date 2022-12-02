@@ -1,5 +1,5 @@
 import { Placement } from '@popperjs/core';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import * as Popper from 'react-popper';
@@ -80,7 +80,7 @@ export function Tooltip({
           showPopper && (
             <div
               ref={popperRef}
-              className={cn(className, styles.tooltip)}
+              className={clsx(className, styles.tooltip)}
               style={stylesP.popper}
               {...attributesP.popper}
               {...props}

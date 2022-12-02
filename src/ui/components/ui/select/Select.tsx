@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import * as styles from './Select.module.css';
@@ -91,7 +91,7 @@ export function Select<T>({
 
   return (
     <div
-      className={cn(className, styles.root, themeClassNames[theme], {
+      className={clsx(className, styles.root, themeClassNames[theme], {
         [styles.rootFill]: fill,
       })}
       ref={getRef}
@@ -113,7 +113,7 @@ export function Select<T>({
 
       {isOpen && (
         <div
-          className={cn(
+          className={clsx(
             styles.list,
             {
               bottom: styles.listPlacementBottom,

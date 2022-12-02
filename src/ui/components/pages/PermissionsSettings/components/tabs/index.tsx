@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 
 import * as styles from './index.styl';
@@ -11,7 +11,7 @@ export class Tabs extends PureComponent<IProps> {
   };
 
   render() {
-    const className = cn(styles.tabs, this.props.className);
+    const className = clsx(styles.tabs, this.props.className);
     const selected = this.props.currentTab;
 
     return (
@@ -21,7 +21,9 @@ export class Tabs extends PureComponent<IProps> {
             key={i}
             id={`${name}Tab`}
             onClick={this.selectHandler(name)}
-            className={cn(styles.tab, { [styles.selected]: selected === name })}
+            className={clsx(styles.tab, {
+              [styles.selected]: selected === name,
+            })}
           >
             <span>{item}</span>
           </div>

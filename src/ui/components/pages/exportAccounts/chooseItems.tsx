@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { NetworkName } from 'networks/types';
 import { PreferencesAccount } from 'preferences/types';
 import { useState } from 'react';
@@ -81,7 +81,7 @@ export function ExportKeystoreChooseItems<
         onSubmit(items.filter(({ address }) => selected.has(address)));
       }}
     >
-      <h1 className={cn(styles.centered, 'margin1', 'title1')}>
+      <h1 className={clsx(styles.centered, 'margin1', 'title1')}>
         {t(
           type === 'contacts'
             ? 'exportKeystore.chooseContactsTitle'
@@ -89,7 +89,7 @@ export function ExportKeystoreChooseItems<
         )}
       </h1>
 
-      <p className={cn(styles.centered, 'margin1', 'body1', 'disabled500')}>
+      <p className={clsx(styles.centered, 'margin1', 'body1', 'disabled500')}>
         {t(
           type === 'contacts'
             ? 'exportKeystore.chooseContactsDesc'
@@ -109,7 +109,7 @@ export function ExportKeystoreChooseItems<
           .map(([network, items]) => (
             <div key={network} className={styles.accountsGroup}>
               <header className={styles.accountsGroupHeader}>
-                <i className={cn(styles.accountsGroupIcon, 'networkIcon')} />
+                <i className={clsx(styles.accountsGroupIcon, 'networkIcon')} />
 
                 <h2 className={styles.accountsGroupLabel}>
                   {networkLabels[network]}
@@ -199,11 +199,11 @@ export function ExportKeystoreChooseItems<
       <Modal animation={Modal.ANIMATION.FLASH} showModal={showWarningModal}>
         <div className="modal cover">
           <div className="modal-form">
-            <h2 className={cn('margin1', 'title1')}>
+            <h2 className={clsx('margin1', 'title1')}>
               {t('exportKeystore.warningModalTitle')}
             </h2>
 
-            <p className={cn('margin1', 'body1', 'disabled500')}>
+            <p className={clsx('margin1', 'body1', 'disabled500')}>
               {t('exportKeystore.warningModalDesc')}
             </p>
 

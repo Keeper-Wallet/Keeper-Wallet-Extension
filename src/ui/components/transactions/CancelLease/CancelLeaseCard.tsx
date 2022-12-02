@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 
@@ -14,7 +14,7 @@ class CancelLeaseCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
-    const className = cn(
+    const className = clsx(
       styles.cancelLeaseTransactionCard,
       this.props.className,
       {

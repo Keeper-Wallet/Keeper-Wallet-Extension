@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useMemo } from 'react';
 
 import * as styles from './Button.module.css';
@@ -14,7 +14,7 @@ type View =
   | 'warning';
 
 const getClassName = (className?: string, view?: View, loading?: boolean) =>
-  cn(className, styles.button, {
+  clsx(className, styles.button, {
     [styles.custom]: view === 'custom',
     [styles.danger]: view === 'danger',
     [styles.defaultView]: !view,

@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { ledgerService, LedgerServiceStatus } from 'ledger/service';
 import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -23,7 +23,7 @@ interface ArrowProps {
 function Arrow({ direction }: ArrowProps) {
   return (
     <svg
-      className={cn(styles.avatarListArrowSvg, {
+      className={clsx(styles.avatarListArrowSvg, {
         [styles.avatarListArrowSvgLeft]: direction === 'left',
       })}
       width="14"
@@ -247,7 +247,7 @@ export function ImportLedger() {
 
             {page > 0 && (
               <button
-                className={cn(
+                className={clsx(
                   styles.avatarListArrow,
                   styles.avatarListArrowLeft
                 )}
@@ -263,7 +263,7 @@ export function ImportLedger() {
 
             {page < MAX_PAGE && (
               <button
-                className={cn(
+                className={clsx(
                   styles.avatarListArrow,
                   styles.avatarListArrowRight
                 )}
@@ -302,7 +302,7 @@ export function ImportLedger() {
             </ErrorMessage>
           </div>
 
-          <div className={cn(styles.address, 'grey-line')}>
+          <div className={clsx(styles.address, 'grey-line')}>
             {selectedUser?.address}
           </div>
 

@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { Fragment, PureComponent } from 'react';
 import {
   useTranslation,
@@ -21,7 +21,7 @@ const ContentScript = ({
 }) => (
   <pre
     ref={getScriptRef}
-    className={cn(styles.codeScript, 'body3')}
+    className={clsx(styles.codeScript, 'body3')}
     data-testid="contentScript"
   >
     {script}
@@ -45,9 +45,9 @@ const Data = ({
 
   return (
     <div className={styles.dataContainer} ref={getScriptRef}>
-      <table className={cn(styles.data, styles.dataTable)}>
+      <table className={clsx(styles.data, styles.dataTable)}>
         <thead>
-          <tr className={cn('basic500', styles.headRow)}>
+          <tr className={clsx('basic500', styles.headRow)}>
             <td className={styles.dataItemData}>
               {t('showScriptComponent.key')}
             </td>
@@ -62,7 +62,7 @@ const Data = ({
         {(data || []).map((item, index) => {
           return (
             <tbody key={index}>
-              <tr className={cn(styles.dataRow)} data-testid="dataRow">
+              <tr className={clsx(styles.dataRow)} data-testid="dataRow">
                 <td
                   title={item.key}
                   className={styles.dataItemData}
@@ -113,9 +113,9 @@ const DataNoKey = ({
 
   return (
     <div className={styles.dataContainer} ref={getScriptRef}>
-      <table className={cn(styles.data, styles.dataTable)}>
+      <table className={clsx(styles.data, styles.dataTable)}>
         <thead>
-          <tr className={cn('basic500', styles.headRow)}>
+          <tr className={clsx('basic500', styles.headRow)}>
             <td className={styles.dataItemData}>
               {t('showScriptComponent.type')}
             </td>
@@ -130,7 +130,7 @@ const DataNoKey = ({
           const length = Array.isArray(itemValue) ? itemValue.length : 0;
           return (
             <tbody key={index}>
-              <tr className={cn(styles.dataRow)} data-testid="invokeArgument">
+              <tr className={clsx(styles.dataRow)} data-testid="invokeArgument">
                 <td
                   className={styles.dataItemData}
                   data-testid="invokeArgumentType"
@@ -227,7 +227,7 @@ class ShowScriptComponent extends PureComponent<Props, State> {
 
   render() {
     const { t, script, optional, data, isData, noKey } = this.props;
-    const showAllClass = cn(this.props.className, {
+    const showAllClass = clsx(this.props.className, {
       [styles.showAllScript]: this.state.showAllScript,
     });
 

@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 
@@ -12,7 +12,7 @@ class DataCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
-    const className = cn(styles.dataTransactionCard, this.props.className, {
+    const className = clsx(styles.dataTransactionCard, this.props.className, {
       [styles.dataCardCollapsed]: this.props.collapsed,
     });
 

@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 
@@ -18,9 +18,11 @@ class OriginWarningComponent extends PureComponent<
 
     return (
       <>
-        <div className={cn(styles.originAddress, 'flex')}>{message.origin}</div>
-        <div className={cn(styles.originNetwork, 'flex')}>
-          <i className={cn(styles.originNetworkIcon, 'networkIcon')}> </i>
+        <div className={clsx(styles.originAddress, 'flex')}>
+          {message.origin}
+        </div>
+        <div className={clsx(styles.originNetwork, 'flex')}>
+          <i className={clsx(styles.originNetworkIcon, 'networkIcon')}> </i>
           <span className={styles.networkBottom}>{t(`bottom.${network}`)}</span>
         </div>
       </>

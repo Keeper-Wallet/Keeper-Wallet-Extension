@@ -1,7 +1,7 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { Long, TRANSACTION_TYPE, TransactionFromNode } from '@waves/ts-types';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
 import { useAppSelector } from '../../../../popup/store/react';
@@ -471,14 +471,14 @@ export function HistoryItem({ tx, className }: Props) {
   }
 
   return (
-    <div className={cn(styles.historyCard, className, 'flex')}>
+    <div className={clsx(styles.historyCard, className, 'flex')}>
       <Tooltip
         content={`${(isTxFailed && t('historyCard.failed')) || ''} ${tooltip}`}
         placement="right"
       >
         {props => (
           <div
-            className={cn(
+            className={clsx(
               styles.historyIconWrapper,
               messageType === 'unknown' && 'skeleton-glow'
             )}
@@ -501,9 +501,9 @@ export function HistoryItem({ tx, className }: Props) {
         )}
       </Tooltip>
 
-      <div className={cn('body1', styles.historyData)}>
+      <div className={clsx('body1', styles.historyData)}>
         <div
-          className={cn(
+          className={clsx(
             info && typeof label === 'string' && 'basic500',
             styles.historyLabel
           )}

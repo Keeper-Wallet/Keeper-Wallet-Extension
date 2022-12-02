@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { MessageStoreItem } from 'messages/types';
 import { PreferencesAccount } from 'preferences/types';
 import { useTranslation } from 'react-i18next';
@@ -15,9 +15,9 @@ const OriginWarning = ({ message }: { message: MessageStoreItem }) => {
 
   return (
     <>
-      <div className={cn(styles.originAddress, 'flex')}>{message.origin}</div>
-      <div className={cn(styles.originNetwork, 'flex')}>
-        <i className={cn(styles.originNetworkIcon, 'networkIcon')}> </i>
+      <div className={clsx(styles.originAddress, 'flex')}>{message.origin}</div>
+      <div className={clsx(styles.originNetwork, 'flex')}>
+        <i className={clsx(styles.originNetworkIcon, 'networkIcon')}> </i>
         <span>{t(`bottom.${message?.account?.network}`)}</span>
       </div>
     </>

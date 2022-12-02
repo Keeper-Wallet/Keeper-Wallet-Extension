@@ -1,5 +1,5 @@
 import { validators } from '@waves/waves-transactions';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useAppSelector } from 'popup/store/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -80,15 +80,15 @@ export function AddressRecipient({
   return (
     <>
       {name ? (
-        <div className={cn(styles.content, className)} data-testid={testid}>
+        <div className={clsx(styles.content, className)} data-testid={testid}>
           <p className={styles.name}>{name}</p>
           <AddressTooltip address={address} />
         </div>
       ) : (
-        <div className={cn(styles.content, className)} data-testid={testid}>
+        <div className={clsx(styles.content, className)} data-testid={testid}>
           {showMirrorAddress ? (
             <Tooltip
-              className={cn(styles.mirrorAddress, {
+              className={clsx(styles.mirrorAddress, {
                 [styles.ethereum]: type === 'ethereum',
                 [styles.waves]: type === 'waves',
               })}
@@ -100,7 +100,7 @@ export function AddressRecipient({
                   <Ellipsis
                     text={address}
                     size={12}
-                    className={cn(styles.recipient, {
+                    className={clsx(styles.recipient, {
                       [styles.ethereum]: type === 'ethereum',
                       [styles.waves]: type === 'waves',
                     })}

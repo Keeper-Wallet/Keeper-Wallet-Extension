@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
 import { Tooltip } from 'ui/components/ui/tooltip';
 
@@ -22,7 +22,7 @@ export function LedgerAvatarList({ selectedId, size, users, onSelect }: Props) {
       {users.map(item => (
         <div
           key={item.address}
-          className={cn(styles.item, {
+          className={clsx(styles.item, {
             [styles.itemSelected]: selectedId === item.id,
           })}
           onClick={() => {

@@ -1,5 +1,5 @@
 import { AssetsRecord } from 'assets/types';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { MessageStoreItem } from 'messages/types';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PreferencesAccount } from 'preferences/types';
@@ -90,10 +90,10 @@ export function FinalTransaction({
         selectedAccount={selectedAccount!}
       />
 
-      <div className={cn(styles.finalTxScrollBox, 'transactionContent')}>
+      <div className={clsx(styles.finalTxScrollBox, 'transactionContent')}>
         {isReject || isApprove ? (
           <div
-            className={cn(styles.txBigIcon, 'margin-main', {
+            className={clsx(styles.txBigIcon, 'margin-main', {
               'tx-reject-icon': isReject,
               'tx-approve-icon': isApprove,
             })}
@@ -160,7 +160,7 @@ export function FinalTransaction({
       </div>
 
       <div
-        className={cn(styles.txButtonsWrapper, {
+        className={clsx(styles.txButtonsWrapper, {
           'buttons-wrapper': isShowList && (isShowClose || isShowNext),
         })}
       >

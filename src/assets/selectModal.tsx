@@ -1,6 +1,6 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
-import cn from 'classnames';
+import clsx from 'clsx';
 import ColorHash from 'color-hash';
 import { NetworkName } from 'networks/types';
 import { cloneElement, useEffect, useMemo, useRef, useState } from 'react';
@@ -179,7 +179,7 @@ export function AssetSelectModal({
   }, [selectedIndex]);
 
   return (
-    <div className={cn('modal', 'cover', styles.root)}>
+    <div className={clsx('modal', 'cover', styles.root)}>
       <div className={styles.content}>
         <div className={styles.header}>
           <h2 className={styles.title}>{t('assetSelectModal.title')}</h2>
@@ -264,7 +264,7 @@ export function AssetSelectModal({
           <ul ref={listRef}>
             {filteredAndSortedItems.map(({ asset, balance }, index) => (
               <AssetSelectItem
-                className={cn(styles.listItem, {
+                className={clsx(styles.listItem, {
                   [styles.listItemSelected]: index === selectedIndex,
                   [styles.listItemDisabled]: asset.disabled,
                 })}

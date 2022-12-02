@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { Children, cloneElement, isValidElement, useState } from 'react';
 
 import * as styles from './tabs.styl';
@@ -13,7 +13,7 @@ interface TabProps {
 export function Tab({ className, children, isActive, onActivate }: TabProps) {
   return (
     <li
-      className={cn(
+      className={clsx(
         styles.tabListItem,
         { [styles.tabListActive]: isActive },
         className
@@ -39,7 +39,7 @@ export function TabList({
   onActiveTab,
 }: TabListProps) {
   return (
-    <ol className={cn(styles.tabList, className)}>
+    <ol className={clsx(styles.tabList, className)}>
       {Children.map(
         children,
         (child, index) =>
