@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 
@@ -22,7 +22,7 @@ const Icon = ({
       />
     ) : (
       <div
-        className={cn('signin-icon', {
+        className={clsx('signin-icon', {
           [styles.authTxIcon]: !small,
           [styles.authTxIconSmall]: small,
           [styles.iconMargin]: !small,
@@ -78,7 +78,7 @@ class AuthCardComponent extends PureComponent<
 
     const tx = { type: data.type, ...data.data };
     const { name } = tx;
-    const className = cn(styles.authTransactionCard, this.props.className, {
+    const className = clsx(styles.authTransactionCard, this.props.className, {
       [styles.authCardCollapsed]: this.props.collapsed,
     });
 

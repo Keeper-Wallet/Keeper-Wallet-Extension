@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 
 import * as styles from './loader.styl';
 
@@ -13,5 +13,5 @@ export function Loader({
     return null;
   }
 
-  return <div className={cn(styles.loader, 'skeleton-glow', className)} />;
+  return <div className={clsx(styles.loader, 'skeleton-glow', className)} />;
 }

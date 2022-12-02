@@ -1,6 +1,6 @@
 import BigNumber from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useAppSelector } from 'popup/store/react';
 import { PreferencesAccount } from 'preferences/types';
 import { useTranslation } from 'react-i18next';
@@ -69,7 +69,7 @@ export function ActiveAccountCard({
         <Tooltip content={t('assets.inStorage')}>
           {props => (
             <button
-              className={cn(styles.iconButton, styles.otherAccountsButton)}
+              className={clsx(styles.iconButton, styles.otherAccountsButton)}
               data-testid="otherAccountsButton"
               type="button"
               onClick={onOtherAccountsClick}
@@ -103,7 +103,7 @@ export function ActiveAccountCard({
           {props => (
             <Copy text={account.address} onCopy={onCopy}>
               <button
-                className={cn(styles.iconButton, 'copyIconBlack')}
+                className={clsx(styles.iconButton, 'copyIconBlack')}
                 {...props}
               />
             </Copy>
@@ -113,7 +113,7 @@ export function ActiveAccountCard({
         <Tooltip content={t('showQR')} placement="bottom-end">
           {props => (
             <button
-              className={cn(styles.iconButton, 'showQrIcon')}
+              className={clsx(styles.iconButton, 'showQrIcon')}
               onClick={onShowQr}
               {...props}
             />

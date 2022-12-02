@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { CSSProperties } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { VariableSizeList } from 'react-window';
@@ -39,7 +39,7 @@ const Row = ({
 
   return (
     <div style={style}>
-      <div className={cn(styles.nftRow, len === 1 && styles.noScroll)}>
+      <div className={clsx(styles.nftRow, len === 1 && styles.noScroll)}>
         <NftCard
           key={leftIndex}
           nft={leftNft}

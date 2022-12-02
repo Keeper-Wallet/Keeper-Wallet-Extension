@@ -11,7 +11,7 @@ import { AssetSelect, AssetSelectOption } from 'assets/assetSelect';
 import { swappableAssetTickersByVendor } from 'assets/constants';
 import { AssetDetail } from 'assets/types';
 import { BalancesItem } from 'balances/types';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useDebouncedValue } from 'common/useDebouncedValue';
 import { useFeeOptions } from 'fee/useFeeOptions';
 import { convertFeeToAsset } from 'fee/utils';
@@ -642,7 +642,7 @@ export function SwapForm({
                 return (
                   <button
                     key={vendor}
-                    className={cn(styles.toAmountCard, {
+                    className={clsx(styles.toAmountCard, {
                       [styles.toAmountCardSelected]: swapVendor === vendor,
                     })}
                     type="button"
@@ -867,7 +867,7 @@ export function SwapForm({
               </div>
             </div>
 
-            <div className={cn(styles.summaryRow, styles.summaryRowCenter)}>
+            <div className={clsx(styles.summaryRow, styles.summaryRowCenter)}>
               <div className={styles.summaryLabel}>
                 <Tooltip
                   className={styles.tooltipContent}

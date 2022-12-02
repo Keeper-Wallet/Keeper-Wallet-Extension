@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import type { IdentityUser } from 'controllers/IdentityController';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -50,7 +50,7 @@ export function ImportEmail() {
 
   return (
     <div className={styles.root}>
-      <h2 className={cn('margin1', 'title1')}>
+      <h2 className={clsx('margin1', 'title1')}>
         {t('importEmail.importEmailTitle')}
       </h2>
 

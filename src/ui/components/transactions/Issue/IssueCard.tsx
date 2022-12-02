@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 
@@ -13,7 +13,7 @@ class IssueCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
-    const className = cn(styles.issueTransactionCard, this.props.className, {
+    const className = clsx(styles.issueTransactionCard, this.props.className, {
       [styles.issueCardCollapsed]: this.props.collapsed,
     });
 

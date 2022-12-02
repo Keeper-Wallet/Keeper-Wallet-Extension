@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PreferencesAccount } from 'preferences/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,12 +29,12 @@ export const TransactionWallet = ({
   };
 
   const avatarSize = 28;
-  className = cn(styles.wallet, className, {
+  className = clsx(styles.wallet, className, {
     [styles.walletClean]: type === 'clean',
     [styles.activeWallet]: active,
   });
 
-  const iconClass = cn(styles.accountIcon, 'change-account-icon');
+  const iconClass = clsx(styles.accountIcon, 'change-account-icon');
 
   const clickHandler = () => {
     if (onSelect) {

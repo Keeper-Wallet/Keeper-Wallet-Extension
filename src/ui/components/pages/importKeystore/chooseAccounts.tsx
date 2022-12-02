@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { KeystoreAccount, KeystoreProfiles } from 'keystore/types';
 import { NetworkName } from 'networks/types';
 import { PreferencesAccount } from 'preferences/types';
@@ -80,11 +80,11 @@ export function ImportKeystoreChooseAccounts({
         );
       }}
     >
-      <h2 className={cn(styles.title, 'title1')}>
+      <h2 className={clsx(styles.title, 'title1')}>
         {t('importKeystore.chooseAccountsTitle')}
       </h2>
 
-      <p className={cn(styles.description, 'body1', 'disabled500')}>
+      <p className={clsx(styles.description, 'body1', 'disabled500')}>
         {t('importKeystore.chooseAccountsDesc')}
       </p>
 
@@ -104,7 +104,9 @@ export function ImportKeystoreChooseAccounts({
                 data-testid="accountsGroup"
               >
                 <header className={styles.accountsGroupHeader}>
-                  <i className={cn(styles.accountsGroupIcon, 'networkIcon')} />
+                  <i
+                    className={clsx(styles.accountsGroupIcon, 'networkIcon')}
+                  />
 
                   <h2
                     className={styles.accountsGroupLabel}
@@ -161,7 +163,7 @@ export function ImportKeystoreChooseAccounts({
 
                             {existingAccount && (
                               <div
-                                className={cn(
+                                className={clsx(
                                   styles.accountName,
                                   'body3',
                                   'disabled500'

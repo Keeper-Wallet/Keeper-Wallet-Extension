@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 
 import { Avatar } from './Avatar';
 import * as styles from './AvatarList.module.css';
@@ -25,7 +25,7 @@ export function AvatarList<T extends AvatarListItem>({
       {items.map(item => (
         <div
           key={item.address}
-          className={cn(styles.avatarListItem, {
+          className={clsx(styles.avatarListItem, {
             [styles.avatarListItemSelected]: selected.address === item.address,
           })}
           onClick={() => {

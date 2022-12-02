@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
 import * as styles from './head.styl';
@@ -11,7 +11,7 @@ export const BigLogo = ({
   noTitle?: boolean;
 }) => {
   const { t } = useTranslation();
-  className = cn(styles.bigLogo, className, 'center');
+  className = clsx(styles.bigLogo, className, 'center');
 
   return (
     <div className={className}>

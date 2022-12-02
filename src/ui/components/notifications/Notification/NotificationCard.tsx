@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
@@ -27,7 +27,7 @@ class NotificationCardComponent extends PureComponent<INotification> {
       className: propsClassName,
       collapsed,
     } = this.props;
-    const className = cn(styles.notificationCard, propsClassName);
+    const className = clsx(styles.notificationCard, propsClassName);
     const isGroup = notifications.length > 1;
     const title = isGroup ? (
       <span>
@@ -38,7 +38,7 @@ class NotificationCardComponent extends PureComponent<INotification> {
     );
 
     return (
-      <div className={cn(className, { [styles.groupTx]: isGroup })}>
+      <div className={clsx(className, { [styles.groupTx]: isGroup })}>
         <div className={styles.groupBottom} />
         <div className={styles.groupEffect}>
           <div className={styles.cardHeader} onClick={this.showHandler}>

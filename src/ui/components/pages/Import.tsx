@@ -1,5 +1,5 @@
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -92,7 +92,9 @@ export function AccountsHome() {
         {t('import.createNew')}
       </Button>
 
-      <div className={cn('body1', 'disabled500', 'font300', styles.separator)}>
+      <div
+        className={clsx('body1', 'disabled500', 'font300', styles.separator)}
+      >
         {t('import.importVia')}
       </div>
 

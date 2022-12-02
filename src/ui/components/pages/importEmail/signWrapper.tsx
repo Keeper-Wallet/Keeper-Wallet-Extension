@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { LedgerConnectModal } from 'ledger/connectModal';
 import { ledgerService, LedgerServiceStatus } from 'ledger/service';
 import { useAppSelector } from 'popup/store/react';
@@ -91,7 +91,7 @@ export function SignWrapper({ onConfirm, children }: Props) {
 
       {account?.type === 'wx' && (
         <Modal showModal={showModal} animation={Modal.ANIMATION.FLASH}>
-          <div className={cn('modal', 'cover', styles.root)}>
+          <div className={clsx('modal', 'cover', styles.root)}>
             <div className={styles.content}>
               <Button
                 className="modal-close"
@@ -103,7 +103,7 @@ export function SignWrapper({ onConfirm, children }: Props) {
                 view="transparent"
               />
 
-              <h2 className={cn('margin4', 'title1')}>
+              <h2 className={clsx('margin4', 'title1')}>
                 {t('importEmail.loginRequired')}
               </h2>
 

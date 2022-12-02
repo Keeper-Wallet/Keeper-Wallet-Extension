@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import ColorHash from 'color-hash';
 
 import { useAssetLogo } from '../../../../assets/utils';
@@ -29,7 +29,7 @@ export function AssetLogo({
 
   if (!logoSrc) {
     return (
-      <div className={cn(styles.assetLogo, className)} style={style}>
+      <div className={clsx(styles.assetLogo, className)} style={style}>
         <div>{name && name[0].toUpperCase()}</div>
         {(hasSponsorship || hasScript) && (
           <div className={styles.assetSubIconContainer}>
@@ -58,6 +58,6 @@ export function AssetLogo({
   }
 
   return (
-    <img className={cn(styles.assetLogo, className)} src={logoSrc} alt="" />
+    <img className={clsx(styles.assetLogo, className)} src={logoSrc} alt="" />
   );
 }

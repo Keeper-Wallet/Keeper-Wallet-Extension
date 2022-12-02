@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { NetworkName } from 'networks/types';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -174,7 +174,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
         <ErrorMessage show={errors._form != null}>{errors._form}</ErrorMessage>
       </div>
 
-      <div className={cn(styles.footer, 'body3')}>
+      <div className={clsx(styles.footer, 'body3')}>
         <a
           rel="noopener noreferrer"
           className="margin1 link blue"

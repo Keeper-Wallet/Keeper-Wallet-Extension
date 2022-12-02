@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -80,7 +80,7 @@ export function ImportKeystoreChooseFile({
       <h2 className="title1 margin3 left">{title}</h2>
       <p className="tag1 basic500 input-title">{label}</p>
 
-      <label className={cn(styles.keystoreFile, 'margin1')}>
+      <label className={clsx(styles.keystoreFile, 'margin1')}>
         <span className={styles.keystoreFileButton}>
           <input
             accept="application/json"
@@ -97,7 +97,7 @@ export function ImportKeystoreChooseFile({
         </span>
 
         <span
-          className={cn('body1', styles.keystoreFileName)}
+          className={clsx('body1', styles.keystoreFileName)}
           title={keystoreFile ? keystoreFile.name : undefined}
         >
           {keystoreFile

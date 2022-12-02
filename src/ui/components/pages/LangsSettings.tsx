@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { SUPPORTED_LANGUAGES } from 'i18n/constants';
 import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { useState } from 'react';
@@ -16,10 +16,10 @@ interface LangProps {
 }
 
 const Lang = ({ id, name, setSelected, selected }: LangProps) => {
-  const className = cn(styles[id], styles.lang, {
+  const className = clsx(styles[id], styles.lang, {
     [styles.selected]: selected,
   });
-  const iconClass = cn(styles.flagIcon, {
+  const iconClass = clsx(styles.flagIcon, {
     'selected-lang': selected,
     [`flag-${id}-icon`]: !selected,
   });

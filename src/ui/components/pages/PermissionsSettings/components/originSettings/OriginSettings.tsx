@@ -1,5 +1,5 @@
 import { BigNumber } from '@waves/bignumber';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, Input, Select } from 'ui/components/ui';
@@ -215,7 +215,7 @@ class OriginSettingsComponent extends PureComponent<IProps, IState> {
     return (
       <div className="modal cover">
         <div id="originSettings" className="modal-form">
-          <h2 className={cn(styles.title)}>
+          <h2 className={clsx(styles.title)}>
             {t('permissionSettings.modal.title')}
           </h2>
 
@@ -233,7 +233,7 @@ class OriginSettingsComponent extends PureComponent<IProps, IState> {
             onSelectItem={this.selectTimeHandler}
           />
 
-          <div className={cn(styles.amount)}>
+          <div className={clsx(styles.amount)}>
             <div className="left input-title basic500 tag1">
               {t('permissionSettings.modal.amount')}
             </div>

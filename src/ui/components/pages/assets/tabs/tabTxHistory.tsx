@@ -1,5 +1,5 @@
 import { TRANSACTION_TYPE, TransactionFromNode } from '@waves/ts-types';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useAppSelector } from 'popup/store/react';
 import { CSSProperties, useEffect, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -41,7 +41,7 @@ const Row = ({
   return (
     <div style={style}>
       {'groupName' in historyOrGroup ? (
-        <div className={cn('basic500 margin-min', 'margin-min-top')}>
+        <div className={clsx('basic500 margin-min', 'margin-min-top')}>
           {historyOrGroup.groupName}
         </div>
       ) : (
@@ -335,7 +335,7 @@ export function TabTxHistory() {
       </div>
 
       {!historyWithGroups.length ? (
-        <div className={cn('basic500 center margin-min-top', styles.tabInfo)}>
+        <div className={clsx('basic500 center margin-min-top', styles.tabInfo)}>
           {term || type || onlyIn || onlyOut ? (
             <>
               <div className="margin-min">

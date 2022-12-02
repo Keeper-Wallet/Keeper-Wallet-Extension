@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 
 import { TxIcon } from '../BaseTransaction';
@@ -8,7 +8,7 @@ import * as styles from './unknown.styl';
 
 export class UnknownCard extends PureComponent<MessageCardComponentProps> {
   render() {
-    const className = cn(styles.unknownTransactionCard, this.props.className);
+    const className = clsx(styles.unknownTransactionCard, this.props.className);
 
     return (
       <div className={className}>

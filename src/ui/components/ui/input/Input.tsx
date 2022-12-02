@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useCallback, useRef, useState } from 'react';
 
 import * as styles from './Input.module.css';
@@ -60,7 +60,7 @@ export function Input({
 
   return (
     <div
-      className={cn(styles.wrapper, wrapperClassName, {
+      className={clsx(styles.wrapper, wrapperClassName, {
         [styles.error]: error,
         [styles.checkbox]: type === 'checkbox',
         [styles.password]: view === 'password',
@@ -68,14 +68,14 @@ export function Input({
     >
       {multiLine ? (
         <textarea
-          className={cn(styles.input, className)}
+          className={clsx(styles.input, className)}
           {...(props as Extract<InputProps, { multiLine: true }>)}
           ref={getRef}
         />
       ) : (
         <>
           <input
-            className={cn(styles.input, className)}
+            className={clsx(styles.input, className)}
             {...(props as Extract<InputProps, { multiLine?: false }>)}
             type={rootType}
             ref={getRef}

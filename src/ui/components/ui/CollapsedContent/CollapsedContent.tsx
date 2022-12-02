@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { createRef, PureComponent } from 'react';
 
 import * as styles from './index.styl';
@@ -35,7 +35,7 @@ export class CollapsedContent extends PureComponent<IProps, IState> {
   }
 
   render(): React.ReactNode {
-    const className = cn(styles.collapsed, this.props.className, {
+    const className = clsx(styles.collapsed, this.props.className, {
       [styles.open]: this.state.isShowed,
     });
 
