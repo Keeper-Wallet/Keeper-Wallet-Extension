@@ -7,7 +7,7 @@
   {
     "name": "background",
     "path": "dist/build/background.js",
-    "limit": 289171
+    "limit": 289147
   },
   {
     "name": "ui",
@@ -16,7 +16,7 @@
       "dist/build/commons*.js",
       "dist/build/popup.js"
     ],
-    "limit": 568853
+    "limit": 568854
   },
   {
     "name": "contentscript",
