@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react';
+import { addBreadcrumb, setTag } from '@sentry/react';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 
@@ -45,7 +45,7 @@ export class NetworkController {
     extensionStorage.subscribe(this.store);
 
     this.configApi = { getNetworkConfig, getNetworks };
-    Sentry.setTag('network', this.store.getState().currentNetwork);
+    setTag('network', this.store.getState().currentNetwork);
   }
 
   getNetworks() {
@@ -56,12 +56,12 @@ export class NetworkController {
   }
 
   setNetwork(network: NetworkName) {
-    Sentry.setTag('network', network);
+    setTag('network', network);
 
-    Sentry.addBreadcrumb({
+    addBreadcrumb({
       type: 'user',
       category: 'network-change',
-      level: Sentry.Severity.Info,
+      level: 'info',
       message: `Change network to ${network}`,
     });
 

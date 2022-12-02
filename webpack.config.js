@@ -148,10 +148,6 @@ async function makeConfig({
         Buffer: ['buffer', 'Buffer'],
         process: 'process',
       }),
-      new webpack.NormalModuleReplacementPlugin(
-        /@sentry\/browser\/esm\/helpers.js/,
-        path.resolve(__dirname, 'src/_sentryHelpersReplacement.js')
-      ),
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(mode),
         __AMPLITUDE_API_KEY__: JSON.stringify(process.env.AMPLITUDE_API_KEY),

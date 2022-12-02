@@ -1,10 +1,10 @@
-import * as Sentry from '@sentry/react';
+import { addBreadcrumb, setTag } from '@sentry/react';
 
 import { ACTION } from '../actions/constants';
 import { AppMiddleware } from '../types';
 
 export const sentryBreadcrumbs: AppMiddleware = () => next => action => {
-  Sentry.addBreadcrumb({
+  addBreadcrumb({
     type: 'info',
     category: 'redux.action',
     data: {
@@ -14,20 +14,20 @@ export const sentryBreadcrumbs: AppMiddleware = () => next => action => {
 
   switch (action.type) {
     case ACTION.UPDATE_CURRENT_NETWORK:
-      Sentry.setTag('network', action.payload);
+      setTag('network', action.payload);
 
-      Sentry.addBreadcrumb({
+      addBreadcrumb({
         type: 'user',
         category: 'network-change',
-        level: Sentry.Severity.Info,
+        level: 'info',
         message: `Change network to ${action.payload}`,
       });
       break;
     case ACTION.UPDATE_SELECTED_ACCOUNT:
-      Sentry.addBreadcrumb({
+      addBreadcrumb({
         type: 'user',
         category: 'account-change',
-        level: Sentry.Severity.Info,
+        level: 'info',
         message: 'Change active account',
       });
       break;

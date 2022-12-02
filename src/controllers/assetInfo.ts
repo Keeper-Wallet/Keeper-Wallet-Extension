@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react';
+import { captureException } from '@sentry/react';
 import { AssetDetail } from 'assets/types';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
@@ -468,7 +468,7 @@ export class AssetInfoController {
         assetInfos.push(...assetsBatch);
         start += maxAssetsPerRequest;
       } catch (err) {
-        Sentry.captureException(err);
+        captureException(err);
         await new Promise(resolve => setTimeout(resolve, 10000));
       }
     }

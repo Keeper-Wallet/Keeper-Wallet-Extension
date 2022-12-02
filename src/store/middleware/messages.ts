@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react';
+import { captureException, withScope } from '@sentry/react';
 
 import { MSG_STATUSES } from '../../constants';
 import { PreferencesAccount } from '../../preferences/types';
@@ -120,7 +120,7 @@ export const approve: AppMiddleware = store => next => action => {
           }
         }
 
-        Sentry.withScope(scope => {
+        withScope(scope => {
           const fingerprint = ['{{ default }}', message.type];
 
           if (message.type === 'transaction') {
@@ -128,7 +128,7 @@ export const approve: AppMiddleware = store => next => action => {
           }
 
           scope.setFingerprint(fingerprint);
-          Sentry.captureException(err);
+          captureException(err);
         });
       });
   });
