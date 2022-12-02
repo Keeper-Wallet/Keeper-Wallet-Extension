@@ -410,14 +410,7 @@ describe('Settings', function () {
       ) {
         // this requests permission first
         const permissionRequest = () => {
-          KeeperWallet.publicState().then(
-            resolved => {
-              window.result = resolved;
-            },
-            rejected => {
-              window.result = rejected;
-            }
-          );
+          window.result = KeeperWallet.publicState();
         };
 
         await this.driver.get(`https://${origin}`);
@@ -651,9 +644,11 @@ describe('Settings', function () {
           );
 
           await publicStateFromOrigin.call(this, origin);
-          const response = await this.driver.executeScript(() => {
-            return window.result;
-          });
+          const response = await this.driver.executeAsyncScript(
+            (done: (result: unknown) => void) => {
+              (window.result as Promise<unknown>).then(done, done);
+            }
+          );
           expect(response).to.be.deep.equal({
             message: 'Api rejected by user',
             code: '12',
