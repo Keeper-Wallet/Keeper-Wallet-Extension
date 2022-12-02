@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react';
+import { captureException, setUser, withScope } from '@sentry/react';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { libs } from '@waves/waves-transactions';
 import { MessageStoreItem } from 'messages/types';
@@ -48,7 +48,7 @@ export class StatisticsController {
     });
 
     const userId = initState.userId || StatisticsController.createUserId();
-    Sentry.setUser({ id: userId });
+    setUser({ id: userId });
     this.store = new ObservableStore({ ...initState, userId });
     extensionStorage.subscribe(this.store);
 
@@ -156,10 +156,10 @@ export class StatisticsController {
                   return;
                 }
 
-                Sentry.withScope(scope => {
+                withScope(scope => {
                   scope.setExtra('responseText', responseText);
 
-                  Sentry.captureException(
+                  captureException(
                     new Error(
                       `Amplitude Error: ${response.status} ${response.statusText}`
                     )
@@ -178,7 +178,7 @@ export class StatisticsController {
               return;
             }
 
-            Sentry.captureException(err);
+            captureException(err);
           });
       });
   }

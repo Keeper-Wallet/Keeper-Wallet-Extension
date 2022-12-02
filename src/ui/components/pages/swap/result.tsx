@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react';
+import { captureException, withScope } from '@sentry/react';
 import { Asset, Money } from '@waves/data-entities';
 import clsx from 'clsx';
 import { NetworkName } from 'networks/types';
@@ -119,18 +119,18 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
             } else {
               setSwapStatus(SwapStatus.Failed);
 
-              Sentry.withScope(scope => {
+              withScope(scope => {
                 scope.setExtra('transactionId', transactionId);
-                Sentry.captureException(err);
+                captureException(err);
               });
             }
           }
         } else {
           setSwapStatus(SwapStatus.Failed);
 
-          Sentry.withScope(scope => {
+          withScope(scope => {
             scope.setExtra('transactionId', transactionId);
-            Sentry.captureException(new Error('Swap transaction failed'));
+            captureException(new Error('Swap transaction failed'));
           });
         }
       } else if (
@@ -140,9 +140,9 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
       ) {
         setSwapStatus(SwapStatus.Failed);
 
-        Sentry.withScope(scope => {
+        withScope(scope => {
           scope.setExtra('transactionId', transactionId);
-          Sentry.captureException(new Error('Swap transaction failed'));
+          captureException(new Error('Swap transaction failed'));
         });
       } else {
         timeout = window.setTimeout(() => updateStatus(txStatus), 5000);

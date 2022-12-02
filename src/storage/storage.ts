@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react';
+import { captureException } from '@sentry/react';
 import { AssetsRecord } from 'assets/types';
 import create from 'callbag-create';
 import pipe from 'callbag-pipe';
@@ -244,7 +244,7 @@ export async function createExtensionStorage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     if (!err.message.includes('FILE_ERROR_NO_SPACE')) {
-      Sentry.captureException(err);
+      captureException(err);
     }
   }
 

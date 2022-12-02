@@ -2,7 +2,7 @@ import './global.css';
 import './ui/styles/app.styl';
 import './ui/styles/icons.styl';
 
-import * as Sentry from '@sentry/react';
+import { setTag, setUser } from '@sentry/react';
 import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
 import i18next from 'i18next';
@@ -119,8 +119,8 @@ Promise.all([
       ([state, networks]) => {
         updateState({ ...state, networks });
 
-        Sentry.setUser({ id: state.userId });
-        Sentry.setTag('network', state.currentNetwork);
+        setUser({ id: state.userId });
+        setTag('network', state.currentNetwork);
 
         Background.init(background);
 

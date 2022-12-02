@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react';
+import { captureException } from '@sentry/react';
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
@@ -204,7 +204,7 @@ export function Swap() {
                 setIsSwapInProgress(false);
 
                 if (capture) {
-                  Sentry.captureException(new Error(msg));
+                  captureException(new Error(msg));
                 }
                 return;
               }
@@ -270,7 +270,7 @@ export function Swap() {
                 }
 
                 if (capture) {
-                  Sentry.captureException(new Error(msg));
+                  captureException(new Error(msg));
                 }
                 return;
               }
@@ -286,7 +286,7 @@ export function Swap() {
             setIsSwapInProgress(false);
 
             if (capture) {
-              Sentry.captureException(new Error(errMessage));
+              captureException(new Error(errMessage));
             }
           }
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
