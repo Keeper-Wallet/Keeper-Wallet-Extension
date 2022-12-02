@@ -8,7 +8,6 @@ import {
   Settings,
   Windows,
 } from './utils/actions';
-import { DEFAULT_PAGE_LOAD_DELAY } from './utils/constants';
 
 describe('Others', function () {
   let tabKeeper: string;
@@ -66,10 +65,10 @@ describe('Others', function () {
     });
 
     beforeEach(async function () {
-      const actions = this.driver.actions({ async: true });
-      await actions
+      await this.driver
+        .actions()
         .move({
-          origin: await this.driver.wait(
+          origin: this.driver.wait(
             until.elementLocated(
               By.css('[data-testid="WAVES"] [data-testid="moreBtn"]')
             ),
@@ -86,8 +85,6 @@ describe('Others', function () {
           this.wait
         )
         .click();
-
-      await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
     });
 
     afterEach(async function () {
