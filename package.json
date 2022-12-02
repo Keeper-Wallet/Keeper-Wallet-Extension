@@ -19,22 +19,6 @@
     "build": "webpack --mode production",
     "zip": "node scripts/zip.js"
   },
-  "mocha": {
-    "bail": true,
-    "extension": [
-      "ts"
-    ],
-    "require": [
-      "esbuild-register",
-      "test/utils/hooks.ts"
-    ],
-    "slow": 10000,
-    "timeout": 300000,
-    "watchFiles": [
-      "dist",
-      "test"
-    ]
-  },
   "dependencies": {
     "@ethereumjs/util": "^8.0.2",
     "@popperjs/core": "^2.11.0",
