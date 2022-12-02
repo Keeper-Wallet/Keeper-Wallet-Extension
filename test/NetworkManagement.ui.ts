@@ -2,7 +2,13 @@ import { expect } from 'chai';
 import { By, until, WebElement } from 'selenium-webdriver';
 
 import { clear } from './utils';
-import { App, CreateNewAccount, Network, Windows } from './utils/actions';
+import {
+  App,
+  CreateNewAccount,
+  Network,
+  Settings,
+  Windows,
+} from './utils/actions';
 import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 
 describe('Network management', function () {
@@ -10,6 +16,8 @@ describe('Network management', function () {
 
   before(async function () {
     await App.initVault.call(this);
+    await Settings.setMaxSessionTimeout.call(this);
+    await App.open.call(this);
   });
 
   after(async function () {

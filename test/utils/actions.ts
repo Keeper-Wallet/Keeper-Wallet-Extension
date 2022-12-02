@@ -123,18 +123,14 @@ export const Assets = {
 
     await this.driver
       .wait(
-        until.elementIsVisible(
-          this.driver.findElement(By.css('[data-testid="otherAccountsButton"]'))
-        ),
+        until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
         this.wait
       )
       .click();
 
     await this.driver
       .wait(
-        until.elementIsVisible(
-          this.driver.findElement(By.css('[data-testid="addAccountButton"]'))
-        ),
+        until.elementLocated(By.css('[data-testid="addAccountButton"]')),
         this.wait
       )
       .click();
