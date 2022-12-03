@@ -19,6 +19,9 @@
     "build": "webpack --mode production",
     "zip": "node scripts/zip.js"
   },
+  "resolutions": {
+    "@types/react": "^17"
+  },
   "dependencies": {
     "@ethereumjs/util": "^8.0.2",
     "@popperjs/core": "^2.11.0",
