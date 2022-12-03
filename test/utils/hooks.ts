@@ -46,16 +46,18 @@ export async function mochaGlobalSetup(this: GlobalFixturesContext) {
       .start(),
 
     new GenericContainer('selenium/standalone-chrome')
-      .withBindMount(
-        path.resolve(__dirname, '..', '..', 'dist'),
-        '/app/dist',
-        'ro'
-      )
-      .withBindMount(
-        path.resolve(__dirname, '..', 'fixtures'),
-        '/app/test/fixtures',
-        'ro'
-      )
+      .withBindMounts([
+        {
+          source: path.resolve(__dirname, '..', '..', 'dist'),
+          target: '/app/dist',
+          mode: 'ro',
+        },
+        {
+          source: path.resolve(__dirname, '..', 'fixtures'),
+          target: '/app/test/fixtures',
+          mode: 'ro',
+        },
+      ])
       .withExposedPorts(
         {
           container: 4444,
