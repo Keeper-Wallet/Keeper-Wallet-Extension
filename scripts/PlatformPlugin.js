@@ -2,7 +2,7 @@ const fs = require('fs/promises');
 const path = require('path');
 const webpack = require('webpack');
 const del = require('del');
-const updateManifest = require('./updateManifest');
+const adaptManifestToPlatform = require('./adaptManifestToPlatform');
 const platforms = require('./platforms.json');
 
 const DIST_FOLDER = path.resolve(__dirname, '..', 'dist');
@@ -45,7 +45,11 @@ module.exports = class PlatformPlugin {
             await fs.mkdir(platformDir, { recursive: true });
 
             if (file === 'manifest.json') {
-              await updateManifest(content, platformName, platformFile);
+              await adaptManifestToPlatform(
+                content,
+                platformName,
+                platformFile
+              );
             } else {
               await fs.writeFile(platformFile, content);
             }
