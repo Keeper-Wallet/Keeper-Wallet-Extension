@@ -42,10 +42,11 @@ module.exports = class PlatformPlugin {
             const platformFile = path.join(platformFolder, file);
             const platformDir = path.dirname(platformFile);
 
+            await fs.mkdir(platformDir, { recursive: true });
+
             if (file === 'manifest.json') {
               await updateManifest(content, platformName, platformFile);
             } else {
-              await fs.mkdir(platformDir, { recursive: true });
               await fs.writeFile(platformFile, content);
             }
           })
