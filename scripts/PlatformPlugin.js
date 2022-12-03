@@ -45,10 +45,14 @@ module.exports = class PlatformPlugin {
             await fs.mkdir(platformDir, { recursive: true });
 
             if (file === 'manifest.json') {
-              await adaptManifestToPlatform(
-                content,
-                platformName,
-                platformFile
+              await fs.writeFile(
+                platformFile,
+                JSON.stringify(
+                  adaptManifestToPlatform(content, platformName),
+                  null,
+                  2
+                ),
+                'utf-8'
               );
             } else {
               await fs.writeFile(platformFile, content);
