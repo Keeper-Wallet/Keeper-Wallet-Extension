@@ -1,4 +1,4 @@
-const fs = require('fs/promises');
+const { mkdir, writeFile } = require('fs/promises');
 const path = require('path');
 const webpack = require('webpack');
 const del = require('del');
@@ -42,10 +42,10 @@ module.exports = class PlatformPlugin {
             const platformFile = path.join(platformFolder, file);
             const platformDir = path.dirname(platformFile);
 
-            await fs.mkdir(platformDir, { recursive: true });
+            await mkdir(platformDir, { recursive: true });
 
             if (file === 'manifest.json') {
-              await fs.writeFile(
+              await writeFile(
                 platformFile,
                 JSON.stringify(
                   adaptManifestToPlatform(content, platformName),
@@ -55,7 +55,7 @@ module.exports = class PlatformPlugin {
                 'utf-8'
               );
             } else {
-              await fs.writeFile(platformFile, content);
+              await writeFile(platformFile, content);
             }
           })
         )
