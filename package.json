@@ -12,7 +12,7 @@
     "lint:eslint": "eslint --ext .ts,.tsx,.js --max-warnings 0 .",
     "lint:prettier": "prettier . --check",
     "lint:prettier:fix": "prettier . --write",
-    "lint:stylelint": "stylelint **/*.module.css",
+    "lint:stylelint": "stylelint '**/*.css'",
     "lint:typescript": "tsc --noEmit",
     "test:dev": "cross-env TEST_WATCH=1 mocha --inspect --watch",
     "test": "mocha",
