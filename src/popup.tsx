@@ -7,8 +7,9 @@ import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
 import i18next from 'i18next';
 import { StrictMode } from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
+import invariant from 'tiny-invariant';
 import Browser from 'webextension-polyfill';
 
 import type { UiApi } from './background';
@@ -45,15 +46,17 @@ Promise.all([
     .then(({ currentLocale }) => i18next.changeLanguage(currentLocale)),
   i18nextInit(),
 ]).then(() => {
-  render(
+  const rootEl = document.getElementById('app-content');
+  invariant(rootEl);
+
+  createRoot(rootEl).render(
     <StrictMode>
       <Provider store={store}>
         <RootWrapper>
           <PopupRoot />
         </RootWrapper>
       </Provider>
-    </StrictMode>,
-    document.getElementById('app-content')
+    </StrictMode>
   );
 
   const updateState = createUpdateState(store);
