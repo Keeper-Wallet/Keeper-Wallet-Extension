@@ -117,37 +117,22 @@ Promise.all([
 
   const background = connect();
 
-  Promise.resolve()
-    .then(() => {
-      if (Browser.extension.getViews({ type: 'popup' }).length > 0) {
-        return background.closeNotificationWindow();
-      }
-    })
-    .then(() => {
-      if (
-        location.pathname === '/notification.html' &&
-        !window.matchMedia('(display-mode: fullscreen)').matches
-      ) {
-        background.resizeNotificationWindow(
-          357 + window.outerWidth - window.innerWidth,
-          600 + window.outerHeight - window.innerHeight
-        );
-      }
+  if (
+    location.pathname === '/notification.html' &&
+    !window.matchMedia('(display-mode: fullscreen)').matches
+  ) {
+    background.resizeNotificationWindow(
+      357 + window.outerWidth - window.innerWidth,
+      600 + window.outerHeight - window.innerHeight
+    );
+  }
 
-      return Promise.all([background.getState(), background.getNetworks()]);
-    })
-    .then(([state, networks]) => {
-      if (!state.initialized) {
-        background.showTab(
-          `${window.location.origin}/accounts.html`,
-          'accounts'
-        );
-      }
-
+  Promise.all([background.getState(), background.getNetworks()]).then(
+    ([state, networks]) => {
       setUser({ id: state.userId });
       setTag('network', state.currentNetwork);
-
       updateState({ ...state, networks });
+      store.dispatch(setLoading(false));
 
       Background.init(background);
 
@@ -157,6 +142,16 @@ Promise.all([
       document.addEventListener('focus', () => Background.updateIdle());
       window.addEventListener('beforeunload', () => background.identityClear());
 
-      store.dispatch(setLoading(false));
-    });
+      if (Browser.extension.getViews({ type: 'popup' }).length > 0) {
+        Background.closeNotificationWindow();
+      }
+
+      if (!state.initialized) {
+        Background.showTab(
+          `${window.location.origin}/accounts.html`,
+          'accounts'
+        );
+      }
+    }
+  );
 });
