@@ -53,7 +53,6 @@ export const mochaHooks = () => ({
       .setChromeOptions(
         new chrome.Options().addArguments(
           '--load-extension=/app/dist/chrome',
-          '--disable-dev-shm-usage',
           '--disable-web-security'
         )
       )

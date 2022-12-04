@@ -6,6 +6,7 @@ services:
       - '6869:6869'
   chrome:
     image: selenium/standalone-chrome
+    shm_size: 2gb
     ports:
       - '4444:4444'
       - '5900:5900'
