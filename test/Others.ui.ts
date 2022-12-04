@@ -69,7 +69,12 @@ describe('Others', function () {
 
     beforeEach(async function () {
       await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="WAVES"]')),
+        until.elementIsVisible(
+          this.driver.wait(
+            until.elementLocated(By.css('[data-testid="WAVES"]')),
+            this.wait
+          )
+        ),
         this.wait
       );
 
