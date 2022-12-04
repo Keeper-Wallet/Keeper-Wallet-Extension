@@ -81,7 +81,7 @@ export function AddressRecipient({
     <>
       {name ? (
         <div className={clsx(styles.content, className)} data-testid={testid}>
-          <p className={styles.name}>{name}</p>
+          <div className={styles.name}>{name}</div>
           <AddressTooltip address={address} />
         </div>
       ) : (
@@ -96,7 +96,7 @@ export function AddressRecipient({
               placement="auto-end"
             >
               {props => (
-                <p className={styles.recipientWrapper} {...props}>
+                <div className={styles.recipientWrapper} {...props}>
                   <Ellipsis
                     text={address}
                     size={12}
@@ -105,19 +105,19 @@ export function AddressRecipient({
                       [styles.waves]: type === 'waves',
                     })}
                   />
-                </p>
+                </div>
               )}
             </Tooltip>
           ) : (
             <Tooltip content={address} placement="auto-end">
               {props => (
-                <p className={styles.recipientWrapper} {...props}>
+                <div className={styles.recipientWrapper} {...props}>
                   <Ellipsis
                     text={address}
                     size={12}
                     className={styles.recipient}
                   />
-                </p>
+                </div>
               )}
             </Tooltip>
           )}
