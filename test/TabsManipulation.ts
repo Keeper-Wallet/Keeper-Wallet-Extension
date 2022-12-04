@@ -1,7 +1,7 @@
 import * as mocha from 'mocha';
 import { By, until } from 'selenium-webdriver';
 
-import { App, Assets, Windows } from '../test/utils/actions';
+import { App, Assets, Windows } from './utils/actions';
 import { DEFAULT_PASSWORD } from './utils/constants';
 
 describe('Tabs manipulation', function () {
