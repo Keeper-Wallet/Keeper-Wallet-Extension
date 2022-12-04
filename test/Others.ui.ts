@@ -10,7 +10,6 @@ import {
   Settings,
   Windows,
 } from './utils/actions';
-import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 
 describe('Others', function () {
   before(async function () {
@@ -68,45 +67,41 @@ describe('Others', function () {
     before(App.open);
 
     beforeEach(async function () {
-      await this.driver.wait(
-        until.elementIsVisible(
-          this.driver.wait(
-            until.elementLocated(By.css('[data-testid="WAVES"]')),
-            this.wait
-          )
-        ),
-        this.wait
-      );
-
-      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-
       await this.driver
-        .actions({ async: true })
+        .actions()
         .move({
-          origin: await this.driver.wait(
-            until.elementLocated(
-              By.css('[data-testid="WAVES"] [data-testid="moreBtn"]')
+          origin: this.driver.wait(
+            until.elementIsVisible(
+              this.driver.wait(
+                until.elementLocated(
+                  By.css('[data-testid="WAVES"] [data-testid="moreBtn"]')
+                ),
+                this.wait
+              )
             ),
             this.wait
           ),
         })
         .perform();
 
-      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-
       await this.driver
-        .wait(
-          until.elementIsVisible(
-            this.driver.wait(
-              until.elementLocated(
-                By.css('[data-testid="WAVES"] [data-testid="sendBtn"]')
-              ),
-              this.wait
-            )
+        .actions()
+        .pause(1000)
+        .move({
+          origin: this.driver.wait(
+            until.elementIsVisible(
+              this.driver.wait(
+                until.elementLocated(
+                  By.css('[data-testid="WAVES"] [data-testid="sendBtn"]')
+                ),
+                this.wait
+              )
+            ),
+            this.wait
           ),
-          this.wait
-        )
-        .click();
+        })
+        .click()
+        .perform();
     });
 
     afterEach(async function () {
