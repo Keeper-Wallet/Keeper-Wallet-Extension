@@ -1,0 +1,15 @@
+version: '3'
+services:
+  waves-private-node:
+    image: wavesplatform/waves-private-node
+    ports:
+      - '6869:6869'
+  chrome:
+    image: selenium/standalone-chrome
+    ports:
+      - '4444:4444'
+      - '5900:5900'
+      - '7900:7900'
+    volumes:
+      - ./dist:/app/dist:ro
+      - ./test/fixtures:/app/test/fixtures:ro
