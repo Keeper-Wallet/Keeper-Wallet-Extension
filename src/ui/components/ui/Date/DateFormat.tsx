@@ -9,6 +9,7 @@ const DEFAULT_OPTIONS: Intl.DateTimeFormatOptions = {
   hour: 'numeric',
   minute: 'numeric',
 };
+
 interface Props {
   className?: string;
   date: number | Date;
@@ -29,7 +30,9 @@ export const DateFormat = ({
       <span>
         {new Intl.DateTimeFormat(i18n.language, options).format(new Date(date))}
       </span>{' '}
-      {showRaw ? <span className={styles.timestamp}>{date}</span> : undefined}
+      {showRaw ? (
+        <span className={styles.timestamp}>{date.toString()}</span>
+      ) : undefined}
     </div>
   );
 };
