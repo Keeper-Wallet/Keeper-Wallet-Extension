@@ -16,7 +16,7 @@
       "dist/build/commons*.js",
       "dist/build/popup.js"
     ],
-    "limit": 557221
+    "limit": 557458
   },
   {
     "name": "contentscript",
