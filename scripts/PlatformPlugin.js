@@ -1,7 +1,6 @@
 const { mkdir, writeFile } = require('fs/promises');
 const path = require('path');
 const webpack = require('webpack');
-const del = require('del');
 const adaptManifestToPlatform = require('./adaptManifestToPlatform');
 const platforms = require('./platforms.json');
 
@@ -15,9 +14,11 @@ module.exports = class PlatformPlugin {
 
   apply(compiler) {
     if (this.clear) {
-      compiler.hooks.beforeCompile.tapPromise('ClearDist', () =>
-        del(DIST_FOLDER)
-      );
+      compiler.hooks.beforeCompile.tapPromise('ClearDist', async () => {
+        const { deleteAsync } = await import('del');
+
+        await deleteAsync(DIST_FOLDER);
+      });
     }
 
     function report(message) {
