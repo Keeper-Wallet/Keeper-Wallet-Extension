@@ -189,14 +189,17 @@ export function AccountInfo() {
             <div className={`headline1 marginTop1 ${styles.balance}`}>
               <Balance balance={balance} showAsset split showUsdAmount />
 
-              {leaseBalance && leaseBalance.gt(leaseBalance.cloneWithCoins(0)) && (
-                <div
-                  className={`${styles.reservedBalance} margin-main-big-top`}
-                >
-                  <span>{leaseBalance.toFormat()}</span>
-                  <span className="basic500 font300">{t('wallet.lease')}</span>
-                </div>
-              )}
+              {leaseBalance &&
+                leaseBalance.gt(leaseBalance.cloneWithCoins(0)) && (
+                  <div
+                    className={`${styles.reservedBalance} margin-main-big-top`}
+                  >
+                    <span>{leaseBalance.toFormat()}</span>
+                    <span className="basic500 font300">
+                      {t('wallet.lease')}
+                    </span>
+                  </div>
+                )}
             </div>
           </div>
         </div>
