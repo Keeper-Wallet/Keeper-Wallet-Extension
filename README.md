@@ -1,6 +1,6 @@
 # Keeper Wallet
 
-en | [ru](https://github.com/wavesplatform/waves-keeper/blob/master/README_ru.md)
+en | [ru](./README_ru.md)
 
 Keeper Wallet is a browser extension that enables secure interaction with Waves-enabled web services.
 
