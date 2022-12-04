@@ -22,10 +22,10 @@
 
 .exportBtn::after,
 .importBtn::after {
+  content: '';
   position: absolute;
   top: 15px;
   right: 0;
-  content: '';
   width: 11px;
   height: 15px;
   background-image: url(../../assets/img/arrow-right-14-basic-200.svg);

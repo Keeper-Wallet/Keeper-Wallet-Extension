@@ -48,13 +48,13 @@
 }
 
 .langsConfirm::before {
+  content: '';
   position: absolute;
   right: 0;
   bottom: 72px;
   left: 60px;
   margin-left: -60px;
   display: block;
-  content: '';
   height: 60px;
   background: linear-gradient(
     to bottom,

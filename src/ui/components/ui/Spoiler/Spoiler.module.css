@@ -8,9 +8,9 @@
 }
 
 .button::after {
+  content: '';
   position: absolute;
   right: 10px;
-  content: '';
   width: 12px;
   height: 12px;
   background-image: url(../../../assets/img/arrow-down-14-basic-200.svg);

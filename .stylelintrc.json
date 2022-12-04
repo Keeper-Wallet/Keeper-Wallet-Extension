@@ -4,6 +4,7 @@
   "rules": {
     "order/order": ["custom-properties", "declarations"],
     "order/properties-order": [
+      "content",
       "position",
       "z-index",
       "inset",
@@ -40,7 +41,6 @@
       "list-style-position",
       "list-style-type",
       "list-style-image",
-      "content",
       "quotes",
       "counter-reset",
       "counter-increment",

@@ -19,8 +19,8 @@
   height: 10px;
 }
 .arrow:after {
-  position: absolute;
   content: ' ';
+  position: absolute;
   width: 10px;
   height: 10px;
   background-color: black;
