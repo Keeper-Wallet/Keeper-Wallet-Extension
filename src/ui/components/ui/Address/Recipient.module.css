@@ -26,9 +26,9 @@
 
 .recipient::before,
 .mirrorAddress::before {
+  content: '';
   flex-shrink: 0;
   display: block;
-  content: '';
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;

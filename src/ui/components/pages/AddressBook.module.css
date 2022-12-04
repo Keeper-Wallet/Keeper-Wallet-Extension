@@ -34,9 +34,9 @@
 }
 
 .empty::before {
+  content: '';
   position: absolute;
   top: 124px;
-  content: '';
   width: 80px;
   height: 80px;
   background-image: url(../../assets/img/users.svg);
