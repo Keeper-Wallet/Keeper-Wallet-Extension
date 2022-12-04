@@ -6170,10 +6170,10 @@ parent-module@^1.0.0:
   dependencies:
     callsites "^3.0.0"
 
-parse-json-bignumber@^0.1.3:
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/parse-json-bignumber/-/parse-json-bignumber-0.1.3.tgz#8ddf51dbd5dd6d8a644a68de1ab3ed85fac22c21"
-  integrity sha512-eE2NSq0PNe3yrtGVTuxrJSpP1pm2/NTRhfhsKA8oy2jDiYAK8BETabTFSymvw3pz6uuu8c4GpWRCCuVEdDFr8g==
+parse-json-bignumber@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/parse-json-bignumber/-/parse-json-bignumber-1.0.0.tgz#a3701586c97192d27b45178e9f4c3b7f6f202c0b"
+  integrity sha512-iUBAXzuCH4NQG5hTe/6nCCe1+u4HBF2yCrrbtOjUAk1qaEVaEOFaR/TXoZuG1FhNWmIIDOrw03V9PQ+/TBpIYA==
 
 parse-json@^5.0.0:
   version "5.2.0"
