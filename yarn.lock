@@ -2043,15 +2043,10 @@
     js-sha3 "^0.8.0"
     node-forge "^0.8.5"
 
-"@waves/ts-types@1.1.0":
+"@waves/ts-types@1.1.0", "@waves/ts-types@^1.0.12":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@waves/ts-types/-/ts-types-1.1.0.tgz#717783919ec6d8e8ab33a38fc06e4da30e449c29"
   integrity sha512-SGHj4cIIvMAhDPiDhbpEzP2UqNF3VgTssGf6UaJ7vwzxq0W1pqz2lKMDe9pZup9p9rEETGW4Yy3+K1G7OGOLxA==
-
-"@waves/ts-types@^1.0.12":
-  version "1.0.12"
-  resolved "https://registry.yarnpkg.com/@waves/ts-types/-/ts-types-1.0.12.tgz#29dd8d847df69079e9e2b7e2d50056a2e3b23fe5"
-  integrity sha512-1CxNGbPbBBzprJHcrLT6ToSe1vwHHeDAQEeljk1w4rJorJ75f5ZnNogpMrYVyAnmBGdr1AgInJyarpyt8F+rJg==
 
 "@waves/waves-transactions@^4.2.5-beta.3":
   version "4.2.10"
