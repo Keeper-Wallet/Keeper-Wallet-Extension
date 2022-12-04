@@ -1,7 +1,7 @@
+import { useDebouncedValue } from '_core/useDebouncedValue';
 import { libs, validators } from '@waves/waves-transactions';
 import { WavesDomainsClient } from '@waves-domains/client';
 import clsx from 'clsx';
-import { useDebouncedValue } from 'common/useDebouncedValue';
 import { NetworkName } from 'networks/types';
 import { useAppSelector } from 'popup/store/react';
 import { PreferencesAccount } from 'preferences/types';
