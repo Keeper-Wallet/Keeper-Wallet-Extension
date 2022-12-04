@@ -15,6 +15,36 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@aws-crypto/sha256-js@1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@aws-crypto/sha256-js/-/sha256-js-1.2.2.tgz#02acd1a1fda92896fc5a28ec7c6e164644ea32fc"
+  integrity sha512-Nr1QJIbW/afYYGzYvrF70LtaHrIRtd4TNAglX8BvlfxJLZ45SAmueIKYl5tWoNBPzp65ymXGFK0Bb1vZUpuc9g==
+  dependencies:
+    "@aws-crypto/util" "^1.2.2"
+    "@aws-sdk/types" "^3.1.0"
+    tslib "^1.11.1"
+
+"@aws-crypto/util@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@aws-crypto/util/-/util-1.2.2.tgz#b28f7897730eb6538b21c18bd4de22d0ea09003c"
+  integrity sha512-H8PjG5WJ4wz0UXAFXeJjWCW1vkvIJ3qUUD+rGRwJ2/hj+xT58Qle2MTql/2MGzkU+1JLAFuR6aJpLAjHwhmwwg==
+  dependencies:
+    "@aws-sdk/types" "^3.1.0"
+    "@aws-sdk/util-utf8-browser" "^3.0.0"
+    tslib "^1.11.1"
+
+"@aws-sdk/types@^3.1.0":
+  version "3.222.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/types/-/types-3.222.0.tgz#e61eb257f0ad2eaa65f7a72b9a2882f914fbcbb5"
+  integrity sha512-yXRYptInkfEFaOvWFxlRXsRh9jWOmQc1sZeKqjfx2UCtzNJ7ebedN0VfCz4SaDotcw9Q4JWuN66qhRMJjDx7/w==
+
+"@aws-sdk/util-utf8-browser@^3.0.0":
+  version "3.188.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/util-utf8-browser/-/util-utf8-browser-3.188.0.tgz#484762bd600401350e148277731d6744a4a92225"
+  integrity sha512-jt627x0+jE+Ydr9NwkFstg3cUvgWh56qdaqAMDsqgRlKD21md/6G226z/Qxl7lb1VEW2LlmCx43ai/37Qwcj2Q==
+  dependencies:
+    tslib "^2.3.1"
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.18.6":
   version "7.18.6"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.18.6.tgz#3b25d38c89600baa2dcc219edfa88a74eb2c427a"
@@ -2273,13 +2303,13 @@ ajv@^8.0.0, ajv@^8.0.1, ajv@^8.8.0:
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-amazon-cognito-identity-js@^5.2.6:
-  version "5.2.12"
-  resolved "https://registry.yarnpkg.com/amazon-cognito-identity-js/-/amazon-cognito-identity-js-5.2.12.tgz#fd93fd1fc2a2a4f7ed27fbdc84222eb9ed33e729"
-  integrity sha512-YfoH2xNgBOb9fC9wen3u4inMpb2YK+58s0uiTn+C9gdZ1GxdW83Fk+YSWUyp/duaStOU1cGFXXgTHt+5lOAXUg==
+amazon-cognito-identity-js@^6.0.0:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/amazon-cognito-identity-js/-/amazon-cognito-identity-js-6.0.1.tgz#d0de66a6cbed41413b202066f7b2acbb35c00de8"
+  integrity sha512-j96DHquV9Jiabs+3/fuQwrSK+1WcxzmEfRuZlhajGxxUplzjt046pedCYiSkcFY+Wilun+I57iri5dXiaNDOsg==
   dependencies:
+    "@aws-crypto/sha256-js" "1.2.2"
     buffer "4.9.2"
-    crypto-js "^4.1.1"
     fast-base64-decode "^1.0.0"
     isomorphic-unfetch "^3.0.0"
     js-cookie "^2.2.1"
@@ -3541,11 +3571,6 @@ cross-spawn@^7.0.1, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
     path-key "^3.1.0"
     shebang-command "^2.0.0"
     which "^2.0.1"
-
-crypto-js@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.1.1.tgz#9e485bcf03521041bd85844786b83fb7619736cf"
-  integrity sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==
 
 css-blank-pseudo@^3.0.3:
   version "3.0.3"
@@ -8046,7 +8071,7 @@ tsconfig-paths@^3.14.1:
     minimist "^1.2.6"
     strip-bom "^3.0.0"
 
-tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
+tslib@^1.11.1, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
@@ -8055,6 +8080,11 @@ tslib@^2.0.3:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
   integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
+
+tslib@^2.3.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.1.tgz#0d0bfbaac2880b91e22df0768e55be9753a5b17e"
+  integrity sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==
 
 tsutils@^3.21.0:
   version "3.21.0"
