@@ -20,7 +20,7 @@
     "zip": "node scripts/zip.js"
   },
   "resolutions": {
-    "@types/react": "^17"
+    "@types/react": "^18.0.0"
   },
   "dependencies": {
     "@ethereumjs/util": "^8.0.2",
