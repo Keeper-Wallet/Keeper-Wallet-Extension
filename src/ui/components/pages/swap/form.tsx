@@ -1,3 +1,4 @@
+import { useDebouncedValue } from '_core/useDebouncedValue';
 import {
   SwapClient,
   SwapClientErrorCode,
@@ -12,7 +13,6 @@ import { swappableAssetTickersByVendor } from 'assets/constants';
 import { AssetDetail } from 'assets/types';
 import { BalancesItem } from 'balances/types';
 import clsx from 'clsx';
-import { useDebouncedValue } from 'common/useDebouncedValue';
 import { useFeeOptions } from 'fee/useFeeOptions';
 import { convertFeeToAsset } from 'fee/utils';
 import { useAppDispatch, useAppSelector } from 'popup/store/react';

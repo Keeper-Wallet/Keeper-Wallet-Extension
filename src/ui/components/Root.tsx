@@ -1,4 +1,4 @@
-import { useSentryNavigationBreadcrumbs } from 'common/useSentryNavigationBreadcrumbs';
+import { useSentryNavigationBreadcrumbs } from '_core/useSentryNavigationBreadcrumbs';
 import { useAppSelector } from 'popup/store/react';
 import { useEffect, useRef } from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
