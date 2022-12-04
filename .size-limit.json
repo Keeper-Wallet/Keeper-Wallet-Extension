@@ -2,7 +2,7 @@
   {
     "name": "css",
     "path": "dist/build/*.css",
-    "limit": 49460
+    "limit": 48994
   },
   {
     "name": "background",
