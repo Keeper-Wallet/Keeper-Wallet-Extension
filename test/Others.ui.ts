@@ -10,7 +10,6 @@ import {
   Settings,
   Windows,
 } from './utils/actions';
-import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 
 describe('Others', function () {
   before(async function () {
@@ -68,10 +67,15 @@ describe('Others', function () {
     before(App.open);
 
     beforeEach(async function () {
+      await this.driver.wait(
+        until.elementLocated(By.css('[data-testid="WAVES"]')),
+        this.wait
+      );
+
       await this.driver
-        .actions()
+        .actions({ async: true })
         .move({
-          origin: this.driver.wait(
+          origin: await this.driver.wait(
             until.elementLocated(
               By.css('[data-testid="WAVES"] [data-testid="moreBtn"]')
             ),
@@ -80,12 +84,15 @@ describe('Others', function () {
         })
         .perform();
 
-      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-
       await this.driver
         .wait(
-          until.elementLocated(
-            By.css('[data-testid="WAVES"] [data-testid="sendBtn"]')
+          until.elementIsVisible(
+            this.driver.wait(
+              until.elementLocated(
+                By.css('[data-testid="WAVES"] [data-testid="sendBtn"]')
+              ),
+              this.wait
+            )
           ),
           this.wait
         )
