@@ -6,6 +6,7 @@ import { setTag, setUser } from '@sentry/react';
 import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
 import i18next from 'i18next';
+import { StrictMode } from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import Browser from 'webextension-polyfill';
@@ -45,11 +46,13 @@ Promise.all([
   i18nextInit(),
 ]).then(() => {
   render(
-    <Provider store={store}>
-      <RootWrapper>
-        <PopupRoot />
-      </RootWrapper>
-    </Provider>,
+    <StrictMode>
+      <Provider store={store}>
+        <RootWrapper>
+          <PopupRoot />
+        </RootWrapper>
+      </Provider>
+    </StrictMode>,
     document.getElementById('app-content')
   );
 
