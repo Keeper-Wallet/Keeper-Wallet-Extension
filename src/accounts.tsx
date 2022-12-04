@@ -44,95 +44,91 @@ Promise.all([
     .get('currentLocale')
     .then(({ currentLocale }) => i18next.changeLanguage(currentLocale)),
   i18nextInit(),
-])
-  .then(() => {
-    render(
-      <StrictMode>
-        <Provider store={store}>
-          <RootWrapper>
-            <AccountsRoot />
-          </RootWrapper>
-        </Provider>
-      </StrictMode>,
-      document.getElementById('app-content')
-    );
-  })
-  .then(() => {
-    const updateState = createUpdateState(store);
+]).then(() => {
+  render(
+    <StrictMode>
+      <Provider store={store}>
+        <RootWrapper>
+          <AccountsRoot />
+        </RootWrapper>
+      </Provider>
+    </StrictMode>,
+    document.getElementById('app-content')
+  );
 
-    Browser.storage.onChanged.addListener(async (changes, area) => {
-      if (area !== 'local') {
-        return;
-      }
+  const updateState = createUpdateState(store);
 
-      const stateChanges: Partial<Record<string, unknown>> &
-        Partial<BackgroundGetStateResult> = await Background.getState([
-        'initialized',
-        'locked',
-      ]);
-
-      for (const key in changes) {
-        stateChanges[key] = changes[key].newValue;
-      }
-
-      updateState(stateChanges);
-    });
-
-    function connect() {
-      const uiApi: UiApi = {
-        closePopupWindow: async () => {
-          const popup = Browser.extension
-            .getViews({ type: 'popup' })
-            .find(w => w.location.pathname === '/popup.html');
-
-          if (popup) {
-            popup.close();
-          }
-        },
-        ledgerSignRequest: async (request: LedgerSignRequest) => {
-          const { selectedAccount } = store.getState();
-
-          return ledgerService.queueSignRequest(selectedAccount, request);
-        },
-      };
-
-      const port = Browser.runtime.connect();
-
-      pipe(
-        fromPort<MethodCallRequestPayload<keyof UiApi>>(port),
-        handleMethodCallRequests(uiApi, result => port.postMessage(result)),
-        subscribe({
-          complete: () => {
-            Background.setConnect(() => {
-              Background.init(connect());
-            });
-          },
-        })
-      );
-
-      return createIpcCallProxy<keyof BackgroundUiApi, BackgroundUiApi>(
-        request => port.postMessage(request),
-        fromPort(port)
-      );
+  Browser.storage.onChanged.addListener(async (changes, area) => {
+    if (area !== 'local') {
+      return;
     }
 
-    const background = connect();
+    const stateChanges: Partial<Record<string, unknown>> &
+      Partial<BackgroundGetStateResult> = await Background.getState([
+      'initialized',
+      'locked',
+    ]);
 
-    Promise.all([background.getState(), background.getNetworks()]).then(
-      ([state, networks]) => {
-        updateState({ ...state, networks });
+    for (const key in changes) {
+      stateChanges[key] = changes[key].newValue;
+    }
 
-        setUser({ id: state.userId });
-        setTag('network', state.currentNetwork);
-
-        Background.init(background);
-
-        document.addEventListener('mousemove', () => Background.updateIdle());
-        document.addEventListener('keyup', () => Background.updateIdle());
-        document.addEventListener('mousedown', () => Background.updateIdle());
-        document.addEventListener('focus', () => Background.updateIdle());
-
-        store.dispatch(setLoading(false));
-      }
-    );
+    updateState(stateChanges);
   });
+
+  function connect() {
+    const uiApi: UiApi = {
+      closePopupWindow: async () => {
+        const popup = Browser.extension
+          .getViews({ type: 'popup' })
+          .find(w => w.location.pathname === '/popup.html');
+
+        if (popup) {
+          popup.close();
+        }
+      },
+      ledgerSignRequest: async (request: LedgerSignRequest) => {
+        const { selectedAccount } = store.getState();
+
+        return ledgerService.queueSignRequest(selectedAccount, request);
+      },
+    };
+
+    const port = Browser.runtime.connect();
+
+    pipe(
+      fromPort<MethodCallRequestPayload<keyof UiApi>>(port),
+      handleMethodCallRequests(uiApi, result => port.postMessage(result)),
+      subscribe({
+        complete: () => {
+          Background.setConnect(() => {
+            Background.init(connect());
+          });
+        },
+      })
+    );
+
+    return createIpcCallProxy<keyof BackgroundUiApi, BackgroundUiApi>(
+      request => port.postMessage(request),
+      fromPort(port)
+    );
+  }
+
+  const background = connect();
+
+  Promise.all([background.getState(), background.getNetworks()]).then(
+    ([state, networks]) => {
+      setUser({ id: state.userId });
+      setTag('network', state.currentNetwork);
+      updateState({ ...state, networks });
+      store.dispatch(setLoading(false));
+
+      Background.init(background);
+
+      document.addEventListener('mousemove', () => Background.updateIdle());
+      document.addEventListener('keyup', () => Background.updateIdle());
+      document.addEventListener('mousedown', () => Background.updateIdle());
+      document.addEventListener('focus', () => Background.updateIdle());
+    }
+  );
+});
