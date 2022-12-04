@@ -1,5 +1,5 @@
 require('dotenv-flow/config');
-const path = require('path');
+const path = require('node:path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');

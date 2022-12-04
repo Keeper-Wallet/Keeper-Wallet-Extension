@@ -1,5 +1,5 @@
-const { mkdir, writeFile } = require('fs/promises');
-const path = require('path');
+const { mkdir, writeFile } = require('node:fs/promises');
+const path = require('node:path');
 const webpack = require('webpack');
 const adaptManifestToPlatform = require('./adaptManifestToPlatform');
 const platforms = require('./platforms.json');
