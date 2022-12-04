@@ -22,12 +22,6 @@ declare module 'mocha' {
   }
 }
 
-declare module 'selenium-webdriver' {
-  interface WebElement {
-    getShadowRoot: () => WebElement;
-  }
-}
-
 interface GlobalFixturesContext {
   compose: StartedDockerComposeEnvironment;
 }
