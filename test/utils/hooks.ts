@@ -36,7 +36,11 @@ export async function mochaGlobalSetup(this: GlobalFixturesContext) {
   this.compose = await new DockerComposeEnvironment(
     '.',
     'docker-compose.yml'
-  ).up();
+  ).up([
+    'waves-private-node',
+    'chrome',
+    ...(process.env.TEST_WATCH ? [] : ['chrome-video']),
+  ]);
 }
 
 export async function mochaGlobalTeardown(this: GlobalFixturesContext) {

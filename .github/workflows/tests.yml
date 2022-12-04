@@ -18,3 +18,8 @@ jobs:
       - run: yarn test
         env:
           DEBUG: testcontainers
+      - if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: video
+          path: test/videos
