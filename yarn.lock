@@ -1978,11 +1978,11 @@
     bignumber.js "^9.0.1"
 
 "@waves/data-entities@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@waves/data-entities/-/data-entities-2.0.4.tgz#ce28f54d1a6ab6c37c0d7f392fb76af27c45af58"
-  integrity sha512-PEZRCvqvPLj4FnQucJC0eZNRO8zRMm8eev1joGEVz7U9xSjemaMexDwqfg5h/zNQ79COjz2tGP5GCTJJQGXC7Q==
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/@waves/data-entities/-/data-entities-2.0.7.tgz#15a2ac33c0b73458d7a0efe5e5da927fa847a0d1"
+  integrity sha512-lN8sCDWG/Fxe/Z98wGxmj/k+vAYYkPZ57li3zEebHIm8D0m/JEwYSD+UBqy24QHssrpa8QEe3WUvIClfqt6oNQ==
   dependencies:
-    "@waves/bignumber" "^1.0.0"
+    "@waves/bignumber" "^1.1.1"
 
 "@waves/ledger@^4.0.0":
   version "4.0.0"
@@ -3019,9 +3019,9 @@ big.js@^5.2.2:
   integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
 
 bignumber.js@^9.0.1:
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.0.tgz#8d340146107fe3a6cb8d40699643c302e8773b62"
-  integrity sha512-4LwHK4nfDOraBCtst+wOWIHbu1vhvAPJK8g8nROd4iuc3PSEjWif/qwbkh8jwCJz6yDBvtU4KPynETgrfh7y3A==
+  version "9.1.1"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.1.tgz#c4df7dc496bd849d4c9464344c1aa74228b4dac6"
+  integrity sha512-pHm4LsMJ6lzgNGVfZHjMoO8sdoRhOzOH4MLmY65Jg70bpxCKu5iOHNJyfF6OyvYw7t8Fpf35RuzUyqnQsj8Vig==
 
 binary-extensions@^2.0.0:
   version "2.1.0"
