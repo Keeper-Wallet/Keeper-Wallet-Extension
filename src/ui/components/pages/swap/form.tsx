@@ -172,6 +172,7 @@ export function SwapForm({
   const feeAssetBalance = getAssetBalance(feeAsset, accountBalance!);
 
   const [fromAmountValue, setFromAmountValue] = useState('');
+  const [fromAmountValueMasked, setFromAmountValueMasked] = useState('');
   const fromAmountTokens = new BigNumber(fromAmountValue || '0');
 
   const finalFeeOptions = feeOptions
@@ -501,7 +502,7 @@ export function SwapForm({
             balance={fromAssetBalance}
             label={t('swap.fromInputLabel')}
             showUsdAmount
-            value={fromAmountValue}
+            value={fromAmountValueMasked}
             onAssetChange={newAssetId => {
               setAssetIds(prevState => ({
                 ...prevState,
@@ -528,8 +529,9 @@ export function SwapForm({
 
               setFromAmountValue(max.getTokens().toFixed());
             }}
-            onChange={newValue => {
+            onChange={(newValue, newValueMasked) => {
               setFromAmountValue(newValue);
+              setFromAmountValueMasked(newValueMasked);
             }}
           />
 
@@ -556,6 +558,7 @@ export function SwapForm({
                     : swapVendorInfo.toAmountTokens.toFixed();
 
                 setFromAmountValue(newFromAmount);
+                setFromAmountValueMasked(newFromAmount);
                 setIsPriceDirectionSwapped(prevState => !prevState);
               }}
             >
