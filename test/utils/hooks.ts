@@ -49,7 +49,7 @@ export async function mochaGlobalTeardown(this: GlobalFixturesContext) {
 
 export const mochaHooks = () => ({
   async beforeAll(this: mocha.Context) {
-    this.wait = 30 * 1000;
+    this.wait = 15 * 1000;
 
     this.driver = new Builder()
       .forBrowser('chrome')
