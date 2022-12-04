@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../popup/store/react';
 import { newAccountSelect } from '../../../../store/actions/localState';
 import * as styles from './importEmail.module.css';
-import { Login } from './login';
+import { Login, UserData } from './login';
 
 export function ImportEmail() {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ export function ImportEmail() {
   const accounts = useAppSelector(state => state.accounts);
 
   const handleSubmit = useCallback(
-    userData => {
+    (userData: UserData) => {
       if (
         accounts.find(
           account =>

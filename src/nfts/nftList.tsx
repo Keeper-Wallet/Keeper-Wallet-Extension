@@ -22,7 +22,7 @@ const Row = ({
     mode: DisplayMode;
     len: number;
     onClick: (nft: Nft) => void;
-    renderMore?: () => void;
+    renderMore?: () => React.ReactNode;
   };
   index: number;
   style: CSSProperties;
@@ -75,7 +75,7 @@ export function NftList({
   nfts: Nft[];
   counters?: Record<string, number>;
   onClick: (nft: Nft) => void;
-  renderMore?: () => void;
+  renderMore?: () => React.ReactNode;
 }) {
   return (
     <div className={styles.nftList}>

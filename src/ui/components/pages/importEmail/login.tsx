@@ -10,10 +10,10 @@ import { SignInForm } from './signInForm';
 
 type LoginStateType = 'sign-in' | 'confirm-sign-in';
 
-type UserData = {
+export interface UserData {
   username: string;
   password: string;
-};
+}
 
 type LoginProps = {
   className?: string;

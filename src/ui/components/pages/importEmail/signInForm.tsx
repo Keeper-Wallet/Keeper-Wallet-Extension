@@ -76,7 +76,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
   }, [password.length, t]);
 
   const handleSubmit = useCallback(
-    async event => {
+    async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       setPending(true);
@@ -164,7 +164,6 @@ export function SignInForm({ className, userData, signIn }: Props) {
           data-testid="submitButton"
           type="submit"
           view="submit"
-          onClick={handleSubmit}
           disabled={pending || !email || !password}
           loading={pending}
         >
