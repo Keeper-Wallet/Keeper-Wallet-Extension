@@ -1,9 +1,8 @@
 import BigNumber from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
 import { useAppSelector } from 'popup/store/react';
-import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useIMask } from 'react-imask';
+import { IMaskInput } from 'react-imask';
 import { BalanceAssets } from 'store/reducers/updateState';
 
 import { UsdAmount } from '../ui/components/ui/UsdAmount';
@@ -19,7 +18,7 @@ interface Props {
   value: string;
   onAssetChange: (newAssetId: string) => void;
   onBalanceClick?: () => void;
-  onChange: (newValue: string) => void;
+  onChange: (newValue: string, newMaskedValue: string) => void;
 }
 
 export function AssetAmountInput({
@@ -36,54 +35,6 @@ export function AssetAmountInput({
   const { t } = useTranslation();
   const network = useAppSelector(state => state.currentNetwork);
   const asset = balance.asset;
-
-  const mask = useIMask({
-    mapToRadix: ['.', ','],
-    mask: Number,
-    radix: '.',
-    scale: asset.precision,
-    thousandsSeparator: ' ',
-  });
-
-  const valueRef = useRef(value);
-  const onChangeRef = useRef(onChange);
-
-  useEffect(() => {
-    valueRef.current = value;
-    onChangeRef.current = onChange;
-  }, [value, onChange]);
-
-  useEffect(() => {
-    const input = mask.ref.current;
-    const maskInstance = mask.maskRef.current;
-
-    if (!input || !maskInstance) {
-      return;
-    }
-
-    function inputListener() {
-      if (valueRef.current !== maskInstance.unmaskedValue) {
-        onChangeRef.current(maskInstance.unmaskedValue);
-      }
-    }
-
-    input.addEventListener('input', inputListener, false);
-
-    return () => {
-      input.removeEventListener('input', inputListener, false);
-    };
-  }, [mask.ref, mask.maskRef]);
-
-  useEffect(() => {
-    const input = mask.ref.current;
-    const maskInstance = mask.maskRef.current;
-
-    if (input && maskInstance && maskInstance.unmaskedValue !== value) {
-      input.value = value;
-      maskInstance.updateValue();
-      maskInstance.updateControl();
-    }
-  }, [value, mask.ref, mask.maskRef]);
 
   const bigNumberValue = new BigNumber(value || '0');
   const tokens = Money.fromTokens(bigNumberValue, asset).getTokens();
@@ -117,12 +68,19 @@ export function AssetAmountInput({
           />
         </div>
 
-        <input
+        <IMaskInput
           className={styles.input}
           data-testid="amountInput"
+          mapToRadix={['.', ',']}
+          mask={Number}
           maxLength={23}
           placeholder="0.0"
-          ref={mask.ref as React.MutableRefObject<HTMLInputElement>}
+          radix="."
+          scale={asset.precision}
+          thousandsSeparator={' '}
+          onAccept={(_, mask) => {
+            onChange(mask.unmaskedValue, mask.value);
+          }}
         />
 
         {showUsdAmount && (

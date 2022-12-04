@@ -96,6 +96,7 @@ export function Send() {
   const showRecipientError = isTriedToSubmit && recipientError != null;
 
   const [amountValue, setAmountValue] = useState(isNft ? '1' : '');
+  const [amountValueMasked, setAmountValueMasked] = useState('');
   const amountError =
     !currentBalance || !amountValue || Number(amountValue) === 0
       ? t('send.amountRequiredError')
@@ -207,15 +208,17 @@ export function Send() {
                         balance={balance}
                         label={t('send.amountInputLabel')}
                         showUsdAmount
-                        value={amountValue}
+                        value={amountValueMasked}
                         onAssetChange={assetId => {
                           navigate(`/send/${assetId}`, { replace: true });
                         }}
                         onBalanceClick={() => {
                           setAmountValue(balance.toTokens());
+                          setAmountValueMasked(balance.toTokens());
                         }}
-                        onChange={value => {
-                          setAmountValue(value);
+                        onChange={(newValue, newMaskedValue) => {
+                          setAmountValue(newValue);
+                          setAmountValueMasked(newMaskedValue);
                         }}
                       />
                       <ErrorMessage show={showAmountError}>
