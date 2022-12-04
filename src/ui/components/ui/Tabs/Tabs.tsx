@@ -27,7 +27,21 @@ export function Tab({ className, children, isActive, onActivate }: TabProps) {
 
 interface TabListProps {
   activeIndex?: number;
-  children: React.ReactNode;
+  children:
+    | Array<
+        | React.ReactElement<React.ComponentProps<typeof Tab>, typeof Tab>
+        | boolean
+        | number
+        | string
+        | null
+        | undefined
+      >
+    | React.ReactElement<React.ComponentProps<typeof Tab>, typeof Tab>
+    | boolean
+    | number
+    | string
+    | null
+    | undefined;
   className?: string;
   onActiveTab?: (index: number) => void;
 }
@@ -43,7 +57,7 @@ export function TabList({
       {Children.map(
         children,
         (child, index) =>
-          isValidElement(child) &&
+          isValidElement<React.ComponentProps<typeof Tab>>(child) &&
           cloneElement(child, {
             isActive: index === activeIndex,
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
