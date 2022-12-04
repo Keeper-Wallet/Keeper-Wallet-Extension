@@ -1,11 +1,9 @@
 import * as mocha from 'mocha';
-import * as path from 'path';
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import * as chrome from 'selenium-webdriver/chrome';
 import {
-  GenericContainer,
-  Network,
-  StartedTestContainer,
+  DockerComposeEnvironment,
+  StartedDockerComposeEnvironment,
 } from 'testcontainers';
 
 declare global {
@@ -31,54 +29,18 @@ declare module 'selenium-webdriver' {
 }
 
 interface GlobalFixturesContext {
-  selenium: StartedTestContainer;
-  node: StartedTestContainer;
+  compose: StartedDockerComposeEnvironment;
 }
 
 export async function mochaGlobalSetup(this: GlobalFixturesContext) {
-  const host = await new Network().start();
-
-  [this.node, this.selenium] = await Promise.all([
-    new GenericContainer('wavesplatform/waves-private-node')
-      .withExposedPorts(6869)
-      .withNetworkMode(host.getName())
-      .withNetworkAliases('waves-private-node')
-      .start(),
-
-    new GenericContainer('selenium/standalone-chrome')
-      .withBindMounts([
-        {
-          source: path.resolve(__dirname, '..', '..', 'dist'),
-          target: '/app/dist',
-          mode: 'ro',
-        },
-        {
-          source: path.resolve(__dirname, '..', 'fixtures'),
-          target: '/app/test/fixtures',
-          mode: 'ro',
-        },
-      ])
-      .withExposedPorts(
-        {
-          container: 4444,
-          host: 4444,
-        },
-        {
-          container: 5900,
-          host: 5900,
-        },
-        {
-          container: 7900,
-          host: 7900,
-        }
-      )
-      .withNetworkMode(host.getName())
-      .start(),
-  ]);
+  this.compose = await new DockerComposeEnvironment(
+    '.',
+    'docker-compose.yml'
+  ).up();
 }
 
 export async function mochaGlobalTeardown(this: GlobalFixturesContext) {
-  await Promise.all([this.selenium.stop(), this.node.stop()]);
+  await this.compose.down();
 }
 
 export const mochaHooks = () => ({
