@@ -2,6 +2,7 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { captureException } from '@sentry/react';
 import WavesLedger from '@waves/ledger';
 import { PreferencesAccount } from 'preferences/types';
+import invariant from 'tiny-invariant';
 import Background from 'ui/services/Background';
 
 import { LedgerSignRequest } from './types';
@@ -99,18 +100,21 @@ class LedgerService {
   }
 
   private async sendSignRequest(
-    selectedAccount: PreferencesAccount | undefined,
+    selectedAccount: PreferencesAccount,
     request: LedgerSignRequest
   ) {
     try {
-      if (selectedAccount?.type !== 'ledger') {
-        throw new Error('Active account is not a ledger account');
+      invariant(
+        selectedAccount.type === 'ledger',
+        'Active account is not a ledger account'
+      );
+
+      if (!ledgerService.ledger) {
+        return;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const userData = await ledgerService.ledger!.getUserDataById(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        selectedAccount.id!
+      const userData = await ledgerService.ledger.getUserDataById(
+        selectedAccount.id
       );
 
       if (userData.address !== selectedAccount.address) {
@@ -123,21 +127,14 @@ class LedgerService {
 
       switch (request.type) {
         case 'order':
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          signature = await ledgerService.ledger!.signOrder(
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            selectedAccount.id!,
-            {
-              ...request.data,
-              dataBuffer: new Uint8Array(request.data.dataBuffer),
-            }
-          );
+          signature = await ledgerService.ledger.signOrder(selectedAccount.id, {
+            ...request.data,
+            dataBuffer: new Uint8Array(request.data.dataBuffer),
+          });
           break;
         case 'request':
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          signature = await ledgerService.ledger!.signRequest(
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            selectedAccount.id!,
+          signature = await ledgerService.ledger.signRequest(
+            selectedAccount.id,
             {
               ...request.data,
               dataBuffer: new Uint8Array(request.data.dataBuffer),
@@ -145,10 +142,8 @@ class LedgerService {
           );
           break;
         case 'someData':
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          signature = await ledgerService.ledger!.signSomeData(
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            selectedAccount.id!,
+          signature = await ledgerService.ledger.signSomeData(
+            selectedAccount.id,
             {
               ...request.data,
               dataBuffer: new Uint8Array(request.data.dataBuffer),
@@ -156,26 +151,25 @@ class LedgerService {
           );
           break;
         case 'transaction':
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          signature = await ledgerService.ledger!.signTransaction(
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            selectedAccount.id!,
+          signature = await ledgerService.ledger.signTransaction(
+            selectedAccount.id,
             {
               ...request.data,
               dataBuffer: new Uint8Array(request.data.dataBuffer),
             }
           );
           break;
-        default:
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          throw new Error(`Unknown request type: "${(request as any).type}"`);
       }
 
       await Background.ledgerSignResponse(request.id, null, signature);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
+    } catch (err) {
       if (err) {
-        if (err.name === 'TransportStatusError' && err.statusCode === 37120) {
+        if (
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (err as any).name === 'TransportStatusError' &&
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (err as any).statusCode === 37120
+        ) {
           await Background.ledgerSignResponse(
             request.id,
             new Error('Request is rejected on ledger')
@@ -189,7 +183,7 @@ class LedgerService {
   }
 
   async queueSignRequest(
-    selectedAccount: PreferencesAccount | undefined,
+    selectedAccount: PreferencesAccount,
     request: LedgerSignRequest
   ) {
     try {

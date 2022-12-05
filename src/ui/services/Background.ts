@@ -721,7 +721,7 @@ class Background {
     }
   }
 
-  async ledgerSignResponse(requestId: string, error: Error): Promise<void>;
+  async ledgerSignResponse(requestId: string, error: unknown): Promise<void>;
   async ledgerSignResponse(
     requestId: string,
     error: null,
@@ -729,7 +729,7 @@ class Background {
   ): Promise<void>;
   async ledgerSignResponse(
     requestId: string,
-    error: Error | null,
+    error: unknown,
     signature?: string
   ) {
     try {
@@ -738,7 +738,8 @@ class Background {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return await this.background!.ledgerSignResponse(
         requestId,
-        error && error.message ? error.message : null,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        error && (error as any).message ? (error as any).message : null,
         signature
       );
     } catch (err) {
