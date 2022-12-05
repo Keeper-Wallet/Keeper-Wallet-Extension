@@ -1,4 +1,4 @@
-import { equals } from 'ramda';
+import { deepEqual } from 'fast-equals';
 
 import { AssetsRecord } from '../assets/types';
 import { collectBalances } from '../balances/utils';
@@ -37,21 +37,27 @@ export function createUpdateState(store: PopupStore) {
     }
 
     const config = getParam(state.config, {});
-    if (config && !equals(currentState.config, config)) {
+    if (config && !deepEqual(currentState.config, config)) {
       store.dispatch({
         type: ACTION.REMOTE_CONFIG.SET_CONFIG,
         payload: config,
       });
     }
 
-    if (state.feeConfig && !equals(currentState.feeConfig, state.feeConfig)) {
+    if (
+      state.feeConfig &&
+      !deepEqual(currentState.feeConfig, state.feeConfig)
+    ) {
       store.dispatch({
         type: ACTION.UPDATE_FEE_CONFIG,
         payload: state.feeConfig,
       });
     }
 
-    if (state.nftConfig && !equals(currentState.nftConfig, state.nftConfig)) {
+    if (
+      state.nftConfig &&
+      !deepEqual(currentState.nftConfig, state.nftConfig)
+    ) {
       store.dispatch({
         type: ACTION.UPDATE_NFT_CONFIG,
         payload: state.nftConfig,
@@ -59,7 +65,7 @@ export function createUpdateState(store: PopupStore) {
     }
 
     const idleOptions = getParam(state.idleOptions, {});
-    if (idleOptions && !equals(currentState.idleOptions, idleOptions)) {
+    if (idleOptions && !deepEqual(currentState.idleOptions, idleOptions)) {
       store.dispatch({
         type: ACTION.REMOTE_CONFIG.UPDATE_IDLE,
         payload: idleOptions,
@@ -67,7 +73,7 @@ export function createUpdateState(store: PopupStore) {
     }
 
     const customNodes = getParam(state.customNodes, {});
-    if (customNodes && !equals(currentState.customNodes, customNodes)) {
+    if (customNodes && !deepEqual(currentState.customNodes, customNodes)) {
       store.dispatch({
         type: ACTION.UPDATE_NODES,
         payload: customNodes,
@@ -75,7 +81,7 @@ export function createUpdateState(store: PopupStore) {
     }
 
     const customCodes = getParam(state.customCodes, {});
-    if (customCodes && !equals(currentState.customCodes, customCodes)) {
+    if (customCodes && !deepEqual(currentState.customCodes, customCodes)) {
       store.dispatch({
         type: ACTION.UPDATE_CODES,
         payload: customCodes,
@@ -83,7 +89,10 @@ export function createUpdateState(store: PopupStore) {
     }
 
     const customMatchers = getParam(state.customMatchers, {});
-    if (customMatchers && !equals(currentState.customMatcher, customMatchers)) {
+    if (
+      customMatchers &&
+      !deepEqual(currentState.customMatcher, customMatchers)
+    ) {
       store.dispatch({
         type: ACTION.UPDATE_MATCHER,
         payload: customMatchers,
@@ -101,7 +110,7 @@ export function createUpdateState(store: PopupStore) {
     }
 
     const uiState = getParam(state.uiState, {});
-    if (uiState && !equals(uiState, currentState.uiState)) {
+    if (uiState && !deepEqual(uiState, currentState.uiState)) {
       store.dispatch({
         type: ACTION.UPDATE_UI_STATE,
         payload: uiState,
@@ -117,7 +126,7 @@ export function createUpdateState(store: PopupStore) {
     }
 
     const origins = getParam(state.origins, {});
-    if (origins && !equals(origins, currentState.origins)) {
+    if (origins && !deepEqual(origins, currentState.origins)) {
       store.dispatch({
         type: ACTION.UPDATE_ORIGINS,
         payload: origins,
@@ -147,7 +156,7 @@ export function createUpdateState(store: PopupStore) {
 
     if (
       unapprovedMessages &&
-      !equals(unapprovedMessages, currentState.messages)
+      !deepEqual(unapprovedMessages, currentState.messages)
     ) {
       store.dispatch({
         type: ACTION.UPDATE_MESSAGES,
@@ -161,7 +170,7 @@ export function createUpdateState(store: PopupStore) {
     const myNotifications = getParam(state.myNotifications, []);
     if (
       myNotifications &&
-      !equals(currentState.notifications, myNotifications)
+      !deepEqual(currentState.notifications, myNotifications)
     ) {
       store.dispatch({
         type: ACTION.NOTIFICATIONS.SET,
@@ -188,7 +197,7 @@ export function createUpdateState(store: PopupStore) {
     );
     if (
       selectedAccount &&
-      !equals(selectedAccount, currentState.selectedAccount)
+      !deepEqual(selectedAccount, currentState.selectedAccount)
     ) {
       store.dispatch({
         type: ACTION.UPDATE_SELECTED_ACCOUNT,
@@ -197,7 +206,7 @@ export function createUpdateState(store: PopupStore) {
     }
 
     const accounts = getParam(state.accounts, []);
-    if (accounts && !equals(accounts, currentState.allNetworksAccounts)) {
+    if (accounts && !deepEqual(accounts, currentState.allNetworksAccounts)) {
       store.dispatch({
         type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
         payload: accounts,
@@ -206,7 +215,7 @@ export function createUpdateState(store: PopupStore) {
 
     if (
       (state.accounts != null &&
-        !equals(state.accounts, currentState.allNetworksAccounts)) ||
+        !deepEqual(state.accounts, currentState.allNetworksAccounts)) ||
       (state.currentNetwork != null &&
         state.currentNetwork !== currentState.currentNetwork)
     ) {
@@ -251,7 +260,7 @@ export function createUpdateState(store: PopupStore) {
     if (
       assets &&
       assets[network] &&
-      !equals(assets[network], currentState.assets)
+      !deepEqual(assets[network], currentState.assets)
     ) {
       store.dispatch({
         type: ACTION.SET_ASSETS,
@@ -261,7 +270,7 @@ export function createUpdateState(store: PopupStore) {
     }
 
     const usdPrices = getParam(state.usdPrices, {});
-    if (usdPrices && !equals(usdPrices, currentState.usdPrices)) {
+    if (usdPrices && !deepEqual(usdPrices, currentState.usdPrices)) {
       store.dispatch({
         type: ACTION.SET_USD_PRICES,
         payload: usdPrices,
@@ -269,7 +278,7 @@ export function createUpdateState(store: PopupStore) {
     }
 
     const assetLogos = getParam(state.assetLogos, {});
-    if (assetLogos && !equals(assetLogos, currentState.assetLogos)) {
+    if (assetLogos && !deepEqual(assetLogos, currentState.assetLogos)) {
       store.dispatch({
         type: ACTION.SET_ASSET_LOGOS,
         payload: assetLogos,
@@ -277,7 +286,7 @@ export function createUpdateState(store: PopupStore) {
     }
 
     const assetTickers = getParam(state.assetTickers, {});
-    if (assetTickers && !equals(assetTickers, currentState.assetTickers)) {
+    if (assetTickers && !deepEqual(assetTickers, currentState.assetTickers)) {
       store.dispatch({
         type: ACTION.SET_ASSET_TICKERS,
         payload: assetTickers,
@@ -285,7 +294,7 @@ export function createUpdateState(store: PopupStore) {
     }
 
     const addresses = getParam(state.addresses, {});
-    if (addresses && !equals(addresses, currentState.addresses)) {
+    if (addresses && !deepEqual(addresses, currentState.addresses)) {
       store.dispatch({
         type: ACTION.UPDATE_ADDRESSES,
         payload: addresses,
@@ -293,7 +302,7 @@ export function createUpdateState(store: PopupStore) {
     }
 
     const nfts = getParam(state.nfts, null);
-    if (nfts && !equals(nfts, currentState.nfts)) {
+    if (nfts && !deepEqual(nfts, currentState.nfts)) {
       store.dispatch({
         type: ACTION.UPDATE_NFTS,
         payload: nfts,

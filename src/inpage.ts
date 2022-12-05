@@ -1,7 +1,7 @@
 import filter from 'callbag-filter';
 import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
-import { equals } from 'ramda';
+import { deepEqual } from 'fast-equals';
 
 import type { __BackgroundPageApiDirect } from './background';
 import { createIpcCallProxy, fromPostMessage } from './ipc/ipc';
@@ -70,7 +70,7 @@ globalThis.KeeperWallet = {
 
         const updatedPublicState = await KeeperWallet.publicState();
 
-        if (!equals(updatedPublicState, lastPublicState)) {
+        if (!deepEqual(updatedPublicState, lastPublicState)) {
           lastPublicState = updatedPublicState;
           cb(updatedPublicState);
         }

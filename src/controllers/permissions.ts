@@ -6,7 +6,6 @@ import {
   PermissionType,
   PermissionValue,
 } from 'permissions/types';
-import { uniq } from 'ramda';
 import { IMoneyLike } from 'ui/utils/converters';
 
 import { allowMatcher } from '../constants';
@@ -364,7 +363,7 @@ export class PermissionsController {
     const blacklist = state.blacklist || oldState.blacklist;
     const inPending = { ...oldInPending, ...(state.inPending || {}) };
     Object.keys(origins).forEach(key => {
-      origins[key] = uniq(origins[key] || []);
+      origins[key] = Array.from(new Set(origins[key] || []));
     });
     const newState = {
       ...oldState,
