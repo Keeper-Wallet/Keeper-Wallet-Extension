@@ -2,7 +2,6 @@ import { BigNumber } from '@waves/bignumber';
 import * as crypto from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { PreferencesAccount } from 'preferences/types';
-import { path } from 'ramda';
 
 import { FeeConfig } from '../constants';
 import { convertFromSa, makeBytes } from '../transactions/utils';
@@ -198,7 +197,7 @@ function getMassTransferFee(
   const transferPrice = new BigNumber(
     getConfigProperty(tx.type, 'price_per_transfer', config) || 0
   );
-  const transfersCount = (path(['transfers', 'length'], tx) as number) || 0;
+  const transfersCount = tx?.transfers?.length ?? 0;
   const smartAssetExtraFee =
     tx.assetId && smartAssetIdList.includes(tx.assetId)
       ? new BigNumber(config.smart_asset_extra_fee)
@@ -218,16 +217,16 @@ function getMassTransferFee(
   return price.add(smartAssetExtraFee);
 }
 
-function getConfigProperty(
-  type: string,
-  propertyName: string,
+function getConfigProperty<T extends keyof FeeConfig['calculate_fee_rules']>(
+  type: T,
+  propertyName: keyof FeeConfig['calculate_fee_rules'][T],
   config: FeeConfig
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): any {
-  const value = path(['calculate_fee_rules', type, propertyName], config);
-  return value == null
-    ? path(['calculate_fee_rules', 'default', propertyName], config)
-    : value;
+) {
+  return (
+    config?.calculate_fee_rules?.[type]?.[propertyName] ??
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (config?.calculate_fee_rules?.default as any)?.[propertyName]
+  );
 }
 
 function getOrderFee(

@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
+import { deepEqual } from 'fast-equals';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
-import { equals } from 'ramda';
 import Browser from 'webextension-polyfill';
 
 import {
@@ -319,7 +319,7 @@ export class RemoteConfigController extends EventEmitter {
           networks.map((network, i) => [network, networkConfigs[i].identity])
         );
 
-        if (!equals(identityConfig, fetchedConfig)) {
+        if (!deepEqual(identityConfig, fetchedConfig)) {
           this.store.updateState({
             identityConfig: Object.assign({}, identityConfig, fetchedConfig),
           });
