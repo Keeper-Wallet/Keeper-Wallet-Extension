@@ -9,6 +9,7 @@ import i18next from 'i18next';
 import { StrictMode } from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
+import invariant from 'tiny-invariant';
 import Browser from 'webextension-polyfill';
 
 import { createAccountsStore } from './accounts/store/create';
@@ -89,8 +90,8 @@ Promise.all([
       },
       ledgerSignRequest: async (request: LedgerSignRequest) => {
         const { selectedAccount } = store.getState();
-
-        return ledgerService.queueSignRequest(selectedAccount, request);
+        invariant(selectedAccount);
+        await ledgerService.queueSignRequest(selectedAccount, request);
       },
     };
 
