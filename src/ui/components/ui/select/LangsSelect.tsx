@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { SUPPORTED_LANGUAGES } from 'i18n/constants';
 import { useAppDispatch, useAppSelector } from 'popup/store/react';
 
@@ -20,7 +20,7 @@ export function LangsSelect() {
         text: name,
         icon: (
           <i
-            className={cn(styles.flagIcon, `flag-${id}-icon`, {
+            className={clsx(styles.flagIcon, `flag-${id}-icon`, {
               [styles.selected]: currentLocale === id,
             })}
           />

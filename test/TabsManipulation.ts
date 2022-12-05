@@ -5,8 +5,6 @@ import { App, PopupHome, Windows } from '../test/utils/actions';
 import { DEFAULT_PASSWORD } from './utils/constants';
 
 describe('Tabs manipulation', function () {
-  this.timeout(60 * 1000);
-
   let tabKeeper: string, tabAccounts: string;
 
   after(async () => {

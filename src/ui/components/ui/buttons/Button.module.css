@@ -199,12 +199,12 @@
 }
 
 .loading::after {
+  content: '';
   position: absolute;
   top: 50%;
   left: 50%;
   margin-top: -8px;
   margin-left: -8px;
-  content: '';
   border: 2px solid #edf0f4;
   border-right-color: #1f5af6;
   width: 16px;

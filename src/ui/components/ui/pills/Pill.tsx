@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 
 import * as styles from './pills.styl';
 
@@ -23,7 +23,7 @@ export function Pill({
   className,
   onSelect,
 }: Props) {
-  const newClassName = cn(styles.pill, className, {
+  const newClassName = clsx(styles.pill, className, {
     [styles.selectedPill]: selected,
     [styles.hiddenPill]: hidden,
   });

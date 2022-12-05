@@ -2,12 +2,14 @@ import './global.css';
 import './ui/styles/app.styl';
 import './ui/styles/icons.styl';
 
-import * as Sentry from '@sentry/react';
+import { setTag, setUser } from '@sentry/react';
 import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
 import i18next from 'i18next';
+import { StrictMode } from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
+import invariant from 'tiny-invariant';
 import Browser from 'webextension-polyfill';
 
 import type { UiApi } from './background';
@@ -45,11 +47,13 @@ Promise.all([
   i18nextInit(),
 ]).then(() => {
   render(
-    <Provider store={store}>
-      <RootWrapper>
-        <PopupRoot />
-      </RootWrapper>
-    </Provider>,
+    <StrictMode>
+      <Provider store={store}>
+        <RootWrapper>
+          <PopupRoot />
+        </RootWrapper>
+      </Provider>
+    </StrictMode>,
     document.getElementById('app-content')
   );
 
@@ -87,8 +91,8 @@ Promise.all([
       },
       ledgerSignRequest: async (request: LedgerSignRequest) => {
         const { selectedAccount } = store.getState();
-
-        return ledgerService.queueSignRequest(selectedAccount, request);
+        invariant(selectedAccount);
+        await ledgerService.queueSignRequest(selectedAccount, request);
       },
     };
 
@@ -114,37 +118,22 @@ Promise.all([
 
   const background = connect();
 
-  Promise.resolve()
-    .then(() => {
-      if (Browser.extension.getViews({ type: 'popup' }).length > 0) {
-        return background.closeNotificationWindow();
-      }
-    })
-    .then(() => {
-      if (
-        location.pathname === '/notification.html' &&
-        !window.matchMedia('(display-mode: fullscreen)').matches
-      ) {
-        background.resizeNotificationWindow(
-          357 + window.outerWidth - window.innerWidth,
-          600 + window.outerHeight - window.innerHeight
-        );
-      }
+  if (
+    location.pathname === '/notification.html' &&
+    !window.matchMedia('(display-mode: fullscreen)').matches
+  ) {
+    background.resizeNotificationWindow(
+      357 + window.outerWidth - window.innerWidth,
+      600 + window.outerHeight - window.innerHeight
+    );
+  }
 
-      return Promise.all([background.getState(), background.getNetworks()]);
-    })
-    .then(([state, networks]) => {
-      if (!state.initialized) {
-        background.showTab(
-          `${window.location.origin}/accounts.html`,
-          'accounts'
-        );
-      }
-
-      Sentry.setUser({ id: state.userId });
-      Sentry.setTag('network', state.currentNetwork);
-
+  Promise.all([background.getState(), background.getNetworks()]).then(
+    ([state, networks]) => {
+      setUser({ id: state.userId });
+      setTag('network', state.currentNetwork);
       updateState({ ...state, networks });
+      store.dispatch(setLoading(false));
 
       Background.init(background);
 
@@ -154,6 +143,16 @@ Promise.all([
       document.addEventListener('focus', () => Background.updateIdle());
       window.addEventListener('beforeunload', () => background.identityClear());
 
-      store.dispatch(setLoading(false));
-    });
+      if (Browser.extension.getViews({ type: 'popup' }).length > 0) {
+        Background.closeNotificationWindow();
+      }
+
+      if (!state.initialized) {
+        Background.showTab(
+          `${window.location.origin}/accounts.html`,
+          'accounts'
+        );
+      }
+    }
+  );
 });

@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { CSSProperties } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { VariableSizeList } from 'react-window';
@@ -22,7 +22,7 @@ const Row = ({
     mode: DisplayMode;
     len: number;
     onClick: (nft: Nft) => void;
-    renderMore?: () => void;
+    renderMore?: () => React.ReactNode;
   };
   index: number;
   style: CSSProperties;
@@ -39,7 +39,7 @@ const Row = ({
 
   return (
     <div style={style}>
-      <div className={cn(styles.nftRow, len === 1 && styles.noScroll)}>
+      <div className={clsx(styles.nftRow, len === 1 && styles.noScroll)}>
         <NftCard
           key={leftIndex}
           nft={leftNft}
@@ -75,7 +75,7 @@ export function NftList({
   nfts: Nft[];
   counters?: Record<string, number>;
   onClick: (nft: Nft) => void;
-  renderMore?: () => void;
+  renderMore?: () => React.ReactNode;
 }) {
   return (
     <div className={styles.nftList}>

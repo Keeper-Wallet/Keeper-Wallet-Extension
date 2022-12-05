@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 
@@ -13,9 +13,13 @@ class MatcherCardComponent extends PureComponent<
   render() {
     const { t, message, collapsed } = this.props;
     const { origin } = message;
-    const className = cn(styles.matcherTransactionCard, this.props.className, {
-      [styles.matcherCardCollapsed]: this.props.collapsed,
-    });
+    const className = clsx(
+      styles.matcherTransactionCard,
+      this.props.className,
+      {
+        [styles.matcherCardCollapsed]: this.props.collapsed,
+      }
+    );
 
     return (
       <div className={className}>

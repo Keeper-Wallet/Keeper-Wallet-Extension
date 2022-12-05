@@ -1,5 +1,5 @@
-import cn from 'classnames';
-import { IdentityUser } from 'controllers/IdentityController';
+import clsx from 'clsx';
+import type { IdentityUser } from 'controllers/IdentityController';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../popup/store/react';
 import { newAccountSelect } from '../../../../store/actions/localState';
 import * as styles from './importEmail.module.css';
-import { Login } from './login';
+import { Login, UserData } from './login';
 
 export function ImportEmail() {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ export function ImportEmail() {
   const accounts = useAppSelector(state => state.accounts);
 
   const handleSubmit = useCallback(
-    userData => {
+    (userData: UserData) => {
       if (
         accounts.find(
           account =>
@@ -50,7 +50,7 @@ export function ImportEmail() {
 
   return (
     <div className={styles.root}>
-      <h2 className={cn('margin1', 'title1')}>
+      <h2 className={clsx('margin1', 'title1')}>
         {t('importEmail.importEmailTitle')}
       </h2>
 

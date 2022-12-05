@@ -1,7 +1,7 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { AssetsRecord } from 'assets/types';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useAppSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -168,7 +168,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
       </div>
 
       {assetEntries.length === 0 ? (
-        <div className={cn('basic500 center margin-min-top', styles.tabInfo)}>
+        <div className={clsx('basic500 center margin-min-top', styles.tabInfo)}>
           {term || onlyMy || onlyFav ? (
             <>
               <div className="margin-min">{t('assets.notFoundAssets')}</div>

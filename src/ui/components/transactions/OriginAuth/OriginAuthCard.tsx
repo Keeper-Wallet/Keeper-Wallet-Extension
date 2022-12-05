@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 
@@ -13,7 +13,7 @@ class OriginAuthCardComponent extends PureComponent<
   render() {
     const { t, message, collapsed } = this.props;
     const { origin } = message;
-    const className = cn(
+    const className = clsx(
       styles.originAuthTransactionCard,
       this.props.className
     );

@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 
 import * as styles from './powerBtn.styl';
 
@@ -9,7 +9,7 @@ export function PowerButton({
   children,
   ...props
 }: IProps) {
-  const btnClassName = cn(className, styles.powerBtn, {
+  const btnClassName = clsx(className, styles.powerBtn, {
     [styles.powerBtnOn]: enabled,
   });
 

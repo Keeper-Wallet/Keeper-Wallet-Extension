@@ -1,8 +1,8 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CodeDelivery } from '../../../../controllers/IdentityController';
+import type { CodeDelivery } from '../../../../controllers/IdentityController';
 import { VerifyCodeComponent } from './verifyCodeComponent';
 
 type CodeConfirmationProps = {
@@ -36,7 +36,7 @@ export function CodeConfirmation({
 
   return (
     <form className={className}>
-      <div className={cn('margin1', 'tag1', 'basic500', 'input-title')}>
+      <div className={clsx('margin1', 'tag1', 'basic500', 'input-title')}>
         {t('importEmail.verifyAccountDesc', { destination })}
       </div>
 

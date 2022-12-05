@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { NftList } from 'nfts/nftList';
 import { createNft } from 'nfts/nfts';
 import { DisplayMode, Nft } from 'nfts/types';
@@ -91,7 +91,7 @@ export function TabNfts() {
         />
       </div>
       {sortedNfts.length === 0 ? (
-        <div className={cn('basic500 center margin-min-top', styles.tabInfo)}>
+        <div className={clsx('basic500 center margin-min-top', styles.tabInfo)}>
           {term ? (
             <>
               <div className="margin-min">
@@ -126,7 +126,7 @@ export function TabNfts() {
           renderMore={() =>
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
             myNfts?.length! > MAX_NFT_ITEMS - 1 && (
-              <div className={cn(styles.nftListMore, 'basic500')}>
+              <div className={clsx(styles.nftListMore, 'basic500')}>
                 <div className="margin-min">
                   {term ? (
                     <Trans

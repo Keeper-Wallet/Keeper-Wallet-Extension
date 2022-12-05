@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useAppSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +23,7 @@ export const ExportButton = ({ className }: Props) => {
   return accounts.length !== 0 || Object.keys(addresses).length !== 0 ? (
     <>
       <button
-        className={cn(className, styles.root)}
+        className={clsx(className, styles.root)}
         onClick={() => {
           setShowExportModal(true);
         }}

@@ -1,0 +1,25 @@
+version: '3'
+services:
+  waves-private-node:
+    image: wavesplatform/waves-private-node
+    ports:
+      - '6869:6869'
+  chrome:
+    image: selenium/standalone-chrome
+    shm_size: 2gb
+    ports:
+      - '4444:4444'
+      - '5900:5900'
+      - '7900:7900'
+    volumes:
+      - ./dist:/app/dist:ro
+      - ./test/fixtures:/app/test/fixtures:ro
+  chrome-video:
+    image: selenium/video:ffmpeg-4.3.1-20221202
+    volumes:
+      - ./test/videos:/videos
+    depends_on:
+      - chrome
+    environment:
+      - DISPLAY_CONTAINER_NAME=chrome
+      - FILE_NAME=chrome_video.mp4

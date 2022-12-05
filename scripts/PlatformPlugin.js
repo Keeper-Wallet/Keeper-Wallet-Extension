@@ -1,8 +1,7 @@
-const fs = require('fs/promises');
-const path = require('path');
+const { mkdir, writeFile } = require('node:fs/promises');
+const path = require('node:path');
 const webpack = require('webpack');
-const del = require('del');
-const updateManifest = require('./updateManifest');
+const adaptManifestToPlatform = require('./adaptManifestToPlatform');
 const platforms = require('./platforms.json');
 
 const DIST_FOLDER = path.resolve(__dirname, '..', 'dist');
@@ -15,9 +14,11 @@ module.exports = class PlatformPlugin {
 
   apply(compiler) {
     if (this.clear) {
-      compiler.hooks.beforeCompile.tapPromise('ClearDist', () =>
-        del(DIST_FOLDER)
-      );
+      compiler.hooks.beforeCompile.tapPromise('ClearDist', async () => {
+        const { deleteAsync } = await import('del');
+
+        await deleteAsync(DIST_FOLDER);
+      });
     }
 
     function report(message) {
@@ -42,11 +43,20 @@ module.exports = class PlatformPlugin {
             const platformFile = path.join(platformFolder, file);
             const platformDir = path.dirname(platformFile);
 
+            await mkdir(platformDir, { recursive: true });
+
             if (file === 'manifest.json') {
-              await updateManifest(content, platformName, platformFile);
+              await writeFile(
+                platformFile,
+                JSON.stringify(
+                  adaptManifestToPlatform(content, platformName),
+                  null,
+                  2
+                ),
+                'utf-8'
+              );
             } else {
-              await fs.mkdir(platformDir, { recursive: true });
-              await fs.writeFile(platformFile, content);
+              await writeFile(platformFile, content);
             }
           })
         )

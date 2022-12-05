@@ -1,7 +1,7 @@
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { AssetsRecord } from 'assets/types';
+import { deepEqual } from 'fast-equals';
 import { Nft, NftVendorId } from 'nfts/types';
-import { equals } from 'ramda';
 import { useState } from 'react';
 import { TFunction } from 'react-i18next';
 
@@ -23,7 +23,7 @@ export function useUiState<T extends keyof UiState>(
     newState => {
       setState(newState);
 
-      if (!equals(newState, state)) {
+      if (!deepEqual(newState, state)) {
         dispatch(setUiState({ [key]: newState }));
       }
     },

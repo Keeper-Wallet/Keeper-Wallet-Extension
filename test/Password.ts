@@ -20,7 +20,6 @@ describe('Password management', () => {
   });
 
   describe('Create password', function () {
-    this.timeout(60 * 1000);
     let firstPasswordInput: WebElement,
       secondPasswordInput: WebElement,
       firstPasswordErrorDiv: WebElement,
@@ -126,8 +125,6 @@ describe('Password management', () => {
 
   // this tests starts when we are at create new account page
   describe('Change password', function () {
-    this.timeout(60 * 1000);
-
     let oldPasswordInput: WebElement,
       newFirstPasswordInput: WebElement,
       newSecondPasswordInput: WebElement;
@@ -255,7 +252,6 @@ describe('Password management', () => {
   });
 
   describe('Etc', function () {
-    this.timeout(60 * 1000);
     let loginForm: WebElement, loginButton: WebElement, loginInput: WebElement;
 
     async function performLogout(this: mocha.Context) {

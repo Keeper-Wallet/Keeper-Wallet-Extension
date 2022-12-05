@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { createRef } from 'react';
 import { Button, Input } from 'ui/components/ui';
 
@@ -20,12 +20,12 @@ export function SearchInput({
   const inputRef = createRef<HTMLInputElement>();
 
   return (
-    <div className={cn(styles.searchWrapper, className)}>
+    <div className={clsx(styles.searchWrapper, className)}>
       <Input
         {...restProps}
         forwardRef={inputRef}
         wrapperClassName={styles.searchInputWrapper}
-        className={cn(styles.searchInput, 'font300')}
+        className={clsx(styles.searchInput, 'font300')}
         onInput={onInput}
         value={value}
         spellCheck={false}

@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { Children, cloneElement, isValidElement, useState } from 'react';
 
 import * as styles from './tabs.styl';
@@ -13,7 +13,7 @@ interface TabProps {
 export function Tab({ className, children, isActive, onActivate }: TabProps) {
   return (
     <li
-      className={cn(
+      className={clsx(
         styles.tabListItem,
         { [styles.tabListActive]: isActive },
         className
@@ -27,7 +27,21 @@ export function Tab({ className, children, isActive, onActivate }: TabProps) {
 
 interface TabListProps {
   activeIndex?: number;
-  children: React.ReactNode;
+  children:
+    | Array<
+        | React.ReactElement<React.ComponentProps<typeof Tab>, typeof Tab>
+        | boolean
+        | number
+        | string
+        | null
+        | undefined
+      >
+    | React.ReactElement<React.ComponentProps<typeof Tab>, typeof Tab>
+    | boolean
+    | number
+    | string
+    | null
+    | undefined;
   className?: string;
   onActiveTab?: (index: number) => void;
 }
@@ -39,11 +53,11 @@ export function TabList({
   onActiveTab,
 }: TabListProps) {
   return (
-    <ol className={cn(styles.tabList, className)}>
+    <ol className={clsx(styles.tabList, className)}>
       {Children.map(
         children,
         (child, index) =>
-          isValidElement(child) &&
+          isValidElement<React.ComponentProps<typeof Tab>>(child) &&
           cloneElement(child, {
             isActive: index === activeIndex,
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

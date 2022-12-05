@@ -1,3 +1,4 @@
+import { useDebouncedValue } from '_core/useDebouncedValue';
 import {
   SwapClient,
   SwapClientErrorCode,
@@ -11,8 +12,7 @@ import { AssetSelect, AssetSelectOption } from 'assets/assetSelect';
 import { swappableAssetTickersByVendor } from 'assets/constants';
 import { AssetDetail } from 'assets/types';
 import { BalancesItem } from 'balances/types';
-import cn from 'classnames';
-import { useDebouncedValue } from 'common/useDebouncedValue';
+import clsx from 'clsx';
 import { useFeeOptions } from 'fee/useFeeOptions';
 import { convertFeeToAsset } from 'fee/utils';
 import { useAppDispatch, useAppSelector } from 'popup/store/react';
@@ -172,6 +172,7 @@ export function SwapForm({
   const feeAssetBalance = getAssetBalance(feeAsset, accountBalance!);
 
   const [fromAmountValue, setFromAmountValue] = useState('');
+  const [fromAmountValueMasked, setFromAmountValueMasked] = useState('');
   const fromAmountTokens = new BigNumber(fromAmountValue || '0');
 
   const finalFeeOptions = feeOptions
@@ -501,7 +502,7 @@ export function SwapForm({
             balance={fromAssetBalance}
             label={t('swap.fromInputLabel')}
             showUsdAmount
-            value={fromAmountValue}
+            value={fromAmountValueMasked}
             onAssetChange={newAssetId => {
               setAssetIds(prevState => ({
                 ...prevState,
@@ -528,8 +529,9 @@ export function SwapForm({
 
               setFromAmountValue(max.getTokens().toFixed());
             }}
-            onChange={newValue => {
+            onChange={(newValue, newValueMasked) => {
               setFromAmountValue(newValue);
+              setFromAmountValueMasked(newValueMasked);
             }}
           />
 
@@ -556,6 +558,7 @@ export function SwapForm({
                     : swapVendorInfo.toAmountTokens.toFixed();
 
                 setFromAmountValue(newFromAmount);
+                setFromAmountValueMasked(newFromAmount);
                 setIsPriceDirectionSwapped(prevState => !prevState);
               }}
             >
@@ -642,7 +645,7 @@ export function SwapForm({
                 return (
                   <button
                     key={vendor}
-                    className={cn(styles.toAmountCard, {
+                    className={clsx(styles.toAmountCard, {
                       [styles.toAmountCardSelected]: swapVendor === vendor,
                     })}
                     type="button"
@@ -867,7 +870,7 @@ export function SwapForm({
               </div>
             </div>
 
-            <div className={cn(styles.summaryRow, styles.summaryRowCenter)}>
+            <div className={clsx(styles.summaryRow, styles.summaryRowCenter)}>
               <div className={styles.summaryLabel}>
                 <Tooltip
                   className={styles.tooltipContent}

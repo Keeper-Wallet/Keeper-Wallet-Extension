@@ -1,8 +1,10 @@
-import { CognitoUser } from 'amazon-cognito-identity-js';
 import { AssetDetail } from 'assets/types';
 import type { __BackgroundUiApiDirect } from 'background';
-import { AuthChallenge, IdentityUser } from 'controllers/IdentityController';
-import { SwapAssetsParams, SwapAssetsResult } from 'controllers/SwapController';
+import type { IdentityUser } from 'controllers/IdentityController';
+import type {
+  SwapAssetsParams,
+  SwapAssetsResult,
+} from 'controllers/SwapController';
 import { MessageInputOfType } from 'messages/types';
 import { NetworkName } from 'networks/types';
 import { PreferencesAccount } from 'preferences/types';
@@ -686,13 +688,7 @@ class Background {
     }
   }
 
-  async identitySignIn(
-    username: string,
-    password: string
-  ): Promise<
-    CognitoUser &
-      Partial<{ challengeName: AuthChallenge; challengeParam: unknown }>
-  > {
+  async identitySignIn(username: string, password: string) {
     try {
       await this.initPromise;
       this._connect();
@@ -725,7 +721,7 @@ class Background {
     }
   }
 
-  async ledgerSignResponse(requestId: string, error: Error): Promise<void>;
+  async ledgerSignResponse(requestId: string, error: unknown): Promise<void>;
   async ledgerSignResponse(
     requestId: string,
     error: null,
@@ -733,7 +729,7 @@ class Background {
   ): Promise<void>;
   async ledgerSignResponse(
     requestId: string,
-    error: Error | null,
+    error: unknown,
     signature?: string
   ) {
     try {
@@ -742,7 +738,8 @@ class Background {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return await this.background!.ledgerSignResponse(
         requestId,
-        error && error.message ? error.message : null,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        error && (error as any).message ? (error as any).message : null,
         signature
       );
     } catch (err) {

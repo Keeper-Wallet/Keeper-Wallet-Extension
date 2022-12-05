@@ -1,5 +1,5 @@
 import { useAccountsSelector } from 'accounts/store/react';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import background from 'ui/services/Background';
@@ -12,13 +12,13 @@ export function ImportSuccessAddressBook() {
 
   return (
     <div data-testid="importSuccessForm" className={styles.content}>
-      <div className={cn(styles.successIcon, 'tx-approve-icon')} />
+      <div className={clsx(styles.successIcon, 'tx-approve-icon')} />
 
-      <p className={cn(styles.title, 'headline2')}>
+      <p className={clsx(styles.title, 'headline2')}>
         {t('import.readyToUseAddressBook')}
       </p>
 
-      <p className={cn(styles.description, 'body1 basic500')}>
+      <p className={clsx(styles.description, 'body1 basic500')}>
         {t('import.readyAddressBookText')}
       </p>
 
@@ -48,16 +48,16 @@ export function ImportSuccess({
 
   return (
     <div data-testid="importSuccessForm" className={styles.content}>
-      <div className={cn(styles.successIcon, 'tx-approve-icon')} />
+      <div className={clsx(styles.successIcon, 'tx-approve-icon')} />
 
-      <p className={cn(styles.title, 'headline2')}>
+      <p className={clsx(styles.title, 'headline2')}>
         {t(
           isKeystoreImport ? 'import.readyToUseKeystore' : 'import.readyToUse',
           { name: account?.name }
         )}
       </p>
 
-      <p className={cn(styles.description, 'body1 basic500')}>
+      <p className={clsx(styles.description, 'body1 basic500')}>
         {t('import.readyHelpText')}
       </p>
 

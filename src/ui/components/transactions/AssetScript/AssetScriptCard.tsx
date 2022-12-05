@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 
@@ -12,7 +12,7 @@ class AssetScriptCardComponent extends PureComponent<
   MessageCardComponentProps & WithTranslation
 > {
   render() {
-    const className = cn(
+    const className = clsx(
       styles.assetScriptTransactionCard,
       this.props.className,
       {
@@ -47,7 +47,7 @@ class AssetScriptCardComponent extends PureComponent<
             </div>
           </div>
 
-          <div className={cn(styles.cardContent, 'marginTop1')}>
+          <div className={clsx(styles.cardContent, 'marginTop1')}>
             <ShowScript
               script={script}
               showNotify

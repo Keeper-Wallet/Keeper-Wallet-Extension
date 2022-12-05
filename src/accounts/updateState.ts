@@ -1,4 +1,4 @@
-import { equals } from 'ramda';
+import { deepEqual } from 'fast-equals';
 import { ACTION } from 'store/actions/constants';
 import { AppAction } from 'store/types';
 import {
@@ -35,7 +35,7 @@ export function createUpdateState(store: AccountsStore) {
     }
 
     const idleOptions = getParam(state.idleOptions, {});
-    if (idleOptions && !equals(currentState.idleOptions, idleOptions)) {
+    if (idleOptions && !deepEqual(currentState.idleOptions, idleOptions)) {
       actions.push({
         type: ACTION.REMOTE_CONFIG.UPDATE_IDLE,
         payload: idleOptions,
@@ -43,7 +43,7 @@ export function createUpdateState(store: AccountsStore) {
     }
 
     const customNodes = getParam(state.customNodes, {});
-    if (customNodes && !equals(currentState.customNodes, customNodes)) {
+    if (customNodes && !deepEqual(currentState.customNodes, customNodes)) {
       actions.push({
         type: ACTION.UPDATE_NODES,
         payload: customNodes,
@@ -51,7 +51,7 @@ export function createUpdateState(store: AccountsStore) {
     }
 
     const customCodes = getParam(state.customCodes, {});
-    if (customCodes && !equals(currentState.customCodes, customCodes)) {
+    if (customCodes && !deepEqual(currentState.customCodes, customCodes)) {
       actions.push({
         type: ACTION.UPDATE_CODES,
         payload: customCodes,
@@ -69,7 +69,7 @@ export function createUpdateState(store: AccountsStore) {
     }
 
     const uiState = getParam(state.uiState, {});
-    if (uiState && !equals(uiState, currentState.uiState)) {
+    if (uiState && !deepEqual(uiState, currentState.uiState)) {
       actions.push({
         type: ACTION.UPDATE_UI_STATE,
         payload: uiState,
@@ -90,7 +90,7 @@ export function createUpdateState(store: AccountsStore) {
     );
     if (
       selectedAccount &&
-      !equals(selectedAccount, currentState.selectedAccount)
+      !deepEqual(selectedAccount, currentState.selectedAccount)
     ) {
       actions.push({
         type: ACTION.UPDATE_SELECTED_ACCOUNT,
@@ -99,7 +99,7 @@ export function createUpdateState(store: AccountsStore) {
     }
 
     const accounts = getParam(state.accounts, []);
-    if (accounts && !equals(accounts, currentState.allNetworksAccounts)) {
+    if (accounts && !deepEqual(accounts, currentState.allNetworksAccounts)) {
       actions.push({
         type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
         payload: accounts,
@@ -108,7 +108,7 @@ export function createUpdateState(store: AccountsStore) {
 
     if (
       (state.accounts != null &&
-        !equals(state.accounts, currentState.allNetworksAccounts)) ||
+        !deepEqual(state.accounts, currentState.allNetworksAccounts)) ||
       (state.currentNetwork != null &&
         state.currentNetwork !== currentState.currentNetwork)
     ) {
@@ -134,7 +134,7 @@ export function createUpdateState(store: AccountsStore) {
     }
 
     const addresses = getParam(state.addresses, {});
-    if (addresses && !equals(addresses, currentState.addresses)) {
+    if (addresses && !deepEqual(addresses, currentState.addresses)) {
       store.dispatch({
         type: ACTION.UPDATE_ADDRESSES,
         payload: addresses,

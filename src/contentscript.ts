@@ -1,7 +1,7 @@
 import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
 import {
-  filterMethodCallRequests,
+  filterIpcRequests,
   fromPort,
   fromPostMessage,
   MethodCallResponsePayload,
@@ -39,7 +39,7 @@ if (document.documentElement.tagName === 'HTML') {
       onload: () => {
         pipe(
           fromPostMessage(),
-          filterMethodCallRequests,
+          filterIpcRequests,
           subscribe(data => {
             getPort().postMessage(data);
           })

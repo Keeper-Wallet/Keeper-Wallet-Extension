@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import {
+import type {
   CodeDelivery,
   IdentityUser,
 } from '../../../../controllers/IdentityController';
@@ -10,10 +10,10 @@ import { SignInForm } from './signInForm';
 
 type LoginStateType = 'sign-in' | 'confirm-sign-in';
 
-type UserData = {
+export interface UserData {
   username: string;
   password: string;
-};
+}
 
 type LoginProps = {
   className?: string;
@@ -55,8 +55,10 @@ export function Login({
         onSubmit(userRef.current);
       }
 
-      const cognitoUser = await background.identitySignIn(username, password);
-      const challengeName = cognitoUser.challengeName;
+      const { challengeName } = await background.identitySignIn(
+        username,
+        password
+      );
 
       switch (challengeName) {
         case 'SOFTWARE_TOKEN_MFA':

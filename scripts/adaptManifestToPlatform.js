@@ -1,5 +1,3 @@
-const fs = require('fs/promises');
-
 const action = {
   default_title: 'Keeper Wallet',
   default_popup: 'popup.html',
@@ -51,16 +49,8 @@ const platformValues = {
   opera: manifestV2,
 };
 
-module.exports = (buffer, platformName, to) =>
-  fs.writeFile(
-    to,
-    JSON.stringify(
-      {
-        ...JSON.parse(buffer.toString('utf-8')),
-        version: process.env.KEEPER_VERSION,
-        ...platformValues[platformName],
-      },
-      null,
-      2
-    )
-  );
+module.exports = (buffer, platformName) => ({
+  ...JSON.parse(buffer.toString('utf-8')),
+  version: process.env.KEEPER_VERSION,
+  ...platformValues[platformName],
+});

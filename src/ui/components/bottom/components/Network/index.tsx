@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { NetworkName } from 'networks/types';
 import { PopupState } from 'popup/store/types';
 import { PureComponent } from 'react';
@@ -37,7 +37,7 @@ const Networks = ({
 }) => {
   const { t } = useTranslation();
 
-  const classNames = cn(styles.selectNetworks, { [styles.isShow]: isShow });
+  const classNames = clsx(styles.selectNetworks, { [styles.isShow]: isShow });
   const nets = networks.reduce(
     (acc, item) => ((acc[item.name] = item), acc),
     Object.create(null)
@@ -51,7 +51,7 @@ const Networks = ({
       {sortedNetworks.map(net => {
         const currentNetwork = net.name;
         const selected = selectedNet === currentNetwork;
-        const className = cn(styles.chooseNetwork, {
+        const className = clsx(styles.chooseNetwork, {
           [styles.selectedNet]: selected,
         });
 
@@ -233,7 +233,7 @@ class NetworkComponent extends PureComponent<Props, IState> {
   }
 
   render(): React.ReactNode {
-    const networkClassName = cn(
+    const networkClassName = clsx(
       'basic500',
       !this.props.allowChangingNetwork && styles.disabledNet
     );
@@ -272,7 +272,7 @@ class NetworkComponent extends PureComponent<Props, IState> {
             </div>
             {showEdit ? (
               <div
-                className={cn(
+                className={clsx(
                   styles.editBtn,
                   !this.props.allowChangingNetwork && styles.disabledNet
                 )}

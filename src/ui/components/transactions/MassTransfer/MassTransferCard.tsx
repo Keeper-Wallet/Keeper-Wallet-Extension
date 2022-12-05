@@ -1,6 +1,6 @@
 import { Money } from '@waves/data-entities';
 import { validators } from '@waves/waves-transactions';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { processAliasOrAddress } from 'transactions/utils';
@@ -83,7 +83,7 @@ class MassTransferCardComponent extends PureComponent<
   state = Object.create(null);
 
   render() {
-    const className = cn(
+    const className = clsx(
       styles.massTransferTransactionCard,
       this.props.className,
       {

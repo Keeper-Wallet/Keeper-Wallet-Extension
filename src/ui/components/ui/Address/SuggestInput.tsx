@@ -1,7 +1,7 @@
+import { useDebouncedValue } from '_core/useDebouncedValue';
 import { libs, validators } from '@waves/waves-transactions';
 import { WavesDomainsClient } from '@waves-domains/client';
-import cn from 'classnames';
-import { useDebouncedValue } from 'common/useDebouncedValue';
+import clsx from 'clsx';
 import { NetworkName } from 'networks/types';
 import { useAppSelector } from 'popup/store/react';
 import { PreferencesAccount } from 'preferences/types';
@@ -109,7 +109,7 @@ function Suggest({
           </p>
 
           <div
-            className={cn(styles.item, styles.item_wavesDomains)}
+            className={clsx(styles.item, styles.item_wavesDomains)}
             style={{ paddingRight, paddingLeft }}
             onMouseDown={() => {
               setAddress(wdResolveResult.address);

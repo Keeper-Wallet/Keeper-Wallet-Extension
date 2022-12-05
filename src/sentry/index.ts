@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react';
+import { Breadcrumbs, init } from '@sentry/react';
 import backgroundService from 'ui/services/Background';
 
 export function initUiSentry({
@@ -8,7 +8,7 @@ export function initUiSentry({
   ignoreErrorContext: 'beforeSendAccounts' | 'beforeSendPopup';
   source: 'popup' | 'accounts';
 }) {
-  return Sentry.init({
+  return init({
     dsn: __SENTRY_DSN__,
     environment: __SENTRY_ENVIRONMENT__,
     release: __SENTRY_RELEASE__,
@@ -18,7 +18,7 @@ export function initUiSentry({
         source,
       },
     },
-    integrations: [new Sentry.Integrations.Breadcrumbs({ dom: false })],
+    integrations: [new Breadcrumbs({ dom: false })],
     beforeSend: async (event, hint) => {
       const message =
         hint &&

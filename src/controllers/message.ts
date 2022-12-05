@@ -11,7 +11,6 @@ import ObservableStore from 'obs-store';
 import create from 'parse-json-bignumber';
 import { PERMISSIONS } from 'permissions/constants';
 import { PreferencesAccount } from 'preferences/types';
-import { clone } from 'ramda';
 import Browser from 'webextension-polyfill';
 
 import { MSG_STATUSES } from '../constants';
@@ -704,7 +703,7 @@ export class MessageController extends EventEmitter {
             const id = getHash.transaction(
               makeBytes.transaction(
                 convertFromSa.transaction(
-                  await this._transformData(clone(readyData)),
+                  await this._transformData(structuredClone(readyData)),
                   this.networkController.getNetworkCode().charCodeAt(0),
                   message.account.type
                 )
@@ -769,7 +768,7 @@ export class MessageController extends EventEmitter {
         };
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const filledMessageData: any = clone(result.data);
+        const filledMessageData: any = structuredClone(result.data);
 
         const convertedData = convertFromSa.order(
           {
@@ -835,7 +834,7 @@ export class MessageController extends EventEmitter {
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const filledMessageData: any = clone(result.data);
+        const filledMessageData: any = structuredClone(result.data);
 
         const convertedData = convertFromSa.transaction(
           {

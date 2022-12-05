@@ -1,5 +1,5 @@
 import { libs } from '@waves/waves-transactions';
-import cn from 'classnames';
+import clsx from 'clsx';
 
 import * as styles from './attachment.styl';
 
@@ -10,7 +10,7 @@ export const Attachment: React.FunctionComponent<IAttachment> = ({
   className,
   ...otherProps
 }) => {
-  const myClassName = cn(styles.attachment, className);
+  const myClassName = clsx(styles.attachment, className);
   let text = '';
 
   if (typeof attachment !== 'string') {

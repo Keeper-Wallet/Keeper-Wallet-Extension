@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { NetworkName } from 'networks/types';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -76,7 +76,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
   }, [password.length, t]);
 
   const handleSubmit = useCallback(
-    async event => {
+    async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       setPending(true);
@@ -164,7 +164,6 @@ export function SignInForm({ className, userData, signIn }: Props) {
           data-testid="submitButton"
           type="submit"
           view="submit"
-          onClick={handleSubmit}
           disabled={pending || !email || !password}
           loading={pending}
         >
@@ -174,7 +173,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
         <ErrorMessage show={errors._form != null}>{errors._form}</ErrorMessage>
       </div>
 
-      <div className={cn(styles.footer, 'body3')}>
+      <div className={clsx(styles.footer, 'body3')}>
         <a
           rel="noopener noreferrer"
           className="margin1 link blue"

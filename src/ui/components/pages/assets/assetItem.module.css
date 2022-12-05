@@ -3,6 +3,7 @@
   z-index: 1;
   margin: 0 14px 8px 14px;
   padding: 8px 14px;
+  padding-right: 0;
   display: flex;
   width: 325px;
   height: 64px;
@@ -52,7 +53,6 @@
 .favIcon,
 .sendIcon,
 .infoIcon {
-  vertical-align: middle;
   width: 28px;
   height: 28px;
 }

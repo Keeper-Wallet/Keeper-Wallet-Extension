@@ -24,7 +24,7 @@ export function SelectedAccountQr() {
       margin: 1,
       rendererOpts: { quality: 1 },
       scale: 16,
-      type: 'image/png',
+      type: 'image/jpeg',
       width: qrSize,
     }).then(setQrSrc);
   }, [address]);

@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useState } from 'react';
 import { Ellipsis } from 'ui/components/ui';
 
@@ -19,7 +19,7 @@ export function NftCover({
     <video
       autoPlay
       loop
-      className={cn(styles.cover, className, isLoading && 'skeleton-glow')}
+      className={clsx(styles.cover, className, isLoading && 'skeleton-glow')}
       // eslint-disable-next-line react/no-unknown-property
       onLoad={() => nft?.foreground && setLoading(false)}
     >
@@ -28,7 +28,7 @@ export function NftCover({
   ) : (
     <img
       src={nft?.foreground}
-      className={cn(styles.cover, className, isLoading && 'skeleton-glow')}
+      className={clsx(styles.cover, className, isLoading && 'skeleton-glow')}
       style={nft?.background}
       onLoad={() => nft?.foreground && setLoading(false)}
     />
@@ -52,12 +52,12 @@ export function NftCard({
 
   return (
     <figure
-      className={cn(styles.card, className)}
+      className={clsx(styles.card, className)}
       onClick={() => !isPlaceholder && onClick(nft)}
     >
       <NftCover nft={nft} />
       <figcaption
-        className={cn(styles.footer, isPlaceholder && 'skeleton-glow')}
+        className={clsx(styles.footer, isPlaceholder && 'skeleton-glow')}
       >
         {mode === DisplayMode.Name && (
           <div className={styles.title}>{nft.displayName}</div>

@@ -10,7 +10,7 @@ export interface AssetDetail {
   issuer: string;
   isSuspicious?: boolean;
   lastUpdated?: number;
-  minSponsoredFee?: BigNumber | string | number;
+  minSponsoredFee?: string | number;
   name: string;
   originTransactionId?: string;
   precision: number;

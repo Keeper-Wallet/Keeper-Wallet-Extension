@@ -1,6 +1,6 @@
 import { Money } from '@waves/data-entities';
 import { isSwappableAsset } from 'assets/utils';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch, useAppSelector } from '../../../../popup/store/react';
@@ -40,11 +40,11 @@ export function AssetItem({
 
   return (
     <div
-      className={cn(styles.assetCard, className, 'flex', 'relative')}
+      className={clsx(styles.assetCard, className, 'flex', 'relative')}
       data-testid={assetId}
     >
       <AssetLogo
-        className={cn(styles.assetIcon, isLoading && 'skeleton-glow')}
+        className={clsx(styles.assetIcon, isLoading && 'skeleton-glow')}
         assetId={assetId}
         name={displayName}
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -52,8 +52,8 @@ export function AssetItem({
         hasScript={balance?.asset?.hasScript}
       />
 
-      <div className={cn('body1', styles.assetData)}>
-        <div className={cn('basic500', styles.assetTitle)}>
+      <div className={clsx('body1', styles.assetData)}>
+        <div className={clsx('basic500', styles.assetTitle)}>
           <div className={styles.assetName}>{displayName || <Loader />}</div>
           {asset?.isFavorite && (
             <svg

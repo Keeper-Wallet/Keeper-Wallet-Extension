@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useAppDispatch } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +32,7 @@ export function DeleteAllAccounts() {
 
   return (
     <div className={styles.content} data-testid="deleteAllAccounts">
-      <i className={cn('error-icon', styles.errorIcon)} />
+      <i className={clsx('error-icon', styles.errorIcon)} />
 
       <h2 className="title1 margin1">{t('forgotPassword.attention')}</h2>
 
@@ -40,7 +40,7 @@ export function DeleteAllAccounts() {
         {t('forgotPassword.attentionMessage')}
       </div>
 
-      <div className={cn('plate', 'body1', 'margin1', styles.error)}>
+      <div className={clsx('plate', 'body1', 'margin1', styles.error)}>
         {t('forgotPassword.warningMessage')}
       </div>
       <div className="margin1 margin-main-big-top">
@@ -65,7 +65,7 @@ export function DeleteAllAccounts() {
           data-testid="confirmPhrase"
         />
         <ErrorMessage
-          className={cn('margin1', styles.error)}
+          className={clsx('margin1', styles.error)}
           show={hasError && (isBlur || isCorrectLength)}
           data-testid="confirmPhraseError"
         >

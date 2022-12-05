@@ -94,17 +94,15 @@ textarea {
 }
 
 input[type='checkbox'] {
+  content: '';
   flex-shrink: 0;
   padding: 0;
   display: block;
-  content: '';
   border: 1px solid var(--color-basic100);
   width: 22px;
   height: 22px;
   border-radius: 4px;
   background: url(../../../assets/img/check-12-basic-200.svg) center no-repeat;
-  -moz-appearance: none;
-  -webkit-appearance: none;
   appearance: none;
 }
 

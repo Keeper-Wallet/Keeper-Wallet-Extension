@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 
@@ -20,7 +20,7 @@ class CancelOrderCardComponent extends PureComponent<
 
     return (
       <div
-        className={cn(styles.cancelOrderTransactionCard, className, {
+        className={clsx(styles.cancelOrderTransactionCard, className, {
           [styles.cancelOrderCardCollapsed]: collapsed,
         })}
       >

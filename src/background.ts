@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react';
+import { init as initSentry } from '@sentry/react';
 import { verifyCustomData } from '@waves/waves-transactions';
 import { TSignedData } from '@waves/waves-transactions/dist/requests/custom-data';
 import { BalancesItem } from 'balances/types';
@@ -69,7 +69,7 @@ log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 
 const bgPromise = setupBackgroundService();
 
-Sentry.init({
+initSentry({
   dsn: __SENTRY_DSN__,
   environment: __SENTRY_ENVIRONMENT__,
   release: __SENTRY_RELEASE__,

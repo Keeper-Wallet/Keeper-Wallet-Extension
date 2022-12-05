@@ -31,8 +31,8 @@
 
 * {
   margin: 0;
-  border: 0;
   padding: 0;
+  border: 0;
   scrollbar-width: thin;
   scrollbar-color: var(--color-black) var(--color-white);
 }
@@ -65,18 +65,28 @@ body {
 
 #app-content {
   position: relative;
+  margin: auto;
   display: flex;
   flex-direction: column;
-  margin: auto;
   width: 357px;
   height: 600px;
   overflow: hidden;
   background: var(--color-white);
 }
 
+img,
+svg {
+  vertical-align: middle;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 ul {
-  list-style-type: none;
   padding: 0;
+  list-style-type: none;
 }
 
 button,

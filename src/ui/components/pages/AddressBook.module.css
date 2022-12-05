@@ -34,9 +34,9 @@
 }
 
 .empty::before {
+  content: '';
   position: absolute;
   top: 124px;
-  content: '';
   width: 80px;
   height: 80px;
   background-image: url(../../assets/img/users.svg);
@@ -85,6 +85,7 @@
   position: relative;
   margin: 14px 14px 0;
   padding: 8px 14px;
+  padding-right: 0;
   display: flex;
   align-items: center;
   height: 56px;
@@ -129,7 +130,6 @@
 .copyIcon,
 .editIcon,
 .deleteIcon {
-  vertical-align: middle;
   width: 18px;
   height: 18px;
   fill: var(--color-basic200);

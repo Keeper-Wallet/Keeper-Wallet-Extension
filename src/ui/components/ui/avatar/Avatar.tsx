@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import * as avatar from 'identity-img';
 import { PreferencesAccount } from 'preferences/types';
 import { Component } from 'react';
@@ -47,7 +47,7 @@ export class Avatar extends Component<Props, State> {
     };
 
     return (
-      <div className={cn(styles.avatar, className)} style={style}>
+      <div className={clsx(styles.avatar, className)} style={style}>
         <img src={src} width={size} height={size} style={style} />
 
         {['ledger', 'wx', 'debug'].includes(type) && (

@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react';
+import { addBreadcrumb } from '@sentry/react';
 import EventEmitter from 'events';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
@@ -138,10 +138,10 @@ export class PreferencesController extends EventEmitter {
       selectedAccount.address !== address ||
       selectedAccount.network !== network
     ) {
-      Sentry.addBreadcrumb({
+      addBreadcrumb({
         type: 'user',
         category: 'account-change',
-        level: Sentry.Severity.Info,
+        level: 'info',
         message: 'Change active account',
       });
 

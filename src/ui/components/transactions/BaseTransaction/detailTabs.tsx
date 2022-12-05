@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import copy from 'copy-to-clipboard';
 import { CheckIcon } from 'icons/check';
 import { CopyIcon } from 'icons/copy';
@@ -36,7 +36,7 @@ export function TxDetailTabs({ children }: Props) {
                 <Highlight code={json} language="json" />
 
                 <button
-                  className={cn(styles.copyBtn, {
+                  className={clsx(styles.copyBtn, {
                     [styles.copyBtn_feedback]: copyFeedback,
                   })}
                   onClick={() => {

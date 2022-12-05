@@ -3,7 +3,7 @@ import { AssetInfoController } from 'controllers/assetInfo';
 import { PreferencesAccount } from 'preferences/types';
 import { DebugWallet } from 'wallets/debug';
 
-import { IdentityApi } from '../controllers/IdentityController';
+import type { IdentityApi } from '../controllers/IdentityController';
 import { EncodedSeedWallet } from './encodedSeed';
 import { LedgerApi, LedgerWallet } from './ledger';
 import { PrivateKeyWallet } from './privateKey';

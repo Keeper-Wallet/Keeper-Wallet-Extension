@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useAppDispatch, useAppSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -47,7 +47,7 @@ export function SettingsGeneral() {
           />
         </div>
 
-        <div className={cn(styles.settingsMenuItem, styles.password)}>
+        <div className={clsx(styles.settingsMenuItem, styles.password)}>
           <Button
             id="changePassword"
             type="button"

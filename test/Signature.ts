@@ -48,8 +48,6 @@ import {
 const { parse } = create();
 
 describe('Signature', function () {
-  this.timeout(5 * 60 * 1000);
-
   let tabOrigin: string;
   let messageWindow: string | null = null;
 

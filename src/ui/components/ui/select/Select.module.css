@@ -15,8 +15,8 @@
 }
 
 .trigger:after {
-  margin-left: auto;
   content: '';
+  margin-left: auto;
   width: 14px;
   height: 14px;
   background: url(../../../assets/img/select-14-black.svg) center no-repeat;

@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 
 export function TxIcon({
   txType,
@@ -11,7 +11,7 @@ export function TxIcon({
   className?: string;
   children?: React.ReactNode;
 }) {
-  className = cn(
+  className = clsx(
     className,
     `${txType}-transaction-icon${small ? '-small' : ''}`
   );

@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import clsx from 'clsx';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui/components/ui/buttons/Button';
@@ -59,9 +59,9 @@ export function ExportPasswordModal({
             setLoading(false);
           }}
         >
-          <i className={cn(styles.lockIcon, 'lock-icon')} />
+          <i className={clsx(styles.lockIcon, 'lock-icon')} />
 
-          <p className={cn('margin1', 'body1', 'disabled500')}>
+          <p className={clsx('margin1', 'body1', 'disabled500')}>
             {t('exportKeystore.passwordVerifyDesc')}
           </p>
 
@@ -89,7 +89,7 @@ export function ExportPasswordModal({
           </div>
 
           {(showAttention || encrypted) && (
-            <p className={cn(styles.attention, 'body1', 'disabled500')}>
+            <p className={clsx(styles.attention, 'body1', 'disabled500')}>
               <Trans
                 t={t}
                 components={{ attention: <strong className="error500" /> }}

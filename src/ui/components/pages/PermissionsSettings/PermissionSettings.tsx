@@ -1,5 +1,5 @@
 import { BigNumber } from '@waves/bignumber';
-import cn from 'classnames';
+import clsx from 'clsx';
 import { PopupState } from 'popup/store/types';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
@@ -125,7 +125,7 @@ class PermissionsSettingsComponent extends PureComponent<Props, State> {
       item: t(`permission.${name}`),
       name,
     }));
-    const className = cn(styles.content);
+    const className = clsx(styles.content);
 
     return (
       <div className={className}>
