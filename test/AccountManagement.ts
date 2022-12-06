@@ -1,13 +1,12 @@
-import { expect } from 'chai';
+import { expect } from 'expect-webdriverio';
 
-import {
-  AccountsHome,
-  App,
-  Network,
-  PopupHome,
-  Settings,
-  Windows,
-} from './utils/actions';
+import { AccountInfoScreen } from "./pageobject/AccountInfoScreen";
+import { ChangeAccountNameScreen } from "./pageobject/ChangeAccountNameScreen";
+import { Common } from "./pageobject/Common";
+import { EmptyHomeScreen } from "./pageobject/EmptyHomeScreen";
+import { HomeScreen } from "./pageobject/HomeScreen";
+import { OtherAccountsScreen } from "./pageobject/OtherAccountsScreen";
+import { AccountsHome, App, Network, PopupHome, Settings, Windows, } from './utils/actions';
 
 describe('Account management', function () {
   let tabKeeper: string, tabAccounts: string;
@@ -19,7 +18,7 @@ describe('Account management', function () {
     tabKeeper = await browser.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
-    await $('[data-testid="addAccountBtn"]').click();
+    await EmptyHomeScreen.addButton.click();
     [tabAccounts] = await waitForNewWindows(1);
     await browser.switchToWindow(tabAccounts);
     await browser.refresh();
@@ -47,10 +46,10 @@ describe('Account management', function () {
 
   describe('Accounts list', () => {
     it('Change active account', async () => {
-      await $('[data-testid="otherAccountsButton"]').click();
-      await $('[data-testid="otherAccountsPage"]').waitForExist();
-      await $('[data-testid="accountCard"]').click();
-      expect(await PopupHome.getActiveAccountName()).to.equal('poor');
+      await HomeScreen.otherAccountsButton.click();
+      await (await OtherAccountsScreen.accounts)[0].select();
+
+      expect(HomeScreen.activeAccountNameField).toHaveText("poor");
     });
 
     it('Updating account balances on import');
@@ -59,12 +58,12 @@ describe('Account management', function () {
 
     describe('Show QR', () => {
       after(async () => {
-        await $('div.arrow-back-icon').click();
+        await Common.backButton.click();
       });
 
       it('Opening the screen with the QR code of the address by clicking the "Show QR" button', async () => {
-        await $('[data-testid="activeAccountCard"] .showQrIcon').click();
-        await $('[class^="content@SelectedAccountQr-module"]').waitForExist();
+        await HomeScreen.showQRButton.click();
+        await browser.$('[class^="content@SelectedAccountQr-module"]').waitForExist();
       });
 
       it('Check that QR matches the displayed address');
@@ -73,66 +72,38 @@ describe('Account management', function () {
 
     describe('Search', () => {
       before(async () => {
-        await $('[data-testid="otherAccountsButton"]').click();
+        await HomeScreen.otherAccountsButton.click();
       });
 
       after(async () => {
-        await $('div.arrow-back-icon').click();
+        await Common.backButton.click();
       });
 
       it('Displays "not found" description if term is not account name, address, public key or email', async () => {
-        await $('[data-testid="accountsSearchInput"]').setValue('WRONG TERM');
-
-        expect(await $$('[data-testid="accountCard"]')).to.have.length(0);
-
-        expect(await $('[data-testid="accountsNote"]').getText()).matches(
-          /No other accounts were found for the specified filters/i
-        );
+        await OtherAccountsScreen.searchInput.setValue("WRONG TERM");
+        expect(await OtherAccountsScreen.accounts).toHaveLength(0);
+        expect(await OtherAccountsScreen.accountsNoteField).toHaveText("No other accounts were found for the specified filters");
       });
 
       it('"x" appears and clear search input', async () => {
-        await $('[data-testid="accountsSearchInput"]').setValue('WRONG TERM');
-        const searchClear = $('[data-testid="searchClear"]');
-        expect(await searchClear.isDisplayed()).to.be.true;
-        await searchClear.click();
-        expect(await $('[data-testid="accountsSearchInput"]').getText()).to.be
-          .empty;
+        await OtherAccountsScreen.searchInput.setValue("WRONG TERM");
+        await OtherAccountsScreen.searchClearButton.click();
+        expect(await OtherAccountsScreen.searchInput).toHaveText("");
       });
 
       it('By existing account name', async () => {
-        await $('[data-testid="accountsSearchInput"]').setValue(
-          /* r */ 'ic' /* h */
-        );
-
-        expect(
-          await $(
-            '[data-testid="accountCard"] [data-testid="accountName"]'
-          ).getText()
-        ).to.equal('rich');
+        await OtherAccountsScreen.searchInput.setValue("ic");
+        expect((await OtherAccountsScreen.accounts)[0].nameField).toHaveText("rich");
       });
 
       it('By existing account address', async () => {
-        await $('[data-testid="accountsSearchInput"]').setValue(
-          '3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1'
-        );
-
-        expect(
-          await $(
-            '[data-testid="accountCard"] [data-testid="accountName"]'
-          ).getText()
-        ).to.equal('rich');
+        await OtherAccountsScreen.searchInput.setValue("3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1");
+        expect((await OtherAccountsScreen.accounts)[0].nameField).toHaveText("rich");
       });
 
       it('By existing account public key', async () => {
-        await $('[data-testid="accountsSearchInput"]').setValue(
-          'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV'
-        );
-
-        expect(
-          await $(
-            '[data-testid="accountCard"] [data-testid="accountName"]'
-          ).getText()
-        ).to.equal('rich');
+        await OtherAccountsScreen.searchInput.setValue("AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV");
+        expect((await OtherAccountsScreen.accounts)[0].nameField).toHaveText("rich");
       });
 
       it('By existing email account');
@@ -142,11 +113,7 @@ describe('Account management', function () {
   function accountPropertiesShouldBeRight() {
     describe('Address', () => {
       it('Is displayed', async () => {
-        expect(
-          await $(
-            "//div[@id='accountInfoAddress']//div[contains(@class, 'copyTextOverflow@copy')]"
-          ).getText()
-        ).matches(/\w+/i);
+        expect(await AccountInfoScreen.addressField.getText()).toMatch(/\w+/i);
       });
 
       it('Copying by clicking the "Copy" button');
@@ -154,11 +121,7 @@ describe('Account management', function () {
 
     describe('Public key', () => {
       it('Is displayed', async () => {
-        expect(
-          await $(
-            "//div[@id='accountInfoPublicKey']//div[contains(@class, 'copyTextOverflow@copy')]"
-          ).getText()
-        ).matches(/\w+/i);
+        expect(await AccountInfoScreen.publicKeyField.getText()).toMatch(/\w+/i);
       });
 
       it('Copying by clicking the "Copy" button');
@@ -166,23 +129,17 @@ describe('Account management', function () {
 
     describe('Private key', () => {
       it('Is hidden', async () => {
-        expect(
-          await $(
-            "//div[@id='accountInfoPrivateKey']//div[contains(@class, 'copyTextOverflow@copy')]"
-          ).getText()
-        ).not.matches(/\w+/i);
+        expect(await AccountInfoScreen.privateKeyField.getText()).toMatch(/\w+/i);
       });
 
       describe('Copying by clicking the "Copy" button', () => {
         before(async () => {
-          await $(
-            "//div[@id='accountInfoPrivateKey']//div[contains(@class, 'lastIcon@copy')]"
-          ).click();
+          await AccountInfoScreen.privateKeyCopyButton.click();
         });
 
         it('Clicking "Copy" displays the password entry form', async () => {
-          await $('form#enterPassword').waitForExist();
-          await $('button#passwordCancel').click();
+          await AccountInfoScreen.modalPasswordInput.waitForExist();
+          await AccountInfoScreen.modalCancelButton.click();
         });
 
         it('Clicking "Cancel" does not copy');
@@ -192,24 +149,17 @@ describe('Account management', function () {
 
     describe('Backup phrase', () => {
       it('Is hidden', async () => {
-        expect(
-          await $(
-            "//div[@id='accountInfoBackupPhrase']//div[contains(@class, 'copyTextOverflow@copy')]"
-          ).getText()
-        ).not.matches(/\w+/i);
+        expect(await AccountInfoScreen.backupPhraseField.getText()).toMatch(/\w+/i);
       });
 
       describe('Copying by clicking the "Copy" button', () => {
         before(async () => {
-          await $(
-            "//div[@id='accountInfoBackupPhrase']//div[contains(@class, 'lastIcon@copy')]"
-          ).click();
-
-          await $('form#enterPassword').waitForExist();
+          await AccountInfoScreen.backupPhraseCopyButton.click();
+          await AccountInfoScreen.modalPasswordInput.waitForExist();
         });
 
         after(async () => {
-          await $('button#passwordCancel').click();
+          await AccountInfoScreen.modalCancelButton.click();
         });
 
         it('Clicking "Cancel" does not copy');
@@ -222,30 +172,24 @@ describe('Account management', function () {
       let newAccountName: string;
 
       before(async () => {
-        await $(
-          "//button[contains(@class, 'accountName@accountInfo')]"
-        ).click();
-
-        currentAccountName = await $('#currentAccountName').getText();
+        await AccountInfoScreen.nameField.click();
+        currentAccountName = await ChangeAccountNameScreen.currentNameField.getText();
       });
 
       it('A name that is already in use cannot be specified', async () => {
-        await $('#newAccountName').setValue(currentAccountName);
+        await ChangeAccountNameScreen.newNameInput.setValue(currentAccountName);
         await browser.keys('Tab');
-        expect(
-          await $('[data-testid="newAccountNameError"]').getText()
-        ).matches(/Name already exist/i);
-        expect(await $('#save').isEnabled()).to.be.false;
-        await $('#newAccountName').clearValue();
+        expect(await ChangeAccountNameScreen.errorField).toHaveText("Name already exist");
+        expect(await ChangeAccountNameScreen.saveButton).toBeDisabled();
+        await ChangeAccountNameScreen.newNameInput.clearValue();
       });
 
       it('Unique name specified', async () => {
         newAccountName = currentAccountName.slice(1);
         await $('#newAccountName').setValue(newAccountName);
         await browser.keys('Tab');
-        expect(await $('[data-testid="newAccountNameError"]').getText()).to.be
-          .empty;
-        expect(await $('#save').isEnabled()).to.be.true;
+        expect(await $('[data-testid="newAccountNameError"]').getText()).toBe("");
+        expect(await $('#save').isEnabled()).toBe(true);
       });
 
       it('Successfully changed account name', async () => {
@@ -302,12 +246,12 @@ describe('Account management', function () {
 
   describe('Inactive account', async () => {
     before(async () => {
-      await $('[data-testid="otherAccountsButton"]').click();
+      await HomeScreen.otherAccountsButton.click();
     });
 
     it('By clicking on account - go to the account properties screen', async () => {
-      await $('[data-testid="accountInfoButton"]').click();
-      await $("//div[contains(@class, 'content@accountInfo')]").waitForExist();
+      (await OtherAccountsScreen.accounts)[0].accountInfoButton.click();
+      expect(await AccountInfoScreen.root).toBeDisplayed();
     });
 
     accountPropertiesShouldBeRight();
@@ -382,10 +326,10 @@ describe('Account management', function () {
       );
 
       await Network.switchToAndCheck('Mainnet');
-      expect(await PopupHome.getActiveAccountName()).to.equal('second');
+      expect(await PopupHome.getActiveAccountName()).toBe('second');
 
       await Network.switchToAndCheck('Testnet');
-      expect(await PopupHome.getActiveAccountName()).to.equal('fourth');
+      expect(await PopupHome.getActiveAccountName()).toBe('fourth');
     });
   });
 });

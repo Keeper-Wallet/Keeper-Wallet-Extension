@@ -1,7 +1,7 @@
 export const HomeScreen = {
   isDisplayed: async () => {
     try {
-      return await browser.findByTestId$("assetsForm", {}, {timeout: 5000}).isDisplayed();
+      return await browser.findByTestId$("assetsForm", {}, { timeout: 5000 }).isDisplayed();
     } catch (e) {
       return false;
     }
@@ -21,5 +21,9 @@ export const HomeScreen = {
 
   get otherAccountsButton() {
     return this.root.findByTestId$("otherAccountsButton");
+  },
+
+  get showQRButton() {
+    return this.root.$(".showQrIcon");
   }
 };
