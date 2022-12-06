@@ -1,38 +1,36 @@
-import { expect } from 'chai';
+import { expect } from "expect-webdriverio";
+import waitForExpect from "wait-for-expect";
 
-import {
-  AccountsHome,
-  App,
-  Network,
-  PopupHome,
-  Settings,
-  Windows,
-} from './utils/actions';
+import { AccountInfoScreen } from "./pageobject/AccountInfoScreen";
+import { BackupSeedScreen } from "./pageobject/BackupSeedScreen";
+import { ChooseAccountsForm } from "./pageobject/ChooseAccountsForm";
+import { Common } from "./pageobject/Common";
+import { ConfirmBackupScreen } from "./pageobject/ConfirmBackupScreen";
+import { DeleteAccountScreen } from "./pageobject/DeleteAccountScreen";
+import { EmptyHomeScreen } from "./pageobject/EmptyHomeScreen";
+import { HomeScreen } from "./pageobject/HomeScreen";
+import { ImportFormScreen } from "./pageobject/ImportFormScreen";
+import { ImportKeystoreFileScreen } from "./pageobject/ImportKeystoreFileScreen";
+import { ImportSuccessScreen } from "./pageobject/ImportSuccessScreen";
+import { ImportUsingSeedScreen } from "./pageobject/ImportUsingSeedScreen";
+import { NewWalletNameScreen } from "./pageobject/NewWalletNameScreen";
+import { NewWalletScreen } from "./pageobject/NewWalletScreen";
+import { OtherAccountsScreen } from "./pageobject/OtherAccountsScreen";
+import { AccountsHome, App, Network, PopupHome, Settings, Windows } from "./utils/actions";
 
-describe('Account creation', function () {
+describe("Account creation", function () {
+  this.timeout(60 * 1000);
+
   let tabKeeper: string, tabAccounts: string;
 
   async function deleteEachAndSwitchToAccounts() {
-    const repeat = true;
-
-    while (repeat) {
-      await $(
-        '[data-testid="assetsForm"], [data-testid="importForm"]'
-      ).waitForExist();
-
-      const activeAccountCards = await $$('[data-testid="activeAccountCard"]');
-
-      if (!activeAccountCards.length) {
-        break; // the cycle
-      }
-
-      await activeAccountCards[0].click();
-
-      await $("//div[contains(@class, 'deleteButton@accountInfo')]").click();
-      await $('#deleteAccount').click();
+    while (!await EmptyHomeScreen.isDisplayed()) {
+      await HomeScreen.activeAccountCard.click();
+      await AccountInfoScreen.deleteAccountButton.click();
+      await DeleteAccountScreen.deleteAccountButton.click();
     }
 
-    await $('[data-testid="importForm"]').waitForExist();
+    await EmptyHomeScreen.root.waitForExist();
     await browser.switchToWindow(tabAccounts);
   }
 
@@ -43,7 +41,7 @@ describe('Account creation', function () {
     tabKeeper = await browser.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
-    await $('[data-testid="addAccountBtn"]').click();
+    await EmptyHomeScreen.addButton.click();
     [tabAccounts] = await waitForNewWindows(1);
     await browser.switchToWindow(tabAccounts);
     await browser.refresh();
@@ -56,786 +54,674 @@ describe('Account creation', function () {
     await App.resetVault();
   });
 
-  describe('Create', () => {
+  describe("Create", () => {
     const ACCOUNTS = {
-      FIRST: 'first',
-      SECOND: 'second',
-      ANY: 'account123!@#_аккаунт',
+      FIRST: "first",
+      SECOND: "second",
+      ANY: "account123!@#_аккаунт"
     };
 
     after(deleteEachAndSwitchToAccounts);
 
-    it('first account via "Create a new account"', async () => {
-      await $('[data-testid="createNewAccountBtn"]').click();
-      await $('#continue').click();
+    it("first account via \"Create a new account\"", async () => {
+      await ImportFormScreen.createNewAccountButton.click();
+      await NewWalletScreen.continueButton.click();
 
-      const seed = await $('div.cant-select').getText();
-      await $('#continue').click();
+      const seed = await BackupSeedScreen.seedField.getText();
+      await BackupSeedScreen.continueButton.click();
 
-      for (const word of seed.split(' ')) {
-        const pill = await $(
-          "//div[(contains(@class, 'selectedPill@pills') and not(contains(@class, 'hiddenPill@pills')))]" +
-            `//div[contains(@class, 'text@pills')][text()='${word}']`
-        );
-
+      for (const word of seed.split(" ")) {
+        const pill = await ConfirmBackupScreen.suggestedPillsContainer.getPillByText(word);
         await pill.click();
-        await pill.waitForDisplayed({ interval: 100, reverse: true });
+        await waitForExpect(async () => {
+          expect(await pill.isDisplayed()).toBe(false);
+        });
       }
 
-      await $('#confirmBackup').click();
+      await ConfirmBackupScreen.confirmButton.click();
+      await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST);
+      await NewWalletNameScreen.continueButton.click();
 
-      await $('[data-testid="newAccountNameInput"]').setValue(ACCOUNTS.FIRST);
-      await $('[data-testid="continueBtn"]').click();
-
-      await $('[data-testid="addAnotherAccountBtn"]').click();
-
+      await ImportSuccessScreen.addAnotherAccountButton.click();
       await browser.switchToWindow(tabKeeper);
-      expect(await PopupHome.getActiveAccountName()).to.equal(ACCOUNTS.FIRST);
+      expect(await HomeScreen.activeAccountNameField.getText()).toBe(ACCOUNTS.FIRST);
     });
 
-    describe('additional account via "Add account"', () => {
-      describe('When you already have 1 account', () => {
-        describe('Create new account page', () => {
+    describe("additional account via \"Add account\"", () => {
+      describe("When you already have 1 account", () => {
+        describe("Create new account page", () => {
           before(async () => {
-            await PopupHome.addAccount();
+            await HomeScreen.otherAccountsButton.click();
+            await OtherAccountsScreen.addAccountButton.click();
             await browser.switchToWindow(tabAccounts);
-            await $('[data-testid="createNewAccountBtn"]').click();
+            await ImportFormScreen.createNewAccountButton.click();
           });
 
-          it('Each time you open the "Create new account" screen, new addresses are generated', async () => {
-            const prevAddress = await $(
-              "//div[contains(@class, 'greyLine@newwallet')]"
-            ).getText();
+          it("Each time you open the \"Create new account\" screen, new addresses are generated", async () => {
+            const prevAddress = await NewWalletScreen.accountAddressField.getText();
+            await Common.backButton.click();
 
-            await $('div.arrow-back-icon').click();
-
-            await $('[data-testid="createNewAccountBtn"]').click();
-
-            expect(
-              await $("//div[contains(@class, 'greyLine@newwallet')]").getText()
-            ).not.to.be.equal(prevAddress);
+            await ImportFormScreen.createNewAccountButton.click();
+            const newAddress = await NewWalletScreen.accountAddressField.getText();
+            expect(newAddress).not.toBe(prevAddress);
           });
 
-          it('You can select any account from the list of 5 generated', async () => {
-            const avatarList = await $$(
-              "//div[contains(@class, 'avatar@avatar')]"
-            );
+          it("You can select any account from the list of 5 generated", async () => {
+            const avatarList = await NewWalletScreen.avatars;
 
-            expect(avatarList).to.have.length(5);
-
-            const addressEl = await $(
-              "//div[contains(@class, 'greyLine@newwallet')]"
-            );
+            expect(avatarList).toHaveLength(5);
 
             let prevAddress: string | null = null;
 
             for (const avatar of avatarList) {
               await avatar.click();
-              const currentAddress = await addressEl.getText();
-              expect(currentAddress).not.to.equal(prevAddress);
+              const currentAddress = await NewWalletScreen.accountAddressField.getText();
+              expect(currentAddress).not.toBe(prevAddress);
               prevAddress = currentAddress;
             }
 
-            await $('#continue').click();
+            await NewWalletScreen.continueButton.click();
           });
         });
 
         let rightSeed: string;
-        describe('Save backup phrase page', () => {
-          it('Backup phrase is visible', async () => {
-            const seedEl = await $('div.cant-select');
-            await seedEl.waitForDisplayed();
-            rightSeed = await seedEl.getText();
-            expect(rightSeed).to.be.not.empty;
+        describe("Save backup phrase page", () => {
+          it("Backup phrase is visible", async () => {
+            rightSeed = await BackupSeedScreen.seedField.getText();
+            expect(rightSeed.length).toBeGreaterThan(0);
 
-            await $('#continue').click();
+            await BackupSeedScreen.continueButton.click();
           });
 
-          it('Backup phrase cannot be selected with cursor');
-          it('Ability to copy backup phrase to clipboard');
+          it("Backup phrase cannot be selected with cursor");
+          it("Ability to copy backup phrase to clipboard");
         });
 
-        describe('Confirm backup page', () => {
-          const xpWriteVisiblePill =
-            "//div[(contains(@class, 'selectedPill@pills') and not(contains(@class, 'hiddenPill@pills')))]";
-
-          const xpReadVisiblePill =
-            "//div[(contains(@class, 'pill@pills') and not(contains(@class, 'selectedPill@pills')) and not(contains(@class, 'hiddenPill@pills')))]";
-
+        describe("Confirm backup page", () => {
           const PILLS_COUNT = 15;
 
-          it('Filling in a seed in the wrong word order', async () => {
+          it("Filling in a seed in the wrong word order", async () => {
             // there is no Confirm button. An error message and a "Clear" button are displayed
-            const wrongSeed = rightSeed.split(' ').reverse();
+            const wrongSeed = rightSeed.split(" ").reverse();
 
+            const suggestedPills = ConfirmBackupScreen.suggestedPillsContainer;
+            const selectedPills = ConfirmBackupScreen.selectedPillsContainer;
             for (const word of wrongSeed) {
-              const pill = $(
-                `${xpWriteVisiblePill}//div[contains(@class, 'text@pills')][text()='${word}']`
-              );
-
+              const pill = await suggestedPills.getPillByText(word);
               await pill.click();
-              await pill.waitForDisplayed({ interval: 100, reverse: true });
-            }
-
-            const errorEl = $("//div[contains(@class, 'error@error')]");
-            await errorEl.waitForDisplayed();
-            expect(await errorEl.getText()).to.equal('Wrong order, try again');
-
-            await $(
-              "//div[contains(@class, 'clearSeed@confirmBackup')]"
-            ).waitForDisplayed();
-
-            expect(await $$(xpReadVisiblePill)).to.have.length(PILLS_COUNT);
-            expect(await $$(xpWriteVisiblePill)).to.have.length(0);
-          });
-
-          it('The "Clear" button resets a completely filled phrase', async () => {
-            const clearSeedBtn = await $(
-              "//div[contains(@class, 'clearSeed@confirmBackup')]"
-            );
-
-            await clearSeedBtn.click();
-            await clearSeedBtn.waitForExist({ reverse: true });
-
-            await $("//div[contains(@class, 'error@error')]").waitForExist({
-              reverse: true,
-            });
-
-            await $(xpReadVisiblePill).waitForExist({ reverse: true });
-            expect(await $$(xpWriteVisiblePill)).to.have.length(PILLS_COUNT);
-          });
-
-          it('The word can be reset by clicking (any, not only the last)', async () => {
-            const writePills = await $$(xpWriteVisiblePill);
-
-            for (const writePill of writePills) {
-              await writePill.click();
-
-              await writePill.waitForDisplayed({
-                interval: 100,
-                reverse: true,
+              await waitForExpect(async () => {
+                expect(await pill.isDisplayed()).toBe(false);
               });
             }
 
-            await $(
-              "//div[contains(@class, 'clearSeed@confirmBackup')]"
-            ).waitForDisplayed();
+            await waitForExpect(async () => {
+              expect(await ConfirmBackupScreen.errorMessage.getText()).toBe("Wrong order, try again");
+            });
 
-            const readPills = await $$(xpReadVisiblePill);
-            expect(readPills).to.have.length(PILLS_COUNT);
-
-            for (const readPill of readPills) {
-              const prevPillsCount = await $$(xpReadVisiblePill).length;
-              await readPill.click();
-
-              await browser.waitUntil(
-                async () =>
-                  (await $$(xpReadVisiblePill).length) === prevPillsCount - 1,
-                { timeoutMsg: "pill didn't disappear" }
-              );
-            }
-
-            expect(await $$(xpReadVisiblePill)).to.have.length(0);
-            expect(await $$(xpWriteVisiblePill)).to.have.length(PILLS_COUNT);
+            expect(await selectedPills.getAllPills()).toHaveLength(PILLS_COUNT);
+            expect(await suggestedPills.getAllPills()).toHaveLength(0);
           });
 
-          it('Account name page opened while filling in the phrase in the correct order', async () => {
-            for (const word of rightSeed.split(' ')) {
-              const pill = $(
-                `${xpWriteVisiblePill}//div[contains(@class, 'text@pills')][text()='${word}']`
-              );
+          it("The \"Clear\" button resets a completely filled phrase", async () => {
+            await ConfirmBackupScreen.clearLink.click();
+            expect(await ConfirmBackupScreen.errorMessage.isDisplayed()).toBe(false);
 
+            const suggestedPills = ConfirmBackupScreen.suggestedPillsContainer;
+            const selectedPills = ConfirmBackupScreen.selectedPillsContainer;
+
+            await waitForExpect(async () => {
+              expect(await selectedPills.getAllPills()).toHaveLength(0);
+              expect(await suggestedPills.getAllPills()).toHaveLength(PILLS_COUNT);
+            });
+          });
+
+          it("The word can be reset by clicking (any, not only the last)", async () => {
+            const suggestedPillsContainer = ConfirmBackupScreen.suggestedPillsContainer;
+            const selectedPillsContainer = ConfirmBackupScreen.selectedPillsContainer;
+
+            for (const pill of await suggestedPillsContainer.getAllPills()) {
               await pill.click();
-              await pill.waitForExist({ interval: 100, reverse: true });
             }
 
-            await $('#confirmBackup').click();
+            const pills = await selectedPillsContainer.getAllPills();
+            expect(pills).toHaveLength(PILLS_COUNT);
+            for (const pill of pills) {
+              const prevPillsCount = (await selectedPillsContainer.getAllPills()).length;
+              await pill.click();
+
+              await waitForExpect(async () => {
+                expect(await selectedPillsContainer.getAllPills()).toHaveLength(prevPillsCount - 1);
+              });
+            }
+
+            expect(await selectedPillsContainer.getAllPills()).toHaveLength(0);
+            expect(await suggestedPillsContainer.getAllPills()).toHaveLength(PILLS_COUNT);
+          });
+
+          it("Account name page opened while filling in the phrase in the correct order", async () => {
+            const suggestedPillsContainer = ConfirmBackupScreen.suggestedPillsContainer;
+            for (const word of rightSeed.split(" ")) {
+              const pill = await suggestedPillsContainer.getPillByText(word);
+              await pill.click();
+              await pill.waitForExist({ reverse: false });
+            }
+
+            await ConfirmBackupScreen.confirmButton.click();
           });
         });
 
-        describe('Account name page', () => {
-          it('Account cannot be given a name that is already in use', async () => {
-            await $('[data-testid="newAccountNameInput"]').setValue(
-              ACCOUNTS.FIRST
-            );
+        describe("Account name page", () => {
+          it("Account cannot be given a name that is already in use", async () => {
+            await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST);
+            await browser.keys("Tab");
 
-            await browser.keys('Tab');
-
-            expect(
-              await $('[data-testid="newAccountNameError"]').getText()
-            ).matches(/name already exist/i);
-
-            expect(await $('[data-testid="continueBtn"]').isEnabled()).to.be
-              .false;
+            expect(await NewWalletNameScreen.errorField.getText()).toBe("Name already exist");
+            expect(await NewWalletNameScreen.continueButton.isEnabled()).toBe(false);
           });
 
-          it('Ability to paste account name from clipboard');
+          it("Ability to paste account name from clipboard");
 
-          it('In the account name, you can enter numbers, special characters and symbols from any layout', async () => {
-            await $('[data-testid="newAccountNameInput"]').setValue(
-              ACCOUNTS.ANY
-            );
+          it("In the account name, you can enter numbers, special characters and symbols from any layout", async () => {
+            await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.ANY);
+            await browser.keys("Tab");
 
-            await browser.keys('Tab');
-
-            expect(await $('[data-testid="newAccountNameError"]').getText()).to
-              .be.empty;
-            expect(await $('[data-testid="continueBtn"]').isEnabled()).to.be
-              .true;
+            expect(await NewWalletNameScreen.errorField.getText()).toBeExisting();
+            expect(await NewWalletNameScreen.continueButton.isEnabled()).toBe(true);
           });
 
-          it('Account successfully created and selected', async () => {
-            await $('[data-testid="newAccountNameInput"]').setValue(
-              ACCOUNTS.ANY
-            );
+          it("Account successfully created and selected", async () => {
+            await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.ANY);
+            await NewWalletNameScreen.continueButton.click();
 
-            await $('[data-testid="continueBtn"]').click();
+            await waitForExpect(async () => {
+              expect(await ImportSuccessScreen.root.isDisplayed()).toBe(true);
+            });
 
-            await $('[data-testid="importSuccessForm"]').waitForExist();
-            await $('[data-testid="addAnotherAccountBtn"]').click();
-            await $('[data-testid="importForm"]').waitForExist();
+            await ImportSuccessScreen.addAnotherAccountButton.click();
+            await ImportFormScreen.root.waitForExist();
 
             await browser.switchToWindow(tabKeeper);
             await browser.openKeeperPopup();
 
-            expect(await PopupHome.getActiveAccountName()).to.equal(
-              ACCOUNTS.ANY
-            );
+            expect(await PopupHome.getActiveAccountName()).toBe(ACCOUNTS.ANY);
           });
         });
       });
 
-      it('When you already have 2 accounts');
+      it("When you already have 2 accounts");
 
-      it('When you already have 10 accounts');
+      it("When you already have 10 accounts");
     });
   });
 
-  describe('Import via seed', () => {
+  describe("Import via seed", () => {
     const ACCOUNTS = {
-      FIRST: { SEED: 'this is first account seed', NAME: 'first' },
+      FIRST: { SEED: "this is first account seed", NAME: "first" },
       MORE_24_CHARS: {
-        SEED: 'there is more than 24 characters',
-        NAME: 'more than 24 characters',
-      },
+        SEED: "there is more than 24 characters",
+        NAME: "more than 24 characters"
+      }
     };
 
     after(deleteEachAndSwitchToAccounts);
 
-    it('first account via "Import account"', async () => {
-      await $('[data-testid="importSeed"]').click();
+    it("first account via \"Import account\"", async () => {
+      await ImportFormScreen.importBySeedButton.click();
 
-      await $('[data-testid="seedInput"]').setValue(ACCOUNTS.FIRST.SEED);
-      await $('[data-testid="continueBtn"]').click();
+      await ImportUsingSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
+      await ImportUsingSeedScreen.importAccountButton.click();
 
-      await $('[data-testid="newAccountNameInput"]').setValue(
-        ACCOUNTS.FIRST.NAME
-      );
-      await $('[data-testid="continueBtn"]').click();
+      await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST.NAME);
+      await NewWalletNameScreen.continueButton.click();
 
-      await $('[data-testid="importSuccessForm"]').waitForExist();
-      await $('[data-testid="addAnotherAccountBtn"]').click();
-
-      await $('[data-testid="importForm"]').waitForExist();
+      expect(ImportSuccessScreen.root).toBeDisplayed();
+      await ImportSuccessScreen.addAnotherAccountButton.click();
+      expect(ImportFormScreen.root).toBeDisplayed();
 
       await browser.switchToWindow(tabKeeper);
       await browser.openKeeperPopup();
 
-      expect(await PopupHome.getActiveAccountName()).to.be.equals(
-        ACCOUNTS.FIRST.NAME
-      );
+      expect(await PopupHome.getActiveAccountName()).toBe(ACCOUNTS.FIRST.NAME);
     });
 
-    describe('additional account via the "Add account"', () => {
-      describe('When you already have 1 account', () => {
+    describe("additional account via the \"Add account\"", () => {
+      describe("When you already have 1 account", () => {
         before(async () => {
           await PopupHome.addAccount();
           await browser.switchToWindow(tabAccounts);
-          await $('[data-testid="importSeed"]').click();
+          await ImportFormScreen.importBySeedButton.click();
         });
 
-        describe('Seed phrase page', () => {
+        describe("Seed phrase page", () => {
           it("Can't import seed with length less than 24 characters", async () => {
-            await $('[data-testid="seedInput"]').setValue('too short seed');
-            await $('[data-testid="continueBtn"]').click();
+            await ImportUsingSeedScreen.seedInput.setValue("too short seed");
+            await ImportUsingSeedScreen.importAccountButton.click();
 
-            expect(
-              await $('[data-testid="validationError"]').getText()
-            ).to.equal('Seed cannot be shorter than 24 characters');
+            expect(ImportUsingSeedScreen.errorMessage).toHaveText("Seed cannot be shorter than 24 characters");
           });
 
-          it('Can be switched to existing account', async () => {
-            await $('[data-testid="seedInput"]').setValue(ACCOUNTS.FIRST.SEED);
-
-            expect(await $('[data-testid="continueBtn"]').getText()).matches(
-              /switch account/i
-            );
-
-            expect(
-              await $('[data-testid="validationError"]').getText()
-            ).matches(/Account already known as .+/i);
+          it("Can be switched to existing account", async () => {
+            await ImportUsingSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
+            expect(ImportUsingSeedScreen.switchAccountButton).toBeDisplayed();
+            expect(ImportUsingSeedScreen.errorMessage).toHaveTextContaining("Account already known as");
           });
 
-          it('Any change in the seed changes the address', async () => {
-            // input seed
-            await $('[data-testid="seedInput"]').setValue(
-              ACCOUNTS.MORE_24_CHARS.SEED
-            );
+          it("Any change in the seed changes the address", async () => {
+            await ImportUsingSeedScreen.seedInput.setValue(ACCOUNTS.MORE_24_CHARS.SEED);
 
-            let prevAddress = await $('[data-testid="address"]').getText();
+            let prevAddress = await ImportUsingSeedScreen.addressField.getText();
 
             // insert char
-            await $('[data-testid="seedInput"]').addValue('W');
-            expect(await $('[data-testid="address"]').getText()).not.to.equal(
-              prevAddress
-            );
-            prevAddress = await $('[data-testid="address"]').getText();
+            await ImportUsingSeedScreen.seedInput.addValue("W");
+            expect(ImportUsingSeedScreen.addressField).not.toHaveText(prevAddress);
+            prevAddress = await ImportUsingSeedScreen.addressField.getText();
 
             // delete inserted char
-            await browser.keys('Backspace');
-            expect(await $('[data-testid="address"]').getText()).not.to.equal(
-              prevAddress
-            );
+            await browser.keys("Backspace");
+            expect(ImportUsingSeedScreen.addressField).not.toHaveText(prevAddress);
           });
 
-          it('You can paste a seed from the clipboard');
+          it("You can paste a seed from the clipboard");
 
-          it('Correct seed entered', async () => {
-            await $('[data-testid="seedInput"]').setValue(
-              ACCOUNTS.MORE_24_CHARS.SEED
-            );
-
-            await $('[data-testid="continueBtn"]').click();
+          it("Correct seed entered", async () => {
+            await ImportUsingSeedScreen.seedInput.setValue(ACCOUNTS.MORE_24_CHARS.SEED);
+            await ImportUsingSeedScreen.importAccountButton.click();
           });
         });
 
-        describe('Account name page', () => {
-          it('The account cannot be given a name already in use', async () => {
-            await $('[data-testid="newAccountNameInput"]').setValue(
-              ACCOUNTS.FIRST.NAME
-            );
-            await browser.keys('Tab');
+        describe("Account name page", () => {
+          it("The account cannot be given a name already in use", async () => {
+            await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST.NAME);
+            await browser.keys("Tab");
 
-            expect(
-              await $('[data-testid="newAccountNameError"]').getText()
-            ).matches(/name already exist/i);
-
-            expect(await $('[data-testid="continueBtn"]').isEnabled()).to.be
-              .false;
+            expect(NewWalletNameScreen.errorField).toHaveText("name already exist");
+            expect(NewWalletNameScreen.continueButton).toBeDisabled();
           });
 
-          it('Additional account successfully imported while entered correct account name', async () => {
-            await $('[data-testid="newAccountNameInput"]').setValue(
-              ACCOUNTS.MORE_24_CHARS.NAME
-            );
-            await browser.keys('Tab');
+          it("Additional account successfully imported while entered correct account name", async () => {
+            await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.MORE_24_CHARS.NAME);
+            await browser.keys("Tab");
 
-            expect($('[data-testid="newAccountNameError"]').getText()).to.be
-              .empty;
+            expect(NewWalletNameScreen.errorField).toHaveText("");
 
-            await $('[data-testid="continueBtn"]').click();
+            await NewWalletNameScreen.continueButton.click();
 
-            await $('[data-testid="addAnotherAccountBtn"]').click();
-
-            await $('[data-testid="importForm"]').waitForExist();
+            await ImportSuccessScreen.addAnotherAccountButton.click();
+            expect(ImportFormScreen.root).toBeExisting();
 
             await browser.switchToWindow(tabKeeper);
             await browser.openKeeperPopup();
 
-            expect(await PopupHome.getActiveAccountName()).to.equal(
-              ACCOUNTS.MORE_24_CHARS.NAME
-            );
+            expect(HomeScreen.activeAccountNameField).toHaveText(ACCOUNTS.MORE_24_CHARS.NAME);
+            7;
           });
         });
       });
 
-      it('When you already have 2 accounts');
-      it('When you already have 10 accounts');
+      it("When you already have 2 accounts");
+      it("When you already have 10 accounts");
     });
   });
 
-  describe('Import via keystore file', () => {
-    describe('validation', () => {
+  describe("Import via keystore file", () => {
+    describe("validation", () => {
       it(
-        'keeps "Continue" button disabled until both keystore file is selected and password is entered'
+        "keeps \"Continue\" button disabled until both keystore file is selected and password is entered"
       );
     });
 
-    describe('file parsing and decryption', () => {
+    describe("file parsing and decryption", () => {
       beforeEach(async () => {
-        await $('[data-testid="importKeystore"]').click();
+        await ImportFormScreen.importByKeystoreFileButton.click();
       });
 
       afterEach(async () => {
-        await $("//div[contains(@class, 'arrowBackIcon@menu')]").click();
+        await Common.backButton.click();
       });
 
-      function extractParsedAccountsFromDOM() {
-        return $$('[data-testid="accountsGroup"]').map(group =>
-          Promise.all([
-            group.$('[data-testid="accountsGroupLabel"]').getText(),
-            group
-              .$$('[data-testid="accountCard"]')
-              .map(card =>
-                Promise.all([
-                  card.$('[data-testid="accountName"]').getText(),
-                  card.getAttribute('title'),
-                ]).then(([name, address]) => ({ name, address }))
-              ),
-          ]).then(([label, accounts]) => ({ label, accounts }))
+      async function extractParsedAccountsFromDOM() {
+        const accountsGroups = await ChooseAccountsForm.accountsGroups;
+        return await Promise.all(
+          accountsGroups.map(
+            async group => {
+              const accountCards = await group.accounts;
+              return {
+                label: await group.label.getText(),
+                accounts: await Promise.all(accountCards.map(async account => ({
+                  name: await account.nameField.getText(),
+                  address: await account.getAddress(),
+                })))
+              };
+            }
+          )
         );
       }
 
-      it('can decrypt the correct keeper keystore file', async () => {
-        await $('[data-testid="fileInput"]').addValue(
-          '/app/test/fixtures/keystore-keeper.json'
-        );
+      it("can decrypt the correct keeper keystore file", async () => {
+        await ImportKeystoreFileScreen.fileInput.addValue("/app/test/fixtures/keystore-keeper.json");
+        await ImportKeystoreFileScreen.passwordInput.setValue("xHZ7Zaxu2wuncWC");
+        await ImportKeystoreFileScreen.continueButton.click();
 
-        await $('[data-testid="passwordInput"]').setValue('xHZ7Zaxu2wuncWC');
-        await $('[data-testid="submitButton"]').click();
-
-        expect(await extractParsedAccountsFromDOM()).to.deep.equal([
+        expect(await extractParsedAccountsFromDOM()).toStrictEqual([
           {
-            label: 'Mainnet',
+            label: "Mainnet",
             accounts: [
-              { name: 'test2', address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r' },
-            ],
+              { name: "test2", address: "3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r" }
+            ]
           },
           {
-            label: 'Testnet',
+            label: "Testnet",
             accounts: [
-              { name: 'test', address: '3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h' },
-              { name: 'test3', address: '3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi' },
-            ],
+              { name: "test", address: "3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h" },
+              { name: "test3", address: "3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi" }
+            ]
           },
           {
-            label: 'Stagenet',
+            label: "Stagenet",
             accounts: [
-              { name: 'test4', address: '3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D' },
-            ],
-          },
+              { name: "test4", address: "3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D" }
+            ]
+          }
         ]);
       });
 
-      it('can decrypt the correct exchange keystore file', async () => {
-        await $('[data-testid="fileInput"]').addValue(
-          '/app/test/fixtures/keystore-exchange.json'
-        );
+      it("can decrypt the correct exchange keystore file", async () => {
+        await ImportKeystoreFileScreen.fileInput.addValue("/app/test/fixtures/keystore-exchange.json");
+        await ImportKeystoreFileScreen.passwordInput.setValue("N72r78ByXBfNBnN#");
+        await ImportKeystoreFileScreen.continueButton.click();
 
-        await $('[data-testid="passwordInput"]').setValue('N72r78ByXBfNBnN#');
-        await $('[data-testid="submitButton"]').click();
-
-        expect(await extractParsedAccountsFromDOM()).to.deep.equal([
+        expect(await extractParsedAccountsFromDOM()).toStrictEqual([
           {
-            label: 'Mainnet',
+            label: "Mainnet",
             accounts: [
-              { name: 'test', address: '3PAqjy2wRWdrEBCmj66UbNUjo5KDksk9rTA' },
-              { name: 'test2', address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r' },
-            ],
-          },
+              { name: "test", address: "3PAqjy2wRWdrEBCmj66UbNUjo5KDksk9rTA" },
+              { name: "test2", address: "3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r" }
+            ]
+          }
         ]);
       });
 
-      it('shows an error if the file format is not recognized');
-      it('shows an error if the password is wrong');
+      it("shows an error if the file format is not recognized");
+      it("shows an error if the password is wrong");
     });
 
-    describe('actual import', () => {
-      function extractAccountCheckboxesFromDOM() {
-        return $$('[data-testid="accountCard"]').map(card =>
-          Promise.all([
-            card.getAttribute('title'),
-            card.$('[data-testid="accountName"]').getText(),
-            card
-              .$('[name="selected"]')
-              .isSelected()
-              .catch(() => null),
-          ]).then(([address, name, selected]) => ({ address, name, selected }))
-        );
+    describe("actual import", () => {
+      async function extractAccountCheckboxesFromDOM() {
+        const accounts = await ChooseAccountsForm.accounts;
+        return await Promise.all(accounts.map(async account => ({
+          name: await account.nameField.getText(),
+          address: await account.getAddress(),
+          selected: await account.isSelected()
+        })));
       }
 
-      describe('when no accounts exist', () => {
-        it('allows to select and import all accounts', async () => {
-          await $('[data-testid="importKeystore"]').click();
+      async function collectAllAccountNames() {
+        const activeAccountName = await HomeScreen.activeAccountNameField.getText();
+        await HomeScreen.otherAccountsButton.click();
+        const otherAccountNames = await Promise.all((await OtherAccountsScreen.accounts).map(async it => await it.nameField.getText()));
+        await Common.backButton.click();
+        return [activeAccountName, ...otherAccountNames];
+      }
 
-          await $('[data-testid="fileInput"]').addValue(
-            '/app/test/fixtures/keystore-keeper.json'
-          );
-
-          await $('[data-testid="passwordInput"]').setValue('xHZ7Zaxu2wuncWC');
-          await $('[data-testid="submitButton"]').click();
-
-          expect(
-            await extractAccountCheckboxesFromDOM()
-          ).to.have.deep.ordered.members([
-            {
-              name: 'test2',
-              address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
-              selected: true,
-            },
-            {
-              name: 'test',
-              address: '3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h',
-              selected: true,
-            },
-            {
-              name: 'test3',
-              address: '3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi',
-              selected: true,
-            },
-            {
-              name: 'test4',
-              address: '3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D',
-              selected: true,
-            },
-          ]);
-
-          await $(
-            'input[type="checkbox"][value="3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi"]'
-          ).click();
-
-          await $(
-            'input[type="checkbox"][value="3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r"]'
-          ).click();
+      describe("when no accounts exist", () => {
+        it("allows to select and import all accounts", async () => {
+          await ImportFormScreen.importByKeystoreFileButton.click();
+          await ImportKeystoreFileScreen.fileInput.addValue("/app/test/fixtures/keystore-keeper.json");
+          await ImportKeystoreFileScreen.passwordInput.setValue("xHZ7Zaxu2wuncWC");
+          await ImportKeystoreFileScreen.continueButton.click();
 
           expect(
             await extractAccountCheckboxesFromDOM()
-          ).to.have.deep.ordered.members([
+          ).toStrictEqual([
             {
-              name: 'test2',
-              address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
-              selected: false,
+              name: "test2",
+              address: "3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r",
+              selected: true
             },
             {
-              name: 'test',
-              address: '3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h',
-              selected: true,
+              name: "test",
+              address: "3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h",
+              selected: true
             },
             {
-              name: 'test3',
-              address: '3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi',
-              selected: false,
+              name: "test3",
+              address: "3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi",
+              selected: true
             },
             {
-              name: 'test4',
-              address: '3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D',
-              selected: true,
-            },
+              name: "test4",
+              address: "3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D",
+              selected: true
+            }
           ]);
 
-          await $('[data-testid="submitButton"]').click();
-          await $('[data-testid="addAnotherAccountBtn"]').click();
+          (await ChooseAccountsForm.getAccountByAddress("3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi")).checkbox.click();
+          (await ChooseAccountsForm.getAccountByAddress("3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r")).checkbox.click();
+
+          expect(
+            await extractAccountCheckboxesFromDOM()
+          ).toStrictEqual([
+            {
+              name: "test2",
+              address: "3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r",
+              selected: false
+            },
+            {
+              name: "test",
+              address: "3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h",
+              selected: true
+            },
+            {
+              name: "test3",
+              address: "3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi",
+              selected: false
+            },
+            {
+              name: "test4",
+              address: "3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D",
+              selected: true
+            }
+          ]);
+
+          await ChooseAccountsForm.importButton.click();
+          await ImportSuccessScreen.addAnotherAccountButton.click();
 
           await browser.switchToWindow(tabKeeper);
-          await Network.switchToAndCheck('Testnet');
+          await Network.switchToAndCheck("Testnet");
 
-          expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
-            'test',
+          expect(await collectAllAccountNames()).toStrictEqual([
+            "test"
           ]);
 
-          await Network.switchToAndCheck('Stagenet');
+          await Network.switchToAndCheck("Stagenet");
 
-          expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
-            'test4',
+          expect(await collectAllAccountNames()).toStrictEqual([
+            "test4"
           ]);
         });
       });
 
-      describe('when some, but not all accounts already exist', () => {
-        it('allows to select only unexisting accounts', async () => {
+      describe("when some, but not all accounts already exist", () => {
+        it("allows to select only unexisting accounts", async () => {
           await PopupHome.addAccount();
 
           await browser.switchToWindow(tabAccounts);
-          await $('[data-testid="importKeystore"]').click();
-
-          await $('[data-testid="fileInput"]').addValue(
-            '/app/test/fixtures/keystore-keeper.json'
-          );
-
-          await $('[data-testid="passwordInput"]').setValue('xHZ7Zaxu2wuncWC');
-          await $('[data-testid="submitButton"]').click();
+          await ImportFormScreen.importByKeystoreFileButton.click();
+          await ImportKeystoreFileScreen.fileInput.addValue("/app/test/fixtures/keystore-keeper.json");
+          await ImportKeystoreFileScreen.passwordInput.setValue("xHZ7Zaxu2wuncWC");
+          await ImportKeystoreFileScreen.continueButton.click();
 
           expect(
             await extractAccountCheckboxesFromDOM()
-          ).to.have.deep.ordered.members([
+          ).toStrictEqual([
             {
-              name: 'test2',
-              address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
-              selected: true,
+              name: "test2",
+              address: "3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r",
+              selected: true
             },
             {
-              name: 'test',
-              address: '3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h',
-              selected: null,
+              name: "test",
+              address: "3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h",
+              selected: null
             },
             {
-              name: 'test3',
-              address: '3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi',
-              selected: true,
+              name: "test3",
+              address: "3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi",
+              selected: true
             },
             {
-              name: 'test4',
-              address: '3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D',
-              selected: null,
-            },
+              name: "test4",
+              address: "3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D",
+              selected: null
+            }
           ]);
 
-          await $('[data-testid="submitButton"]').click();
-          await $('[data-testid="addAnotherAccountBtn"]').click();
+          await ChooseAccountsForm.importButton.click();
+          await ImportSuccessScreen.addAnotherAccountButton.click();
 
           await browser.switchToWindow(tabKeeper);
           await browser.openKeeperPopup();
-          await Network.switchToAndCheck('Testnet');
+          await Network.switchToAndCheck("Testnet");
 
-          expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
-            'test',
-            'test3',
+          expect(await collectAllAccountNames()).toStrictEqual([
+            "test",
+            "test3"
           ]);
 
-          await Network.switchToAndCheck('Stagenet');
+          await Network.switchToAndCheck("Stagenet");
 
-          expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
-            'test4',
+          expect(await collectAllAccountNames()).toStrictEqual([
+            "test4"
           ]);
 
-          await Network.switchToAndCheck('Mainnet');
+          await Network.switchToAndCheck("Mainnet");
 
-          expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
-            'test2',
+          expect(await collectAllAccountNames()).toStrictEqual([
+            "test2"
           ]);
         });
       });
 
-      describe('when all accounts exist', () => {
-        it('does not allow selecting anything and shows the "Skip" button', async () => {
+      describe("when all accounts exist", () => {
+        it("does not allow selecting anything and shows the \"Skip\" button", async () => {
           await PopupHome.addAccount();
 
           await browser.switchToWindow(tabAccounts);
-          await $('[data-testid="importKeystore"]').click();
-
-          await $('[data-testid="fileInput"]').addValue(
-            '/app/test/fixtures/keystore-keeper.json'
-          );
-
-          await $('[data-testid="passwordInput"]').setValue('xHZ7Zaxu2wuncWC');
-          await $('[data-testid="submitButton"]').click();
+          await ImportFormScreen.importByKeystoreFileButton.click();
+          await ImportKeystoreFileScreen.fileInput.addValue("/app/test/fixtures/keystore-keeper.json");
+          await ImportKeystoreFileScreen.passwordInput.setValue("xHZ7Zaxu2wuncWC");
+          await ImportKeystoreFileScreen.continueButton.click();
 
           expect(
             await extractAccountCheckboxesFromDOM()
-          ).to.have.deep.ordered.members([
+          ).toStrictEqual([
             {
-              name: 'test2',
-              address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
-              selected: null,
+              name: "test2",
+              address: "3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r",
+              selected: null
             },
             {
-              name: 'test',
-              address: '3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h',
-              selected: null,
+              name: "test",
+              address: "3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h",
+              selected: null
             },
             {
-              name: 'test3',
-              address: '3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi',
-              selected: null,
+              name: "test3",
+              address: "3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi",
+              selected: null
             },
             {
-              name: 'test4',
-              address: '3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D',
-              selected: null,
-            },
+              name: "test4",
+              address: "3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D",
+              selected: null
+            }
           ]);
 
-          await $('[data-testid="skipButton"]').click();
-          await $('[data-testid="importForm"]').waitForExist();
+          await ChooseAccountsForm.skipButton.click();
+          await ImportFormScreen.root.waitForDisplayed();
         });
       });
 
-      describe('when the user already has an account with the same name, but different address', () => {
+      describe("when the user already has an account with the same name, but different address", () => {
         before(async () => {
           await browser.switchToWindow(tabKeeper);
         });
 
         beforeEach(deleteEachAndSwitchToAccounts);
 
-        it('adds suffix to the name', async () => {
+        it("adds suffix to the name", async () => {
           await AccountsHome.importAccount(
-            'test2',
-            'this is the seed for the test account'
+            "test2",
+            "this is the seed for the test account"
           );
 
-          await $('[data-testid="importKeystore"]').click();
-
-          await $('[data-testid="fileInput"]').addValue(
-            '/app/test/fixtures/keystore-keeper.json'
-          );
-
-          await $('[data-testid="passwordInput"]').setValue('xHZ7Zaxu2wuncWC');
-          await $('[data-testid="submitButton"]').click();
+          await ImportFormScreen.importByKeystoreFileButton.click();
+          await ImportKeystoreFileScreen.fileInput.addValue("/app/test/fixtures/keystore-keeper.json");
+          await ImportKeystoreFileScreen.passwordInput.setValue("xHZ7Zaxu2wuncWC");
+          await ImportKeystoreFileScreen.continueButton.click();
 
           expect(
             await extractAccountCheckboxesFromDOM()
-          ).to.include.deep.members([
+          ).toContainEqual(
             {
-              name: 'test2 (1)',
-              address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
-              selected: true,
-            },
-          ]);
+              name: "test2 (1)",
+              address: "3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r",
+              selected: true
+            }
+          );
 
-          await $('[data-testid="submitButton"]').click();
-          await $('[data-testid="addAnotherAccountBtn"]').click();
+          await ChooseAccountsForm.importButton.click();
+          await ImportSuccessScreen.addAnotherAccountButton.click();
 
           await browser.switchToWindow(tabKeeper);
           await browser.openKeeperPopup();
 
-          expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
-            'test2',
-            'test2 (1)',
+          expect(await collectAllAccountNames()).toStrictEqual([
+            "test2",
+            "test2 (1)"
           ]);
         });
 
-        it('increments the number in suffix if it already exists', async () => {
+        it("increments the number in suffix if it already exists", async () => {
           await AccountsHome.importAccount(
-            'test2',
-            'this is a seed for the test account'
+            "test2",
+            "this is a seed for the test account"
           );
 
           await AccountsHome.importAccount(
-            'test2 (1)',
-            'this is an another seed for the test account'
+            "test2 (1)",
+            "this is an another seed for the test account"
           );
 
-          await $('[data-testid="importKeystore"]').click();
-
-          await $('[data-testid="fileInput"]').addValue(
-            '/app/test/fixtures/keystore-keeper.json'
-          );
-
-          await $('[data-testid="passwordInput"]').setValue('xHZ7Zaxu2wuncWC');
-          await $('[data-testid="submitButton"]').click();
+          await ImportFormScreen.importByKeystoreFileButton.click();
+          await ImportKeystoreFileScreen.fileInput.addValue("/app/test/fixtures/keystore-keeper.json");
+          await ImportKeystoreFileScreen.passwordInput.setValue("xHZ7Zaxu2wuncWC");
+          await ImportKeystoreFileScreen.continueButton.click();
 
           expect(
             await extractAccountCheckboxesFromDOM()
-          ).to.include.deep.members([
+          ).toContainEqual(
             {
-              name: 'test2 (2)',
-              address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
-              selected: true,
-            },
-          ]);
+              name: "test2 (2)",
+              address: "3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r",
+              selected: true
+            }
+          );
 
-          await $('[data-testid="submitButton"]').click();
-
-          await $('[data-testid="addAnotherAccountBtn"]').click();
+          await ChooseAccountsForm.importButton.click();
+          await ImportSuccessScreen.addAnotherAccountButton.click();
 
           await browser.switchToWindow(tabKeeper);
           await browser.openKeeperPopup();
 
-          expect(await PopupHome.getAllAccountNames()).to.have.ordered.members([
-            'test2 (1)',
-            'test2',
-            'test2 (2)',
-          ]);
+          const accountNames = await collectAllAccountNames();
+          [
+            "test2 (1)",
+            "test2",
+            "test2 (2)"
+          ].forEach(name => {
+            expect(accountNames).toContainEqual(name);
+          });
         });
       });
     });

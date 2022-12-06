@@ -65,7 +65,7 @@ export const PopupHome = {
   },
 
   getActiveAccountName: async () =>
-    await browser.findByTestId$("activeAccountCard").findByTestId$("accountName").getText(),
+    await HomeScreen.activeAccountNameField.getText(),
 
   getOtherAccountNames: async () => {
     await $("[data-testid=\"otherAccountsButton\"]").click();

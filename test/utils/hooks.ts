@@ -1,10 +1,9 @@
+import { configure, setupBrowser, WebdriverIOQueries, WebdriverIOQueriesChainable } from '@testing-library/webdriverio';
 import * as mocha from 'mocha';
-import * as path from 'path';
 import { Session, WebDriver } from 'selenium-webdriver';
 import { Executor, HttpClient } from 'selenium-webdriver/http';
-import { GenericContainer, Network, StartedTestContainer } from 'testcontainers';
+import { DockerComposeEnvironment, StartedDockerComposeEnvironment, StartedTestContainer } from 'testcontainers';
 import { remote } from 'webdriverio';
-import { configure, setupBrowser, WebdriverIOQueries, WebdriverIOQueriesChainable } from '@testing-library/webdriverio';
 
 declare global {
   interface Window {
@@ -42,42 +41,20 @@ interface GlobalFixturesContext {
   node: StartedTestContainer;
 }
 
+
+interface GlobalFixturesContext {
+  compose: StartedDockerComposeEnvironment;
+}
+
 export async function mochaGlobalSetup(this: GlobalFixturesContext) {
-  const host = await new Network().start();
-
-  this.node = await new GenericContainer('wavesplatform/waves-private-node')
-    .withExposedPorts(6869)
-    .withNetworkMode(host.getName())
-    .withNetworkAliases('waves-private-node')
-    .start();
-
-  this.selenium = await new GenericContainer('selenium/standalone-chrome')
-    .withBindMount(
-      path.resolve(__dirname, '..', '..', 'dist'),
-      '/app/dist',
-      'ro'
-    )
-    .withBindMount(
-      path.resolve(__dirname, '..', 'fixtures'),
-      '/app/test/fixtures',
-      'ro'
-    )
-    .withExposedPorts(
-      {
-        container: 4444,
-        host: 4444,
-      },
-      {
-        container: 5900,
-        host: 5900,
-      },
-      {
-        container: 7900,
-        host: 7900,
-      }
-    )
-    .withNetworkMode(host.getName())
-    .start();
+  this.compose = await new DockerComposeEnvironment(
+    '.',
+    'docker-compose.yml'
+  ).up([
+    'waves-private-node',
+    'chrome',
+    ...(process.env.TEST_WATCH ? [] : ['chrome-video']),
+  ]);
 }
 
 export async function mochaGlobalTeardown(this: GlobalFixturesContext) {
@@ -144,7 +121,7 @@ export const mochaHooks = () => ({
     // https://github.com/webdriverio/webdriverio/issues/5869#issuecomment-964012560
     browser.overwriteCommand(
       'clearValue',
-      async function(this: WebdriverIO.Element) {
+      async function (this: WebdriverIO.Element) {
         // https://w3c.github.io/webdriver/#keyboard-actions
         await this.elementSendKeys(this.elementId, '\uE009a'); // Ctrl+a
         await this.elementSendKeys(this.elementId, '\uE003'); // Backspace
@@ -154,9 +131,9 @@ export const mochaHooks = () => ({
 
     browser.addCommand(
       'openKeeperPopup',
-      async function(this: WebdriverIO.Browser) {
+      async function (this: WebdriverIO.Browser) {
         await this.navigateTo(
-          `chrome-extension://${keeperExtensionId}/popup.html`
+          `chrome-extension://${ keeperExtensionId }/popup.html`
         );
       }
     );
