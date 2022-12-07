@@ -24,7 +24,7 @@ export const AccountInfoScreen = {
   },
 
   get privateKeyCopyButton() {
-    return this.root.$("#accountInfoPublicKey [class*='lastIcon@copy']");
+    return this.root.$("#accountInfoPrivateKey [class*='lastIcon@copy']");
   },
 
   get backupPhraseCopyButton() {
@@ -36,10 +36,14 @@ export const AccountInfoScreen = {
   },
 
   get modalCancelButton() {
-    return browser.$("[class*='modalWrapped@modal'] #passwordCancel");
+    return browser.$("[class*='modalWrapper@modal'] #passwordCancel");
   },
 
   get nameField() {
     return this.root.$("[class*='accountName@accountInfo']")
+  },
+
+  get notification() {
+    return browser.$(".modal.notification");
   }
 };

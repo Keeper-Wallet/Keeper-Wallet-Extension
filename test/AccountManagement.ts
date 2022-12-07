@@ -3,10 +3,11 @@ import { expect } from 'expect-webdriverio';
 import { AccountInfoScreen } from "./pageobject/AccountInfoScreen";
 import { ChangeAccountNameScreen } from "./pageobject/ChangeAccountNameScreen";
 import { Common } from "./pageobject/Common";
+import { DeleteAccountScreen } from "./pageobject/DeleteAccountScreen";
 import { EmptyHomeScreen } from "./pageobject/EmptyHomeScreen";
 import { HomeScreen } from "./pageobject/HomeScreen";
 import { OtherAccountsScreen } from "./pageobject/OtherAccountsScreen";
-import { AccountsHome, App, Network, PopupHome, Settings, Windows, } from './utils/actions';
+import { AccountsHome, App, Network, Settings, Windows, } from './utils/actions';
 
 describe('Account management', function () {
   let tabKeeper: string, tabAccounts: string;
@@ -149,7 +150,7 @@ describe('Account management', function () {
 
     describe('Backup phrase', () => {
       it('Is hidden', async () => {
-        expect(await AccountInfoScreen.backupPhraseField.getText()).toMatch(/\w+/i);
+        expect(await AccountInfoScreen.backupPhraseField.getText()).not.toMatch(/\w+/i);
       });
 
       describe('Copying by clicking the "Copy" button', () => {
@@ -186,60 +187,33 @@ describe('Account management', function () {
 
       it('Unique name specified', async () => {
         newAccountName = currentAccountName.slice(1);
-        await $('#newAccountName').setValue(newAccountName);
+        await ChangeAccountNameScreen.newNameInput.setValue(newAccountName);
         await browser.keys('Tab');
-        expect(await $('[data-testid="newAccountNameError"]').getText()).toBe("");
-        expect(await $('#save').isEnabled()).toBe(true);
+        expect(ChangeAccountNameScreen.errorField).toHaveText("");
+        expect(ChangeAccountNameScreen.saveButton).toBeEnabled();
       });
 
       it('Successfully changed account name', async () => {
-        await $('#save').click();
+        await ChangeAccountNameScreen.saveButton.click();
 
-        const notification = await $('.modal.notification');
-        await notification.waitForDisplayed();
-
-        await browser.waitUntil(
-          async () => (await notification.getText()) === 'Account name changed',
-          {
-            timeoutMsg: 'notification text is incorrect',
-          }
-        );
-
-        await browser.waitUntil(
-          async () =>
-            (await $(
-              "//button[contains(@class, 'accountName@accountInfo')]//span"
-            ).getText()) === newAccountName,
-          {
-            timeoutMsg: 'account name did not change',
-          }
-        );
+        expect(await AccountInfoScreen.notification).toHaveText("Account name changed");
+        expect(await AccountInfoScreen.nameField).toHaveText(newAccountName);
       });
     });
 
     describe('Delete account', () => {
       beforeEach(async () => {
-        await $("//div[contains(@class, 'deleteButton@accountInfo')]").click();
-
-        await $(
-          "//div[contains(@class, 'content@deleteAccount-module')]"
-        ).waitForExist();
+        await AccountInfoScreen.deleteAccountButton.click();
       });
 
       it('Click "Back" on the account deletion confirmation screen - the account is not deleted', async () => {
-        await $('div.arrow-back-icon').click();
-
-        await $(
-          "//div[contains(@class, 'content@accountInfo')]"
-        ).waitForExist();
+        await Common.backButton.click();
+        expect(await AccountInfoScreen.nameField).toBeDisabled();
       });
 
       it('Click "Delete account" deletes the account', async () => {
-        await $('button#deleteAccount').click();
-
-        await $(
-          '[data-testid="importForm"], [data-testid="assetsForm"]'
-        ).waitForExist();
+        await DeleteAccountScreen.deleteAccountButton.click();
+        expect(await HomeScreen.isDisplayed() || await EmptyHomeScreen.isDisplayed()).toBe(true);
       });
     });
   }
@@ -259,8 +233,7 @@ describe('Account management', function () {
 
   describe('Active account', async () => {
     it('By clicking on account - go to the account properties screen', async () => {
-      await $('[data-testid="activeAccountCard"]').click();
-      await $("//div[contains(@class, 'content@accountInfo')]").waitForExist();
+      await HomeScreen.activeAccountCard.click();
     });
 
     accountPropertiesShouldBeRight();
@@ -301,35 +274,21 @@ describe('Account management', function () {
     });
 
     it('should preserve previously selected account for the network', async () => {
-      await $('[data-testid="otherAccountsButton"]').click();
-      await $('[data-testid="otherAccountsPage"]').waitForExist();
-      await $('[data-testid="accountCard"]').click();
-
-      await browser.waitUntil(
-        async () => (await PopupHome.getActiveAccountName()) === 'second',
-        {
-          timeoutMsg: 'selected account did not change',
-        }
-      );
+      await HomeScreen.otherAccountsButton.click();
+      (await OtherAccountsScreen.accounts)[0].select();
+      expect(await HomeScreen.activeAccountNameField).toHaveText("second");
 
       await Network.switchToAndCheck('Testnet');
 
-      await $('[data-testid="otherAccountsButton"]').click();
-      await $('[data-testid="otherAccountsPage"]').waitForExist();
-      await $('[data-testid="accountCard"]').click();
-
-      await browser.waitUntil(
-        async () => (await PopupHome.getActiveAccountName()) === 'fourth',
-        {
-          timeoutMsg: 'selected account did not change',
-        }
-      );
+      await HomeScreen.otherAccountsButton.click();
+      (await OtherAccountsScreen.accounts)[0].select();
+      expect(await HomeScreen.activeAccountNameField).toHaveText("fourth");
 
       await Network.switchToAndCheck('Mainnet');
-      expect(await PopupHome.getActiveAccountName()).toBe('second');
+      expect(await HomeScreen.activeAccountNameField).toHaveText("second");
 
       await Network.switchToAndCheck('Testnet');
-      expect(await PopupHome.getActiveAccountName()).toBe('fourth');
+      expect(await HomeScreen.activeAccountNameField).toHaveText("fourth");
     });
   });
 });
