@@ -10,7 +10,7 @@ import { ImportUsingSeedScreen } from "../pageobject/ImportUsingSeedScreen";
 import { NewAccountScreen } from "../pageobject/NewAccountScreen";
 import { NewWalletNameScreen } from "../pageobject/NewWalletNameScreen";
 import { OtherAccountsScreen } from "../pageobject/OtherAccountsScreen";
-import { GeneralSettingsScreen, SettingsScreen } from "../pageobject/SettingsScreen";
+import { GeneralSettingsScreen, PermissionControlSettingsScreen, SettingsScreen } from "../pageobject/SettingsScreen";
 import { DEFAULT_PASSWORD } from "./constants";
 
 export const App = {
@@ -117,14 +117,13 @@ export const Settings = {
   },
 
   clearCustomList: async () => {
-    await $("//div[contains(@class, 'settingsIcon@menu')]").click();
-    await $("#settingsPermission").click();
+    await EmptyHomeScreen.settingsButton.click();
+    await SettingsScreen.permissionsSectionLink.click();
 
-    for (const originEl of await $$(
-      "//div[contains(@class, 'permissionItem@list')]"
-    )) {
-      await originEl.$("//button[contains(@class, 'settings@list')]").click();
-      await $("#delete").click();
+    const permissions = await PermissionControlSettingsScreen.permissionItems
+    for (const permission of permissions) {
+      await permission.detailsIcon.click();
+      await PermissionControlSettingsScreen.modalDeleteButton.click();
     }
   }
 };
