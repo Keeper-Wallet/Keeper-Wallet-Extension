@@ -4872,9 +4872,9 @@ htmlparser2@^6.1.0:
     entities "^2.0.0"
 
 i18next-resources-to-backend@^1.0.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/i18next-resources-to-backend/-/i18next-resources-to-backend-1.1.0.tgz#ce6ea7143dbe97304015a5b93a80498cb801f510"
-  integrity sha512-h/DhIkFQ2T++MkL+cfbXBPTT9r02Pa1/2zCmbnsEWxB+dwKQYZ3lh1JQintKuK6Kn2nl7ivYJEUtzAI7fDtopw==
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/i18next-resources-to-backend/-/i18next-resources-to-backend-1.1.1.tgz#b2f66e47c47e76d65918bc1981268f4f18f96783"
+  integrity sha512-8RSFzFGy1SKQDkG/Pv6dEWR1H07L6UflAysWXE4z3kdN7pntdncgBQh915/fkphkioRnU00+HYj+r9d92YDH5A==
   dependencies:
     "@babel/runtime" "^7.20.6"
 
