@@ -15,5 +15,9 @@ export const Common = {
 
   async getNetworksMenu() {
     return NetworksMenu(await browser.$("[class*='selectNetworks@network']"));
-  }
+  },
+
+  get settingsButton() {
+    return browser.$("[class*='settingsIcon@menu']");
+  },
 };

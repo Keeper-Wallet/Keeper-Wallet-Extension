@@ -11,10 +11,6 @@ export const EmptyHomeScreen = {
     return browser.findByTestId$("importForm");
   },
 
-  get settingsButton() {
-    return browser.$("[class*='settingsIcon@menu']");
-  },
-
   get addButton() {
     return this.root.findByText$("Add account");
   }

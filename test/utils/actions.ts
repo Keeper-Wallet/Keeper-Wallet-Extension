@@ -1,7 +1,7 @@
 import { expect } from "expect-webdriverio";
 
 import { Common } from "../pageobject/Common";
-import { EmptyHomeScreen } from "../pageobject/EmptyHomeScreen";
+import { ConfirmDeleteAccountsScreen } from "../pageobject/ConfirmDeleteAccountsScreen";
 import { GetStartedScreen } from "../pageobject/GetStartedScreen";
 import { HomeScreen } from "../pageobject/HomeScreen";
 import { ImportFormScreen } from "../pageobject/ImportFormScreen";
@@ -38,12 +38,12 @@ export const App = {
   resetVault: async () => {
     await browser.openKeeperPopup();
 
-    await $("//div[contains(@class, 'settingsIcon@menu')]").click();
-    await $("//div[contains(@class, 'deleteAccounts@settings')]").click();
-    await $("[data-testid=\"confirmPhrase\"]").setValue("DELETE ALL ACCOUNTS");
-    await $("[data-testid=\"resetConfirm\"]").click();
+    await Common.settingsButton.click();
+    await SettingsScreen.deleteAccountsButton.click();
+    await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue("DELETE ALL ACCOUNTS");
+    await ConfirmDeleteAccountsScreen.deleteAllButton.click();
 
-    await $("[data-testid=\"getStartedBtn\"]").waitForExist();
+    expect(GetStartedScreen.getStartedButton).toBeDisplayed();
   },
 
   closeBgTabs: async (foreground: string) => {
@@ -103,7 +103,7 @@ export const Settings = {
       window.focus();
     });
 
-    await EmptyHomeScreen.settingsButton.click();
+    await Common.settingsButton.click();
     await SettingsScreen.generalSectionLink.click();
     await GeneralSettingsScreen.setSessionTimeoutByIndex(index);
   },
@@ -117,10 +117,10 @@ export const Settings = {
   },
 
   clearCustomList: async () => {
-    await EmptyHomeScreen.settingsButton.click();
+    await Common.settingsButton.click();
     await SettingsScreen.permissionsSectionLink.click();
 
-    const permissions = await PermissionControlSettingsScreen.permissionItems
+    const permissions = await PermissionControlSettingsScreen.permissionItems;
     for (const permission of permissions) {
       await permission.detailsIcon.click();
       await PermissionControlSettingsScreen.modalDeleteButton.click();

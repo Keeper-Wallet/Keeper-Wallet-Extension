@@ -23,6 +23,14 @@ export const PermissionControlSettingsScreen = {
 
   get modalDeleteButton() {
     return browser.$("[class*='modalWrapper@modal'] #delete");
+  },
+
+  get modalSaveButton() {
+    return browser.$("[class*='modalWrapper@modal'] #save");
+  },
+
+  get modalAllowMessagesCheckbox() {
+    return browser.$("[class*='modalWrapper@modal']").findByText$("Allow sending messages");
   }
 };
 
@@ -37,5 +45,9 @@ export const SettingsScreen = {
 
   get permissionsSectionLink() {
     return this.root.findByText$("Permissions control");
+  },
+
+  get deleteAccountsButton() {
+    return this.root.findByText$("Delete accounts");
   }
 };
