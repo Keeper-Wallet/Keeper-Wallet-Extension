@@ -4,7 +4,7 @@ export const AccountInfoScreen = {
   },
 
   get deleteAccountButton() {
-    return this.root.findByText$("Delete account");
+    return this.root.findByText$('Delete account');
   },
 
   get addressField() {
@@ -12,15 +12,21 @@ export const AccountInfoScreen = {
   },
 
   get publicKeyField() {
-    return this.root.$("#accountInfoPublicKey [class*='copyTextOverflow@copy']");
+    return this.root.$(
+      "#accountInfoPublicKey [class*='copyTextOverflow@copy']"
+    );
   },
 
   get privateKeyField() {
-    return this.root.$("#accountInfoPublicKey [class*='copyTextOverflow@copy']");
+    return this.root.$(
+      "#accountInfoPublicKey [class*='copyTextOverflow@copy']"
+    );
   },
 
   get backupPhraseField() {
-    return this.root.$("#accountInfoBackupPhrase [class*='copyTextOverflow@copy']");
+    return this.root.$(
+      "#accountInfoBackupPhrase [class*='copyTextOverflow@copy']"
+    );
   },
 
   get privateKeyCopyButton() {
@@ -40,10 +46,10 @@ export const AccountInfoScreen = {
   },
 
   get nameField() {
-    return this.root.$("[class*='accountName@accountInfo']")
+    return this.root.$("[class*='accountName@accountInfo']");
   },
 
   get notification() {
-    return browser.$(".modal.notification");
-  }
+    return browser.$('.modal.notification');
+  },
 };

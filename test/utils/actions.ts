@@ -1,17 +1,21 @@
-import { expect } from "expect-webdriverio";
+import { expect } from 'expect-webdriverio';
 
-import { Common } from "../pageobject/Common";
-import { ConfirmDeleteAccountsScreen } from "../pageobject/ConfirmDeleteAccountsScreen";
-import { GetStartedScreen } from "../pageobject/GetStartedScreen";
-import { HomeScreen } from "../pageobject/HomeScreen";
-import { ImportFormScreen } from "../pageobject/ImportFormScreen";
-import { ImportSuccessScreen } from "../pageobject/ImportSuccessScreen";
-import { ImportUsingSeedScreen } from "../pageobject/ImportUsingSeedScreen";
-import { NewAccountScreen } from "../pageobject/NewAccountScreen";
-import { NewWalletNameScreen } from "../pageobject/NewWalletNameScreen";
-import { OtherAccountsScreen } from "../pageobject/OtherAccountsScreen";
-import { GeneralSettingsScreen, PermissionControlSettingsScreen, SettingsScreen } from "../pageobject/SettingsScreen";
-import { DEFAULT_PASSWORD } from "./constants";
+import { Common } from '../pageobject/Common';
+import { ConfirmDeleteAccountsScreen } from '../pageobject/ConfirmDeleteAccountsScreen';
+import { GetStartedScreen } from '../pageobject/GetStartedScreen';
+import { HomeScreen } from '../pageobject/HomeScreen';
+import { ImportFormScreen } from '../pageobject/ImportFormScreen';
+import { ImportSuccessScreen } from '../pageobject/ImportSuccessScreen';
+import { ImportUsingSeedScreen } from '../pageobject/ImportUsingSeedScreen';
+import { NewAccountScreen } from '../pageobject/NewAccountScreen';
+import { NewWalletNameScreen } from '../pageobject/NewWalletNameScreen';
+import { OtherAccountsScreen } from '../pageobject/OtherAccountsScreen';
+import {
+  GeneralSettingsScreen,
+  PermissionControlSettingsScreen,
+  SettingsScreen,
+} from '../pageobject/SettingsScreen';
+import { DEFAULT_PASSWORD } from './constants';
 
 export const App = {
   initVault: async (password = DEFAULT_PASSWORD) => {
@@ -40,7 +44,9 @@ export const App = {
 
     await Common.settingsButton.click();
     await SettingsScreen.deleteAccountsButton.click();
-    await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue("DELETE ALL ACCOUNTS");
+    await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
+      'DELETE ALL ACCOUNTS'
+    );
     await ConfirmDeleteAccountsScreen.deleteAllButton.click();
 
     expect(GetStartedScreen.getStartedButton).toBeDisplayed();
@@ -55,7 +61,7 @@ export const App = {
     }
 
     await browser.switchToWindow(foreground);
-  }
+  },
 };
 
 export const PopupHome = {
@@ -68,14 +74,14 @@ export const PopupHome = {
     await HomeScreen.activeAccountNameField.getText(),
 
   getOtherAccountNames: async () => {
-    await $("[data-testid=\"otherAccountsButton\"]").click();
-    await $("[data-testid=\"otherAccountsPage\"]").waitForDisplayed();
+    await $('[data-testid="otherAccountsButton"]').click();
+    await $('[data-testid="otherAccountsPage"]').waitForDisplayed();
 
     const accountNames = await $$(
-      "[data-testid=\"accountCard\"] [data-testid=\"accountName\"]"
+      '[data-testid="accountCard"] [data-testid="accountName"]'
     ).map(accName => accName.getText());
 
-    await $("div.arrow-back-icon").click();
+    await $('div.arrow-back-icon').click();
 
     return accountNames;
   },
@@ -93,7 +99,7 @@ export const AccountsHome = {
 
     await ImportSuccessScreen.addAnotherAccountButton.click();
     await ImportFormScreen.root.waitForDisplayed();
-  }
+  },
 };
 
 export const Settings = {
@@ -125,7 +131,7 @@ export const Settings = {
       await permission.detailsIcon.click();
       await PermissionControlSettingsScreen.modalDeleteButton.click();
     }
-  }
+  },
 };
 
 export const Network = {
@@ -144,7 +150,7 @@ export const Network = {
   switchToAndCheck: async (network: string) => {
     await Network.switchTo(network);
     await Network.checkNetwork(network);
-  }
+  },
 };
 
 export const Windows = {
@@ -164,12 +170,12 @@ export const Windows = {
             return newHandles.length >= count;
           },
           {
-            timeoutMsg: "waiting for new windows to appear"
+            timeoutMsg: 'waiting for new windows to appear',
           }
         );
 
         return newHandles;
-      }
+      },
     };
   },
 
@@ -181,8 +187,8 @@ export const Windows = {
         return !handles.includes(handle);
       },
       {
-        timeoutMsg: "waiting for window to close"
+        timeoutMsg: 'waiting for window to close',
       }
     );
-  }
+  },
 };

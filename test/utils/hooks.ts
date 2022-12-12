@@ -1,8 +1,17 @@
-import { configure, setupBrowser, WebdriverIOQueries, WebdriverIOQueriesChainable } from '@testing-library/webdriverio';
+import {
+  configure,
+  setupBrowser,
+  WebdriverIOQueries,
+  WebdriverIOQueriesChainable,
+} from '@testing-library/webdriverio';
 import * as mocha from 'mocha';
 import { Session, WebDriver } from 'selenium-webdriver';
 import { Executor, HttpClient } from 'selenium-webdriver/http';
-import { DockerComposeEnvironment, StartedDockerComposeEnvironment, StartedTestContainer } from 'testcontainers';
+import {
+  DockerComposeEnvironment,
+  StartedDockerComposeEnvironment,
+  StartedTestContainer,
+} from 'testcontainers';
 import { remote } from 'webdriverio';
 
 declare global {
@@ -12,20 +21,22 @@ declare global {
 
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace WebdriverIO {
-    interface Browser extends WebdriverIOQueries, WebdriverIOQueriesChainable<Browser> {
+    interface Browser
+      extends WebdriverIOQueries,
+        WebdriverIOQueriesChainable<Browser> {
       openKeeperPopup: () => Promise<void>;
     }
 
-    interface Element extends WebdriverIOQueries, WebdriverIOQueriesChainable<Element> {
-    }
+    interface Element
+      extends WebdriverIOQueries,
+        WebdriverIOQueriesChainable<Element> {}
   }
 }
 
 declare module 'webdriverio' {
   // eslint-disable-next-line
   interface ChainablePromiseElement<T extends WebdriverIO.Element | undefined>
-    extends WebdriverIOQueriesChainable<T> {
-  }
+    extends WebdriverIOQueriesChainable<T> {}
 }
 
 declare module 'mocha' {
@@ -40,7 +51,6 @@ interface GlobalFixturesContext {
   selenium: StartedTestContainer;
   node: StartedTestContainer;
 }
-
 
 interface GlobalFixturesContext {
   compose: StartedDockerComposeEnvironment;
@@ -76,16 +86,16 @@ export const mochaHooks = () => ({
           args: [
             '--load-extension=/app/dist/chrome',
             '--disable-dev-shm-usage',
-            '--disable-web-security'
-          ]
-        }
+            '--disable-web-security',
+          ],
+        },
       },
       path: '/wd/hub',
-      waitforTimeout: this.wait
+      waitforTimeout: this.wait,
     });
     Object.defineProperty(global, 'browser', { value: browser });
     configure({
-      asyncUtilTimeout: 15 * 1000
+      asyncUtilTimeout: 15 * 1000,
     });
     const queries = setupBrowser(browser);
     Object.defineProperty(global, 'queries', { value: queries });
@@ -133,7 +143,7 @@ export const mochaHooks = () => ({
       'openKeeperPopup',
       async function (this: WebdriverIO.Browser) {
         await this.navigateTo(
-          `chrome-extension://${ keeperExtensionId }/popup.html`
+          `chrome-extension://${keeperExtensionId}/popup.html`
         );
       }
     );
@@ -143,5 +153,5 @@ export const mochaHooks = () => ({
     if (typeof browser !== 'undefined') {
       browser.deleteSession();
     }
-  }
+  },
 });

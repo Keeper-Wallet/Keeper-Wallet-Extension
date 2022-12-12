@@ -4,6 +4,6 @@ export const GetStartedScreen = {
   },
 
   get getStartedButton() {
-    return this.root.findByText$("Get Started");
-  }
+    return this.root.findByText$('Get Started');
+  },
 };

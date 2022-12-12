@@ -4,7 +4,7 @@ export const NewWalletScreen = {
   },
 
   get continueButton() {
-    return this.root.findByText$("Continue");
+    return this.root.findByText$('Continue');
   },
 
   get accountAddressField() {
@@ -13,5 +13,5 @@ export const NewWalletScreen = {
 
   get avatars() {
     return this.root.$$("[class*='avatar@avatar']");
-  }
+  },
 };

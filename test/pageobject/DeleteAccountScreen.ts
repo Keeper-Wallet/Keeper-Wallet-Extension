@@ -4,6 +4,6 @@ export const DeleteAccountScreen = {
   },
 
   get deleteAccountButton() {
-    return this.root.findByText$("Delete account");
-  }
-}
+    return this.root.findByText$('Delete account');
+  },
+};

@@ -1,18 +1,22 @@
-import { ChainablePromiseElement } from "webdriverio";
+import { ChainablePromiseElement } from 'webdriverio';
 
-const PillsContainer = (wrapped: ChainablePromiseElement<WebdriverIO.Element>) => ({
+const PillsContainer = (
+  wrapped: ChainablePromiseElement<WebdriverIO.Element>
+) => ({
   getPillByText: async (text: string) => {
-    const pills = await wrapped.findAllByText$(text, { selector: "[class*='text@pills']" });
+    const pills = await wrapped.findAllByText$(text, {
+      selector: "[class*='text@pills']",
+    });
     if (pills.length > 0) {
       return pills[0];
     } else {
-      throw Error(`No pills with text '${ text }' found.`);
+      throw Error(`No pills with text '${text}' found.`);
     }
   },
 
   getAllPills: async () => {
     return wrapped.$$("[class*='pill@pills']:not([class*='hiddenPill@pills'])");
-  }
+  },
 });
 
 export const ConfirmBackupScreen = {
@@ -29,14 +33,14 @@ export const ConfirmBackupScreen = {
   },
 
   get confirmButton() {
-    return this.root.findByText$("Confirm");
+    return this.root.findByText$('Confirm');
   },
 
   get clearLink() {
-    return this.root.findByText$("Clear");
+    return this.root.findByText$('Clear');
   },
 
   get errorMessage() {
     return this.root.$("[class*='error@error']");
-  }
+  },
 };

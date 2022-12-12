@@ -4,14 +4,14 @@ export const ImportKeystoreFileScreen = {
   },
 
   get fileInput() {
-    return this.root.findByTestId$("fileInput");
+    return this.root.findByTestId$('fileInput');
   },
 
   get passwordInput() {
-    return this.root.findByTestId$("passwordInput");
+    return this.root.findByTestId$('passwordInput');
   },
 
   get continueButton() {
-    return this.root.findByTestId$("submitButton");
+    return this.root.findByTestId$('submitButton');
   },
 };

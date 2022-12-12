@@ -4,14 +4,14 @@ export const OriginAuthScreen = {
   },
 
   get permissionDetailsButton() {
-    return this.root.findByText$("Permission details");
+    return this.root.findByText$('Permission details');
   },
 
   get allowMessagesCheckbox() {
-    return this.root.findByText$("Allow sending messages");
+    return this.root.findByText$('Allow sending messages');
   },
 
   get authButton() {
-    return this.root.findByText$("Auth");
+    return this.root.findByText$('Auth');
   },
 };

@@ -1,17 +1,17 @@
 export const ImportFormScreen = {
   get root() {
-    return browser.findByTestId$("importForm");
+    return browser.findByTestId$('importForm');
   },
 
   get createNewAccountButton() {
-    return this.root.findByText$("Create a new account");
+    return this.root.findByText$('Create a new account');
   },
 
   get importBySeedButton() {
-    return this.root.findByText$("Seed Phrase or Private Key");
+    return this.root.findByText$('Seed Phrase or Private Key');
   },
 
   get importByKeystoreFileButton() {
-    return this.root.findByText$("Keystore File");
-  }
+    return this.root.findByText$('Keystore File');
+  },
 };

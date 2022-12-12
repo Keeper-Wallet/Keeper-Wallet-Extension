@@ -1,14 +1,21 @@
 import { expect } from 'expect-webdriverio';
 
-import { Common } from "./pageobject/Common";
-import { EmptyHomeScreen } from "./pageobject/EmptyHomeScreen";
-import { HomeScreen } from "./pageobject/HomeScreen";
-import { MessagesScreen } from "./pageobject/MessagesScreen";
-import { OriginAuthScreen } from "./pageobject/OriginAuthScreen";
-import { PermissionControlSettingsScreen, SettingsScreen } from "./pageobject/SettingsScreen";
-import { SuccessTransactionScreen } from "./pageobject/SuccessTransactionScreen";
+import { Common } from './pageobject/Common';
+import { EmptyHomeScreen } from './pageobject/EmptyHomeScreen';
+import { HomeScreen } from './pageobject/HomeScreen';
+import { MessagesScreen } from './pageobject/MessagesScreen';
+import { OriginAuthScreen } from './pageobject/OriginAuthScreen';
+import {
+  PermissionControlSettingsScreen,
+  SettingsScreen,
+} from './pageobject/SettingsScreen';
+import { SuccessTransactionScreen } from './pageobject/SuccessTransactionScreen';
 import { AccountsHome, App, Settings, Windows } from './utils/actions';
-import { CUSTOMLIST, DEFAULT_PAGE_LOAD_DELAY, WHITELIST, } from './utils/constants';
+import {
+  CUSTOMLIST,
+  DEFAULT_PAGE_LOAD_DELAY,
+  WHITELIST,
+} from './utils/constants';
 
 describe('Messages', function () {
   let tabOrigin: string;
@@ -60,7 +67,7 @@ describe('Messages', function () {
 
   it('Allowed messages from all resources from WhiteList', async function () {
     for (const origin of WHITELIST) {
-      await browser.navigateTo(`https://${ origin }`);
+      await browser.navigateTo(`https://${origin}`);
 
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await browser.executeAsync(sendNotification);
@@ -77,7 +84,7 @@ describe('Messages', function () {
   });
 
   it('When a message is received from a new resource, permission is requested to access', async function () {
-    await browser.navigateTo(`https://${ CUSTOMLIST[0] }`);
+    await browser.navigateTo(`https://${CUSTOMLIST[0]}`);
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -106,7 +113,7 @@ describe('Messages', function () {
   });
 
   it('When allowing access to an application, but denying messages - messages are not displayed', async function () {
-    await browser.navigateTo(`https://${ CUSTOMLIST[1] }`);
+    await browser.navigateTo(`https://${CUSTOMLIST[1]}`);
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
     await this.driver.executeScript(sendNotification);
@@ -117,7 +124,9 @@ describe('Messages', function () {
     await OriginAuthScreen.permissionDetailsButton.click();
     await OriginAuthScreen.authButton.click();
 
-    expect(SuccessTransactionScreen.transactionContent).toHaveText("Request has been signed!");
+    expect(SuccessTransactionScreen.transactionContent).toHaveText(
+      'Request has been signed!'
+    );
 
     await SuccessTransactionScreen.closeButton.click();
     await Windows.waitForWindowToClose(messageWindow);
@@ -131,11 +140,13 @@ describe('Messages', function () {
     await Common.settingsButton.click();
     await SettingsScreen.permissionsSectionLink.click();
 
-    (await PermissionControlSettingsScreen.permissionItems)[1].detailsIcon.click();
+    (
+      await PermissionControlSettingsScreen.permissionItems
+    )[1].detailsIcon.click();
     await PermissionControlSettingsScreen.modalAllowMessagesCheckbox.click();
     await PermissionControlSettingsScreen.modalSaveButton.click();
 
-    await browser.navigateTo(`https://${ CUSTOMLIST[1] }`);
+    await browser.navigateTo(`https://${CUSTOMLIST[1]}`);
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
     await browser.executeAsync(sendNotification);
@@ -151,12 +162,12 @@ describe('Messages', function () {
   });
 
   it('When receiving several messages from one resource - messages are displayed as a "batch"', async function () {
-    await browser.navigateTo(`https://${ WHITELIST[3] }`);
+    await browser.navigateTo(`https://${WHITELIST[3]}`);
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
-    for (let success = 0; success < 2;) {
+    for (let success = 0; success < 2; ) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const result = await browser.executeAsync(sendNotification) as any;
+      const result = (await browser.executeAsync(sendNotification)) as any;
 
       if (result?.code !== '18') {
         success++;
@@ -174,7 +185,7 @@ describe('Messages', function () {
 
   it('When receiving messages from several resources - messages are displayed in several blocks', async function () {
     await browser.switchToWindow(tabOrigin);
-    await browser.navigateTo(`https://${ WHITELIST[4] }`);
+    await browser.navigateTo(`https://${WHITELIST[4]}`);
 
     await browser.executeAsync(sendNotification);
     expect(messageWindow).not.toBeNull();

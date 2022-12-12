@@ -3,13 +3,13 @@ export const GeneralSettingsScreen = {
     await browser.$("[class*='trigger@Select-module']").click();
     const items = await browser.$$("[class*='item@Select-module']");
     await items.at(index)?.click();
-  }
+  },
 };
 
 const Permission = (wrapped: WebdriverIO.Element) => ({
   get detailsIcon() {
     return wrapped.$("[class*='settings@list']");
-  }
+  },
 });
 
 export const PermissionControlSettingsScreen = {
@@ -18,7 +18,9 @@ export const PermissionControlSettingsScreen = {
   },
 
   get permissionItems() {
-    return this.root.$$("[class*='permissionItem@list']").map(it => Permission(it));
+    return this.root
+      .$$("[class*='permissionItem@list']")
+      .map(it => Permission(it));
   },
 
   get modalDeleteButton() {
@@ -30,8 +32,10 @@ export const PermissionControlSettingsScreen = {
   },
 
   get modalAllowMessagesCheckbox() {
-    return browser.$("[class*='modalWrapper@modal']").findByText$("Allow sending messages");
-  }
+    return browser
+      .$("[class*='modalWrapper@modal']")
+      .findByText$('Allow sending messages');
+  },
 };
 
 export const SettingsScreen = {
@@ -40,14 +44,14 @@ export const SettingsScreen = {
   },
 
   get generalSectionLink() {
-    return this.root.findByText$("General");
+    return this.root.findByText$('General');
   },
 
   get permissionsSectionLink() {
-    return this.root.findByText$("Permissions control");
+    return this.root.findByText$('Permissions control');
   },
 
   get deleteAccountsButton() {
-    return this.root.findByText$("Delete accounts");
-  }
+    return this.root.findByText$('Delete accounts');
+  },
 };

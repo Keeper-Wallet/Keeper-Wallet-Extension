@@ -1,29 +1,31 @@
 export const HomeScreen = {
   isDisplayed: async () => {
     try {
-      return await browser.findByTestId$("assetsForm", {}, { timeout: 5000 }).isDisplayed();
+      return await browser
+        .findByTestId$('assetsForm', {}, { timeout: 5000 })
+        .isDisplayed();
     } catch (e) {
       return false;
     }
   },
 
   get root() {
-    return browser.findByTestId$("assetsForm");
+    return browser.findByTestId$('assetsForm');
   },
 
   get activeAccountCard() {
-    return this.root.findByTestId$("activeAccountCard");
+    return this.root.findByTestId$('activeAccountCard');
   },
 
   get activeAccountNameField() {
-    return this.activeAccountCard.findByTestId$("accountName");
+    return this.activeAccountCard.findByTestId$('accountName');
   },
 
   get otherAccountsButton() {
-    return this.root.findByTestId$("otherAccountsButton");
+    return this.root.findByTestId$('otherAccountsButton');
   },
 
   get showQRButton() {
-    return this.root.$(".showQrIcon");
-  }
+    return this.root.$('.showQrIcon');
+  },
 };

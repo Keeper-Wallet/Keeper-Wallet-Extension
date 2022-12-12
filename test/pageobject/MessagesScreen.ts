@@ -12,10 +12,10 @@ export const MessagesScreen = {
   },
 
   get closeButton() {
-    return this.root.findByText$("Close");
+    return this.root.findByText$('Close');
   },
 
   get clearAllButton() {
-    return this.root.findByText$("Clear All");
-  }
+    return this.root.findByText$('Clear All');
+  },
 };

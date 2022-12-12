@@ -4,22 +4,22 @@ export const ImportUsingSeedScreen = {
   },
 
   get seedInput() {
-    return this.root.$("[class*='input@Input']")
+    return this.root.$("[class*='input@Input']");
   },
 
   get importAccountButton() {
-    return this.root.findByText$("Import Account");
+    return this.root.findByText$('Import Account');
   },
 
   get switchAccountButton() {
-    return this.root.findByText$("Switch account");
+    return this.root.findByText$('Switch account');
   },
 
   get errorMessage() {
-    return this.root.findByTestId$("validationError");
+    return this.root.findByTestId$('validationError');
   },
 
   get addressField() {
-    return this.root.findByTestId$("address");
-  }
-}
+    return this.root.findByTestId$('address');
+  },
+};

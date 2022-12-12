@@ -4,18 +4,18 @@ export const ChangeAccountNameScreen = {
   },
 
   get currentNameField() {
-    return this.root.$("#currentAccountName");
+    return this.root.$('#currentAccountName');
   },
 
   get newNameInput() {
-    return this.root.$("#newAccountName");
+    return this.root.$('#newAccountName');
   },
 
   get errorField() {
-    return this.root.findByTestId$("newAccountNameError");
+    return this.root.findByTestId$('newAccountNameError');
   },
 
   get saveButton() {
-    return this.root.$("#save");
-  }
+    return this.root.$('#save');
+  },
 };

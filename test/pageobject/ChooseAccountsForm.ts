@@ -1,6 +1,6 @@
 const Account = (wrapped: WebdriverIO.Element) => ({
   get nameField() {
-    return wrapped.findByTestId$("accountName");
+    return wrapped.findByTestId$('accountName');
   },
 
   get checkbox() {
@@ -9,48 +9,51 @@ const Account = (wrapped: WebdriverIO.Element) => ({
 
   async isSelected() {
     const checkbox = await this.checkbox;
-    if (!await checkbox.isExisting()) return null;
+    if (!(await checkbox.isExisting())) return null;
     return await checkbox.isSelected();
-
   },
 
   async getAddress() {
-    return await wrapped.getAttribute("title");
+    return await wrapped.getAttribute('title');
   },
 });
 
 const AccountsGroup = (wrapped: WebdriverIO.Element) => ({
   get label() {
-    return wrapped.findByTestId$("accountsGroupLabel");
+    return wrapped.findByTestId$('accountsGroupLabel');
   },
 
   get accounts() {
-    return wrapped.findAllByTestId$("accountCard").map(it => Account(it));
-  }
+    return wrapped.findAllByTestId$('accountCard').map(it => Account(it));
+  },
 });
 
 export const ChooseAccountsForm = {
   get root() {
-    return browser.findByTestId$("chooseAccountsForm");
+    return browser.findByTestId$('chooseAccountsForm');
   },
 
   get importButton() {
-    return this.root.findByTestId$("submitButton");
+    return this.root.findByTestId$('submitButton');
   },
 
   get accountsGroups() {
-    return this.root.findAllByTestId$("accountsGroup").map(it => AccountsGroup(it));
+    return this.root
+      .findAllByTestId$('accountsGroup')
+      .map(it => AccountsGroup(it));
   },
 
   get accounts() {
-    return this.root.findAllByTestId$("accountCard").map(it => Account(it));
+    return this.root.findAllByTestId$('accountCard').map(it => Account(it));
   },
 
   get skipButton() {
-    return this.root.findByText$("Skip");
+    return this.root.findByText$('Skip');
   },
 
   async getAccountByAddress(address: string) {
-    return Account(await this.root.$(`[data-testid='accountCard'][title='${ address }']`));
+    return Account(
+      await this.root.$(`[data-testid='accountCard'][title='${address}']`)
+    );
   },
 };
