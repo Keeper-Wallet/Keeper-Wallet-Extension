@@ -1,21 +1,21 @@
 import { expect } from 'expect-webdriverio';
 import waitForExpect from 'wait-for-expect';
 
-import { AccountInfoScreen } from './pageobject/AccountInfoScreen';
-import { BackupSeedScreen } from './pageobject/BackupSeedScreen';
-import { ChooseAccountsForm } from './pageobject/ChooseAccountsForm';
-import { ConfirmBackupScreen } from './pageobject/ConfirmBackupScreen';
-import { DeleteAccountScreen } from './pageobject/DeleteAccountScreen';
-import { EmptyHomeScreen } from './pageobject/EmptyHomeScreen';
-import { HomeScreen } from './pageobject/HomeScreen';
-import { ImportFormScreen } from './pageobject/ImportFormScreen';
-import { ImportKeystoreFileScreen } from './pageobject/ImportKeystoreFileScreen';
-import { ImportSuccessScreen } from './pageobject/ImportSuccessScreen';
-import { ImportUsingSeedScreen } from './pageobject/ImportUsingSeedScreen';
-import { NewWalletNameScreen } from './pageobject/NewWalletNameScreen';
-import { NewWalletScreen } from './pageobject/NewWalletScreen';
-import { OtherAccountsScreen } from './pageobject/OtherAccountsScreen';
-import { TopMenu } from './pageobject/TopMenu';
+import { AccountInfoScreen } from './helpers/AccountInfoScreen';
+import { BackupSeedScreen } from './helpers/BackupSeedScreen';
+import { ChooseAccountsForm } from './helpers/ChooseAccountsForm';
+import { ConfirmBackupScreen } from './helpers/ConfirmBackupScreen';
+import { DeleteAccountScreen } from './helpers/DeleteAccountScreen';
+import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { HomeScreen } from './helpers/HomeScreen';
+import { ImportFormScreen } from './helpers/ImportFormScreen';
+import { ImportKeystoreFileScreen } from './helpers/ImportKeystoreFileScreen';
+import { ImportSuccessScreen } from './helpers/ImportSuccessScreen';
+import { ImportUsingSeedScreen } from './helpers/ImportUsingSeedScreen';
+import { NewWalletNameScreen } from './helpers/NewWalletNameScreen';
+import { NewWalletScreen } from './helpers/NewWalletScreen';
+import { OtherAccountsScreen } from './helpers/OtherAccountsScreen';
+import { TopMenu } from './helpers/TopMenu';
 import {
   AccountsHome,
   App,
@@ -74,7 +74,7 @@ describe('Account creation', function () {
       await ImportFormScreen.createNewAccountButton.click();
       await NewWalletScreen.continueButton.click();
 
-      const seed = await BackupSeedScreen.seedField.getText();
+      const seed = await BackupSeedScreen.seed.getText();
       await BackupSeedScreen.continueButton.click();
 
       for (const word of seed.split(' ')) {
@@ -92,9 +92,7 @@ describe('Account creation', function () {
 
       await ImportSuccessScreen.addAnotherAccountButton.click();
       await browser.switchToWindow(tabKeeper);
-      expect(await HomeScreen.activeAccountNameField.getText()).toBe(
-        ACCOUNTS.FIRST
-      );
+      expect(await HomeScreen.activeAccountName.getText()).toBe(ACCOUNTS.FIRST);
     });
 
     describe('additional account via "Add account"', () => {
@@ -108,13 +106,11 @@ describe('Account creation', function () {
           });
 
           it('Each time you open the "Create new account" screen, new addresses are generated', async () => {
-            const prevAddress =
-              await NewWalletScreen.accountAddressField.getText();
+            const prevAddress = await NewWalletScreen.accountAddress.getText();
             await TopMenu.backButton.click();
 
             await ImportFormScreen.createNewAccountButton.click();
-            const newAddress =
-              await NewWalletScreen.accountAddressField.getText();
+            const newAddress = await NewWalletScreen.accountAddress.getText();
             expect(newAddress).not.toBe(prevAddress);
           });
 
@@ -128,7 +124,7 @@ describe('Account creation', function () {
             for (const avatar of avatarList) {
               await avatar.click();
               const currentAddress =
-                await NewWalletScreen.accountAddressField.getText();
+                await NewWalletScreen.accountAddress.getText();
               expect(currentAddress).not.toBe(prevAddress);
               prevAddress = currentAddress;
             }
@@ -140,7 +136,7 @@ describe('Account creation', function () {
         let rightSeed: string;
         describe('Save backup phrase page', () => {
           it('Backup phrase is visible', async () => {
-            rightSeed = await BackupSeedScreen.seedField.getText();
+            rightSeed = await BackupSeedScreen.seed.getText();
             expect(rightSeed.length).toBeGreaterThan(0);
 
             await BackupSeedScreen.continueButton.click();
@@ -243,7 +239,7 @@ describe('Account creation', function () {
             await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST);
             await browser.keys('Tab');
 
-            expect(await NewWalletNameScreen.errorField.getText()).toBe(
+            expect(await NewWalletNameScreen.error.getText()).toBe(
               'Name already exist'
             );
             expect(await NewWalletNameScreen.continueButton.isEnabled()).toBe(
@@ -257,9 +253,7 @@ describe('Account creation', function () {
             await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.ANY);
             await browser.keys('Tab');
 
-            expect(
-              await NewWalletNameScreen.errorField.getText()
-            ).toBeExisting();
+            expect(await NewWalletNameScreen.error.getText()).toBeExisting();
             expect(await NewWalletNameScreen.continueButton.isEnabled()).toBe(
               true
             );
@@ -351,21 +345,16 @@ describe('Account creation', function () {
               ACCOUNTS.MORE_24_CHARS.SEED
             );
 
-            let prevAddress =
-              await ImportUsingSeedScreen.addressField.getText();
+            let prevAddress = await ImportUsingSeedScreen.address.getText();
 
             // insert char
             await ImportUsingSeedScreen.seedInput.addValue('W');
-            expect(ImportUsingSeedScreen.addressField).not.toHaveText(
-              prevAddress
-            );
-            prevAddress = await ImportUsingSeedScreen.addressField.getText();
+            expect(ImportUsingSeedScreen.address).not.toHaveText(prevAddress);
+            prevAddress = await ImportUsingSeedScreen.address.getText();
 
             // delete inserted char
             await browser.keys('Backspace');
-            expect(ImportUsingSeedScreen.addressField).not.toHaveText(
-              prevAddress
-            );
+            expect(ImportUsingSeedScreen.address).not.toHaveText(prevAddress);
           });
 
           it('You can paste a seed from the clipboard');
@@ -383,9 +372,7 @@ describe('Account creation', function () {
             await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST.NAME);
             await browser.keys('Tab');
 
-            expect(NewWalletNameScreen.errorField).toHaveText(
-              'name already exist'
-            );
+            expect(NewWalletNameScreen.error).toHaveText('name already exist');
             expect(NewWalletNameScreen.continueButton).toBeDisabled();
           });
 
@@ -395,7 +382,7 @@ describe('Account creation', function () {
             );
             await browser.keys('Tab');
 
-            expect(NewWalletNameScreen.errorField).toHaveText('');
+            expect(NewWalletNameScreen.error).toHaveText('');
 
             await NewWalletNameScreen.continueButton.click();
 
@@ -405,7 +392,7 @@ describe('Account creation', function () {
             await browser.switchToWindow(tabKeeper);
             await browser.openKeeperPopup();
 
-            expect(HomeScreen.activeAccountNameField).toHaveText(
+            expect(HomeScreen.activeAccountName).toHaveText(
               ACCOUNTS.MORE_24_CHARS.NAME
             );
             7;
@@ -521,8 +508,7 @@ describe('Account creation', function () {
       }
 
       async function collectAllAccountNames() {
-        const activeAccountName =
-          await HomeScreen.activeAccountNameField.getText();
+        const activeAccountName = await HomeScreen.activeAccountName.getText();
         await HomeScreen.otherAccountsButton.click();
         const otherAccountNames = await Promise.all(
           (

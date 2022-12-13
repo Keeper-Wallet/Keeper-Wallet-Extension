@@ -1,5 +1,5 @@
 const Account = (wrapped: WebdriverIO.Element) => ({
-  get nameField() {
+  get name() {
     return wrapped.findByTestId$('accountName');
   },
 

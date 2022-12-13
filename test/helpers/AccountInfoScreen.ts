@@ -7,23 +7,23 @@ export const AccountInfoScreen = {
     return this.root.findByText$('Delete account');
   },
 
-  get addressField() {
+  get address() {
     return this.root.$("#accountInfoAddress [class*='copyTextOverflow@copy']");
   },
 
-  get publicKeyField() {
+  get publicKey() {
     return this.root.$(
       "#accountInfoPublicKey [class*='copyTextOverflow@copy']"
     );
   },
 
-  get privateKeyField() {
+  get privateKey() {
     return this.root.$(
       "#accountInfoPublicKey [class*='copyTextOverflow@copy']"
     );
   },
 
-  get backupPhraseField() {
+  get backupPhrase() {
     return this.root.$(
       "#accountInfoBackupPhrase [class*='copyTextOverflow@copy']"
     );
@@ -45,7 +45,7 @@ export const AccountInfoScreen = {
     return browser.$("[class*='modalWrapper@modal'] #passwordCancel");
   },
 
-  get nameField() {
+  get name() {
     return this.root.$("[class*='accountName@accountInfo']");
   },
 

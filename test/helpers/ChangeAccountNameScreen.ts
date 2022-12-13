@@ -3,7 +3,7 @@ export const ChangeAccountNameScreen = {
     return browser.$("[class*='content@changeName']");
   },
 
-  get currentNameField() {
+  get currentName() {
     return this.root.$('#currentAccountName');
   },
 
@@ -11,7 +11,7 @@ export const ChangeAccountNameScreen = {
     return this.root.$('#newAccountName');
   },
 
-  get errorField() {
+  get error() {
     return this.root.findByTestId$('newAccountNameError');
   },
 

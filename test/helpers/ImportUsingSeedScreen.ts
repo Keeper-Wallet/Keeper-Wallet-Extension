@@ -19,7 +19,7 @@ export const ImportUsingSeedScreen = {
     return this.root.findByTestId$('validationError');
   },
 
-  get addressField() {
+  get address() {
     return this.root.findByTestId$('address');
   },
 };

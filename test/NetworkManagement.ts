@@ -1,9 +1,9 @@
 import { expect } from 'expect-webdriverio';
 
-import { AccountInfoScreen } from './pageobject/AccountInfoScreen';
-import { EmptyHomeScreen } from './pageobject/EmptyHomeScreen';
-import { HomeScreen } from './pageobject/HomeScreen';
-import { CustomNetworkModal, NetworksMenu,TopMenu } from './pageobject/TopMenu';
+import { AccountInfoScreen } from './helpers/AccountInfoScreen';
+import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { HomeScreen } from './helpers/HomeScreen';
+import { CustomNetworkModal, NetworksMenu, TopMenu } from './helpers/TopMenu';
 import { AccountsHome, App, Network, Windows } from './utils/actions';
 
 describe('Network management', function () {
@@ -50,9 +50,7 @@ describe('Network management', function () {
         await browser.switchToWindow(tabKeeper);
 
         await HomeScreen.activeAccountCard.click();
-        expect(await AccountInfoScreen.addressField.getText()).toMatch(
-          /^3[MN]/i
-        );
+        expect(await AccountInfoScreen.address.getText()).toMatch(/^3[MN]/i);
 
         await TopMenu.backButton.click();
 
@@ -86,16 +84,14 @@ describe('Network management', function () {
 
         it('Node address is required field', async function () {
           await CustomNetworkModal.saveButton.click();
-          expect(CustomNetworkModal.addressErrorField).toHaveText(
-            'URL is required'
-          );
+          expect(CustomNetworkModal.addressError).toHaveText('URL is required');
         });
 
         it('The address of non-existed node was entered', async function () {
           await CustomNetworkModal.addressInput.setValue(invalidNodeUrl);
           await CustomNetworkModal.saveButton.click();
 
-          expect(CustomNetworkModal.addressErrorField).toHaveText(
+          expect(CustomNetworkModal.addressError).toHaveText(
             'Incorrect node address'
           );
         });

@@ -7,7 +7,7 @@ export const NewWalletScreen = {
     return this.root.findByText$('Continue');
   },
 
-  get accountAddressField() {
+  get accountAddress() {
     return this.root.$("[class*='greyLine@newwallet']");
   },
 

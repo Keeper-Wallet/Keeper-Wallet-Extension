@@ -14,4 +14,20 @@ export const OriginAuthScreen = {
   get authButton() {
     return this.root.findByText$('Auth');
   },
+
+  get originAddress() {
+    return this.root.$("[class*='originAddress@transactions']");
+  },
+
+  get originNetwork() {
+    return this.root.$("[class*='originNetwork@transactions']");
+  },
+
+  get accountName() {
+    return this.root.$("[class*='accountName@wallet']");
+  },
+
+  get rejectButton() {
+    return this.root.$('#reject');
+  },
 };

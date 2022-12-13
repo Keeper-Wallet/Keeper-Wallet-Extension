@@ -3,7 +3,7 @@ const Account = (wrapped: WebdriverIO.Element) => ({
     return wrapped;
   },
 
-  get nameField() {
+  get name() {
     return wrapped.findByTestId$('accountName');
   },
 
@@ -29,7 +29,7 @@ export const OtherAccountsScreen = {
     return this.root.findByTestId$('accountsSearchInput');
   },
 
-  get accountsNoteField() {
+  get accountsNote() {
     return this.root.findByTestId$('accountsNote');
   },
 

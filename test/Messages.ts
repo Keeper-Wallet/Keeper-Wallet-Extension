@@ -1,15 +1,15 @@
 import { expect } from 'expect-webdriverio';
 
-import { EmptyHomeScreen } from './pageobject/EmptyHomeScreen';
-import { HomeScreen } from './pageobject/HomeScreen';
-import { MessagesScreen } from './pageobject/MessagesScreen';
-import { OriginAuthScreen } from './pageobject/OriginAuthScreen';
+import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { FinalTransactionScreen } from './helpers/FinalTransactionScreen';
+import { HomeScreen } from './helpers/HomeScreen';
+import { MessagesScreen } from './helpers/MessagesScreen';
+import { OriginAuthScreen } from './helpers/OriginAuthScreen';
 import {
   PermissionControlSettingsScreen,
   SettingsScreen,
-} from './pageobject/SettingsScreen';
-import { SuccessTransactionScreen } from './pageobject/SuccessTransactionScreen';
-import { TopMenu } from './pageobject/TopMenu';
+} from './helpers/SettingsScreen';
+import { TopMenu } from './helpers/TopMenu';
 import { AccountsHome, App, Settings, Windows } from './utils/actions';
 import {
   CUSTOMLIST,
@@ -124,11 +124,11 @@ describe('Messages', function () {
     await OriginAuthScreen.permissionDetailsButton.click();
     await OriginAuthScreen.authButton.click();
 
-    expect(SuccessTransactionScreen.transactionContent).toHaveText(
+    expect(FinalTransactionScreen.transactionContent).toHaveText(
       'Request has been signed!'
     );
 
-    await SuccessTransactionScreen.closeButton.click();
+    await FinalTransactionScreen.closeButton.click();
     await Windows.waitForWindowToClose(messageWindow);
     messageWindow = null;
     await browser.switchToWindow(tabOrigin);
@@ -140,7 +140,9 @@ describe('Messages', function () {
     await TopMenu.settingsButton.click();
     await SettingsScreen.permissionsSectionLink.click();
 
-    (await PermissionControlSettingsScreen.getPermissionByOrigin(CUSTOMLIST[1])).detailsIcon.click();
+    (
+      await PermissionControlSettingsScreen.getPermissionByOrigin(CUSTOMLIST[1])
+    ).detailsIcon.click();
     await PermissionControlSettingsScreen.modalAllowMessagesCheckbox.click();
     await PermissionControlSettingsScreen.modalSaveButton.click();
 

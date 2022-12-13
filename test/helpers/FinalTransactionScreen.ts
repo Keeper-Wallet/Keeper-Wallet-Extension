@@ -1,4 +1,4 @@
-export const SuccessTransactionScreen = {
+export const FinalTransactionScreen = {
   get root() {
     return browser.$("[class*='transaction@final']");
   },

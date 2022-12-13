@@ -1,3 +1,13 @@
+const AssetCard = (wrapped: WebdriverIO.Element) => ({
+  get moreButton() {
+    return wrapped.findByTestId$('moreBtn');
+  },
+
+  get clickButton() {
+    return wrapped;
+  },
+});
+
 export const HomeScreen = {
   isDisplayed: async () => {
     try {
@@ -17,7 +27,7 @@ export const HomeScreen = {
     return this.root.findByTestId$('activeAccountCard');
   },
 
-  get activeAccountNameField() {
+  get activeAccountName() {
     return this.activeAccountCard.findByTestId$('accountName');
   },
 
@@ -27,5 +37,19 @@ export const HomeScreen = {
 
   get showQRButton() {
     return this.root.$('.showQrIcon');
+  },
+
+  get assets() {
+    return this.root
+      .$$("[class*='assetCard@assetItem']")
+      .map(it => AssetCard(it));
+  },
+
+  async getAssetByName(name: string) {
+    return AssetCard(
+      await this.root
+        .findByText$(name, { selector: "[class*='assetTitle@assetItem']" })
+        .$(".//ancestor::*[contains(@class, 'assetCard@assetItem')]")
+    );
   },
 };

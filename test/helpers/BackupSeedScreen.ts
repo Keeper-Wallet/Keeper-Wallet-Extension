@@ -3,7 +3,7 @@ export const BackupSeedScreen = {
     return browser.$("[class*='content@backupSeed']");
   },
 
-  get seedField() {
+  get seed() {
     return this.root.$("[class*='plateMargin@backupSeed']");
   },
 

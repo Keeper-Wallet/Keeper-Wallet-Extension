@@ -7,7 +7,7 @@ export const NewWalletNameScreen = {
     return this.root.findByTestId$('newAccountNameInput');
   },
 
-  get errorField() {
+  get error() {
     return this.root.findByTestId$('newAccountNameError');
   },
 

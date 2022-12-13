@@ -43,7 +43,7 @@ export const CustomNetworkModal = {
     return this.root.$('#networkSettingsSave');
   },
 
-  get addressErrorField() {
+  get addressError() {
     return this.root.$('#nodeAddressError');
   },
 };

@@ -1,20 +1,20 @@
 import { expect } from 'expect-webdriverio';
 
-import { ConfirmDeleteAccountsScreen } from '../pageobject/ConfirmDeleteAccountsScreen';
-import { GetStartedScreen } from '../pageobject/GetStartedScreen';
-import { HomeScreen } from '../pageobject/HomeScreen';
-import { ImportFormScreen } from '../pageobject/ImportFormScreen';
-import { ImportSuccessScreen } from '../pageobject/ImportSuccessScreen';
-import { ImportUsingSeedScreen } from '../pageobject/ImportUsingSeedScreen';
-import { NewAccountScreen } from '../pageobject/NewAccountScreen';
-import { NewWalletNameScreen } from '../pageobject/NewWalletNameScreen';
-import { OtherAccountsScreen } from '../pageobject/OtherAccountsScreen';
+import { ConfirmDeleteAccountsScreen } from '../helpers/ConfirmDeleteAccountsScreen';
+import { GetStartedScreen } from '../helpers/GetStartedScreen';
+import { HomeScreen } from '../helpers/HomeScreen';
+import { ImportFormScreen } from '../helpers/ImportFormScreen';
+import { ImportSuccessScreen } from '../helpers/ImportSuccessScreen';
+import { ImportUsingSeedScreen } from '../helpers/ImportUsingSeedScreen';
+import { NewAccountScreen } from '../helpers/NewAccountScreen';
+import { NewWalletNameScreen } from '../helpers/NewWalletNameScreen';
+import { OtherAccountsScreen } from '../helpers/OtherAccountsScreen';
 import {
   GeneralSettingsScreen,
   PermissionControlSettingsScreen,
   SettingsScreen,
-} from '../pageobject/SettingsScreen';
-import { NetworksMenu,TopMenu } from '../pageobject/TopMenu';
+} from '../helpers/SettingsScreen';
+import { NetworksMenu, TopMenu } from '../helpers/TopMenu';
 import { DEFAULT_PASSWORD } from './constants';
 
 export const App = {
@@ -71,7 +71,7 @@ export const PopupHome = {
   },
 
   getActiveAccountName: async () =>
-    await HomeScreen.activeAccountNameField.getText(),
+    await HomeScreen.activeAccountName.getText(),
 
   getOtherAccountNames: async () => {
     await $('[data-testid="otherAccountsButton"]').click();
@@ -115,11 +115,11 @@ export const Settings = {
   },
 
   setMinSessionTimeout: async () => {
-    await Settings.setSessionTimeout("Browser timeout");
+    await Settings.setSessionTimeout('Browser timeout');
   },
 
   setMaxSessionTimeout: async () => {
-    await Settings.setSessionTimeout("1 hour");
+    await Settings.setSessionTimeout('1 hour');
   },
 
   clearCustomList: async () => {
