@@ -45,6 +45,7 @@ export function Login() {
             view="password"
             onChange={event => {
               setPassword(event.target.value);
+              setError(false);
             }}
           />
 
