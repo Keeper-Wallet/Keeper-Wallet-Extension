@@ -1,14 +1,12 @@
 import { expect } from 'expect-webdriverio';
 
 import { AccountInfoScreen } from './pageobject/AccountInfoScreen';
-import { Common, CustomNetworkModal } from './pageobject/Common';
 import { EmptyHomeScreen } from './pageobject/EmptyHomeScreen';
 import { HomeScreen } from './pageobject/HomeScreen';
+import { CustomNetworkModal, NetworksMenu,TopMenu } from './pageobject/TopMenu';
 import { AccountsHome, App, Network, Windows } from './utils/actions';
 
 describe('Network management', function () {
-  this.timeout(60 * 1000);
-
   let tabKeeper: string;
 
   before(async () => {
@@ -56,7 +54,7 @@ describe('Network management', function () {
           /^3[MN]/i
         );
 
-        await Common.backButton.click();
+        await TopMenu.backButton.click();
 
         expect(await HomeScreen.root).toBeDisplayed();
       });
@@ -77,7 +75,7 @@ describe('Network management', function () {
 
       describe('Changing network settings by "Edit" button', function () {
         before(async function () {
-          await (await Common.getNetworksMenu()).editButton.click();
+          await NetworksMenu.editButton.click();
           expect(CustomNetworkModal.root).toBeDisplayed();
         });
 
@@ -106,7 +104,7 @@ describe('Network management', function () {
           await CustomNetworkModal.addressInput.setValue(this.nodeUrl);
           await CustomNetworkModal.saveButton.click();
 
-          expect((await Common.getNetworksMenu()).editButton).toBeDisplayed();
+          expect(NetworksMenu.editButton).toBeDisplayed();
         });
       });
     });

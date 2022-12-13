@@ -1,14 +1,14 @@
 const Account = (wrapped: WebdriverIO.Element) => ({
+  get root() {
+    return wrapped;
+  },
+
   get nameField() {
     return wrapped.findByTestId$('accountName');
   },
 
   get accountInfoButton() {
     return wrapped.findByTestId$('accountInfoButton');
-  },
-
-  async select() {
-    await wrapped.click();
   },
 });
 

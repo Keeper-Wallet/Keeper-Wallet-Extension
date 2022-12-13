@@ -1,6 +1,5 @@
 import { expect } from 'expect-webdriverio';
 
-import { Common } from './pageobject/Common';
 import { EmptyHomeScreen } from './pageobject/EmptyHomeScreen';
 import { HomeScreen } from './pageobject/HomeScreen';
 import { MessagesScreen } from './pageobject/MessagesScreen';
@@ -10,6 +9,7 @@ import {
   SettingsScreen,
 } from './pageobject/SettingsScreen';
 import { SuccessTransactionScreen } from './pageobject/SuccessTransactionScreen';
+import { TopMenu } from './pageobject/TopMenu';
 import { AccountsHome, App, Settings, Windows } from './utils/actions';
 import {
   CUSTOMLIST,
@@ -137,12 +137,10 @@ describe('Messages', function () {
   it('When allowing access from settings - messages are displayed', async function () {
     await browser.openKeeperPopup();
 
-    await Common.settingsButton.click();
+    await TopMenu.settingsButton.click();
     await SettingsScreen.permissionsSectionLink.click();
 
-    (
-      await PermissionControlSettingsScreen.permissionItems
-    )[1].detailsIcon.click();
+    (await PermissionControlSettingsScreen.getPermissionByOrigin(CUSTOMLIST[1])).detailsIcon.click();
     await PermissionControlSettingsScreen.modalAllowMessagesCheckbox.click();
     await PermissionControlSettingsScreen.modalSaveButton.click();
 

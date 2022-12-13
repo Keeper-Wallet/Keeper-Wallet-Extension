@@ -1,8 +1,9 @@
 export const GeneralSettingsScreen = {
-  setSessionTimeoutByIndex: async (index: number) => {
+  setSessionTimeoutByName: async (name: string) => {
     await browser.$("[class*='trigger@Select-module']").click();
-    const items = await browser.$$("[class*='item@Select-module']");
-    await items.at(index)?.click();
+    await browser
+      .findByText$(name, { selector: "[class*='item@Select-module']" })
+      .click();
   },
 };
 
@@ -21,6 +22,10 @@ export const PermissionControlSettingsScreen = {
     return this.root
       .$$("[class*='permissionItem@list']")
       .map(it => Permission(it));
+  },
+
+  async getPermissionByOrigin(origin: string) {
+    return Permission(await this.root.findByText$(origin).parentElement());
   },
 
   get modalDeleteButton() {

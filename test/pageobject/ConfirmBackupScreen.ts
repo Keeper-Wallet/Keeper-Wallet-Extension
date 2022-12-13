@@ -4,14 +4,9 @@ const PillsContainer = (
   wrapped: ChainablePromiseElement<WebdriverIO.Element>
 ) => ({
   getPillByText: async (text: string) => {
-    const pills = await wrapped.findAllByText$(text, {
-      selector: "[class*='text@pills']",
-    });
-    if (pills.length > 0) {
-      return pills[0];
-    } else {
-      throw Error(`No pills with text '${text}' found.`);
-    }
+    return wrapped.$(
+      `.//*[contains(@class, 'pill@pills') and not(contains(@class, 'hiddenPill@pills')) and contains(., '${text}')]`
+    );
   },
 
   getAllPills: async () => {

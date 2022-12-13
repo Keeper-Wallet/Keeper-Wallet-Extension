@@ -10,7 +10,6 @@ import { Executor, HttpClient } from 'selenium-webdriver/http';
 import {
   DockerComposeEnvironment,
   StartedDockerComposeEnvironment,
-  StartedTestContainer,
 } from 'testcontainers';
 import { remote } from 'webdriverio';
 
@@ -34,7 +33,7 @@ declare global {
 }
 
 declare module 'webdriverio' {
-  // eslint-disable-next-line
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface ChainablePromiseElement<T extends WebdriverIO.Element | undefined>
     extends WebdriverIOQueriesChainable<T> {}
 }
@@ -45,11 +44,6 @@ declare module 'mocha' {
     nodeUrl: string;
     wait: number;
   }
-}
-
-interface GlobalFixturesContext {
-  selenium: StartedTestContainer;
-  node: StartedTestContainer;
 }
 
 interface GlobalFixturesContext {
@@ -68,13 +62,11 @@ export async function mochaGlobalSetup(this: GlobalFixturesContext) {
 }
 
 export async function mochaGlobalTeardown(this: GlobalFixturesContext) {
-  await this.selenium.stop();
-  await this.node.stop();
+  await this.compose.down();
 }
 
 export const mochaHooks = () => ({
   async beforeAll(this: mocha.Context) {
-    this.timeout(15 * 60 * 1000);
     this.wait = 15 * 1000;
     this.nodeUrl = 'http://waves-private-node:6869';
 
@@ -85,7 +77,6 @@ export const mochaHooks = () => ({
         'goog:chromeOptions': {
           args: [
             '--load-extension=/app/dist/chrome',
-            '--disable-dev-shm-usage',
             '--disable-web-security',
           ],
         },

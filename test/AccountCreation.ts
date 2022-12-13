@@ -4,7 +4,6 @@ import waitForExpect from 'wait-for-expect';
 import { AccountInfoScreen } from './pageobject/AccountInfoScreen';
 import { BackupSeedScreen } from './pageobject/BackupSeedScreen';
 import { ChooseAccountsForm } from './pageobject/ChooseAccountsForm';
-import { Common } from './pageobject/Common';
 import { ConfirmBackupScreen } from './pageobject/ConfirmBackupScreen';
 import { DeleteAccountScreen } from './pageobject/DeleteAccountScreen';
 import { EmptyHomeScreen } from './pageobject/EmptyHomeScreen';
@@ -16,6 +15,7 @@ import { ImportUsingSeedScreen } from './pageobject/ImportUsingSeedScreen';
 import { NewWalletNameScreen } from './pageobject/NewWalletNameScreen';
 import { NewWalletScreen } from './pageobject/NewWalletScreen';
 import { OtherAccountsScreen } from './pageobject/OtherAccountsScreen';
+import { TopMenu } from './pageobject/TopMenu';
 import {
   AccountsHome,
   App,
@@ -110,7 +110,7 @@ describe('Account creation', function () {
           it('Each time you open the "Create new account" screen, new addresses are generated', async () => {
             const prevAddress =
               await NewWalletScreen.accountAddressField.getText();
-            await Common.backButton.click();
+            await TopMenu.backButton.click();
 
             await ImportFormScreen.createNewAccountButton.click();
             const newAddress =
@@ -231,7 +231,7 @@ describe('Account creation', function () {
             for (const word of rightSeed.split(' ')) {
               const pill = await suggestedPillsContainer.getPillByText(word);
               await pill.click();
-              await pill.waitForExist({ reverse: false });
+              await pill.waitForExist({ reverse: true });
             }
 
             await ConfirmBackupScreen.confirmButton.click();
@@ -431,7 +431,7 @@ describe('Account creation', function () {
       });
 
       afterEach(async () => {
-        await Common.backButton.click();
+        await TopMenu.backButton.click();
       });
 
       async function extractParsedAccountsFromDOM() {
@@ -529,7 +529,7 @@ describe('Account creation', function () {
             await OtherAccountsScreen.accounts
           ).map(async it => await it.nameField.getText())
         );
-        await Common.backButton.click();
+        await TopMenu.backButton.click();
         return [activeAccountName, ...otherAccountNames];
       }
 

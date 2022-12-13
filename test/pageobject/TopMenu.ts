@@ -1,24 +1,24 @@
-const NetworksMenu = (wrapped: WebdriverIO.Element) => ({
-  async networkByName(network: string) {
-    return await wrapped.findByText$(network);
+export const NetworksMenu = {
+  get root() {
+    return browser.$("[class*='network@network']");
+  },
+
+  networkByName(network: string) {
+    return this.root.findByText$(network);
   },
 
   get editButton() {
-    return wrapped.$("[class*='editBtn@network']");
-  },
-});
-
-export const Common = {
-  get backButton() {
-    return browser.$('.arrow-back-icon');
+    return this.root.$("[class*='editBtn@network']");
   },
 
   get networkMenuButton() {
-    return browser.$("[class*='networkBottom@network']");
+    return this.root.$("[class*='networkBottom@network']");
   },
+};
 
-  async getNetworksMenu() {
-    return NetworksMenu(await browser.$("[class*='selectNetworks@network']"));
+export const TopMenu = {
+  get backButton() {
+    return browser.$('.arrow-back-icon');
   },
 
   get settingsButton() {

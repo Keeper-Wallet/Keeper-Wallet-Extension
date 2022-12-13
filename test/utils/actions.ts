@@ -1,6 +1,5 @@
 import { expect } from 'expect-webdriverio';
 
-import { Common } from '../pageobject/Common';
 import { ConfirmDeleteAccountsScreen } from '../pageobject/ConfirmDeleteAccountsScreen';
 import { GetStartedScreen } from '../pageobject/GetStartedScreen';
 import { HomeScreen } from '../pageobject/HomeScreen';
@@ -15,6 +14,7 @@ import {
   PermissionControlSettingsScreen,
   SettingsScreen,
 } from '../pageobject/SettingsScreen';
+import { NetworksMenu,TopMenu } from '../pageobject/TopMenu';
 import { DEFAULT_PASSWORD } from './constants';
 
 export const App = {
@@ -42,7 +42,7 @@ export const App = {
   resetVault: async () => {
     await browser.openKeeperPopup();
 
-    await Common.settingsButton.click();
+    await TopMenu.settingsButton.click();
     await SettingsScreen.deleteAccountsButton.click();
     await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
       'DELETE ALL ACCOUNTS'
@@ -103,27 +103,27 @@ export const AccountsHome = {
 };
 
 export const Settings = {
-  setSessionTimeout: async (index: number) => {
+  setSessionTimeout: async (name: string) => {
     // refresh timeout by focus window
     await browser.execute(() => {
       window.focus();
     });
 
-    await Common.settingsButton.click();
+    await TopMenu.settingsButton.click();
     await SettingsScreen.generalSectionLink.click();
-    await GeneralSettingsScreen.setSessionTimeoutByIndex(index);
+    await GeneralSettingsScreen.setSessionTimeoutByName(name);
   },
 
   setMinSessionTimeout: async () => {
-    await Settings.setSessionTimeout(1);
+    await Settings.setSessionTimeout("Browser timeout");
   },
 
   setMaxSessionTimeout: async () => {
-    await Settings.setSessionTimeout(-1);
+    await Settings.setSessionTimeout("1 hour");
   },
 
   clearCustomList: async () => {
-    await Common.settingsButton.click();
+    await TopMenu.settingsButton.click();
     await SettingsScreen.permissionsSectionLink.click();
 
     const permissions = await PermissionControlSettingsScreen.permissionItems;
@@ -136,13 +136,12 @@ export const Settings = {
 
 export const Network = {
   switchTo: async (network: string) => {
-    await Common.networkMenuButton.click();
-    const networksMenu = await Common.getNetworksMenu();
-    (await networksMenu.networkByName(network)).click();
+    await NetworksMenu.networkMenuButton.click();
+    await NetworksMenu.networkByName(network).click();
   },
 
   checkNetwork: async (network: string) => {
-    const networkMenuButton = Common.networkMenuButton;
+    const networkMenuButton = NetworksMenu.networkMenuButton;
     await networkMenuButton.waitForDisplayed();
     expect(networkMenuButton).toHaveText(network);
   },

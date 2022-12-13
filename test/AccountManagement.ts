@@ -2,11 +2,11 @@ import { expect } from 'expect-webdriverio';
 
 import { AccountInfoScreen } from './pageobject/AccountInfoScreen';
 import { ChangeAccountNameScreen } from './pageobject/ChangeAccountNameScreen';
-import { Common } from './pageobject/Common';
 import { DeleteAccountScreen } from './pageobject/DeleteAccountScreen';
 import { EmptyHomeScreen } from './pageobject/EmptyHomeScreen';
 import { HomeScreen } from './pageobject/HomeScreen';
 import { OtherAccountsScreen } from './pageobject/OtherAccountsScreen';
+import { TopMenu } from './pageobject/TopMenu';
 import { AccountsHome, App, Network, Settings, Windows } from './utils/actions';
 
 describe('Account management', function () {
@@ -48,7 +48,7 @@ describe('Account management', function () {
   describe('Accounts list', () => {
     it('Change active account', async () => {
       await HomeScreen.otherAccountsButton.click();
-      await (await OtherAccountsScreen.accounts)[0].select();
+      await (await OtherAccountsScreen.accounts)[0].root.click();
 
       expect(HomeScreen.activeAccountNameField).toHaveText('poor');
     });
@@ -59,7 +59,7 @@ describe('Account management', function () {
 
     describe('Show QR', () => {
       after(async () => {
-        await Common.backButton.click();
+        await TopMenu.backButton.click();
       });
 
       it('Opening the screen with the QR code of the address by clicking the "Show QR" button', async () => {
@@ -79,7 +79,7 @@ describe('Account management', function () {
       });
 
       after(async () => {
-        await Common.backButton.click();
+        await TopMenu.backButton.click();
       });
 
       it('Displays "not found" description if term is not account name, address, public key or email', async () => {
@@ -232,7 +232,7 @@ describe('Account management', function () {
       });
 
       it('Click "Back" on the account deletion confirmation screen - the account is not deleted', async () => {
-        await Common.backButton.click();
+        await TopMenu.backButton.click();
         expect(await AccountInfoScreen.nameField).toBeDisabled();
       });
 
@@ -303,13 +303,13 @@ describe('Account management', function () {
 
     it('should preserve previously selected account for the network', async () => {
       await HomeScreen.otherAccountsButton.click();
-      (await OtherAccountsScreen.accounts)[0].select();
+      (await OtherAccountsScreen.accounts)[0].root.click();
       expect(await HomeScreen.activeAccountNameField).toHaveText('second');
 
       await Network.switchToAndCheck('Testnet');
 
       await HomeScreen.otherAccountsButton.click();
-      (await OtherAccountsScreen.accounts)[0].select();
+      (await OtherAccountsScreen.accounts)[0].root.click();
       expect(await HomeScreen.activeAccountNameField).toHaveText('fourth');
 
       await Network.switchToAndCheck('Mainnet');
