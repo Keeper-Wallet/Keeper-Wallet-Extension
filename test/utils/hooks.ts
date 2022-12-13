@@ -75,10 +75,7 @@ export const mochaHooks = () => ({
       capabilities: {
         browserName: 'chrome',
         'goog:chromeOptions': {
-          args: [
-            '--load-extension=/app/dist/chrome',
-            '--disable-web-security',
-          ],
+          args: ['--load-extension=/app/dist/chrome', '--disable-web-security'],
         },
       },
       path: '/wd/hub',
