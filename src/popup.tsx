@@ -96,14 +96,15 @@ Promise.all([
       },
     };
 
-    const port = Browser.runtime.connect();
+    let port: Browser.Runtime.Port | null = Browser.runtime.connect();
 
     pipe(
       fromPort<MethodCallRequestPayload<keyof UiApi>>(port),
-      handleMethodCallRequests(uiApi, result => port.postMessage(result)),
+      handleMethodCallRequests(uiApi, result => port?.postMessage(result)),
       subscribe({
         complete: () => {
           Background.setConnect(() => {
+            port = null;
             Background.init(connect());
           });
         },
@@ -111,7 +112,7 @@ Promise.all([
     );
 
     return createIpcCallProxy<keyof BackgroundUiApi, BackgroundUiApi>(
-      request => port.postMessage(request),
+      request => port?.postMessage(request),
       fromPort(port)
     );
   }
