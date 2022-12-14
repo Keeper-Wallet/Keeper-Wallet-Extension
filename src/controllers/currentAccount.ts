@@ -1,3 +1,4 @@
+import { isNotNull } from '_core/isNotNull';
 import { BigNumber } from '@waves/bignumber';
 import { TransactionFromNode } from '@waves/ts-types';
 import { AssetBalance, BalancesItem } from 'balances/types';
@@ -192,16 +193,15 @@ export class CurrentAccountController {
 
     const json = (await response.json()) as [TransactionFromNode[]];
 
-    return json;
+    return json[0];
   }
 
   getAccountBalance() {
-    const activeAccount = this.getSelectedAccount();
+    const selectedAccount = this.getSelectedAccount();
     const state = this.store.getState();
     const balances = collectBalances(state);
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return balances[activeAccount!.address];
+    return selectedAccount && balances[selectedAccount.address];
   }
 
   async updateBalances() {
@@ -236,8 +236,7 @@ export class CurrentAccountController {
       minSponsoredAssetFee: string | null;
     }) =>
       balanceAsset.minSponsoredAssetFee !==
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      assets[balanceAsset.assetId]!.minSponsoredFee;
+      assets[balanceAsset.assetId]?.minSponsoredFee;
 
     const fetchAssetIds = (
       myAssets.balances.filter(
@@ -254,33 +253,22 @@ export class CurrentAccountController {
       )
       .map(info => info.assetId)
       .concat(
-        txHistory[0]
-          .reduce<string[]>(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (ids, tx: any) => [
-              ...ids,
-              tx.assetId,
-              ...(tx.order1
-                ? [
-                    tx.order1.assetPair.amountAsset,
-                    tx.order1.assetPair.priceAsset,
-                  ]
-                : []),
-              ...(tx.payment
-                ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  tx.payment.map((x: any) => x.assetId)
-                : []),
-              ...(tx.stateChanges
-                ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  tx.stateChanges.transfers.map((x: any) => x.asset)
-                : []),
-            ],
-            []
-          )
-          .filter(
-            assetId =>
-              !!assetId && !assetExists(assetId) && isMaxAgeExceeded(assetId)
-          )
+        txHistory
+          .flatMap(tx => [
+            ...('assetId' in tx ? [tx.assetId] : []),
+            ...('order1' in tx
+              ? [
+                  tx.order1.assetPair.amountAsset,
+                  tx.order1.assetPair.priceAsset,
+                ]
+              : []),
+            ...('payment' in tx ? tx.payment?.map(x => x.assetId) ?? [] : []),
+            ...('stateChanges' in tx
+              ? tx.stateChanges.transfers.map(x => x.asset)
+              : []),
+          ])
+          .filter(isNotNull)
+          .filter(assetId => !assetExists(assetId) && isMaxAgeExceeded(assetId))
       );
 
     await Promise.all([
@@ -288,36 +276,33 @@ export class CurrentAccountController {
       this.nftInfoController.updateNfts(myNfts),
     ]);
 
-    const available = new BigNumber(wavesBalance.available);
-    const regular = new BigNumber(wavesBalance.regular);
-    const leasedOut = regular.sub(available);
+    const wavesAssetBalance: AssetBalance = {
+      minSponsoredAssetFee: '100000',
+      sponsorBalance: wavesBalance.available,
+      balance: wavesBalance.available,
+    };
 
     const balance: BalancesItem = {
       aliases,
-      available: available.toString(),
-      leasedOut: leasedOut.toString(),
+      available: wavesBalance.available.toString(),
+      leasedOut: new BigNumber(wavesBalance.regular)
+        .sub(wavesBalance.available)
+        .toString(),
       network: currentNetwork,
-      txHistory: txHistory[0],
+      txHistory,
 
-      assets: myAssets.balances.reduce<Record<string, AssetBalance>>(
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        (assets, info) => {
-          assets[info.assetId] = {
+      assets: Object.fromEntries([
+        ['WAVES', wavesAssetBalance],
+        ...myAssets.balances.map(info => {
+          const assetBalance: AssetBalance = {
             minSponsoredAssetFee: info.minSponsoredAssetFee,
             sponsorBalance: info.sponsorBalance,
             balance: info.balance,
           };
-          return assets;
-        },
-        {
-          WAVES: {
-            minSponsoredAssetFee: '100000',
-            sponsorBalance: wavesBalance.available,
-            balance: wavesBalance.available,
-          },
-        }
-      ),
 
+          return [info.assetId, assetBalance];
+        }),
+      ]),
       nfts: myNfts.map(nft => ({
         id: nft.assetId,
         name: nft.name,
