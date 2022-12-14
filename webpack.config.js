@@ -162,10 +162,7 @@ async function makeConfig({
         __SENTRY_RELEASE__: JSON.stringify(process.env.SENTRY_RELEASE),
       }),
       new MiniCssExtractPlugin(),
-      new PlatformPlugin({
-        clear: !dev,
-        performance: !dev,
-      }),
+      new PlatformPlugin({ clear: !dev }),
     ]
       .concat(plugins)
       .filter(Boolean),
@@ -220,28 +217,28 @@ module.exports = async (_, { mode }) => [
     plugins: [
       new HtmlWebpackPlugin({
         filename: 'popup.html',
-        chunks: ['commons', 'popup'],
+        chunks: ['vendors', 'popup'],
         hash: true,
       }),
       new HtmlWebpackPlugin({
         filename: 'notification.html',
-        chunks: ['commons', 'popup'],
+        chunks: ['vendors', 'popup'],
         hash: true,
       }),
       new HtmlWebpackPlugin({
         filename: 'accounts.html',
-        chunks: ['commons', 'accounts'],
+        chunks: ['vendors', 'accounts'],
         hash: true,
       }),
     ],
     optimization: {
       splitChunks: {
         cacheGroups: {
-          commons: {
-            name: 'commons',
-            test: /.js$/,
-            maxSize: 4000000,
-            chunks: chunk => ['popup', 'accounts'].includes(chunk.name),
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            chunks: 'initial',
+            name: (_module, chunks, cacheGroupKey) =>
+              `${cacheGroupKey}-${chunks.map(chunk => chunk.name).join('&')}`,
           },
         },
       },

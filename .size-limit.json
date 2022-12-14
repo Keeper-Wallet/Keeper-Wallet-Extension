@@ -13,10 +13,10 @@
     "name": "ui",
     "path": [
       "dist/build/accounts.js",
-      "dist/build/commons*.js",
-      "dist/build/popup.js"
+      "dist/build/popup.js",
+      "dist/build/vendors*.js"
     ],
-    "limit": 551334
+    "limit": 559337
   },
   {
     "name": "contentscript",
