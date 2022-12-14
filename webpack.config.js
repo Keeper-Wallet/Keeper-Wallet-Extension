@@ -52,6 +52,7 @@ async function makeConfig({
         stream: 'stream-browserify',
       },
     },
+    ignoreWarnings: [/Failed to parse source map/],
     output: {
       assetModuleFilename: 'assets/[hash][ext]',
       filename: '[name].js',
@@ -61,6 +62,11 @@ async function makeConfig({
     module: {
       strictExportPresence: true,
       rules: [
+        {
+          test: /\.(css|js)$/,
+          enforce: 'pre',
+          use: ['source-map-loader'],
+        },
         {
           test: /\.(js|tsx?)$/,
           include: path.resolve(__dirname, 'src'),
