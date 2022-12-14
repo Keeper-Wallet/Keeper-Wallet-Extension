@@ -51,7 +51,12 @@
 }
 
 .assetSelect {
+  flex: 0 0 auto;
   margin-left: -6px;
+}
+
+.inputWrapper {
+  flex: 1 1 0;
 }
 
 .input {
