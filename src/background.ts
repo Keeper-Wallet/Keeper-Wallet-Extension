@@ -73,7 +73,6 @@ initSentry({
   dsn: __SENTRY_DSN__,
   environment: __SENTRY_ENVIRONMENT__,
   release: __SENTRY_RELEASE__,
-  autoSessionTracking: false,
   initialScope: {
     tags: {
       source: 'background',
