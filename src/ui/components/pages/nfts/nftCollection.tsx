@@ -3,7 +3,6 @@ import { NftList } from 'nfts/nftList';
 import { createNft } from 'nfts/nfts';
 import { DisplayMode, Nft } from 'nfts/types';
 import { usePopupSelector } from 'popup/store/react';
-import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -65,22 +64,16 @@ export function NftCollection() {
       })
     : PLACEHOLDERS;
 
-  const creatorRef = useRef(creatorNfts[0]);
-
-  const creatorUrl =
-    creatorRef.current.creatorUrl ||
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    getAccountLink(networkCode!, creatorRef.current.creator);
+  const creatorNft = creatorNfts.at(0);
 
   return (
     <div className={styles.root}>
       <div className={styles.header}>
         <div className={styles.title}>
-          {creatorRef.current?.creator ===
-          creatorRef.current?.displayCreator ? (
-            <Ellipsis text={creatorRef.current?.creator} size={12} />
+          {creatorNft?.creator === creatorNft?.displayCreator ? (
+            <Ellipsis text={creatorNft?.creator} size={12} />
           ) : (
-            creatorRef.current?.displayCreator
+            creatorNft?.displayCreator
           )}
         </div>
         <div>
@@ -91,7 +84,11 @@ export function NftCollection() {
                 rel="noopener noreferrer"
                 className="link"
                 target="_blank"
-                href={creatorUrl}
+                href={
+                  creatorNft?.creatorUrl ??
+                  (networkCode &&
+                    getAccountLink(networkCode, creatorNft?.creator))
+                }
                 {...props}
               >
                 <svg width="16" height="16" viewBox="0 0 16 16">
