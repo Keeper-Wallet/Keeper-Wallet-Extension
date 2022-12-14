@@ -544,7 +544,7 @@ export class AssetInfoController {
 
   async updateInfo() {
     const network = this.getNetwork();
-    
+
     if (network === NetworkName.Mainnet) {
       const resp = await fetch(new URL('/api/v1/assets', STATIC_SERVICE_URL));
 
