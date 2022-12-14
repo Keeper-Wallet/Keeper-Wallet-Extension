@@ -68,20 +68,22 @@ export function AssetAmountInput({
           />
         </div>
 
-        <IMaskInput
-          className={styles.input}
-          data-testid="amountInput"
-          mapToRadix={['.', ',']}
-          mask={Number}
-          maxLength={23}
-          placeholder="0.0"
-          radix="."
-          scale={asset.precision}
-          thousandsSeparator={' '}
-          onAccept={(_, mask) => {
-            onChange(mask.unmaskedValue, mask.value);
-          }}
-        />
+        <div className={styles.inputWrapper}>
+          <IMaskInput
+            className={styles.input}
+            data-testid="amountInput"
+            mapToRadix={['.', ',']}
+            mask={Number}
+            maxLength={23}
+            placeholder="0.0"
+            radix="."
+            scale={asset.precision}
+            thousandsSeparator={' '}
+            onAccept={(_, mask) => {
+              onChange(mask.unmaskedValue, mask.value);
+            }}
+          />
+        </div>
 
         {showUsdAmount && (
           <UsdAmount
