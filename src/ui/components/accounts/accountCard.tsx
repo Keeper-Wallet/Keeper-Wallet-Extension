@@ -10,7 +10,7 @@ import * as styles from './accountCard.module.css';
 
 interface Props {
   account: PreferencesAccount;
-  balance: string | BigNumber | Money;
+  balance: string | BigNumber | Money | undefined;
   onClick: (account: PreferencesAccount) => void;
   onInfoClick: (account: PreferencesAccount) => void;
 }

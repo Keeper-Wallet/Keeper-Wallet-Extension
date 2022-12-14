@@ -39,20 +39,14 @@ export function OtherAccountsPage() {
     )
     .sort(compareAccountsByLastUsed);
 
-  const balancesMoney: Record<string, Money> = {};
+  const wavesAsset = new Asset(assets.WAVES);
 
-  const assetInfo = assets.WAVES;
-
-  if (assetInfo) {
-    const asset = new Asset(assetInfo);
-
-    Object.entries(balances).forEach(([key, balance]) => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const { available } = balance!;
-
-      balancesMoney[key] = new Money(available, asset);
-    });
-  }
+  const balancesMoney = Object.fromEntries(
+    Object.entries(balances).map(([key, balance]) => [
+      key,
+      balance && new Money(balance.available, wavesAsset),
+    ])
+  );
 
   return (
     <div className={styles.root} data-testid="otherAccountsPage">
