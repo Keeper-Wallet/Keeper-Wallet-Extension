@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,8 +15,8 @@ interface Props {
 export const ExportButton = ({ className }: Props) => {
   const { t } = useTranslation();
 
-  const addresses = useAppSelector(state => state.addresses);
-  const accounts = useAppSelector(state => state.allNetworksAccounts);
+  const addresses = usePopupSelector(state => state.addresses);
+  const accounts = usePopupSelector(state => state.allNetworksAccounts);
 
   const [showExportModal, setShowExportModal] = useState(false);
 

@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import copy from 'copy-to-clipboard';
 import { CheckIcon } from 'icons/check';
 import { CopyIcon } from 'icons/copy';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'ui/components/ui';
@@ -16,7 +16,7 @@ interface Props {
 
 export function TxDetailTabs({ children }: Props) {
   const { t } = useTranslation();
-  const json = useAppSelector(state => state.activePopup?.msg?.json);
+  const json = usePopupSelector(state => state.activePopup?.msg?.json);
   const [copyFeedback, setCopyFeedback] = useState(false);
 
   return (

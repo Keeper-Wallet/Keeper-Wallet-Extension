@@ -1,6 +1,6 @@
 import { TRANSACTION_TYPE, TransactionFromNode } from '@waves/ts-types';
 import clsx from 'clsx';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { CSSProperties, useEffect, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -80,20 +80,20 @@ const PLACEHOLDERS = [...Array(4).keys()].map<TransactionFromNode>(
 
 export function TabTxHistory() {
   const { t, i18n } = useTranslation();
-  const networkCode = useAppSelector(
+  const networkCode = usePopupSelector(
     state => state.selectedAccount?.networkCode
   );
-  const assets = useAppSelector(state => state.assets);
-  const showSuspiciousAssets = useAppSelector(
+  const assets = usePopupSelector(state => state.assets);
+  const showSuspiciousAssets = usePopupSelector(
     state => !!state.uiState?.showSuspiciousAssets
   );
-  const address = useAppSelector(state => state.selectedAccount?.address);
-  const aliases = useAppSelector(
+  const address = usePopupSelector(state => state.selectedAccount?.address);
+  const aliases = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     state => state.balances[address!]?.aliases || []
   );
   const addressOrAlias = [address, ...aliases];
-  const txHistory = useAppSelector(
+  const txHistory = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     state => state.balances[address!]?.txHistory
   );

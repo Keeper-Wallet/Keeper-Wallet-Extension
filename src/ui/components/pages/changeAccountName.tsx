@@ -1,4 +1,4 @@
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { PreferencesAccount } from 'preferences/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -39,10 +39,10 @@ export function ChangeAccountName() {
   const navigate = useNavigate();
   const params = useParams<{ address: string }>();
 
-  const dispatch = useAppDispatch();
-  const accounts = useAppSelector(state => state.accounts);
+  const dispatch = usePopupDispatch();
+  const accounts = usePopupSelector(state => state.accounts);
 
-  const account = useAppSelector(state =>
+  const account = usePopupSelector(state =>
     state.accounts.find(x => x.address === params.address)
   );
 

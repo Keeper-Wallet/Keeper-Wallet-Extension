@@ -2,7 +2,7 @@ import { Asset, Money } from '@waves/data-entities';
 import { AssetDetail } from 'assets/types';
 import { useTranslation } from 'react-i18next';
 
-import { useAppSelector } from '../../../../popup/store/react';
+import { usePopupSelector } from '../../../../popup/store/react';
 import { getAssetDetailLink } from '../../../urls';
 import { Balance, Button, Copy, DateFormat, Ellipsis } from '../../ui';
 
@@ -14,7 +14,7 @@ interface Props {
 
 export function AssetInfo({ asset, onCopy, onClose }: Props) {
   const { t } = useTranslation();
-  const networkCode = useAppSelector(
+  const networkCode = usePopupSelector(
     state => state.selectedAccount?.networkCode
   );
 

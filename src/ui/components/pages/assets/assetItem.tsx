@@ -3,7 +3,10 @@ import { isSwappableAsset } from 'assets/utils';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
-import { useAppDispatch, useAppSelector } from '../../../../popup/store/react';
+import {
+  usePopupDispatch,
+  usePopupSelector,
+} from '../../../../popup/store/react';
 import { favoriteAsset } from '../../../../store/actions/assets';
 import { Balance, Loader } from '../../ui';
 import { Tooltip } from '../../ui/tooltip';
@@ -29,9 +32,9 @@ export function AssetItem({
   onSwapClick,
 }: Props) {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-  const assets = useAppSelector(state => state.assets);
-  const currentNetwork = useAppSelector(state => state.currentNetwork);
+  const dispatch = usePopupDispatch();
+  const assets = usePopupSelector(state => state.assets);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const asset = assets[assetId];
 
   const displayName = asset?.displayName;

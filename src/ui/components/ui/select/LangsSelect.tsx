@@ -1,14 +1,14 @@
 import clsx from 'clsx';
 import { SUPPORTED_LANGUAGES } from 'i18n/constants';
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 
 import { setLocale } from '../../../../store/actions/user';
 import { Select } from '../';
 import * as styles from './LangsSelect.module.css';
 
 export function LangsSelect() {
-  const dispatch = useAppDispatch();
-  const currentLocale = useAppSelector(state => state.currentLocale);
+  const dispatch = usePopupDispatch();
+  const currentLocale = usePopupSelector(state => state.currentLocale);
 
   return (
     <Select

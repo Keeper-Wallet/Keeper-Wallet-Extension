@@ -1,5 +1,5 @@
 import { Money } from '@waves/data-entities';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 
 import { getFeeOptions } from './utils';
 
@@ -10,15 +10,15 @@ export function useFeeOptions({
   initialFee: Money;
   txType: number;
 }) {
-  const assets = useAppSelector(state => state.assets);
+  const assets = usePopupSelector(state => state.assets);
 
-  const balance = useAppSelector(
+  const balance = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
     state => state.balances[state.selectedAccount?.address!]
   );
 
-  const feeConfig = useAppSelector(state => state.feeConfig);
-  const usdPrices = useAppSelector(state => state.usdPrices);
+  const feeConfig = usePopupSelector(state => state.feeConfig);
+  const usdPrices = usePopupSelector(state => state.usdPrices);
 
   return getFeeOptions({
     assets,

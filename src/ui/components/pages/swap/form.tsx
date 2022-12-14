@@ -15,7 +15,7 @@ import { BalancesItem } from 'balances/types';
 import clsx from 'clsx';
 import { useFeeOptions } from 'fee/useFeeOptions';
 import { convertFeeToAsset } from 'fee/utils';
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setUiState } from 'store/actions/uiState';
@@ -115,19 +115,19 @@ export function SwapForm({
   wavesFeeCoins,
   onSwap,
 }: Props) {
-  const dispatch = useAppDispatch();
+  const dispatch = usePopupDispatch();
   const { t } = useTranslation();
 
-  const assets = useAppSelector(state => state.assets);
-  const usdPrices = useAppSelector(state => state.usdPrices);
-  const accountBalance = useAppSelector(
+  const assets = usePopupSelector(state => state.assets);
+  const usdPrices = usePopupSelector(state => state.usdPrices);
+  const accountBalance = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
     state => state.balances[state.selectedAccount?.address!]
   );
 
-  const currentNetwork = useAppSelector(state => state.currentNetwork);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
 
-  const feeConfig = useAppSelector(state => state.feeConfig);
+  const feeConfig = usePopupSelector(state => state.feeConfig);
 
   const wavesFee = new Money(wavesFeeCoins, new Asset(assets.WAVES));
 
@@ -199,7 +199,7 @@ export function SwapForm({
   const [swapVendor, setSwapVendor] = useState(SwapVendor.Keeper);
   const [swapVendorTouched, setSwapVendorTouched] = useState(false);
 
-  const slippageToleranceIndex = useAppSelector(
+  const slippageToleranceIndex = usePopupSelector(
     state => state.uiState.slippageToleranceIndex ?? 2
   );
 
@@ -223,7 +223,7 @@ export function SwapForm({
       })
     : null;
 
-  const accountAddress = useAppSelector(
+  const accountAddress = usePopupSelector(
     state => state.selectedAccount?.address
   );
 

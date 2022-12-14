@@ -5,7 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import background from 'ui/services/Background';
 
-import { useAppSelector } from '../../../popup/store/react';
+import { usePopupSelector } from '../../../popup/store/react';
 import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { Button } from '../ui';
 import { generateNewWalletItems } from './NewWallet';
@@ -13,7 +13,7 @@ import * as styles from './styles/import.styl';
 
 export function ImportPopup() {
   const { t } = useTranslation();
-  const currentNetwork = useAppSelector(state => state.currentNetwork);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
 
   return (
     <div data-testid="importForm" className={styles.root}>
@@ -51,9 +51,9 @@ export function ImportPopup() {
 export function AccountsHome() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const customCodes = useAppSelector(state => state.customCodes);
-  const currentNetwork = useAppSelector(state => state.currentNetwork);
-  const networks = useAppSelector(state => state.networks);
+  const customCodes = usePopupSelector(state => state.customCodes);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const networks = usePopupSelector(state => state.networks);
 
   const [isLedgerSupported, setIsLedgerSupported] = useState(false);
   const [isDebug, setDebug] = useState(false);

@@ -4,7 +4,7 @@ import {
   isEnoughBalanceForFeeAndSpendingAmounts,
 } from 'fee/utils';
 import { MessageStoreItem } from 'messages/types';
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 
 import { updateTransactionFee } from '../../../../store/actions/messages';
 import { getMoney } from '../../../utils/converters';
@@ -16,15 +16,15 @@ interface Props {
 }
 
 export function TxFee({ message: messageProp }: Props) {
-  const dispatch = useAppDispatch();
-  const assets = useAppSelector(state => state.assets);
+  const dispatch = usePopupDispatch();
+  const assets = usePopupSelector(state => state.assets);
 
-  const balance = useAppSelector(
+  const balance = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
     state => state.balances[state.selectedAccount?.address!]
   );
 
-  const messageFromState = useAppSelector(
+  const messageFromState = usePopupSelector(
     state => state.activePopup?.msg
   ) as Extract<MessageStoreItem, { type: 'transaction' }>;
 

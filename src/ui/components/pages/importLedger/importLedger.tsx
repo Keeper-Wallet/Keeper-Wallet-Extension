@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { ledgerService, LedgerServiceStatus } from 'ledger/service';
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -49,11 +49,11 @@ interface LedgerUser {
 export function ImportLedger() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-  const accounts = useAppSelector(state => state.accounts);
-  const currentNetwork = useAppSelector(state => state.currentNetwork);
-  const customCodes = useAppSelector(state => state.customCodes);
-  const networks = useAppSelector(state => state.networks);
+  const dispatch = usePopupDispatch();
+  const accounts = usePopupSelector(state => state.accounts);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const customCodes = usePopupSelector(state => state.customCodes);
+  const networks = usePopupSelector(state => state.networks);
 
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);

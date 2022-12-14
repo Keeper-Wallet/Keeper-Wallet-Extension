@@ -1,5 +1,5 @@
 import { Asset, Money } from '@waves/data-entities';
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { compareAccountsByLastUsed } from 'preferences/utils';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,15 +14,15 @@ import * as styles from './otherAccounts.module.css';
 export function OtherAccountsPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-  const accounts = useAppSelector(state => state.accounts);
-  const activeAccount = useAppSelector(state =>
+  const dispatch = usePopupDispatch();
+  const accounts = usePopupSelector(state => state.accounts);
+  const activeAccount = usePopupSelector(state =>
     state.accounts.find(
       ({ address }) => address === state.selectedAccount?.address
     )
   );
-  const assets = useAppSelector(state => state.assets);
-  const balances = useAppSelector(state => state.balances);
+  const assets = usePopupSelector(state => state.assets);
+  const balances = usePopupSelector(state => state.balances);
 
   const [term, setTerm] = useState<string>('');
 

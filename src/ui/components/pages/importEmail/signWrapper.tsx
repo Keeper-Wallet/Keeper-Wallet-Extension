@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { LedgerConnectModal } from 'ledger/connectModal';
 import { ledgerService, LedgerServiceStatus } from 'ledger/service';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui/components/ui';
@@ -20,7 +20,7 @@ type Props = {
 
 export function SignWrapper({ onConfirm, children }: Props) {
   const { t } = useTranslation();
-  const account = useAppSelector(state => state.selectedAccount);
+  const account = usePopupSelector(state => state.selectedAccount);
 
   const [showModal, setShowModal] = useState(false);
   const [pending, setPending] = useState(false);

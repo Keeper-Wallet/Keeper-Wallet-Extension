@@ -4,7 +4,10 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { useAppDispatch, useAppSelector } from '../../../../popup/store/react';
+import {
+  usePopupDispatch,
+  usePopupSelector,
+} from '../../../../popup/store/react';
 import { newAccountSelect } from '../../../../store/actions/localState';
 import * as styles from './importEmail.module.css';
 import { Login, UserData } from './login';
@@ -12,8 +15,8 @@ import { Login, UserData } from './login';
 export function ImportEmail() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-  const accounts = useAppSelector(state => state.accounts);
+  const dispatch = usePopupDispatch();
+  const accounts = usePopupSelector(state => state.accounts);
 
   const handleSubmit = useCallback(
     (userData: UserData) => {

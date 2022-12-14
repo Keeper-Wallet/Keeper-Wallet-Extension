@@ -1,4 +1,4 @@
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
 import * as styles from 'ui/components/pages/styles/transactions.styl';
@@ -14,7 +14,7 @@ export function TxFooter({
   autoClickProtection,
 }: MessageComponentProps & { hideApprove?: boolean }) {
   const { t } = useTranslation();
-  const status = useAppSelector(state => state.localState.transactionStatus);
+  const status = usePopupSelector(state => state.localState.transactionStatus);
 
   const isSend = message.broadcast;
 

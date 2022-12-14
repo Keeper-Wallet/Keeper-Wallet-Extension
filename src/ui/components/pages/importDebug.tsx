@@ -1,5 +1,5 @@
 import { validators } from '@waves/waves-transactions';
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -11,11 +11,11 @@ import { WalletTypes } from 'ui/services/Background';
 export function ImportDebug() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-  const accounts = useAppSelector(state => state.accounts);
-  const currentNetwork = useAppSelector(state => state.currentNetwork);
-  const customCodes = useAppSelector(state => state.customCodes);
-  const networks = useAppSelector(state => state.networks);
+  const dispatch = usePopupDispatch();
+  const accounts = usePopupSelector(state => state.accounts);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const customCodes = usePopupSelector(state => state.customCodes);
+  const networks = usePopupSelector(state => state.networks);
   const networkCode =
     customCodes[currentNetwork] ||
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

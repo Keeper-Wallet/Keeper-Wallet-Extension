@@ -1,4 +1,4 @@
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { icontains } from 'ui/components/pages/assets/helpers';
@@ -109,7 +109,7 @@ function AddressCard({ address, name }: AddressCardProps) {
 export function AddressBook() {
   const { t } = useTranslation();
 
-  const addresses = useAppSelector(state => state.addresses);
+  const addresses = usePopupSelector(state => state.addresses);
 
   const [search, setSearch] = useState('');
   const addressList = useMemo(
