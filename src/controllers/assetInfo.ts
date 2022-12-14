@@ -423,8 +423,8 @@ export class AssetInfoController {
     this.store.updateState({ assets });
   }
 
-  async #fetchAssetsBatch(assetIds: string[]) {
-    const response = await fetch(new URL('assets/details', this.getNode()), {
+  async #fetchAssetsBatch(nodeUrl: string, assetIds: string[]) {
+    const response = await fetch(new URL('assets/details', nodeUrl), {
       method: 'POST',
       headers: {
         Accept: 'application/json;large-significand-format=string',
@@ -462,6 +462,7 @@ export class AssetInfoController {
     for (let start = 0; start < assetIds.length; ) {
       try {
         const assetsBatch = await this.#fetchAssetsBatch(
+          this.getNode(),
           assetIds.slice(start, start + maxAssetsPerRequest)
         );
 
