@@ -1,7 +1,7 @@
 import { captureException } from '@sentry/react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRouteError } from 'react-router-dom';
+import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
 import { ExportButton, ResetButton } from 'ui/components/ui';
 
 import { HeadLogo } from '../head';
@@ -12,16 +12,28 @@ export function ErrorPage() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    captureException(error);
+    if (isRouteErrorResponse(error)) {
+      if (error.status !== 404 && error.error) {
+        captureException(error.error);
+      }
+    } else {
+      captureException(error);
+    }
   }, [error]);
 
   return (
     <div className={styles.wrapper}>
       <HeadLogo className={styles.logo} />
+
       <div className={styles.content}>
         <h2 className={styles.title}>{t('errorPage.title')}</h2>
+
         <p className={styles.name}>
-          {error instanceof Error ? error.message : String(error)}
+          {isRouteErrorResponse(error)
+            ? error.statusText
+            : error instanceof Error
+            ? error.message
+            : String(error)}
         </p>
       </div>
 

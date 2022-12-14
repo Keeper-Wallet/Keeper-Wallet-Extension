@@ -16,7 +16,7 @@
       "dist/build/popup.js",
       "dist/build/vendors*.js"
     ],
-    "limit": 559180
+    "limit": 559271
   },
   {
     "name": "contentscript",
