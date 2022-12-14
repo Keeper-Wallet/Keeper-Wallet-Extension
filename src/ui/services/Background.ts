@@ -16,11 +16,6 @@ import { CreateWalletInput } from 'wallets/types';
 import { IgnoreErrorsContext } from '../../constants';
 import type { StorageLocalState } from '../../storage/storage';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function prepareErrorMessage(err: any) {
-  return err && err.message ? err.message : String(err);
-}
-
 export type BackgroundUiApi = __BackgroundUiApiDirect;
 
 class Background {
@@ -59,14 +54,10 @@ class Background {
   }
 
   async getState<K extends keyof StorageLocalState>(params?: K[]) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.getState(params);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.getState(params);
   }
 
   async updateIdle() {
@@ -75,224 +66,148 @@ class Background {
   }
 
   async setIdleOptions(options: { type: string }) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.setIdleOptions(options);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.setIdleOptions(options);
   }
 
   async allowOrigin(origin: string) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.allowOrigin(origin);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.allowOrigin(origin);
   }
 
   async disableOrigin(origin: string) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.disableOrigin(origin);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.disableOrigin(origin);
   }
 
   async deleteOrigin(origin: string) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.deleteOrigin(origin);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.deleteOrigin(origin);
   }
 
   async setAutoSign(
     origin: string,
     options: { interval: number; totalAmount: number }
   ) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-      return await (this.background!.setAutoSign as any)(origin, options);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
+    return (this.background!.setAutoSign as any)(origin, options);
   }
 
   async setNotificationPermissions(options: {
     origin: string;
     canUse: boolean;
   }) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.setNotificationPermissions(options);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.setNotificationPermissions(options);
   }
 
   async setCurrentLocale(lng: string): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.setCurrentLocale(lng);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.setCurrentLocale(lng);
   }
 
   async setUiState(newUiState: UiState) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.setUiState(newUiState);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.setUiState(newUiState);
   }
 
   async selectAccount(address: string, network: NetworkName): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.selectAccount(address, network);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.selectAccount(address, network);
   }
 
   async addWallet(
     data: Omit<CreateWalletInput, 'networkCode'> & { networkCode?: string }
   ) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.addWallet(data);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.addWallet(data);
   }
 
   async removeWallet(address: string, network: NetworkName): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      if (address) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        return await this.background!.removeWallet(address, network);
-      }
-
-      return await this.deleteVault();
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
+    await this.initPromise;
+    this._connect();
+    if (address) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return this.background!.removeWallet(address, network);
     }
+
+    return this.deleteVault();
   }
 
   async deleteVault() {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.deleteVault();
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.deleteVault();
   }
 
   async closeNotificationWindow(): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.closeNotificationWindow();
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.closeNotificationWindow();
   }
 
   async showTab(url: string, name: string): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.showTab(url, name);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.showTab(url, name);
   }
 
   async closeCurrentTab(): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.closeCurrentTab();
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.closeCurrentTab();
   }
 
   async lock(): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.lock();
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.lock();
   }
 
   async unlock(password: string): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.unlock(password);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.unlock(password);
   }
 
   async initVault(password: string): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.initVault(password);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.initVault(password);
   }
 
   async checkPassword(password: string): Promise<string> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-      return (await this.background!.checkPassword(password)) as any;
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
+    return (await this.background!.checkPassword(password)) as any;
   }
 
   async getAccountSeed(
@@ -300,14 +215,10 @@ class Background {
     network: NetworkName,
     password: string
   ): Promise<string> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.getAccountSeed(address, network, password);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.getAccountSeed(address, network, password);
   }
 
   async getAccountEncodedSeed(
@@ -315,18 +226,10 @@ class Background {
     network: NetworkName,
     password: string
   ): Promise<string> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.getAccountEncodedSeed(
-        address,
-        network,
-        password
-      );
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.getAccountEncodedSeed(address, network, password);
   }
 
   async getAccountPrivateKey(
@@ -334,228 +237,148 @@ class Background {
     network: NetworkName,
     password: string
   ): Promise<string> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.getAccountPrivateKey(
-        address,
-        network,
-        password
-      );
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.getAccountPrivateKey(address, network, password);
   }
 
   async editWalletName(address: string, name: string, network: NetworkName) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.editWalletName(address, name, network);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.editWalletName(address, name, network);
   }
 
   async newPassword(oldPassword: string, newPassword: string): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.newPassword(oldPassword, newPassword);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.newPassword(oldPassword, newPassword);
   }
 
   async clearMessages(): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.clearMessages();
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.clearMessages();
   }
 
   async deleteMessage(id: string): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.deleteMessage(id);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.deleteMessage(id);
   }
 
   async approve(
     messageId: string,
     address: PreferencesAccount
   ): Promise<unknown> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.approve(messageId, address);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.approve(messageId, address);
   }
 
   async reject(messageId: string, forever = false): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.reject(messageId, forever);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.reject(messageId, forever);
   }
 
   async updateTransactionFee(messageId: string, fee: IMoneyLike) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.updateTransactionFee(messageId, fee);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.updateTransactionFee(messageId, fee);
   }
 
   async setNetwork(network: NetworkName): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.setNetwork(network);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.setNetwork(network);
   }
 
   async setCustomNode(
     url: string | null | undefined,
     network: NetworkName
   ): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.setCustomNode(url, network);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.setCustomNode(url, network);
   }
 
   async setCustomCode(
     code: string | undefined,
     network: NetworkName
   ): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.setCustomCode(code, network);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.setCustomCode(code, network);
   }
 
   async setCustomMatcher(
     url: string | null | undefined,
     network: NetworkName
   ): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.setCustomMatcher(url, network);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.setCustomMatcher(url, network);
   }
 
   async assetInfo(assetId: string): Promise<AssetDetail> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.assetInfo(assetId || 'WAVES');
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.assetInfo(assetId || 'WAVES');
   }
 
   async updateAssets(assetIds: string[]): Promise<AssetDetail> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-      return (await this.background!.updateAssets(assetIds)) as any;
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
+    return (await this.background!.updateAssets(assetIds)) as any;
   }
 
   async setAddress(address: string, name: string): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.setAddress(address, name);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.setAddress(address, name);
   }
 
   async setAddresses(addresses: Record<string, string>): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.setAddresses(addresses);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.setAddresses(addresses);
   }
 
   async removeAddress(address: string): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.removeAddress(address);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.removeAddress(address);
   }
 
   async toggleAssetFavorite(assetId: string): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.toggleAssetFavorite(assetId);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.toggleAssetFavorite(assetId);
   }
 
   async deleteNotifications(ids: string[]) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.deleteNotifications(ids);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.deleteNotifications(ids);
   }
 
   sendEvent(event: 'addWallet', properties: { type: string }): Promise<void>;
@@ -577,148 +400,96 @@ class Background {
     }
   ): Promise<void>;
   async sendEvent(event: string, properties: Record<string, unknown> = {}) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.sendEvent(event, properties);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.sendEvent(event, properties);
   }
 
   async updateBalances() {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.updateBalances();
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.updateBalances();
   }
 
   async swapAssets(params: SwapAssetsParams): Promise<SwapAssetsResult> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.swapAssets(params);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.swapAssets(params);
   }
 
   async signAndPublishTransaction(
     data: MessageInputOfType<'transaction'>['data']
   ) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.signAndPublishTransaction(data);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.signAndPublishTransaction(data);
   }
 
   async getExtraFee(address: string, network: NetworkName) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.getExtraFee(address, network);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.getExtraFee(address, network);
   }
 
   async getMessageById(messageId: string) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.getMessageById(messageId);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.getMessageById(messageId);
   }
 
   async shouldIgnoreError(context: IgnoreErrorsContext, message: string) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.shouldIgnoreError(context, message);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.shouldIgnoreError(context, message);
   }
 
   async identityRestore(userId: string): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-      return (await this.background!.identityRestore(userId)) as any;
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
+    return (await this.background!.identityRestore(userId)) as any;
   }
 
   async identityUpdate(): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.identityUpdate();
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.identityUpdate();
   }
 
   async identityClear(): Promise<void> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.identityClear();
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.identityClear();
   }
 
   async identitySignIn(username: string, password: string) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.identitySignIn(username, password);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.identitySignIn(username, password);
   }
 
   async identityConfirmSignIn(code: string) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.identityConfirmSignIn(code);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.identityConfirmSignIn(code);
   }
 
   async identityUser(): Promise<IdentityUser> {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-      return (await this.background!.identityUser()) as any;
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
+    return (await this.background!.identityUser()) as any;
   }
 
   async ledgerSignResponse(requestId: string, error: unknown): Promise<void>;
@@ -732,19 +503,15 @@ class Background {
     error: unknown,
     signature?: string
   ) {
-    try {
-      await this.initPromise;
-      this._connect();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await this.background!.ledgerSignResponse(
-        requestId,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        error && (error as any).message ? (error as any).message : null,
-        signature
-      );
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.ledgerSignResponse(
+      requestId,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      error && (error as any).message ? (error as any).message : null,
+      signature
+    );
   }
 
   async _updateIdle() {
