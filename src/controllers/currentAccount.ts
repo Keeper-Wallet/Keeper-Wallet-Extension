@@ -97,6 +97,10 @@ export class CurrentAccountController {
       },
     });
 
+    if (!response.ok) {
+      throw response;
+    }
+
     const json = (await response.json()) as {
       available: string;
       regular: string;
@@ -113,6 +117,10 @@ export class CurrentAccountController {
         accept: 'application/json; large-significand-format=string',
       },
     });
+
+    if (!response.ok) {
+      throw response;
+    }
 
     const json = (await response.json()) as {
       address: string;
@@ -139,6 +147,10 @@ export class CurrentAccountController {
       },
     });
 
+    if (!response.ok) {
+      throw response;
+    }
+
     const json: NftAssetDetail[] = await response.json();
 
     return json;
@@ -152,6 +164,10 @@ export class CurrentAccountController {
         accept: 'application/json',
       },
     });
+
+    if (!response.ok) {
+      throw response;
+    }
 
     const json = (await response.json()) as string[];
 
@@ -169,6 +185,10 @@ export class CurrentAccountController {
         accept: 'application/json; large-significand-format=string',
       },
     });
+
+    if (!response.ok) {
+      throw response;
+    }
 
     const json = (await response.json()) as [TransactionFromNode[]];
 
