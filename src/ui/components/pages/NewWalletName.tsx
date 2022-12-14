@@ -1,4 +1,4 @@
-import { useAccountsSelector, useAppDispatch } from 'accounts/store/react';
+import { useAccountsDispatch, useAccountsSelector } from 'accounts/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -13,7 +13,7 @@ import * as styles from './newWalletName.module.css';
 export function NewWalletName() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
+  const dispatch = useAccountsDispatch();
 
   const account = useAccountsSelector(state => state.localState.newAccount);
   const accounts = useAccountsSelector(state => state.accounts);

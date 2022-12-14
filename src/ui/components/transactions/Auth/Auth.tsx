@@ -1,4 +1,4 @@
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 
 import { SignWrapper } from '../../pages/importEmail/signWrapper';
@@ -11,7 +11,7 @@ import { AuthInfo } from './AuthInfo';
 
 export function Auth(props: MessageComponentProps) {
   const { t } = useTranslation();
-  const status = useAppSelector(state => state.localState.transactionStatus);
+  const status = usePopupSelector(state => state.localState.transactionStatus);
 
   const { message, assets } = props;
 

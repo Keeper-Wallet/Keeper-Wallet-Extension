@@ -1,10 +1,10 @@
 import { NetworkName } from 'networks/types';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 
 import { assetIds, assetLogosByNetwork, swappableAssetIds } from './constants';
 
 export function useAssetLogo(network: NetworkName, assetId: string) {
-  const logos = useAppSelector(state => state.assetLogos);
+  const logos = usePopupSelector(state => state.assetLogos);
 
   if (network !== NetworkName.Mainnet) {
     return assetLogosByNetwork[network]?.[assetId];
@@ -14,7 +14,7 @@ export function useAssetLogo(network: NetworkName, assetId: string) {
 }
 
 export function useAssetIdByTicker(network: NetworkName, ticker: string) {
-  const tickers = useAppSelector(state => state.assetTickers);
+  const tickers = usePopupSelector(state => state.assetTickers);
 
   if (network !== NetworkName.Mainnet) {
     return assetIds[network]?.[ticker];

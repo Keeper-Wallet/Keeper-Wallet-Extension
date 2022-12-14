@@ -1,5 +1,5 @@
 import { validators } from '@waves/waves-transactions';
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { removeAddress, setAddress } from 'store/actions/addresses';
@@ -25,8 +25,8 @@ export function EditModal({
 }: Props) {
   const { t } = useTranslation();
 
-  const dispatch = useAppDispatch();
-  const addresses = useAppSelector(state => state.addresses);
+  const dispatch = usePopupDispatch();
+  const addresses = usePopupSelector(state => state.addresses);
 
   const [loading, setLoading] = useState(false);
   const [showNotification, setShowNotification] = useState(false);

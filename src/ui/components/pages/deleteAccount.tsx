@@ -1,4 +1,4 @@
-import { useAppDispatch } from 'popup/store/react';
+import { usePopupDispatch } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -12,7 +12,7 @@ export function DeleteAccount() {
   const navigate = useNavigate();
   const params = useParams<{ address: string }>();
 
-  const dispatch = useAppDispatch();
+  const dispatch = usePopupDispatch();
 
   return (
     <div className={styles.content}>

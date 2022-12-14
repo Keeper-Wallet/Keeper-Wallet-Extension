@@ -1,5 +1,5 @@
 import BigNumber from '@waves/bignumber';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 
 interface Props {
   id: string;
@@ -8,9 +8,9 @@ interface Props {
 }
 
 export function UsdAmount({ id, tokens, className }: Props) {
-  const usdPrices = useAppSelector(state => state.usdPrices);
+  const usdPrices = usePopupSelector(state => state.usdPrices);
 
-  const currentNetwork = useAppSelector(state => state.currentNetwork);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const isMainnet = currentNetwork === 'mainnet';
 
   if (!usdPrices || !isMainnet) {

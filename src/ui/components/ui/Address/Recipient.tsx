@@ -1,6 +1,6 @@
 import { validators } from '@waves/waves-transactions';
 import clsx from 'clsx';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { processAliasOrAddress } from 'transactions/utils';
@@ -39,8 +39,8 @@ export function AddressRecipient({
     ? recipient
     : processAliasOrAddress(recipient, chainId);
 
-  const accounts = useAppSelector(state => state.accounts);
-  const addresses = useAppSelector(state => state.addresses);
+  const accounts = usePopupSelector(state => state.accounts);
+  const addresses = usePopupSelector(state => state.addresses);
 
   const name =
     accounts.find(account => account.address === address)?.name ||

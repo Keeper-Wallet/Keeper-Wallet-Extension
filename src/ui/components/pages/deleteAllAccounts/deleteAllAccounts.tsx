@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useAppDispatch } from 'popup/store/react';
+import { usePopupDispatch } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,7 @@ import * as styles from './deleteAccounts.module.css';
 export function DeleteAllAccounts() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
+  const dispatch = usePopupDispatch();
 
   const [phrase, setPhrase] = useState<string | null>(null);
   const [isBlur, setBlur] = useState(false);

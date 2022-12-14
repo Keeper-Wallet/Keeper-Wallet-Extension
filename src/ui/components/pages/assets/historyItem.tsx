@@ -4,7 +4,7 @@ import { Long, TRANSACTION_TYPE, TransactionFromNode } from '@waves/ts-types';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
-import { useAppSelector } from '../../../../popup/store/react';
+import { usePopupSelector } from '../../../../popup/store/react';
 import { getTxDetailLink } from '../../../urls';
 import { TxIcon } from '../../transactions/BaseTransaction';
 import { Balance, Loader } from '../../ui';
@@ -19,17 +19,17 @@ interface Props {
 
 export function HistoryItem({ tx, className }: Props) {
   const { t } = useTranslation();
-  const address = useAppSelector(state => state.selectedAccount?.address);
-  const networkCode = useAppSelector(
+  const address = usePopupSelector(state => state.selectedAccount?.address);
+  const networkCode = usePopupSelector(
     state => state.selectedAccount?.networkCode
   );
-  const chainId = useAppSelector(state =>
+  const chainId = usePopupSelector(state =>
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     state.selectedAccount?.networkCode!.charCodeAt(0)
   );
-  const assets = useAppSelector(state => state.assets);
+  const assets = usePopupSelector(state => state.assets);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const aliases = useAppSelector(state => state.balances[address!]?.aliases);
+  const aliases = usePopupSelector(state => state.balances[address!]?.aliases);
   const addressAlias = [address, ...(aliases || [])];
 
   let tooltip, label, info, messageType: string, addSign;

@@ -1,6 +1,6 @@
 import { NftCover } from 'nfts/nftCard';
 import { createNft } from 'nfts/nfts';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Ellipsis, Loader } from 'ui/components/ui';
@@ -15,20 +15,20 @@ export function NftInfo() {
 
   const { t } = useTranslation();
 
-  const networkCode = useAppSelector(
+  const networkCode = usePopupSelector(
     state => state.selectedAccount?.networkCode
   );
 
-  const userAddress = useAppSelector(
+  const userAddress = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
     state => state.selectedAccount?.address!
   );
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const asset = useAppSelector(state => state.assets[params.assetId!]);
+  const asset = usePopupSelector(state => state.assets[params.assetId!]);
 
-  const nftInfo = useAppSelector(state => asset && state.nfts?.[asset.id]);
-  const nftConfig = useAppSelector(state => state.nftConfig);
+  const nftInfo = usePopupSelector(state => asset && state.nfts?.[asset.id]);
+  const nftConfig = usePopupSelector(state => state.nftConfig);
 
   const nft =
     asset &&
