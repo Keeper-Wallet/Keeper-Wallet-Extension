@@ -7795,9 +7795,9 @@ terser@^5.10.0, terser@^5.14.1:
     source-map-support "~0.5.20"
 
 testcontainers@^9.0.0:
-  version "9.0.1"
-  resolved "https://registry.yarnpkg.com/testcontainers/-/testcontainers-9.0.1.tgz#8a22327ac286824a03d744444c38792dd5a496df"
-  integrity sha512-ZT9H6Gjqm8OWc8Dmvk0oZlk/T6+pTKTKgQnbbivmWy2/WHt45AKMs1czpkmVACdSS3Z7zaLiTxyrcx8I6S9sPA==
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/testcontainers/-/testcontainers-9.1.0.tgz#3dc58017013acd9aaa5eabdca269b167647c3984"
+  integrity sha512-YzVC6XFA/fZeCPg1Nk+11sCp3ZTKquyAIoKmGXH571IOs60Eeb/ven1XfGhGQMeGeuEJFa9i1lqZ5nduJJglgw==
   dependencies:
     "@balena/dockerignore" "^1.0.2"
     "@types/archiver" "^5.3.1"
