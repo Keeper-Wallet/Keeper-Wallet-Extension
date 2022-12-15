@@ -2385,9 +2385,9 @@ ajv@^8.0.0, ajv@^8.0.1, ajv@^8.8.0:
     uri-js "^4.2.2"
 
 amazon-cognito-identity-js@^6.0.0:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/amazon-cognito-identity-js/-/amazon-cognito-identity-js-6.0.1.tgz#d0de66a6cbed41413b202066f7b2acbb35c00de8"
-  integrity sha512-j96DHquV9Jiabs+3/fuQwrSK+1WcxzmEfRuZlhajGxxUplzjt046pedCYiSkcFY+Wilun+I57iri5dXiaNDOsg==
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/amazon-cognito-identity-js/-/amazon-cognito-identity-js-6.1.0.tgz#a15935d51b5f0ed6e1d0cd3ae6e6ade0365e71ea"
+  integrity sha512-Yx0ua84OPJ7ifZklXqiAu7T3LCD0okb+LBM0FyYMqPrM4Ag2d8dpmRVQkFT1TN6vomTNAXmH6fKiaAUzLiWvNg==
   dependencies:
     "@aws-crypto/sha256-js" "1.2.2"
     buffer "4.9.2"
