@@ -26,4 +26,12 @@ export const NewAccountScreen = {
   get continueButton() {
     return this.root.findByText$('Continue');
   },
+
+  get passwordError() {
+    return this.root.findByTestId$('firstError');
+  },
+
+  get passwordConfirmationError() {
+    return this.root.findByTestId$('secondError');
+  },
 };

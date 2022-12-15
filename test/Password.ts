@@ -1,10 +1,18 @@
-import { expect } from 'chai';
-import * as mocha from 'mocha';
-import { By, until, WebElement } from 'selenium-webdriver';
+import { expect } from 'expect-webdriverio';
 
-import { clear } from './utils';
+import { ChangePasswordScreen } from './helpers/ChangePasswordScreen';
+import { ConfirmDeleteAccountsScreen } from './helpers/ConfirmDeleteAccountsScreen';
+import { GetStartedScreen } from './helpers/GetStartedScreen';
+import { HomeScreen } from './helpers/HomeScreen';
+import { ImportFormScreen } from './helpers/ImportFormScreen';
+import { LoginScreen } from './helpers/LoginScreen';
+import { NewAccountScreen } from './helpers/NewAccountScreen';
+import {
+  GeneralSettingsScreen,
+  SettingsScreen,
+} from './helpers/SettingsScreen';
+import { TopMenu } from './helpers/TopMenu';
 import { AccountsHome, App, Windows } from './utils/actions';
-import { DEFAULT_PAGE_LOAD_DELAY } from './utils/constants';
 
 describe('Password management', () => {
   const PASSWORD = {
@@ -12,7 +20,6 @@ describe('Password management', () => {
     DEFAULT: 'strongpassword',
     NEW: 'verystrongpassword',
   };
-  let currentPassword: string;
   let tabKeeper: string, tabAccounts: string;
 
   after(async function () {
@@ -20,11 +27,6 @@ describe('Password management', () => {
   });
 
   describe('Create password', function () {
-    let firstPasswordInput: WebElement,
-      secondPasswordInput: WebElement,
-      firstPasswordErrorDiv: WebElement,
-      secondPasswordErrorDiv: WebElement;
-
     before(async function () {
       tabKeeper = await this.driver.getWindowHandle();
 
@@ -32,426 +34,221 @@ describe('Password management', () => {
       await browser.openKeeperPopup();
       [tabAccounts] = await waitForNewWindows(1);
 
-      await this.driver.switchTo().window(tabAccounts);
-      await this.driver.navigate().refresh();
+      await browser.switchToWindow(tabAccounts);
+      await browser.refresh();
 
-      await this.driver
-        .wait(
-          until.elementIsVisible(
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="getStartedBtn"]')),
-              this.wait
-            )
-          ),
-          this.wait
-        )
-        .click();
-
-      await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="newAccountForm"]')),
-        this.wait
-      );
-
-      // Protect Your Account page
-      firstPasswordInput = this.driver.wait(
-        until.elementLocated(By.css('#first')),
-        this.wait
-      );
-      firstPasswordErrorDiv = this.driver.findElement(
-        By.css('[data-testid="firstError"]')
-      );
-      secondPasswordInput = this.driver.findElement(By.css('#second'));
-      secondPasswordErrorDiv = this.driver.findElement(
-        By.css('[data-testid="secondError"]')
-      );
+      await GetStartedScreen.getStartedButton.click();
     });
 
     beforeEach(async function () {
-      await firstPasswordInput.clear();
-      await secondPasswordInput.clear();
+      await NewAccountScreen.passwordInput.clearValue();
+      await NewAccountScreen.passwordConfirmationInput.clearValue();
     });
 
     it('Minimum password length 8 characters', async function () {
-      await firstPasswordInput.sendKeys(PASSWORD.SHORT);
-      expect(await firstPasswordErrorDiv.getText()).matches(
-        /password is too short/i
+      await NewAccountScreen.passwordInput.setValue(PASSWORD.SHORT);
+      expect(NewAccountScreen.passwordError).toHaveText(
+        'Password is too short'
       );
     });
 
     it('Passwords in both fields must mismatch', async function () {
-      // check password mismatches
-      await firstPasswordInput.sendKeys(PASSWORD.DEFAULT);
-      await secondPasswordInput.sendKeys(PASSWORD.SHORT);
-      expect(await secondPasswordErrorDiv.getText()).matches(
-        /passwords do not match/i
+      await NewAccountScreen.passwordInput.setValue(PASSWORD.DEFAULT);
+      await NewAccountScreen.passwordConfirmationInput.setValue(PASSWORD.SHORT);
+      expect(NewAccountScreen.passwordConfirmationError).toHaveText(
+        'Passwords do not match'
       );
     });
 
     it('Passwords in both fields must match', async function () {
-      await firstPasswordInput.sendKeys(PASSWORD.DEFAULT);
-      await secondPasswordInput.sendKeys(PASSWORD.DEFAULT);
-      expect(await secondPasswordErrorDiv.getText()).to.be.empty;
+      await NewAccountScreen.passwordInput.setValue(PASSWORD.DEFAULT);
+      await NewAccountScreen.passwordConfirmationInput.setValue(
+        PASSWORD.DEFAULT
+      );
+      expect(NewAccountScreen.passwordConfirmationError).toHaveText('');
     });
 
     it('The ability to paste the password from the clipboard');
 
     it('Successful password creation', async function () {
-      await firstPasswordInput.sendKeys(PASSWORD.DEFAULT);
-      await secondPasswordInput.sendKeys(PASSWORD.DEFAULT);
-      await this.driver.findElement(By.css('#termsAccepted')).click();
-      await this.driver.findElement(By.css('#conditionsAccepted')).click();
-      await this.driver
-        .wait(
-          until.elementIsEnabled(
-            this.driver.findElement(By.css('button[type=submit]'))
-          ),
-          this.wait
-        )
-        .click();
-      // check we are at create new account page
-      await this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, 'root@import')]")
-        ),
-        this.wait
+      await NewAccountScreen.passwordInput.setValue(PASSWORD.DEFAULT);
+      await NewAccountScreen.passwordConfirmationInput.setValue(
+        PASSWORD.DEFAULT
       );
-      expect(
-        await this.driver
-          .findElement(By.css('[data-testid="createNewAccountBtn"]'))
-          .getText()
-      ).matches(/create a new account/i);
+      await NewAccountScreen.termsAndConditionsLine.click();
+      await NewAccountScreen.privacyPolicyLine.click();
+      await NewAccountScreen.continueButton.click();
+      expect(ImportFormScreen.root).toBeDisplayed();
+      expect(ImportFormScreen.createNewAccountButton).toBeDisplayed();
     });
   });
 
   // this tests starts when we are at create new account page
   describe('Change password', function () {
-    let oldPasswordInput: WebElement,
-      newFirstPasswordInput: WebElement,
-      newSecondPasswordInput: WebElement;
-
     before(async function () {
-      await this.driver.switchTo().window(tabKeeper);
+      await browser.switchToWindow(tabKeeper);
       await browser.openKeeperPopup();
 
-      await this.driver
-        .wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'settingsIcon@menu')]")
-          ),
-          this.wait
-        )
-        .click();
-      await this.driver
-        .wait(until.elementLocated(By.css('button#settingsGeneral')), this.wait)
-        .click();
-      await this.driver
-        .wait(until.elementLocated(By.css('button#changePassword')), this.wait)
-        .click();
-      oldPasswordInput = this.driver.wait(
-        until.elementLocated(By.css('input#old[type=password]')),
-        this.wait
-      );
-      newFirstPasswordInput = this.driver.findElement(
-        By.css('input#first[type=password]')
-      );
-      newSecondPasswordInput = this.driver.findElement(
-        By.css('input#second[type=password]')
-      );
+      await TopMenu.settingsButton.click();
+      await SettingsScreen.generalSectionLink.click();
+      await GeneralSettingsScreen.changePasswordLink.click();
     });
 
     beforeEach(async function () {
-      await clear(oldPasswordInput);
-      await clear(newFirstPasswordInput);
-      await clear(newSecondPasswordInput);
+      await ChangePasswordScreen.oldPasswordInput.clearValue();
+      await ChangePasswordScreen.newPasswordInput.clearValue();
+      await ChangePasswordScreen.passwordConfirmationInput.clearValue();
     });
 
     it('Minimum password length 8 characters', async function () {
-      await oldPasswordInput.sendKeys(PASSWORD.SHORT);
-      await oldPasswordInput.sendKeys('\t');
-      expect(
-        await this.driver
-          .findElement(By.css('[data-testid="oldError"]'))
-          .getText()
-      ).matches(/Password can't be so short/i);
-      await clear(oldPasswordInput);
+      await ChangePasswordScreen.oldPasswordInput.setValue(PASSWORD.SHORT);
+      expect(ChangePasswordScreen.oldPasswordError).toHaveText(
+        "Password can't be so short"
+      );
+      await ChangePasswordScreen.oldPasswordInput.clearValue();
 
-      await newFirstPasswordInput.sendKeys(PASSWORD.SHORT);
-      await newFirstPasswordInput.sendKeys('\t');
-      expect(
-        await this.driver
-          .findElement(By.css('[data-testid="firstError"]'))
-          .getText()
-      ).matches(/Password is too short/i);
-      await clear(newFirstPasswordInput);
+      await ChangePasswordScreen.newPasswordInput.setValue(PASSWORD.SHORT);
+      expect(ChangePasswordScreen.newPasswordInput).toHaveText(
+        "Password can't be so short"
+      );
+      await ChangePasswordScreen.newPasswordInput.clearValue();
     });
 
     it('The ability to paste the password from the clipboard');
 
     it('Passwords in both fields must match', async function () {
-      // check password mismatches
-      await newFirstPasswordInput.sendKeys(PASSWORD.DEFAULT);
-      await newSecondPasswordInput.sendKeys(PASSWORD.SHORT);
-      await newFirstPasswordInput.sendKeys('\t');
-
-      const errDiv = this.driver.findElement(
-        By.css('[data-testid="secondError"]')
+      await ChangePasswordScreen.newPasswordInput.setValue(PASSWORD.DEFAULT);
+      await ChangePasswordScreen.passwordConfirmationInput.setValue(
+        PASSWORD.SHORT
       );
-      expect(await errDiv.getText()).matches(/New passwords do not match/i);
-      await clear(newSecondPasswordInput);
+      expect(ChangePasswordScreen.newPasswordInput).toHaveText(
+        'New passwords do not match'
+      );
+      await ChangePasswordScreen.newPasswordInput.clearValue();
 
-      await newSecondPasswordInput.sendKeys(PASSWORD.DEFAULT);
-      await newFirstPasswordInput.sendKeys('\t');
-      expect(await errDiv.getText()).to.be.empty;
+      await ChangePasswordScreen.passwordConfirmationInput.setValue(
+        PASSWORD.DEFAULT
+      );
+      expect(ChangePasswordScreen.passwordConfirmationError).toHaveText('');
     });
 
     it('New password cannot match old', async function () {
-      await oldPasswordInput.sendKeys(PASSWORD.DEFAULT);
-      await newFirstPasswordInput.sendKeys(PASSWORD.DEFAULT);
-      await newFirstPasswordInput.sendKeys('\t');
+      await ChangePasswordScreen.oldPasswordInput.setValue(PASSWORD.DEFAULT);
+      await ChangePasswordScreen.newPasswordInput.setValue(PASSWORD.DEFAULT);
 
-      const errDiv = this.driver.findElement(
-        By.css('[data-testid="secondError"]')
+      expect(ChangePasswordScreen.passwordConfirmationError).toHaveText(
+        'Old password is equal new'
       );
-      expect(await errDiv.getText()).matches(/Old password is equal new/i);
-      await clear(newFirstPasswordInput);
 
-      await newFirstPasswordInput.sendKeys(PASSWORD.NEW);
-      await newFirstPasswordInput.sendKeys('\t');
-      expect(await errDiv.getText()).to.be.empty;
+      await ChangePasswordScreen.newPasswordInput.clearValue();
+      await ChangePasswordScreen.newPasswordInput.setValue(PASSWORD.NEW);
+      expect(ChangePasswordScreen.passwordConfirmationError).toHaveText('');
     });
 
     it('Successful password changed', async function () {
-      await oldPasswordInput.sendKeys(PASSWORD.DEFAULT);
-      currentPassword = PASSWORD.NEW;
-      await newFirstPasswordInput.sendKeys(currentPassword);
-      await newSecondPasswordInput.sendKeys(currentPassword);
-
-      await this.driver
-        .wait(
-          until.elementIsEnabled(
-            this.driver.findElement(By.css('button[type=submit]'))
-          ),
-          this.wait
-        )
-        .click();
-
-      expect(
-        await this.driver
-          .wait(
-            until.elementIsVisible(
-              this.driver.wait(
-                until.elementLocated(By.css('[data-testid="modalPassword"]')),
-                this.wait
-              )
-            ),
-            this.wait
-          )
-          .getText()
-      ).matches(/Password changed/i);
+      await ChangePasswordScreen.oldPasswordInput.setValue(PASSWORD.DEFAULT);
+      await ChangePasswordScreen.newPasswordInput.setValue(PASSWORD.NEW);
+      await ChangePasswordScreen.passwordConfirmationInput.setValue(
+        PASSWORD.NEW
+      );
+      await ChangePasswordScreen.saveButton.click();
+      expect(ChangePasswordScreen.notification).toHaveText('Password changed');
     });
   });
 
   describe('Etc', function () {
-    let loginForm: WebElement, loginButton: WebElement, loginInput: WebElement;
-
-    async function performLogout(this: mocha.Context) {
-      await this.driver
-        .wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'settingsIcon@menu')]")
-          ),
-          this.wait
-        )
-        .click();
-      await this.driver
-        .wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'logout@settings')]")
-          ),
-          this.wait
-        )
-        .click();
-      loginForm = await this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, 'content@login')]")
-        ),
-        this.wait
-      );
+    async function performLogout() {
+      await TopMenu.settingsButton.click();
+      await SettingsScreen.logoutButton.click();
     }
 
-    async function performLogin(this: mocha.Context, password: string) {
-      await this.driver
-        .wait(until.elementLocated(By.css('input#loginPassword')), this.wait)
-        .sendKeys(password);
-
-      await this.driver
-        .wait(
-          until.elementIsEnabled(
-            this.driver.findElement(By.css('button#loginEnter'))
-          ),
-          this.wait
-        )
-        .click();
+    async function performLogin(password: string) {
+      await LoginScreen.passwordInput.setValue(password);
+      await LoginScreen.enterButton.click();
     }
 
     before(async function () {
-      await this.driver.switchTo().window(tabAccounts);
+      await browser.switchToWindow(tabAccounts);
       await AccountsHome.importAccount(
         'rich',
         'waves private node seed with waves tokens'
       );
-      await this.driver.switchTo().window(tabKeeper);
+      await browser.switchToWindow(tabKeeper);
       await browser.openKeeperPopup();
     });
 
     it('Logout', async function () {
-      await performLogout.call(this);
-      loginButton = loginForm.findElement(By.css('button[type=submit]'));
-      expect(await loginButton.getText()).matches(/Enter/i);
+      await performLogout();
+      expect(LoginScreen.root).toBeDisplayed();
     });
 
     it('Incorrect password login', async function () {
-      loginInput = loginForm.findElement(By.css('input[type=password]'));
-      await loginInput.sendKeys(PASSWORD.DEFAULT);
-      await loginButton.click();
-
-      await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
-
-      expect(
-        await this.driver
-          .findElement(By.css('[data-testid="loginPasswordError"]'))
-          .getText()
-      ).matches(/Wrong password/i);
-      await loginInput.clear();
+      await LoginScreen.passwordInput.setValue(PASSWORD.DEFAULT);
+      await LoginScreen.enterButton.click();
+      expect(LoginScreen.passwordError).toHaveText('Wrong password');
+      await LoginScreen.passwordInput.clearValue();
     });
 
     it('Correct password login', async function () {
-      await loginInput.sendKeys(currentPassword);
-      await loginButton.click();
-
-      expect(
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'assets@assets')]")
-          ),
-          this.wait
-        )
-      ).not.to.be.throw;
+      await LoginScreen.passwordInput.setValue(PASSWORD.NEW);
+      await LoginScreen.enterButton.click();
+      expect(HomeScreen.root).toBeDisplayed();
     });
 
     describe('Password reset', async function () {
       before(async function () {
-        await performLogout.call(this);
+        await performLogout();
       });
 
       it('"I forgot password" button opens recovery page and "Delete all" button is disabled', async function () {
-        await loginForm
-          .findElement(By.xpath("//div[contains(@class, 'forgotLnk@login')]"))
-          .click();
-        await this.driver.wait(
-          until.elementLocated(By.css('[data-testid="deleteAllAccounts"]')),
-          this.wait
-        );
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="resetConfirm"]'))
-            .isEnabled()
-        ).to.be.false;
+        await LoginScreen.forgotPasswordLink.click();
+        expect(ConfirmDeleteAccountsScreen.root).toBeDisplayed();
+        expect(ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
       });
 
       it('Clicking "Cancel" button returns to login page and login is available', async function () {
-        await this.driver
-          .findElement(By.css('[data-testid="resetCancel"]'))
-          .click();
-        expect(
-          await this.driver.wait(
-            until.elementLocated(By.css('input#loginPassword')),
-            this.wait
-          )
-        ).not.to.be.empty;
+        await ConfirmDeleteAccountsScreen.cancelButton.click();
+        expect(LoginScreen.passwordInput).toBeDisplayed();
 
-        await performLogin.call(this, currentPassword);
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'assets@assets')]")
-          ),
-          this.wait
-        );
-        await performLogout.call(this);
+        await performLogin(PASSWORD.NEW);
+        expect(HomeScreen.root).toBeDisplayed();
+        await performLogout();
       });
 
       describe('Delete all', function () {
-        let confirmPhraseInput: WebElement,
-          confirmPhraseErrorDiv: WebElement,
-          resetConfirmBtn: WebElement,
-          defaultPhrase: string;
-
         before(async function () {
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'content@login')]")
-              ),
-              this.wait
-            )
-            .findElement(By.xpath("//div[contains(@class, 'forgotLnk@login')]"))
-            .click();
-
-          defaultPhrase = await this.driver
-            .wait(
-              until.elementLocated(By.css('[data-testid="defaultPhrase"]')),
-              this.wait
-            )
-            .getText();
-
-          confirmPhraseInput = this.driver.findElement(
-            By.css('[data-testid="confirmPhrase"]')
-          );
-
-          confirmPhraseErrorDiv = this.driver.findElement(
-            By.css('[data-testid="confirmPhraseError"]')
-          );
-
-          resetConfirmBtn = this.driver.findElement(
-            By.css('[data-testid="resetConfirm"]')
-          );
+          await LoginScreen.forgotPasswordLink.click();
         });
 
         beforeEach(async function () {
-          await confirmPhraseInput.clear();
+          await ConfirmDeleteAccountsScreen.confirmPhraseInput.clearValue();
         });
 
         it('Entering right confirmation phrase enables "Delete all" button', async function () {
-          await confirmPhraseInput.sendKeys(defaultPhrase);
-          await confirmPhraseInput.sendKeys('\t');
-          expect(await confirmPhraseErrorDiv.getText()).to.be.empty;
-          expect(await resetConfirmBtn.isEnabled()).to.be.true;
+          await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
+            'DELETE ALL ACCOUNTS'
+          );
+          expect(ConfirmDeleteAccountsScreen.confirmPhraseError).toHaveText('');
+          expect(ConfirmDeleteAccountsScreen.deleteAllButton).toBeEnabled();
         });
 
         it('Entering wrong confirmation phrase disables "Delete all" button', async function () {
-          await confirmPhraseInput.sendKeys(defaultPhrase.toLowerCase());
-          await confirmPhraseInput.sendKeys('\t');
-          expect(await confirmPhraseErrorDiv.getText()).matches(
-            /The phrase is entered incorrectly/i
+          await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
+            'delete all accounts'
           );
-          expect(await resetConfirmBtn.isEnabled()).to.be.false;
+          expect(ConfirmDeleteAccountsScreen.confirmPhraseError).toHaveText(
+            'The phrase is entered incorrectly'
+          );
+          expect(ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
         });
 
         it('Entering right phrase and clicking "Delete all" removes all accounts', async function () {
-          await confirmPhraseInput.sendKeys(defaultPhrase);
-          await resetConfirmBtn.click();
+          await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
+            'DELETE ALL ACCOUNTS'
+          );
+          await ConfirmDeleteAccountsScreen.deleteAllButton.click();
 
-          expect(
-            await this.driver
-              .wait(
-                until.elementLocated(
-                  By.xpath("//div[contains(@class, 'content@Welcome-module')]")
-                ),
-                this.wait
-              )
-              .findElement(By.css('button[type=submit]'))
-              .getText()
-          ).matches(/Get started/i);
+          expect(GetStartedScreen.root).toBeDisplayed();
         });
       });
     });

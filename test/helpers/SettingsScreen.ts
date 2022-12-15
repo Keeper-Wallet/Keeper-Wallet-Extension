@@ -5,6 +5,14 @@ export const GeneralSettingsScreen = {
       .findByText$(name, { selector: "[class*='item@Select-module']" })
       .click();
   },
+
+  get root() {
+    return browser.$("[class*='content@settings']");
+  },
+
+  get changePasswordLink() {
+    return this.root.$('#changePassword');
+  },
 };
 
 const Permission = (wrapped: WebdriverIO.Element) => ({
@@ -58,5 +66,9 @@ export const SettingsScreen = {
 
   get deleteAccountsButton() {
     return this.root.findByText$('Delete accounts');
+  },
+
+  get logoutButton() {
+    return this.root.findByText$('Log out');
   },
 };
