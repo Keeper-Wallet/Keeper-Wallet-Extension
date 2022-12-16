@@ -1,4 +1,4 @@
-import { addBreadcrumb } from '@sentry/react';
+import { addBreadcrumb } from '@sentry/browser';
 import EventEmitter from 'events';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';

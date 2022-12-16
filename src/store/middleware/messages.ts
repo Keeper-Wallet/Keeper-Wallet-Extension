@@ -1,4 +1,4 @@
-import { captureException, withScope } from '@sentry/react';
+import { captureException, withScope } from '@sentry/browser';
 
 import { MSG_STATUSES } from '../../constants';
 import { PreferencesAccount } from '../../preferences/types';

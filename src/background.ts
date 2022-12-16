@@ -1,4 +1,4 @@
-import { init as initSentry } from '@sentry/react';
+import { init as initSentry } from '@sentry/browser';
 import { verifyCustomData } from '@waves/waves-transactions';
 import { TSignedData } from '@waves/waves-transactions/dist/requests/custom-data';
 import { BalancesItem } from 'balances/types';
