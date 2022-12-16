@@ -809,7 +809,10 @@ class BackgroundService extends EventEmitter {
       data: MessageInputTx | MessageInputTxPackage,
       messageId: string
     ) => {
+      const { locked } = this.getState(['locked']);
+
       if (
+        !locked &&
         selectedAccount.type !== 'ledger' &&
         this.permissionsController.canAutoSign(origin, data)
       ) {
