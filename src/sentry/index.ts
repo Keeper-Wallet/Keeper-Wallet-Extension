@@ -1,4 +1,4 @@
-import { Breadcrumbs, init } from '@sentry/react';
+import { Breadcrumbs, init } from '@sentry/browser';
 import backgroundService from 'ui/services/Background';
 
 export function initUiSentry({

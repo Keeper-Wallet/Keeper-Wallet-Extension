@@ -1,4 +1,4 @@
-import { captureException, withScope } from '@sentry/react';
+import { captureException, withScope } from '@sentry/browser';
 import { Asset, Money } from '@waves/data-entities';
 import clsx from 'clsx';
 import { NetworkName } from 'networks/types';

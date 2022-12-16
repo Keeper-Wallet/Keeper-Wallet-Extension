@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 import { AssetDetail } from 'assets/types';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';

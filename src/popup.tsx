@@ -2,7 +2,7 @@ import './global.css';
 import './ui/styles/app.styl';
 import './ui/styles/icons.styl';
 
-import { setTag, setUser } from '@sentry/react';
+import { setTag, setUser } from '@sentry/browser';
 import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
 import i18next from 'i18next';

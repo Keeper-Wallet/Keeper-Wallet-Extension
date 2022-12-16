@@ -1,4 +1,4 @@
-import { addBreadcrumb, setTag } from '@sentry/react';
+import { addBreadcrumb, setTag } from '@sentry/browser';
 
 import { ACTION } from '../actions/constants';
 import { AppMiddleware } from '../types';

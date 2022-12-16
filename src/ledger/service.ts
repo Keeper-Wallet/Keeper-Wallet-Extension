@@ -1,5 +1,5 @@
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 import WavesLedger from '@waves/ledger';
 import { PreferencesAccount } from 'preferences/types';
 import invariant from 'tiny-invariant';

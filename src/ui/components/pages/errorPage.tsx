@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom';

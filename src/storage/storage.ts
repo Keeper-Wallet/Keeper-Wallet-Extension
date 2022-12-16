@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 import { AssetsRecord } from 'assets/types';
 import create from 'callbag-create';
 import pipe from 'callbag-pipe';

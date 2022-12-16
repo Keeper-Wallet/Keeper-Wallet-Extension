@@ -25,6 +25,7 @@
   "dependencies": {
     "@ethereumjs/util": "^8.0.2",
     "@popperjs/core": "^2.11.0",
+    "@sentry/browser": "^7.26.0",
     "@waves-domains/client": "^0.3.0",
     "@waves/bignumber": "^1.0.0",
     "@waves/data-entities": "^2.0.4",
@@ -80,7 +81,6 @@
     "@keeper-wallet/swap-client": "^0.1.2",
     "@ledgerhq/hw-transport-webusb": "^6.24.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.9",
-    "@sentry/react": "^7.23.0",
     "@size-limit/file": "^8.1.0",
     "@types/chai": "^4.2.21",
     "@types/color-hash": "^1.0.2",
