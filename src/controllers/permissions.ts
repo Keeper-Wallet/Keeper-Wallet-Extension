@@ -1,4 +1,11 @@
 import { BigNumber } from '@waves/bignumber';
+import {
+  MessageInputTx,
+  MessageInputTxData,
+  MessageInputTxMassTransfer,
+  MessageInputTxPackage,
+  MessageInputTxTransfer,
+} from 'messages/types';
 import ObservableStore from 'obs-store';
 import { PERMISSIONS } from 'permissions/constants';
 import {
@@ -8,11 +15,8 @@ import {
 } from 'permissions/types';
 import { IMoneyLike } from 'ui/utils/converters';
 
-import { allowMatcher } from '../constants';
 import { ERRORS } from '../lib/keeperError';
 import { ExtensionStorage, StorageLocalState } from '../storage/storage';
-import { IdentityController } from './IdentityController';
-import { PreferencesController } from './preferences';
 import { RemoteConfigController } from './remoteConfig';
 
 const findPermissionFabric =
@@ -25,33 +29,137 @@ const findPermissionFabric =
     return type === permission;
   };
 
-interface Identity {
-  restoreSession: (
-    userId: string
-  ) => ReturnType<IdentityController['restoreSession']>;
-}
-
 type PermissionsStoreState = Pick<
   StorageLocalState,
   'origins' | 'whitelist' | 'inPending'
 >;
 
+function getTxAmount(tx: MessageInputTx | MessageInputTxPackage) {
+  const result = Array.isArray(tx)
+    ? getTxPackageAmount(tx)
+    : tx.type === 4
+    ? getTransferTxAmount(tx)
+    : tx.type === 11
+    ? getMassTransferTxAmount(tx)
+    : tx.type === 12
+    ? getDataTxAmount(tx)
+    : null;
+
+  return result &&
+    result.fee.assetId === 'WAVES' &&
+    result.amount.assetId === 'WAVES'
+    ? result.fee.amount.add(result.amount.amount)
+    : null;
+}
+
+function moneyLikeToBigNumber(
+  moneyLike: IMoneyLike | string | number,
+  precision: number
+) {
+  if (typeof moneyLike === 'string' || typeof moneyLike === 'number') {
+    const sum = new BigNumber(moneyLike);
+    return sum.isNaN() ? new BigNumber(0) : sum;
+  }
+
+  const { coins = 0, tokens = 0 } = moneyLike;
+  const tokensAmount = new BigNumber(tokens).mul(10 ** precision);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const coinsAmount = new BigNumber(coins as any);
+
+  if (!coinsAmount.isNaN() && coinsAmount.gt(0)) {
+    return coinsAmount;
+  }
+
+  if (!tokensAmount.isNaN()) {
+    return tokensAmount;
+  }
+
+  return new BigNumber(0);
+}
+
+function getFeeAmount(tx: MessageInputTx) {
+  return tx.data.fee
+    ? {
+        amount: moneyLikeToBigNumber(tx.data.fee, 8),
+        assetId: tx.data.fee.assetId ?? 'WAVES',
+      }
+    : { amount: null, assetId: null };
+}
+
+function getTransferTxAmount(tx: MessageInputTxTransfer) {
+  return {
+    amount: tx.data.amount
+      ? {
+          amount: moneyLikeToBigNumber(tx.data.amount, 8),
+          assetId: tx.data.amount.assetId ?? 'WAVES',
+        }
+      : { amount: null, assetId: null },
+    fee: getFeeAmount(tx),
+  };
+}
+
+function getMassTransferTxAmount(tx: MessageInputTxMassTransfer) {
+  return {
+    amount: {
+      amount: tx.data.transfers.reduce(
+        (acc, transfer) => acc.add(moneyLikeToBigNumber(transfer.amount, 8)),
+        new BigNumber(0)
+      ),
+      assetId: tx.data.totalAmount.assetId,
+    },
+    fee: getFeeAmount(tx),
+  };
+}
+
+function getDataTxAmount(tx: MessageInputTxData) {
+  return {
+    amount: { amount: new BigNumber(0), assetId: 'WAVES' },
+    fee: getFeeAmount(tx),
+  };
+}
+
+function getTxPackageAmount(txs: MessageInputTxPackage) {
+  const amount = { amount: new BigNumber(0), assetId: 'WAVES' };
+  const fee = { amount: new BigNumber(0), assetId: 'WAVES' };
+
+  for (const tx of txs) {
+    const result =
+      tx.type === 4
+        ? getTransferTxAmount(tx)
+        : tx.type === 11
+        ? getMassTransferTxAmount(tx)
+        : tx.type === 12
+        ? getDataTxAmount(tx)
+        : undefined;
+
+    if (
+      !result ||
+      result.amount.assetId !== 'WAVES' ||
+      result.fee.assetId !== 'WAVES'
+    ) {
+      return {
+        amount: { assetId: null, amount: null },
+        fee: { assetId: null, amount: null },
+      };
+    }
+
+    amount.amount = amount.amount.add(result.amount.amount);
+    fee.amount = fee.amount.add(result.fee.amount);
+  }
+
+  return { fee, amount };
+}
+
 export class PermissionsController {
   private store;
   private remoteConfig;
-  private getSelectedAccount;
-  private identity;
 
   constructor({
     extensionStorage,
     remoteConfig,
-    getSelectedAccount,
-    identity,
   }: {
     extensionStorage: ExtensionStorage;
     remoteConfig: RemoteConfigController;
-    getSelectedAccount: PreferencesController['getSelectedAccount'];
-    identity: Identity;
   }) {
     this.store = new ObservableStore(
       extensionStorage.getInitState({
@@ -65,8 +173,6 @@ export class PermissionsController {
 
     this.remoteConfig = remoteConfig;
     this._updateByConfig();
-    this.getSelectedAccount = getSelectedAccount;
-    this.identity = identity;
   }
 
   getMessageIdAccess(origin: string) {
@@ -196,36 +302,6 @@ export class PermissionsController {
     this.updatePermission(origin, newAutoSign);
   }
 
-  matcherOrdersAllow(
-    origin: string,
-    tx:
-      | {
-          type: number;
-          data: {
-            amount?: IMoneyLike | undefined;
-            fee?: IMoneyLike | undefined;
-            totalAmount: { assetId: string };
-            transfers: Array<{ amount: IMoneyLike }>;
-          };
-        }
-      | Array<{
-          type: number;
-          data: {
-            amount?: IMoneyLike | undefined;
-            fee?: IMoneyLike | undefined;
-            totalAmount: IMoneyLike;
-            transfers: Array<{ amount: IMoneyLike }>;
-          };
-        }>
-  ) {
-    if (!allowMatcher.filter(item => origin.includes(item)).length) {
-      return false;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return ['1001', '1002', '1003'].includes(String((tx as any).type).trim());
-  }
-
   canUseNotification(origin: string, time_interval: number) {
     const useApi = this.getPermission(origin, PERMISSIONS.APPROVED);
     const { whitelist = [] } = this.store.getState();
@@ -258,46 +334,7 @@ export class PermissionsController {
     return true;
   }
 
-  async canApprove(
-    origin: string,
-    tx:
-      | {
-          type: number;
-          data: {
-            amount?: IMoneyLike | undefined;
-            fee?: IMoneyLike | undefined;
-            totalAmount: { assetId: string };
-            transfers: Array<{ amount: IMoneyLike }>;
-          };
-        }
-      | Array<{
-          type: number;
-          data: {
-            amount?: IMoneyLike | undefined;
-            fee?: IMoneyLike | undefined;
-            totalAmount: IMoneyLike;
-            transfers: Array<{ amount: IMoneyLike }>;
-          };
-        }>
-  ) {
-    const account = this.getSelectedAccount();
-    switch (account?.type) {
-      case 'wx':
-        try {
-          await this.identity.restoreSession(account.uuid);
-        } catch (err) {
-          // if we can't restore session, then we can't auto-approve
-          return false;
-        }
-        break;
-      default:
-        break;
-    }
-
-    if (this.matcherOrdersAllow(origin, tx)) {
-      return true;
-    }
-
+  canAutoSign(origin: string, tx: MessageInputTx | MessageInputTxPackage) {
     const permission = this.getPermission(origin, PERMISSIONS.AUTO_SIGN);
 
     if (!permission) {
@@ -318,22 +355,23 @@ export class PermissionsController {
 
     const currentTime = Date.now();
     approved = approved.filter(({ time }) => currentTime - time < interval);
-    const total = new BigNumber(totalAmount);
-    const amount = approved.reduce(
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      (acc, { amount }) => acc.add(new BigNumber(amount)),
-      new BigNumber(0)
-    );
 
-    if (amount.add(txAmount).gt(total)) {
+    if (
+      approved
+        .reduce((acc, item) => acc.add(item.amount), txAmount)
+        .gt(totalAmount)
+    ) {
       return false;
     }
 
-    approved.push({ time: currentTime, amount: txAmount.toString() });
     this.updatePermission(origin, {
       ...(permission as PermissionObject),
-      approved,
+      approved: approved.concat({
+        time: currentTime,
+        amount: txAmount.toString(),
+      }),
     });
+
     return true;
   }
 
@@ -412,215 +450,3 @@ export class PermissionsController {
     });
   }
 }
-
-const getTxAmount = (
-  tx:
-    | {
-        type: number;
-        data: {
-          amount?: IMoneyLike | undefined;
-          fee?: IMoneyLike | undefined;
-          totalAmount: { assetId: string };
-          transfers: Array<{ amount: IMoneyLike }>;
-        };
-      }
-    | Array<{
-        type: number;
-        data: {
-          amount?: IMoneyLike | undefined;
-          fee?: IMoneyLike | undefined;
-          totalAmount: IMoneyLike;
-          transfers: Array<{ amount: IMoneyLike }>;
-        };
-      }>
-) => {
-  let result: {
-    fee: {
-      amount: BigNumber | null;
-      assetId: string | null;
-    };
-    amount: {
-      amount: BigNumber | null;
-      assetId: string | null;
-    };
-  } = {
-    fee: { amount: null, assetId: null },
-    amount: { amount: null, assetId: null },
-  };
-
-  if (Array.isArray(tx)) {
-    result = getPackAmount(tx);
-  } else if (tx.type === 4) {
-    result = getTxReceiveAmount(tx);
-  } else if (tx.type === 11) {
-    result = getTxMassReceiveAmount(tx);
-  } else if (tx.type === 12) {
-    result = getTxDataAmount(tx);
-  }
-
-  if (
-    result.fee.assetId === result.amount.assetId &&
-    result.fee.assetId === 'WAVES'
-  ) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return result.fee.amount!.add(result.amount.amount!);
-  }
-
-  return null;
-};
-
-const getTxReceiveAmount = (tx: {
-  data: {
-    amount?: IMoneyLike;
-    fee?: IMoneyLike;
-  };
-}) => {
-  const fee: { amount: BigNumber | null; assetId: string | null } = {
-    amount: null,
-    assetId: null,
-  };
-
-  const amount: { amount: BigNumber | null; assetId: string | null } = {
-    amount: null,
-    assetId: null,
-  };
-
-  if (tx.data.fee) {
-    fee.amount = moneyLikeToBigNumber(tx.data.fee, 8);
-    fee.assetId = tx.data.fee.assetId || 'WAVES';
-  }
-
-  if (tx.data.amount) {
-    amount.amount = moneyLikeToBigNumber(tx.data.amount, 8);
-    amount.assetId = tx.data.amount.assetId || 'WAVES';
-  }
-
-  return { amount, fee };
-};
-
-const getTxMassReceiveAmount = (tx: {
-  data: {
-    assetId?: string;
-    fee?: IMoneyLike;
-    totalAmount: { assetId: string };
-    transfers: Array<{ amount: IMoneyLike }>;
-  };
-}) => {
-  const fee: { amount: BigNumber | null; assetId: string | null } = {
-    amount: null,
-    assetId: null,
-  };
-  const amount: { amount: BigNumber | null; assetId: string | null } = {
-    amount: null,
-    assetId: null,
-  };
-
-  if (tx.data.fee) {
-    fee.amount = moneyLikeToBigNumber(tx.data.fee, 8);
-    fee.assetId = tx.data.fee.assetId || 'WAVES';
-  }
-
-  amount.assetId = tx.data.assetId || tx.data.totalAmount.assetId;
-  amount.amount = tx.data.transfers.reduce((acc, transfer) => {
-    return acc.add(moneyLikeToBigNumber(transfer.amount, 8));
-  }, new BigNumber(0));
-
-  return { amount, fee };
-};
-
-const getTxDataAmount = (tx: { data: { fee?: IMoneyLike } }) => {
-  const fee: { amount: BigNumber | null; assetId: string | null } = {
-    amount: null,
-    assetId: null,
-  };
-
-  const amount = { amount: new BigNumber(0), assetId: 'WAVES' };
-
-  if (tx.data.fee) {
-    fee.amount = moneyLikeToBigNumber(tx.data.fee, 8);
-    fee.assetId = tx.data.fee.assetId || 'WAVES';
-  }
-
-  return { amount, fee };
-};
-
-const getPackAmount = (
-  txs: Array<{
-    type?: number;
-    data: {
-      amount?: IMoneyLike;
-      fee?: IMoneyLike;
-      totalAmount: IMoneyLike;
-      transfers: Array<{ amount: IMoneyLike }>;
-    };
-  }>
-) => {
-  const fee = { amount: new BigNumber(0), assetId: 'WAVES' };
-
-  const amount: {
-    amount: BigNumber;
-    assetId: string | null;
-  } = { amount: new BigNumber(0), assetId: null };
-
-  for (const tx of txs) {
-    let result:
-      | ReturnType<typeof getTxReceiveAmount>
-      | ReturnType<typeof getTxMassReceiveAmount>
-      | ReturnType<typeof getTxDataAmount>
-      | null
-      | undefined;
-
-    if (tx.type === 4) {
-      result = getTxReceiveAmount(tx);
-    } else if (tx.type === 11) {
-      result = getTxMassReceiveAmount(tx);
-    } else if (tx.type === 12) {
-      result = getTxDataAmount(tx);
-    }
-
-    if (
-      (result && result.fee.assetId !== result.amount.assetId) ||
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      result!.fee.assetId !== 'WAVES'
-    ) {
-      return { amount, fee: { assetId: null, amount: null } };
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    amount.assetId = result!.amount.assetId;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    fee.assetId = result!.fee.assetId;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    amount.amount = amount.amount.add(result!.amount.amount!);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    fee.amount = fee.amount.add(result!.fee.amount!);
-    result = null;
-  }
-
-  return { fee, amount };
-};
-
-const moneyLikeToBigNumber = (
-  moneyLike: IMoneyLike | string | number,
-  precession: number
-) => {
-  if (typeof moneyLike === 'string' || typeof moneyLike === 'number') {
-    const sum = new BigNumber(moneyLike);
-    return sum.isNaN() ? new BigNumber(0) : sum;
-  }
-
-  const { coins = 0, tokens = 0 } = moneyLike;
-  const tokensAmount = new BigNumber(tokens).mul(10 ** precession);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const coinsAmount = new BigNumber(coins as any);
-
-  if (!coinsAmount.isNaN() && coinsAmount.gt(0)) {
-    return coinsAmount;
-  }
-
-  if (!tokensAmount.isNaN()) {
-    return tokensAmount;
-  }
-
-  return new BigNumber(0);
-};

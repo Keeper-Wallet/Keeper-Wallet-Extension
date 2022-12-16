@@ -19,6 +19,8 @@ import log from 'loglevel';
 import {
   MessageInput,
   MessageInputOfType,
+  MessageInputTx,
+  MessageInputTxPackage,
   MessageStoreItem,
 } from 'messages/types';
 import { nanoid } from 'nanoid';
@@ -179,25 +181,6 @@ async function setupBackgroundService() {
   return backgroundService;
 }
 
-type NewMessageFnArgs<T extends MessageInput['type']> = [
-  data: MessageInputOfType<T>['data'],
-  type: MessageInputOfType<T>['type'],
-  options: MessageInputOfType<T>['options'],
-  broadcast: MessageInputOfType<T>['broadcast'],
-  title?: MessageInputOfType<T>['title']
-];
-
-type NewMessageFn = {
-  (...args: NewMessageFnArgs<'auth'>): Promise<unknown>;
-  (...args: NewMessageFnArgs<'cancelOrder'>): Promise<unknown>;
-  (...args: NewMessageFnArgs<'customData'>): Promise<unknown>;
-  (...args: NewMessageFnArgs<'order'>): Promise<unknown>;
-  (...args: NewMessageFnArgs<'request'>): Promise<unknown>;
-  (...args: NewMessageFnArgs<'transaction'>): Promise<unknown>;
-  (...args: NewMessageFnArgs<'transactionPackage'>): Promise<unknown>;
-  (...args: NewMessageFnArgs<'wavesAuth'>): Promise<unknown>;
-};
-
 class BackgroundService extends EventEmitter {
   extensionStorage;
 
@@ -249,11 +232,6 @@ class BackgroundService extends EventEmitter {
     this.permissionsController = new PermissionsController({
       extensionStorage: this.extensionStorage,
       remoteConfig: this.remoteConfigController,
-      getSelectedAccount: () => this.preferencesController.getSelectedAccount(),
-      identity: {
-        restoreSession: userId =>
-          this.identityController.restoreSession(userId),
-      },
     });
 
     // Network. Works with blockchain
@@ -709,14 +687,14 @@ class BackgroundService extends EventEmitter {
         const { selectedAccount } = this.getState('selectedAccount');
         invariant(selectedAccount);
 
-        const result = await this.messageController.newMessage({
+        const messageId = await this.messageController.newMessage({
+          account: selectedAccount,
+          broadcast: true,
           data,
           type: 'transaction',
-          broadcast: true,
-          account: selectedAccount,
         });
 
-        await this.messageController.getMessageResult(result.id);
+        await this.messageController.getMessageResult(messageId);
       },
       getExtraFee: (address: string, network: NetworkName) =>
         getExtraFee(address, this.networkController.getNode(network)),
@@ -788,18 +766,17 @@ class BackgroundService extends EventEmitter {
     }
 
     if (!messageId) {
-      const result = await this.messageController.newMessage({
-        origin,
-        connectionId,
-        title: null,
-        options: {},
-        broadcast: false,
-        data: { origin },
-        type: 'authOrigin',
+      messageId = await this.messageController.newMessage({
         account: selectedAccount,
+        broadcast: false,
+        connectionId,
+        data: { origin },
+        options: {},
+        origin,
+        title: null,
+        type: 'authOrigin',
       });
 
-      messageId = result.id;
       this.permissionsController.setMessageIdAccess(origin, messageId);
     }
 
@@ -823,41 +800,28 @@ class BackgroundService extends EventEmitter {
   }
 
   getInpageApi(origin: string, connectionId: string) {
-    const newMessage: NewMessageFn = async (
-      data,
-      type,
-      options,
-      broadcast,
-      title = ''
+    const showNotification = () => {
+      this.emit('Show notification');
+    };
+
+    const autoSignOrShowNotification = (
+      selectedAccount: PreferencesAccount,
+      data: MessageInputTx | MessageInputTxPackage,
+      messageId: string
     ) => {
-      const { selectedAccount } = await this.validatePermission(
-        origin,
-        connectionId
-      );
-
-      const result = await this.messageController.newMessage({
-        connectionId,
-        data,
-        type,
-        title,
-        origin,
-        options,
-        broadcast,
-        account: selectedAccount,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
-
       if (
         selectedAccount.type !== 'ledger' &&
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (await this.permissionsController.canApprove(origin, data as any))
+        this.permissionsController.canAutoSign(origin, data)
       ) {
-        this.messageController.approve(result.id);
+        this.messageController.approve(messageId);
       } else {
-        this.emit('Show notification');
+        showNotification();
       }
+    };
 
-      return this.messageController.getMessageResult(result.id);
+    const commonMessageInput: Pick<MessageInput, 'connectionId' | 'origin'> = {
+      connectionId,
+      origin,
     };
 
     return {
@@ -865,81 +829,248 @@ class BackgroundService extends EventEmitter {
         data: MessageInputOfType<'order'>['data'],
         options?: MessageInputOfType<'order'>['options']
       ) => {
-        return await newMessage(data, 'order', options, false);
+        const { selectedAccount } = await this.validatePermission(
+          origin,
+          connectionId
+        );
+
+        const messageId = await this.messageController.newMessage({
+          ...commonMessageInput,
+          account: selectedAccount,
+          broadcast: false,
+          data,
+          options,
+          type: 'order',
+        });
+
+        showNotification();
+
+        return this.messageController.getMessageResult(messageId);
       },
       signAndPublishOrder: async (
         data: MessageInputOfType<'order'>['data'],
         options: MessageInputOfType<'order'>['options']
       ) => {
-        return await newMessage(data, 'order', options, true);
+        const { selectedAccount } = await this.validatePermission(
+          origin,
+          connectionId
+        );
+
+        const messageId = await this.messageController.newMessage({
+          ...commonMessageInput,
+          account: selectedAccount,
+          broadcast: true,
+          data,
+          options,
+          type: 'order',
+        });
+
+        showNotification();
+
+        return this.messageController.getMessageResult(messageId);
       },
       signCancelOrder: async (
         data: MessageInputOfType<'cancelOrder'>['data'],
         options?: MessageInputOfType<'cancelOrder'>['options']
       ) => {
-        return await newMessage(data, 'cancelOrder', options, false);
+        const { selectedAccount } = await this.validatePermission(
+          origin,
+          connectionId
+        );
+
+        const messageId = await this.messageController.newMessage({
+          ...commonMessageInput,
+          account: selectedAccount,
+          broadcast: false,
+          data,
+          options,
+          type: 'cancelOrder',
+        });
+
+        showNotification();
+
+        return this.messageController.getMessageResult(messageId);
       },
       signAndPublishCancelOrder: async (
         data: MessageInputOfType<'cancelOrder'>['data'],
         options: MessageInputOfType<'cancelOrder'>['options']
       ) => {
-        return await newMessage(data, 'cancelOrder', options, true);
+        const { selectedAccount } = await this.validatePermission(
+          origin,
+          connectionId
+        );
+
+        const messageId = await this.messageController.newMessage({
+          ...commonMessageInput,
+          account: selectedAccount,
+          broadcast: true,
+          data,
+          options,
+          type: 'cancelOrder',
+        });
+
+        showNotification();
+
+        return this.messageController.getMessageResult(messageId);
       },
       signTransaction: async (
         data: MessageInputOfType<'transaction'>['data'],
         options?: MessageInputOfType<'transaction'>['options']
       ) => {
-        return await newMessage(data, 'transaction', options, false);
+        const { selectedAccount } = await this.validatePermission(
+          origin,
+          connectionId
+        );
+
+        const messageId = await this.messageController.newMessage({
+          ...commonMessageInput,
+          account: selectedAccount,
+          broadcast: false,
+          data,
+          options,
+          type: 'transaction',
+        });
+
+        autoSignOrShowNotification(selectedAccount, data, messageId);
+
+        return this.messageController.getMessageResult(messageId);
       },
       signTransactionPackage: async (
         data: MessageInputOfType<'transactionPackage'>['data'],
         title: string | undefined,
         options?: MessageInputOfType<'transactionPackage'>['options']
       ) => {
-        return await newMessage(
-          data,
-          'transactionPackage',
-          options,
-          false,
-          title
+        const { selectedAccount } = await this.validatePermission(
+          origin,
+          connectionId
         );
+
+        const messageId = await this.messageController.newMessage({
+          ...commonMessageInput,
+          account: selectedAccount,
+          broadcast: false,
+          data,
+          options,
+          title,
+          type: 'transactionPackage',
+        });
+
+        autoSignOrShowNotification(selectedAccount, data, messageId);
+
+        return this.messageController.getMessageResult(messageId);
       },
       signAndPublishTransaction: async (
         data: MessageInputOfType<'transaction'>['data'],
         options?: MessageInputOfType<'transaction'>['options']
       ) => {
-        return await newMessage(data, 'transaction', options, true);
+        const { selectedAccount } = await this.validatePermission(
+          origin,
+          connectionId
+        );
+
+        const messageId = await this.messageController.newMessage({
+          ...commonMessageInput,
+          account: selectedAccount,
+          broadcast: true,
+          data,
+          options,
+          type: 'transaction',
+        });
+
+        autoSignOrShowNotification(selectedAccount, data, messageId);
+
+        return this.messageController.getMessageResult(messageId);
       },
       auth: async (
         data: MessageInputOfType<'auth'>['data'],
         options?: MessageInputOfType<'auth'>['options']
       ) => {
-        return await newMessage(data, 'auth', options, false);
+        const { selectedAccount } = await this.validatePermission(
+          origin,
+          connectionId
+        );
+
+        const messageId = await this.messageController.newMessage({
+          ...commonMessageInput,
+          account: selectedAccount,
+          broadcast: false,
+          data,
+          options,
+          type: 'auth',
+        });
+
+        showNotification();
+
+        return this.messageController.getMessageResult(messageId);
       },
       wavesAuth: async (
         data: MessageInputOfType<'wavesAuth'>['data'],
         options?: MessageInputOfType<'wavesAuth'>['options']
       ) => {
-        const publicKey = data && data.publicKey;
-        const timestamp = (data && data.timestamp) || Date.now();
-        return await newMessage(
-          { publicKey, timestamp },
-          'wavesAuth',
-          options,
-          false
+        const { selectedAccount } = await this.validatePermission(
+          origin,
+          connectionId
         );
+
+        const messageId = await this.messageController.newMessage({
+          ...commonMessageInput,
+          account: selectedAccount,
+          broadcast: false,
+          data: {
+            publicKey: data?.publicKey,
+            timestamp: data?.timestamp ?? Date.now(),
+          },
+          options,
+          type: 'wavesAuth',
+        });
+
+        showNotification();
+
+        return this.messageController.getMessageResult(messageId);
       },
       signRequest: async (
         data: MessageInputOfType<'request'>['data'],
         options?: MessageInputOfType<'request'>['options']
       ) => {
-        return await newMessage(data, 'request', options, false);
+        const { selectedAccount } = await this.validatePermission(
+          origin,
+          connectionId
+        );
+
+        const messageId = await this.messageController.newMessage({
+          ...commonMessageInput,
+          account: selectedAccount,
+          broadcast: false,
+          data,
+          options,
+          type: 'request',
+        });
+
+        showNotification();
+
+        return this.messageController.getMessageResult(messageId);
       },
       signCustomData: async (
         data: MessageInputOfType<'customData'>['data'],
         options?: MessageInputOfType<'customData'>['options']
       ) => {
-        return await newMessage(data, 'customData', options, false);
+        const { selectedAccount } = await this.validatePermission(
+          origin,
+          connectionId
+        );
+
+        const messageId = await this.messageController.newMessage({
+          ...commonMessageInput,
+          account: selectedAccount,
+          broadcast: false,
+          data,
+          options,
+          type: 'customData',
+        });
+
+        showNotification();
+
+        return this.messageController.getMessageResult(messageId);
       },
       verifyCustomData: async (data: TSignedData) => verifyCustomData(data),
       notification: async (data?: { message?: string; title?: string }) => {

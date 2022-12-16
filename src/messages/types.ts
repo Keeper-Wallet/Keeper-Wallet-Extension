@@ -12,6 +12,215 @@ import { IMoneyLike } from 'ui/utils/converters';
 
 import { MsgStatus } from '../constants';
 
+interface MessageInputTxIssue {
+  type: (typeof TRANSACTION_TYPE)['ISSUE'];
+  data: {
+    description: string;
+    fee?: IMoneyLike;
+    name: string;
+    quantity: string | number;
+    precision: number;
+    reissuable: boolean;
+    senderPublicKey?: string;
+    script?: string;
+    timestamp?: number;
+  };
+}
+
+export interface MessageInputTxTransfer {
+  type: (typeof TRANSACTION_TYPE)['TRANSFER'];
+  data: {
+    amount: IMoneyLike;
+    attachment?: string;
+    fee?: IMoneyLike;
+    recipient: string;
+    senderPublicKey?: string;
+    timestamp?: number;
+  };
+}
+
+interface MessageInputTxReissue {
+  type: (typeof TRANSACTION_TYPE)['REISSUE'];
+  data: {
+    assetId: string | null;
+    fee?: IMoneyLike;
+    quantity: string | number;
+    reissuable: boolean;
+    senderPublicKey?: string;
+    timestamp?: number;
+  };
+}
+
+interface MessageInputTxBurn {
+  type: (typeof TRANSACTION_TYPE)['BURN'];
+  data: {
+    amount: IMoneyLike | string | number;
+    assetId: string | null;
+    fee?: IMoneyLike;
+    senderPublicKey?: string;
+    timestamp?: number;
+  };
+}
+
+interface MessageInputTxLease {
+  type: (typeof TRANSACTION_TYPE)['LEASE'];
+  data: {
+    amount: IMoneyLike | string | number;
+    fee?: IMoneyLike;
+    recipient: string;
+    senderPublicKey?: string;
+    timestamp?: number;
+  };
+}
+
+interface MessageInputTxCancelLease {
+  type: (typeof TRANSACTION_TYPE)['CANCEL_LEASE'];
+  data: {
+    fee?: IMoneyLike;
+    leaseId: string;
+    senderPublicKey?: string;
+    timestamp?: number;
+  };
+}
+
+interface MessageInputTxAlias {
+  type: (typeof TRANSACTION_TYPE)['ALIAS'];
+  data: {
+    alias: string;
+    fee?: IMoneyLike;
+    senderPublicKey?: string;
+    timestamp?: number;
+  };
+}
+
+export interface MessageInputTxMassTransfer {
+  type: (typeof TRANSACTION_TYPE)['MASS_TRANSFER'];
+  data: {
+    attachment?: string;
+    fee?: IMoneyLike;
+    senderPublicKey?: string;
+    timestamp?: number;
+    totalAmount: { assetId: string | null };
+    transfers: Array<{
+      amount: IMoneyLike | string | number;
+      recipient: string;
+    }>;
+  };
+}
+
+export interface MessageInputTxData {
+  type: (typeof TRANSACTION_TYPE)['DATA'];
+  data: {
+    data: Array<
+      { key: string } & (
+        | { type: 'binary'; value: string }
+        | { type: 'boolean'; value: boolean }
+        | { type: 'integer'; value: string | number }
+        | { type: 'string'; value: string }
+        | { type?: null; value?: null }
+      )
+    >;
+    fee?: IMoneyLike;
+    senderPublicKey?: string;
+    timestamp?: number;
+  };
+}
+
+interface MessageInputTxSetScript {
+  type: (typeof TRANSACTION_TYPE)['SET_SCRIPT'];
+  data: {
+    fee?: IMoneyLike;
+    script: string | null;
+    senderPublicKey?: string;
+    timestamp?: number;
+  };
+}
+
+interface MessageInputTxSponsorship {
+  type: (typeof TRANSACTION_TYPE)['SPONSORSHIP'];
+  data: {
+    fee?: IMoneyLike;
+    minSponsoredAssetFee: IMoneyLike;
+    senderPublicKey?: string;
+    timestamp?: number;
+  };
+}
+
+interface MessageInputTxSetAssetScript {
+  type: (typeof TRANSACTION_TYPE)['SET_ASSET_SCRIPT'];
+  data: {
+    assetId: string | null;
+    fee?: IMoneyLike;
+    script: string;
+    senderPublicKey?: string;
+    timestamp?: number;
+  };
+}
+
+type InvokeScriptCallArgPrimitive =
+  | { type: 'binary'; value: string }
+  | { type: 'boolean'; value: boolean }
+  | { type: 'integer'; value: string | number }
+  | { type: 'string'; value: string };
+
+type InvokeScriptCallArg =
+  | InvokeScriptCallArgPrimitive
+  | {
+      type: 'list';
+      value: InvokeScriptCallArgPrimitive[];
+    };
+
+interface MessageInputTxInvokeScript {
+  type: (typeof TRANSACTION_TYPE)['INVOKE_SCRIPT'];
+  data: {
+    call?: {
+      function: string;
+      args: InvokeScriptCallArg[];
+    };
+    dApp: string;
+    fee?: IMoneyLike;
+  };
+}
+
+interface MessageInputTxUpdateAssetInfo {
+  type: (typeof TRANSACTION_TYPE)['UPDATE_ASSET_INFO'];
+  data: {
+    fee?: IMoneyLike;
+    name?: string;
+  };
+}
+
+interface MessageInputTxEthereum {
+  type: (typeof TRANSACTION_TYPE)['ETHEREUM'];
+  data: {
+    fee?: IMoneyLike;
+  };
+}
+
+export type MessageInputTx =
+  | MessageInputTxIssue
+  | MessageInputTxTransfer
+  | MessageInputTxReissue
+  | MessageInputTxBurn
+  | MessageInputTxLease
+  | MessageInputTxCancelLease
+  | MessageInputTxAlias
+  | MessageInputTxMassTransfer
+  | MessageInputTxData
+  | MessageInputTxSetScript
+  | MessageInputTxSponsorship
+  | MessageInputTxSetAssetScript
+  | MessageInputTxInvokeScript
+  | MessageInputTxUpdateAssetInfo
+  | MessageInputTxEthereum;
+
+export type MessageInputTxPackage = MessageInputTx[] & {
+  data?: never;
+  origin?: never;
+  successPath?: never;
+  type?: never;
+};
+
 export type MessageInput = {
   connectionId?: string;
   account: PreferencesAccount;
@@ -59,7 +268,7 @@ export type MessageInput = {
         origin?: string;
         priceAsset?: string;
         successPath?: string;
-        type?: never;
+        type: 1003;
       };
     }
   | {
@@ -101,41 +310,15 @@ export type MessageInput = {
   | {
       type: 'transaction';
       origin?: string;
-      data: {
+      data: MessageInputTx & {
         origin?: string;
         successPath?: string;
-        type: (typeof TRANSACTION_TYPE)[keyof typeof TRANSACTION_TYPE];
-        data: {
-          alias?: string;
-          amount?: IMoneyLike | number;
-          attachment?: string;
-          data?: unknown;
-          fee?: IMoneyLike;
-          leaseId?: string;
-          minSponsoredAssetFee?: unknown;
-          name?: string;
-          recipient?: string;
-          reissuable?: boolean;
-          script?: string;
-        };
       };
     }
   | {
       type: 'transactionPackage';
       origin?: string;
-      data: Array<{
-        type: (typeof TRANSACTION_TYPE)[keyof typeof TRANSACTION_TYPE];
-        data: {
-          fee?: IMoneyLike;
-          leaseId?: string;
-          lease?: TransactionFromNode;
-        };
-      }> & {
-        data?: never;
-        origin?: never;
-        successPath?: never;
-        type?: never;
-      };
+      data: MessageInputTxPackage;
     }
   | {
       type: 'wavesAuth';
@@ -152,16 +335,37 @@ export type MessageInputOfType<T extends MessageInput['type']> = Extract<
   { type: T }
 >;
 
-interface TxData {
-  type: (typeof TRANSACTION_TYPE)[keyof typeof TRANSACTION_TYPE];
+export interface MessageStoreItemTxData {
+  type:
+    | (typeof TRANSACTION_TYPE)['ISSUE']
+    | (typeof TRANSACTION_TYPE)['TRANSFER']
+    | (typeof TRANSACTION_TYPE)['REISSUE']
+    | (typeof TRANSACTION_TYPE)['BURN']
+    | (typeof TRANSACTION_TYPE)['LEASE']
+    | (typeof TRANSACTION_TYPE)['CANCEL_LEASE']
+    | (typeof TRANSACTION_TYPE)['ALIAS']
+    | (typeof TRANSACTION_TYPE)['MASS_TRANSFER']
+    | (typeof TRANSACTION_TYPE)['DATA']
+    | (typeof TRANSACTION_TYPE)['SET_SCRIPT']
+    | (typeof TRANSACTION_TYPE)['SPONSORSHIP']
+    | (typeof TRANSACTION_TYPE)['SET_ASSET_SCRIPT']
+    | (typeof TRANSACTION_TYPE)['INVOKE_SCRIPT']
+    | (typeof TRANSACTION_TYPE)['UPDATE_ASSET_INFO']
+    | (typeof TRANSACTION_TYPE)['ETHEREUM'];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   referrer?: string | URL;
   binary?: string;
+  lease?: TransactionFromNode;
   timestamp?: number;
   publicKey?: string;
   successPath?: string;
 }
+
+type MessageStoreItemTxPackageData = MessageStoreItemTxData[] & {
+  type?: never;
+  data?: never;
+};
 
 export type MessageStoreItem = {
   connectionId?: string;
@@ -183,14 +387,14 @@ export type MessageStoreItem = {
       origin?: string;
       result?: string;
       messageHash: string;
-      data: TxData;
+      data: MessageStoreItemTxData;
     }
   | {
       type: 'transactionPackage';
       origin?: string;
       result?: string[];
       messageHash: string[];
-      data: TxData[] & { type?: never; data?: never };
+      data: MessageStoreItemTxPackageData;
     }
   | {
       type: 'wavesAuth';
@@ -258,7 +462,7 @@ export type MessageStoreItem = {
       messageHash: string;
       priceAsset?: string;
       data: {
-        type?: never;
+        type: 1003;
         data: {
           id: string;
           senderPublicKey: string;
