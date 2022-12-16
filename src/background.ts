@@ -28,6 +28,7 @@ import { PermissionObject } from 'permissions/types';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';
 import { initSentry } from 'sentry/init';
 import { UiState } from 'store/reducers/updateState';
+import invariant from 'tiny-invariant';
 import { CreateWalletInput } from 'wallets/types';
 import Browser from 'webextension-polyfill';
 
@@ -500,8 +501,6 @@ class BackgroundService extends EventEmitter {
   }
 
   getApi() {
-    const newMessage = this.getNewMessageFn();
-
     // RPC API object. Only async functions allowed
     return {
       // state
@@ -704,9 +703,21 @@ class BackgroundService extends EventEmitter {
         this.currentAccountController
       ),
       swapAssets: this.swapController.swapAssets.bind(this.swapController),
-      signAndPublishTransaction: (
+      signAndPublishTransaction: async (
         data: MessageInputOfType<'transaction'>['data']
-      ) => newMessage(data, 'transaction', undefined, true),
+      ) => {
+        const { selectedAccount } = this.getState('selectedAccount');
+        invariant(selectedAccount);
+
+        const result = await this.messageController.newMessage({
+          data,
+          type: 'transaction',
+          broadcast: true,
+          account: selectedAccount,
+        });
+
+        await this.messageController.getMessageResult(result.id);
+      },
       getExtraFee: (address: string, network: NetworkName) =>
         getExtraFee(address, this.networkController.getNode(network)),
 
@@ -811,8 +822,14 @@ class BackgroundService extends EventEmitter {
     return { selectedAccount };
   }
 
-  getNewMessageFn(origin?: string, connectionId?: string): NewMessageFn {
-    return async (data, type, options, broadcast, title = '') => {
+  getInpageApi(origin: string, connectionId: string) {
+    const newMessage: NewMessageFn = async (
+      data,
+      type,
+      options,
+      broadcast,
+      title = ''
+    ) => {
       if (data.type === 1000) {
         type = 'auth';
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -820,11 +837,10 @@ class BackgroundService extends EventEmitter {
         data.isRequest = true;
       }
 
-      if (origin != null && connectionId != null) {
-        await this.validatePermission(origin, connectionId);
-      }
-
-      const { selectedAccount } = this.getState('selectedAccount');
+      const { selectedAccount } = await this.validatePermission(
+        origin,
+        connectionId
+      );
 
       const { noSign, ...result } = await this.messageController.newMessage({
         connectionId,
@@ -834,8 +850,7 @@ class BackgroundService extends EventEmitter {
         origin,
         options,
         broadcast,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        account: selectedAccount!,
+        account: selectedAccount,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
@@ -843,25 +858,18 @@ class BackgroundService extends EventEmitter {
         return result;
       }
 
-      if (origin) {
-        if (
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          selectedAccount!.type !== 'ledger' &&
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (await this.permissionsController.canApprove(origin, data as any))
-        ) {
-          this.messageController.approve(result.id);
-        } else {
-          this.emit('Show notification');
-        }
+      if (
+        selectedAccount.type !== 'ledger' &&
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (await this.permissionsController.canApprove(origin, data as any))
+      ) {
+        this.messageController.approve(result.id);
+      } else {
+        this.emit('Show notification');
       }
 
-      return await this.messageController.getMessageResult(result.id);
+      return this.messageController.getMessageResult(result.id);
     };
-  }
-
-  getInpageApi(origin: string, connectionId: string) {
-    const newMessage = this.getNewMessageFn(origin, connectionId);
 
     return {
       signOrder: async (
