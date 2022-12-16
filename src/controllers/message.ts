@@ -543,9 +543,7 @@ export class MessageController extends EventEmitter {
           message.account.network
         );
 
-        message.result = message.data.isRequest
-          ? signedData.signature
-          : signedData;
+        message.result = signedData;
         break;
       }
       case 'wavesAuth':
@@ -635,7 +633,6 @@ export class MessageController extends EventEmitter {
         const data = {
           type: 1000 as const,
           referrer: message.data.referrer,
-          isRequest: message.data.isRequest,
           data: {
             data: message.data.data,
             prefix: 'WavesWalletAuthentication',
