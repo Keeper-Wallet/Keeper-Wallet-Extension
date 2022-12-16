@@ -740,17 +740,27 @@ class BackgroundService extends EventEmitter {
   }
 
   async validatePermission(origin: string, connectionId: string) {
-    const { selectedAccount } = this.getState('selectedAccount');
+    const { initialized, selectedAccount } = this.getState([
+      'initialized',
+      'selectedAccount',
+    ]);
 
-    if (!selectedAccount) throw ERRORS.EMPTY_KEEPER();
+    if (!selectedAccount) {
+      throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
+    }
 
     const hasPermission = this.permissionsController.hasPermission(
       origin,
       PERMISSIONS.APPROVED
     );
 
-    if (hasPermission) return;
-    if (hasPermission === false) throw ERRORS.API_DENIED();
+    if (hasPermission) {
+      return { selectedAccount };
+    }
+
+    if (hasPermission === false) {
+      throw ERRORS.API_DENIED();
+    }
 
     let messageId = this.permissionsController.getMessageIdAccess(origin);
 
@@ -784,21 +794,21 @@ class BackgroundService extends EventEmitter {
 
     this.emit('Show notification');
 
-    await this.messageController
-      .getMessageResult(messageId)
-      .then(() => {
-        this.messageController.setPermission(origin, PERMISSIONS.APPROVED);
-      })
-      .catch(e => {
-        if (e.data === MSG_STATUSES.REJECTED) {
-          // user rejected single permission request
-          this.permissionsController.setMessageIdAccess(origin, null);
-        } else if (e.data === MSG_STATUSES.REJECTED_FOREVER) {
-          // blocked origin
-          this.messageController.setPermission(origin, PERMISSIONS.REJECTED);
-        }
-        return Promise.reject(e);
-      });
+    try {
+      await this.messageController.getMessageResult(messageId);
+      this.messageController.setPermission(origin, PERMISSIONS.APPROVED);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      if (err.data === MSG_STATUSES.REJECTED) {
+        this.permissionsController.setMessageIdAccess(origin, null);
+      } else if (err.data === MSG_STATUSES.REJECTED_FOREVER) {
+        this.messageController.setPermission(origin, PERMISSIONS.REJECTED);
+      }
+
+      throw err;
+    }
+
+    return { selectedAccount };
   }
 
   getNewMessageFn(origin?: string, connectionId?: string): NewMessageFn {
@@ -936,16 +946,10 @@ class BackgroundService extends EventEmitter {
       },
       verifyCustomData: async (data: TSignedData) => verifyCustomData(data),
       notification: async (data?: { message?: string; title?: string }) => {
-        const { selectedAccount, initialized } = this.getState([
-          'selectedAccount',
-          'initialized',
-        ]);
-
-        if (!selectedAccount) {
-          throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
-        }
-
-        await this.validatePermission(origin, connectionId);
+        const { selectedAccount } = await this.validatePermission(
+          origin,
+          connectionId
+        );
 
         const notificationId = this.notificationsController.newNotification({
           address: selectedAccount.address,
@@ -963,15 +967,6 @@ class BackgroundService extends EventEmitter {
       },
 
       publicState: async () => {
-        const { selectedAccount, initialized } = this.getState([
-          'selectedAccount',
-          'initialized',
-        ]);
-
-        if (!selectedAccount) {
-          throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
-        }
-
         await this.validatePermission(origin, connectionId);
 
         return this._publicState(origin);
@@ -992,14 +987,10 @@ class BackgroundService extends EventEmitter {
       },
 
       getKEK: async (publicKey: string, prefix: string) => {
-        const { selectedAccount, initialized } = this.getState([
-          'selectedAccount',
-          'initialized',
-        ]);
-
-        if (!selectedAccount) {
-          throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
-        }
+        const { selectedAccount } = await this.validatePermission(
+          origin,
+          connectionId
+        );
 
         if (!prefix || typeof prefix !== 'string') {
           throw ERRORS.INVALID_FORMAT(undefined, 'prefix is invalid');
@@ -1008,8 +999,6 @@ class BackgroundService extends EventEmitter {
         if (!publicKey || typeof publicKey !== 'string') {
           throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
         }
-
-        await this.validatePermission(origin, connectionId);
 
         return this.walletController.getKEK(
           selectedAccount.address,
@@ -1024,14 +1013,10 @@ class BackgroundService extends EventEmitter {
         publicKey: string,
         prefix: string
       ) => {
-        const { selectedAccount, initialized } = this.getState([
-          'selectedAccount',
-          'initialized',
-        ]);
-
-        if (!selectedAccount) {
-          throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
-        }
+        const { selectedAccount } = await this.validatePermission(
+          origin,
+          connectionId
+        );
 
         if (!message || typeof message !== 'string') {
           throw ERRORS.INVALID_FORMAT(undefined, 'message is invalid');
@@ -1040,8 +1025,6 @@ class BackgroundService extends EventEmitter {
         if (!publicKey || typeof publicKey !== 'string') {
           throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
         }
-
-        await this.validatePermission(origin, connectionId);
 
         return this.walletController.encryptMessage(
           selectedAccount.address,
@@ -1057,14 +1040,10 @@ class BackgroundService extends EventEmitter {
         publicKey: string,
         prefix: string
       ) => {
-        const { selectedAccount, initialized } = this.getState([
-          'selectedAccount',
-          'initialized',
-        ]);
-
-        if (!selectedAccount) {
-          throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
-        }
+        const { selectedAccount } = await this.validatePermission(
+          origin,
+          connectionId
+        );
 
         if (!message || typeof message !== 'string') {
           throw ERRORS.INVALID_FORMAT(undefined, 'message is invalid');
@@ -1073,8 +1052,6 @@ class BackgroundService extends EventEmitter {
         if (!publicKey || typeof publicKey !== 'string') {
           throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
         }
-
-        await this.validatePermission(origin, connectionId);
 
         return this.walletController.decryptMessage(
           selectedAccount.address,
