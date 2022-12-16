@@ -10,6 +10,7 @@ import { orderToProtoBytes } from '@waves/waves-transactions/dist/proto-serializ
 import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
 import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
 import { expect } from 'chai';
+import { MessageInputTx } from 'messages/types';
 import * as mocha from 'mocha';
 import create from 'parse-json-bignumber';
 import { By, until } from 'selenium-webdriver';
@@ -589,20 +590,25 @@ describe('Signature', function () {
   });
 
   describe('Transactions', function () {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async function performSignTransaction(this: mocha.Context, tx: any) {
+    async function performSignTransaction(
+      this: mocha.Context,
+      tx: Parameters<(typeof KeeperWallet)['signTransaction']>[0]
+    ) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-shadow
-      await this.driver.executeScript((tx: any) => {
-        KeeperWallet.signTransaction(tx).then(
-          result => {
-            window.result = JSON.stringify(['RESOLVED', result]);
-          },
-          err => {
-            window.result = JSON.stringify(['REJECTED', err]);
-          }
-        );
-      }, tx);
+      await this.driver.executeScript(
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        (tx: Parameters<(typeof KeeperWallet)['signTransaction']>[0]) => {
+          KeeperWallet.signTransaction(tx).then(
+            result => {
+              window.result = JSON.stringify(['RESOLVED', result]);
+            },
+            err => {
+              window.result = JSON.stringify(['REJECTED', err]);
+            }
+          );
+        },
+        tx
+      );
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
       await this.driver.navigate().refresh();
@@ -618,10 +624,7 @@ describe('Signature', function () {
       );
     }
 
-    function setTxVersion(
-      tx: Parameters<(typeof KeeperWallet)['signTransaction']>[0],
-      version: number
-    ) {
+    function setTxVersion<T extends MessageInputTx>(tx: T, version: number): T {
       return { ...tx, data: { ...tx.data, version } };
     }
 
@@ -1205,7 +1208,11 @@ describe('Signature', function () {
 
       describe('with money-like', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, REISSUE_WITH_MONEY_LIKE);
+          await performSignTransaction.call(
+            this,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            REISSUE_WITH_MONEY_LIKE as any
+          );
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
@@ -1220,7 +1227,11 @@ describe('Signature', function () {
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, REISSUE_WITH_MONEY_LIKE);
+          await performSignTransaction.call(
+            this,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            REISSUE_WITH_MONEY_LIKE as any
+          );
           await approveMessage.call(this);
           await closeMessage.call(this);
 
@@ -1381,7 +1392,8 @@ describe('Signature', function () {
 
       describe('with quantity instead of amount', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, BURN_WITH_QUANTITY);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await performSignTransaction.call(this, BURN_WITH_QUANTITY as any);
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
@@ -1395,7 +1407,8 @@ describe('Signature', function () {
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, BURN_WITH_QUANTITY);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await performSignTransaction.call(this, BURN_WITH_QUANTITY as any);
           await approveMessage.call(this);
           await closeMessage.call(this);
 
@@ -3182,8 +3195,7 @@ describe('Signature', function () {
         it('Rejected', async function () {
           await performSignTransaction.call(
             this,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            setTxVersion(INVOKE_SCRIPT as any, 1)
+            setTxVersion(INVOKE_SCRIPT, 1)
           );
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
@@ -3222,8 +3234,7 @@ describe('Signature', function () {
         it('Approved', async function () {
           await performSignTransaction.call(
             this,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            setTxVersion(INVOKE_SCRIPT as any, 1)
+            setTxVersion(INVOKE_SCRIPT, 1)
           );
 
           await approveMessage.call(this);
@@ -3366,8 +3377,9 @@ describe('Signature', function () {
   });
 
   describe('Order', function () {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const createOrder = (tx: any) => {
+    const createOrder = (
+      tx: Parameters<(typeof KeeperWallet)['signOrder']>[0]
+    ) => {
       KeeperWallet.signOrder(tx).then(
         result => {
           window.result = result;
@@ -3378,8 +3390,9 @@ describe('Signature', function () {
       );
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const cancelOrder = (tx: any) => {
+    const cancelOrder = (
+      tx: Parameters<(typeof KeeperWallet)['signCancelOrder']>[0]
+    ) => {
       KeeperWallet.signCancelOrder(tx).then(
         result => {
           window.result = result;
@@ -3392,11 +3405,22 @@ describe('Signature', function () {
 
     async function performSignOrder(
       this: mocha.Context,
+      script: (tx: Parameters<(typeof KeeperWallet)['signOrder']>[0]) => void,
+      tx: Parameters<(typeof KeeperWallet)['signOrder']>[0]
+    ) {
+      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      await this.driver.executeScript(script, tx);
+      [messageWindow] = await waitForNewWindows(1);
+      await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
+    }
+
+    async function performSignCancelOrder(
+      this: mocha.Context,
       script: (
-        tx: Parameters<(typeof KeeperWallet)['signTransaction']>[0]
+        tx: Parameters<(typeof KeeperWallet)['signCancelOrder']>[0]
       ) => void,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      tx: any
+      tx: Parameters<(typeof KeeperWallet)['signCancelOrder']>[0]
     ) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(script, tx);
@@ -3466,7 +3490,7 @@ describe('Signature', function () {
       describe('version 3', () => {
         describe('basic', () => {
           const INPUT = {
-            type: 1002,
+            type: 1002 as const,
             data: {
               matcherPublicKey: '7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy',
               orderType: 'sell',
@@ -3558,7 +3582,7 @@ describe('Signature', function () {
 
         describe('with price precision conversion', function () {
           const INPUT = {
-            type: 1002,
+            type: 1002 as const,
             data: {
               matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
               orderType: 'buy',
@@ -3659,7 +3683,7 @@ describe('Signature', function () {
       describe('version 4', () => {
         describe('with assetDecimals priceMode', function () {
           const INPUT = {
-            type: 1002,
+            type: 1002 as const,
             data: {
               version: 4,
               matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
@@ -3762,7 +3786,7 @@ describe('Signature', function () {
 
         describe('with fixedDecimals priceMode', function () {
           const INPUT = {
-            type: 1002,
+            type: 1002 as const,
             data: {
               version: 4,
               matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
@@ -3865,7 +3889,7 @@ describe('Signature', function () {
 
         describe('without priceMode', function () {
           const INPUT = {
-            type: 1002,
+            type: 1002 as const,
             data: {
               version: 4,
               matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
@@ -3969,7 +3993,7 @@ describe('Signature', function () {
 
     describe('Cancel', function () {
       const INPUT = {
-        type: 1003,
+        type: 1003 as const,
         data: {
           id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap',
         },
@@ -3984,7 +4008,7 @@ describe('Signature', function () {
       }
 
       it('Rejected', async function () {
-        await performSignOrder.call(this, cancelOrder, INPUT);
+        await performSignCancelOrder.call(this, cancelOrder, INPUT);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
@@ -3996,7 +4020,7 @@ describe('Signature', function () {
       });
 
       it('Approved', async function () {
-        await performSignOrder.call(this, cancelOrder, INPUT);
+        await performSignCancelOrder.call(this, cancelOrder, INPUT);
         await approveMessage.call(this);
         await closeMessage.call(this);
 
@@ -4025,14 +4049,14 @@ describe('Signature', function () {
   describe('Multiple transactions package', function () {
     async function performSignTransactionPackage(
       this: mocha.Context,
-      tx: Array<Parameters<(typeof KeeperWallet)['signTransaction']>[0]>,
+      tx: Parameters<(typeof KeeperWallet)['signTransactionPackage']>[0],
       name: string
     ) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(
         (
           // eslint-disable-next-line @typescript-eslint/no-shadow
-          tx: Array<Parameters<(typeof KeeperWallet)['signTransaction']>[0]>,
+          tx: Parameters<(typeof KeeperWallet)['signTransactionPackage']>[0],
           // eslint-disable-next-line @typescript-eslint/no-shadow
           name: string
         ) => {
@@ -4084,12 +4108,7 @@ describe('Signature', function () {
     }
 
     it('Rejected', async function () {
-      await performSignTransactionPackage.call(
-        this,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        PACKAGE as any,
-        'Test package'
-      );
+      await performSignTransactionPackage.call(this, PACKAGE, 'Test package');
       await checkOrigin.call(this, WHITELIST[3]);
       await checkAccountName.call(this, 'rich');
       await checkNetworkName.call(this, 'Testnet');
@@ -4308,12 +4327,7 @@ describe('Signature', function () {
     });
 
     it('Approved', async function () {
-      await performSignTransactionPackage.call(
-        this,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        PACKAGE as any,
-        'Test package'
-      );
+      await performSignTransactionPackage.call(this, PACKAGE, 'Test package');
 
       await approveMessage.call(this);
       await closeMessage.call(this);
@@ -4524,20 +4538,25 @@ describe('Signature', function () {
   });
 
   describe('Custom data', function () {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async function performSignCustomData(this: mocha.Context, data: any) {
+    async function performSignCustomData(
+      this: mocha.Context,
+      data: Parameters<(typeof KeeperWallet)['signCustomData']>[0]
+    ) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-shadow
-      await this.driver.executeScript((data: any) => {
-        KeeperWallet.signCustomData(data).then(
-          result => {
-            window.result = JSON.stringify(result);
-          },
-          () => {
-            window.result = null;
-          }
-        );
-      }, data);
+      await this.driver.executeScript(
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        (data: Parameters<(typeof KeeperWallet)['signCustomData']>[0]) => {
+          KeeperWallet.signCustomData(data).then(
+            result => {
+              window.result = JSON.stringify(result);
+            },
+            () => {
+              window.result = null;
+            }
+          );
+        },
+        data
+      );
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
       await this.driver.navigate().refresh();

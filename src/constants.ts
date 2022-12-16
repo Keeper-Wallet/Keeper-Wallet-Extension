@@ -5,8 +5,6 @@ export const KEEPERWALLET_DEBUG = process.env.NODE_ENV !== 'production';
 export const MAX_TX_HISTORY_ITEMS = 101;
 export const MAX_NFT_ITEMS = 1000;
 
-export const allowMatcher = ['dex.tokenomica.com', 'vfa.tokenomica.com'];
-
 export const MSG_STATUSES = {
   UNAPPROVED: 'unapproved',
   SIGNED: 'signed',

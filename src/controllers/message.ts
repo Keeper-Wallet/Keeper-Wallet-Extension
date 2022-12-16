@@ -5,7 +5,11 @@ import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import EventEmitter from 'events';
 import log from 'loglevel';
-import { MessageInput, MessageStoreItem } from 'messages/types';
+import {
+  MessageInput,
+  MessageStoreItem,
+  MessageStoreItemTxData,
+} from 'messages/types';
 import { nanoid } from 'nanoid';
 import ObservableStore from 'obs-store';
 import create from 'parse-json-bignumber';
@@ -180,7 +184,7 @@ export class MessageController extends EventEmitter {
 
     this._updateStore(messages);
 
-    return { id: message.id };
+    return message.id;
   }
 
   async getMessageResult(id: string) {
@@ -676,7 +680,7 @@ export class MessageController extends EventEmitter {
               ...txParams.data,
             };
 
-            const readyData = {
+            const readyData: MessageStoreItemTxData = {
               ...txParams,
               data: {
                 ...data,

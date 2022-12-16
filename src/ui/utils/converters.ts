@@ -54,5 +54,5 @@ export interface IMoneyLike {
   amount?: number | string | BigNumber;
   coins?: number | string | BigNumber | null;
   tokens?: number | string | BigNumber;
-  assetId: string;
+  assetId: string | null;
 }

@@ -51,7 +51,8 @@ export function getFees(tx: PackageItem[], assets: AssetsRecord) {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     const { tx, config } = getTransactionData(item);
     const fee = config.getFee(tx);
-    const accFee = acc[fee.assetId] || {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const accFee = acc[fee.assetId as any] || {
       coins: 0,
       tokens: 0,
       assetId: fee.assetId,
@@ -60,7 +61,8 @@ export function getFees(tx: PackageItem[], assets: AssetsRecord) {
       fee.coins || (fee as { amount?: string | number }).amount || 0
     );
     accFee.tokens = new BigNumber(accFee.tokens).add(fee.tokens || 0);
-    acc[fee.assetId] = accFee;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    acc[fee.assetId as any] = accFee;
     return acc;
   }, Object.create(null));
 
