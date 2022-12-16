@@ -30,7 +30,6 @@ export type MessageInput = {
         data: string;
         host?: string;
         icon?: string;
-        isRequest?: boolean;
         name?: string;
         origin?: string;
         referrer?: string;
@@ -43,7 +42,6 @@ export type MessageInput = {
       origin: string;
       data: {
         data?: unknown;
-        isRequest?: boolean;
         origin: string;
         successPath?: string;
         type?: never;
@@ -59,7 +57,6 @@ export type MessageInput = {
           senderPublicKey?: string;
           timestamp?: number;
         };
-        isRequest?: boolean;
         origin?: string;
         priceAsset?: string;
         successPath?: string;
@@ -70,7 +67,6 @@ export type MessageInput = {
       type: 'customData';
       origin?: string;
       data: TCustomData & {
-        isRequest?: boolean;
         origin?: string;
         successPath?: string;
         type?: never;
@@ -80,7 +76,6 @@ export type MessageInput = {
       type: 'order';
       origin?: string;
       data: {
-        isRequest?: never;
         successPath?: string;
         type: 1002;
         data: {
@@ -99,7 +94,6 @@ export type MessageInput = {
           senderPublicKey?: string;
           timestamp?: number;
         };
-        isRequest?: boolean;
         origin?: string;
         successPath?: string;
         type?: never;
@@ -109,7 +103,6 @@ export type MessageInput = {
       type: 'transaction';
       origin?: string;
       data: {
-        isRequest?: boolean;
         origin?: string;
         successPath?: string;
         type: (typeof TRANSACTION_TYPE)[keyof typeof TRANSACTION_TYPE];
@@ -140,7 +133,6 @@ export type MessageInput = {
         };
       }> & {
         data?: never;
-        isRequest?: never;
         origin?: never;
         successPath?: never;
         type?: never;
@@ -150,7 +142,6 @@ export type MessageInput = {
       type: 'wavesAuth';
       origin?: string;
       data: IWavesAuthParams & {
-        isRequest?: boolean;
         successPath?: string;
         type?: never;
       };
@@ -231,7 +222,6 @@ export type MessageStoreItem = {
       data: {
         type: 1000;
         referrer: string | undefined;
-        isRequest: boolean | undefined;
         data: {
           data: string;
           prefix: string;
@@ -306,7 +296,6 @@ export type MessageStoreItem = {
       result?: TSignedData;
       messageHash: string;
       data: TCustomData & {
-        isRequest?: boolean;
         origin?: string;
         successPath?: string;
         type?: never;

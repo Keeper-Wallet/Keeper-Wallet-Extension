@@ -830,13 +830,6 @@ class BackgroundService extends EventEmitter {
       broadcast,
       title = ''
     ) => {
-      if (data.type === 1000) {
-        type = 'auth';
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        data = data.data as any;
-        data.isRequest = true;
-      }
-
       const { selectedAccount } = await this.validatePermission(
         origin,
         connectionId
