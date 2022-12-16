@@ -1,4 +1,3 @@
-import { init as initSentry } from '@sentry/browser';
 import { verifyCustomData } from '@waves/waves-transactions';
 import { TSignedData } from '@waves/waves-transactions/dist/requests/custom-data';
 import { BalancesItem } from 'balances/types';
@@ -27,6 +26,7 @@ import { NetworkName } from 'networks/types';
 import { PERMISSIONS } from 'permissions/constants';
 import { PermissionObject } from 'permissions/types';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';
+import { initSentry } from 'sentry/init';
 import { UiState } from 'store/reducers/updateState';
 import { CreateWalletInput } from 'wallets/types';
 import Browser from 'webextension-polyfill';
@@ -70,42 +70,17 @@ log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 const bgPromise = setupBackgroundService();
 
 initSentry({
-  dsn: __SENTRY_DSN__,
-  environment: __SENTRY_ENVIRONMENT__,
-  release: __SENTRY_RELEASE__,
-  initialScope: {
-    tags: {
-      source: 'background',
-    },
-  },
-  beforeSend: async (event, hint) => {
-    const message =
-      hint &&
-      hint.originalException &&
-      typeof hint.originalException === 'object' &&
-      'message' in hint.originalException &&
-      typeof hint.originalException.message === 'string' &&
-      hint.originalException.message
-        ? hint.originalException.message
-        : String(hint?.originalException);
+  source: 'background',
+  shouldIgnoreError: async message => {
+    const bg = await bgPromise;
 
-    const backgroundService = await bgPromise;
-
-    const shouldIgnore =
-      backgroundService.remoteConfigController.shouldIgnoreError(
-        'beforeSend',
-        message
-      ) ||
-      backgroundService.remoteConfigController.shouldIgnoreError(
+    return (
+      bg.remoteConfigController.shouldIgnoreError('beforeSend', message) ||
+      bg.remoteConfigController.shouldIgnoreError(
         'beforeSendBackground',
         message
-      );
-
-    if (shouldIgnore) {
-      return null;
-    }
-
-    return event;
+      )
+    );
   },
 });
 
