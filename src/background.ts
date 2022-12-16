@@ -744,64 +744,61 @@ class BackgroundService extends EventEmitter {
 
     if (!selectedAccount) throw ERRORS.EMPTY_KEEPER();
 
-    const canIUse = this.permissionsController.hasPermission(
+    const hasPermission = this.permissionsController.hasPermission(
       origin,
       PERMISSIONS.APPROVED
     );
 
-    if (!canIUse && canIUse != null) {
-      throw ERRORS.API_DENIED();
-    }
+    if (hasPermission) return;
+    if (hasPermission === false) throw ERRORS.API_DENIED();
 
-    if (canIUse === null) {
-      let messageId = this.permissionsController.getMessageIdAccess(origin);
+    let messageId = this.permissionsController.getMessageIdAccess(origin);
 
-      if (messageId) {
-        try {
-          const message = this.messageController.getMessageById(messageId);
+    if (messageId) {
+      try {
+        const message = this.messageController.getMessageById(messageId);
 
-          if (!message || message.account.address !== selectedAccount.address) {
-            messageId = null;
-          }
-        } catch (e) {
+        if (!message || message.account.address !== selectedAccount.address) {
           messageId = null;
         }
+      } catch {
+        messageId = null;
       }
-
-      if (!messageId) {
-        const messageData: MessageInput = {
-          origin,
-          connectionId,
-          title: null,
-          options: {},
-          broadcast: false,
-          data: { origin },
-          type: 'authOrigin',
-          account: selectedAccount,
-        };
-        const result = await this.messageController.newMessage(messageData);
-        messageId = result.id;
-        this.permissionsController.setMessageIdAccess(origin, messageId);
-      }
-
-      this.emit('Show notification');
-
-      await this.messageController
-        .getMessageResult(messageId)
-        .then(() => {
-          this.messageController.setPermission(origin, PERMISSIONS.APPROVED);
-        })
-        .catch(e => {
-          if (e.data === MSG_STATUSES.REJECTED) {
-            // user rejected single permission request
-            this.permissionsController.setMessageIdAccess(origin, null);
-          } else if (e.data === MSG_STATUSES.REJECTED_FOREVER) {
-            // blocked origin
-            this.messageController.setPermission(origin, PERMISSIONS.REJECTED);
-          }
-          return Promise.reject(e);
-        });
     }
+
+    if (!messageId) {
+      const result = await this.messageController.newMessage({
+        origin,
+        connectionId,
+        title: null,
+        options: {},
+        broadcast: false,
+        data: { origin },
+        type: 'authOrigin',
+        account: selectedAccount,
+      });
+
+      messageId = result.id;
+      this.permissionsController.setMessageIdAccess(origin, messageId);
+    }
+
+    this.emit('Show notification');
+
+    await this.messageController
+      .getMessageResult(messageId)
+      .then(() => {
+        this.messageController.setPermission(origin, PERMISSIONS.APPROVED);
+      })
+      .catch(e => {
+        if (e.data === MSG_STATUSES.REJECTED) {
+          // user rejected single permission request
+          this.permissionsController.setMessageIdAccess(origin, null);
+        } else if (e.data === MSG_STATUSES.REJECTED_FOREVER) {
+          // blocked origin
+          this.messageController.setPermission(origin, PERMISSIONS.REJECTED);
+        }
+        return Promise.reject(e);
+      });
   }
 
   getNewMessageFn(origin?: string, connectionId?: string): NewMessageFn {
