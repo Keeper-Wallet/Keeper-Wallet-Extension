@@ -835,7 +835,7 @@ class BackgroundService extends EventEmitter {
         connectionId
       );
 
-      const { noSign, ...result } = await this.messageController.newMessage({
+      const result = await this.messageController.newMessage({
         connectionId,
         data,
         type,
@@ -846,10 +846,6 @@ class BackgroundService extends EventEmitter {
         account: selectedAccount,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
-
-      if (noSign) {
-        return result;
-      }
 
       if (
         selectedAccount.type !== 'ledger' &&
