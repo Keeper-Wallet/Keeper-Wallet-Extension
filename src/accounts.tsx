@@ -25,7 +25,7 @@ import {
 } from './ipc/ipc';
 import { ledgerService } from './ledger/service';
 import { LedgerSignRequest } from './ledger/types';
-import { initUiSentry } from './sentry';
+import { initSentry } from './sentry/init';
 import { setLoading } from './store/actions/localState';
 import { RootWrapper } from './ui/components/RootWrapper';
 import Background, {
@@ -33,9 +33,16 @@ import Background, {
   BackgroundUiApi,
 } from './ui/services/Background';
 
-initUiSentry({
-  ignoreErrorContext: 'beforeSendAccounts',
+initSentry({
   source: 'accounts',
+  shouldIgnoreError: async message => {
+    const [shouldIgnoreGlobal, shouldIgnoreContext] = await Promise.all([
+      Background.shouldIgnoreError('beforeSend', message),
+      Background.shouldIgnoreError('beforeSendAccounts', message),
+    ]);
+
+    return shouldIgnoreGlobal || shouldIgnoreContext;
+  },
 });
 
 const store = createAccountsStore();

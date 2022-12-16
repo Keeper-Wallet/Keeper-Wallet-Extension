@@ -1,12 +1,11 @@
 import { Breadcrumbs, init } from '@sentry/browser';
-import backgroundService from 'ui/services/Background';
 
-export function initUiSentry({
-  ignoreErrorContext,
+export function initSentry({
+  shouldIgnoreError,
   source,
 }: {
-  ignoreErrorContext: 'beforeSendAccounts' | 'beforeSendPopup';
-  source: 'popup' | 'accounts';
+  shouldIgnoreError: (message: string) => Promise<boolean>;
+  source: 'background' | 'popup' | 'accounts';
 }) {
   return init({
     dsn: __SENTRY_DSN__,
@@ -29,14 +28,7 @@ export function initUiSentry({
           ? hint.originalException.message
           : String(hint?.originalException);
 
-      const [shouldIgnoreGlobal, shouldIgnoreContext] = await Promise.all([
-        backgroundService.shouldIgnoreError('beforeSend', message),
-        backgroundService.shouldIgnoreError(ignoreErrorContext, message),
-      ]);
-
-      const shouldIgnore = shouldIgnoreGlobal || shouldIgnoreContext;
-
-      if (shouldIgnore) {
+      if (await shouldIgnoreError(message)) {
         return null;
       }
 

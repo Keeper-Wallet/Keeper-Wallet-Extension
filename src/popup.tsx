@@ -25,7 +25,7 @@ import { LedgerSignRequest } from './ledger/types';
 import { createPopupStore } from './popup/store/create';
 import { createUpdateState } from './popup/updateState';
 import { PopupRoot } from './popupRoot';
-import { initUiSentry } from './sentry';
+import { initSentry } from './sentry/init';
 import { setLoading } from './store/actions/localState';
 import { RootWrapper } from './ui/components/RootWrapper';
 import Background, {
@@ -33,9 +33,16 @@ import Background, {
   BackgroundUiApi,
 } from './ui/services/Background';
 
-initUiSentry({
-  ignoreErrorContext: 'beforeSendPopup',
+initSentry({
   source: 'popup',
+  shouldIgnoreError: async message => {
+    const [shouldIgnoreGlobal, shouldIgnoreContext] = await Promise.all([
+      Background.shouldIgnoreError('beforeSend', message),
+      Background.shouldIgnoreError('beforeSendPopup', message),
+    ]);
+
+    return shouldIgnoreGlobal || shouldIgnoreContext;
+  },
 });
 
 const store = createPopupStore();
