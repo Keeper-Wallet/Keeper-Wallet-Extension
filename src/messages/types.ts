@@ -17,7 +17,6 @@ export type MessageInput = {
   account: PreferencesAccount;
   broadcast?: boolean;
   options?: {
-    getMeta?: unknown;
     uid?: unknown;
   };
   successPath?: string | null;

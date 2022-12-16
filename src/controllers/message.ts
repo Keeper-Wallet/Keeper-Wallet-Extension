@@ -174,17 +174,6 @@ export class MessageController extends EventEmitter {
       }
     }
 
-    const { options } = messageData;
-    const { getMeta } = options || {};
-
-    if (getMeta) {
-      return {
-        noSign: true,
-        id: message.id,
-        hash: message.messageHash,
-      };
-    }
-
     log.debug(`Generated message ${JSON.stringify(message)}`);
 
     messages.push(message);
