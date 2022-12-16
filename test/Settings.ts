@@ -1,7 +1,18 @@
-import { expect } from 'chai';
-import * as mocha from 'mocha';
-import { By, until, WebElement } from 'selenium-webdriver';
+import { expect } from 'expect-webdriverio';
 
+import { ChooseAccountsForm } from './helpers/ChooseAccountsForm';
+import { ConfirmDeleteAccountsScreen } from './helpers/ConfirmDeleteAccountsScreen';
+import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { FinalTransactionScreen } from './helpers/FinalTransactionScreen';
+import { LoginScreen } from './helpers/LoginScreen';
+import { OriginAuthScreen } from './helpers/OriginAuthScreen';
+import {
+  ExportAndImportSettingsScreen,
+  NetworkSettingsScreen,
+  PermissionControlSettingsScreen,
+  SettingsScreen,
+} from './helpers/SettingsScreen';
+import { TopMenu } from './helpers/TopMenu';
 import { AccountsHome, App, Settings, Windows } from './utils/actions';
 import {
   CUSTOMLIST,
@@ -16,42 +27,23 @@ const BROWSER_TIMEOUT_DELAY = 120 * 1000;
 describe('Settings', function () {
   let tabKeeper: string;
 
-  async function performLogin(this: mocha.Context, password: string) {
-    const passwordEls = await this.driver.findElements(
-      By.css('input#loginPassword')
-    );
-
-    if (passwordEls.length) {
-      await passwordEls[0].sendKeys(password);
-      await this.driver
-        .wait(
-          until.elementIsEnabled(
-            this.driver.findElement(By.css('button#loginEnter'))
-          ),
-          this.wait
-        )
-        .click();
-      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-    }
+  async function performLogin(password: string) {
+    await LoginScreen.passwordInput.setValue(password);
+    await LoginScreen.enterButton.click();
   }
 
   before(async function () {
     await App.initVault();
-    await Settings.setMaxSessionTimeout.call(this);
+    await Settings.setMaxSessionTimeout();
     await browser.openKeeperPopup();
-    tabKeeper = await this.driver.getWindowHandle();
+    tabKeeper = await browser.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
-    await this.driver
-      .wait(
-        until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
-        this.wait
-      )
-      .click();
+    await EmptyHomeScreen.addButton.click();
     const [tabAccounts] = await waitForNewWindows(1);
 
-    await this.driver.switchTo().window(tabAccounts);
-    await this.driver.navigate().refresh();
+    await browser.switchToWindow(tabAccounts);
+    await browser.refresh();
 
     await AccountsHome.importAccount(
       'rich',
@@ -65,134 +57,63 @@ describe('Settings', function () {
       'test3',
       'defy credit shoe expect pair gun future slender escape visa test book tone patient vibrant'
     );
-    await this.driver.close();
+    await browser.closeWindow();
+    await browser.switchToWindow(tabKeeper);
 
-    await this.driver.switchTo().window(tabKeeper);
-
-    await this.driver
-      .wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, 'settingsIcon@menu')]")
-        ),
-        this.wait
-      )
-      .click();
-
-    await this.driver.wait(
-      until.elementLocated(
-        By.xpath("//div[contains(@class, 'content@settings')]")
-      ),
-      this.wait
-    );
+    await TopMenu.settingsButton.click();
   });
 
   after(async function () {
-    await App.closeBgTabs.call(this, tabKeeper);
+    await App.closeBgTabs(tabKeeper);
   });
 
   describe('Export accounts', function () {
     it('creates an encrypted keystore file containing account details', async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid=exportMenuItem]')),
-          this.wait
+      await SettingsScreen.exportAndImportSectionLink.click();
+
+      await ExportAndImportSettingsScreen.exportAccountsLink.click();
+      (
+        await ChooseAccountsForm.getAccountByAddress(
+          '3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1'
         )
-        .click();
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid=exportAccounts]')),
-          this.wait
-        )
-        .click();
-      await this.driver
-        .wait(
-          until.elementLocated(
-            By.css('input[value="3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1"]')
-          ),
-          this.wait
-        )
-        .click();
-      await this.driver
-        .findElement(By.css('[data-testid="exportButton"]'))
-        .click();
-      await this.driver
-        .findElement(By.css('[data-testid="passwordInput"]'))
-        .sendKeys(DEFAULT_PASSWORD);
-      await this.driver
-        .findElement(By.css('[data-testid="verifyButton"]'))
-        .click();
-      await this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, 'content@settings')]")
-        ),
-        this.wait
-      );
+      ).checkbox.click();
+      await ChooseAccountsForm.exportButton.click();
+      await ChooseAccountsForm.modalPasswordInput.setValue(DEFAULT_PASSWORD);
+      await ChooseAccountsForm.modalEnterButton.click();
     });
   });
 
   describe('Network', function () {
-    let nodeUrlInput: WebElement,
-      matcherUrlInput: WebElement,
-      setDefaultBtn: WebElement,
-      nodeUrl: string,
-      matcherUrl: string;
+    let nodeUrl: string, matcherUrl: string;
 
     before(async function () {
-      await this.driver
-        .wait(until.elementLocated(By.css('button#settingsNetwork')), this.wait)
-        .click();
-
-      await this.driver.wait(
-        until.elementIsVisible(
-          this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'networkTab@settings')]")
-            ),
-            this.wait
-          )
-        ),
-        this.wait
-      );
-
-      nodeUrlInput = this.driver.wait(
-        until.elementLocated(By.css('input#node_address')),
-        this.wait
-      );
-      matcherUrlInput = this.driver.wait(
-        until.elementLocated(By.css('input#matcher_address')),
-        this.wait
-      );
-      setDefaultBtn = this.driver.wait(
-        until.elementLocated(By.css('button#setDefault')),
-        this.wait
-      );
-
-      nodeUrl = await nodeUrlInput.getAttribute('value');
-      matcherUrl = await matcherUrlInput.getAttribute('value');
+      await SettingsScreen.networkSectionLink.click();
+      nodeUrl = await NetworkSettingsScreen.nodeAddress.getValue();
+      matcherUrl = await NetworkSettingsScreen.matcherAddress.getValue();
     });
 
     after(async function () {
-      await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+      await TopMenu.backButton.click();
     });
 
     describe('Node URL', function () {
       it('Is shown', async function () {
-        expect(nodeUrl).not.to.be.empty;
+        expect(NetworkSettingsScreen.nodeAddress).toBeDisplayed();
       });
       it('Can be changed', async function () {
-        await nodeUrlInput.clear();
-        expect(await nodeUrlInput.getText()).not.to.be.equal(nodeUrl);
+        await NetworkSettingsScreen.nodeAddress.clearValue();
+        expect(NetworkSettingsScreen.nodeAddress).not.toHaveValue(nodeUrl);
       });
       it('Can be copied');
     });
 
     describe('Matcher URL', function () {
       it('Is shown', async function () {
-        expect(matcherUrl).not.to.be.empty;
+        expect(NetworkSettingsScreen.matcherAddress).toBeDisplayed();
       });
       it('Can be changed', async function () {
-        await matcherUrlInput.clear();
-        expect(await matcherUrlInput.getAttribute('value')).not.to.be.equal(
+        await NetworkSettingsScreen.matcherAddress.clearValue();
+        expect(NetworkSettingsScreen.matcherAddress).not.toHaveValue(
           matcherUrl
         );
       });
@@ -201,192 +122,71 @@ describe('Settings', function () {
 
     describe('Set default', function () {
       it('Resets Node and Matcher URLs', async function () {
-        await setDefaultBtn.click();
-        expect(await nodeUrlInput.getAttribute('value')).to.be.equal(nodeUrl);
-        expect(await matcherUrlInput.getAttribute('value')).to.be.equal(
-          matcherUrl
-        );
+        await NetworkSettingsScreen.setDefaultButton.click();
+        expect(NetworkSettingsScreen.nodeAddress).toHaveValue(nodeUrl);
+        expect(NetworkSettingsScreen.matcherAddress).toHaveValue(matcherUrl);
       });
     });
   });
 
   describe('Permissions control', function () {
     before(async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('button#settingsPermission')),
-          this.wait
-        )
-        .click();
+      await SettingsScreen.permissionsSectionLink.click();
     });
 
     after(async function () {
-      await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+      await TopMenu.backButton.click();
     });
 
     const checkChangingAutoLimitsInResourceSettings = () => {
       describe('Changing auto-limits in resource settings', function () {
         beforeEach(async function () {
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath(
-                  "//div[contains(@class, 'permissionItem@list')]//button[contains(@class, 'settings@list')]"
-                )
-              ),
-              this.wait
-            )
-            .click();
-          await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-
-          await this.driver.wait(
-            until.elementIsVisible(
-              this.driver.wait(
-                until.elementLocated(By.css('div#originSettings')),
-                this.wait
-              )
-            ),
-            this.wait
-          );
+          (
+            await PermissionControlSettingsScreen.permissionItems
+          )[0].detailsIcon.click();
+          await browser.pause(DEFAULT_ANIMATION_DELAY);
         });
 
         it('Enabling', async function () {
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath(
-                  "//div[contains(@class, 'selectTime@settings')]" +
-                    "//div[contains(@class, 'trigger@Select-module')]"
-                )
-              ),
-              this.wait
-            )
-            .click();
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath(
-                  "//div[contains(@class, 'item@Select-module')][last()]"
-                )
-              ),
-              this.wait
-            )
-            .click();
-          await this.driver
-            .wait(
-              until.elementIsEnabled(
-                this.driver.findElement(
-                  By.xpath("//input[contains(@class, 'amountInput@settings')]")
-                )
-              ),
-              this.wait
-            )
-            .sendKeys(SPENDING_LIMIT);
-          await this.driver
-            .wait(
-              until.elementIsEnabled(
-                this.driver.findElement(By.css('button#save'))
-              ),
-              this.wait
-            )
-            .click();
-          await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
+          await PermissionControlSettingsScreen.modalSetResolutionTime(
+            'For 1 hour'
+          );
+          await browser.pause(DEFAULT_ANIMATION_DELAY);
+          await PermissionControlSettingsScreen.modalSpendingLimitInput.setValue(
+            SPENDING_LIMIT
+          );
+          await PermissionControlSettingsScreen.modalSaveButton.click();
           expect(
-            await this.driver
-              .wait(
-                until.elementLocated(
-                  By.xpath(
-                    "//div[contains(@class, 'permissionItem@list')]" +
-                      "//div[contains(@class, 'statusColor@list')]" +
-                      '//span'
-                  )
-                ),
-                this.wait
-              )
-              .getText()
-          ).matches(/automatic signing/i);
+            (await PermissionControlSettingsScreen.permissionItems)[0].status
+          ).toHaveText('Approved+ Automatic signing');
         });
 
         it('Disabling', async function () {
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath(
-                  "//div[contains(@class, 'selectTime@settings')]" +
-                    "//div[contains(@class, 'trigger@Select-module')]"
-                )
-              ),
-              this.wait
-            )
-            .click();
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'item@Select-module')]")
-              ),
-              this.wait
-            )
-            .click();
-          await this.driver
-            .wait(
-              until.elementIsEnabled(
-                this.driver.findElement(By.css('button#save'))
-              ),
-              this.wait
-            )
-            .click();
-          await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
+          await PermissionControlSettingsScreen.modalSetResolutionTime(
+            "Don't automatically sign"
+          );
+          await PermissionControlSettingsScreen.modalSaveButton.click();
           expect(
-            await this.driver
-              .wait(
-                until.elementLocated(
-                  By.xpath("//div[contains(@class, 'permissionList@list')]")
-                ),
-                this.wait
-              )
-              .findElements(
-                By.xpath(
-                  "//div[contains(@class, 'permissionItem@list')]" +
-                    "//div[contains(@class, 'statusColor@list')]" +
-                    '//span'
-                )
-              )
-          ).length(0);
+            (await PermissionControlSettingsScreen.permissionItems)[0].status
+          ).toHaveText('Approved');
         });
       });
     };
 
     describe('White list', function () {
       before(async function () {
-        await this.driver
-          .wait(until.elementLocated(By.css('div#whiteListTab')), this.wait)
-          .click();
-
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath(
-              "//div[@id='whiteListTab'][contains(@class, 'selected@index')]"
-            )
-          )
-        );
+        await PermissionControlSettingsScreen.whiteListLink.click();
       });
 
       it('Default whitelisted services appears', async function () {
         for (const origin of WHITELIST) {
           expect(
-            await this.driver
-              .wait(
-                until.elementLocated(
-                  By.xpath("//div[contains(@class, 'permissionList@list')]")
-                ),
-                this.wait
+            (
+              await PermissionControlSettingsScreen.getPermissionByOrigin(
+                origin
               )
-              .findElements(
-                By.xpath(
-                  `//div[contains(@class, 'permissionItem@list')]//div[text()='${origin}']`
-                )
-              )
-          ).length(1);
+            ).root
+          ).toBeDisplayed();
         }
       });
 
@@ -401,17 +201,14 @@ describe('Settings', function () {
     });
 
     describe('Custom list', function () {
-      async function publicStateFromOrigin(
-        this: mocha.Context,
-        origin: string
-      ) {
+      async function publicStateFromOrigin(origin: string) {
         // this requests permission first
         const permissionRequest = () => {
           window.result = KeeperWallet.publicState();
         };
 
-        await this.driver.get(`https://${origin}`);
-        await this.driver.executeScript(permissionRequest);
+        await browser.navigateTo(`https://${origin}`);
+        await browser.execute(permissionRequest);
       }
 
       after(async () => {
@@ -424,168 +221,59 @@ describe('Settings', function () {
           const origin = CUSTOMLIST[0];
 
           const { waitForNewWindows } = await Windows.captureNewWindows();
-          await publicStateFromOrigin.call(this, origin);
+          await publicStateFromOrigin(origin);
           const [messageWindow] = await waitForNewWindows(1);
-          await this.driver.switchTo().window(messageWindow);
-          await this.driver.navigate().refresh();
+          await browser.switchToWindow(messageWindow);
+          await browser.refresh();
 
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'transaction@originAuth')]")
-            ),
-            this.wait
-          );
-          await this.driver.findElement(By.css('button#approve')).click();
-
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'transaction@final')]")
-            ),
-            this.wait
-          );
-          await this.driver.findElement(By.css('button#close')).click();
+          await OriginAuthScreen.authButton.click();
+          expect(FinalTransactionScreen.root).toBeDisplayed();
+          await FinalTransactionScreen.closeButton.click();
           await Windows.waitForWindowToClose(messageWindow);
-          await this.driver.switchTo().window(tabKeeper);
+          await browser.switchToWindow(tabKeeper);
           await browser.openKeeperPopup();
 
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'settingsIcon@menu')]")
-              ),
-              this.wait
-            )
-            .click();
+          await TopMenu.settingsButton.click();
+          await SettingsScreen.permissionsSectionLink.click();
 
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'content@settings')]")
-            ),
-            this.wait
-          );
-          await this.driver
-            .wait(
-              until.elementLocated(By.css('button#settingsPermission')),
-              this.wait
-            )
-            .click();
-
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'permissionList@list')]")
-              ),
-              this.wait
-            )
-            .findElements(
-              By.xpath(
-                `//div[contains(@class, 'permissionItem@list')]//div[text()='${origin}']`
+          expect(
+            (
+              await PermissionControlSettingsScreen.getPermissionByOrigin(
+                CUSTOMLIST[0]
               )
-            );
+            ).root
+          ).toBeDisplayed();
         });
 
         it('Origin added to custom list with auto-limits', async function () {
           const origin = CUSTOMLIST[1];
 
           const { waitForNewWindows } = await Windows.captureNewWindows();
-          await publicStateFromOrigin.call(this, origin);
+          await publicStateFromOrigin(origin);
           const [messageWindow] = await waitForNewWindows(1);
-          await this.driver.switchTo().window(messageWindow);
-          await this.driver.navigate().refresh();
+          await browser.switchToWindow(messageWindow);
+          await browser.refresh();
 
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath(
-                  "//div[contains(@class, 'collapsed@originAuth')]//div[contains(@class, 'title@index')]"
-                )
-              ),
-              this.wait
-            )
-            .click();
+          await OriginAuthScreen.permissionDetailsButton.click();
+          await OriginAuthScreen.setResolutionTime('For 1 hour');
+          await OriginAuthScreen.spendingLimitInput.setValue(SPENDING_LIMIT);
+          await OriginAuthScreen.authButton.click();
 
-          await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-
-          await this.driver
-            .findElement(
-              By.xpath(
-                "//div[contains(@class, 'selectTime@settings')]" +
-                  "//div[contains(@class, 'trigger@Select-module')]"
-              )
-            )
-            .click();
-
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath(
-                  "//div[contains(@class, 'item@Select-module')][last()]"
-                )
-              ),
-              this.wait
-            )
-            .click();
-
-          await this.driver
-            .wait(
-              until.elementIsEnabled(
-                this.driver.findElement(
-                  By.xpath("//input[contains(@class, 'amountInput@settings')]")
-                )
-              ),
-              this.wait
-            )
-            .sendKeys(SPENDING_LIMIT);
-
-          await this.driver.findElement(By.css('button#approve')).click();
-
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'transaction@final')]")
-            ),
-            this.wait
-          );
-          await this.driver.findElement(By.css('button#close')).click();
+          await FinalTransactionScreen.closeButton.click();
           await Windows.waitForWindowToClose(messageWindow);
-          await this.driver.switchTo().window(tabKeeper);
+          await browser.switchToWindow(tabKeeper);
           await browser.openKeeperPopup();
 
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'settingsIcon@menu')]")
-              ),
-              this.wait
-            )
-            .click();
-
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'content@settings')]")
-            ),
-            this.wait
-          );
-          await this.driver
-            .wait(
-              until.elementLocated(By.css('button#settingsPermission')),
-              this.wait
-            )
-            .click();
+          await TopMenu.settingsButton.click();
+          await SettingsScreen.permissionsSectionLink.click();
 
           expect(
-            await this.driver
-              .wait(
-                until.elementLocated(
-                  By.xpath("//div[contains(@class, 'permissionList@list')]")
-                ),
-                this.wait
+            (
+              await PermissionControlSettingsScreen.getPermissionByOrigin(
+                origin
               )
-              .findElements(
-                By.xpath(
-                  `//div[contains(@class, 'permissionItem@list')][./div[text()='${origin}']]//span`
-                )
-              )
-          ).length(1);
+            ).status
+          ).toHaveText('Approved+ Automatic signing');
         });
       });
 
@@ -593,56 +281,23 @@ describe('Settings', function () {
         after(async function () {
           await browser.openKeeperPopup();
 
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'settingsIcon@menu')]")
-              ),
-              this.wait
-            )
-            .click();
-
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'content@settings')]")
-            ),
-            this.wait
-          );
-          await this.driver
-            .wait(
-              until.elementLocated(By.css('button#settingsPermission')),
-              this.wait
-            )
-            .click();
+          await TopMenu.settingsButton.click();
+          await SettingsScreen.permissionsSectionLink.click();
         });
 
         it('Block all messages from origin in custom list', async function () {
-          // here we have 2 enabled origins
-          const originEl: WebElement = await this.driver.findElement(
-            By.xpath("//div[contains(@class, 'permissionItem@list')]")
-          );
-          const origin: string = await originEl
-            .findElement(By.css('div'))
-            .getText();
-
-          await originEl
-            .findElement(By.xpath("//button[contains(@class, 'enable@list')]"))
-            .click();
-
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//button[contains(@class, 'disable@list')]")
-            ),
-            this.wait
-          );
-
-          await publicStateFromOrigin.call(this, origin);
-          const response = await this.driver.executeAsyncScript(
+          const firstOrigin = (
+            await PermissionControlSettingsScreen.permissionItems
+          )[0];
+          const origin = await firstOrigin.origin.getText();
+          await firstOrigin.enableCheckbox.click();
+          await publicStateFromOrigin(origin);
+          const response = await browser.executeAsync(
             (done: (result: unknown) => void) => {
               (window.result as Promise<unknown>).then(done, done);
             }
           );
-          expect(response).to.be.deep.equal({
+          expect(response).toStrictEqual({
             message: 'Api rejected by user',
             code: '12',
             data: null,
@@ -654,83 +309,29 @@ describe('Settings', function () {
         after(async function () {
           await browser.openKeeperPopup();
 
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'settingsIcon@menu')]")
-              ),
-              this.wait
-            )
-            .click();
-
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'content@settings')]")
-            ),
-            this.wait
-          );
-          await this.driver
-            .wait(
-              until.elementLocated(By.css('button#settingsPermission')),
-              this.wait
-            )
-            .click();
+          await TopMenu.settingsButton.click();
+          await SettingsScreen.permissionsSectionLink.click();
         });
 
         it('After deletion, requests generate permission request', async function () {
-          // here we have 2 origins, the first one is disabled, so we will delete it
-          const originEl: WebElement = await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'permissionItem@list')]")
-            ),
-            this.wait
-          );
-          const origin: string = await originEl
-            .findElement(By.css('div'))
-            .getText();
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//button[contains(@class, 'settings@list')]")
-              ),
-              this.wait
-            )
-            .click();
-
-          await this.driver.wait(
-            until.elementIsVisible(
-              this.driver.wait(
-                until.elementLocated(By.css('div#originSettings')),
-                this.wait
-              )
-            ),
-            this.wait
-          );
-          await this.driver
-            .wait(until.elementLocated(By.css('button#delete')), this.wait)
-            .click();
-
+          const originToDelete =
+            await PermissionControlSettingsScreen.getPermissionByOrigin(
+              'waves.tech'
+            );
+          const origin = await originToDelete.origin.getText();
+          await originToDelete.detailsIcon.click();
+          await PermissionControlSettingsScreen.modalDeleteButton.click();
           const { waitForNewWindows } = await Windows.captureNewWindows();
-          await publicStateFromOrigin.call(this, origin);
+          await publicStateFromOrigin(origin);
           const [messageWindow] = await waitForNewWindows(1);
-          await this.driver.switchTo().window(messageWindow);
-          await this.driver.navigate().refresh();
+          await browser.switchToWindow(messageWindow);
+          await browser.refresh();
 
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'transaction@originAuth')]")
-            ),
-            this.wait
-          );
-          await this.driver
-            .wait(until.elementLocated(By.css('button#reject')), this.wait)
-            .click();
-          await this.driver
-            .wait(until.elementLocated(By.css('button#close')), this.wait)
-            .click();
+          await OriginAuthScreen.rejectButton.click();
+          await FinalTransactionScreen.closeButton.click();
 
           await Windows.waitForWindowToClose(messageWindow);
-          await this.driver.switchTo().window(tabKeeper);
+          await browser.switchToWindow(tabKeeper);
         });
       });
 
@@ -747,39 +348,24 @@ describe('Settings', function () {
 
   describe('General', function () {
     before(async function () {
-      await this.driver
-        .wait(until.elementLocated(By.css('button#settingsGeneral')), this.wait)
-        .click();
+      await SettingsScreen.generalSectionLink.click();
     });
 
     after(async function () {
-      await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+      await TopMenu.backButton.click();
     });
 
     describe('Session Timeout', function () {
       afterEach(async function () {
-        await performLogin.call(this, DEFAULT_PASSWORD);
-
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'content@settings')]")
-          ),
-          this.wait
-        );
+        await performLogin(DEFAULT_PASSWORD);
       });
 
       it('Logout after "Browser timeout"', async function () {
         await browser.openKeeperPopup();
         await Settings.setMinSessionTimeout();
 
-        expect(
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'content@login')]")
-            ),
-            BROWSER_TIMEOUT_DELAY
-          )
-        ).not.to.be.throw;
+        await browser.pause(BROWSER_TIMEOUT_DELAY);
+        expect(LoginScreen.root).toBeDisplayed();
       });
 
       it('Logout after 5 min / 10 min / 1 hour');
@@ -789,383 +375,124 @@ describe('Settings', function () {
   describe('Root', function () {
     describe('Auto-click protection', function () {
       before(async function () {
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'content@settings')]")
-          ),
-          this.wait
-        );
+        expect(SettingsScreen.root).toBeDisplayed();
       });
 
       it('Can be enabled', async function () {
-        await this.driver
-          .wait(
-            until.elementLocated(By.css('[data-testid="clickProtectionBtn"]')),
-            this.wait
-          )
-          .click();
-        await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'content@settings')]")
-          ),
-          this.wait
+        await SettingsScreen.clickProtectionButton.click();
+        expect(SettingsScreen.clickProtectionButton).toHaveAttr(
+          'data-teston',
+          'true'
         );
-
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(By.css('[data-testid="clickProtection"]')),
-              this.wait
-            )
-            .findElements(
-              By.css('[data-testid="clickProtectionBtn"][data-teston="true"]')
-            )
-        ).length(1);
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.css('[data-testid="clickProtectionStatus"] span')
-              ),
-              this.wait
-            )
-            .getText()
-        ).matches(/enabled/i);
+        expect(SettingsScreen.clickProtectionStatus).toHaveText('Enabled');
       });
 
       it('Can be disabled', async function () {
-        await this.driver
-          .wait(
-            until.elementLocated(By.css('[data-testid="clickProtectionBtn"]')),
-            this.wait
-          )
-          .click();
-        await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'content@settings')]")
-          ),
-          this.wait
+        await SettingsScreen.clickProtectionButton.click();
+        expect(SettingsScreen.clickProtectionButton).toHaveAttr(
+          'data-teston',
+          'false'
         );
-
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(By.css('[data-testid="clickProtection"]')),
-              this.wait
-            )
-            .findElements(
-              By.css('[data-testid="clickProtectionBtn"][data-teston="true"]')
-            )
-        ).length(0);
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.css('[data-testid="clickProtectionStatus"] span')
-              ),
-              this.wait
-            )
-            .getText()
-        ).matches(/disabled/i);
+        expect(SettingsScreen.clickProtectionStatus).toHaveText('Disabled');
       });
 
       it('Display tooltip', async function () {
-        const actions = this.driver.actions({ async: true });
-        const helpIcon = await this.driver.wait(
-          until.elementLocated(By.css('[data-testid="clickProtectionIcon"]')),
-          this.wait
+        await SettingsScreen.clickProtectionIcon.moveTo();
+        expect(SettingsScreen.helpTooltip).toHaveText(
+          'Protect yourself from Clicker Trojans threats'
         );
-        await actions.move({ origin: helpIcon }).perform();
-        expect(
-          this.driver.wait(
-            until.elementIsVisible(
-              this.driver.wait(
-                until.elementLocated(
-                  By.css('[data-testid="clickProtectionTooltip"]')
-                ),
-                this.wait
-              )
-            ),
-            this.wait
-          )
-        ).not.to.be.throw;
       });
     });
 
     describe('Suspicious assets protection', function () {
       before(async function () {
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'content@settings')]")
-          ),
-          this.wait
-        );
+        expect(SettingsScreen.root).toBeDisplayed();
       });
 
       it('Can be disabled', async function () {
-        await this.driver
-          .wait(
-            until.elementLocated(
-              By.css('[data-testid="showSuspiciousAssetsBtn"]')
-            ),
-            this.wait
-          )
-          .click();
-        await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'content@settings')]")
-          ),
-          this.wait
+        await SettingsScreen.suspiciousAssetsProtectionButton.click();
+        expect(SettingsScreen.suspiciousAssetsProtectionButton).toHaveAttr(
+          'data-teston',
+          'true'
         );
-
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.css('[data-testid="showSuspiciousAssets"]')
-              ),
-              this.wait
-            )
-            .findElements(
-              By.css(
-                '[data-testid="showSuspiciousAssetsBtn"][data-teston="true"]'
-              )
-            )
-        ).length(0);
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.css('[data-testid="showSuspiciousAssetsStatus"] span')
-              ),
-              this.wait
-            )
-            .getText()
-        ).matches(/disabled/i);
+        expect(SettingsScreen.suspiciousAssetsProtectionStatus).toHaveText(
+          'Enable'
+        );
       });
 
       it('Can be enabled', async function () {
-        await this.driver
-          .wait(
-            until.elementLocated(
-              By.css('[data-testid="showSuspiciousAssetsBtn"]')
-            ),
-            this.wait
-          )
-          .click();
-        await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'content@settings')]")
-          ),
-          this.wait
+        await SettingsScreen.suspiciousAssetsProtectionButton.click();
+        expect(SettingsScreen.suspiciousAssetsProtectionButton).toHaveAttr(
+          'data-teston',
+          'false'
         );
-
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.css('[data-testid="showSuspiciousAssets"]')
-              ),
-              this.wait
-            )
-            .findElements(
-              By.css(
-                '[data-testid="showSuspiciousAssetsBtn"][data-teston="true"]'
-              )
-            )
-        ).length(1);
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.css('[data-testid="showSuspiciousAssetsStatus"] span')
-              ),
-              this.wait
-            )
-            .getText()
-        ).matches(/enabled/i);
+        expect(SettingsScreen.suspiciousAssetsProtectionStatus).toHaveText(
+          'Disabled'
+        );
       });
 
       it('Display tooltip', async function () {
-        const actions = this.driver.actions({ async: true });
-        const helpIcon = this.driver.wait(
-          until.elementLocated(
-            By.css('[data-testid="showSuspiciousAssetsIcon"]')
-          ),
-          this.wait
+        await SettingsScreen.suspiciousAssetsProtectionIcon.moveTo();
+        expect(SettingsScreen.helpTooltip).toHaveText(
+          "Don't show balances and transactions related to suspicious assets"
         );
-        await actions.move({ origin: helpIcon }).perform();
-        expect(
-          this.driver.wait(
-            until.elementIsVisible(
-              this.driver.wait(
-                until.elementLocated(
-                  By.css('[data-testid="showSuspiciousAssetsTooltip"]')
-                ),
-                this.wait
-              )
-            ),
-            this.wait
-          )
-        ).not.to.be.throw;
       });
     });
 
     describe('Logout', function () {
       after(async function () {
-        await performLogin.call(this, DEFAULT_PASSWORD);
-
-        await this.driver
-          .wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'settingsIcon@menu')]")
-            ),
-            this.wait
-          )
-          .click();
+        await performLogin(DEFAULT_PASSWORD);
+        await TopMenu.settingsButton.click();
       });
 
       it('Exit to the login screen', async function () {
-        await this.driver
-          .findElement(By.xpath("//div[contains(@class, 'logout@settings')]"))
-          .click();
-
-        expect(
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'content@login')]")
-            ),
-            this.wait
-          )
-        ).not.to.be.throw;
+        await SettingsScreen.logoutButton.click();
+        expect(LoginScreen.root).toBeDisplayed();
       });
     });
 
     describe('Delete accounts', function () {
-      async function clickDeleteAllBtn(this: mocha.Context) {
-        await this.driver
-          .wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'deleteAccounts@settings')]")
-            ),
-            this.wait
-          )
-          .click();
-
-        await this.driver.wait(
-          until.elementLocated(By.css('[data-testid="deleteAllAccounts"]')),
-          this.wait
-        );
-      }
-
       it('Account deletion warning displays', async function () {
-        await this.driver
-          .findElement(
-            By.xpath("//div[contains(@class, 'deleteAccounts@settings')]")
-          )
-          .click();
-
-        expect(
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="deleteAllAccounts"]')),
-            this.wait
-          )
-        ).not.to.be.throw;
+        await SettingsScreen.deleteAccountsButton.click();
+        expect(ConfirmDeleteAccountsScreen.root).toBeDisplayed();
       });
 
       it('Clicking "Back" button cancels the deletion', async function () {
-        await this.driver.findElement(By.css('div.arrow-back-icon')).click();
-
-        expect(
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'content@settings')]")
-            ),
-            this.wait
-          )
-        ).not.to.be.throw;
+        await TopMenu.backButton.click();
+        expect(SettingsScreen.root).toBeDisplayed();
       });
 
       it('Clicking "Cancel" button cancels the deletion', async function () {
-        await clickDeleteAllBtn.call(this);
-
-        await this.driver
-          .findElement(By.css('[data-testid="resetCancel"]'))
-          .click();
-
-        expect(
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'content@settings')]")
-            ),
-            this.wait
-          )
-        ).not.to.be.throw;
+        await SettingsScreen.deleteAccountsButton.click();
+        await ConfirmDeleteAccountsScreen.cancelButton.click();
+        expect(SettingsScreen.root).toBeDisplayed();
       });
 
       it('"Delete all" button is disabled', async function () {
-        await clickDeleteAllBtn.call(this);
-
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="resetConfirm"]'))
-            .isEnabled()
-        ).to.be.false;
+        await SettingsScreen.deleteAccountsButton.click();
+        expect(ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
       });
 
       it('Wrong confirmation phrase displays error', async function () {
-        const defaultPhrase = await this.driver
-          .findElement(By.css('[data-testid="defaultPhrase"]'))
-          .getText();
-        await this.driver
-          .findElement(By.css('[data-testid="confirmPhrase"]'))
-          .sendKeys(defaultPhrase.toLowerCase());
-
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="confirmPhraseError"]'))
-            .getText()
-        ).matches(/The phrase is entered incorrectly/i);
+        await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
+          'delete all accounts'
+        );
+        expect(ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
+        expect(ConfirmDeleteAccountsScreen.confirmPhraseError).toHaveText(
+          'The phrase is entered incorrectly'
+        );
       });
 
       it('Correct confirmation phrase enables "Delete all" button', async function () {
-        const defaultPhrase = await this.driver
-          .findElement(By.css('[data-testid="defaultPhrase"]'))
-          .getText();
-        const phraseInput = this.driver.findElement(
-          By.css('[data-testid="confirmPhrase"]')
+        await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
+          'DELETE ALL ACCOUNTS'
         );
-        await phraseInput.clear();
-        await phraseInput.sendKeys(defaultPhrase);
-
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="resetConfirm"]'))
-            .isEnabled()
-        ).to.be.true;
+        expect(ConfirmDeleteAccountsScreen.deleteAllButton).toBeEnabled();
       });
 
       it('Clicking "Delete account" removes all accounts from current network', async function () {
-        await this.driver
-          .findElement(By.css('[data-testid="resetConfirm"]'))
-          .click();
-
-        expect(
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'content@Welcome-module')]")
-            ),
-            this.wait
-          )
-        ).not.to.be.throw;
+        await ConfirmDeleteAccountsScreen.deleteAllButton.click();
+        expect(LoginScreen.root).toBeDisabled();
       });
     });
   });

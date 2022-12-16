@@ -15,7 +15,7 @@ describe('Network management', function () {
 
   after(async function () {
     await Network.switchToAndCheck('Mainnet');
-    await App.closeBgTabs.call(this, tabKeeper);
+    await App.closeBgTabs(tabKeeper);
     await App.resetVault();
   });
 

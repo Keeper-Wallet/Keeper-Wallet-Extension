@@ -30,11 +30,17 @@ const AccountsGroup = (wrapped: WebdriverIO.Element) => ({
 
 export const ChooseAccountsForm = {
   get root() {
-    return browser.findByTestId$('chooseAccountsForm');
+    return browser.$(
+      "[class*='root@chooseItems'],[class*='root@chooseAccounts']"
+    );
   },
 
   get importButton() {
     return this.root.findByTestId$('submitButton');
+  },
+
+  get exportButton() {
+    return this.root.findByTestId$('exportButton');
   },
 
   get accountsGroups() {
@@ -53,7 +59,17 @@ export const ChooseAccountsForm = {
 
   async getAccountByAddress(address: string) {
     return Account(
-      await this.root.$(`[data-testid='accountCard'][title='${address}']`)
+      await this.root.$(
+        `[data-testid='accountCard'][title='${address}'], [class*='accountListItem@chooseItems'][title='${address}']`
+      )
     );
+  },
+
+  get modalPasswordInput() {
+    return browser.findByTestId$('passwordInput');
+  },
+
+  get modalEnterButton() {
+    return browser.findByTestId$('verifyButton');
   },
 };

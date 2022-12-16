@@ -430,7 +430,7 @@ describe('Account creation', function () {
               label: await group.label.getText(),
               accounts: await Promise.all(
                 accountCards.map(async account => ({
-                  name: await account.nameField.getText(),
+                  name: await account.name.getText(),
                   address: await account.getAddress(),
                 }))
               ),
@@ -500,7 +500,7 @@ describe('Account creation', function () {
         const accounts = await ChooseAccountsForm.accounts;
         return await Promise.all(
           accounts.map(async account => ({
-            name: await account.nameField.getText(),
+            name: await account.name.getText(),
             address: await account.getAddress(),
             selected: await account.isSelected(),
           }))
@@ -513,7 +513,7 @@ describe('Account creation', function () {
         const otherAccountNames = await Promise.all(
           (
             await OtherAccountsScreen.accounts
-          ).map(async it => await it.nameField.getText())
+          ).map(async it => await it.name.getText())
         );
         await TopMenu.backButton.click();
         return [activeAccountName, ...otherAccountNames];

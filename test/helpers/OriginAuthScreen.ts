@@ -30,4 +30,15 @@ export const OriginAuthScreen = {
   get rejectButton() {
     return this.root.$('#reject');
   },
+
+  async setResolutionTime(time: string) {
+    await this.root.$("[class*='trigger@Select']").click();
+    await this.root
+      .findByText$(time, { selector: "[class*='item@Select']" })
+      .click();
+  },
+
+  get spendingLimitInput() {
+    return this.root.$("[class*='amountInput@settings']");
+  },
 };
