@@ -116,7 +116,7 @@ export class NotificationsController extends EventEmitter {
     notifications.push(notification);
     this._updateStore(notifications);
     this.setNotificationPermissions(data.origin, true, Date.now());
-    return { id: notification.id };
+    return notification.id;
   }
 
   deleteNotifications(ids: string[]) {
