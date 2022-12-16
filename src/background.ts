@@ -853,34 +853,6 @@ class BackgroundService extends EventEmitter {
   getInpageApi(origin: string, connectionId: string) {
     const newMessage = this.getNewMessageFn(origin, connectionId);
 
-    const newNotification = async (
-      data:
-        | {
-            message?: string;
-            title?: string;
-          }
-        | undefined
-    ) => {
-      const { selectedAccount } = this.getState('selectedAccount');
-      const myData = { ...data };
-      const result = this.notificationsController.newNotification({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        address: selectedAccount!.address,
-        message: myData.message,
-        origin,
-        status: MSG_STATUSES.NEW_NOTIFICATION,
-        timestamp: Date.now(),
-        title: myData.title,
-        type: 'simple',
-      }).id;
-
-      if (result) {
-        this.emit('Show notification');
-      }
-
-      return result;
-    };
-
     return {
       signOrder: async (
         data: MessageInputOfType<'order'>['data'],
@@ -975,7 +947,19 @@ class BackgroundService extends EventEmitter {
 
         await this.validatePermission(origin, connectionId);
 
-        return await newNotification(data);
+        const notificationId = this.notificationsController.newNotification({
+          address: selectedAccount.address,
+          message: data?.message,
+          origin,
+          status: MSG_STATUSES.NEW_NOTIFICATION,
+          timestamp: Date.now(),
+          title: data?.title,
+          type: 'simple',
+        });
+
+        this.emit('Show notification');
+
+        return notificationId;
       },
 
       publicState: async () => {
