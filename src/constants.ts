@@ -27,12 +27,30 @@ export const STATUS = {
   UPDATED: 2,
 };
 
-export const DEFAULT_LEGACY_CONFIG = {
-  CONFIG: {
-    update_ms: 30000,
+export const DEFAULT_MAIN_CONFIG = {
+  whitelist: [
+    'swop.fi',
+    'waves.exchange',
+    'testnet.waves.exchange',
+    'waves-dapp.com',
+    'waves-ide.com',
+    'wavesducks.com',
+    'vires.finance',
+  ],
+  networks: ['mainnet', 'testnet', 'stagenet', 'custom'],
+  messages_config: {
+    message_expiration_ms: 30 * 60 * 1000,
+    update_messages_ms: 30 * 1000,
+    max_messages: 100,
+    notification_title_max: 20,
+    notification_interval_min: 30 * 1000,
+    notification_message_max: 250,
   },
-  NETWORKS: ['mainnet', 'testnet', 'stagenet', 'custom'],
-  NETWORK_CONFIG: {
+  pack_config: {
+    max: 7,
+    allow_tx: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+  },
+  network_config: {
     testnet: {
       code: 'T',
       server: 'https://nodes-testnet.wavesnodes.com/',
@@ -54,19 +72,7 @@ export const DEFAULT_LEGACY_CONFIG = {
       matcher: '',
     },
   },
-  MESSAGES_CONFIG: {
-    message_expiration_ms: 30 * 60 * 1000,
-    update_messages_ms: 30 * 1000,
-    max_messages: 100,
-    notification_title_max: 20,
-    notification_interval_min: 30 * 1000,
-    notification_message_max: 250,
-  },
-  PACK_CONFIG: {
-    max: 7,
-    allow_tx: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
-  },
-  IDLE: {
+  idle: {
     idle: 0,
     '5m': 5 * 60 * 1000,
     '10m': 10 * 60 * 1000,
@@ -74,9 +80,6 @@ export const DEFAULT_LEGACY_CONFIG = {
     '40m': 40 * 60 * 1000,
     '1h': 60 * 60 * 1000,
   },
-};
-
-export const DEFAULT_MAIN_CONFIG = {
   assets: {
     maxAssetsPerRequest: 100,
   },
