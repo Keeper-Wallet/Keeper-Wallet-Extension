@@ -33,7 +33,7 @@ interface Identity {
 
 type PermissionsStoreState = Pick<
   StorageLocalState,
-  'origins' | 'blacklist' | 'whitelist' | 'inPending'
+  'origins' | 'whitelist' | 'inPending'
 >;
 
 export class PermissionsController {
@@ -56,7 +56,6 @@ export class PermissionsController {
     this.store = new ObservableStore(
       extensionStorage.getInitState({
         origins: {},
-        blacklist: [],
         whitelist: [],
         inPending: {},
       })
@@ -80,11 +79,8 @@ export class PermissionsController {
   }
 
   getPermissions(origin: string) {
-    const { origins, blacklist, whitelist } = this.store.getState();
+    const { origins, whitelist } = this.store.getState();
     const permissions = origins[origin] || [];
-    if (blacklist.includes(origin)) {
-      return [PERMISSIONS.REJECTED];
-    }
 
     if (whitelist.includes(origin) && !permissions.includes(PERMISSIONS.ALL)) {
       return [...permissions, PERMISSIONS.ALL];
@@ -124,9 +120,9 @@ export class PermissionsController {
 
   deletePermissions(origin: string) {
     const { origins, ...other } = this.store.getState();
-    const { whitelist, blacklist } = other;
+    const { whitelist } = other;
 
-    if (whitelist.includes(origin) || blacklist.includes(origin)) {
+    if (whitelist.includes(origin)) {
       return null;
     }
 
@@ -360,7 +356,6 @@ export class PermissionsController {
     } = this.store.getState();
     const origins = { ...oldOrigins, ...(state.origins || {}) };
     const whitelist = state.whitelist || oldState.whitelist;
-    const blacklist = state.blacklist || oldState.blacklist;
     const inPending = { ...oldInPending, ...(state.inPending || {}) };
     Object.keys(origins).forEach(key => {
       origins[key] = Array.from(new Set(origins[key] || []));
@@ -370,7 +365,6 @@ export class PermissionsController {
       ...state,
       origins,
       whitelist,
-      blacklist,
       inPending,
     };
 
@@ -378,15 +372,14 @@ export class PermissionsController {
   }
 
   _updateBlackWhitelist() {
-    const { blacklist, whitelist } = this.store.getState();
+    const { whitelist } = this.store.getState();
     this._updatePermissionByList(whitelist, PERMISSIONS.APPROVED, 'whiteList');
-    this._updatePermissionByList(blacklist, PERMISSIONS.REJECTED, 'blackList');
   }
 
   _updatePermissionByList(
     list: string[],
     permission: PermissionType,
-    type: 'whiteList' | 'blackList'
+    type: 'whiteList'
   ) {
     const { origins } = this.store.getState();
     const newOrigins = list.reduce(
@@ -410,11 +403,11 @@ export class PermissionsController {
   }
 
   _updateByConfig() {
-    const { blacklist, whitelist } = this.remoteConfig.store.getState();
-    this.updateState({ blacklist, whitelist });
+    const { whitelist } = this.remoteConfig.store.getState();
+    this.updateState({ whitelist });
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    this.remoteConfig.store.subscribe(({ blacklist, whitelist }) => {
-      this.updateState({ blacklist, whitelist });
+    this.remoteConfig.store.subscribe(({ whitelist }) => {
+      this.updateState({ whitelist });
       this._updateBlackWhitelist();
     });
   }

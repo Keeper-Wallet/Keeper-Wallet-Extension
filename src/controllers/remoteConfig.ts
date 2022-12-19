@@ -6,7 +6,6 @@ import Browser from 'webextension-polyfill';
 
 import {
   DEFAULT_IDENTITY_CONFIG,
-  DEFAULT_LEGACY_CONFIG,
   DEFAULT_MAIN_CONFIG,
   IgnoreErrorsContext,
   MainConfig,
@@ -58,14 +57,13 @@ export class RemoteConfigController extends EventEmitter {
 
     this.store = new ObservableStore(
       extensionStorage.getInitState({
-        blacklist: [],
-        whitelist: [],
+        whitelist: DEFAULT_MAIN_CONFIG.whitelist,
         config: {
-          networks: DEFAULT_LEGACY_CONFIG.NETWORKS,
-          network_config: DEFAULT_LEGACY_CONFIG.NETWORK_CONFIG,
-          messages_config: DEFAULT_LEGACY_CONFIG.MESSAGES_CONFIG,
-          pack_config: DEFAULT_LEGACY_CONFIG.PACK_CONFIG,
-          idle: DEFAULT_LEGACY_CONFIG.IDLE,
+          networks: DEFAULT_MAIN_CONFIG.networks,
+          network_config: DEFAULT_MAIN_CONFIG.network_config,
+          messages_config: DEFAULT_MAIN_CONFIG.messages_config,
+          pack_config: DEFAULT_MAIN_CONFIG.pack_config,
+          idle: DEFAULT_MAIN_CONFIG.idle,
         },
         assetsConfig: DEFAULT_MAIN_CONFIG.assets,
         ignoreErrorsConfig: DEFAULT_MAIN_CONFIG.ignoreErrors,
@@ -78,15 +76,11 @@ export class RemoteConfigController extends EventEmitter {
 
     extensionStorage.subscribe(this.store);
 
-    this.#updateLegacyConfig();
     this.#updateMainConfig();
     this.#updateIdentityConfig();
 
     Browser.alarms.onAlarm.addListener(({ name }) => {
       switch (name) {
-        case 'updateLegacyConfig':
-          this.#updateLegacyConfig();
-          break;
         case 'updateMainConfig':
           this.#updateMainConfig();
           break;
@@ -97,21 +91,21 @@ export class RemoteConfigController extends EventEmitter {
     });
   }
 
-  getPackConfig(): typeof DEFAULT_LEGACY_CONFIG.PACK_CONFIG {
+  getPackConfig(): typeof DEFAULT_MAIN_CONFIG.pack_config {
     try {
       const { pack_config } = this.store.getState().config;
-      return extendValues(DEFAULT_LEGACY_CONFIG.PACK_CONFIG, pack_config);
+      return extendValues(DEFAULT_MAIN_CONFIG.pack_config, pack_config);
     } catch (e) {
-      return DEFAULT_LEGACY_CONFIG.PACK_CONFIG;
+      return DEFAULT_MAIN_CONFIG.pack_config;
     }
   }
 
   getIdleConfig() {
     try {
       const { idle } = this.store.getState().config;
-      return extendValues(DEFAULT_LEGACY_CONFIG.IDLE, idle);
+      return extendValues(DEFAULT_MAIN_CONFIG.idle, idle);
     } catch (e) {
-      return DEFAULT_LEGACY_CONFIG.IDLE;
+      return DEFAULT_MAIN_CONFIG.idle;
     }
   }
 
@@ -119,25 +113,11 @@ export class RemoteConfigController extends EventEmitter {
     try {
       const { messages_config } = this.store.getState().config;
       return extendValues(
-        DEFAULT_LEGACY_CONFIG.MESSAGES_CONFIG,
+        DEFAULT_MAIN_CONFIG.messages_config,
         messages_config
       );
     } catch (e) {
-      return DEFAULT_LEGACY_CONFIG.MESSAGES_CONFIG;
-    }
-  }
-
-  getBlacklist() {
-    try {
-      const { blacklist } = this.store.getState();
-
-      if (Array.isArray(blacklist)) {
-        return blacklist.filter(item => typeof item === 'string');
-      }
-
-      return [];
-    } catch (e) {
-      return [];
+      return DEFAULT_MAIN_CONFIG.messages_config;
     }
   }
 
@@ -158,18 +138,18 @@ export class RemoteConfigController extends EventEmitter {
   getNetworkConfig(): NetworkConfig {
     try {
       const { network_config } = this.store.getState().config;
-      return extendValues(DEFAULT_LEGACY_CONFIG.NETWORK_CONFIG, network_config);
+      return extendValues(DEFAULT_MAIN_CONFIG.network_config, network_config);
     } catch (e) {
-      return DEFAULT_LEGACY_CONFIG.NETWORK_CONFIG;
+      return DEFAULT_MAIN_CONFIG.network_config;
     }
   }
 
   getNetworks() {
     try {
       const { networks } = this.store.getState().config;
-      return networks || DEFAULT_LEGACY_CONFIG.NETWORKS;
+      return networks || DEFAULT_MAIN_CONFIG.networks;
     } catch (e) {
-      return DEFAULT_LEGACY_CONFIG.NETWORKS;
+      return DEFAULT_MAIN_CONFIG.networks;
     }
   }
 
@@ -204,49 +184,6 @@ export class RemoteConfigController extends EventEmitter {
   getAssetsConfig() {
     const { assetsConfig } = this.store.getState();
     return assetsConfig;
-  }
-
-  async #updateLegacyConfig() {
-    try {
-      const response = await fetch(
-        'https://raw.githubusercontent.com/wavesplatform/waves-client-config/master/waves_keeper_blacklist.json'
-      );
-
-      if (response.ok) {
-        const {
-          blacklist = [],
-          whitelist = [],
-          networks = DEFAULT_LEGACY_CONFIG.NETWORKS,
-          network_config = DEFAULT_LEGACY_CONFIG.NETWORK_CONFIG,
-          messages_config = DEFAULT_LEGACY_CONFIG.MESSAGES_CONFIG,
-          idle = DEFAULT_LEGACY_CONFIG.IDLE,
-          pack_config = DEFAULT_LEGACY_CONFIG.PACK_CONFIG,
-        } = await response.json();
-
-        this.store.updateState({
-          blacklist,
-          whitelist,
-          config: {
-            idle,
-            networks,
-            network_config,
-            messages_config,
-            pack_config,
-          },
-          status: STATUS.UPDATED,
-        });
-      } else if (response.status < 500) {
-        throw new Error(await response.text());
-      }
-    } catch (e) {
-      this.store.updateState({ status: STATUS.ERROR });
-
-      // ignore sentry errors
-    }
-
-    Browser.alarms.create('updateLegacyConfig', {
-      delayInMinutes: DEFAULT_LEGACY_CONFIG.CONFIG.update_ms / 1000 / 60,
-    });
   }
 
   async #updateMainConfig() {
