@@ -75,8 +75,8 @@ export class CurrentAccountController {
     this.isLocked = isLocked;
 
     Browser.alarms.onAlarm.addListener(({ name }) => {
-      if (name === 'updateBalances') {
-        this.updateBalances();
+      if (name === 'updateCurrentAccountBalance') {
+        this.updateCurrentAccountBalance();
       }
     });
 
@@ -84,7 +84,7 @@ export class CurrentAccountController {
   }
 
   restartPolling() {
-    Browser.alarms.create('updateBalances', {
+    Browser.alarms.create('updateCurrentAccountBalance', {
       periodInMinutes: PERIOD_IN_SECONDS / 60,
     });
   }
@@ -204,7 +204,7 @@ export class CurrentAccountController {
     return selectedAccount && balances[selectedAccount.address];
   }
 
-  async updateBalances() {
+  async updateCurrentAccountBalance() {
     const currentNetwork = this.getNetwork();
     const accounts = this.getAccounts().filter(
       ({ network }) => network === currentNetwork
@@ -326,5 +326,47 @@ export class CurrentAccountController {
     this.store.updateState({
       [`balance_${address}`]: balance,
     });
+  }
+
+  async updateOtherAccountsBalances() {
+    const url = new URL('addresses/balance', this.getNode());
+    const addresses = this.getAccounts().map(account => account.address);
+
+    while (addresses.length > 0) {
+      const splicedAddresses = addresses.splice(0, 1000);
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          accept: 'application/json; large-significand-format=string',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          addresses: splicedAddresses,
+        }),
+      });
+
+      const regularBalances = (await response.json()) as Array<{
+        id: string;
+        balance: string;
+      }>;
+
+      const storeState = this.store.getState();
+
+      const balances = Object.fromEntries(
+        regularBalances.map(regularBalance => {
+          const balanceKey = `balance_${regularBalance.id}`;
+          const existingBalance = storeState[balanceKey];
+
+          const balance = {
+            ...existingBalance,
+            regular: regularBalance.balance,
+          };
+
+          return [balanceKey, balance];
+        })
+      );
+
+      this.store.updateState(balances);
+    }
   }
 }
