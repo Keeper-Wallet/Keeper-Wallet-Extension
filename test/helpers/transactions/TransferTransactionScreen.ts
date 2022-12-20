@@ -1,4 +1,4 @@
-export const TransferScreen = {
+export const TransferTransactionScreen = {
   get root() {
     return browser.$("[class*='transaction@transfer']");
   },

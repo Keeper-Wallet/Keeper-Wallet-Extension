@@ -1,6 +1,8 @@
-export const OriginAuthScreen = {
+export const AuthTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@originAuth']");
+    return browser.$(
+      "[class*='transaction@originAuth'], [class*='transaction@auth']"
+    );
   },
 
   get permissionDetailsButton() {
@@ -15,22 +17,6 @@ export const OriginAuthScreen = {
     return this.root.findByText$('Auth');
   },
 
-  get originAddress() {
-    return this.root.$("[class*='originAddress@transactions']");
-  },
-
-  get originNetwork() {
-    return this.root.$("[class*='originNetwork@transactions']");
-  },
-
-  get accountName() {
-    return this.root.$("[class*='accountName@wallet']");
-  },
-
-  get rejectButton() {
-    return this.root.$('#reject');
-  },
-
   async setResolutionTime(time: string) {
     await this.root.$("[class*='trigger@Select']").click();
     await this.root
@@ -40,5 +26,13 @@ export const OriginAuthScreen = {
 
   get spendingLimitInput() {
     return this.root.$("[class*='amountInput@settings']");
+  },
+
+  get rejectArrowButton() {
+    return this.root.$("[class*='arrowButton@dropdownButton']");
+  },
+
+  get addToBlacklistButton() {
+    return this.root.$('#rejectForever');
   },
 };

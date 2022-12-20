@@ -1,15 +1,15 @@
 import { expect } from 'expect-webdriverio';
 
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
-import { FinalTransactionScreen } from './helpers/FinalTransactionScreen';
 import { HomeScreen } from './helpers/HomeScreen';
 import { MessagesScreen } from './helpers/MessagesScreen';
-import { OriginAuthScreen } from './helpers/OriginAuthScreen';
 import {
   PermissionControlSettingsScreen,
   SettingsScreen,
 } from './helpers/SettingsScreen';
 import { TopMenu } from './helpers/TopMenu';
+import { AuthTransactionScreen } from './helpers/transactions/AuthTransactionScreen';
+import { FinalTransactionScreen } from './helpers/transactions/FinalTransactionScreen';
 import { AccountsHome, App, Settings, Windows } from './utils/actions';
 import {
   CUSTOMLIST,
@@ -95,13 +95,13 @@ describe('Messages', function () {
     await browser.switchToWindow(messageWindow);
     await browser.refresh();
 
-    expect(OriginAuthScreen.root).toBeDisplayed();
+    expect(AuthTransactionScreen.root).toBeDisplayed();
   });
 
   it('When allowing access to messages - the message is instantly displayed', async function () {
-    await OriginAuthScreen.permissionDetailsButton.click();
-    await OriginAuthScreen.allowMessagesCheckbox.click();
-    await OriginAuthScreen.authButton.click();
+    await AuthTransactionScreen.permissionDetailsButton.click();
+    await AuthTransactionScreen.allowMessagesCheckbox.click();
+    await AuthTransactionScreen.authButton.click();
 
     expect(await MessagesScreen.messages).not.toHaveLength(0);
 
@@ -121,8 +121,8 @@ describe('Messages', function () {
     await this.driver.switchTo().window(messageWindow);
     await this.driver.navigate().refresh();
 
-    await OriginAuthScreen.permissionDetailsButton.click();
-    await OriginAuthScreen.authButton.click();
+    await AuthTransactionScreen.permissionDetailsButton.click();
+    await AuthTransactionScreen.authButton.click();
 
     expect(FinalTransactionScreen.transactionContent).toHaveText(
       'Request has been signed!'

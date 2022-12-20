@@ -1,11 +1,11 @@
 import { expect } from 'expect-webdriverio';
 
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
-import { FinalTransactionScreen } from './helpers/FinalTransactionScreen';
 import { HomeScreen } from './helpers/HomeScreen';
-import { OriginAuthScreen } from './helpers/OriginAuthScreen';
 import { SendAssetScreen } from './helpers/SendAssetScreen';
-import { TransferScreen } from './helpers/TransferScreen';
+import { CommonTransaction } from './helpers/transactions/CommonTransaction';
+import { FinalTransactionScreen } from './helpers/transactions/FinalTransactionScreen';
+import { TransferTransactionScreen } from './helpers/transactions/TransferTransactionScreen';
 import {
   AccountsHome,
   App,
@@ -72,7 +72,7 @@ describe('Others', function () {
     });
 
     afterEach(async function () {
-      await TransferScreen.rejectButton.click();
+      await TransferTransactionScreen.rejectButton.click();
       await FinalTransactionScreen.closeButton.click();
     });
 
@@ -93,9 +93,13 @@ describe('Others', function () {
 
       await SendAssetScreen.submitButton.click();
 
-      expect(TransferScreen.transferAmount).toHaveText('-0.12300000 WAVES');
-      expect(TransferScreen.recipient).toHaveText('rich\n3MsX9C2M...yxZMg4cW');
-      expect(TransferScreen.attachmentContent).toHaveText(
+      expect(TransferTransactionScreen.transferAmount).toHaveText(
+        '-0.12300000 WAVES'
+      );
+      expect(TransferTransactionScreen.recipient).toHaveText(
+        'rich\n3MsX9C2M...yxZMg4cW'
+      );
+      expect(TransferTransactionScreen.attachmentContent).toHaveText(
         'This is an attachment'
       );
     });
@@ -106,9 +110,13 @@ describe('Others', function () {
       await SendAssetScreen.attachmentInput.setValue('This is an attachment');
       await SendAssetScreen.submitButton.click();
 
-      expect(TransferScreen.transferAmount).toHaveText('-0.87654321 WAVES');
-      expect(TransferScreen.recipient).toHaveText('alias:T:an_alias');
-      expect(TransferScreen.attachmentContent).toHaveText(
+      expect(TransferTransactionScreen.transferAmount).toHaveText(
+        '-0.87654321 WAVES'
+      );
+      expect(TransferTransactionScreen.recipient).toHaveText(
+        'alias:T:an_alias'
+      );
+      expect(TransferTransactionScreen.attachmentContent).toHaveText(
         'This is an attachment'
       );
     });
@@ -160,11 +168,11 @@ describe('Others', function () {
       await browser.switchToWindow(messageWindow);
       await browser.refresh();
 
-      expect(OriginAuthScreen.originAddress).toHaveText('example.com');
-      expect(OriginAuthScreen.accountName).toHaveText('rich');
-      expect(OriginAuthScreen.originNetwork).toHaveText('Testnet');
+      expect(CommonTransaction.originAddress).toHaveText('example.com');
+      expect(CommonTransaction.accountName).toHaveText('rich');
+      expect(CommonTransaction.originNetwork).toHaveText('Testnet');
 
-      await OriginAuthScreen.rejectButton.click();
+      await CommonTransaction.rejectButton.click();
       await FinalTransactionScreen.closeButton.click();
 
       await Windows.waitForWindowToClose(messageWindow);

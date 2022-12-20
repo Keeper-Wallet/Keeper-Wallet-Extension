@@ -3,9 +3,7 @@ import { expect } from 'expect-webdriverio';
 import { ChooseAccountsForm } from './helpers/ChooseAccountsForm';
 import { ConfirmDeleteAccountsScreen } from './helpers/ConfirmDeleteAccountsScreen';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
-import { FinalTransactionScreen } from './helpers/FinalTransactionScreen';
 import { LoginScreen } from './helpers/LoginScreen';
-import { OriginAuthScreen } from './helpers/OriginAuthScreen';
 import {
   ExportAndImportSettingsScreen,
   NetworkSettingsScreen,
@@ -13,6 +11,9 @@ import {
   SettingsScreen,
 } from './helpers/SettingsScreen';
 import { TopMenu } from './helpers/TopMenu';
+import { AuthTransactionScreen } from './helpers/transactions/AuthTransactionScreen';
+import { CommonTransaction } from './helpers/transactions/CommonTransaction';
+import { FinalTransactionScreen } from './helpers/transactions/FinalTransactionScreen';
 import { AccountsHome, App, Settings, Windows } from './utils/actions';
 import {
   CUSTOMLIST,
@@ -226,7 +227,7 @@ describe('Settings', function () {
           await browser.switchToWindow(messageWindow);
           await browser.refresh();
 
-          await OriginAuthScreen.authButton.click();
+          await AuthTransactionScreen.authButton.click();
           expect(FinalTransactionScreen.root).toBeDisplayed();
           await FinalTransactionScreen.closeButton.click();
           await Windows.waitForWindowToClose(messageWindow);
@@ -254,10 +255,12 @@ describe('Settings', function () {
           await browser.switchToWindow(messageWindow);
           await browser.refresh();
 
-          await OriginAuthScreen.permissionDetailsButton.click();
-          await OriginAuthScreen.setResolutionTime('For 1 hour');
-          await OriginAuthScreen.spendingLimitInput.setValue(SPENDING_LIMIT);
-          await OriginAuthScreen.authButton.click();
+          await AuthTransactionScreen.permissionDetailsButton.click();
+          await AuthTransactionScreen.setResolutionTime('For 1 hour');
+          await AuthTransactionScreen.spendingLimitInput.setValue(
+            SPENDING_LIMIT
+          );
+          await AuthTransactionScreen.authButton.click();
 
           await FinalTransactionScreen.closeButton.click();
           await Windows.waitForWindowToClose(messageWindow);
@@ -327,7 +330,7 @@ describe('Settings', function () {
           await browser.switchToWindow(messageWindow);
           await browser.refresh();
 
-          await OriginAuthScreen.rejectButton.click();
+          await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.closeButton.click();
 
           await Windows.waitForWindowToClose(messageWindow);
