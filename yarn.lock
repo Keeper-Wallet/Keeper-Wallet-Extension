@@ -1384,9 +1384,9 @@
     "@jridgewell/sourcemap-codec" "1.4.14"
 
 "@keeper-wallet/swap-client@^0.1.2":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@keeper-wallet/swap-client/-/swap-client-0.1.9.tgz#d750cd847b1daf1173197e2fa09e9a1c92064343"
-  integrity sha512-dl6CAzcZuRDcwVaJe5Bo2mhxTwdqoLsTj+MtZVi7N+1kDfD06/Zvxb1EyijMAKeaVSQ3NPled0AFXVZAp+mptg==
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@keeper-wallet/swap-client/-/swap-client-0.1.10.tgz#adec311052cfd9b0fb76b9f7ef1515e95d8b11ac"
+  integrity sha512-5wPJuR91jldsa+actSoEx66sWcBH8GG4LL/okEGmNuf/RnCqmFPJDAkKFsT6DnMT2une1+stK88IZv7fIddgFA==
   dependencies:
     "@types/long" "^4.0.2"
     "@waves/bignumber" "^1.1.1"
