@@ -26,11 +26,13 @@ interface GlobalFixturesContext {
   compose: StartedDockerComposeEnvironment;
 }
 
+const isArm = process.arch === 'arm' || process.arch === 'arm64';
+
 export async function mochaGlobalSetup(this: GlobalFixturesContext) {
-  this.compose = await new DockerComposeEnvironment(
-    '.',
-    'docker-compose.yml'
-  ).up([
+  this.compose = await new DockerComposeEnvironment('.', [
+    'docker-compose.yml',
+    ...(isArm ? ['docker-compose.arm.yml'] : []),
+  ]).up([
     'waves-private-node',
     'chrome',
     ...(process.env.TEST_WATCH ? [] : ['chrome-video']),
@@ -45,15 +47,19 @@ export const mochaHooks = () => ({
   async beforeAll(this: mocha.Context) {
     this.wait = 15 * 1000;
 
+    const chromeOptions = new chrome.Options().addArguments(
+      '--disable-web-security',
+      '--load-extension=/app/dist/chrome'
+    );
+
+    if (isArm) {
+      chromeOptions.setChromeBinaryPath('/usr/bin/chromium');
+    }
+
     this.driver = new Builder()
       .forBrowser('chrome')
       .usingServer(`http://localhost:4444/wd/hub`)
-      .setChromeOptions(
-        new chrome.Options().addArguments(
-          '--load-extension=/app/dist/chrome',
-          '--disable-web-security'
-        )
-      )
+      .setChromeOptions(chromeOptions)
       .build();
 
     // detect Keeper Wallet extension URL
