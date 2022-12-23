@@ -1,5 +1,11 @@
 import * as mocha from 'mocha';
-import { Builder, By, until, WebDriver } from 'selenium-webdriver';
+import {
+  Builder,
+  By,
+  Capabilities,
+  until,
+  WebDriver,
+} from 'selenium-webdriver';
 import * as chrome from 'selenium-webdriver/chrome';
 import {
   DockerComposeEnvironment,
@@ -47,6 +53,8 @@ export const mochaHooks = () => ({
   async beforeAll(this: mocha.Context) {
     this.wait = 15 * 1000;
 
+    const capabilities = new Capabilities().setPageLoadStrategy('eager');
+
     const chromeOptions = new chrome.Options().addArguments(
       '--disable-web-security',
       '--load-extension=/app/dist/chrome'
@@ -57,6 +65,7 @@ export const mochaHooks = () => ({
     }
 
     this.driver = new Builder()
+      .withCapabilities(capabilities)
       .forBrowser('chrome')
       .usingServer(`http://localhost:4444/wd/hub`)
       .setChromeOptions(chromeOptions)
