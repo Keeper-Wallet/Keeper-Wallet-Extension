@@ -7,10 +7,6 @@ import {
   WebDriver,
 } from 'selenium-webdriver';
 import * as chrome from 'selenium-webdriver/chrome';
-import {
-  DockerComposeEnvironment,
-  StartedDockerComposeEnvironment,
-} from 'testcontainers';
 
 declare global {
   interface Window {
@@ -28,27 +24,6 @@ declare module 'mocha' {
   }
 }
 
-interface GlobalFixturesContext {
-  compose: StartedDockerComposeEnvironment;
-}
-
-const isArm = process.arch === 'arm' || process.arch === 'arm64';
-
-export async function mochaGlobalSetup(this: GlobalFixturesContext) {
-  this.compose = await new DockerComposeEnvironment('.', [
-    'docker-compose.yml',
-    ...(isArm ? ['docker-compose.arm.yml'] : []),
-  ]).up([
-    'waves-private-node',
-    'chrome',
-    ...(process.env.TEST_WATCH ? [] : ['chrome-video']),
-  ]);
-}
-
-export async function mochaGlobalTeardown(this: GlobalFixturesContext) {
-  await this.compose.down();
-}
-
 export const mochaHooks = () => ({
   async beforeAll(this: mocha.Context) {
     this.wait = 15 * 1000;
@@ -60,7 +35,8 @@ export const mochaHooks = () => ({
       '--load-extension=/app/dist/chrome'
     );
 
-    if (isArm) {
+    // there's no chrome builds for linux arm, so seleniarm uses chromium
+    if (process.arch === 'arm' || process.arch === 'arm64') {
       chromeOptions.setChromeBinaryPath('/usr/bin/chromium');
     }
 

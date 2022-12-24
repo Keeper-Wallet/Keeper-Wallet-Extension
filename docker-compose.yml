@@ -14,11 +14,11 @@ services:
     volumes:
       - .:/app:ro
   chrome-video:
-    image: selenium/video:ffmpeg-4.3.1-20221202
-    volumes:
-      - ./test/videos:/videos
     depends_on:
       - chrome
     environment:
       - DISPLAY_CONTAINER_NAME=chrome
       - FILE_NAME=chrome_video.mp4
+    image: selenium/video:ffmpeg-4.3.1-20221202
+    volumes:
+      - ./test/videos:/videos
