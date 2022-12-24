@@ -259,17 +259,13 @@ describe('Others', function () {
     async function stopServiceWorker(this: mocha.Context) {
       await this.driver.get('chrome://serviceworker-internals');
 
-      await this.driver
-        .wait(
-          until.elementIsEnabled(
-            this.driver.wait(
-              until.elementLocated(By.css('.content .stop')),
-              this.wait
-            )
-          ),
-          this.wait
-        )
-        .click();
+      const stopButton = await this.driver.wait(
+        until.elementLocated(By.css('.content .stop')),
+        this.wait
+      );
+
+      await stopButton.click();
+      await this.driver.wait(until.elementIsNotVisible(stopButton), this.wait);
     }
 
     it('ui waits until connection with background is established before trying to call methods', async function () {
