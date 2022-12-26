@@ -208,4 +208,4 @@ export const PermissionsSettings = connect(
   actions
 )(withTranslation()(PermissionsSettingsComponent));
 
-export type TTabTypes = 'customList' | 'whiteList' | 'blackList';
+export type TTabTypes = 'customList' | 'whiteList';
