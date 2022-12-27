@@ -161,7 +161,7 @@ async function makeConfig({
         __SENTRY_ENVIRONMENT__: JSON.stringify(process.env.SENTRY_ENVIRONMENT),
         __SENTRY_RELEASE__: JSON.stringify(process.env.SENTRY_RELEASE),
       }),
-      new MiniCssExtractPlugin(),
+      new MiniCssExtractPlugin({ ignoreOrder: true }),
       new PlatformPlugin({ clear: !dev }),
     ]
       .concat(plugins)
@@ -234,9 +234,18 @@ module.exports = async (_, { mode }) => [
     optimization: {
       splitChunks: {
         cacheGroups: {
+          defaultVendors: false,
+          default: false,
           vendors: {
+            priority: 10,
             test: /[\\/]node_modules[\\/]/,
             chunks: 'initial',
+            name: (_module, chunks, cacheGroupKey) =>
+              `${cacheGroupKey}-${chunks.map(chunk => chunk.name).join('&')}`,
+          },
+          common: {
+            chunks: 'initial',
+            minChunks: 2,
             name: (_module, chunks, cacheGroupKey) =>
               `${cacheGroupKey}-${chunks.map(chunk => chunk.name).join('&')}`,
           },
