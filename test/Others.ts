@@ -7,15 +7,12 @@ import {
   Assets,
   CreateNewAccount,
   Network,
-  Settings,
   Windows,
 } from './utils/actions';
 
 describe('Others', function () {
   before(async function () {
     await App.initVault.call(this);
-    await Settings.setMaxSessionTimeout.call(this);
-    await App.open.call(this);
 
     const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
     await this.driver

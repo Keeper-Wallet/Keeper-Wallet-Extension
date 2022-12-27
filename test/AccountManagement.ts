@@ -7,7 +7,6 @@ import {
   Assets,
   CreateNewAccount,
   Network,
-  Settings,
   Windows,
 } from './utils/actions';
 import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './utils/constants';
@@ -17,8 +16,6 @@ describe('Account management', function () {
 
   before(async function () {
     await App.initVault.call(this, DEFAULT_PASSWORD);
-    await Settings.setMaxSessionTimeout.call(this);
-    await App.open.call(this);
     tabKeeper = await this.driver.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows.call(this);

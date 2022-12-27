@@ -22,8 +22,6 @@ describe('Messages', function () {
 
   before(async function () {
     await App.initVault.call(this);
-    await Settings.setMaxSessionTimeout.call(this);
-    await App.open.call(this);
     const tabKeeper = await this.driver.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows.call(this);

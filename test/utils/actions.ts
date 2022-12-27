@@ -242,7 +242,7 @@ export const CreateNewAccount = {
 };
 
 export const Settings = {
-  async rootSettings(this: mocha.Context) {
+  async clearCustomList(this: mocha.Context) {
     await this.driver
       .wait(
         until.elementLocated(
@@ -251,64 +251,13 @@ export const Settings = {
         this.wait
       )
       .click();
-  },
-  async generalSettings(this: mocha.Context) {
-    await Settings.rootSettings.call(this);
-    await this.driver
-      .wait(until.elementLocated(By.css('button#settingsGeneral')), this.wait)
-      .click();
-  },
 
-  async setSessionTimeout(this: mocha.Context, index: number) {
-    // refresh timeout by focus window
-    await this.driver.executeScript(() => {
-      window.focus();
-    });
-
-    await Settings.generalSettings.call(this);
-
-    await this.driver
-      .wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, 'trigger@Select-module')]")
-        ),
-        this.wait
-      )
-      .click();
-    const position = index === -1 ? 'last()' : `position()=${index}`;
-
-    await this.driver
-      .wait(
-        until.elementLocated(
-          By.xpath(`//div[contains(@class, 'item@Select-module')][${position}]`)
-        ),
-        this.wait
-      )
-      .click();
-  },
-
-  async setMinSessionTimeout(this: mocha.Context) {
-    const FIRST = 1;
-    await Settings.setSessionTimeout.call(this, FIRST);
-  },
-
-  async setMaxSessionTimeout(this: mocha.Context) {
-    const LAST = -1;
-    await Settings.setSessionTimeout.call(this, LAST);
-  },
-
-  async permissionSettings(this: mocha.Context) {
-    await Settings.rootSettings.call(this);
     await this.driver
       .wait(
         until.elementLocated(By.css('button#settingsPermission')),
         this.wait
       )
       .click();
-  },
-
-  async clearCustomList(this: mocha.Context) {
-    await Settings.permissionSettings.call(this);
 
     for (const originEl of await this.driver.findElements(
       By.xpath("//div[contains(@class, 'permissionItem@list')]")

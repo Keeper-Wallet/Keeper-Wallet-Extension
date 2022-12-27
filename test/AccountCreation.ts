@@ -8,7 +8,6 @@ import {
   Assets,
   CreateNewAccount,
   Network,
-  Settings,
   Windows,
 } from './utils/actions';
 
@@ -58,8 +57,6 @@ describe('Account creation', function () {
 
   before(async function () {
     await App.initVault.call(this);
-    await Settings.setMaxSessionTimeout.call(this);
-    await App.open.call(this);
     tabKeeper = await this.driver.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
