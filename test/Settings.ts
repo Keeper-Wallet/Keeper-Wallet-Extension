@@ -10,8 +10,7 @@ import {
   WHITELIST,
 } from './utils/constants';
 
-const SPENDING_LIMIT = '1',
-  BROWSER_TIMEOUT_DELAY = 60 * 1000 + DEFAULT_ANIMATION_DELAY;
+const SPENDING_LIMIT = '1';
 
 describe('Settings', function () {
   let tabKeeper: string;
@@ -37,7 +36,6 @@ describe('Settings', function () {
 
   before(async function () {
     await App.initVault.call(this, DEFAULT_PASSWORD);
-    await Settings.setMaxSessionTimeout.call(this);
     await App.open.call(this);
     tabKeeper = await this.driver.getWindowHandle();
 
@@ -757,18 +755,39 @@ describe('Settings', function () {
   });
 
   describe('General', function () {
-    before(async function () {
-      await this.driver
-        .wait(until.elementLocated(By.css('#settingsGeneral')), this.wait)
-        .click();
-    });
-
-    after(async function () {
-      await this.driver.findElement(By.css('div.arrow-back-icon')).click();
-    });
-
     describe('Session Timeout', function () {
-      afterEach(async function () {
+      it('Logout after "Browser timeout"', async function () {
+        await this.driver
+          .wait(until.elementLocated(By.css('#settingsGeneral')), this.wait)
+          .click();
+
+        await this.driver
+          .wait(
+            until.elementLocated(
+              By.xpath("//div[contains(@class, 'trigger@Select-module')]")
+            ),
+            this.wait
+          )
+          .click();
+
+        await this.driver
+          .wait(
+            until.elementLocated(
+              By.xpath(
+                "//div[contains(@class, 'item@Select-module')][position()=1]"
+              )
+            ),
+            this.wait
+          )
+          .click();
+
+        await this.driver.wait(
+          until.elementLocated(
+            By.xpath("//div[contains(@class, 'content@login')]")
+          ),
+          60 * 1000
+        );
+
         await performLogin.call(this, DEFAULT_PASSWORD);
 
         await this.driver.wait(
@@ -777,23 +796,27 @@ describe('Settings', function () {
           ),
           this.wait
         );
-      });
 
-      it('Logout after "Browser timeout"', async function () {
-        await App.open.call(this);
-        await Settings.setMinSessionTimeout.call(this);
-
-        expect(
-          await this.driver.wait(
+        await this.driver
+          .wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'content@login')]")
+              By.xpath("//div[contains(@class, 'trigger@Select-module')]")
             ),
-            BROWSER_TIMEOUT_DELAY
+            this.wait
           )
-        ).not.to.be.throw;
-      });
+          .click();
 
-      it('Logout after 5 min / 10 min / 1 hour');
+        await this.driver
+          .wait(
+            until.elementLocated(
+              By.xpath("//div[contains(@class, 'item@Select-module')][last()]")
+            ),
+            this.wait
+          )
+          .click();
+
+        await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+      });
     });
   });
 

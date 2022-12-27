@@ -25,13 +25,7 @@ import {
 import * as mocha from 'mocha';
 import { By, until } from 'selenium-webdriver';
 
-import {
-  App,
-  CreateNewAccount,
-  Network,
-  Settings,
-  Windows,
-} from './utils/actions';
+import { App, CreateNewAccount, Network, Windows } from './utils/actions';
 import { CUSTOMLIST, WHITELIST } from './utils/constants';
 import { CUSTOM_DATA_V1, CUSTOM_DATA_V2 } from './utils/customData';
 import {
@@ -71,8 +65,6 @@ describe('Signature', function () {
 
   before(async function () {
     await App.initVault.call(this);
-    await Settings.setMaxSessionTimeout.call(this);
-    await App.open.call(this);
     await Network.switchToAndCheck.call(this, 'Testnet');
     const tabKeeper = await this.driver.getWindowHandle();
 
