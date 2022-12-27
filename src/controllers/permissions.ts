@@ -1,11 +1,7 @@
+import { isNotNull } from '_core/isNotNull';
 import { BigNumber } from '@waves/bignumber';
-import {
-  MessageInputTx,
-  MessageInputTxData,
-  MessageInputTxMassTransfer,
-  MessageInputTxPackage,
-  MessageInputTxTransfer,
-} from 'messages/types';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { MessageTx } from 'messages/types';
 import ObservableStore from 'obs-store';
 import { PERMISSIONS } from 'permissions/constants';
 import {
@@ -13,7 +9,6 @@ import {
   PermissionType,
   PermissionValue,
 } from 'permissions/types';
-import { IMoneyLike } from 'ui/utils/converters';
 
 import { ERRORS } from '../lib/keeperError';
 import { ExtensionStorage, StorageLocalState } from '../storage/storage';
@@ -33,122 +28,6 @@ type PermissionsStoreState = Pick<
   StorageLocalState,
   'origins' | 'whitelist' | 'inPending'
 >;
-
-function getTxAmount(tx: MessageInputTx | MessageInputTxPackage) {
-  const result = Array.isArray(tx)
-    ? getTxPackageAmount(tx)
-    : tx.type === 4
-    ? getTransferTxAmount(tx)
-    : tx.type === 11
-    ? getMassTransferTxAmount(tx)
-    : tx.type === 12
-    ? getDataTxAmount(tx)
-    : null;
-
-  return result &&
-    result.fee.assetId === 'WAVES' &&
-    result.amount.assetId === 'WAVES'
-    ? result.fee.amount.add(result.amount.amount)
-    : null;
-}
-
-function moneyLikeToBigNumber(
-  moneyLike: IMoneyLike | string | number,
-  precision: number
-) {
-  if (typeof moneyLike === 'string' || typeof moneyLike === 'number') {
-    const sum = new BigNumber(moneyLike);
-    return sum.isNaN() ? new BigNumber(0) : sum;
-  }
-
-  const { coins = 0, tokens = 0 } = moneyLike;
-  const tokensAmount = new BigNumber(tokens).mul(10 ** precision);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const coinsAmount = new BigNumber(coins as any);
-
-  if (!coinsAmount.isNaN() && coinsAmount.gt(0)) {
-    return coinsAmount;
-  }
-
-  if (!tokensAmount.isNaN()) {
-    return tokensAmount;
-  }
-
-  return new BigNumber(0);
-}
-
-function getFeeAmount(tx: MessageInputTx) {
-  return tx.data.fee
-    ? {
-        amount: moneyLikeToBigNumber(tx.data.fee, 8),
-        assetId: tx.data.fee.assetId ?? 'WAVES',
-      }
-    : { amount: null, assetId: null };
-}
-
-function getTransferTxAmount(tx: MessageInputTxTransfer) {
-  return {
-    amount: tx.data.amount
-      ? {
-          amount: moneyLikeToBigNumber(tx.data.amount, 8),
-          assetId: tx.data.amount.assetId ?? 'WAVES',
-        }
-      : { amount: null, assetId: null },
-    fee: getFeeAmount(tx),
-  };
-}
-
-function getMassTransferTxAmount(tx: MessageInputTxMassTransfer) {
-  return {
-    amount: {
-      amount: tx.data.transfers.reduce(
-        (acc, transfer) => acc.add(moneyLikeToBigNumber(transfer.amount, 8)),
-        new BigNumber(0)
-      ),
-      assetId: tx.data.totalAmount.assetId,
-    },
-    fee: getFeeAmount(tx),
-  };
-}
-
-function getDataTxAmount(tx: MessageInputTxData) {
-  return {
-    amount: { amount: new BigNumber(0), assetId: 'WAVES' },
-    fee: getFeeAmount(tx),
-  };
-}
-
-function getTxPackageAmount(txs: MessageInputTxPackage) {
-  const amount = { amount: new BigNumber(0), assetId: 'WAVES' };
-  const fee = { amount: new BigNumber(0), assetId: 'WAVES' };
-
-  for (const tx of txs) {
-    const result =
-      tx.type === 4
-        ? getTransferTxAmount(tx)
-        : tx.type === 11
-        ? getMassTransferTxAmount(tx)
-        : tx.type === 12
-        ? getDataTxAmount(tx)
-        : undefined;
-
-    if (
-      !result ||
-      result.amount.assetId !== 'WAVES' ||
-      result.fee.assetId !== 'WAVES'
-    ) {
-      return {
-        amount: { assetId: null, amount: null },
-        fee: { assetId: null, amount: null },
-      };
-    }
-
-    amount.amount = amount.amount.add(result.amount.amount);
-    fee.amount = fee.amount.add(result.fee.amount);
-  }
-
-  return { fee, amount };
-}
 
 export class PermissionsController {
   private store;
@@ -264,7 +143,7 @@ export class PermissionsController {
     this.setPermissions(origin, permissions);
   }
 
-  setNotificationPermissions(origin: string, canUse: boolean, time = 0) {
+  setNotificationPermissions(origin: string, canUse: boolean | null, time = 0) {
     this.updatePermission(origin, {
       type: PERMISSIONS.USE_NOTIFICATION,
       time,
@@ -334,14 +213,59 @@ export class PermissionsController {
     return true;
   }
 
-  canAutoSign(origin: string, tx: MessageInputTx | MessageInputTxPackage) {
+  canAutoSign(origin: string, txOrPackage: MessageTx | MessageTx[]) {
     const permission = this.getPermission(origin, PERMISSIONS.AUTO_SIGN);
 
     if (!permission) {
       return false;
     }
 
-    const txAmount = getTxAmount(tx);
+    function getTxAmount(tx: MessageTx) {
+      return tx.type === TRANSACTION_TYPE.TRANSFER
+        ? tx.assetId
+          ? null
+          : new BigNumber(tx.amount)
+        : tx.type === TRANSACTION_TYPE.MASS_TRANSFER
+        ? tx.assetId
+          ? null
+          : BigNumber.sum(...tx.transfers.map(transfer => transfer.amount))
+        : tx.type === TRANSACTION_TYPE.DATA
+        ? new BigNumber(0)
+        : null;
+    }
+
+    function getTxPackageAmount(txs: MessageTx[]) {
+      const amounts = txs.map(getTxAmount);
+
+      return amounts.some(amount => amount == null)
+        ? null
+        : BigNumber.sum(...amounts.filter(isNotNull));
+    }
+
+    function getTxFee(tx: MessageTx) {
+      return 'feeAssetId' in tx && tx.feeAssetId != null
+        ? null
+        : new BigNumber(tx.fee);
+    }
+
+    function getTxPackageFee(txs: MessageTx[]) {
+      const fees = txs.map(getTxFee);
+
+      return fees.some(fee => fee == null)
+        ? null
+        : BigNumber.sum(...fees.filter(isNotNull));
+    }
+
+    function getTotalTxAmount(tx: MessageTx | MessageTx[]) {
+      const amount = Array.isArray(tx)
+        ? getTxPackageAmount(tx)
+        : getTxAmount(tx);
+      const fee = Array.isArray(tx) ? getTxPackageFee(tx) : getTxFee(tx);
+
+      return amount && fee ? fee.add(amount) : null;
+    }
+
+    const txAmount = getTotalTxAmount(txOrPackage);
 
     if (!txAmount) {
       return false;

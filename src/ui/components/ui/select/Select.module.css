@@ -32,9 +32,9 @@
   position: absolute;
   z-index: 50;
   right: 0;
-  width: fit-content;
   min-width: 100%;
   max-width: 300px;
+  width: fit-content;
   max-height: 240px;
   overflow-y: auto;
   border-radius: 4px;

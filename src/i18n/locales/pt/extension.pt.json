@@ -491,12 +491,6 @@
       "disallowed": "Não permitido!"
     }
   },
-  "plateComponent": {
-    "copy": "Copiar",
-    "copied": "Copiado!",
-    "collapse": "Recolher",
-    "expand": "Expandir"
-  },
   "qrCode": {
     "download": "Baixar código QR"
   },
@@ -588,7 +582,6 @@
     "exchangeChannelUnavailableError": "Serviço não está respondendo",
     "exchangeChannelUnknownError": "Indisponível para este swap",
     "failMessage": "A conversão não foi bem-sucedida, tente novamente",
-    "ledgerFailMessage": "O pedido foi rejeitado pela Ledger.",
     "fromInputLabel": "De",
     "insufficientFundsError": "Saldo Insuficiente",
     "maxAmountExceeded": "O valor não deve exceder {{ maxAmount }}",

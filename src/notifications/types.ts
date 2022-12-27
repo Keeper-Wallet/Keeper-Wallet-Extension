@@ -1,11 +1,8 @@
-import { MsgStatus } from '../constants';
-
 export interface NotificationsStoreItem {
   address: string;
   id: string;
-  message: string;
+  message: string | undefined;
   origin: string;
-  status: MsgStatus;
   timestamp: number;
   title: string;
   type: string;

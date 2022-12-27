@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import resourcesToBackend from 'i18next-resources-to-backend';
 import { initReactI18next } from 'react-i18next';
 
-import { I18N_NAME_SPACE } from '../ui/appConfig';
+const NS = 'extension';
 
 export function i18nextInit() {
   return i18next
@@ -16,8 +16,8 @@ export function i18nextInit() {
     .use(initReactI18next)
     .init({
       fallbackLng: 'en',
-      ns: [I18N_NAME_SPACE],
-      defaultNS: I18N_NAME_SPACE,
+      ns: [NS],
+      defaultNS: NS,
       react: {
         useSuspense: false,
       },

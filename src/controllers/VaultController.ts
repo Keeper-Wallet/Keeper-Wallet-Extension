@@ -5,9 +5,10 @@ import { IdentityController } from './IdentityController';
 import { WalletController } from './wallet';
 
 export class VaultController {
+  #identity;
+  #wallet;
+
   store;
-  private wallet;
-  private identity;
 
   constructor({
     extensionStorage,
@@ -19,83 +20,57 @@ export class VaultController {
     identity: IdentityController;
   }) {
     this.store = new ObservableStore(
-      extensionStorage.getInitState(
-        { locked: null, initialized: null },
-        { locked: !extensionStorage.getInitSession().password }
-      )
+      extensionStorage.getInitState({ locked: false, initialized: false })
     );
+
     extensionStorage.subscribe(this.store);
 
-    this.wallet = wallet;
-    this.identity = identity;
+    this.#identity = identity;
+    this.#wallet = wallet;
 
-    const { vault } = wallet.store.getState().WalletController;
-    if (vault) {
-      this.store.updateState({ initialized: true });
-    }
+    this.store.updateState({
+      initialized: Boolean(wallet.store.getState().WalletController.vault),
+      locked: !extensionStorage.getInitSession().password,
+    });
   }
 
-  private get locked() {
-    return this.store.getState().locked;
-  }
-
-  private set locked(value) {
-    if (this.locked !== value) {
-      this.store.updateState({ locked: value });
-    }
-  }
-
-  private get initialized() {
-    return this.store.getState().initialized;
-  }
-
-  private set initialized(value) {
-    if (this.initialized !== value) {
-      this.store.updateState({ initialized: value });
-    }
-  }
-
-  init(password: string) {
-    this.wallet.initVault(password);
-    this.identity.initVault(password);
-
-    this.locked = false;
-    this.initialized = true;
+  async init(password: string) {
+    await this.#wallet.initVault(password);
+    this.#identity.initVault(password);
+    this.store.updateState({ initialized: true, locked: false });
   }
 
   lock() {
-    this.wallet.lock();
-    this.identity.lock();
-
-    this.locked = true;
+    this.#wallet.lock();
+    this.#identity.lock();
+    this.store.updateState({ locked: true });
   }
 
-  unlock(password: string) {
-    this.wallet.unlock(password);
-    this.identity.unlock(password);
-
-    this.locked = false;
+  async unlock(password: string) {
+    await this.#wallet.unlock(password);
+    this.#identity.unlock(password);
+    this.store.updateState({ locked: false });
   }
 
-  update(oldPassword: string, newPassword: string) {
-    this.wallet.newPassword(oldPassword, newPassword);
-    this.identity.updateVault(oldPassword, newPassword);
+  async update(oldPassword: string, newPassword: string) {
+    await Promise.all([
+      this.#wallet.newPassword(oldPassword, newPassword),
+      this.#identity.updateVault(oldPassword, newPassword),
+    ]);
   }
 
-  clear() {
-    this.wallet.deleteVault();
-    this.identity.deleteVault();
-
-    this.locked = true;
-    this.initialized = false;
+  async clear() {
+    await this.#wallet.deleteVault();
+    this.#identity.deleteVault();
+    this.store.updateState({ initialized: false, locked: true });
   }
 
   isLocked() {
-    return this.locked;
+    return this.store.getState().locked;
   }
 
   migrate() {
-    const state = this.wallet.store.getState().WalletController;
+    const state = this.#wallet.store.getState().WalletController;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((state as any).initialized != null) {
@@ -109,7 +84,7 @@ export class VaultController {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       delete (state as any).initialized;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      this.wallet.store.putState(state as any);
+      this.#wallet.store.putState(state as any);
     }
   }
 }

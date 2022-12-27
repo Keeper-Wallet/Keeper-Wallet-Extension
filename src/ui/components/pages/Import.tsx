@@ -5,6 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import background from 'ui/services/Background';
 
+import { NETWORK_CONFIG } from '../../../constants';
 import { usePopupSelector } from '../../../popup/store/react';
 import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { Button } from '../ui';
@@ -53,7 +54,6 @@ export function AccountsHome() {
   const { t } = useTranslation();
   const customCodes = usePopupSelector(state => state.customCodes);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
-  const networks = usePopupSelector(state => state.networks);
 
   const [isLedgerSupported, setIsLedgerSupported] = useState(false);
   const [isDebug, setDebug] = useState(false);
@@ -80,12 +80,12 @@ export function AccountsHome() {
       <Button
         data-testid="createNewAccountBtn"
         view="submit"
-        onClick={() => {
+        onClick={async () => {
           const networkCode =
             customCodes[currentNetwork] ||
-            (networks.find(x => x.name === currentNetwork)?.code ?? '');
+            NETWORK_CONFIG[currentNetwork].networkCode;
 
-          generateNewWalletItems(networkCode);
+          await generateNewWalletItems(networkCode);
           navigate('/create-account');
         }}
       >

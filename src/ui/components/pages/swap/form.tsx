@@ -126,9 +126,6 @@ export function SwapForm({
   );
 
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
-
-  const feeConfig = usePopupSelector(state => state.feeConfig);
-
   const wavesFee = new Money(wavesFeeCoins, new Asset(assets.WAVES));
 
   const feeOptions = useFeeOptions({
@@ -328,7 +325,7 @@ export function SwapForm({
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const sponsoredAssetFee = accountBalance!.assets![feeAssetId]
-    ? convertFeeToAsset(wavesFee, feeAsset, feeConfig)
+    ? convertFeeToAsset(wavesFee, feeAsset)
     : null;
 
   const balanceErrorMessage =
@@ -501,8 +498,8 @@ export function SwapForm({
             assetOptions={fromSwappableAssets}
             balance={fromAssetBalance}
             label={t('swap.fromInputLabel')}
+            maskedValue={fromAmountValueMasked}
             showUsdAmount
-            value={fromAmountValueMasked}
             onAssetChange={newAssetId => {
               setAssetIds(prevState => ({
                 ...prevState,
@@ -520,18 +517,19 @@ export function SwapForm({
                 const fee = convertFeeToAsset(
                   wavesFee,
                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  new Asset(assets[feeAssetId]!),
-                  feeConfig
+                  new Asset(assets[feeAssetId]!)
                 );
 
                 max = max.gt(fee) ? max.minus(fee) : max.cloneWithCoins(0);
               }
 
-              setFromAmountValue(max.getTokens().toFixed());
+              const newValue = max.getTokens().toFixed();
+              setFromAmountValueMasked(newValue);
+              setFromAmountValue(newValue);
             }}
             onChange={(newValue, newValueMasked) => {
-              setFromAmountValue(newValue);
               setFromAmountValueMasked(newValueMasked);
+              setFromAmountValue(newValue);
             }}
           />
 

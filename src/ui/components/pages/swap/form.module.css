@@ -31,7 +31,6 @@
 
 .swapDirectionBtn:disabled {
   background: #f8f9fb;
-  cursor: not-allowed;
 }
 
 .swapDirectionBtnIcon {

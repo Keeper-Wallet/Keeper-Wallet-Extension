@@ -2,7 +2,7 @@ import copy from 'copy-to-clipboard';
 import { Children, cloneElement, PureComponent } from 'react';
 
 interface Props {
-  text: string;
+  text: string | null | undefined;
   children: React.ReactNode;
   options: {
     debug?: boolean;
@@ -31,7 +31,7 @@ export class Copy extends PureComponent<Props> {
 
     const elem = Children.only(children);
 
-    const result = copy(text, options);
+    const result = copy(text ?? '', options);
 
     if (onCopy) {
       onCopy(text, result);

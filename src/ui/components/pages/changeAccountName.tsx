@@ -3,8 +3,9 @@ import { PreferencesAccount } from 'preferences/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
+import { notificationChangeName } from 'store/actions/localState';
+import Background from 'ui/services/Background';
 
-import { changeAccountName } from '../../../store/actions/account';
 import { CONFIG } from '../../appConfig';
 import { Button, ErrorMessage, Input } from '../ui';
 import * as styles from './styles/changeName.styl';
@@ -40,6 +41,7 @@ export function ChangeAccountName() {
   const params = useParams<{ address: string }>();
 
   const dispatch = usePopupDispatch();
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const accounts = usePopupSelector(state => state.accounts);
 
   const account = usePopupSelector(state =>
@@ -70,16 +72,17 @@ export function ChangeAccountName() {
       <div className="separator margin-main-big" />
 
       <form
-        onSubmit={event => {
+        onSubmit={async event => {
           event.preventDefault();
 
-          dispatch(
-            changeAccountName({
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              address: account!.address,
-              name: newName,
-            })
+          await Background.editWalletName(
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            account!.address,
+            newName,
+            currentNetwork
           );
+
+          dispatch(notificationChangeName(true));
 
           navigate(-1);
         }}

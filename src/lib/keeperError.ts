@@ -1,4 +1,4 @@
-export const ERRORS_DATA = {
+const ERRORS_DATA = {
   8: { msg: 'Invalid data format', name: 'INVALID_FORMAT' },
   9: { msg: 'Invalid request data', name: 'REQUEST_ERROR' },
   10: { msg: 'User denied message', name: 'USER_DENIED' },
@@ -11,33 +11,29 @@ export const ERRORS_DATA = {
   17: { msg: 'Invalid idle type', name: 'UNKNOWN_IDLE' },
   18: { msg: "Can't sent notification", name: 'NOTIFICATION_ERROR' },
   19: { msg: 'Incorrect notification data', name: 'NOTIFICATION_DATA_ERROR' },
-};
+} as const;
 
-const DEF_CODE = 11;
-const DEF_ERR = ERRORS_DATA[DEF_CODE].msg;
+type ErrorName = (typeof ERRORS_DATA)[keyof typeof ERRORS_DATA]['name'];
 
-class KeeperError extends Error {
-  code: number | string;
-  data: unknown;
+export class KeeperError {
+  code;
+  data;
+  message;
 
-  constructor(
-    text: string = DEF_ERR,
-    code: number | string = DEF_CODE,
-    data: unknown = null
-  ) {
-    super(text);
-    this.data = data;
+  constructor(message = 'Unknown error', code = '11', data: unknown = null) {
     this.code = code;
+    this.data = data;
+    this.message = message;
   }
 }
 
 export const ERRORS = Object.entries(ERRORS_DATA).reduce(
-  (acc, [code, data]) => {
-    const { msg, name } = data;
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    acc[name] = (message: unknown, data: unknown) =>
-      new KeeperError(message ? `${msg}: ${message}` : msg, code, data);
+  (acc, [code, { msg, name }]) => {
+    acc[name] = (message, data) => {
+      return new KeeperError(message ? `${msg}: ${message}` : msg, code, data);
+    };
+
     return acc;
   },
-  Object.create(null)
+  {} as Record<ErrorName, (message?: string, data?: unknown) => KeeperError>
 );

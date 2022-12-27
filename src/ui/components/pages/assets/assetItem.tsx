@@ -2,12 +2,9 @@ import { Money } from '@waves/data-entities';
 import { isSwappableAsset } from 'assets/utils';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import Background from 'ui/services/Background';
 
-import {
-  usePopupDispatch,
-  usePopupSelector,
-} from '../../../../popup/store/react';
-import { favoriteAsset } from '../../../../store/actions/assets';
+import { usePopupSelector } from '../../../../popup/store/react';
 import { Balance, Loader } from '../../ui';
 import { Tooltip } from '../../ui/tooltip';
 import * as styles from './assetItem.module.css';
@@ -32,7 +29,6 @@ export function AssetItem({
   onSwapClick,
 }: Props) {
   const { t } = useTranslation();
-  const dispatch = usePopupDispatch();
   const assets = usePopupSelector(state => state.assets);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const asset = assets[assetId];
@@ -92,11 +88,10 @@ export function AssetItem({
 
         <div>
           <Balance
-            isShortFormat={false}
-            split
             balance={balance}
-            assetId={isLoading ? 'WAVES' : assetId}
+            isShortFormat={false}
             showUsdAmount
+            split
           />
         </div>
       </div>
@@ -131,7 +126,9 @@ export function AssetItem({
               <button
                 className={styles.favBtn}
                 type="button"
-                onClick={() => dispatch(favoriteAsset(assetId))}
+                onClick={() => {
+                  Background.toggleAssetFavorite(assetId);
+                }}
                 {...props}
               >
                 <svg

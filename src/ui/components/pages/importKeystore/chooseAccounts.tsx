@@ -38,10 +38,7 @@ export function ImportKeystoreChooseAccounts({
     () =>
       new Set(
         Object.values(profiles)
-          .reduce(
-            (accounts, profile) => accounts.concat(profile.accounts),
-            [] as KeystoreAccount[]
-          )
+          .flatMap(profile => profile.accounts)
           .filter(({ address }) => !existingAccounts.has(address))
           .map(({ address }) => address)
       )
@@ -72,10 +69,7 @@ export function ImportKeystoreChooseAccounts({
 
         onSubmit(
           Object.values(profiles)
-            .reduce(
-              (accounts, profile) => accounts.concat(profile.accounts),
-              [] as KeystoreAccount[]
-            )
+            .flatMap(profile => profile.accounts)
             .filter(({ address }) => selected.has(address))
         );
       }}

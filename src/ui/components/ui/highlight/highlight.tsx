@@ -7,14 +7,12 @@ interface Props {
 
 export function Highlight({ code, language }: Props) {
   return (
-    <pre>
-      <code
-        className={`language-${language}`}
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{
-          __html: Prism.highlight(code, Prism.languages[language], language),
-        }}
-      />
-    </pre>
+    <code
+      className={`language-${language}`}
+      // eslint-disable-next-line react/no-danger
+      dangerouslySetInnerHTML={{
+        __html: Prism.highlight(code, Prism.languages[language], language),
+      }}
+    />
   );
 }

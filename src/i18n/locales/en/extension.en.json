@@ -506,12 +506,6 @@
     "rejectedOrigin": "Rejected",
     "title": "Permissions control"
   },
-  "plateComponent": {
-    "copy": "Copy",
-    "copied": "Copied!",
-    "collapse": "Collapse",
-    "expand": "Expand"
-  },
   "qrCode": {
     "download": "Download QR code"
   },
@@ -602,7 +596,6 @@
     "exchangeChannelUnavailableError": "Service is not responding",
     "exchangeChannelUnknownError": "Unavailable for this swap",
     "failMessage": "Swap did not succeed, please try again",
-    "ledgerFailMessage": "Request is rejected on ledger",
     "fromInputLabel": "From",
     "insufficientFundsError": "Insufficient funds",
     "maxAmountExceeded": "Amount must not exceed {{ maxAmount }}",

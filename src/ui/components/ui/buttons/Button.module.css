@@ -36,7 +36,6 @@
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
-  cursor: pointer;
 }
 
 .custom {
@@ -50,53 +49,35 @@
 
 .defaultView {
   border: 1px solid #dae1e9;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #000000;
   font-weight: 300;
 }
 
-.defaultView:hover {
+.defaultView:not(:disabled):hover {
   border: 1px solid #000000;
 }
 
 .submit,
 .submitTiny {
   background-color: #1f5af6;
-  color: #ffffff;
+  color: #fff;
 }
 
 .submitTiny {
   width: auto;
-  height: auto;
+  height: 32px;
   text-align: inherit;
 }
 
-.submit:hover,
-.submitTiny:hover {
+.submit:not(:disabled):hover,
+.submitTiny:not(:disabled):hover {
   background-color: #5a81ea;
 }
 
-.submit.disabled,
-.submitTiny.disabled,
 .submit:disabled,
-.submitTiny:disabled,
-.submit[disabled],
-.submitTiny[disabled] {
+.submitTiny:disabled {
   background-color: #bacaf4;
-  cursor: default;
-}
-
-.submit.disabled:hover,
-.submitTiny.disabled:hover,
-.submit:disabled:hover,
-.submitTiny:disabled:hover,
-.submit[disabled]:hover,
-.submitTiny[disabled]:hover {
-  background-color: #bacaf4;
-}
-
-.submitTiny {
-  height: 32px;
 }
 
 .icon {
@@ -114,83 +95,23 @@
   white-space: normal;
 }
 
-.transparent:hover {
+.transparent:not(:disabled):hover {
   background-color: transparent;
   text-decoration: none;
 }
 
-.transparent.disabled {
-  background-color: transparent;
-}
-
-.transparent.fullwidth {
-  width: 100%;
-}
-
-.transparent.body1 {
-  font-size: 14px;
-}
-
 .warning {
   background-color: #e5494d;
-  color: #ffffff;
+  color: #fff;
   font-weight: 300;
 }
 
-.warning:hover {
+.warning:not(:disabled):hover {
   background-color: #e5494dcc;
 }
 
-.warning.disabled,
-.warning:disabled,
-.warning[disabled] {
-  cursor: default;
+.warning:disabled {
   opacity: 0.5;
-}
-
-.warning.disabled:hover,
-.warning:disabled:hover,
-.warning[disabled]:hover {
-  opacity: 0.5;
-}
-
-.danger {
-  background-color: #e53935;
-  color: #ffffff;
-  font-weight: 300;
-}
-
-.danger:hover {
-  background-color: #e5494dcc;
-}
-
-.interfaced {
-  flex-basis: auto;
-  margin: 0;
-  padding: 0 14px;
-  border: 0.5px solid transparent;
-  width: auto;
-  height: 32px;
-  box-shadow: 0 2px 4px 0 #9ba6b266;
-  background-color: #ffffff;
-  font-weight: normal;
-  line-height: 32px;
-}
-
-.interfaced:not(:last-child) {
-  margin-right: 14px;
-}
-
-.interfaced:hover {
-  box-shadow: 0 4px 6px 0 #9ba6b266;
-}
-
-.interfaced.disabled,
-.interfaced:disabled,
-.interfaced[disabled] {
-  border: 0.5px solid #dae1e9;
-  box-shadow: none;
-  background-color: transparent;
 }
 
 .loading {
@@ -198,29 +119,10 @@
   color: transparent;
 }
 
-.loading::after {
-  content: '';
+.spinner {
   position: absolute;
   top: 50%;
   left: 50%;
   margin-top: -8px;
   margin-left: -8px;
-  border: 2px solid #edf0f4;
-  border-right-color: #1f5af6;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  animation: rotate-spinner 0.6s linear infinite;
-}
-
-@keyframes rotate-spinner {
-  0% {
-    transform: rotate(0deg);
-  }
-  50% {
-    transform: rotate(180deg);
-  }
-  100% {
-    transform: rotate(359deg);
-  }
 }

@@ -115,6 +115,7 @@ async function makeConfig({
               loader: 'css-loader',
               options: {
                 modules: {
+                  exportLocalsConvention: 'dashesOnly',
                   localIdentName: '[local]@[name]#[contenthash:base64:5]',
                   namedExport: true,
                 },

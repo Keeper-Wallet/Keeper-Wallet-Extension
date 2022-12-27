@@ -3,8 +3,8 @@ import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
+import { notificationChangeName } from 'store/actions/localState';
 
-import { getAsset } from '../../../store/actions/assets';
 import Background from '../../services/Background';
 import { getAccountLink } from '../../urls';
 import {
@@ -28,9 +28,16 @@ export function AccountInfo() {
   const assets = usePopupSelector(state => state.assets);
   const balances = usePopupSelector(state => state.balances);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
-  const notifications = usePopupSelector(
-    state => state.localState.notifications
+
+  const showChangeNameNotification = usePopupSelector(
+    state => state.localState.notifications.changeName
   );
+
+  useEffect(() => {
+    if (!showChangeNameNotification) return;
+
+    setTimeout(() => dispatch(notificationChangeName(false)), 1000);
+  }, [dispatch, showChangeNameNotification]);
 
   const account = usePopupSelector(state =>
     state.accounts.find(x => x.address === params.address)
@@ -63,12 +70,6 @@ export function AccountInfo() {
       leaseBalance = new Money(balanceItem.leasedOut, assetInstance);
     }
   }
-
-  useEffect(() => {
-    if (!wavesAsset) {
-      dispatch(getAsset('WAVES'));
-    }
-  }, [dispatch, wavesAsset]);
 
   if (!account) {
     return null;
@@ -361,6 +362,7 @@ export function AccountInfo() {
               </div>
 
               <Input
+                autoComplete="current-password"
                 autoFocus
                 type="password"
                 view="password"
@@ -407,7 +409,7 @@ export function AccountInfo() {
 
       <Modal
         animation={Modal.ANIMATION.FLASH_SCALE}
-        showModal={notifications.changeName}
+        showModal={showChangeNameNotification}
       >
         <div className="modal notification active-asset" key="change_name">
           <div>{t('assets.changeName')}</div>

@@ -1,4 +1,16 @@
-import { libs, seedUtils } from '@waves/waves-transactions';
+import {
+  base58Encode,
+  base64Decode,
+  base64Encode,
+  createPrivateKey,
+  createPublicKey,
+  decryptSeed,
+  encryptSeed,
+  generateRandomSeed,
+  signBytes,
+  utf8Decode,
+  utf8Encode,
+} from '@keeper-wallet/waves-crypto';
 import {
   AuthenticationDetails,
   ChallengeName,
@@ -10,6 +22,7 @@ import {
 } from 'amazon-cognito-identity-js';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
+import invariant from 'tiny-invariant';
 
 import { DEFAULT_IDENTITY_CONFIG } from '../constants';
 import {
@@ -130,30 +143,22 @@ class IdentityStorage
     this.clear();
   }
 
-  restore(userId: string) {
-    const cognitoSessions = this.decrypt() as Record<
-      string,
-      Record<string, string>
-    >;
+  async restore(userId: string) {
+    const cognitoSessions = await this.decrypt();
     this.memo = cognitoSessions[userId] || {};
     this._updateMemo();
   }
 
-  persist(userId: string) {
-    const cognitoSessions = this.decrypt();
+  async persist(userId: string) {
+    const cognitoSessions = await this.decrypt();
     cognitoSessions[userId] = this.memo;
-    this.updateState({
-      cognitoSessions: this.encrypt(cognitoSessions),
-    });
+    this.updateState({ cognitoSessions: await this.encrypt(cognitoSessions) });
   }
 
-  update(password: string) {
-    const cognitoSessions = this.decrypt();
-
+  async update(password: string) {
+    const cognitoSessions = await this.decrypt();
     this._setPassword(password);
-    this.updateState({
-      cognitoSessions: this.encrypt(cognitoSessions),
-    });
+    this.updateState({ cognitoSessions: await this.encrypt(cognitoSessions) });
   }
 
   private _updateMemo() {
@@ -165,25 +170,32 @@ class IdentityStorage
     this._setSession({ password });
   }
 
-  private encrypt(object: unknown): string {
-    const jsonObj = JSON.stringify(object);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return seedUtils.encryptSeed(jsonObj, this.password!);
+  private async encrypt(object: CognitoSessions) {
+    invariant(this.password);
+
+    const encrypted = await encryptSeed(
+      utf8Encode(JSON.stringify(object)),
+      utf8Encode(this.password)
+    );
+
+    return base64Encode(encrypted);
   }
 
-  private decrypt(): Record<string, unknown> {
+  private async decrypt() {
     const encryptedText = this.getState().cognitoSessions;
 
     try {
       if (!encryptedText) {
         return {};
       }
-      const decryptedJson = seedUtils.decryptSeed(
-        encryptedText,
+
+      const decryptedJson = await decryptSeed(
+        base64Decode(encryptedText),
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.password!
+        utf8Encode(this.password!)
       );
-      return JSON.parse(decryptedJson);
+
+      return JSON.parse(utf8Decode(decryptedJson)) as CognitoSessions;
     } catch (e) {
       throw new Error('Invalid password');
     }
@@ -191,8 +203,10 @@ class IdentityStorage
 }
 
 export interface IdentityApi {
-  signBytes: (bytes: number[] | Uint8Array) => Promise<string>;
+  signBytes: (bytes: Uint8Array) => Promise<string>;
 }
+
+type CognitoSessions = Partial<Record<string, Record<string, string | null>>>;
 
 export class IdentityController implements IdentityApi {
   protected getNetwork;
@@ -200,7 +214,7 @@ export class IdentityController implements IdentityApi {
   protected getIdentityConfig;
   private network: NetworkName | undefined;
   // identity properties
-  private readonly seed = seedUtils.Seed.create();
+  private readonly seed = generateRandomSeed();
   private userPool: CognitoUserPool | undefined = undefined;
   private user: CognitoUser | undefined = undefined;
   private userData: { username: string; password: string } | undefined =
@@ -237,9 +251,9 @@ export class IdentityController implements IdentityApi {
     this.store.unlock(password);
   }
 
-  updateVault(oldPassword: string, newPassword: string) {
+  async updateVault(oldPassword: string, newPassword: string) {
     this.unlock(oldPassword);
-    this.store.update(newPassword);
+    await this.store.update(newPassword);
   }
 
   deleteVault() {
@@ -277,8 +291,20 @@ export class IdentityController implements IdentityApi {
     }
   }
 
+  async getKeyPair() {
+    const privateKey = await createPrivateKey(utf8Encode(this.seed));
+    const publicKey = await createPublicKey(privateKey);
+
+    return {
+      privateKey,
+      publicKey,
+    };
+  }
+
   async signIn(username: string, password: string) {
     this.clearSession();
+
+    const { publicKey } = await this.getKeyPair();
 
     return new Promise<{ challengeName?: ChallengeName }>((resolve, reject) => {
       if (!this.userPool) {
@@ -290,6 +316,7 @@ export class IdentityController implements IdentityApi {
         Pool: this.userPool,
         Storage: this.store,
       });
+
       this.userData = { username, password };
 
       this.user.authenticateUser(
@@ -297,7 +324,7 @@ export class IdentityController implements IdentityApi {
           Username: username,
           Password: password,
           ClientMetadata: {
-            'custom:encryptionKey': this.seed.keyPair.publicKey,
+            'custom:encryptionKey': base58Encode(publicKey),
           },
         }),
         {
@@ -343,6 +370,8 @@ export class IdentityController implements IdentityApi {
     code: string,
     mfaType: MFAType = 'SOFTWARE_TOKEN_MFA'
   ): Promise<void> {
+    const { publicKey } = await this.getKeyPair();
+
     return new Promise((resolve, reject) => {
       if (!this.user) {
         return reject(new Error('Not authenticated'));
@@ -376,7 +405,7 @@ export class IdentityController implements IdentityApi {
         },
         mfaType,
         {
-          'custom:encryptionKey': this.seed.keyPair.publicKey,
+          'custom:encryptionKey': base58Encode(publicKey),
         }
       );
     });
@@ -399,25 +428,25 @@ export class IdentityController implements IdentityApi {
     return this.identity!;
   }
 
-  persistSession(uuid: string) {
-    this.store.persist(this.getUserId(uuid));
+  async persistSession(uuid: string) {
+    await this.store.persist(this.getUserId(uuid));
   }
 
-  updateSession() {
+  async updateSession() {
     const selectedAccount = this.getSelectedAccount();
 
     if (selectedAccount?.type !== 'wx') {
       throw new Error('selectedAccount is not a wx account');
     }
 
-    this.persistSession(selectedAccount.uuid);
+    await this.persistSession(selectedAccount.uuid);
     this.clearSession();
   }
 
   async restoreSession(uuid: string) {
     this.clearSession();
     // set current user session
-    this.store.restore(this.getUserId(uuid));
+    await this.store.restore(this.getUserId(uuid));
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.user = this.userPool!.getCurrentUser()!;
     // restores user session tokens from storage
@@ -432,8 +461,8 @@ export class IdentityController implements IdentityApi {
         }
 
         this.refreshSessionIsNeeded()
-          .then(data => {
-            this.persistSession(uuid);
+          .then(async data => {
+            await this.persistSession(uuid);
             resolve(data);
           })
           // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -446,10 +475,10 @@ export class IdentityController implements IdentityApi {
     const token = this.getIdToken();
     const payload = token.decodePayload();
     const currentTime = Math.ceil(Date.now() / 1000);
-    const currentPublicKey = this.seed.keyPair.publicKey;
+    const { publicKey } = await this.getKeyPair();
     const isValidTime = payload.exp - currentTime > 10;
     const isValidPublicKey =
-      payload['custom:encryptionKey'] === currentPublicKey;
+      payload['custom:encryptionKey'] === base58Encode(publicKey);
 
     if (isValidPublicKey && isValidTime) {
       return Promise.resolve();
@@ -459,7 +488,9 @@ export class IdentityController implements IdentityApi {
   }
 
   private async refreshSession() {
-    const meta = { 'custom:encryptionKey': this.seed.keyPair.publicKey };
+    const { publicKey } = await this.getKeyPair();
+    const publicKeyBase58 = base58Encode(publicKey);
+    const meta = { 'custom:encryptionKey': publicKeyBase58 };
 
     return new Promise<unknown>((resolve, reject) => {
       if (!this.user) {
@@ -470,7 +501,7 @@ export class IdentityController implements IdentityApi {
         [
           new CognitoUserAttribute({
             Name: 'custom:encryptionKey',
-            Value: this.seed.keyPair.publicKey,
+            Value: publicKeyBase58,
           }),
         ],
         err => {
@@ -515,12 +546,12 @@ export class IdentityController implements IdentityApi {
     this.store.clear();
   }
 
-  removeSession(uuid: string) {
+  async removeSession(uuid: string) {
     this.clearSession();
-    this.persistSession(uuid);
+    await this.persistSession(uuid);
   }
 
-  async signBytes(bytes: number[] | Uint8Array): Promise<string> {
+  async signBytes(bytes: Uint8Array): Promise<string> {
     const selectedAccount = this.getSelectedAccount();
 
     if (selectedAccount?.type !== 'wx') {
@@ -528,21 +559,22 @@ export class IdentityController implements IdentityApi {
     }
 
     const userId = selectedAccount.uuid;
-    await this.restoreSession(userId);
 
-    const signature = libs.crypto.base58Decode(
-      libs.crypto.signBytes(this.seed.keyPair, bytes)
-    );
+    const [{ privateKey }] = await Promise.all([
+      this.getKeyPair(),
+      this.restoreSession(userId),
+    ]);
+
+    const signature = await signBytes(privateKey, bytes);
+
     const response = await this.signByIdentity({
-      payload: libs.crypto.base64Encode(bytes),
-      signature: libs.crypto.base64Encode(signature),
+      payload: base64Encode(bytes),
+      signature: base64Encode(signature),
     });
 
     this.clearSession();
 
-    return libs.crypto.base58Encode(
-      libs.crypto.base64Decode(response.signature)
-    );
+    return base58Encode(base64Decode(response.signature));
   }
 
   private async signByIdentity(body: {

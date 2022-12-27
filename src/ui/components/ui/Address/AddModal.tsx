@@ -1,4 +1,4 @@
-import { validators } from '@waves/waves-transactions';
+import { isAddressString, isAlias } from 'messages/utils';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -86,8 +86,8 @@ export function AddModal({ showModal, setShowModal, address }: Props) {
 
                 if (
                   /^\s/g.test(name) ||
-                  validators.isValidAddress(name) ||
-                  validators.isValidAlias(name)
+                  isAddressString(name) ||
+                  isAlias(name)
                 ) {
                   setNameError(t('address.nameInvalidError'));
                   return;
@@ -104,7 +104,7 @@ export function AddModal({ showModal, setShowModal, address }: Props) {
                   return;
                 }
 
-                if (!validators.isValidAddress(addressValue)) {
+                if (!isAddressString(addressValue)) {
                   setAddressError(t('address.addressInvalidError'));
                   return;
                 }

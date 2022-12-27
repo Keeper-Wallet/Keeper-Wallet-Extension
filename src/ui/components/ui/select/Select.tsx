@@ -27,8 +27,8 @@ interface Props<T> {
   fill?: boolean;
   forwardRef?: React.MutableRefObject<HTMLDivElement>;
   listPlacement?: ListPlacement;
-  selectList: Array<SelectItem<T>>;
-  selected?: string | number;
+  selectList: ReadonlyArray<SelectItem<T>>;
+  selected: T;
   theme?: Theme;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;

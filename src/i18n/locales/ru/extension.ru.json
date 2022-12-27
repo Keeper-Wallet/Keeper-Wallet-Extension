@@ -486,12 +486,6 @@
       "disallowed": "Запрещено!"
     }
   },
-  "plateComponent": {
-    "copy": "Скопировать",
-    "copied": "Скопировано!",
-    "collapse": "Свернуть",
-    "expand": "Развернуть"
-  },
   "qrCode": { "download": "Загрузить QR-код" },
   "send": {
     "amountInputLabel": "Сумма",
@@ -582,7 +576,6 @@
     "exchangeChannelUnavailableError": "Сервис не отвечает",
     "exchangeChannelUnknownError": "Недоступно для данного обмена",
     "failMessage": "Сделка не удалась, попробуйте еще раз",
-    "ledgerFailMessage": "Ledger отменил запрос",
     "fromInputLabel": "Отдадите",
     "insufficientFundsError": "Недостаточно средств",
     "maxAmountExceeded": "Сумма не должна превышать {{ maxAmount }}",

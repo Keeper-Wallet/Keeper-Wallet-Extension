@@ -1,14 +1,12 @@
 import { deepEqual } from 'fast-equals';
+import { NotificationsStoreItem } from 'notifications/types';
+import type { StorageLocalState } from 'storage/storage';
 
 import { AssetsRecord } from '../assets/types';
 import { collectBalances } from '../balances/utils';
-import { MessageStoreItem } from '../messages/types';
+import { Message, MessageStatus } from '../messages/types';
 import { NetworkName } from '../networks/types';
 import { ACTION } from '../store/actions/constants';
-import {
-  BackgroundGetStateResult,
-  BackgroundUiApi,
-} from '../ui/services/Background';
 import { PopupStore } from './store/types';
 
 function getParam<S, D>(param: S, defaultParam: D) {
@@ -19,24 +17,13 @@ function getParam<S, D>(param: S, defaultParam: D) {
   return param === null ? defaultParam : undefined;
 }
 
-type UpdateStateInput = Partial<
-  BackgroundGetStateResult & {
-    networks: Awaited<ReturnType<BackgroundUiApi['getNetworks']>>;
-  }
->;
+type StateChanges = Partial<StorageLocalState>;
 
 export function createUpdateState(store: PopupStore) {
-  return (state: UpdateStateInput) => {
+  return (stateChanges: StateChanges) => {
     const currentState = store.getState();
 
-    if (state.networks && state.networks.length) {
-      store.dispatch({
-        type: ACTION.UPDATE_NETWORKS,
-        payload: state.networks,
-      });
-    }
-
-    const config = getParam(state.config, {});
+    const config = getParam(stateChanges.config, {});
     if (config && !deepEqual(currentState.config, config)) {
       store.dispatch({
         type: ACTION.REMOTE_CONFIG.SET_CONFIG,
@@ -45,26 +32,16 @@ export function createUpdateState(store: PopupStore) {
     }
 
     if (
-      state.feeConfig &&
-      !deepEqual(currentState.feeConfig, state.feeConfig)
-    ) {
-      store.dispatch({
-        type: ACTION.UPDATE_FEE_CONFIG,
-        payload: state.feeConfig,
-      });
-    }
-
-    if (
-      state.nftConfig &&
-      !deepEqual(currentState.nftConfig, state.nftConfig)
+      stateChanges.nftConfig &&
+      !deepEqual(currentState.nftConfig, stateChanges.nftConfig)
     ) {
       store.dispatch({
         type: ACTION.UPDATE_NFT_CONFIG,
-        payload: state.nftConfig,
+        payload: stateChanges.nftConfig,
       });
     }
 
-    const idleOptions = getParam(state.idleOptions, {});
+    const idleOptions = getParam(stateChanges.idleOptions, {});
     if (idleOptions && !deepEqual(currentState.idleOptions, idleOptions)) {
       store.dispatch({
         type: ACTION.REMOTE_CONFIG.UPDATE_IDLE,
@@ -72,7 +49,7 @@ export function createUpdateState(store: PopupStore) {
       });
     }
 
-    const customNodes = getParam(state.customNodes, {});
+    const customNodes = getParam(stateChanges.customNodes, {});
     if (customNodes && !deepEqual(currentState.customNodes, customNodes)) {
       store.dispatch({
         type: ACTION.UPDATE_NODES,
@@ -80,7 +57,7 @@ export function createUpdateState(store: PopupStore) {
       });
     }
 
-    const customCodes = getParam(state.customCodes, {});
+    const customCodes = getParam(stateChanges.customCodes, {});
     if (customCodes && !deepEqual(currentState.customCodes, customCodes)) {
       store.dispatch({
         type: ACTION.UPDATE_CODES,
@@ -88,7 +65,7 @@ export function createUpdateState(store: PopupStore) {
       });
     }
 
-    const customMatchers = getParam(state.customMatchers, {});
+    const customMatchers = getParam(stateChanges.customMatchers, {});
     if (
       customMatchers &&
       !deepEqual(currentState.customMatcher, customMatchers)
@@ -100,16 +77,16 @@ export function createUpdateState(store: PopupStore) {
     }
 
     if (
-      state.currentLocale &&
-      state.currentLocale !== currentState.currentLocale
+      stateChanges.currentLocale &&
+      stateChanges.currentLocale !== currentState.currentLocale
     ) {
       store.dispatch({
         type: ACTION.UPDATE_FROM_LNG,
-        payload: state.currentLocale,
+        payload: stateChanges.currentLocale,
       });
     }
 
-    const uiState = getParam(state.uiState, {});
+    const uiState = getParam(stateChanges.uiState, {});
     if (uiState && !deepEqual(uiState, currentState.uiState)) {
       store.dispatch({
         type: ACTION.UPDATE_UI_STATE,
@@ -117,7 +94,7 @@ export function createUpdateState(store: PopupStore) {
       });
     }
 
-    const currentNetwork = getParam(state.currentNetwork, '');
+    const currentNetwork = getParam(stateChanges.currentNetwork, '');
     if (currentNetwork && currentNetwork !== currentState.currentNetwork) {
       store.dispatch({
         type: ACTION.UPDATE_CURRENT_NETWORK,
@@ -125,7 +102,7 @@ export function createUpdateState(store: PopupStore) {
       });
     }
 
-    const origins = getParam(state.origins, {});
+    const origins = getParam(stateChanges.origins, {});
     if (origins && !deepEqual(origins, currentState.origins)) {
       store.dispatch({
         type: ACTION.UPDATE_ORIGINS,
@@ -133,22 +110,21 @@ export function createUpdateState(store: PopupStore) {
       });
     }
 
-    function isMyMessages(msg: MessageStoreItem) {
-      try {
-        const account = state.selectedAccount || currentState.selectedAccount;
-        return (
-          msg.status === 'unapproved' &&
-          msg.account.address === account?.address &&
-          msg.account.network === account?.network
-        );
-      } catch (e) {
-        return false;
-      }
-    }
+    const messages = getParam(stateChanges.messages, []);
 
-    const messages = getParam(state.messages, []);
-    const unapprovedMessages = messages?.filter(isMyMessages);
-    const toUpdateActiveNotify = {
+    const unapprovedMessages = messages?.filter((msg: Message) => {
+      const account =
+        stateChanges.selectedAccount || currentState.selectedAccount;
+
+      return (
+        account != null &&
+        msg.status === MessageStatus.UnApproved &&
+        msg.account.address === account.address &&
+        msg.account.network === account.network
+      );
+    });
+
+    const setActiveAutoPayload = {
       allMessages: messages,
       messages: currentState.messages,
       notifications: currentState.notifications,
@@ -164,10 +140,38 @@ export function createUpdateState(store: PopupStore) {
         payload: { unapprovedMessages, messages: messages! },
       });
 
-      toUpdateActiveNotify.messages = unapprovedMessages;
+      setActiveAutoPayload.messages = unapprovedMessages;
     }
 
-    const myNotifications = getParam(state.myNotifications, []);
+    const currentOrNewSelectedAccount =
+      stateChanges.selectedAccount ?? currentState.selectedAccount;
+
+    const myNotifications =
+      currentOrNewSelectedAccount &&
+      stateChanges.notifications &&
+      stateChanges.notifications
+        .filter(
+          notification =>
+            notification.address === currentOrNewSelectedAccount.address
+        )
+        .reverse()
+        .reduce<{
+          items: NotificationsStoreItem[][];
+          hash: Record<string, NotificationsStoreItem[]>;
+        }>(
+          (acc, item) => {
+            if (!acc.hash[item.origin]) {
+              acc.hash[item.origin] = [];
+              acc.items.push(acc.hash[item.origin]);
+            }
+
+            acc.hash[item.origin].push(item);
+
+            return acc;
+          },
+          { items: [], hash: {} }
+        ).items;
+
     if (
       myNotifications &&
       !deepEqual(currentState.notifications, myNotifications)
@@ -177,35 +181,35 @@ export function createUpdateState(store: PopupStore) {
         payload: myNotifications,
       });
 
-      toUpdateActiveNotify.notifications = myNotifications;
+      setActiveAutoPayload.notifications = myNotifications;
     }
 
     if (
       messages &&
-      (toUpdateActiveNotify.messages !== currentState.messages ||
-        toUpdateActiveNotify.notifications !== currentState.notifications)
+      (setActiveAutoPayload.messages !== currentState.messages ||
+        setActiveAutoPayload.notifications !== currentState.notifications)
     ) {
       store.dispatch({
         type: ACTION.MESSAGES.SET_ACTIVE_AUTO,
-        payload: toUpdateActiveNotify,
+        payload: setActiveAutoPayload,
       });
     }
 
-    const selectedAccount = getParam(
-      state.selectedAccount,
+    const newSelectedAccount = getParam(
+      stateChanges.selectedAccount,
       {} as unknown as undefined
     );
     if (
-      selectedAccount &&
-      !deepEqual(selectedAccount, currentState.selectedAccount)
+      newSelectedAccount &&
+      !deepEqual(newSelectedAccount, currentState.selectedAccount)
     ) {
       store.dispatch({
         type: ACTION.UPDATE_SELECTED_ACCOUNT,
-        payload: selectedAccount,
+        payload: newSelectedAccount,
       });
     }
 
-    const accounts = getParam(state.accounts, []);
+    const accounts = getParam(stateChanges.accounts, []);
     if (accounts && !deepEqual(accounts, currentState.allNetworksAccounts)) {
       store.dispatch({
         type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
@@ -214,14 +218,16 @@ export function createUpdateState(store: PopupStore) {
     }
 
     if (
-      (state.accounts != null &&
-        !deepEqual(state.accounts, currentState.allNetworksAccounts)) ||
-      (state.currentNetwork != null &&
-        state.currentNetwork !== currentState.currentNetwork)
+      (stateChanges.accounts != null &&
+        !deepEqual(stateChanges.accounts, currentState.allNetworksAccounts)) ||
+      (stateChanges.currentNetwork != null &&
+        stateChanges.currentNetwork !== currentState.currentNetwork)
     ) {
       // eslint-disable-next-line @typescript-eslint/no-shadow
-      const accounts = state.accounts || currentState.allNetworksAccounts;
-      const network = state.currentNetwork || currentState.currentNetwork;
+      const accounts =
+        stateChanges.accounts || currentState.allNetworksAccounts;
+      const network =
+        stateChanges.currentNetwork || currentState.currentNetwork;
 
       store.dispatch({
         type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
@@ -231,16 +237,22 @@ export function createUpdateState(store: PopupStore) {
 
     if (
       !currentState.state ||
-      state.initialized !== currentState.state.initialized ||
-      state.locked !== currentState.state.locked
+      ('initialized' in stateChanges &&
+        stateChanges.initialized !== currentState.state.initialized) ||
+      ('locked' in stateChanges &&
+        stateChanges.locked !== currentState.state.locked)
     ) {
       store.dispatch({
         type: ACTION.UPDATE_APP_STATE,
-        payload: { initialized: state.initialized, locked: state.locked },
+        payload: {
+          initialized:
+            stateChanges.initialized ?? currentState.state?.initialized,
+          locked: stateChanges.locked ?? currentState.state?.locked,
+        },
       });
     }
 
-    const balances = collectBalances(state);
+    const balances = collectBalances(stateChanges);
     if (Object.keys(balances).length !== 0) {
       store.dispatch({
         type: ACTION.UPDATE_BALANCES,
@@ -252,11 +264,11 @@ export function createUpdateState(store: PopupStore) {
     }
 
     const assets = getParam<
-      BackgroundGetStateResult['assets'] | undefined,
+      StorageLocalState['assets'] | undefined,
       Partial<Record<NetworkName, AssetsRecord>>
-    >(state.assets, {});
+    >(stateChanges.assets, {});
 
-    const network = state.currentNetwork || currentState.currentNetwork;
+    const network = stateChanges.currentNetwork || currentState.currentNetwork;
     if (
       assets &&
       assets[network] &&
@@ -269,7 +281,7 @@ export function createUpdateState(store: PopupStore) {
       });
     }
 
-    const usdPrices = getParam(state.usdPrices, {});
+    const usdPrices = getParam(stateChanges.usdPrices, {});
     if (usdPrices && !deepEqual(usdPrices, currentState.usdPrices)) {
       store.dispatch({
         type: ACTION.SET_USD_PRICES,
@@ -277,7 +289,7 @@ export function createUpdateState(store: PopupStore) {
       });
     }
 
-    const assetLogos = getParam(state.assetLogos, {});
+    const assetLogos = getParam(stateChanges.assetLogos, {});
     if (assetLogos && !deepEqual(assetLogos, currentState.assetLogos)) {
       store.dispatch({
         type: ACTION.SET_ASSET_LOGOS,
@@ -285,7 +297,7 @@ export function createUpdateState(store: PopupStore) {
       });
     }
 
-    const assetTickers = getParam(state.assetTickers, {});
+    const assetTickers = getParam(stateChanges.assetTickers, {});
     if (assetTickers && !deepEqual(assetTickers, currentState.assetTickers)) {
       store.dispatch({
         type: ACTION.SET_ASSET_TICKERS,
@@ -293,7 +305,7 @@ export function createUpdateState(store: PopupStore) {
       });
     }
 
-    const addresses = getParam(state.addresses, {});
+    const addresses = getParam(stateChanges.addresses, {});
     if (addresses && !deepEqual(addresses, currentState.addresses)) {
       store.dispatch({
         type: ACTION.UPDATE_ADDRESSES,
@@ -301,7 +313,7 @@ export function createUpdateState(store: PopupStore) {
       });
     }
 
-    const nfts = getParam(state.nfts, null);
+    const nfts = getParam(stateChanges.nfts, null);
     if (nfts && !deepEqual(nfts, currentState.nfts)) {
       store.dispatch({
         type: ACTION.UPDATE_NFTS,

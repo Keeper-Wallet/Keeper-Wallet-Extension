@@ -1,39 +1,33 @@
 import ObservableStore from 'obs-store';
-import { PreferencesAccount } from 'preferences/types';
 
 import { ExtensionStorage } from '../storage/storage';
 
 const MAX_ITEMS = 200;
 
 export interface TrashItem {
-  walletsData: string | PreferencesAccount;
   address: string;
+  walletsData: string;
 }
 
 export class TrashController {
-  private store;
+  #store;
 
   constructor({ extensionStorage }: { extensionStorage: ExtensionStorage }) {
-    this.store = new ObservableStore(
+    this.#store = new ObservableStore(
       extensionStorage.getInitState({ data: [] })
     );
-    extensionStorage.subscribe(this.store);
+
+    extensionStorage.subscribe(this.#store);
   }
 
-  getData() {
-    return this.store.getState().data;
-  }
+  addItem(newItem: TrashItem) {
+    const { data } = this.#store.getState();
+    const newData = [...data, newItem];
 
-  addData(saveData: TrashItem) {
-    const { data } = this.store.getState();
-    const dataToSave = [...data, saveData];
-    if (dataToSave.length > MAX_ITEMS) {
-      dataToSave.splice(0, dataToSave.length - MAX_ITEMS);
+    if (newData.length > MAX_ITEMS) {
+      newData.splice(0, newData.length - MAX_ITEMS);
     }
-    this._saveData(dataToSave);
-  }
 
-  _saveData(data: TrashItem[]) {
-    this.store.updateState({ data });
+    this.#store.updateState({ data: newData });
   }
 }

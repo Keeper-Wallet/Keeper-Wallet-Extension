@@ -1,18 +1,28 @@
-import { binary, serializePrimitives } from '@waves/marshall';
+import { JSONbn } from '_core/jsonBn';
 import {
+  base58Decode,
   base58Encode,
   blake2b,
-  concat,
   verifySignature,
-} from '@waves/ts-lib-crypto';
-import { makeTxBytes, serializeCustomData } from '@waves/waves-transactions';
-import { orderToProtoBytes } from '@waves/waves-transactions/dist/proto-serialize';
-import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
-import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
+} from '@keeper-wallet/waves-crypto';
+import BigNumber from '@waves/bignumber';
+import { binary } from '@waves/marshall';
 import { expect } from 'chai';
-import { MessageInputTx } from 'messages/types';
+import Long from 'long';
+import {
+  MessageInputCancelOrder,
+  MessageInputCustomData,
+  MessageInputOrder,
+  MessageInputTx,
+} from 'messages/types';
+import {
+  makeAuthBytes,
+  makeCancelOrderBytes,
+  makeCustomDataBytes,
+  makeOrderBytes,
+  makeTxBytes,
+} from 'messages/utils';
 import * as mocha from 'mocha';
-import create from 'parse-json-bignumber';
 import { By, until } from 'selenium-webdriver';
 
 import {
@@ -52,13 +62,12 @@ import {
   UPDATE_ASSET_INFO,
 } from './utils/transactions';
 
-const { parse } = create();
-
 describe('Signature', function () {
   let tabOrigin: string;
   let messageWindow: string | null = null;
 
   const senderPublicKey = 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV';
+  const senderPublicKeyBytes = base58Decode(senderPublicKey);
 
   before(async function () {
     await App.initVault.call(this);
@@ -134,7 +143,7 @@ describe('Signature', function () {
     expectedNetworkName: string
   ) {
     const networkNameEl = await this.driver.wait(
-      until.elementLocated(By.css('[class^="originNetwork@transactions"]')),
+      until.elementLocated(By.css('[data-testid="originNetwork"]')),
       this.wait
     );
 
@@ -268,16 +277,14 @@ describe('Signature', function () {
       await this.driver.switchTo().window(messageWindow);
       await this.driver.navigate().refresh();
 
-      await this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, 'messageList@messageList')]")
-        ),
-        this.wait
-      );
-
       expect(
-        await this.driver.findElements(
-          By.xpath("//div[contains(@class, 'cardItem@messageList')]")
+        await this.driver.wait(
+          until.elementsLocated(
+            By.xpath(
+              "//div[contains(@class, 'cardItem@messagesAndNotifications')]"
+            )
+          ),
+          this.wait
         )
       ).to.have.length(2);
 
@@ -428,11 +435,6 @@ describe('Signature', function () {
         '15': [2, 1],
         '16': [2, 1],
         '17': [1],
-        '18': [1],
-        '1000': [1],
-        '1001': [1],
-        '1002': [4, 3, 2, 1],
-        '1003': [1, 0],
       });
     });
   });
@@ -500,15 +502,20 @@ describe('Signature', function () {
         publicKey: senderPublicKey,
       };
 
-      const bytes = serializeAuthData({
+      const bytes = makeAuthBytes({
         host: WHITELIST[3],
         data: 'generated auth data',
       });
 
       expect(result).to.deep.contain(expectedApproveResult);
 
-      expect(verifySignature(senderPublicKey, bytes, result.signature)).to.be
-        .true;
+      expect(
+        await verifySignature(
+          senderPublicKeyBytes,
+          bytes,
+          base58Decode(result.signature)
+        )
+      ).to.be.true;
     });
   });
 
@@ -580,24 +587,26 @@ describe('Signature', function () {
 
       expect(status).to.equal('RESOLVED');
 
-      const bytes = concat(
-        serializePrimitives.BASE58_STRING(senderPublicKey),
-        serializePrimitives.LONG(timestamp)
+      const bytes = Uint8Array.of(
+        ...base58Decode(senderPublicKey),
+        ...new Uint8Array(Long.fromNumber(timestamp).toBytesBE())
       );
 
-      expect(verifySignature(senderPublicKey, bytes, result)).to.be.true;
+      expect(
+        await verifySignature(senderPublicKeyBytes, bytes, base58Decode(result))
+      ).to.be.true;
     });
   });
 
   describe('Transactions', function () {
     async function performSignTransaction(
       this: mocha.Context,
-      tx: Parameters<(typeof KeeperWallet)['signTransaction']>[0]
+      tx: MessageInputTx
     ) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(
         // eslint-disable-next-line @typescript-eslint/no-shadow
-        (tx: Parameters<(typeof KeeperWallet)['signTransaction']>[0]) => {
+        (tx: MessageInputTx) => {
           KeeperWallet.signTransaction(tx).then(
             result => {
               window.result = JSON.stringify(['RESOLVED', result]);
@@ -731,15 +740,15 @@ describe('Signature', function () {
 
         expect(status).to.equal('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: ISSUE.type,
-          version: 3,
+          version: 3 as const,
           senderPublicKey,
           name: ISSUE.data.name,
           description: ISSUE.data.description,
-          quantity: ISSUE.data.quantity,
+          quantity: new BigNumber(ISSUE.data.quantity),
           script: ISSUE.data.script,
           decimals: ISSUE.data.precision,
           reissuable: ISSUE.data.reissuable,
@@ -749,6 +758,7 @@ describe('Signature', function () {
 
         const bytes = makeTxBytes({
           ...expectedApproveResult,
+          quantity: ISSUE.data.quantity,
           timestamp: parsedApproveResult.timestamp,
         });
 
@@ -756,7 +766,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).to.be.true;
       });
 
@@ -804,15 +818,15 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: ISSUE_WITHOUT_SCRIPT.type,
-            version: 3,
+            version: 3 as const,
             senderPublicKey,
             name: ISSUE_WITHOUT_SCRIPT.data.name,
             description: ISSUE_WITHOUT_SCRIPT.data.description,
-            quantity: ISSUE_WITHOUT_SCRIPT.data.quantity,
+            quantity: new BigNumber(ISSUE_WITHOUT_SCRIPT.data.quantity),
             decimals: ISSUE_WITHOUT_SCRIPT.data.precision,
             reissuable: ISSUE_WITHOUT_SCRIPT.data.reissuable,
             fee: 100400000,
@@ -821,18 +835,20 @@ describe('Signature', function () {
 
           const bytes = makeTxBytes({
             ...expectedApproveResult,
+            quantity: ISSUE_WITHOUT_SCRIPT.data.quantity,
+            script: null,
             timestamp: parsedApproveResult.timestamp,
           });
 
           expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.script).to.not.exist;
+          expect(parsedApproveResult.script).to.equal(null);
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -881,15 +897,15 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: ISSUE.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             name: ISSUE.data.name,
             description: ISSUE.data.description,
-            quantity: ISSUE.data.quantity,
+            quantity: new BigNumber(ISSUE.data.quantity),
             script: ISSUE.data.script,
             decimals: ISSUE.data.precision,
             reissuable: ISSUE.data.reissuable,
@@ -899,6 +915,7 @@ describe('Signature', function () {
 
           const bytes = makeTxBytes({
             ...expectedApproveResult,
+            quantity: ISSUE.data.quantity,
             timestamp: parsedApproveResult.timestamp,
           });
 
@@ -906,10 +923,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -977,11 +994,11 @@ describe('Signature', function () {
 
         expect(status).to.equal('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: TRANSFER.type,
-          version: 3,
+          version: 3 as const,
           senderPublicKey,
           assetId: TRANSFER.data.amount.assetId,
           recipient: TRANSFER.data.recipient,
@@ -1001,7 +1018,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).to.be.true;
       });
 
@@ -1019,7 +1040,7 @@ describe('Signature', function () {
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
 
-          await checkTransferAmount.call(this, '-123456790 NonScriptToken');
+          await checkTransferAmount.call(this, '-1.23456790 WAVES');
           await checkRecipient.call(this, 'alias:T:alice');
 
           await checkTxFee.call(this, '0.005 WAVES');
@@ -1039,16 +1060,15 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: TRANSFER_WITHOUT_ATTACHMENT.type,
-            version: 3,
+            version: 3 as const,
             senderPublicKey,
-            assetId: TRANSFER_WITHOUT_ATTACHMENT.data.amount.assetId,
+            assetId: null,
             recipient: 'alias:T:alice',
             amount: TRANSFER_WITHOUT_ATTACHMENT.data.amount.amount,
-            attachment: '',
             fee: 500000,
             feeAssetId: null,
             chainId: 84,
@@ -1063,10 +1083,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -1100,11 +1120,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: TRANSFER.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             assetId: TRANSFER.data.amount.assetId,
             recipient: TRANSFER.data.recipient,
@@ -1124,10 +1144,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -1180,11 +1200,11 @@ describe('Signature', function () {
 
         expect(status).to.equal('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: REISSUE.type,
-          version: 3,
+          version: 3 as const,
           senderPublicKey,
           assetId: REISSUE.data.assetId,
           quantity: REISSUE.data.quantity,
@@ -1202,17 +1222,17 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).to.be.true;
       });
 
       describe('with money-like', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(
-            this,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            REISSUE_WITH_MONEY_LIKE as any
-          );
+          await performSignTransaction.call(this, REISSUE_WITH_MONEY_LIKE);
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
@@ -1227,11 +1247,7 @@ describe('Signature', function () {
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(
-            this,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            REISSUE_WITH_MONEY_LIKE as any
-          );
+          await performSignTransaction.call(this, REISSUE_WITH_MONEY_LIKE);
           await approveMessage.call(this);
           await closeMessage.call(this);
 
@@ -1241,11 +1257,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: REISSUE_WITH_MONEY_LIKE.type,
-            version: 3,
+            version: 3 as const,
             senderPublicKey,
             assetId: REISSUE_WITH_MONEY_LIKE.data.amount.assetId,
             quantity: REISSUE_WITH_MONEY_LIKE.data.amount.amount,
@@ -1263,10 +1279,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -1299,11 +1315,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: REISSUE.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             assetId: REISSUE.data.assetId,
             quantity: REISSUE.data.quantity,
@@ -1321,10 +1337,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -1365,11 +1381,11 @@ describe('Signature', function () {
 
         expect(status).to.equal('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: BURN.type,
-          version: 3,
+          version: 3 as const,
           senderPublicKey,
           assetId: BURN.data.assetId,
           amount: BURN.data.amount,
@@ -1386,14 +1402,17 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).to.be.true;
       });
 
       describe('with quantity instead of amount', function () {
         it('Rejected', async function () {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await performSignTransaction.call(this, BURN_WITH_QUANTITY as any);
+          await performSignTransaction.call(this, BURN_WITH_QUANTITY);
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
@@ -1407,8 +1426,7 @@ describe('Signature', function () {
         });
 
         it('Approved', async function () {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await performSignTransaction.call(this, BURN_WITH_QUANTITY as any);
+          await performSignTransaction.call(this, BURN_WITH_QUANTITY);
           await approveMessage.call(this);
           await closeMessage.call(this);
 
@@ -1418,11 +1436,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: BURN_WITH_QUANTITY.type,
-            version: 3,
+            version: 3 as const,
             senderPublicKey,
             assetId: BURN_WITH_QUANTITY.data.assetId,
             amount: BURN_WITH_QUANTITY.data.quantity,
@@ -1439,10 +1457,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -1474,11 +1492,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: BURN.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             assetId: BURN.data.assetId,
             amount: BURN.data.amount,
@@ -1495,10 +1513,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -1551,11 +1569,11 @@ describe('Signature', function () {
 
         expect(status).to.equal('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: LEASE.type,
-          version: 3,
+          version: 3 as const,
           senderPublicKey,
           amount: LEASE.data.amount,
           recipient: LEASE.data.recipient,
@@ -1572,7 +1590,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).to.be.true;
       });
 
@@ -1603,11 +1625,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: LEASE_WITH_ALIAS.type,
-            version: 3,
+            version: 3 as const,
             senderPublicKey,
             amount: LEASE_WITH_ALIAS.data.amount,
             recipient: 'alias:T:bobby',
@@ -1624,10 +1646,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -1660,11 +1682,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: LEASE_WITH_MONEY_LIKE.type,
-            version: 3,
+            version: 3 as const,
             senderPublicKey,
             amount: LEASE_WITH_MONEY_LIKE.data.amount.amount,
             recipient: LEASE_WITH_MONEY_LIKE.data.recipient,
@@ -1681,10 +1703,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -1717,11 +1739,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: LEASE.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             amount: LEASE.data.amount,
             recipient: LEASE.data.recipient,
@@ -1738,10 +1760,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -1797,11 +1819,11 @@ describe('Signature', function () {
 
         expect(status).to.equal('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: CANCEL_LEASE.type,
-          version: 3,
+          version: 3 as const,
           senderPublicKey,
           leaseId: CANCEL_LEASE.data.leaseId,
           fee: 500000,
@@ -1817,7 +1839,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).to.be.true;
       });
 
@@ -1854,11 +1880,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: CANCEL_LEASE.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             leaseId: CANCEL_LEASE.data.leaseId,
             fee: 500000,
@@ -1874,10 +1900,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -1918,11 +1944,11 @@ describe('Signature', function () {
 
         expect(status).to.equal('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: ALIAS.type,
-          version: 3,
+          version: 3 as const,
           senderPublicKey,
           alias: ALIAS.data.alias,
           fee: 500000,
@@ -1938,7 +1964,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).to.be.true;
       });
 
@@ -1972,11 +2002,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: ALIAS.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             alias: ALIAS.data.alias,
             fee: 500000,
@@ -1991,14 +2021,16 @@ describe('Signature', function () {
           expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
 
           expect(parsedApproveResult.id).to.equal(
-            base58Encode(blake2b([bytes[0], ...bytes.slice(36, -16)]))
+            base58Encode(
+              blake2b(Uint8Array.of(bytes[0], ...bytes.subarray(36, -16)))
+            )
           );
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -2097,11 +2129,11 @@ describe('Signature', function () {
 
         expect(status).to.equal('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: MASS_TRANSFER.type,
-          version: 2,
+          version: 2 as const,
           senderPublicKey,
           assetId: MASS_TRANSFER.data.totalAmount.assetId,
           transfers: [
@@ -2122,7 +2154,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).to.be.true;
       });
 
@@ -2137,16 +2173,16 @@ describe('Signature', function () {
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
 
-          await checkMassTransferAmount.call(this, '-2 NonScriptToken');
+          await checkMassTransferAmount.call(this, '-0.00000123 WAVES');
 
           await checkMassTransferItems.call(this, [
             {
               recipient: '3N5HNJz5otiU...BVv5HhYLdhiD',
-              amount: '1',
+              amount: '0.0000012',
             },
             {
               recipient: 'alias:T:merry',
-              amount: '1',
+              amount: '0.00000003',
             },
           ]);
 
@@ -2171,19 +2207,18 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: MASS_TRANSFER_WITHOUT_ATTACHMENT.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
-            assetId: MASS_TRANSFER_WITHOUT_ATTACHMENT.data.totalAmount.assetId,
+            assetId: null,
             transfers: [
-              { amount: 1, recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD' },
-              { amount: 1, recipient: 'alias:T:merry' },
+              { amount: 120, recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD' },
+              { amount: 3, recipient: 'alias:T:merry' },
             ],
             fee: 600000,
-            attachment: '',
             chainId: 84,
           };
 
@@ -2196,10 +2231,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -2250,11 +2285,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: MASS_TRANSFER.type,
-            version: 1,
+            version: 1 as const,
             senderPublicKey,
             assetId: MASS_TRANSFER.data.totalAmount.assetId,
             transfers: [
@@ -2275,10 +2310,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -2365,19 +2400,37 @@ describe('Signature', function () {
 
         expect(status).to.equal('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: DATA.type,
-          version: 2,
+          version: 2 as const,
           senderPublicKey,
           fee: 500000,
           chainId: 84,
-          data: DATA.data.data,
+          data: [
+            {
+              key: 'stringValue',
+              type: 'string',
+              value: 'Lorem ipsum dolor sit amet',
+            },
+            {
+              key: 'longMaxValue',
+              type: 'integer',
+              value: new BigNumber('9223372036854775807'),
+            },
+            { key: 'flagValue', type: 'boolean', value: true },
+            {
+              key: 'base64',
+              type: 'binary',
+              value: 'base64:BQbtKNoM',
+            },
+          ],
         };
 
         const bytes = makeTxBytes({
           ...expectedApproveResult,
+          data: DATA.data.data,
           timestamp: parsedApproveResult.timestamp,
         });
 
@@ -2385,7 +2438,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).to.be.true;
       });
 
@@ -2436,19 +2493,37 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: DATA.type,
-            version: 1,
+            version: 1 as const,
             senderPublicKey,
             fee: 500000,
             chainId: 84,
-            data: DATA.data.data,
+            data: [
+              {
+                key: 'stringValue',
+                type: 'string',
+                value: 'Lorem ipsum dolor sit amet',
+              },
+              {
+                key: 'longMaxValue',
+                type: 'integer',
+                value: new BigNumber('9223372036854775807'),
+              },
+              { key: 'flagValue', type: 'boolean', value: true },
+              {
+                key: 'base64',
+                type: 'binary',
+                value: 'base64:BQbtKNoM',
+              },
+            ],
           };
 
           const bytes = makeTxBytes({
             ...expectedApproveResult,
+            data: DATA.data.data,
             timestamp: parsedApproveResult.timestamp,
           });
 
@@ -2456,10 +2531,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -2509,11 +2584,11 @@ describe('Signature', function () {
 
         expect(status).to.equal('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: SET_SCRIPT.type,
-          version: 2,
+          version: 2 as const,
           senderPublicKey,
           chainId: 84,
           fee: 500000,
@@ -2529,7 +2604,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).to.be.true;
       });
 
@@ -2563,11 +2642,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: SET_SCRIPT_WITHOUT_SCRIPT.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             chainId: 84,
             fee: 500000,
@@ -2584,10 +2663,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -2620,11 +2699,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: SET_SCRIPT.type,
-            version: 1,
+            version: 1 as const,
             senderPublicKey,
             chainId: 84,
             fee: 500000,
@@ -2640,10 +2719,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -2704,11 +2783,11 @@ describe('Signature', function () {
 
         expect(status).to.equal('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: SPONSORSHIP.type,
-          version: 2,
+          version: 2 as const,
           senderPublicKey,
           minSponsoredAssetFee: SPONSORSHIP.data.minSponsoredAssetFee.amount,
           assetId: SPONSORSHIP.data.minSponsoredAssetFee.assetId,
@@ -2725,7 +2804,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).to.be.true;
       });
 
@@ -2756,11 +2839,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: SPONSORSHIP_REMOVAL.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             minSponsoredAssetFee: null,
             assetId: SPONSORSHIP_REMOVAL.data.minSponsoredAssetFee.assetId,
@@ -2777,10 +2860,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -2813,11 +2896,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: SPONSORSHIP.type,
-            version: 1,
+            version: 1 as const,
             senderPublicKey,
             minSponsoredAssetFee: SPONSORSHIP.data.minSponsoredAssetFee.amount,
             assetId: SPONSORSHIP.data.minSponsoredAssetFee.assetId,
@@ -2834,10 +2917,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -2887,11 +2970,11 @@ describe('Signature', function () {
 
         expect(status).to.equal('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: SET_ASSET_SCRIPT.type,
-          version: 2,
+          version: 2 as const,
           senderPublicKey,
           assetId: SET_ASSET_SCRIPT.data.assetId,
           chainId: 84,
@@ -2908,7 +2991,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).to.be.true;
       });
 
@@ -2948,11 +3035,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: SET_ASSET_SCRIPT.type,
-            version: 1,
+            version: 1 as const,
             senderPublicKey,
             assetId: SET_ASSET_SCRIPT.data.assetId,
             chainId: 84,
@@ -2969,10 +3056,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -3052,7 +3139,7 @@ describe('Signature', function () {
         await checkNetworkName.call(this, 'Testnet');
 
         await checkPaymentsTitle.call(this, '2 Payments');
-        await checkDApp.call(this, INVOKE_SCRIPT.data.dApp);
+        await checkDApp.call(this, '3My2kBJaGfeM...3y8rAgfV2EAx');
         await checkFunction.call(this, INVOKE_SCRIPT.data.call.function);
 
         await checkArgs.call(this, [
@@ -3066,7 +3153,7 @@ describe('Signature', function () {
           },
           {
             type: 'string',
-            value: '"hello"',
+            value: 'hello',
           },
         ]);
 
@@ -3092,11 +3179,11 @@ describe('Signature', function () {
 
         expect(status).to.equal('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: INVOKE_SCRIPT.type,
-          version: 2,
+          version: 2 as const,
           senderPublicKey,
           dApp: INVOKE_SCRIPT.data.dApp,
           call: INVOKE_SCRIPT.data.call,
@@ -3115,7 +3202,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).to.be.true;
       });
 
@@ -3139,7 +3230,10 @@ describe('Signature', function () {
           await checkNetworkName.call(this, 'Testnet');
 
           await checkPaymentsTitle.call(this, 'No Payments');
-          await checkDApp.call(this, INVOKE_SCRIPT_WITHOUT_CALL.data.dApp);
+          await checkDApp.call(
+            this,
+            `alias:T:${INVOKE_SCRIPT_WITHOUT_CALL.data.dApp}`
+          );
           await checkFunction.call(this, 'default');
           await checkArgs.call(this, []);
           await checkPayments.call(this, []);
@@ -3160,11 +3254,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: INVOKE_SCRIPT_WITHOUT_CALL.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             dApp: 'alias:T:chris',
             payment: INVOKE_SCRIPT_WITHOUT_CALL.data.payment,
@@ -3175,6 +3269,7 @@ describe('Signature', function () {
 
           const bytes = makeTxBytes({
             ...expectedApproveResult,
+            call: null,
             timestamp: parsedApproveResult.timestamp,
           });
 
@@ -3182,10 +3277,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -3202,7 +3297,7 @@ describe('Signature', function () {
           await checkNetworkName.call(this, 'Testnet');
 
           await checkPaymentsTitle.call(this, '2 Payments');
-          await checkDApp.call(this, INVOKE_SCRIPT.data.dApp);
+          await checkDApp.call(this, '3My2kBJaGfeM...3y8rAgfV2EAx');
           await checkFunction.call(this, INVOKE_SCRIPT.data.call.function);
 
           await checkArgs.call(this, [
@@ -3216,7 +3311,7 @@ describe('Signature', function () {
             },
             {
               type: 'string',
-              value: '"hello"',
+              value: 'hello',
             },
           ]);
 
@@ -3246,11 +3341,11 @@ describe('Signature', function () {
 
           expect(status).to.equal('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: INVOKE_SCRIPT.type,
-            version: 1,
+            version: 1 as const,
             senderPublicKey,
             dApp: INVOKE_SCRIPT.data.dApp,
             call: INVOKE_SCRIPT.data.call,
@@ -3269,10 +3364,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).to.be.true;
         });
@@ -3348,7 +3443,7 @@ describe('Signature', function () {
 
         expect(status).to.equal('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: UPDATE_ASSET_INFO.type,
@@ -3370,16 +3465,18 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).to.be.true;
       });
     });
   });
 
   describe('Order', function () {
-    const createOrder = (
-      tx: Parameters<(typeof KeeperWallet)['signOrder']>[0]
-    ) => {
+    const createOrder = (tx: MessageInputOrder) => {
       KeeperWallet.signOrder(tx).then(
         result => {
           window.result = result;
@@ -3390,9 +3487,7 @@ describe('Signature', function () {
       );
     };
 
-    const cancelOrder = (
-      tx: Parameters<(typeof KeeperWallet)['signCancelOrder']>[0]
-    ) => {
+    const cancelOrder = (tx: MessageInputCancelOrder) => {
       KeeperWallet.signCancelOrder(tx).then(
         result => {
           window.result = result;
@@ -3405,8 +3500,8 @@ describe('Signature', function () {
 
     async function performSignOrder(
       this: mocha.Context,
-      script: (tx: Parameters<(typeof KeeperWallet)['signOrder']>[0]) => void,
-      tx: Parameters<(typeof KeeperWallet)['signOrder']>[0]
+      script: (tx: MessageInputOrder) => void,
+      tx: MessageInputOrder
     ) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(script, tx);
@@ -3417,10 +3512,8 @@ describe('Signature', function () {
 
     async function performSignCancelOrder(
       this: mocha.Context,
-      script: (
-        tx: Parameters<(typeof KeeperWallet)['signCancelOrder']>[0]
-      ) => void,
-      tx: Parameters<(typeof KeeperWallet)['signCancelOrder']>[0]
+      script: (tx: MessageInputCancelOrder) => void,
+      tx: MessageInputCancelOrder
     ) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(script, tx);
@@ -3490,7 +3583,6 @@ describe('Signature', function () {
       describe('version 3', () => {
         describe('basic', () => {
           const INPUT = {
-            type: 1002 as const,
             data: {
               matcherPublicKey: '7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy',
               orderType: 'sell',
@@ -3508,7 +3600,7 @@ describe('Signature', function () {
                 assetId: 'WAVES',
               },
             },
-          };
+          } as const;
 
           it('Rejected', async function () {
             await performSignOrder.call(this, createOrder, INPUT);
@@ -3538,11 +3630,11 @@ describe('Signature', function () {
             await approveMessage.call(this, 60 * 1000);
             await closeMessage.call(this);
 
-            const approveResult = await this.driver.executeScript(
+            const approveResult = await this.driver.executeScript<string>(
               () => window.result
             );
 
-            const parsedApproveResult = parse(approveResult);
+            const parsedApproveResult = JSONbn.parse(approveResult);
 
             const expectedApproveResult = {
               orderType: INPUT.data.orderType,
@@ -3571,10 +3663,10 @@ describe('Signature', function () {
             );
 
             expect(
-              verifySignature(
-                senderPublicKey,
+              await verifySignature(
+                senderPublicKeyBytes,
                 bytes,
-                parsedApproveResult.proofs[0]
+                base58Decode(parsedApproveResult.proofs[0])
               )
             ).to.be.true;
           });
@@ -3582,7 +3674,6 @@ describe('Signature', function () {
 
         describe('with price precision conversion', function () {
           const INPUT = {
-            type: 1002 as const,
             data: {
               matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
               orderType: 'buy',
@@ -3600,7 +3691,7 @@ describe('Signature', function () {
                 assetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
               },
             },
-          };
+          } as const;
 
           it('Rejected', async function () {
             await performSignOrder.call(this, createOrder, INPUT);
@@ -3637,11 +3728,11 @@ describe('Signature', function () {
             await approveMessage.call(this, 60 * 1000);
             await closeMessage.call(this);
 
-            const approveResult = await this.driver.executeScript(
+            const approveResult = await this.driver.executeScript<string>(
               () => window.result
             );
 
-            const parsedApproveResult = parse(approveResult);
+            const parsedApproveResult = JSONbn.parse(approveResult);
 
             const expectedApproveResult = {
               orderType: INPUT.data.orderType,
@@ -3670,10 +3761,10 @@ describe('Signature', function () {
             );
 
             expect(
-              verifySignature(
-                senderPublicKey,
+              await verifySignature(
+                senderPublicKeyBytes,
                 bytes,
-                parsedApproveResult.proofs[0]
+                base58Decode(parsedApproveResult.proofs[0])
               )
             ).to.be.true;
           });
@@ -3683,11 +3774,10 @@ describe('Signature', function () {
       describe('version 4', () => {
         describe('with assetDecimals priceMode', function () {
           const INPUT = {
-            type: 1002 as const,
             data: {
               version: 4,
               matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
-              orderType: 'buy' as const,
+              orderType: 'buy',
               expiration: Date.now() + 100000,
               priceMode: 'assetDecimals',
               amount: {
@@ -3703,7 +3793,7 @@ describe('Signature', function () {
                 assetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
               },
             },
-          };
+          } as const;
 
           it('Rejected', async function () {
             await performSignOrder.call(this, createOrder, INPUT);
@@ -3740,30 +3830,30 @@ describe('Signature', function () {
             await approveMessage.call(this, 60 * 1000);
             await closeMessage.call(this);
 
-            const approveResult = await this.driver.executeScript(
+            const approveResult = await this.driver.executeScript<string>(
               () => window.result
             );
 
-            const parsedApproveResult = parse(approveResult);
+            const parsedApproveResult = JSONbn.parse(approveResult);
 
             const expectedApproveResult = {
               chainId: 84,
               orderType: INPUT.data.orderType,
-              version: 4 as const,
+              version: 4,
               assetPair: {
                 amountAsset: INPUT.data.amount.assetId,
                 priceAsset: INPUT.data.price.assetId,
               },
               price: 101400200,
-              priceMode: 'assetDecimals' as const,
+              priceMode: 'assetDecimals',
               amount: 1000000,
               matcherFee: 4077612,
               matcherPublicKey: INPUT.data.matcherPublicKey,
               senderPublicKey,
               matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
-            };
+            } as const;
 
-            const bytes = orderToProtoBytes({
+            const bytes = makeOrderBytes({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
@@ -3775,10 +3865,10 @@ describe('Signature', function () {
             );
 
             expect(
-              verifySignature(
-                senderPublicKey,
+              await verifySignature(
+                senderPublicKeyBytes,
                 bytes,
-                parsedApproveResult.proofs[0]
+                base58Decode(parsedApproveResult.proofs[0])
               )
             ).to.be.true;
           });
@@ -3786,11 +3876,10 @@ describe('Signature', function () {
 
         describe('with fixedDecimals priceMode', function () {
           const INPUT = {
-            type: 1002 as const,
             data: {
               version: 4,
               matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
-              orderType: 'buy' as const,
+              orderType: 'buy',
               expiration: Date.now() + 100000,
               priceMode: 'fixedDecimals',
               amount: {
@@ -3806,7 +3895,7 @@ describe('Signature', function () {
                 assetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
               },
             },
-          };
+          } as const;
 
           it('Rejected', async function () {
             await performSignOrder.call(this, createOrder, INPUT);
@@ -3843,30 +3932,30 @@ describe('Signature', function () {
             await approveMessage.call(this, 60 * 1000);
             await closeMessage.call(this);
 
-            const approveResult = await this.driver.executeScript(
+            const approveResult = await this.driver.executeScript<string>(
               () => window.result
             );
 
-            const parsedApproveResult = parse(approveResult);
+            const parsedApproveResult = JSONbn.parse(approveResult);
 
             const expectedApproveResult = {
               chainId: 84,
               orderType: INPUT.data.orderType,
-              version: 4 as const,
+              version: 4,
               assetPair: {
                 amountAsset: INPUT.data.amount.assetId,
                 priceAsset: INPUT.data.price.assetId,
               },
               price: 101400200,
-              priceMode: 'fixedDecimals' as const,
+              priceMode: 'fixedDecimals',
               amount: 1000000,
               matcherFee: 4077612,
               matcherPublicKey: INPUT.data.matcherPublicKey,
               senderPublicKey,
               matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
-            };
+            } as const;
 
-            const bytes = orderToProtoBytes({
+            const bytes = makeOrderBytes({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
@@ -3878,10 +3967,10 @@ describe('Signature', function () {
             );
 
             expect(
-              verifySignature(
-                senderPublicKey,
+              await verifySignature(
+                senderPublicKeyBytes,
                 bytes,
-                parsedApproveResult.proofs[0]
+                base58Decode(parsedApproveResult.proofs[0])
               )
             ).to.be.true;
           });
@@ -3889,11 +3978,10 @@ describe('Signature', function () {
 
         describe('without priceMode', function () {
           const INPUT = {
-            type: 1002 as const,
             data: {
               version: 4,
               matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
-              orderType: 'buy' as const,
+              orderType: 'buy',
               expiration: Date.now() + 100000,
               amount: {
                 tokens: '1.000000',
@@ -3908,7 +3996,7 @@ describe('Signature', function () {
                 assetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
               },
             },
-          };
+          } as const;
 
           it('Rejected', async function () {
             await performSignOrder.call(this, createOrder, INPUT);
@@ -3945,30 +4033,30 @@ describe('Signature', function () {
             await approveMessage.call(this, 60 * 1000);
             await closeMessage.call(this);
 
-            const approveResult = await this.driver.executeScript(
+            const approveResult = await this.driver.executeScript<string>(
               () => window.result
             );
 
-            const parsedApproveResult = parse(approveResult);
+            const parsedApproveResult = JSONbn.parse(approveResult);
 
             const expectedApproveResult = {
               chainId: 84,
               orderType: INPUT.data.orderType,
-              version: 4 as const,
+              version: 4,
               assetPair: {
                 amountAsset: INPUT.data.amount.assetId,
                 priceAsset: INPUT.data.price.assetId,
               },
               price: 101400200,
-              priceMode: 'fixedDecimals' as const,
+              priceMode: 'fixedDecimals',
               amount: 1000000,
               matcherFee: 4077612,
               matcherPublicKey: INPUT.data.matcherPublicKey,
               senderPublicKey,
               matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
-            };
+            } as const;
 
-            const bytes = orderToProtoBytes({
+            const bytes = makeOrderBytes({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
@@ -3980,10 +4068,10 @@ describe('Signature', function () {
             );
 
             expect(
-              verifySignature(
-                senderPublicKey,
+              await verifySignature(
+                senderPublicKeyBytes,
                 bytes,
-                parsedApproveResult.proofs[0]
+                base58Decode(parsedApproveResult.proofs[0])
               )
             ).to.be.true;
           });
@@ -3993,10 +4081,9 @@ describe('Signature', function () {
 
     describe('Cancel', function () {
       const INPUT = {
-        type: 1003 as const,
-        data: {
-          id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap',
-        },
+        amountAsset: '',
+        data: { id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap' },
+        priceAsset: '',
       };
 
       async function checkOrderId(this: mocha.Context, orderId: string) {
@@ -4024,23 +4111,27 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
+        const approveResult = await this.driver.executeScript<string>(
           () => window.result
         );
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           orderId: INPUT.data.id,
           sender: senderPublicKey,
         };
 
-        const bytes = cancelOrderParamsToBytes(expectedApproveResult);
+        const bytes = makeCancelOrderBytes(expectedApproveResult);
 
         expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.signature)
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.signature)
+          )
         ).to.be.true;
       });
     });
@@ -4049,14 +4140,14 @@ describe('Signature', function () {
   describe('Multiple transactions package', function () {
     async function performSignTransactionPackage(
       this: mocha.Context,
-      tx: Parameters<(typeof KeeperWallet)['signTransactionPackage']>[0],
+      tx: MessageInputTx[],
       name: string
     ) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(
         (
           // eslint-disable-next-line @typescript-eslint/no-shadow
-          tx: Parameters<(typeof KeeperWallet)['signTransactionPackage']>[0],
+          tx: MessageInputTx[],
           // eslint-disable-next-line @typescript-eslint/no-shadow
           name: string
         ) => {
@@ -4126,7 +4217,7 @@ describe('Signature', function () {
         '-1 NonScriptToken',
       ]);
 
-      await checkPackageFees.call(this, ['1.029 WAVES', '0.005 WAVES']);
+      await checkPackageFees.call(this, ['1.034 WAVES']);
 
       await this.driver
         .findElement(By.css('[data-testid="packageDetailsToggle"]'))
@@ -4258,7 +4349,7 @@ describe('Signature', function () {
         await invokeScript
           .findElement(By.css('[data-testid="invokeScriptDApp"]'))
           .getText()
-      ).to.equal(INVOKE_SCRIPT.data.dApp);
+      ).to.equal('3My2kBJaGfeM...3y8rAgfV2EAx');
 
       expect(
         await invokeScript
@@ -4299,7 +4390,7 @@ describe('Signature', function () {
         },
         {
           type: 'string',
-          value: '"hello"',
+          value: 'hello',
         },
       ]);
 
@@ -4342,15 +4433,15 @@ describe('Signature', function () {
         id: string;
         proofs: string[];
         timestamp: number;
-      }>(parse);
+      }>(result => JSONbn.parse(result));
 
       const expectedApproveResult0 = {
         type: ISSUE.type,
-        version: 3,
+        version: 3 as const,
         senderPublicKey,
         name: ISSUE.data.name,
         description: ISSUE.data.description,
-        quantity: ISSUE.data.quantity,
+        quantity: new BigNumber(ISSUE.data.quantity),
         script: ISSUE.data.script,
         decimals: ISSUE.data.precision,
         reissuable: ISSUE.data.reissuable,
@@ -4360,6 +4451,7 @@ describe('Signature', function () {
 
       const bytes0 = makeTxBytes({
         ...expectedApproveResult0,
+        quantity: ISSUE.data.quantity,
         timestamp: parsedApproveResult[0].timestamp,
       });
 
@@ -4367,16 +4459,16 @@ describe('Signature', function () {
       expect(parsedApproveResult[0].id).to.equal(base58Encode(blake2b(bytes0)));
 
       expect(
-        verifySignature(
-          senderPublicKey,
+        await verifySignature(
+          senderPublicKeyBytes,
           bytes0,
-          parsedApproveResult[0].proofs[0]
+          base58Decode(parsedApproveResult[0].proofs[0])
         )
       ).to.be.true;
 
       const expectedApproveResult1 = {
         type: TRANSFER.type,
-        version: 3,
+        version: 3 as const,
         senderPublicKey,
         assetId: TRANSFER.data.amount.assetId,
         recipient: TRANSFER.data.recipient,
@@ -4396,16 +4488,16 @@ describe('Signature', function () {
       expect(parsedApproveResult[1].id).to.equal(base58Encode(blake2b(bytes1)));
 
       expect(
-        verifySignature(
-          senderPublicKey,
+        await verifySignature(
+          senderPublicKeyBytes,
           bytes1,
-          parsedApproveResult[1].proofs[0]
+          base58Decode(parsedApproveResult[1].proofs[0])
         )
       ).to.be.true;
 
       const expectedApproveResult2 = {
         type: REISSUE.type,
-        version: 3,
+        version: 3 as const,
         senderPublicKey,
         assetId: REISSUE.data.assetId,
         quantity: REISSUE.data.quantity,
@@ -4423,16 +4515,16 @@ describe('Signature', function () {
       expect(parsedApproveResult[2].id).to.equal(base58Encode(blake2b(bytes2)));
 
       expect(
-        verifySignature(
-          senderPublicKey,
+        await verifySignature(
+          senderPublicKeyBytes,
           bytes2,
-          parsedApproveResult[2].proofs[0]
+          base58Decode(parsedApproveResult[2].proofs[0])
         )
       ).to.be.true;
 
       const expectedApproveResult3 = {
         type: BURN.type,
-        version: 3,
+        version: 3 as const,
         senderPublicKey,
         assetId: BURN.data.assetId,
         amount: BURN.data.amount,
@@ -4449,16 +4541,16 @@ describe('Signature', function () {
       expect(parsedApproveResult[3].id).to.equal(base58Encode(blake2b(bytes3)));
 
       expect(
-        verifySignature(
-          senderPublicKey,
+        await verifySignature(
+          senderPublicKeyBytes,
           bytes3,
-          parsedApproveResult[3].proofs[0]
+          base58Decode(parsedApproveResult[3].proofs[0])
         )
       ).to.be.true;
 
       const expectedApproveResult4 = {
         type: LEASE.type,
-        version: 3,
+        version: 3 as const,
         senderPublicKey,
         amount: LEASE.data.amount,
         recipient: LEASE.data.recipient,
@@ -4475,16 +4567,16 @@ describe('Signature', function () {
       expect(parsedApproveResult[4].id).to.equal(base58Encode(blake2b(bytes4)));
 
       expect(
-        verifySignature(
-          senderPublicKey,
+        await verifySignature(
+          senderPublicKeyBytes,
           bytes4,
-          parsedApproveResult[4].proofs[0]
+          base58Decode(parsedApproveResult[4].proofs[0])
         )
       ).to.be.true;
 
       const expectedApproveResult5 = {
         type: CANCEL_LEASE.type,
-        version: 3,
+        version: 3 as const,
         senderPublicKey,
         leaseId: CANCEL_LEASE.data.leaseId,
         fee: 500000,
@@ -4500,16 +4592,16 @@ describe('Signature', function () {
       expect(parsedApproveResult[5].id).to.equal(base58Encode(blake2b(bytes5)));
 
       expect(
-        verifySignature(
-          senderPublicKey,
+        await verifySignature(
+          senderPublicKeyBytes,
           bytes5,
-          parsedApproveResult[5].proofs[0]
+          base58Decode(parsedApproveResult[5].proofs[0])
         )
       ).to.be.true;
 
       const expectedApproveResult6 = {
         type: INVOKE_SCRIPT.type,
-        version: 2,
+        version: 2 as const,
         senderPublicKey,
         dApp: INVOKE_SCRIPT.data.dApp,
         call: INVOKE_SCRIPT.data.call,
@@ -4528,10 +4620,10 @@ describe('Signature', function () {
       expect(parsedApproveResult[6].id).to.equal(base58Encode(blake2b(bytes6)));
 
       expect(
-        verifySignature(
-          senderPublicKey,
+        await verifySignature(
+          senderPublicKeyBytes,
           bytes6,
-          parsedApproveResult[6].proofs[0]
+          base58Decode(parsedApproveResult[6].proofs[0])
         )
       ).to.be.true;
     });
@@ -4540,12 +4632,12 @@ describe('Signature', function () {
   describe('Custom data', function () {
     async function performSignCustomData(
       this: mocha.Context,
-      data: Parameters<(typeof KeeperWallet)['signCustomData']>[0]
+      data: MessageInputCustomData
     ) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(
         // eslint-disable-next-line @typescript-eslint/no-shadow
-        (data: Parameters<(typeof KeeperWallet)['signCustomData']>[0]) => {
+        (data: MessageInputCustomData) => {
           KeeperWallet.signCustomData(data).then(
             result => {
               window.result = JSON.stringify(result);
@@ -4566,7 +4658,7 @@ describe('Signature', function () {
       async function checkData(this: mocha.Context, script: string) {
         expect(
           await this.driver
-            .findElement(By.css('[data-testid="contentScript"]'))
+            .findElement(By.css('[data-testid="customDataBinary"]'))
             .getText()
         ).to.equal(script);
       }
@@ -4604,10 +4696,10 @@ describe('Signature', function () {
         expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
 
         expect(
-          verifySignature(
-            senderPublicKey,
-            serializeCustomData(expectedApproveResult),
-            parsedApproveResult.signature
+          await verifySignature(
+            senderPublicKeyBytes,
+            makeCustomDataBytes(expectedApproveResult),
+            base58Decode(parsedApproveResult.signature)
           )
         ).to.be.true;
       });
@@ -4701,10 +4793,10 @@ describe('Signature', function () {
         expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
 
         expect(
-          verifySignature(
-            senderPublicKey,
-            serializeCustomData(expectedApproveResult),
-            parsedApproveResult.signature
+          await verifySignature(
+            senderPublicKeyBytes,
+            makeCustomDataBytes(expectedApproveResult),
+            base58Decode(parsedApproveResult.signature)
           )
         ).to.be.true;
       });

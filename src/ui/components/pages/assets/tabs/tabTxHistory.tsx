@@ -109,7 +109,7 @@ export function TabTxHistory() {
   ];
   const [type, setType] = [
     filters?.type,
-    (value: number) => setFilters({ ...filters, type: value }),
+    (value: number | undefined) => setFilters({ ...filters, type: value }),
   ];
   const [onlyIn, setOnlyIn] = [
     filters?.onlyIncoming,

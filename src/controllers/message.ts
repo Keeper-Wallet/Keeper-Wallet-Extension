@@ -1,340 +1,479 @@
-import { BigNumber } from '@waves/bignumber';
-import { Money } from '@waves/data-entities';
-import { address } from '@waves/ts-lib-crypto';
-import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { customData, wavesAuth } from '@waves/waves-transactions';
-import EventEmitter from 'events';
-import log from 'loglevel';
+import { JSONbn } from '_core/jsonBn';
 import {
-  MessageInput,
-  MessageStoreItem,
-  MessageStoreItemTxData,
-} from 'messages/types';
+  base58Decode,
+  base58Encode,
+  base64Decode,
+  blake2b,
+  utf8Encode,
+} from '@keeper-wallet/waves-crypto';
+import { captureException } from '@sentry/browser';
+import { BigNumber } from '@waves/bignumber';
+import { Asset, Money } from '@waves/data-entities';
+import { binary } from '@waves/marshall';
+import { waves } from '@waves/protobuf-serialization';
+import { LeaseTransactionFromNode, TRANSACTION_TYPE } from '@waves/ts-types';
+import { AssetsRecord } from 'assets/types';
+import EventEmitter from 'events';
+import { getExtraFee } from 'fee/utils';
+import Long from 'long';
+import {
+  computeHash,
+  computeTxHash,
+  makeAuthBytes,
+  makeCancelOrderBytes,
+  makeCustomDataBytes,
+  makeOrderBytes,
+  makeRequestBytes,
+  makeTxBytes,
+  makeWavesAuthBytes,
+  processAliasOrAddress,
+  stringifyOrder,
+  stringifyTransaction,
+} from 'messages/utils';
 import { nanoid } from 'nanoid';
 import ObservableStore from 'obs-store';
-import create from 'parse-json-bignumber';
-import { PERMISSIONS } from 'permissions/constants';
-import { PreferencesAccount } from 'preferences/types';
+import invariant from 'tiny-invariant';
 import Browser from 'webextension-polyfill';
 
-import { MSG_STATUSES } from '../constants';
 import {
   getFeeOptions,
   getSpendingAmountsForSponsorableTx,
   isEnoughBalanceForFeeAndSpendingAmounts,
 } from '../fee/utils';
-import { networkByteFromAddress } from '../lib/cryptoUtil';
-import { ERRORS, ERRORS_DATA } from '../lib/keeperError';
+import { ERRORS, KeeperError } from '../lib/keeperError';
+import {
+  Message,
+  MessageInput,
+  MessageInputOfType,
+  MessageInputTx,
+  MessageOfType,
+  MessageStatus,
+  MessageTx,
+  MessageTxInvokeScript,
+  MessageTxTransfer,
+  MoneyLike,
+} from '../messages/types';
+import { PERMISSIONS } from '../permissions/constants';
+import { PreferencesAccount } from '../preferences/types';
 import { ExtensionStorage } from '../storage/storage';
-import { convertFromSa, getHash, makeBytes } from '../transactions/utils';
-import { getMoney, IMoneyLike } from '../ui/utils/converters';
-import { getTxVersions } from '../wallets';
+import { getTxVersions } from '../wallets/getTxVersions';
 import { AssetInfoController } from './assetInfo';
-import { calculateFeeFabric } from './calculateFee';
 import { CurrentAccountController } from './currentAccount';
 import { NetworkController } from './network';
 import { PermissionsController } from './permissions';
 import { RemoteConfigController } from './remoteConfig';
-import { TxInfoController } from './txInfo';
 import { WalletController } from './wallet';
 
-const { stringify } = create({ BigNumber });
+function moneyLikeToMoney(amount: MoneyLike, assets: AssetsRecord) {
+  const asset = new Asset(assets[amount.assetId ?? 'WAVES'] ?? assets.WAVES);
+
+  if (amount.tokens != null || amount.coins != null) {
+    let result = new Money(0, asset);
+
+    if ('tokens' in amount) {
+      result = result.cloneWithTokens(amount.tokens || 0);
+    }
+
+    if ('coins' in amount) {
+      result = result.add(result.cloneWithCoins(amount.coins || 0));
+    }
+
+    return result;
+  }
+
+  return new Money(amount.amount || 0, asset);
+}
 
 export class MessageController extends EventEmitter {
-  private messages;
   private store;
-  private signTx;
-  private signOrder;
-  private signCancelOrder;
-  private signWavesAuth;
-  private signCustomData;
-  private auth;
-  private signRequest;
-  private broadcast: NetworkController['broadcast'];
-  private getMatcherPublicKey;
   private networkController;
-  private getMessagesConfig;
-  private getPackConfig;
-  private assetInfo;
   private assetInfoController;
-  private txInfo;
   setPermission;
-  private getFee;
-  private getFeeConfig;
   private getAccountBalance;
+  private remoteConfigController;
+  private walletController;
 
   constructor({
     extensionStorage,
-    signTx,
-    signOrder,
-    signCancelOrder,
-    signWavesAuth,
-    signCustomData,
-    auth,
-    signRequest,
     assetInfoController,
     networkController,
-    getMatcherPublicKey,
-    getMessagesConfig,
-    getPackConfig,
-    txInfo,
     setPermission,
     getAccountBalance,
-    getFeeConfig,
+    remoteConfigController,
+    walletController,
   }: {
     extensionStorage: ExtensionStorage;
-    signTx: WalletController['signTx'];
-    signOrder: WalletController['signOrder'];
-    signCancelOrder: WalletController['signCancelOrder'];
-    signWavesAuth: WalletController['signWavesAuth'];
-    signCustomData: WalletController['signCustomData'];
-    auth: WalletController['auth'];
-    signRequest: WalletController['signRequest'];
     assetInfoController: AssetInfoController;
     networkController: NetworkController;
-    getMatcherPublicKey: NetworkController['getMatcherPublicKey'];
-    getMessagesConfig: RemoteConfigController['getMessagesConfig'];
-    getPackConfig: RemoteConfigController['getPackConfig'];
-    txInfo: TxInfoController['txInfo'];
     setPermission: PermissionsController['setPermission'];
     getAccountBalance: CurrentAccountController['getAccountBalance'];
-    getFeeConfig: RemoteConfigController['getFeeConfig'];
+    remoteConfigController: RemoteConfigController;
+    walletController: WalletController;
   }) {
     super();
 
-    this.messages = extensionStorage.getInitState({
-      messages: [],
-    });
-
-    this.store = new ObservableStore(this.messages);
+    this.store = new ObservableStore(
+      extensionStorage.getInitState({ messages: [] })
+    );
     extensionStorage.subscribe(this.store);
 
-    // Signing methods from WalletController
-    this.signTx = signTx;
-    this.signOrder = signOrder;
-    this.signCancelOrder = signCancelOrder;
-    this.signWavesAuth = signWavesAuth;
-    this.signCustomData = signCustomData;
-    this.auth = auth;
-    this.signRequest = signRequest;
-
-    // Broadcast and getMatcherPublicKey method from NetworkController
-    this.broadcast = messages => networkController.broadcast(messages);
-    this.getMatcherPublicKey = getMatcherPublicKey;
-    this.networkController = networkController;
-
-    this.getMessagesConfig = getMessagesConfig;
-    this.getPackConfig = getPackConfig;
-
-    // Get assetInfo method from AssetInfoController
-    this.assetInfo = assetInfoController.assetInfo.bind(assetInfoController);
     this.assetInfoController = assetInfoController;
-    // tx by txId
-    this.txInfo = txInfo;
+    this.networkController = networkController;
+    this.remoteConfigController = remoteConfigController;
+    this.walletController = walletController;
 
     // permissions
     this.setPermission = setPermission;
-
-    this.getFee = calculateFeeFabric(assetInfoController, networkController);
-    this.getFeeConfig = getFeeConfig;
     this.getAccountBalance = getAccountBalance;
-
-    this.rejectAllByTime();
+    this.#rejectAllByTime();
 
     Browser.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'rejectMessages') {
-        this.rejectAllByTime();
+        this.#rejectAllByTime();
       }
     });
 
-    this._updateBadge();
+    this.#updateBadge();
   }
 
-  async newMessage(messageData: MessageInput) {
-    log.debug(
-      `New message ${messageData.type}: ${JSON.stringify(messageData.data)}`
-    );
-
-    let message: MessageStoreItem;
+  async newMessage<T extends MessageInput['type']>(
+    messageInput: MessageInputOfType<T>
+  ) {
     try {
-      message = await this._generateMessage(messageData);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      throw ERRORS_DATA[e.code as keyof typeof ERRORS_DATA]
-        ? e
-        : ERRORS.UNKNOWN(e.message, e.stack);
-    }
-
-    const messages = this.store.getState().messages;
-
-    while (messages.length > this.getMessagesConfig().max_messages) {
-      const oldest = messages
-        .filter(msg => Object.values(MSG_STATUSES).includes(msg.status))
-        .sort((a, b) => a.timestamp - b.timestamp)[0];
-      if (oldest) {
-        this._deleteMessage(oldest.id);
-      } else {
-        break;
+      const message = await this.#generateMessage(messageInput);
+      const { messages } = this.store.getState();
+      this.#updateStore(messages.concat(message));
+      return message as MessageOfType<T>;
+    } catch (err) {
+      if (err instanceof KeeperError) {
+        throw err;
       }
+
+      if (err instanceof Response) {
+        throw new Error(await err.text());
+      }
+
+      // eslint-disable-next-line no-console
+      console.error(err);
+      captureException(err);
+      throw ERRORS.UNKNOWN(String(err));
     }
-
-    log.debug(`Generated message ${JSON.stringify(message)}`);
-
-    messages.push(message);
-
-    this._updateStore(messages);
-
-    return message.id;
   }
 
   async getMessageResult(id: string) {
-    const message = this._getMessageById(id);
+    const message = this.getMessageById(id);
 
     switch (message.status) {
-      case MSG_STATUSES.SIGNED:
-      case MSG_STATUSES.PUBLISHED:
+      case MessageStatus.Signed:
+      case MessageStatus.Published:
         return message.result;
-      case MSG_STATUSES.REJECTED:
-      case MSG_STATUSES.REJECTED_FOREVER:
+      case MessageStatus.Rejected:
+      case MessageStatus.RejectedForever:
         throw ERRORS.USER_DENIED(undefined, message.status);
-      case MSG_STATUSES.FAILED:
-        throw ERRORS.FAILED_MSG(undefined, message.err.message);
+      case MessageStatus.Failed:
+        throw ERRORS.FAILED_MSG(undefined, message.err);
     }
 
-    const finishedMessage = await new Promise<MessageStoreItem>(resolve => {
+    const finishedMessage = await new Promise<Message>(resolve => {
       this.once(`${id}:finished`, resolve);
     });
 
     switch (finishedMessage.status) {
-      case MSG_STATUSES.SIGNED:
-      case MSG_STATUSES.PUBLISHED:
+      case MessageStatus.Signed:
+      case MessageStatus.Published:
         return finishedMessage.result;
-      case MSG_STATUSES.REJECTED:
-      case MSG_STATUSES.REJECTED_FOREVER:
+      case MessageStatus.Rejected:
+      case MessageStatus.RejectedForever:
         throw ERRORS.USER_DENIED(undefined, message.status);
-      case MSG_STATUSES.FAILED:
-        throw ERRORS.FAILED_MSG(undefined, finishedMessage.err.message);
+      case MessageStatus.Failed:
+        throw ERRORS.FAILED_MSG(undefined, finishedMessage.err);
       default:
         throw ERRORS.UNKNOWN();
     }
   }
 
   getMessageById(id: string) {
-    return this._getMessageById(id);
+    const result = this.store
+      .getState()
+      .messages.find(message => message.id === id);
+
+    if (!result) throw new Error(`Failed to get message with id ${id}`);
+
+    return result;
   }
 
   deleteMessage(id: string) {
-    return this._deleteMessage(id);
+    const { messages } = this.store.getState();
+    const index = messages.findIndex(message => message.id === id);
+
+    if (index > -1) {
+      messages.splice(index, 1);
+      this.#updateStore(messages);
+    }
   }
 
-  async approve(id: string, account?: PreferencesAccount) {
-    const message = this._getMessageById(id);
-    message.account = account || message.account;
-
-    if (!message.account) {
-      throw new Error(
-        'Message has empty account filled and no address is provided'
-      );
-    }
+  async approve(id: string) {
+    const message = this.getMessageById(id);
 
     try {
-      await this._signMessage(message);
+      const { address, network, publicKey } = message.account;
+      const wallet = this.walletController.getWallet(address, network);
 
-      if (
-        message.broadcast &&
-        (message.type === 'transaction' ||
-          message.type === 'order' ||
-          message.type === 'cancelOrder')
-      ) {
-        message.result = await this.broadcast(message);
-        message.status = MSG_STATUSES.PUBLISHED;
-      }
+      switch (message.type) {
+        case 'auth': {
+          const { data, host, name, prefix, version } = message.data.data;
 
-      if (message.successPath) {
-        const url = new URL(message.successPath);
+          const signature = await wallet.signAuth(
+            makeAuthBytes({ data, host })
+          );
 
-        switch (message.type) {
-          case 'transaction':
-            url.searchParams.append('txId', message.messageHash);
+          message.result = {
+            address,
+            host,
+            name,
+            prefix,
+            publicKey,
+            signature: base58Encode(signature),
+            version,
+          };
+
+          message.status = MessageStatus.Signed;
+
+          if (message.successPath) {
+            const url = new URL(message.successPath);
+            url.searchParams.append('p', message.result.publicKey);
+            url.searchParams.append('s', message.result.signature);
+            url.searchParams.append('a', message.result.address);
+            this.emit('Open new tab', url.toString());
+          }
+          break;
+        }
+        case 'authOrigin':
+          this.setPermission(message.origin, PERMISSIONS.APPROVED);
+          message.result = { approved: 'OK' };
+          message.status = MessageStatus.Signed;
+          break;
+        case 'cancelOrder': {
+          const cancelOrder = {
+            orderId: message.data.data.id,
+            sender: message.data.data.senderPublicKey,
+          };
+
+          const signature = await wallet.signCancelOrder(
+            makeCancelOrderBytes(cancelOrder)
+          );
+
+          const signedCancelOrder = {
+            ...cancelOrder,
+            signature: base58Encode(signature),
+          };
+
+          if (message.broadcast) {
+            message.result = JSONbn.stringify(
+              await this.networkController.broadcastCancelOrder(
+                signedCancelOrder,
+                message
+              )
+            );
+
+            message.status = MessageStatus.Published;
+          } else {
+            message.result = JSONbn.stringify(signedCancelOrder);
+            message.status = MessageStatus.Signed;
+          }
+          break;
+        }
+        case 'customData': {
+          const { data } = message;
+
+          const signature = await wallet.signCustomData(
+            makeCustomDataBytes(data)
+          );
+
+          message.result = {
+            ...data,
+            signature: base58Encode(signature),
+          };
+
+          message.status = MessageStatus.Signed;
+          break;
+        }
+        case 'order': {
+          const signature = await wallet.signOrder(
+            makeOrderBytes(message.data),
+            message.data.version
+          );
+
+          const signedOrder =
+            message.data.version === 1
+              ? { ...message.data, signature }
+              : {
+                  ...message.data,
+                  proofs: message.data.proofs.concat([base58Encode(signature)]),
+                };
+
+          if (message.broadcast) {
+            message.result = JSONbn.stringify(
+              await this.networkController.broadcastOrder(signedOrder)
+            );
+
+            message.status = MessageStatus.Published;
+          } else {
+            message.result = stringifyOrder(signedOrder);
+            message.status = MessageStatus.Signed;
+          }
+          break;
+        }
+        case 'request': {
+          const signature = await wallet.signRequest(
+            makeRequestBytes({
+              senderPublicKey: message.data.data.senderPublicKey,
+              timestamp: message.data.data.timestamp,
+            })
+          );
+
+          message.result = base58Encode(signature);
+
+          message.status = MessageStatus.Signed;
+          break;
+        }
+        case 'transaction': {
+          const signature = await wallet.signTx(
+            makeTxBytes(message.data),
+            message.data
+          );
+
+          const signedTx = {
+            ...message.data,
+            proofs: message.data.proofs.concat([base58Encode(signature)]),
+          };
+
+          if (message.broadcast) {
+            message.result = JSONbn.stringify(
+              await this.networkController.broadcastTransaction(signedTx)
+            );
+
+            message.status = MessageStatus.Published;
+          } else {
+            message.result = stringifyTransaction(signedTx);
+            message.status = MessageStatus.Signed;
+          }
+
+          if (message.successPath) {
+            const url = new URL(message.successPath);
+            url.searchParams.append('txId', message.data.id);
             this.emit('Open new tab', url.href);
-            break;
-          case 'auth':
-            if (message.result && typeof message.result !== 'string') {
-              url.searchParams.append('p', message.result.publicKey);
-              url.searchParams.append('s', message.result.signature);
-              url.searchParams.append('a', message.result.address);
-              this.emit('Open new tab', url.href);
-            }
-            break;
+          }
+          break;
+        }
+        case 'transactionPackage': {
+          message.result = await Promise.all(
+            message.data.map(async data => {
+              const signature = await wallet.signTx(makeTxBytes(data), data);
+
+              return stringifyTransaction({
+                ...data,
+                proofs: data.proofs.concat([base58Encode(signature)]),
+              });
+            })
+          );
+
+          message.status = MessageStatus.Signed;
+          break;
+        }
+        case 'wavesAuth': {
+          const data = {
+            ...message.data,
+            publicKey: message.data.publicKey || publicKey,
+            timestamp: message.data.timestamp || Date.now(),
+          };
+
+          const signature = await wallet.signWavesAuth(
+            makeWavesAuthBytes(data)
+          );
+
+          message.result = {
+            ...data,
+            signature: base58Encode(signature),
+          };
+
+          message.status = MessageStatus.Signed;
+          break;
         }
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      message.status = MSG_STATUSES.FAILED;
-      message.err = {
-        message: e.toString(),
-        stack: e.stack,
-      };
+
+      this.#updateMessage(message);
+      this.emit(`${message.id}:finished`, message);
+
+      return message;
+    } catch (err) {
+      if (
+        err instanceof KeeperError &&
+        err.message === 'Request is rejected on ledger'
+      ) {
+        this.reject(id);
+        return message;
+      }
+
+      const errorMessage =
+        err && typeof err === 'object' && 'message' in err && err.message
+          ? String(err.message)
+          : String(err);
+
+      Object.assign(message, {
+        status: MessageStatus.Failed,
+        err: errorMessage,
+      });
+
+      this.#updateMessage(message);
+      this.emit(`${message.id}:finished`, message);
+
+      if (err instanceof Error) {
+        throw err;
+      } else {
+        throw new Error(errorMessage);
+      }
     }
-
-    this._updateMessage(message);
-    this.emit(`${message.id}:finished`, message);
-
-    if (message.status === MSG_STATUSES.FAILED) {
-      throw new Error(message.err.message);
-    }
-
-    return message;
   }
 
   reject(id: string, forever?: boolean) {
-    const message = this._getMessageById(id);
-    message.status = !forever
-      ? MSG_STATUSES.REJECTED
-      : MSG_STATUSES.REJECTED_FOREVER;
-    this._updateMessage(message);
+    const message = this.getMessageById(id);
+
+    message.status = forever
+      ? MessageStatus.RejectedForever
+      : MessageStatus.Rejected;
+
+    this.#updateMessage(message);
     this.emit(`${message.id}:finished`, message);
   }
 
-  async updateTransactionFee(id: string, fee: IMoneyLike) {
-    const message = this._getMessageById(id) as Extract<
-      MessageStoreItem,
-      { type: 'transaction' }
-    >;
+  async updateTransactionFee(id: string, fee: MoneyLike) {
+    const message = this.getMessageById(id);
+    invariant(message.type === 'transaction');
 
-    message.data.data.fee = fee;
-    const updatedMsg = await this._generateMessage(message);
-    updatedMsg.id = id;
-    this._updateMessage(updatedMsg);
-    return updatedMsg;
-  }
+    message.input.data.data.fee = fee;
 
-  updateBadge() {
-    this._updateBadge();
+    if (!message.input.data.data.initialFee) {
+      message.input.data.data.initialFee = {
+        assetId: 'feeAssetId' in message.data ? message.data.feeAssetId : null,
+        coins: message.data.fee,
+      };
+    }
+
+    const newMessage = await this.#generateMessage(message.input);
+    newMessage.id = id;
+    this.#updateMessage(newMessage);
+    return newMessage;
   }
 
   rejectByOrigin(byOrigin: string) {
     const { messages } = this.store.getState();
+
     messages.forEach(({ id, origin }) => {
       if (byOrigin === origin) {
         this.reject(id);
       }
     });
-  }
-
-  rejectAllByTime() {
-    const { message_expiration_ms } = this.getMessagesConfig();
-    const time = Date.now();
-    const { messages } = this.store.getState();
-    messages.forEach(({ id, timestamp, status }) => {
-      if (
-        time - timestamp > message_expiration_ms &&
-        status === MSG_STATUSES.UNAPPROVED
-      ) {
-        this.reject(id);
-      }
-    });
-    this._updateMessagesByTimeout();
   }
 
   removeMessagesFromConnection(connectionId: string) {
@@ -346,776 +485,1548 @@ export class MessageController extends EventEmitter {
       }
     });
 
-    this._updateStore(
+    this.#updateStore(
       messages.filter(message => message.connectionId !== connectionId)
     );
   }
 
   clearMessages(ids?: string | string[]) {
     if (typeof ids === 'string') {
-      this._deleteMessage(ids);
+      this.deleteMessage(ids);
     } else if (ids && ids.length > 0) {
-      ids.forEach(id => this._deleteMessage(id));
+      ids.forEach(id => this.deleteMessage(id));
     } else {
-      this._updateStore([]);
+      this.#updateStore([]);
     }
   }
 
   getUnapproved() {
-    return this.messages.messages.filter(
-      ({ status }) => status === MSG_STATUSES.UNAPPROVED
-    );
+    return this.store
+      .getState()
+      .messages.filter(({ status }) => status === MessageStatus.UnApproved);
   }
 
-  _updateMessagesByTimeout() {
-    const { update_messages_ms } = this.getMessagesConfig();
+  #rejectAllByTime() {
+    const { message_expiration_ms } =
+      this.remoteConfigController.getMessagesConfig();
+
+    const { messages } = this.store.getState();
+
+    messages.forEach(({ id, timestamp, status }) => {
+      if (
+        Date.now() - timestamp > message_expiration_ms &&
+        status === MessageStatus.UnApproved
+      ) {
+        this.reject(id);
+      }
+    });
+
+    this.#updateMessagesByTimeout();
+  }
+
+  #updateMessagesByTimeout() {
+    const { update_messages_ms } =
+      this.remoteConfigController.getMessagesConfig();
+
     Browser.alarms.create('rejectMessages', {
       delayInMinutes: update_messages_ms / 1000 / 60,
     });
   }
 
-  _updateMessage(message: MessageStoreItem) {
+  #updateMessage(message: Message) {
     const messages = this.store.getState().messages;
-    const id = message.id;
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    const index = messages.findIndex(message => message.id === id);
-    messages[index] = message;
-    this._updateStore(messages);
+    messages[messages.findIndex(m => m.id === message.id)] = message;
+    this.#updateStore(messages);
   }
 
-  _getMessageById(id: string) {
-    const result = this.store
-      .getState()
-      .messages.find(message => message.id === id);
-    if (!result) throw new Error(`Failed to get message with id ${id}`);
-    return result;
+  #updateStore(messages: Message[]) {
+    this.store.updateState({ ...this.store.getState(), messages });
+    this.#updateBadge();
   }
 
-  _deleteMessage(id: string) {
-    const { messages } = this.store.getState();
-    const index = messages.findIndex(message => message.id === id);
-    if (index > -1) {
-      messages.splice(index, 1);
-      this._updateStore(messages);
-    }
-  }
-
-  _updateStore(messages: MessageStoreItem[]) {
-    this.messages = { ...this.store.getState(), messages };
-    this.store.updateState(this.messages);
-    this._updateBadge();
-  }
-
-  _updateBadge() {
+  #updateBadge() {
     this.emit('Update badge');
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async _transformData(data: any) {
-    if (
-      !data ||
-      typeof data !== 'object' ||
-      data instanceof BigNumber ||
-      data instanceof Money
-    ) {
-      return data;
-    }
-
-    if (Array.isArray(data)) {
-      data = [...data];
-    } else {
-      data = { ...data };
-    }
-
-    for (const key in data) {
-      if (!Object.prototype.hasOwnProperty.call(data, key)) {
-        continue;
-      }
-
-      // Validate fields containing assetId
-      if (
-        [
-          'assetId',
-          'amountAsset',
-          'amountAssetId',
-          'priceAsset',
-          'priceAssetId',
-          'feeAssetId',
-          'matcherFeeAssetId',
-        ].includes(key)
-      ) {
-        await this.assetInfo(data[key]);
-      }
-
-      // Convert moneyLike fields
-      const field = data[key];
-
-      if (field && typeof field === 'object') {
-        if (
-          Object.prototype.hasOwnProperty.call(field, 'tokens') &&
-          Object.prototype.hasOwnProperty.call(field, 'assetId')
-        ) {
-          const asset = await this.assetInfo(data[key].assetId);
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          data[key] = Money.fromTokens(field.tokens, asset as any);
-        } else if (
-          Object.prototype.hasOwnProperty.call(field, 'coins') &&
-          Object.prototype.hasOwnProperty.call(field, 'assetId')
-        ) {
-          const asset = await this.assetInfo(data[key].assetId);
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          data[key] = Money.fromCoins(field.coins, asset as any);
-        } else if (
-          Object.prototype.hasOwnProperty.call(field, 'amount') &&
-          Object.prototype.hasOwnProperty.call(field, 'assetId') &&
-          Object.keys(field).length === 2
-        ) {
-          const asset = await this.assetInfo(data[key].assetId);
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          data[key] = Money.fromCoins(field.amount, asset as any);
-        } else {
-          data[key] = await this._transformData(field);
-        }
-      }
-    }
-
-    return data;
-  }
-
-  async _signMessage(message: MessageStoreItem) {
-    switch (message.type) {
-      case 'transaction':
-        message.result = await this.signTx(
-          message.account.address,
-          {
-            ...message.data,
-            data: await this._transformData(message.data.data),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          } as any,
-          message.account.network
-        );
-        break;
-      case 'transactionPackage':
-        message.result = await Promise.all(
-          message.data.map(async data => {
-            const txParams = await this._transformData(data);
-
-            return this.signTx(
-              message.account.address,
-              txParams,
-              message.account.network
-            );
-          })
-        );
-        break;
-      case 'order':
-        message.result = await this.signOrder(
-          message.account.address,
-          {
-            ...message.data,
-            data: await this._transformData(message.data.data),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          } as any,
-          message.account.network
-        );
-        break;
-      case 'cancelOrder':
-        message.result = await this.signCancelOrder(
-          message.account.address,
-          {
-            ...message.data,
-            data: await this._transformData(message.data.data),
-          },
-          message.account.network
-        );
-        break;
-      case 'auth': {
-        const signedData = await this.auth(
-          message.account.address,
-          message.data,
-          message.account.network
-        );
-
-        message.result = signedData;
-        break;
-      }
-      case 'wavesAuth':
-        message.result = await this.signWavesAuth(
-          message.data,
-          message.account.address,
-          message.account.network
-        );
-        break;
-      case 'request':
-        message.result = await this.signRequest(
-          message.account.address,
-          message.data,
-          message.account.network
-        );
-        break;
-      case 'customData':
-        message.result = await this.signCustomData(
-          message.data,
-          message.account.address,
-          message.account.network
-        );
-        break;
-      case 'authOrigin':
-        message.result = { approved: 'OK' };
-        this.setPermission(message.origin, PERMISSIONS.APPROVED);
-        break;
-      default:
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        throw new Error(`Unknown message type ${(message as any).type}`);
-    }
-    message.status = MSG_STATUSES.SIGNED;
-  }
-
-  async _generateMessage(messageData: MessageInput): Promise<MessageStoreItem> {
-    const message = {
-      ...messageData,
-      id: nanoid(),
-      timestamp: Date.now(),
-      ext_uuid: messageData.options && messageData.options.uid,
-      status: MSG_STATUSES.UNAPPROVED,
-    };
-
-    if (!message.data && message.type !== 'authOrigin') {
-      throw ERRORS.REQUEST_ERROR('should contain a data field', message);
-    }
-
-    switch (message.type) {
-      case 'wavesAuth': {
-        const result = {
-          ...message,
-          successPath: message.data.successPath || undefined,
-          data: {
-            ...message.data,
-            publicKey: message.data.publicKey || message.account.publicKey,
-          },
-        };
-
-        let messageHash: string;
-
-        try {
-          messageHash = wavesAuth(message.data, 'fake user').hash;
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (e: any) {
-          throw ERRORS.REQUEST_ERROR(e.message, message);
-        }
-
-        return {
-          ...result,
-          messageHash,
-        };
-      }
-      case 'auth': {
-        let successPath: string | null = null;
-
-        try {
-          successPath = message.data.successPath
-            ? new URL(
-                message.data.successPath,
-                message.data.referrer || `https://${message.origin}`
-              ).href
-            : null;
-        } catch {
-          // ignore
-        }
-
-        const data = {
-          type: 1000 as const,
-          referrer: message.data.referrer,
-          data: {
-            data: message.data.data,
-            prefix: 'WavesWalletAuthentication',
-            host:
-              message.data.host || new URL(`https://${message.origin}`).host,
-            name: message.data.name,
-            icon: message.data.icon,
-          },
-        };
-
-        return {
-          ...message,
-          successPath,
-          messageHash: getHash.auth(makeBytes.auth(convertFromSa.auth(data))),
-          data,
-        };
-      }
-      case 'transactionPackage': {
-        const { max, allow_tx } = this.getPackConfig();
-
-        const msgs = message.data.length;
-
-        if (!msgs || msgs > max) {
-          throw ERRORS.REQUEST_ERROR(
-            `max transactions in pack is ${max}`,
-            message
-          );
-        }
-
-        const unavailableTx = message.data.filter(
-          ({ type }) => !allow_tx.includes(type)
-        );
-
-        if (unavailableTx.length) {
-          throw ERRORS.REQUEST_ERROR(
-            `tx type can be ${allow_tx.join(', ')}`,
-            message
-          );
-        }
-
-        const data = await Promise.all(
-          message.data.map(async txParams => {
-            this._validateTx(txParams, message.account);
-
-            // eslint-disable-next-line @typescript-eslint/no-shadow
-            const data = {
-              timestamp: Date.now(),
-              senderPublicKey: message.account.publicKey,
-              chainId: networkByteFromAddress(
-                message.account.address
-              ).charCodeAt(0),
-              ...txParams.data,
-            };
-
-            const readyData: MessageStoreItemTxData = {
-              ...txParams,
-              data: {
-                ...data,
-                fee:
-                  txParams.data.fee ||
-                  (await this._getDefaultTxFee(message, { ...txParams, data })),
-              },
-            };
-
-            const id = getHash.transaction(
-              makeBytes.transaction(
-                convertFromSa.transaction(
-                  await this._transformData(readyData),
-                  this.networkController.getNetworkCode().charCodeAt(0),
-                  message.account.type
-                )
-              )
-            );
-
-            if (
-              txParams.type === TRANSACTION_TYPE.CANCEL_LEASE &&
-              txParams.data.leaseId
-            ) {
-              readyData.data.lease = await this.txInfo(txParams.data.leaseId);
-            }
-
-            return {
-              ...readyData,
-              id,
-            };
-          })
-        );
-
-        return {
-          ...message,
-          successPath: message.data.successPath || undefined,
-          data,
-          messageHash: data.map(tx => tx.id),
-        };
-      }
-      case 'order': {
-        if (message.data.type !== 1002) {
-          throw ERRORS.REQUEST_ERROR('unexpected type', message.data);
-        }
-
-        if (!this._isMoneyLikeValuePositive(message.data.data.amount)) {
-          throw ERRORS.REQUEST_ERROR('amount is not valid', message.data);
-        }
-
-        if (!this._isMoneyLikeValuePositive(message.data.data.price)) {
-          throw ERRORS.REQUEST_ERROR('price is not valid', message.data);
-        }
-
-        if (!this._isMoneyLikeValuePositive(message.data.data.matcherFee)) {
-          throw ERRORS.REQUEST_ERROR('matcherFee is not valid', message.data);
-        }
-
-        const data = {
-          ...message.data,
-          data: {
-            timestamp: Date.now(),
-            senderPublicKey: message.account.publicKey,
-            chainId: networkByteFromAddress(message.account.address).charCodeAt(
-              0
-            ),
-            matcherPublicKey: await this.getMatcherPublicKey(),
-            ...message.data.data,
-          },
-        };
-
-        const result = {
-          ...message,
-          successPath: message.data.successPath || undefined,
-          data,
-        };
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const filledMessageData: any = result.data;
-
-        const convertedData = convertFromSa.order(
-          {
-            ...filledMessageData,
-            data: await this._transformData(filledMessageData.data),
-          },
-          this.networkController.getNetworkCode().charCodeAt(0)
-        );
-
-        const messageHash = getHash.order(makeBytes.order(convertedData));
-
-        const json = stringify(
-          {
-            ...convertedData,
-            sender: address(
-              { publicKey: convertedData.senderPublicKey },
-              this.networkController.getNetworkCode().charCodeAt(0)
-            ),
-          },
-          null,
-          2
-        );
-
-        return {
-          ...result,
-          messageHash,
-          json,
-        };
-      }
-      case 'transaction': {
-        if (!message.data.type || message.data.type >= 1000) {
-          throw ERRORS.REQUEST_ERROR('invalid transaction type', message);
-        }
-
-        this._validateTx(message.data, message.account);
-
-        const result = {
-          ...message,
-          successPath: message.data.successPath || undefined,
-          data: {
-            ...message.data,
-            data: {
-              timestamp: Date.now(),
-              senderPublicKey: message.account.publicKey,
-              chainId: networkByteFromAddress(
-                message.account.address
-              ).charCodeAt(0),
-              ...message.data.data,
-            },
-          },
-        } as unknown as Extract<MessageStoreItem, { type: 'transaction' }>;
-
-        result.data.data.fee =
-          message.data.data.fee ||
-          (await this._getDefaultTxFee(message, result.data));
-
-        result.data.data.initialFee = result.data.data.initialFee || {
-          ...result.data.data.fee,
-        };
-
-        if (result.data.type === TRANSACTION_TYPE.CANCEL_LEASE) {
-          result.data.data.lease = await this.txInfo(result.data.data.leaseId);
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const filledMessageData: any = result.data;
-
-        const convertedData = convertFromSa.transaction(
-          {
-            ...filledMessageData,
-            data: await this._transformData(filledMessageData.data),
-          },
-          result.data.data.chainId,
-          message.account.type
-        );
-
-        return {
-          ...result,
-          messageHash: getHash.transaction(
-            makeBytes.transaction(convertedData)
-          ),
-          json: stringify(
-            {
-              ...convertedData,
-              sender: address(
-                { publicKey: convertedData.senderPublicKey },
-                result.data.data.chainId
-              ),
-            },
-            null,
-            2
-          ),
-        };
-      }
-      case 'cancelOrder': {
-        const result = {
-          ...message,
-          successPath: message.data.successPath || undefined,
-          amountAsset: message.data.amountAsset,
-          priceAsset: message.data.priceAsset,
-          data: {
-            ...message.data,
-            data: {
-              timestamp: Date.now(),
-              senderPublicKey: message.account.publicKey,
-              ...message.data.data,
-            },
-          },
-        };
-
-        return {
-          ...result,
-          messageHash: getHash.request(
-            makeBytes.request(convertFromSa.request(result.data))
-          ),
-        };
-      }
-      case 'request': {
-        const result = {
-          ...message,
-          successPath: message.data.successPath || undefined,
-          data: {
-            ...message.data,
-            data: {
-              timestamp: Date.now(),
-              senderPublicKey: message.account.publicKey,
-              ...message.data.data,
-            },
-          },
-        };
-
-        return {
-          ...result,
-          messageHash: getHash.request(
-            makeBytes.request(convertFromSa.request(result.data))
-          ),
-        };
-      }
-      case 'authOrigin':
-        return {
-          ...message,
-          successPath: message.data.successPath || undefined,
-        };
-      case 'customData': {
-        const result = {
-          ...message,
-          successPath: message.data.successPath || undefined,
-          data: {
-            ...message.data,
-            publicKey: message.data.publicKey || message.account.publicKey,
-          },
-        };
-
-        let messageHash: string;
-
-        try {
-          messageHash = customData(result.data, 'fake user').hash;
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (e: any) {
-          throw ERRORS.REQUEST_ERROR(e.message, message);
-        }
-
-        return {
-          ...result,
-          messageHash,
-        };
-      }
-      default:
-        throw ERRORS.REQUEST_ERROR(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          `incorrect type "${(message as any).type}"`,
-          message
-        );
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async _getDefaultTxFee(message: any, signData: any) {
-    const signableData = await this._transformData({ ...signData });
-    const chainId = this.networkController.getNetworkCode().charCodeAt(0);
-
-    let fee: IMoneyLike = {
-      assetId: 'WAVES',
-      coins: (
-        await this.getFee(
-          signableData,
-          chainId,
-          message.account,
-          this.getFeeConfig()
-        )
-      ).toString(),
-    };
-
-    const assets = this.assetInfoController.getAssets();
-    const balance = this.getAccountBalance();
-    const feeMoney = getMoney(fee, assets);
-
-    const spendingAmounts = getSpendingAmountsForSponsorableTx({
-      assets,
-      message,
-    });
-
-    if (
-      !isEnoughBalanceForFeeAndSpendingAmounts({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        assetBalance: balance!.assets![feeMoney!.asset.id],
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        fee: feeMoney!,
-        spendingAmounts,
-      })
-    ) {
-      const feeOptions = getFeeOptions({
-        assets,
-        balance,
-        feeConfig: this.getFeeConfig(),
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        initialFee: feeMoney!,
-        txType: message.data.type,
-        usdPrices: this.assetInfoController.getUsdPrices(),
-      });
-
-      const feeOption = feeOptions.find(({ assetBalance, money }) =>
-        isEnoughBalanceForFeeAndSpendingAmounts({
-          assetBalance,
-          fee: money,
-          spendingAmounts,
-        })
-      );
-
-      if (feeOption) {
-        fee = feeOption.money.toJSON();
-      }
-    }
-
-    return fee;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _getMoneyLikeValue(moneyLike: any) {
-    for (const key of ['tokens', 'coins', 'amount']) {
+  #getMoneyLikeValue(moneyLike: MoneyLike) {
+    for (const key of ['tokens', 'coins', 'amount'] as const) {
       if (key in moneyLike) {
-        return moneyLike[key];
+        return moneyLike[key] as Exclude<
+          (typeof moneyLike)[typeof key],
+          BigNumber
+        >;
       }
     }
 
     return null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _isNumberLikePositive(numberLike: any) {
+  #isNumberLikePositive(numberLike: string | number) {
     const bn = new BigNumber(numberLike);
 
     return bn.isFinite() && bn.gt(0);
   }
 
-  _isMoneyLikeValuePositive(moneyLike: unknown) {
+  #isMoneyLikeValuePositive(
+    moneyLike: MoneyLike | string | number | null | undefined
+  ) {
     if (typeof moneyLike !== 'object' || moneyLike === null) {
       return false;
     }
 
-    const value = this._getMoneyLikeValue(moneyLike);
+    const value = this.#getMoneyLikeValue(moneyLike);
 
     if (value == null) {
       return false;
     }
 
-    return this._isNumberLikePositive(value);
+    return this.#isNumberLikePositive(value);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _validateTx(tx: any, account: PreferencesAccount) {
-    if ('fee' in tx.data && !this._isMoneyLikeValuePositive(tx.data.fee)) {
-      throw ERRORS.REQUEST_ERROR('fee is not valid', tx);
+  #getFeeInAssetWithEnoughBalance(
+    assets: AssetsRecord,
+    txParams: Partial<Pick<MessageTx, 'fee' | 'initialFee'>> &
+      (
+        | (Omit<
+            MessageTxTransfer,
+            'fee' | 'id' | 'initialFee' | 'initialFeeAssetId'
+          > &
+            Partial<Pick<MessageTxTransfer, 'initialFeeAssetId'>>)
+        | (Omit<
+            MessageTxInvokeScript,
+            'fee' | 'id' | 'initialFee' | 'initialFeeAssetId'
+          > &
+            Partial<Pick<MessageTxInvokeScript, 'initialFeeAssetId'>>)
+      ),
+    feeMoneyLike: MoneyLike
+  ) {
+    const balance = this.getAccountBalance();
+
+    const feeMoney = moneyLikeToMoney(feeMoneyLike, assets);
+
+    const spendingAmounts = getSpendingAmountsForSponsorableTx({
+      assets,
+      messageTx: txParams,
+    });
+
+    if (
+      isEnoughBalanceForFeeAndSpendingAmounts({
+        balance: balance?.assets?.[feeMoney.asset.id]?.balance ?? 0,
+        fee: feeMoney,
+        spendingAmounts,
+      })
+    )
+      return;
+
+    const feeOption = getFeeOptions({
+      assets,
+      balance,
+      initialFee: feeMoney,
+      txType: txParams.type,
+      usdPrices: this.assetInfoController.getUsdPrices(),
+    }).find(option =>
+      isEnoughBalanceForFeeAndSpendingAmounts({
+        balance: option.assetBalance.balance,
+        fee: option.money,
+        spendingAmounts,
+      })
+    );
+
+    if (!feeOption) return;
+
+    const fee = feeOption.money.toCoins();
+
+    const feeAssetId =
+      feeOption.money.asset.id === 'WAVES' ? null : feeOption.money.asset.id;
+
+    const { initialFee = fee, initialFeeAssetId = feeAssetId } = txParams;
+
+    return {
+      fee,
+      feeAssetId,
+      initialFee,
+      initialFeeAssetId,
+    };
+  }
+
+  async #generateMessageTx(
+    account: PreferencesAccount,
+    messageInputTx: MessageInputTx
+  ): Promise<MessageTx> {
+    if (
+      'fee' in messageInputTx.data &&
+      !this.#isMoneyLikeValuePositive(messageInputTx.data.fee)
+    ) {
+      throw ERRORS.REQUEST_ERROR('fee is not valid', messageInputTx);
     }
 
     if (
-      'chainId' in tx.data &&
-      tx.data.chainId !== this.networkController.getNetworkCode().charCodeAt(0)
+      'chainId' in messageInputTx.data &&
+      messageInputTx.data.chainId !==
+        this.networkController.getNetworkCode().charCodeAt(0)
     ) {
-      throw ERRORS.REQUEST_ERROR('chainId does not match current network', tx);
+      throw ERRORS.REQUEST_ERROR(
+        'chainId does not match current network',
+        messageInputTx
+      );
     }
 
-    const versions = getTxVersions(account.type)[tx.type];
+    const chainId =
+      messageInputTx.data.chainId ?? account.networkCode.charCodeAt(0);
 
-    if ('version' in tx.data && !versions.includes(tx.data.version)) {
-      throw ERRORS.REQUEST_ERROR('unsupported tx version', tx);
+    const proofs = messageInputTx.data.proofs ?? [];
+
+    const senderPublicKey =
+      messageInputTx.data.senderPublicKey ?? account.publicKey;
+
+    const timestamp = messageInputTx.data.timestamp ?? Date.now();
+
+    const assets = this.assetInfoController.getAssets();
+
+    function getRoundedUpKbs(byteCount: number) {
+      return ((byteCount - 1) >> 10) + 1;
     }
 
-    switch (tx.type) {
-      case TRANSACTION_TYPE.ISSUE:
-        if (!this._isNumberLikePositive(tx.data.quantity)) {
-          throw ERRORS.REQUEST_ERROR('quantity is not valid', tx);
+    switch (messageInputTx.type) {
+      case TRANSACTION_TYPE.ISSUE: {
+        const versions = getTxVersions(account.type)[messageInputTx.type];
+        const version = messageInputTx.data.version ?? versions[0];
+
+        if (!versions.includes(version)) {
+          throw ERRORS.REQUEST_ERROR('unsupported tx version', messageInputTx);
         }
 
-        if (tx.data.precision < 0) {
-          throw ERRORS.REQUEST_ERROR('precision is not valid', tx);
+        if (!this.#isNumberLikePositive(messageInputTx.data.quantity)) {
+          throw ERRORS.REQUEST_ERROR('quantity is not valid', messageInputTx);
         }
-        break;
-      case TRANSACTION_TYPE.TRANSFER:
-        if (!this._isMoneyLikeValuePositive(tx.data.amount)) {
-          throw ERRORS.REQUEST_ERROR('amount is not valid', tx);
-        }
-        break;
-      case TRANSACTION_TYPE.REISSUE:
+
         if (
-          !this._isMoneyLikeValuePositive(tx.data.quantity || tx.data.amount) &&
-          !this._isNumberLikePositive(tx.data.quantity || tx.data.amount)
+          typeof messageInputTx.data.precision !== 'number' ||
+          messageInputTx.data.precision < 0 ||
+          messageInputTx.data.precision > 8
         ) {
-          throw ERRORS.REQUEST_ERROR('quantity is not valid', tx);
+          throw ERRORS.REQUEST_ERROR('precision is not valid', messageInputTx);
         }
-        break;
-      case TRANSACTION_TYPE.BURN:
-        if (
-          !this._isMoneyLikeValuePositive(tx.data.quantity || tx.data.amount) &&
-          !this._isNumberLikePositive(tx.data.quantity || tx.data.amount)
-        ) {
-          throw ERRORS.REQUEST_ERROR('amount is not valid', tx);
+
+        await this.assetInfoController.updateAssets([
+          messageInputTx.data.fee?.assetId,
+          messageInputTx.data.initialFee?.assetId,
+        ]);
+
+        let fee =
+          messageInputTx.data.fee &&
+          moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
+
+        if (!fee) {
+          fee = new BigNumber(
+            await getExtraFee(account.address, this.networkController.getNode())
+          )
+            .add(
+              !messageInputTx.data.reissuable &&
+                messageInputTx.data.precision === 0 &&
+                new BigNumber(messageInputTx.data.quantity).eq(1)
+                ? 10_0000
+                : 1_0000_0000
+            )
+            .toString();
         }
-        break;
-      case TRANSACTION_TYPE.LEASE:
-        if (
-          !this._isMoneyLikeValuePositive(tx.data.amount) &&
-          !this._isNumberLikePositive(tx.data.amount)
-        ) {
-          throw ERRORS.REQUEST_ERROR('amount is not valid', tx);
+
+        const tx = {
+          chainId,
+          decimals: messageInputTx.data.precision,
+          description: messageInputTx.data.description,
+          fee,
+          initialFee: messageInputTx.data.initialFee
+            ? moneyLikeToMoney(messageInputTx.data.initialFee, assets).toCoins()
+            : fee,
+          name: messageInputTx.data.name,
+          proofs: messageInputTx.data.proofs ?? [],
+          quantity: messageInputTx.data.quantity,
+          reissuable: messageInputTx.data.reissuable,
+          script: messageInputTx.data.script || null,
+          senderPublicKey,
+          timestamp,
+          type: messageInputTx.type,
+          version,
+        };
+
+        return {
+          id: base58Encode(computeTxHash(makeTxBytes(tx))),
+          ...tx,
+        };
+      }
+      case TRANSACTION_TYPE.TRANSFER: {
+        const versions = getTxVersions(account.type)[messageInputTx.type];
+        const version = messageInputTx.data.version ?? versions[0];
+
+        if (!versions.includes(version)) {
+          throw ERRORS.REQUEST_ERROR('unsupported tx version', messageInputTx);
         }
-        break;
-      case TRANSACTION_TYPE.MASS_TRANSFER:
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        tx.data.transfers.forEach(({ amount }: any) => {
+
+        if (!this.#isMoneyLikeValuePositive(messageInputTx.data.amount)) {
+          throw ERRORS.REQUEST_ERROR('amount is not valid', messageInputTx);
+        }
+
+        await this.assetInfoController.updateAssets([
+          messageInputTx.data.fee?.assetId,
+          messageInputTx.data.initialFee?.assetId,
+          messageInputTx.data.amount.assetId,
+        ]);
+
+        const txParams = {
+          amount: moneyLikeToMoney(
+            messageInputTx.data.amount,
+            assets
+          ).toCoins(),
+          assetId:
+            messageInputTx.data.amount.assetId === 'WAVES'
+              ? null
+              : messageInputTx.data.amount.assetId,
+          attachment: Array.isArray(messageInputTx.data.attachment)
+            ? base58Encode(new Uint8Array(messageInputTx.data.attachment))
+            : messageInputTx.data.attachment
+            ? base58Encode(utf8Encode(messageInputTx.data.attachment))
+            : undefined,
+          chainId,
+          fee:
+            messageInputTx.data.fee &&
+            moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins(),
+          feeAssetId:
+            messageInputTx.data.fee?.assetId === 'WAVES'
+              ? null
+              : messageInputTx.data.fee?.assetId ?? null,
+          initialFee:
+            messageInputTx.data.initialFee &&
+            moneyLikeToMoney(messageInputTx.data.initialFee, assets).toCoins(),
+          initialFeeAssetId:
+            messageInputTx.data.initialFee &&
+            (messageInputTx.data.initialFee.assetId === 'WAVES'
+              ? null
+              : messageInputTx.data.initialFee.assetId ?? null),
+          proofs,
+          recipient: processAliasOrAddress(
+            messageInputTx.data.recipient,
+            chainId
+          ),
+          senderPublicKey,
+          timestamp,
+          type: messageInputTx.type,
+          version,
+        };
+
+        let { fee } = txParams;
+        if (!fee) {
+          fee = new BigNumber(
+            await getExtraFee(account.address, this.networkController.getNode())
+          )
+            .add(
+              txParams.assetId && assets[txParams.assetId]?.hasScript
+                ? 50_0000
+                : 10_0000
+            )
+            .toString();
+        }
+
+        const {
+          feeAssetId,
+          initialFee = fee,
+          initialFeeAssetId = feeAssetId,
+        } = txParams;
+
+        const tx = {
+          ...txParams,
+          ...(this.#getFeeInAssetWithEnoughBalance(assets, txParams, {
+            assetId: feeAssetId,
+            coins: fee,
+          }) ?? {
+            fee,
+            feeAssetId,
+            initialFee,
+            initialFeeAssetId,
+          }),
+        };
+
+        return {
+          id: base58Encode(computeTxHash(makeTxBytes(tx))),
+          ...tx,
+        };
+      }
+      case TRANSACTION_TYPE.REISSUE: {
+        const versions = getTxVersions(account.type)[messageInputTx.type];
+        const version = messageInputTx.data.version ?? versions[0];
+
+        if (!versions.includes(version)) {
+          throw ERRORS.REQUEST_ERROR('unsupported tx version', messageInputTx);
+        }
+
+        const quantityInput =
+          'quantity' in messageInputTx.data
+            ? messageInputTx.data.quantity
+            : messageInputTx.data.amount;
+
+        if (!this.#isMoneyLikeValuePositive(quantityInput)) {
           if (
-            !this._isMoneyLikeValuePositive(amount) &&
-            !this._isNumberLikePositive(amount)
+            typeof quantityInput !== 'object' &&
+            !this.#isNumberLikePositive(quantityInput)
           ) {
-            throw ERRORS.REQUEST_ERROR('amount is not valid', tx);
+            throw ERRORS.REQUEST_ERROR('quantity is not valid', messageInputTx);
+          }
+        }
+
+        await this.assetInfoController.updateAssets([
+          messageInputTx.data.fee?.assetId,
+          messageInputTx.data.initialFee?.assetId,
+          messageInputTx.data.assetId,
+        ]);
+
+        const quantityMaybeMoney =
+          typeof quantityInput === 'object'
+            ? moneyLikeToMoney(quantityInput, assets)
+            : quantityInput;
+
+        let assetId: string;
+        let quantity: string | number;
+
+        if (quantityMaybeMoney instanceof Money) {
+          assetId = quantityMaybeMoney.asset.id;
+          quantity = quantityMaybeMoney.toCoins();
+        } else {
+          invariant(messageInputTx.data.assetId);
+          assetId = messageInputTx.data.assetId;
+          quantity = quantityMaybeMoney;
+        }
+
+        const txParams = {
+          assetId,
+          chainId,
+          proofs,
+          quantity,
+          reissuable: messageInputTx.data.reissuable,
+          senderPublicKey,
+          timestamp,
+          type: messageInputTx.type,
+          version,
+        };
+
+        let fee =
+          messageInputTx.data.fee &&
+          moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
+
+        if (!fee) {
+          fee = new BigNumber(
+            await getExtraFee(account.address, this.networkController.getNode())
+          )
+            .add(
+              txParams.assetId && assets[txParams.assetId]?.hasScript
+                ? 50_0000
+                : 10_0000
+            )
+            .toString();
+        }
+
+        const tx = {
+          ...txParams,
+          fee,
+          initialFee: messageInputTx.data.initialFee
+            ? moneyLikeToMoney(messageInputTx.data.initialFee, assets).toCoins()
+            : fee,
+        };
+
+        return {
+          id: base58Encode(computeTxHash(makeTxBytes(tx))),
+          ...tx,
+        };
+      }
+      case TRANSACTION_TYPE.BURN: {
+        const versions = getTxVersions(account.type)[messageInputTx.type];
+        const version = messageInputTx.data.version ?? versions[0];
+
+        if (!versions.includes(version)) {
+          throw ERRORS.REQUEST_ERROR('unsupported tx version', messageInputTx);
+        }
+
+        const amountInput =
+          'quantity' in messageInputTx.data
+            ? messageInputTx.data.quantity
+            : messageInputTx.data.amount;
+
+        if (!this.#isMoneyLikeValuePositive(amountInput)) {
+          if (
+            typeof amountInput !== 'object' &&
+            !this.#isNumberLikePositive(amountInput)
+          ) {
+            throw ERRORS.REQUEST_ERROR('amount is not valid', messageInputTx);
+          }
+        }
+
+        await this.assetInfoController.updateAssets([
+          messageInputTx.data.fee?.assetId,
+          messageInputTx.data.initialFee?.assetId,
+          messageInputTx.data.assetId,
+        ]);
+
+        const amountMaybeMoney =
+          typeof amountInput === 'object'
+            ? moneyLikeToMoney(amountInput, assets)
+            : amountInput;
+
+        let assetId: string;
+        let amount: string | number;
+        if (amountMaybeMoney instanceof Money) {
+          assetId = amountMaybeMoney.asset.id;
+          amount = amountMaybeMoney.toCoins();
+        } else {
+          assetId = messageInputTx.data.assetId;
+          amount = amountMaybeMoney;
+        }
+
+        const txParams = {
+          assetId,
+          amount,
+          chainId,
+          initialFee:
+            messageInputTx.data.initialFee &&
+            moneyLikeToMoney(messageInputTx.data.initialFee, assets).toCoins(),
+          proofs,
+          senderPublicKey,
+          timestamp,
+          type: messageInputTx.type,
+          version,
+        };
+
+        let fee =
+          messageInputTx.data.fee &&
+          moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
+
+        if (!fee) {
+          fee = new BigNumber(
+            await getExtraFee(account.address, this.networkController.getNode())
+          )
+            .add(
+              txParams.assetId && assets[txParams.assetId]?.hasScript
+                ? 50_0000
+                : 10_0000
+            )
+            .toString();
+        }
+
+        const { initialFee = fee } = txParams;
+
+        const tx = {
+          ...txParams,
+          fee,
+          initialFee,
+        };
+
+        return {
+          id: base58Encode(computeTxHash(makeTxBytes(tx))),
+          ...tx,
+        };
+      }
+      case TRANSACTION_TYPE.LEASE: {
+        const versions = getTxVersions(account.type)[messageInputTx.type];
+        const version = messageInputTx.data.version ?? versions[0];
+
+        if (!versions.includes(version)) {
+          throw ERRORS.REQUEST_ERROR('unsupported tx version', messageInputTx);
+        }
+
+        if (!this.#isMoneyLikeValuePositive(messageInputTx.data.amount)) {
+          if (
+            typeof messageInputTx.data.amount !== 'object' &&
+            !this.#isNumberLikePositive(messageInputTx.data.amount)
+          ) {
+            throw ERRORS.REQUEST_ERROR('amount is not valid', messageInputTx);
+          }
+        }
+
+        await this.assetInfoController.updateAssets([
+          messageInputTx.data.fee?.assetId,
+          messageInputTx.data.initialFee?.assetId,
+        ]);
+
+        const amount = moneyLikeToMoney(
+          typeof messageInputTx.data.amount === 'object'
+            ? messageInputTx.data.amount
+            : { coins: messageInputTx.data.amount, assetId: 'WAVES' },
+          assets
+        ).toCoins();
+
+        const txParams = {
+          amount,
+          chainId,
+          initialFee:
+            messageInputTx.data.initialFee &&
+            moneyLikeToMoney(messageInputTx.data.initialFee, assets).toCoins(),
+          proofs,
+          recipient: processAliasOrAddress(
+            messageInputTx.data.recipient,
+            chainId
+          ),
+          senderPublicKey,
+          timestamp,
+          type: messageInputTx.type,
+          version,
+        };
+
+        let fee =
+          messageInputTx.data.fee &&
+          moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
+
+        if (!fee) {
+          fee = new BigNumber(
+            await getExtraFee(account.address, this.networkController.getNode())
+          )
+            .add(10_0000)
+            .toString();
+        }
+
+        const { initialFee = fee } = txParams;
+
+        const tx = {
+          ...txParams,
+          fee,
+          initialFee,
+        };
+
+        return {
+          id: base58Encode(computeTxHash(makeTxBytes(tx))),
+          ...tx,
+        };
+      }
+      case TRANSACTION_TYPE.CANCEL_LEASE: {
+        const versions = getTxVersions(account.type)[messageInputTx.type];
+        const version = messageInputTx.data.version ?? versions[0];
+
+        if (!versions.includes(version)) {
+          throw ERRORS.REQUEST_ERROR('unsupported tx version', messageInputTx);
+        }
+
+        await this.assetInfoController.updateAssets([
+          messageInputTx.data.fee?.assetId,
+          messageInputTx.data.initialFee?.assetId,
+        ]);
+
+        const response = await fetch(
+          new URL(
+            `/transactions/info/${messageInputTx.data.leaseId}`,
+            this.networkController.getNode()
+          ),
+          {
+            headers: {
+              accept: 'application/json; large-significand-format=string',
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `Could not fetch lease transaction: ${await response.text()}`
+          );
+        }
+
+        const lease: LeaseTransactionFromNode = await response.json();
+
+        const txParams = {
+          chainId,
+          initialFee:
+            messageInputTx.data.initialFee &&
+            moneyLikeToMoney(messageInputTx.data.initialFee, assets).toCoins(),
+          leaseId: messageInputTx.data.leaseId,
+          proofs,
+          senderPublicKey,
+          timestamp,
+          type: messageInputTx.type,
+          version,
+        };
+
+        let fee =
+          messageInputTx.data.fee &&
+          moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
+
+        if (!fee) {
+          fee = new BigNumber(
+            await getExtraFee(account.address, this.networkController.getNode())
+          )
+            .add(10_0000)
+            .toString();
+        }
+
+        const { initialFee = fee } = txParams;
+
+        const tx = {
+          ...txParams,
+          fee,
+          initialFee,
+        };
+
+        return {
+          id: base58Encode(computeTxHash(makeTxBytes(tx))),
+          ...tx,
+          lease,
+        };
+      }
+      case TRANSACTION_TYPE.ALIAS: {
+        const versions = getTxVersions(account.type)[messageInputTx.type];
+        const version = messageInputTx.data.version ?? versions[0];
+
+        if (!versions.includes(version)) {
+          throw ERRORS.REQUEST_ERROR('unsupported tx version', messageInputTx);
+        }
+
+        await this.assetInfoController.updateAssets([
+          messageInputTx.data.fee?.assetId,
+          messageInputTx.data.initialFee?.assetId,
+        ]);
+
+        const txParams = {
+          alias: messageInputTx.data.alias,
+          chainId,
+          initialFee:
+            messageInputTx.data.initialFee &&
+            moneyLikeToMoney(messageInputTx.data.initialFee, assets).toCoins(),
+          proofs,
+          senderPublicKey,
+          timestamp,
+          type: messageInputTx.type,
+          version,
+        };
+
+        let fee =
+          messageInputTx.data.fee &&
+          moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
+
+        if (!fee) {
+          fee = new BigNumber(
+            await getExtraFee(account.address, this.networkController.getNode())
+          )
+            .add(10_0000)
+            .toString();
+        }
+
+        const { initialFee = fee } = txParams;
+
+        const tx = {
+          ...txParams,
+          fee,
+          initialFee,
+        };
+
+        return {
+          id: base58Encode(computeTxHash(makeTxBytes(tx))),
+          ...tx,
+        };
+      }
+      case TRANSACTION_TYPE.MASS_TRANSFER: {
+        const versions = getTxVersions(account.type)[messageInputTx.type];
+        const version = messageInputTx.data.version ?? versions[0];
+
+        if (!versions.includes(version)) {
+          throw ERRORS.REQUEST_ERROR('unsupported tx version', messageInputTx);
+        }
+
+        messageInputTx.data.transfers.forEach(({ amount }) => {
+          if (!this.#isNumberLikePositive(amount)) {
+            throw ERRORS.REQUEST_ERROR('amount is not valid', messageInputTx);
           }
         });
-        break;
-      case TRANSACTION_TYPE.SPONSORSHIP: {
-        const value = this._getMoneyLikeValue(tx.data.minSponsoredAssetFee);
-        const bn = value === null ? null : new BigNumber(value);
 
-        if (!bn || !bn.isFinite() || bn.lt(0)) {
-          throw ERRORS.REQUEST_ERROR('minSponsoredAssetFee is not valid', tx);
+        await this.assetInfoController.updateAssets([
+          messageInputTx.data.fee?.assetId,
+          messageInputTx.data.initialFee?.assetId,
+          messageInputTx.data.totalAmount.assetId,
+        ]);
+
+        const txParams = {
+          assetId:
+            messageInputTx.data.totalAmount.assetId === 'WAVES'
+              ? null
+              : messageInputTx.data.totalAmount.assetId,
+          attachment: Array.isArray(messageInputTx.data.attachment)
+            ? base58Encode(new Uint8Array(messageInputTx.data.attachment))
+            : messageInputTx.data.attachment
+            ? base58Encode(utf8Encode(messageInputTx.data.attachment))
+            : undefined,
+          chainId,
+          initialFee:
+            messageInputTx.data.initialFee &&
+            moneyLikeToMoney(messageInputTx.data.initialFee, assets).toCoins(),
+          proofs,
+          senderPublicKey,
+          timestamp,
+          transfers: messageInputTx.data.transfers.map(transfer => ({
+            amount: transfer.amount,
+            recipient: processAliasOrAddress(transfer.recipient, chainId),
+          })),
+          type: messageInputTx.type,
+          version,
+        };
+
+        let fee =
+          messageInputTx.data.fee &&
+          moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
+
+        if (!fee) {
+          fee = new BigNumber(
+            await getExtraFee(account.address, this.networkController.getNode())
+          )
+            .add(
+              (((txParams.transfers.length + 1) >> 1) + 1) *
+                (txParams.assetId && assets[txParams.assetId]?.hasScript
+                  ? 50_0000
+                  : 10_0000)
+            )
+            .toString();
         }
-        break;
+
+        const { initialFee = fee } = txParams;
+
+        const tx = {
+          ...txParams,
+          fee,
+          initialFee,
+        };
+
+        return {
+          id: base58Encode(computeTxHash(makeTxBytes(tx))),
+          ...tx,
+        };
       }
-      case TRANSACTION_TYPE.INVOKE_SCRIPT:
-        if (tx.data.payment) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          tx.data.payment.forEach((payment: any) => {
-            if (!this._isMoneyLikeValuePositive(payment)) {
-              throw ERRORS.REQUEST_ERROR('payment is not valid', tx);
-            }
-          });
+      case TRANSACTION_TYPE.DATA: {
+        const versions = getTxVersions(account.type)[messageInputTx.type];
+        const version = messageInputTx.data.version ?? versions[0];
+
+        if (!versions.includes(version)) {
+          throw ERRORS.REQUEST_ERROR('unsupported tx version', messageInputTx);
         }
-        break;
+
+        messageInputTx.data.data.forEach(item => {
+          if (item.type === 'integer') {
+            const { value } = item;
+
+            if (!new BigNumber(value).isInt()) {
+              throw ERRORS.REQUEST_ERROR(
+                `'${
+                  item.key
+                }' data key value must be a string or number representing an integer, got: ${
+                  value === '' ? "''" : value
+                }`,
+                messageInputTx
+              );
+            }
+          }
+        });
+
+        await this.assetInfoController.updateAssets([
+          messageInputTx.data.fee?.assetId,
+          messageInputTx.data.initialFee?.assetId,
+        ]);
+
+        const txParams = {
+          chainId,
+          data: messageInputTx.data.data,
+          initialFee:
+            messageInputTx.data.initialFee &&
+            moneyLikeToMoney(messageInputTx.data.initialFee, assets).toCoins(),
+          proofs,
+          senderPublicKey,
+          timestamp,
+          type: messageInputTx.type,
+          version,
+        };
+
+        let fee =
+          messageInputTx.data.fee &&
+          moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
+
+        if (!fee) {
+          const bytes =
+            txParams.version === 1
+              ? binary.serializeTx({ ...txParams, fee: 0 })
+              : waves.DataTransactionData.encode({
+                  data: txParams.data.map(entry => ({
+                    key: entry.key,
+                    intValue:
+                      entry.type === 'integer'
+                        ? Long.fromValue(entry.value)
+                        : undefined,
+                    boolValue:
+                      entry.type === 'boolean' ? entry.value : undefined,
+                    binaryValue:
+                      entry.type === 'binary'
+                        ? base64Decode(entry.value.replace(/^base64:/, ''))
+                        : undefined,
+                    stringValue:
+                      entry.type === 'string' ? entry.value : undefined,
+                  })),
+                }).finish();
+
+          fee = new BigNumber(
+            await getExtraFee(account.address, this.networkController.getNode())
+          )
+            .add(getRoundedUpKbs(bytes.length) * 10_0000)
+            .toString();
+        }
+
+        const { initialFee = fee } = txParams;
+
+        const tx = {
+          ...txParams,
+          fee,
+          initialFee,
+        };
+
+        return {
+          id: base58Encode(computeTxHash(makeTxBytes(tx))),
+          ...tx,
+        };
+      }
+      case TRANSACTION_TYPE.SET_SCRIPT: {
+        const versions = getTxVersions(account.type)[messageInputTx.type];
+        const version = messageInputTx.data.version ?? versions[0];
+
+        if (!versions.includes(version)) {
+          throw ERRORS.REQUEST_ERROR('unsupported tx version', messageInputTx);
+        }
+
+        await this.assetInfoController.updateAssets([
+          messageInputTx.data.fee?.assetId,
+          messageInputTx.data.initialFee?.assetId,
+        ]);
+
+        const txParams = {
+          chainId,
+          initialFee:
+            messageInputTx.data.initialFee &&
+            moneyLikeToMoney(messageInputTx.data.initialFee, assets).toCoins(),
+          proofs,
+          script: messageInputTx.data.script || null,
+          senderPublicKey,
+          timestamp,
+          type: messageInputTx.type,
+          version,
+        };
+
+        let fee =
+          messageInputTx.data.fee &&
+          moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
+
+        if (!fee) {
+          if (txParams.script == null) {
+            fee = new BigNumber(
+              await getExtraFee(
+                account.address,
+                this.networkController.getNode()
+              )
+            )
+              .add(10_0000)
+              .toString();
+          } else {
+            const kbs = getRoundedUpKbs(
+              base64Decode(txParams.script.replace(/^base64:/, '')).length
+            );
+
+            fee = new BigNumber(
+              await getExtraFee(
+                account.address,
+                this.networkController.getNode()
+              )
+            )
+              .add(kbs * 10_0000)
+              .toString();
+          }
+        }
+
+        const { initialFee = fee } = txParams;
+
+        const tx = {
+          ...txParams,
+          fee,
+          initialFee,
+        };
+
+        return {
+          id: base58Encode(computeTxHash(makeTxBytes(tx))),
+          ...tx,
+        };
+      }
+      case TRANSACTION_TYPE.SPONSORSHIP: {
+        const versions = getTxVersions(account.type)[messageInputTx.type];
+        const version = messageInputTx.data.version ?? versions[0];
+
+        if (!versions.includes(version)) {
+          throw ERRORS.REQUEST_ERROR('unsupported tx version', messageInputTx);
+        }
+
+        const assetId = messageInputTx.data.minSponsoredAssetFee.assetId;
+
+        if (typeof assetId !== 'string') {
+          throw ERRORS.REQUEST_ERROR(
+            'assetId must be a string',
+            messageInputTx
+          );
+        }
+
+        await this.assetInfoController.updateAssets([
+          messageInputTx.data.fee?.assetId,
+          messageInputTx.data.initialFee?.assetId,
+          messageInputTx.data.minSponsoredAssetFee.assetId,
+        ]);
+
+        const minSponsoredAssetFee = moneyLikeToMoney(
+          messageInputTx.data.minSponsoredAssetFee,
+          assets
+        ).getCoins();
+
+        const txParams = {
+          assetId,
+          chainId,
+          initialFee:
+            messageInputTx.data.initialFee &&
+            moneyLikeToMoney(messageInputTx.data.initialFee, assets).toCoins(),
+          minSponsoredAssetFee: minSponsoredAssetFee.eq(0)
+            ? null
+            : minSponsoredAssetFee.toString(),
+          proofs,
+          senderPublicKey,
+          timestamp,
+          type: messageInputTx.type,
+          version,
+        };
+
+        let fee =
+          messageInputTx.data.fee &&
+          moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
+
+        if (!fee) {
+          fee = new BigNumber(
+            await getExtraFee(account.address, this.networkController.getNode())
+          )
+            .add(10_0000)
+            .toString();
+        }
+
+        const { initialFee = fee } = txParams;
+
+        const tx = {
+          ...txParams,
+          fee,
+          initialFee,
+        };
+
+        return {
+          id: base58Encode(computeTxHash(makeTxBytes(tx))),
+          ...tx,
+        };
+      }
+      case TRANSACTION_TYPE.SET_ASSET_SCRIPT: {
+        const versions = getTxVersions(account.type)[messageInputTx.type];
+        const version = messageInputTx.data.version ?? versions[0];
+
+        if (!versions.includes(version)) {
+          throw ERRORS.REQUEST_ERROR('unsupported tx version', messageInputTx);
+        }
+
+        await this.assetInfoController.updateAssets([
+          messageInputTx.data.fee?.assetId,
+          messageInputTx.data.initialFee?.assetId,
+          messageInputTx.data.assetId,
+        ]);
+
+        const txParams = {
+          assetId: messageInputTx.data.assetId,
+          chainId,
+          initialFee:
+            messageInputTx.data.initialFee &&
+            moneyLikeToMoney(messageInputTx.data.initialFee, assets).toCoins(),
+          proofs,
+          script: messageInputTx.data.script,
+          senderPublicKey,
+          timestamp,
+          type: messageInputTx.type,
+          version,
+        };
+
+        let fee =
+          messageInputTx.data.fee &&
+          moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
+
+        if (!fee) {
+          fee = new BigNumber(
+            await getExtraFee(account.address, this.networkController.getNode())
+          )
+            .add(1_0000_0000)
+            .toString();
+        }
+
+        const { initialFee = fee } = txParams;
+
+        const tx = {
+          ...txParams,
+          fee,
+          initialFee,
+        };
+
+        return {
+          id: base58Encode(computeTxHash(makeTxBytes(tx))),
+          ...tx,
+        };
+      }
+      case TRANSACTION_TYPE.INVOKE_SCRIPT: {
+        const versions = getTxVersions(account.type)[messageInputTx.type];
+        const version = messageInputTx.data.version ?? versions[0];
+
+        if (!versions.includes(version)) {
+          throw ERRORS.REQUEST_ERROR('unsupported tx version', messageInputTx);
+        }
+
+        const payment = messageInputTx.data.payment ?? [];
+
+        payment.forEach(p => {
+          if (!this.#isMoneyLikeValuePositive(p)) {
+            throw ERRORS.REQUEST_ERROR('payment is not valid', messageInputTx);
+          }
+        });
+
+        await this.assetInfoController.updateAssets([
+          messageInputTx.data.fee?.assetId,
+          messageInputTx.data.initialFee?.assetId,
+          ...payment.map(p => p.assetId),
+        ]);
+
+        const txParams = {
+          call:
+            messageInputTx.data.call == null
+              ? null
+              : {
+                  ...messageInputTx.data.call,
+                  args: messageInputTx.data.call.args ?? [],
+                },
+          chainId,
+          dApp: processAliasOrAddress(messageInputTx.data.dApp, chainId),
+          feeAssetId:
+            messageInputTx.data.fee?.assetId === 'WAVES'
+              ? null
+              : messageInputTx.data.fee?.assetId ?? null,
+          initialFee:
+            messageInputTx.data.initialFee &&
+            moneyLikeToMoney(messageInputTx.data.initialFee, assets).toCoins(),
+          initialFeeAssetId:
+            messageInputTx.data.initialFee &&
+            (messageInputTx.data.initialFee.assetId === 'WAVES'
+              ? null
+              : messageInputTx.data.initialFee.assetId),
+          payment: payment.map(p => ({
+            ...p,
+            amount: moneyLikeToMoney(p, assets).toCoins(),
+          })),
+          proofs,
+          senderPublicKey,
+          timestamp,
+          type: messageInputTx.type,
+          version,
+        };
+
+        let fee =
+          messageInputTx.data.fee &&
+          moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
+
+        if (!fee) {
+          fee = new BigNumber(
+            await getExtraFee(account.address, this.networkController.getNode())
+          )
+            .add(50_0000)
+            .toString();
+        }
+
+        const {
+          feeAssetId,
+          initialFee = fee,
+          initialFeeAssetId = feeAssetId,
+        } = txParams;
+
+        const tx = {
+          ...txParams,
+          ...(this.#getFeeInAssetWithEnoughBalance(assets, txParams, {
+            assetId: feeAssetId,
+            coins: fee,
+          }) ?? {
+            fee,
+            feeAssetId,
+            initialFee,
+            initialFeeAssetId,
+          }),
+        };
+
+        return {
+          id: base58Encode(computeTxHash(makeTxBytes(tx))),
+          ...tx,
+        };
+      }
+      case TRANSACTION_TYPE.UPDATE_ASSET_INFO: {
+        const versions = getTxVersions(account.type)[messageInputTx.type];
+        const version = messageInputTx.data.version ?? versions[0];
+
+        if (!versions.includes(version)) {
+          throw ERRORS.REQUEST_ERROR('unsupported tx version', messageInputTx);
+        }
+
+        await this.assetInfoController.updateAssets([
+          messageInputTx.data.fee?.assetId,
+          messageInputTx.data.initialFee?.assetId,
+          messageInputTx.data.assetId,
+        ]);
+
+        const txParams = {
+          assetId: messageInputTx.data.assetId,
+          chainId,
+          description: messageInputTx.data.description,
+          initialFee:
+            messageInputTx.data.initialFee &&
+            moneyLikeToMoney(messageInputTx.data.initialFee, assets).toCoins(),
+          name: messageInputTx.data.name,
+          proofs,
+          senderPublicKey,
+          timestamp,
+          type: messageInputTx.type,
+          version,
+        };
+
+        let fee =
+          messageInputTx.data.fee &&
+          moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
+
+        if (!fee) {
+          fee = new BigNumber(
+            await getExtraFee(account.address, this.networkController.getNode())
+          )
+            .add(
+              txParams.assetId && assets[txParams.assetId]?.hasScript
+                ? 50_0000
+                : 10_0000
+            )
+            .toString();
+        }
+
+        const { initialFee = fee } = txParams;
+
+        const tx = {
+          ...txParams,
+          fee,
+          initialFee,
+        };
+
+        return {
+          id: base58Encode(computeTxHash(makeTxBytes(tx))),
+          ...tx,
+        };
+      }
+    }
+  }
+
+  async #generateMessage(messageInput: MessageInput): Promise<Message> {
+    if (!messageInput.data && messageInput.type !== 'authOrigin') {
+      throw ERRORS.REQUEST_ERROR('should contain a data field', messageInput);
+    }
+
+    switch (messageInput.type) {
+      case 'auth': {
+        let successPath: string | null = null;
+
+        try {
+          successPath = messageInput.data.successPath
+            ? new URL(
+                messageInput.data.successPath,
+                messageInput.data.referrer || `https://${messageInput.origin}`
+              ).href
+            : null;
+        } catch {
+          // ignore
+        }
+
+        const { data, icon, name } = messageInput.data;
+
+        const host =
+          messageInput.data.host ||
+          new URL(`https://${messageInput.origin}`).host;
+
+        const prefix = 'WavesWalletAuthentication';
+
+        return {
+          ...messageInput,
+          data: {
+            referrer: messageInput.data.referrer,
+            data: { data, host, icon, name, prefix },
+          },
+          ext_uuid: messageInput.options && messageInput.options.uid,
+          id: nanoid(),
+          messageHash: base58Encode(computeHash(makeAuthBytes({ data, host }))),
+          status: MessageStatus.UnApproved,
+          successPath,
+          timestamp: Date.now(),
+        };
+      }
+      case 'authOrigin':
+        return {
+          ...messageInput,
+          id: nanoid(),
+          ext_uuid: messageInput.options && messageInput.options.uid,
+          status: MessageStatus.UnApproved,
+          timestamp: Date.now(),
+        };
+      case 'cancelOrder': {
+        const data = {
+          senderPublicKey: messageInput.account.publicKey,
+          ...messageInput.data.data,
+        };
+
+        return {
+          ...messageInput,
+          amountAsset: messageInput.data.amountAsset,
+          data: { ...messageInput.data, data, timestamp: Date.now() },
+          ext_uuid: messageInput.options && messageInput.options.uid,
+          id: nanoid(),
+          messageHash: base58Encode(
+            computeHash(
+              makeCancelOrderBytes({
+                orderId: data.id,
+                sender: data.senderPublicKey,
+              })
+            )
+          ),
+          priceAsset: messageInput.data.priceAsset,
+          status: MessageStatus.UnApproved,
+          timestamp: Date.now(),
+        };
+      }
+      case 'customData': {
+        try {
+          const data = {
+            ...messageInput.data,
+            publicKey:
+              messageInput.data.publicKey || messageInput.account.publicKey,
+          };
+
+          return {
+            ...messageInput,
+            data: {
+              ...data,
+              hash: base58Encode(computeHash(makeCustomDataBytes(data))),
+            },
+            ext_uuid: messageInput.options && messageInput.options.uid,
+            id: nanoid(),
+            status: MessageStatus.UnApproved,
+            timestamp: Date.now(),
+          };
+        } catch (err) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          throw ERRORS.REQUEST_ERROR((err as any).message, messageInput);
+        }
+      }
+      case 'order': {
+        if (!this.#isMoneyLikeValuePositive(messageInput.data.data.amount)) {
+          throw ERRORS.REQUEST_ERROR('amount is not valid', messageInput.data);
+        }
+
+        if (!this.#isMoneyLikeValuePositive(messageInput.data.data.price)) {
+          throw ERRORS.REQUEST_ERROR('price is not valid', messageInput.data);
+        }
+
+        if (
+          !this.#isMoneyLikeValuePositive(messageInput.data.data.matcherFee)
+        ) {
+          throw ERRORS.REQUEST_ERROR(
+            'matcherFee is not valid',
+            messageInput.data
+          );
+        }
+
+        const amountAssetId = messageInput.data.data.amount.assetId ?? 'WAVES';
+
+        const matcherFeeAssetId =
+          messageInput.data.data.matcherFee.assetId === 'WAVES'
+            ? null
+            : messageInput.data.data.matcherFee.assetId;
+
+        const priceAssetId = messageInput.data.data.price.assetId ?? 'WAVES';
+
+        await this.assetInfoController.updateAssets([
+          amountAssetId,
+          matcherFeeAssetId,
+          priceAssetId,
+        ]);
+
+        const assets = this.assetInfoController.getAssets();
+
+        const amountAsset = assets[amountAssetId];
+        invariant(amountAsset);
+
+        const priceAsset = assets[priceAssetId];
+        invariant(priceAsset);
+
+        const version = messageInput.data.data.version ?? 3;
+
+        const orderParams = {
+          amount: moneyLikeToMoney(
+            messageInput.data.data.amount,
+            assets
+          ).toCoins(),
+          assetPair: {
+            amountAsset: amountAssetId,
+            priceAsset: priceAssetId,
+          },
+          chainId:
+            messageInput.data.data.chainId ??
+            base58Decode(messageInput.account.address)[1],
+          eip712Signature: messageInput.data.data.eip712Signature,
+          expiration: messageInput.data.data.expiration,
+          matcherFee: moneyLikeToMoney(
+            messageInput.data.data.matcherFee,
+            assets
+          ).toCoins(),
+          matcherFeeAssetId:
+            matcherFeeAssetId === 'WAVES' ? null : matcherFeeAssetId,
+          matcherPublicKey:
+            messageInput.data.data.matcherPublicKey ??
+            (await this.networkController.getMatcherPublicKey()),
+          orderType: messageInput.data.data.orderType,
+          price: moneyLikeToMoney(messageInput.data.data.price, assets)
+            .getTokens()
+            .mul(
+              new BigNumber(10).pow(
+                version < 4 ||
+                  messageInput.data.data.priceMode === 'assetDecimals'
+                  ? 8 + priceAsset.precision - amountAsset.precision
+                  : 8
+              )
+            )
+            .toString(),
+          priceMode: messageInput.data.data.priceMode ?? 'fixedDecimals',
+          proofs: messageInput.data.data.proofs ?? [],
+          senderPublicKey: messageInput.account.publicKey,
+          timestamp: Date.now(),
+          version,
+        };
+
+        const order = {
+          id: base58Encode(computeHash(makeOrderBytes(orderParams))),
+          ...orderParams,
+        };
+
+        return {
+          ...messageInput,
+          data: order,
+          ext_uuid: messageInput.options && messageInput.options.uid,
+          id: nanoid(),
+          status: MessageStatus.UnApproved,
+          timestamp: Date.now(),
+        };
+      }
+      case 'request': {
+        const data = {
+          timestamp: Date.now(),
+          senderPublicKey: messageInput.account.publicKey,
+          ...messageInput.data.data,
+        };
+
+        return {
+          ...messageInput,
+          data: { ...messageInput.data, data },
+          ext_uuid: messageInput.options && messageInput.options.uid,
+          id: nanoid(),
+          messageHash: base58Encode(
+            computeHash(
+              makeRequestBytes({
+                senderPublicKey: data.senderPublicKey,
+                timestamp: data.timestamp,
+              })
+            )
+          ),
+          status: MessageStatus.UnApproved,
+          timestamp: Date.now(),
+        };
+      }
+      case 'transaction': {
+        const messageTx = await this.#generateMessageTx(
+          messageInput.account,
+          messageInput.data
+        );
+
+        return {
+          ...messageInput,
+          data: messageTx,
+          ext_uuid: messageInput.options?.uid,
+          id: nanoid(),
+          input: messageInput,
+          status: MessageStatus.UnApproved,
+          successPath: messageInput.data.successPath || undefined,
+          timestamp: Date.now(),
+        };
+      }
+      case 'transactionPackage': {
+        const { max, allow_tx } = this.remoteConfigController.getPackConfig();
+
+        const msgs = messageInput.data.length;
+
+        if (!msgs || msgs > max) {
+          throw ERRORS.REQUEST_ERROR(
+            `max transactions in pack is ${max}`,
+            messageInput
+          );
+        }
+
+        const unavailableTx = messageInput.data.filter(
+          ({ type }) => !allow_tx.includes(type)
+        );
+
+        if (unavailableTx.length) {
+          throw ERRORS.REQUEST_ERROR(
+            `tx type can be ${allow_tx.join(', ')}`,
+            messageInput
+          );
+        }
+
+        const txs = await Promise.all(
+          messageInput.data.map(txParams =>
+            this.#generateMessageTx(messageInput.account, txParams)
+          )
+        );
+
+        return {
+          ...messageInput,
+          data: txs,
+          ext_uuid: messageInput.options && messageInput.options.uid,
+          id: nanoid(),
+          input: messageInput,
+          status: MessageStatus.UnApproved,
+          timestamp: Date.now(),
+        };
+      }
+      case 'wavesAuth': {
+        try {
+          const data = {
+            ...messageInput.data,
+            publicKey:
+              messageInput.data.publicKey || messageInput.account.publicKey,
+          };
+
+          return {
+            ...messageInput,
+            data: {
+              ...data,
+              address: messageInput.account.address,
+              hash: base58Encode(blake2b(makeWavesAuthBytes(data))),
+            },
+            ext_uuid: messageInput.options && messageInput.options.uid,
+            id: nanoid(),
+            status: MessageStatus.UnApproved,
+            timestamp: Date.now(),
+          };
+        } catch (err) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          throw ERRORS.REQUEST_ERROR((err as any).message, messageInput);
+        }
+      }
     }
   }
 }

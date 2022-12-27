@@ -92,14 +92,15 @@ export const App = {
       .findElement(By.css('[data-testid="confirmPhrase"]'))
       .sendKeys(defaultPhrase);
 
-    await this.driver
-      .wait(
-        until.elementIsEnabled(
-          form.findElement(By.css('[data-testid="resetConfirm"]'))
-        ),
-        this.wait
-      )
-      .click();
+    const resetConfirmButton = await this.driver.wait(
+      until.elementIsEnabled(
+        form.findElement(By.css('[data-testid="resetConfirm"]'))
+      ),
+      this.wait
+    );
+
+    await resetConfirmButton.click();
+    await this.driver.wait(until.stalenessOf(resetConfirmButton), this.wait);
   },
 
   async open(this: mocha.Context) {

@@ -1,0 +1,35 @@
+.expandable {
+  padding: 14px;
+  border: 1px dashed #dae1e9;
+  border-radius: 2px;
+  background: #f8f9fb;
+}
+
+.expandable_isExpanded .expandableContent {
+  max-height: none;
+}
+
+.expandableContent {
+  max-height: 90px;
+  overflow: auto;
+}
+
+.buttonsWrapper {
+  margin-bottom: -13px;
+  display: flex;
+  justify-content: flex-end;
+  min-height: 27px;
+}
+
+.button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-submit300);
+  font: inherit;
+  font-weight: 500;
+}
+
+.button + .button {
+  margin-left: 24px;
+}

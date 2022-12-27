@@ -479,12 +479,6 @@
       "disallowed": "İzin verilmedi!"
     }
   },
-  "plateComponent": {
-    "copy": "Kopyala",
-    "copied": "Kopyalandı!",
-    "collapse": "Daralt",
-    "expand": "Genişlet"
-  },
   "qrCode": { "download": "QR kodunu indir" },
   "send": {
     "amountInputLabel": "Miktar",
@@ -574,7 +568,6 @@
     "exchangeChannelUnavailableError": "Hizmet cevap vermiyor",
     "exchangeChannelUnknownError": "Swap mümkün değil",
     "failMessage": "Takas (işlemi) başarılı olmadı, lütfen tekrar deneyin",
-    "ledgerFailMessage": "İstek, Ledger üzerinde reddedildi",
     "fromInputLabel": "-den",
     "insufficientFundsError": "Yetersiz bakiye",
     "maxAmountExceeded": "Bu miktarı aşmamalıdır: {{ maxAmount }}",

@@ -26,7 +26,7 @@ describe('Settings', function () {
       await this.driver
         .wait(
           until.elementIsEnabled(
-            this.driver.findElement(By.css('button#loginEnter'))
+            this.driver.findElement(By.css('#loginEnter'))
           ),
           this.wait
         )
@@ -142,7 +142,7 @@ describe('Settings', function () {
 
     before(async function () {
       await this.driver
-        .wait(until.elementLocated(By.css('button#settingsNetwork')), this.wait)
+        .wait(until.elementLocated(By.css('#settingsNetwork')), this.wait)
         .click();
 
       await this.driver.wait(
@@ -166,7 +166,7 @@ describe('Settings', function () {
         this.wait
       );
       setDefaultBtn = this.driver.wait(
-        until.elementLocated(By.css('button#setDefault')),
+        until.elementLocated(By.css('#setDefault')),
         this.wait
       );
 
@@ -213,13 +213,10 @@ describe('Settings', function () {
     });
   });
 
-  describe('Permissions control', function () {
+  describe('Permission control', function () {
     before(async function () {
       await this.driver
-        .wait(
-          until.elementLocated(By.css('button#settingsPermission')),
-          this.wait
-        )
+        .wait(until.elementLocated(By.css('#settingsPermission')), this.wait)
         .click();
     });
 
@@ -287,9 +284,7 @@ describe('Settings', function () {
             .sendKeys(SPENDING_LIMIT);
           await this.driver
             .wait(
-              until.elementIsEnabled(
-                this.driver.findElement(By.css('button#save'))
-              ),
+              until.elementIsEnabled(this.driver.findElement(By.css('#save'))),
               this.wait
             )
             .click();
@@ -332,9 +327,7 @@ describe('Settings', function () {
             .click();
           await this.driver
             .wait(
-              until.elementIsEnabled(
-                this.driver.findElement(By.css('button#save'))
-              ),
+              until.elementIsEnabled(this.driver.findElement(By.css('#save'))),
               this.wait
             )
             .click();
@@ -436,19 +429,22 @@ describe('Settings', function () {
 
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'transaction@originAuth')]")
+              By.xpath(
+                "//details[contains(@class, 'permissionsDetails@authOrigin')]"
+              )
             ),
             this.wait
           );
-          await this.driver.findElement(By.css('button#approve')).click();
+
+          await this.driver.findElement(By.css('#approve')).click();
 
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'transaction@final')]")
+              By.xpath("//div[contains(@class, 'transaction@transactions')]")
             ),
             this.wait
           );
-          await this.driver.findElement(By.css('button#close')).click();
+          await this.driver.findElement(By.css('#close')).click();
           await Windows.waitForWindowToClose.call(this, messageWindow);
           await this.driver.switchTo().window(tabKeeper);
           await App.open.call(this);
@@ -470,7 +466,7 @@ describe('Settings', function () {
           );
           await this.driver
             .wait(
-              until.elementLocated(By.css('button#settingsPermission')),
+              until.elementLocated(By.css('#settingsPermission')),
               this.wait
             )
             .click();
@@ -504,7 +500,7 @@ describe('Settings', function () {
             .wait(
               until.elementLocated(
                 By.xpath(
-                  "//div[contains(@class, 'collapsed@originAuth')]//div[contains(@class, 'title@index')]"
+                  "//summary[contains(@class, 'permissionsSummary@authOrigin')]"
                 )
               ),
               this.wait
@@ -516,7 +512,7 @@ describe('Settings', function () {
           await this.driver
             .findElement(
               By.xpath(
-                "//div[contains(@class, 'selectTime@settings')]" +
+                "//div[contains(@class, 'selectTime@authOrigin')]" +
                   "//div[contains(@class, 'trigger@Select-module')]"
               )
             )
@@ -537,22 +533,25 @@ describe('Settings', function () {
             .wait(
               until.elementIsEnabled(
                 this.driver.findElement(
-                  By.xpath("//input[contains(@class, 'amountInput@settings')]")
+                  By.xpath(
+                    "//input[contains(@class, 'amountInput@authOrigin')]"
+                  )
                 )
               ),
               this.wait
             )
             .sendKeys(SPENDING_LIMIT);
 
-          await this.driver.findElement(By.css('button#approve')).click();
+          await this.driver.findElement(By.css('#approve')).click();
 
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'transaction@final')]")
+              By.xpath("//div[contains(@class, 'transaction@transactions')]")
             ),
             this.wait
           );
-          await this.driver.findElement(By.css('button#close')).click();
+
+          await this.driver.findElement(By.css('#close')).click();
           await Windows.waitForWindowToClose.call(this, messageWindow);
           await this.driver.switchTo().window(tabKeeper);
           await App.open.call(this);
@@ -574,7 +573,7 @@ describe('Settings', function () {
           );
           await this.driver
             .wait(
-              until.elementLocated(By.css('button#settingsPermission')),
+              until.elementLocated(By.css('#settingsPermission')),
               this.wait
             )
             .click();
@@ -617,7 +616,7 @@ describe('Settings', function () {
           );
           await this.driver
             .wait(
-              until.elementLocated(By.css('button#settingsPermission')),
+              until.elementLocated(By.css('#settingsPermission')),
               this.wait
             )
             .click();
@@ -678,7 +677,7 @@ describe('Settings', function () {
           );
           await this.driver
             .wait(
-              until.elementLocated(By.css('button#settingsPermission')),
+              until.elementLocated(By.css('#settingsPermission')),
               this.wait
             )
             .click();
@@ -692,9 +691,9 @@ describe('Settings', function () {
             ),
             this.wait
           );
-          const origin: string = await originEl
-            .findElement(By.css('div'))
-            .getText();
+
+          const origin = await originEl.findElement(By.css('div')).getText();
+
           await this.driver
             .wait(
               until.elementLocated(
@@ -714,7 +713,7 @@ describe('Settings', function () {
             this.wait
           );
           await this.driver
-            .wait(until.elementLocated(By.css('button#delete')), this.wait)
+            .wait(until.elementLocated(By.css('#delete')), this.wait)
             .click();
 
           const { waitForNewWindows } = await Windows.captureNewWindows.call(
@@ -727,15 +726,18 @@ describe('Settings', function () {
 
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'transaction@originAuth')]")
+              By.xpath(
+                "//details[contains(@class, 'permissionsDetails@authOrigin')]"
+              )
             ),
             this.wait
           );
+
           await this.driver
-            .wait(until.elementLocated(By.css('button#reject')), this.wait)
+            .wait(until.elementLocated(By.css('#reject')), this.wait)
             .click();
           await this.driver
-            .wait(until.elementLocated(By.css('button#close')), this.wait)
+            .wait(until.elementLocated(By.css('#close')), this.wait)
             .click();
 
           await Windows.waitForWindowToClose.call(this, messageWindow);
@@ -757,7 +759,7 @@ describe('Settings', function () {
   describe('General', function () {
     before(async function () {
       await this.driver
-        .wait(until.elementLocated(By.css('button#settingsGeneral')), this.wait)
+        .wait(until.elementLocated(By.css('#settingsGeneral')), this.wait)
         .click();
     });
 

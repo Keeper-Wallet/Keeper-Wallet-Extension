@@ -2,6 +2,7 @@ import { PopupThunkAction } from '../../popup/store/types';
 import Background from '../../ui/services/Background';
 import { AppAction, AppActionPayload } from '../types';
 import { ACTION } from './constants';
+import { setActiveMessage, setActiveNotification } from './notifications';
 
 function createMVAction<TActionType extends AppAction['type']>(
   type: TActionType
@@ -39,10 +40,19 @@ export const notificationChangeName = createMVAction(
   ACTION.NOTIFICATION_NAME_CHANGED
 );
 
-export const approvePending = createMVAction(ACTION.APPROVE_PENDING);
-export const approveOk = createMVAction(ACTION.APPROVE_OK);
-export const approveError = createMVAction(ACTION.APPROVE_ERROR);
-export const rejectOk = createMVAction(ACTION.REJECT_OK);
-export const clearMessagesStatus = createMVAction(ACTION.APPROVE_REJECT_CLEAR);
+export function clearMessagesStatus(): PopupThunkAction<void> {
+  return (dispatch, getState) => {
+    const { activePopup, messages, notifications } = getState();
+
+    const message = messages.find(x => x.id !== activePopup?.msg?.id);
+
+    if (message) {
+      dispatch(setActiveMessage(message));
+    } else {
+      dispatch(setActiveNotification(notifications[0]));
+    }
+  };
+}
+
 export const setIdle = createMVAction(ACTION.REMOTE_CONFIG.SET_IDLE);
 export const updateIdle = createMVAction(ACTION.REMOTE_CONFIG.UPDATE_IDLE);

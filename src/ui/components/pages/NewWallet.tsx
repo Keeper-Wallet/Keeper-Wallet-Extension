@@ -1,4 +1,11 @@
-import { seedUtils } from '@waves/waves-transactions';
+import {
+  base58Encode,
+  createAddress,
+  createPrivateKey,
+  createPublicKey,
+  generateRandomSeed,
+  utf8Encode,
+} from '@keeper-wallet/waves-crypto';
 import { PopupState } from 'popup/store/types';
 import { Component } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
@@ -11,8 +18,8 @@ import { AvatarList, Button } from '../ui';
 import * as styles from './styles/newwallet.styl';
 
 interface NewWalletItem {
+  address: string;
   seed: string;
-  address: string | null;
   type: 'seed';
 }
 
@@ -34,15 +41,20 @@ interface State {
 
 let generatedWalletItems: NewWalletItem[] = [];
 
-export function generateNewWalletItems(networkCode: string) {
+export async function generateNewWalletItems(networkCode: string) {
   const list: NewWalletItem[] = [];
 
   for (let i = 0; i < 5; i++) {
-    const seed = seedUtils.Seed.create().phrase;
+    const seed = generateRandomSeed();
+
+    const privateKey = await createPrivateKey(utf8Encode(seed));
+    const publicKey = await createPublicKey(privateKey);
+
+    const address = createAddress(publicKey, networkCode.charCodeAt(0));
 
     list.push({
       seed,
-      address: new seedUtils.Seed(seed, networkCode).address,
+      address: base58Encode(address),
       type: 'seed',
     });
   }

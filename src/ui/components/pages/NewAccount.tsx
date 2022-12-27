@@ -131,15 +131,15 @@ class NewAccountComponent extends PureComponent<Props> {
                 {t('newAccount.createPassword')}
               </div>
               <Input
+                autoComplete="new-password"
+                autoFocus
+                error={!!this.state.firstError}
                 id="first"
-                wrapperClassName="margin1"
-                type="password"
-                view="password"
                 onBlur={this.onFirstBlur}
                 onChange={this.onChangeFist}
-                error={!!this.state.firstError}
-                autoFocus
-                autoComplete="off"
+                type="password"
+                view="password"
+                wrapperClassName="margin1"
               />
 
               <ErrorMessage
@@ -154,13 +154,13 @@ class NewAccountComponent extends PureComponent<Props> {
                 {t('newAccount.confirmPassword')}
               </div>
               <Input
+                autoComplete="new-password"
+                error={!!this.state.secondError}
                 id="second"
-                type="password"
-                view="password"
                 onBlur={this.onSecondBlur}
                 onChange={this.onChangeSecond}
-                error={!!this.state.secondError}
-                autoComplete="off"
+                type="password"
+                view="password"
               />
               <ErrorMessage
                 show={this.state.secondError}
