@@ -776,9 +776,13 @@ describe('Account creation', function () {
         await this.driver
           .findElement(By.css('[data-testid="passwordInput"]'))
           .sendKeys('xHZ7Zaxu2wuncWC');
-        await this.driver
-          .findElement(By.css('[data-testid="submitButton"]'))
-          .click();
+
+        const submitButton = await this.driver.findElement(
+          By.css('[data-testid="submitButton"]')
+        );
+
+        await submitButton.click();
+        await this.driver.wait(until.stalenessOf(submitButton), this.wait);
 
         expect(await extractParsedAccountsFromDOM.call(this)).to.deep.equal([
           {
@@ -811,9 +815,13 @@ describe('Account creation', function () {
         await this.driver
           .findElement(By.css('[data-testid="passwordInput"]'))
           .sendKeys('N72r78ByXBfNBnN#');
-        await this.driver
-          .findElement(By.css('[data-testid="submitButton"]'))
-          .click();
+
+        const submitButton = await this.driver.findElement(
+          By.css('[data-testid="submitButton"]')
+        );
+
+        await submitButton.click();
+        await this.driver.wait(until.stalenessOf(submitButton), this.wait);
 
         expect(await extractParsedAccountsFromDOM.call(this)).to.deep.equal([
           {
@@ -878,9 +886,13 @@ describe('Account creation', function () {
           await this.driver
             .findElement(By.css('[data-testid="passwordInput"]'))
             .sendKeys('xHZ7Zaxu2wuncWC');
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+
+          const submitButton = await this.driver.findElement(
+            By.css('[data-testid="submitButton"]')
+          );
+
+          await submitButton.click();
+          await this.driver.wait(until.stalenessOf(submitButton), this.wait);
 
           expect(
             await extractAccountCheckboxesFromDOM.call(this)
@@ -1009,9 +1021,13 @@ describe('Account creation', function () {
           await this.driver
             .findElement(By.css('[data-testid="passwordInput"]'))
             .sendKeys('xHZ7Zaxu2wuncWC');
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+
+          const submitButton = await this.driver.findElement(
+            By.css('[data-testid="submitButton"]')
+          );
+
+          await submitButton.click();
+          await this.driver.wait(until.stalenessOf(submitButton), this.wait);
 
           expect(
             await extractAccountCheckboxesFromDOM.call(this)
@@ -1105,9 +1121,13 @@ describe('Account creation', function () {
           await this.driver
             .findElement(By.css('[data-testid="passwordInput"]'))
             .sendKeys('xHZ7Zaxu2wuncWC');
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+
+          const submitButton = await this.driver.findElement(
+            By.css('[data-testid="submitButton"]')
+          );
+
+          await submitButton.click();
+          await this.driver.wait(until.stalenessOf(submitButton), this.wait);
 
           expect(
             await extractAccountCheckboxesFromDOM.call(this)
@@ -1173,9 +1193,13 @@ describe('Account creation', function () {
           await this.driver
             .findElement(By.css('[data-testid="passwordInput"]'))
             .sendKeys('xHZ7Zaxu2wuncWC');
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+
+          const submitButton = await this.driver.findElement(
+            By.css('[data-testid="submitButton"]')
+          );
+
+          await submitButton.click();
+          await this.driver.wait(until.stalenessOf(submitButton), this.wait);
 
           expect(
             await extractAccountCheckboxesFromDOM.call(this)
@@ -1237,9 +1261,13 @@ describe('Account creation', function () {
           await this.driver
             .findElement(By.css('[data-testid="passwordInput"]'))
             .sendKeys('xHZ7Zaxu2wuncWC');
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+
+          const submitButton = await this.driver.findElement(
+            By.css('[data-testid="submitButton"]')
+          );
+
+          await submitButton.click();
+          await this.driver.wait(until.stalenessOf(submitButton), this.wait);
 
           expect(
             await extractAccountCheckboxesFromDOM.call(this)

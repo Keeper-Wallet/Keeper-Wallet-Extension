@@ -1,4 +1,3 @@
-import { BigNumber } from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
 import { PreferencesAccount } from 'preferences/types';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +9,7 @@ import * as styles from './accountCard.module.css';
 
 interface Props {
   account: PreferencesAccount;
-  balance: string | BigNumber | Money | undefined;
+  balance: Money | undefined;
   onClick: (account: PreferencesAccount) => void;
   onInfoClick: (account: PreferencesAccount) => void;
 }

@@ -1,37 +1,23 @@
 import type { Dispatch, MiddlewareAPI } from 'redux';
+import type { StorageLocalState } from 'storage/storage';
 
 import type { AssetsRecord } from '../assets/types';
 import type { BalancesItem } from '../balances/types';
-import type { FeeConfig, NftConfig } from '../constants';
-import type { MessageStoreItem } from '../messages/types';
+import type { NftConfig } from '../constants';
+import type { Message } from '../messages/types';
 import type { NetworkName } from '../networks/types';
 import type { NftInfo } from '../nfts/nfts';
 import type { NotificationsStoreItem } from '../notifications/types';
 import type { PermissionValue } from '../permissions/types';
 import type { PopupState } from '../popup/store/types';
 import type { IdleOptions, PreferencesAccount } from '../preferences/types';
-import type {
-  BackgroundGetStateResult,
-  BackgroundUiApi,
-} from '../ui/services/Background';
-import type { IMoneyLike } from '../ui/utils/converters';
 import type { ACTION } from './actions/constants';
 import type { NewAccountState, UiState } from './reducers/updateState';
 
 export type AppAction =
   | {
-      type: typeof ACTION.UPDATE_NETWORKS;
-      payload: Awaited<ReturnType<BackgroundUiApi['getNetworks']>>;
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.REMOTE_CONFIG.SET_CONFIG;
-      payload: Partial<BackgroundGetStateResult['config']>;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.UPDATE_FEE_CONFIG;
-      payload: FeeConfig;
+      payload: Partial<StorageLocalState['config']>;
       meta?: never;
     }
   | {
@@ -76,14 +62,14 @@ export type AppAction =
     }
   | {
       type: typeof ACTION.UPDATE_ORIGINS;
-      payload: Record<string, PermissionValue[]>;
+      payload: Partial<Record<string, PermissionValue[]>>;
       meta?: never;
     }
   | {
       type: typeof ACTION.UPDATE_MESSAGES;
       payload: {
-        unapprovedMessages: MessageStoreItem[];
-        messages: MessageStoreItem[];
+        unapprovedMessages: Message[];
+        messages: Message[];
       };
       meta?: never;
     }
@@ -100,8 +86,8 @@ export type AppAction =
   | {
       type: typeof ACTION.MESSAGES.SET_ACTIVE_AUTO;
       payload: {
-        allMessages: MessageStoreItem[] | undefined;
-        messages: MessageStoreItem[];
+        allMessages: Message[] | undefined;
+        messages: Message[];
         notifications: NotificationsStoreItem[][];
       };
       meta?: never;
@@ -170,36 +156,6 @@ export type AppAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.APPROVE_PENDING;
-      payload: boolean;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.APPROVE_OK;
-      payload: string | boolean;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.APPROVE_ERROR;
-      payload:
-        | boolean
-        | {
-            error: unknown;
-            message: unknown;
-          };
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.REJECT_OK;
-      payload: string | boolean;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.APPROVE_REJECT_CLEAR;
-      payload: boolean | void;
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.NOTIFICATION_SELECT;
       payload: boolean;
       meta?: never;
@@ -236,12 +192,12 @@ export type AppAction =
     }
   | {
       type: typeof ACTION.MESSAGES.SET_ACTIVE_MESSAGE;
-      payload: MessageStoreItem | null;
+      payload: Message | undefined;
       meta?: never;
     }
   | {
       type: typeof ACTION.MESSAGES.SET_ACTIVE_NOTIFICATION;
-      payload: NotificationsStoreItem[] | null;
+      payload: NotificationsStoreItem[] | undefined;
       meta?: never;
     }
   | {
@@ -318,20 +274,10 @@ export type AppAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.NOTIFICATIONS.DELETE;
-      payload:
-        | string[]
-        | {
-            ids: string[];
-            next: NotificationsStoreItem[] | null;
-          };
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.NOTIFICATIONS.SET_PERMS;
       payload: {
         origin: string;
-        canUse: boolean;
+        canUse: boolean | null;
       };
       meta?: never;
     }
@@ -356,11 +302,6 @@ export type AppAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.UPDATE_ASSETS;
-      payload: string[];
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.SET_ADDRESS;
       payload: { address: string; name: string };
       meta?: never;
@@ -376,16 +317,6 @@ export type AppAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.FAVORITE_ASSET;
-      payload: string;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.CHANGE_ACCOUNT_NAME;
-      payload: { address: string; name: string };
-      meta?: never;
-    }
-  | {
       type: typeof ACTION.CHANGE_NODE;
       payload: { node: string | null | undefined; network: NetworkName };
       meta?: never;
@@ -398,36 +329,6 @@ export type AppAction =
   | {
       type: typeof ACTION.CHANGE_MATCHER;
       payload: { network: NetworkName; matcher: string | null | undefined };
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.LOCK;
-      payload?: never;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.UPDATE_TRANSACTION_FEE;
-      payload: { messageId: string; fee: IMoneyLike };
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.CLEAR_MESSAGES;
-      payload?: never;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.APPROVE;
-      payload: string;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.REJECT;
-      payload: string;
-      meta?: never;
-    }
-  | {
-      type: typeof ACTION.REJECT_FOREVER;
-      payload: { messageId: string; forever: boolean };
       meta?: never;
     };
 

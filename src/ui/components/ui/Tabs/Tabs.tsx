@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { Children, cloneElement, isValidElement, useState } from 'react';
+import invariant from 'tiny-invariant';
 
 import * as styles from './tabs.styl';
 
@@ -60,8 +61,7 @@ export function TabList({
           isValidElement<React.ComponentProps<typeof Tab>>(child) &&
           cloneElement(child, {
             isActive: index === activeIndex,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            onActivate: () => onActiveTab!(index),
+            onActivate: () => onActiveTab?.(index),
           })
       )}
     </ol>
@@ -79,10 +79,11 @@ export function TabPanels({
   children,
   className,
 }: TabPanelsProps) {
-  const childArray = Children.toArray(children);
+  invariant(typeof activeIndex === 'number');
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return <div className={className}>{childArray[activeIndex!]}</div>;
+  return (
+    <div className={className}>{Children.toArray(children)[activeIndex]}</div>
+  );
 }
 
 interface TabPanelProps {
@@ -122,6 +123,7 @@ export function Tabs({
                 if (onTabChange) {
                   onTabChange(activeIndex);
                 }
+
                 setActiveTabState(activeIndex);
               },
             });

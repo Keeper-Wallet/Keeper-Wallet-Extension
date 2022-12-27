@@ -1,70 +1,74 @@
-import { TBinaryIn } from '@waves/ts-lib-crypto';
-import { seedUtils } from '@waves/waves-transactions';
-import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
-import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
+import {
+  base58Encode,
+  base64Decode,
+  base64Encode,
+  decryptSeed,
+  encryptSeed,
+  utf8Decode,
+  utf8Encode,
+} from '@keeper-wallet/waves-crypto';
 import { EventEmitter } from 'events';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
-import {
-  SaAuth,
-  SaCancelOrder,
-  SaOrder,
-  SaRequest,
-  SaTransaction,
-} from 'transactions/utils';
-import { createWallet } from 'wallets';
-import { LedgerApi } from 'wallets/ledger';
+import invariant from 'tiny-invariant';
+import { DebugWallet } from 'wallets/debug';
+import { EncodedSeedWallet } from 'wallets/encodedSeed';
+import { LedgerApi, LedgerWallet } from 'wallets/ledger';
+import { PrivateKeyWallet } from 'wallets/privateKey';
+import { SeedWallet } from 'wallets/seed';
 import { CreateWalletInput, WalletPrivateData } from 'wallets/types';
 import { Wallet } from 'wallets/wallet';
+import { WxWallet } from 'wallets/wx';
 
+import { NETWORK_CONFIG } from '../constants';
 import { ExtensionStorage } from '../storage/storage';
 import { AssetInfoController } from './assetInfo';
 import { IdentityApi } from './IdentityController';
-import { NetworkController } from './network';
 import { TrashController } from './trash';
 
-function encrypt(object: unknown, password: string) {
-  const jsonObj = JSON.stringify(object);
-  return seedUtils.encryptSeed(jsonObj, password);
+async function encryptVault(input: WalletPrivateData[], password: string) {
+  const json = JSON.stringify(input);
+  const vault = await encryptSeed(utf8Encode(json), utf8Encode(password));
+
+  return base64Encode(vault);
 }
 
-function decrypt(ciphertext: string, password: string) {
+async function decryptVault(vault: string, password: string) {
   try {
-    const decryptedJson = seedUtils.decryptSeed(ciphertext, password);
-    return JSON.parse(decryptedJson);
-  } catch (e) {
+    const decryptedSeed = await decryptSeed(
+      base64Decode(vault),
+      utf8Encode(password)
+    );
+
+    return JSON.parse(utf8Decode(decryptedSeed)) as WalletPrivateData[];
+  } catch {
     throw new Error('Invalid password');
   }
 }
 
 export class WalletController extends EventEmitter {
-  store;
-  private password: string | null | undefined;
-  private _setSession;
-  private wallets: Array<Wallet<WalletPrivateData>>;
-  private assetInfo;
-  private getNetworks;
-  private getNetworkCode;
-  private ledger;
-  private trashControl;
-  private identity;
+  #assetInfo;
+  #identity;
+  #ledger;
+  #password: string | null | undefined;
+  #setSession;
+  #trashController;
+  #wallets: Array<Wallet<WalletPrivateData>>;
+
+  readonly store;
 
   constructor({
-    extensionStorage,
     assetInfo,
-    getNetworks,
-    getNetworkCode,
+    extensionStorage,
+    identity,
     ledger,
     trash,
-    identity,
   }: {
-    extensionStorage: ExtensionStorage;
     assetInfo: AssetInfoController['assetInfo'];
-    getNetworks: NetworkController['getNetworks'];
-    getNetworkCode: NetworkController['getNetworkCode'];
+    extensionStorage: ExtensionStorage;
+    identity: IdentityApi;
     ledger: LedgerApi;
     trash: TrashController;
-    identity: IdentityApi;
   }) {
     super();
 
@@ -73,361 +77,334 @@ export class WalletController extends EventEmitter {
         WalletController: { vault: undefined },
       })
     );
+
     extensionStorage.subscribe(this.store);
 
-    this.password = extensionStorage.getInitSession().password;
-    this._setSession = extensionStorage.setSession.bind(extensionStorage);
+    this.#assetInfo = assetInfo;
+    this.#identity = identity;
+    this.#ledger = ledger;
+    this.#password = extensionStorage.getInitSession().password;
+    this.#setSession = extensionStorage.setSession.bind(extensionStorage);
+    this.#trashController = trash;
+    this.#wallets = [];
 
-    this.wallets = [];
-    this.assetInfo = assetInfo;
-    this.getNetworks = getNetworks;
-    this.getNetworkCode = getNetworkCode;
-    this.ledger = ledger;
-    this.trashControl = trash;
-    this.identity = identity;
-
-    this._restoreWallets(this.password);
+    if (this.#password) {
+      this.#restoreWallets(this.#password);
+    }
   }
 
-  // Public
-  addWallet(
-    options: Omit<CreateWalletInput, 'networkCode'> & {
-      networkCode?: string;
-    }
+  async #createWallet(
+    input: CreateWalletInput,
+    network: NetworkName,
+    networkCode: string
   ) {
-    const networkCode =
-      options.networkCode || this.getNetworkCode(options.network);
+    switch (input.type) {
+      case 'debug':
+        return new DebugWallet({
+          address: input.address,
+          name: input.name,
+          network,
+          networkCode,
+        });
+      case 'encodedSeed':
+        return EncodedSeedWallet.create({
+          encodedSeed: input.encodedSeed,
+          name: input.name,
+          network,
+          networkCode,
+        });
+      case 'ledger':
+        return new LedgerWallet(
+          {
+            address: input.address,
+            id: input.id,
+            name: input.name,
+            network,
+            networkCode,
+            publicKey: input.publicKey,
+          },
+          this.#ledger,
+          this.#assetInfo
+        );
+      case 'privateKey':
+        return PrivateKeyWallet.create({
+          name: input.name,
+          network,
+          networkCode,
+          privateKey: input.privateKey,
+        });
+      case 'seed':
+        return SeedWallet.create({
+          name: input.name,
+          network,
+          networkCode,
+          seed: input.seed,
+        });
+      case 'wx':
+        return new WxWallet(
+          {
+            name: input.name,
+            network,
+            networkCode,
+            publicKey: input.publicKey,
+            address: input.address,
+            uuid: input.uuid,
+            username: input.username,
+          },
+          this.#identity
+        );
+    }
+  }
 
-    const wallet = this._createWallet({
-      ...options,
-      networkCode,
-    } as CreateWalletInput);
+  async #saveWallets() {
+    invariant(this.#password);
 
-    const foundWallet = this.getWalletsByNetwork(options.network).find(
-      item => item.getAccount().address === wallet.getAccount().address
+    const vault = await encryptVault(
+      this.#wallets.map(wallet => wallet.data),
+      this.#password
+    );
+
+    this.store.updateState({ WalletController: { vault } });
+  }
+
+  async #restoreWallets(password: string) {
+    if (!password) throw new Error('Password is required');
+
+    const state = this.store.getState();
+    const { vault } = state.WalletController;
+
+    if (!vault) return;
+
+    const decryptedVault = await decryptVault(vault, password);
+
+    this.#wallets = await Promise.all(
+      decryptedVault.map(user =>
+        this.#createWallet(user, user.network, user.networkCode)
+      )
+    );
+
+    this.emit('updateWallets');
+  }
+
+  #getWalletsByNetwork(network: NetworkName) {
+    return this.#wallets.filter(wallet => wallet.data.network === network);
+  }
+
+  #setPassword(password: string | null) {
+    if (password?.length === 0) {
+      throw new Error('Password is required');
+    }
+
+    this.#password = password;
+    this.#setSession({ password });
+  }
+
+  async #putWalletIntoTrash(wallet: Wallet<WalletPrivateData>) {
+    invariant(this.#password);
+
+    const walletsData = await encryptSeed(
+      utf8Encode(JSON.stringify(wallet.data)),
+      utf8Encode(this.#password)
+    );
+
+    this.#trashController.addItem({
+      address: wallet.data.address,
+      walletsData: base64Encode(walletsData),
+    });
+  }
+
+  async addWallet(
+    input: CreateWalletInput,
+    network: NetworkName,
+    networkCode: string
+  ) {
+    const wallet = await this.#createWallet(input, network, networkCode);
+
+    const foundWallet = this.#getWalletsByNetwork(network).find(
+      w => w.data.address === wallet.data.address
     );
 
     if (foundWallet) {
       return foundWallet.getAccount();
     }
 
-    this.wallets.push(wallet);
-    this._saveWallets();
+    this.#wallets.push(wallet);
+    await this.#saveWallets();
+
     this.emit('addWallet', wallet);
+    this.emit('updateWallets');
+
     return wallet.getAccount();
   }
 
-  removeWallet(address: string, network: NetworkName) {
-    const wallet = this.getWalletsByNetwork(network).find(
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      wallet => wallet.getAccount().address === address
+  async batchAddWallets(
+    inputs: Array<
+      CreateWalletInput & { network: NetworkName; networkCode: string }
+    >
+  ) {
+    const newWallets = await Promise.all(
+      inputs.map(input =>
+        this.#createWallet(input, input.network, input.networkCode)
+      )
     );
-    this._walletToTrash(wallet);
-    this.wallets = this.wallets.filter(w => {
-      return w !== wallet;
+
+    this.#wallets.push(...newWallets);
+
+    await this.#saveWallets();
+
+    newWallets.forEach(wallet => {
+      this.emit('addWallet', wallet);
     });
-    this._saveWallets();
+
+    this.emit('updateWallets');
+  }
+
+  async removeWallet(address: string, network: NetworkName) {
+    const wallet = this.#getWalletsByNetwork(network).find(
+      w => w.data.address === address
+    );
+
+    if (!wallet) return;
+
+    await this.#putWalletIntoTrash(wallet);
+    this.#wallets = this.#wallets.filter(w => w !== wallet);
+    await this.#saveWallets();
     this.emit('removeWallet', wallet);
+    this.emit('updateWallets');
+  }
+
+  async updateNetworkCode(network: NetworkName, code: string | undefined) {
+    let changed = false;
+
+    await Promise.all(
+      this.#wallets.map(async (wallet, index) => {
+        if (
+          wallet.data.network === network &&
+          wallet.data.networkCode !== code
+        ) {
+          this.#wallets[index] = await this.#createWallet(
+            wallet.data,
+            wallet.data.network,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            code!
+          );
+
+          changed = true;
+        }
+      })
+    );
+
+    if (changed) {
+      await this.#saveWallets();
+    }
+
+    this.emit('updateWallets');
   }
 
   getAccounts() {
-    return this.wallets.map(wallet => wallet.getAccount());
+    return this.#wallets.map(wallet => wallet.getAccount());
   }
 
-  lock() {
-    this._setPassword(null);
-    this.wallets = [];
+  async initVault(password: string) {
+    this.#setPassword(password);
+    await this.#saveWallets();
   }
 
-  unlock(password: string) {
-    this._restoreWallets(password);
-    this._setPassword(password);
-    this._migrateWalletsNetwork();
-  }
+  async deleteVault() {
+    await Promise.all(
+      this.#wallets.map(wallet => this.#putWalletIntoTrash(wallet))
+    );
 
-  initVault(password: string) {
-    if (!password || typeof password !== 'string') {
-      throw new Error('Password is needed to init vault');
-    }
-    (this.wallets || []).forEach(wallet => this._walletToTrash(wallet));
-    this._setPassword(password);
-    this.wallets = [];
-    this._saveWallets();
-  }
+    this.#wallets.forEach(wallet => {
+      this.emit('removeWallet', wallet);
+    });
 
-  deleteVault() {
-    (this.wallets || []).forEach(wallet => this._walletToTrash(wallet));
-    this._setPassword(null);
-    this.wallets = [];
+    this.#setPassword(null);
+    this.#wallets = [];
+    this.emit('updateWallets');
     this.store.updateState({ WalletController: { vault: undefined } });
   }
 
-  newPassword(oldPassword: string, newPassword: string) {
-    if (
-      !oldPassword ||
-      !newPassword ||
-      typeof oldPassword !== 'string' ||
-      typeof newPassword !== 'string'
-    ) {
-      throw new Error('Password is required');
-    }
-    this._restoreWallets(oldPassword);
-    this._setPassword(newPassword);
-    this._saveWallets();
-  }
-
-  checkPassword(password: string) {
-    return password === this.password;
-  }
-
-  getAccountSeed(address: string, network: NetworkName, password: string) {
-    if (!password) throw new Error('Password is required');
-    this._restoreWallets(password);
-
-    return this._findWallet(address, network).getSeed();
-  }
-
-  getAccountEncodedSeed(
-    address: string,
-    network: NetworkName,
-    password: string
-  ) {
-    if (!password) throw new Error('Password is required');
-    this._restoreWallets(password);
-
-    return this._findWallet(address, network).getEncodedSeed();
-  }
-
-  getAccountPrivateKey(
-    address: string,
-    network: NetworkName,
-    password: string
-  ) {
-    if (!password) throw new Error('Password is required');
-    this._restoreWallets(password);
-
-    return this._findWallet(address, network).getPrivateKey();
-  }
-
-  encryptedSeed(address: string, network: NetworkName) {
-    const wallet = this._findWallet(address, network);
-    const seed = wallet.getSeed();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return seedUtils.Seed.encryptSeedPhrase(seed, this.password!);
-  }
-
-  updateNetworkCode(network: NetworkName, code: string | undefined) {
-    let changed = false;
-
-    this.wallets.forEach((wallet, index) => {
-      const account = wallet.getAccount();
-
-      if (account.network === network && account.networkCode !== code) {
-        changed = true;
-
-        this.wallets[index] = this._createWallet({
-          ...wallet.serialize(),
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          networkCode: code!,
-        });
-      }
-    });
-
-    if (changed) {
-      this._saveWallets();
+  async checkPassword(password: string) {
+    try {
+      await this.#restoreWallets(password);
+      return true;
+    } catch {
+      return false;
     }
   }
 
-  getWalletsByNetwork(network: NetworkName) {
-    return this.wallets.filter(
-      wallet => wallet.getAccount().network === network
+  async newPassword(oldPassword: string, newPassword: string) {
+    await this.#restoreWallets(oldPassword);
+    this.#setPassword(newPassword);
+    await this.#saveWallets();
+  }
+
+  lock() {
+    this.#setPassword(null);
+    this.#wallets = [];
+  }
+
+  async unlock(password: string) {
+    await this.#restoreWallets(password);
+    this.#setPassword(password);
+
+    if (this.#wallets.some(wallet => !wallet.data.network)) {
+      const networks = Object.fromEntries(
+        Object.values(NETWORK_CONFIG).map(net => [net.networkCode, net.name])
+      );
+
+      this.#wallets = await Promise.all(
+        this.#wallets.map(wallet =>
+          this.#createWallet(
+            wallet.data,
+            networks[wallet.data.networkCode],
+            wallet.data.networkCode
+          )
+        )
+      );
+
+      await this.#saveWallets();
+    }
+
+    this.emit('updateWallets');
+  }
+
+  getWallet(address: string, network: NetworkName) {
+    const wallet = this.#getWalletsByNetwork(network).find(
+      w => w.data.address === address
     );
-  }
 
-  _walletToTrash(wallet: Wallet<WalletPrivateData> | undefined) {
-    const walletsData = wallet && wallet.serialize && wallet.serialize();
-    if (walletsData) {
-      const saveData = {
-        walletsData: this.password
-          ? encrypt(walletsData, this.password)
-          : walletsData,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        address: (wallet as any).address,
-      };
-      this.trashControl.addData(saveData);
-    }
-  }
-
-  _migrateWalletsNetwork() {
-    const networks = this.getNetworks().reduce((acc, net) => {
-      acc[net.code] = net.name;
-      return acc;
-    }, Object.create(null));
-
-    const wallets = this.wallets.map(wallet => wallet.serialize());
-
-    if (!wallets.find(item => !item.network)) {
-      return null;
-    }
-
-    const walletsData = this.wallets.map(wallet => {
-      const data = wallet.serialize();
-      if (!data.network) {
-        data.network = networks[data.networkCode];
-      }
-
-      return data;
-    });
-
-    this.wallets = walletsData.map(user => this._createWallet(user));
-    this._saveWallets();
-  }
-
-  async signTx(address: string, tx: SaTransaction, network: NetworkName) {
-    const wallet = this._findWallet(address, network);
-
-    return await wallet.signTx({
-      ...tx,
-      data: {
-        senderPublicKey: wallet.getAccount().publicKey,
-        ...tx.data,
-      },
-    } as SaTransaction);
-  }
-
-  async signOrder(address: string, order: SaOrder, network: NetworkName) {
-    const wallet = this._findWallet(address, network);
-
-    return await wallet.signOrder({
-      ...order,
-      data: {
-        senderPublicKey: wallet.getAccount().publicKey,
-        ...order.data,
-      },
-    });
-  }
-
-  async signCancelOrder(
-    address: string,
-    cancelOrder: SaCancelOrder,
-    network: NetworkName
-  ) {
-    const wallet = this._findWallet(address, network);
-    return await wallet.signCancelOrder(cancelOrder);
-  }
-
-  async signWavesAuth(
-    data: IWavesAuthParams,
-    address: string,
-    network: NetworkName
-  ) {
-    const wallet = this._findWallet(address, network);
-    return await wallet.signWavesAuth(data);
-  }
-
-  async signCustomData(
-    data: TCustomData,
-    address: string,
-    network: NetworkName
-  ) {
-    const wallet = this._findWallet(address, network);
-    return await wallet.signCustomData(data);
-  }
-
-  async signRequest(address: string, request: SaRequest, network: NetworkName) {
-    const wallet = this._findWallet(address, network);
-    return wallet.signRequest(request);
-  }
-
-  async auth(
-    address: string,
-    authData: SaAuth & { data: { name: unknown } },
-    network: NetworkName
-  ) {
-    const wallet = this._findWallet(address, network);
-    const signature = await wallet.signAuth(authData);
-    const { host, name, prefix, version } = authData.data;
-    return {
-      host,
-      name,
-      prefix,
-      address,
-      publicKey: wallet.getAccount().publicKey,
-      signature,
-      version,
-    };
-  }
-
-  async getKEK(
-    address: string,
-    network: NetworkName,
-    publicKey: string,
-    prefix: string
-  ) {
-    const wallet = this._findWallet(address, network);
-    return await wallet.getKEK(publicKey, prefix);
-  }
-
-  async encryptMessage(
-    address: string,
-    network: NetworkName,
-    message: string,
-    publicKey: TBinaryIn,
-    prefix: string | undefined
-  ) {
-    const wallet = this._findWallet(address, network);
-    return await wallet.encryptMessage(message, publicKey, prefix);
-  }
-
-  async decryptMessage(
-    address: string,
-    network: NetworkName,
-    message: TBinaryIn,
-    publicKey: TBinaryIn,
-    prefix: string | undefined
-  ) {
-    const wallet = this._findWallet(address, network);
-    return await wallet.decryptMessage(message, publicKey, prefix);
-  }
-
-  _saveWallets() {
-    const walletsData = this.wallets.map(wallet => wallet.serialize());
-    this.store.updateState({
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      WalletController: { vault: encrypt(walletsData, this.password!) },
-    });
-  }
-
-  _restoreWallets(password: string | null | undefined) {
-    const vault = this.store.getState().WalletController.vault;
-
-    if (!vault || !password) {
-      return;
-    }
-
-    const decryptedData = decrypt(vault, password) as CreateWalletInput[];
-    this.wallets = decryptedData.map(user => this._createWallet(user));
-  }
-
-  _createWallet(user: CreateWalletInput) {
-    return createWallet(user, {
-      getAssetInfo: this.assetInfo,
-      identity: this.identity,
-      ledger: this.ledger,
-    });
-  }
-
-  _findWallet(address: string, network: NetworkName) {
-    const wallet = this.getWalletsByNetwork(network).find(
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      wallet => wallet.getAccount().address === address
-    );
     if (!wallet) throw new Error(`Wallet not found for address ${address}`);
+
     return wallet;
   }
 
-  _setPassword(password: string | null) {
-    this.password = password;
-    this._setSession({ password });
+  async getAccountSeed(
+    address: string,
+    network: NetworkName,
+    password: string
+  ) {
+    await this.checkPassword(password);
+    return this.getWallet(address, network).getSeed();
+  }
+
+  async getAccountEncodedSeed(
+    address: string,
+    network: NetworkName,
+    password: string
+  ) {
+    await this.checkPassword(password);
+    return this.getWallet(address, network).getEncodedSeed();
+  }
+
+  async getAccountPrivateKey(
+    address: string,
+    network: NetworkName,
+    password: string
+  ) {
+    await this.checkPassword(password);
+    const privateKey = await this.getWallet(address, network).getPrivateKey();
+    return base58Encode(privateKey);
   }
 }

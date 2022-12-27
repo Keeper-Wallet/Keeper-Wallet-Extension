@@ -55,8 +55,7 @@ export const TransactionWallet = ({
       <div className={styles.avatar}>
         <Avatar
           size={avatarSize}
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          address={account.address!}
+          address={account.address}
           type={account.type}
         />
       </div>

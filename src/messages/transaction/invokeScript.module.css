@@ -1,0 +1,16 @@
+.argsTable {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.argsTable td {
+  vertical-align: baseline;
+}
+
+.argsTable td + td {
+  padding-left: 8px;
+}
+
+.paymentItem + .paymentItem {
+  margin-top: 8px;
+}

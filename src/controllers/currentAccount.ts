@@ -272,7 +272,9 @@ export class CurrentAccountController {
       );
 
     await Promise.all([
-      this.assetInfoController.updateAssets(fetchAssetIds),
+      this.assetInfoController.updateAssets(fetchAssetIds, {
+        ignoreCache: true,
+      }),
       this.nftInfoController.updateNfts(myNfts),
     ]);
 

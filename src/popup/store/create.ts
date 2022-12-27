@@ -1,10 +1,9 @@
 import { applyMiddleware, createStore } from 'redux';
 import { createLogger } from 'redux-logger';
 import thunk, { ThunkDispatch } from 'redux-thunk';
-import { AppAction } from 'store/types';
 
 import * as middleware from '../../store/middleware';
-import { KEEPERWALLET_DEBUG } from '../../ui/appConfig';
+import type { AppAction } from '../../store/types';
 import { reducer } from './reducer';
 import type { PopupState } from './types';
 
@@ -19,7 +18,9 @@ export function createPopupStore() {
     applyMiddleware(
       thunk,
       ...Object.values(middleware),
-      ...(KEEPERWALLET_DEBUG ? [createLogger({ collapsed: true })] : [])
+      ...(process.env.NODE_ENV === 'development'
+        ? [createLogger({ collapsed: true })]
+        : [])
     )
   );
 

@@ -1,23 +1,18 @@
+import { JSONbn } from '_core/jsonBn';
 import { addBreadcrumb, setTag } from '@sentry/browser';
+import { TransactionFromNode } from '@waves/ts-types';
+import { MessageOrder, MessageTx } from 'messages/types';
+import { stringifyOrder, stringifyTransaction } from 'messages/utils';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 
+import { NETWORK_CONFIG } from '../constants';
 import { ExtensionStorage } from '../storage/storage';
-import { RemoteConfigController } from './remoteConfig';
 
 export class NetworkController {
   store;
-  private configApi;
 
-  constructor({
-    extensionStorage,
-    getNetworkConfig,
-    getNetworks,
-  }: {
-    extensionStorage: ExtensionStorage;
-    getNetworkConfig: RemoteConfigController['getNetworkConfig'];
-    getNetworks: RemoteConfigController['getNetworks'];
-  }) {
+  constructor({ extensionStorage }: { extensionStorage: ExtensionStorage }) {
     this.store = new ObservableStore(
       extensionStorage.getInitState({
         currentNetwork: NetworkName.Mainnet,
@@ -44,15 +39,7 @@ export class NetworkController {
 
     extensionStorage.subscribe(this.store);
 
-    this.configApi = { getNetworkConfig, getNetworks };
     setTag('network', this.store.getState().currentNetwork);
-  }
-
-  getNetworks() {
-    const networks = this.configApi.getNetworkConfig();
-    return this.configApi
-      .getNetworks()
-      .map(name => ({ ...networks[name], name }));
   }
 
   setNetwork(network: NetworkName) {
@@ -98,9 +85,11 @@ export class NetworkController {
   }
 
   getNetworkCode(network?: NetworkName) {
-    const networks = this.configApi.getNetworkConfig();
     network = network || this.getNetwork();
-    return this.getCustomCodes()[network] || networks[network].code;
+
+    return (
+      this.getCustomCodes()[network] || NETWORK_CONFIG[network].networkCode
+    );
   }
 
   getCustomNodes() {
@@ -108,88 +97,148 @@ export class NetworkController {
   }
 
   getNode(network?: NetworkName) {
-    const networks = this.configApi.getNetworkConfig();
     network = network || this.getNetwork();
-    return this.getCustomNodes()[network] || networks[network].server;
+
+    return (
+      this.getCustomNodes()[network] || NETWORK_CONFIG[network].nodeBaseUrl
+    );
   }
 
   getCustomMatchers() {
     return this.store.getState().customMatchers;
   }
 
-  getMatcher(network?: NetworkName) {
-    network = network || this.getNetwork();
+  getMatcher() {
     return (
-      this.getCustomMatchers()[network] ||
-      this.configApi.getNetworkConfig()[network].matcher
+      this.getCustomMatchers()[this.getNetwork()] ||
+      NETWORK_CONFIG[this.getNetwork()].matcherBaseUrl
     );
   }
 
   async getMatcherPublicKey() {
-    const keyMap: Record<string, string> = {};
-    const url = new URL('/matcher', this.getMatcher()).toString();
-    if (keyMap[url] == null) {
-      const resp = await fetch(url);
+    const response = await fetch(new URL('/matcher', this.getMatcher()));
 
-      keyMap[url] = await resp.text();
+    if (!response.ok) {
+      throw response;
     }
-    return keyMap[url];
+
+    const matcherPublicKey = (await response.json()) as string;
+
+    return matcherPublicKey;
   }
 
-  async broadcast(message: {
-    amountAsset?: string;
-    priceAsset?: string;
-    type: string;
-    result?: string;
-  }) {
-    const { result, type } = message;
-    let API_BASE, url;
+  async broadcastCancelOrder(
+    cancelOrder: {
+      orderId: string;
+      sender: string;
+      signature: string;
+    },
+    params: {
+      amountAsset: string;
+      priceAsset: string;
+    }
+  ) {
+    const matcherUrl = this.getMatcher();
 
-    switch (type) {
-      case 'transaction':
-        API_BASE = this.getNode();
-        url = new URL('transactions/broadcast', API_BASE).toString();
-        break;
-      case 'order':
-        API_BASE = this.getMatcher();
-        if (!API_BASE) {
-          throw new Error('Matcher not set. Cannot send order');
-        }
-        url = new URL('matcher/orderbook', API_BASE).toString();
-        break;
-      case 'cancelOrder': {
-        const { amountAsset, priceAsset } = message;
-        API_BASE = this.getMatcher();
-        if (!API_BASE) {
-          throw new Error('Matcher not set. Cannot send order');
-        }
-        url = new URL(
-          `matcher/orderbook/${amountAsset}/${priceAsset}/cancel`,
-          API_BASE
-        ).toString();
-        break;
-      }
-      default:
-        throw new Error(`Unknown message type: ${type}`);
+    if (!matcherUrl) {
+      throw new Error('Matcher not set. Cannot send order');
     }
 
-    const resp = await fetch(url, {
+    const response = await fetch(
+      new URL(
+        `matcher/orderbook/${params.amountAsset}/${params.priceAsset}/cancel`,
+        matcherUrl
+      ),
+      {
+        method: 'POST',
+        headers: {
+          accept: 'application/json; large-significand-format=string',
+          'content-type': 'application/json; charset=utf-8',
+        },
+        body: JSONbn.stringify(cancelOrder),
+      }
+    );
+
+    if (!response.ok) {
+      const text = await response.text();
+
+      let errorMessage;
+      try {
+        errorMessage = JSON.parse(text).message;
+      } catch {
+        errorMessage = text;
+      }
+
+      throw new Error(errorMessage);
+    }
+
+    const json = (await response.json()) as unknown;
+
+    return json;
+  }
+
+  async broadcastOrder(order: MessageOrder) {
+    const matcherUrl = this.getMatcher();
+
+    if (!matcherUrl) {
+      throw new Error('Matcher not set. Cannot send order');
+    }
+
+    const response = await fetch(new URL('matcher/orderbook', matcherUrl), {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json; charset=utf-8',
+        accept: 'application/json; large-significand-format=string',
+        'content-type': 'application/json; charset=utf-8',
       },
-      body: result,
+      body: stringifyOrder(order),
     });
 
-    switch (resp.status) {
-      case 200:
-        return await resp.text();
-      case 400: {
-        const error = await resp.json();
-        throw new Error(error.message);
+    if (!response.ok) {
+      const text = await response.text();
+
+      let errorMessage;
+      try {
+        errorMessage = JSON.parse(text).message;
+      } catch {
+        errorMessage = text;
       }
-      default:
-        throw new Error(await resp.text());
+
+      throw new Error(errorMessage);
     }
+
+    const json = (await response.json()) as unknown;
+
+    return json;
+  }
+
+  async broadcastTransaction(tx: MessageTx) {
+    const response = await fetch(
+      new URL('transactions/broadcast', this.getNode()),
+      {
+        method: 'POST',
+        headers: {
+          accept: 'application/json; large-significand-format=string',
+          'content-type': 'application/json; charset=utf-8',
+        },
+        body: stringifyTransaction(tx),
+      }
+    );
+
+    if (!response.ok) {
+      const text = await response.text();
+
+      let errorMessage;
+      try {
+        errorMessage = JSON.parse(text).message;
+      } catch {
+        errorMessage = text;
+      }
+
+      throw new Error(errorMessage);
+    }
+
+    const json = (await response.json()) as TransactionFromNode;
+
+    return json;
   }
 }

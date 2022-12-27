@@ -328,7 +328,7 @@ describe('Others', function () {
       ).to.equal('rich');
 
       const networkName = await this.driver
-        .findElement(By.css('[class^="originNetwork@transactions"]'))
+        .findElement(By.css('[data-testid="originNetwork"]'))
         .getText();
 
       expect(networkName).to.equal('Testnet');

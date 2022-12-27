@@ -30,6 +30,7 @@ export function PopupHome() {
   const assets = usePopupSelector(state => state.assets);
   const usdPrices = usePopupSelector(state => state.usdPrices);
   const balances = usePopupSelector(state => state.balances);
+
   const notifications = usePopupSelector(
     state => state.localState.notifications
   );
@@ -56,7 +57,7 @@ export function PopupHome() {
   const amountInUsd = balances[activeAccount.address]?.assets
     ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       Object.entries(balances[activeAccount.address]!.assets!).reduce(
-        (acc, [id, { balance }]) => {
+        (acc, [id, { balance = 0 } = {}]) => {
           // eslint-disable-next-line @typescript-eslint/no-shadow
           const asset = assets[id];
 

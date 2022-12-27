@@ -60,14 +60,15 @@ class ChangePasswordComponent extends PureComponent<Props, State> {
                 {t('changePassword.oldPassword')}
               </div>
               <Input
-                id="old"
-                value={this.state.oldValue}
-                type="password"
-                view="password"
+                autoComplete="current-password"
                 autoFocus
-                onChange={this.onChangeOld}
-                onBlur={this.onOldBlur}
                 error={!!(this.state.oldError || this.state.passwordError)}
+                id="old"
+                type="password"
+                value={this.state.oldValue}
+                view="password"
+                onBlur={this.onOldBlur}
+                onChange={this.onChangeOld}
               />
               <ErrorMessage
                 show={!!(this.state.oldError || this.state.passwordError)}
@@ -85,13 +86,14 @@ class ChangePasswordComponent extends PureComponent<Props, State> {
                 {t('changePassword.newPassword')}
               </div>
               <Input
+                autoComplete="new-password"
+                error={!!this.state.firstError || this.state.oldEqualNewError}
                 id="first"
-                value={this.state.firstValue}
                 type="password"
+                value={this.state.firstValue}
                 view="password"
                 onBlur={this.onFirstBlur}
                 onChange={this.onChangeFist}
-                error={!!this.state.firstError || this.state.oldEqualNewError}
               />
               <ErrorMessage
                 show={!!this.state.firstError}
@@ -106,13 +108,14 @@ class ChangePasswordComponent extends PureComponent<Props, State> {
                 {t('changePassword.confirmPassword')}
               </div>
               <Input
+                autoComplete="new-password"
+                error={!!this.state.secondError || this.state.oldEqualNewError}
                 id="second"
-                value={this.state.secondValue}
                 type="password"
+                value={this.state.secondValue}
                 view="password"
                 onBlur={this.onSecondBlur}
                 onChange={this.onChangeSecond}
-                error={!!this.state.secondError || this.state.oldEqualNewError}
               />
               <ErrorMessage
                 show={!!this.state.secondError || this.state.oldEqualNewError}

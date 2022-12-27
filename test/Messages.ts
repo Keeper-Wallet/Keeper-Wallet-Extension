@@ -77,16 +77,20 @@ describe('Messages', function () {
         await this.driver
           .wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'messageList@messageList')]")
+              By.xpath(
+                "//div[contains(@class, 'messageList@activeNotification')]"
+              )
             ),
             this.wait
           )
           .findElements(
-            By.xpath("//div[contains(@class, 'messageItemInner@messageList')]")
+            By.xpath(
+              "//div[contains(@class, 'messageItemInner@activeNotification')]"
+            )
           )
       ).not.to.be.empty;
 
-      await this.driver.findElement(By.css('button#closeNotification')).click();
+      await this.driver.findElement(By.css('#closeNotification')).click();
       await Windows.waitForWindowToClose.call(this, messageWindow);
       messageWindow = null;
       await this.driver.switchTo().window(tabOrigin);
@@ -105,7 +109,7 @@ describe('Messages', function () {
     // permission request is shown
     await this.driver.wait(
       until.elementLocated(
-        By.xpath("//div[contains(@class, 'transaction@originAuth')]")
+        By.xpath("//details[contains(@class, 'permissionsDetails@authOrigin')]")
       ),
       this.wait
     );
@@ -114,43 +118,40 @@ describe('Messages', function () {
   it('When allowing access to messages - the message is instantly displayed', async function () {
     // expand permission settings
     await this.driver
-      .wait(
-        until.elementIsVisible(
-          this.driver.findElement(
-            By.xpath(
-              "//div[contains(@class, 'collapsed')]//div[contains(@class, 'title@index')]"
-            )
-          )
-        ),
-        this.wait
+      .findElement(
+        By.xpath("//summary[contains(@class, 'permissionsSummary@authOrigin')]")
       )
       .click();
 
     await this.driver
       .wait(
         until.elementIsVisible(
-          this.driver.findElement(By.css('input#checkbox_noshow'))
+          this.driver.findElement(By.css('#checkbox_noshow'))
         ),
         this.wait
       )
       .click();
 
-    await this.driver.findElement(By.css('button#approve')).click();
+    await this.driver.findElement(By.css('#approve')).click();
 
     expect(
       await this.driver
         .wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'messageList@messageList')]")
+            By.xpath(
+              "//div[contains(@class, 'messageList@activeNotification')]"
+            )
           ),
           this.wait
         )
         .findElements(
-          By.xpath("//div[contains(@class, 'messageItemInner@messageList')]")
+          By.xpath(
+            "//div[contains(@class, 'messageItemInner@activeNotification')]"
+          )
         )
     ).not.to.be.empty;
 
-    await this.driver.findElement(By.css('button#closeNotification')).click();
+    await this.driver.findElement(By.css('#closeNotification')).click();
     expect(messageWindow).not.to.be.null;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     await Windows.waitForWindowToClose.call(this, messageWindow!);
@@ -170,27 +171,26 @@ describe('Messages', function () {
     // permission request is shown
     await this.driver.wait(
       until.elementLocated(
-        By.xpath("//div[contains(@class, 'transaction@originAuth')]")
+        By.xpath("//details[contains(@class, 'permissionsDetails@authOrigin')]")
       ),
       this.wait
     );
+
     await this.driver
       .wait(
-        until.elementIsEnabled(
-          this.driver.findElement(By.css('button#approve'))
-        ),
+        until.elementIsEnabled(this.driver.findElement(By.css('#approve'))),
         this.wait
       )
       .click();
 
     await this.driver.wait(
       until.elementLocated(
-        By.xpath("//div[contains(@class, 'transaction@final')]")
+        By.xpath("//div[contains(@class, 'transaction@transactions')]")
       ),
       this.wait
     );
 
-    await this.driver.findElement(By.css('button#close')).click();
+    await this.driver.findElement(By.css('#close')).click();
     await Windows.waitForWindowToClose.call(this, messageWindow);
     messageWindow = null;
     await this.driver.switchTo().window(tabOrigin);
@@ -209,10 +209,7 @@ describe('Messages', function () {
       .click();
 
     await this.driver
-      .wait(
-        until.elementLocated(By.css('button#settingsPermission')),
-        this.wait
-      )
+      .wait(until.elementLocated(By.css('#settingsPermission')), this.wait)
       .click();
 
     await this.driver
@@ -230,7 +227,7 @@ describe('Messages', function () {
       .wait(until.elementLocated(By.css('input#checkbox_noshow')), this.wait)
       .click();
 
-    await this.driver.findElement(By.css('button#save')).click();
+    await this.driver.findElement(By.css('#save')).click();
 
     await this.driver.get(`https://${CUSTOMLIST[1]}`);
 
@@ -244,16 +241,20 @@ describe('Messages', function () {
       await this.driver
         .wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'messageList@messageList')]")
+            By.xpath(
+              "//div[contains(@class, 'messageList@activeNotification')]"
+            )
           ),
           this.wait
         )
         .findElements(
-          By.xpath("//div[contains(@class, 'messageItemInner@messageList')]")
+          By.xpath(
+            "//div[contains(@class, 'messageItemInner@activeNotification')]"
+          )
         )
     ).not.to.be.empty;
 
-    await this.driver.findElement(By.css('button#closeNotification')).click();
+    await this.driver.findElement(By.css('#closeNotification')).click();
     await Windows.waitForWindowToClose.call(this, messageWindow);
     messageWindow = null;
     await this.driver.switchTo().window(tabOrigin);
@@ -269,11 +270,11 @@ describe('Messages', function () {
         sendNotification
       );
 
-      if (result?.code !== '18') {
+      if (result?.code === '18') {
+        await this.driver.sleep(5 * 1000);
+      } else {
         success++;
       }
-
-      await this.driver.sleep(5 * 1000);
     }
     [messageWindow] = await waitForNewWindows(1);
     await this.driver.switchTo().window(messageWindow);
@@ -283,12 +284,16 @@ describe('Messages', function () {
       await this.driver
         .wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, 'messageList@messageList')]")
+            By.xpath(
+              "//div[contains(@class, 'messageList@activeNotification')]"
+            )
           ),
           this.wait
         )
         .findElements(
-          By.xpath("//div[contains(@class, 'messageItemInner@messageList')]")
+          By.xpath(
+            "//div[contains(@class, 'messageItemInner@activeNotification')]"
+          )
         )
     ).length(2);
     // do not clear messages for next test
@@ -305,29 +310,27 @@ describe('Messages', function () {
     await this.driver.navigate().refresh();
 
     expect(
-      await this.driver
-        .wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'messageList@messageList')]")
-          ),
-          this.wait
-        )
-        .findElements(
-          By.xpath("//div[contains(@class, 'cardItem@messageList')]")
-        )
+      await this.driver.wait(
+        until.elementsLocated(
+          By.xpath(
+            "//div[contains(@class, 'cardItem@messagesAndNotifications')]"
+          )
+        ),
+        this.wait
+      )
     ).length(2);
     // do not clear messages for next test
   });
 
   it('The "Clear all" button closes all messages', async function () {
-    await this.driver.findElement(By.css('button#clearAllMessages')).click();
+    await this.driver.findElement(By.css('#clearAllMessages')).click();
     await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
 
     expect(
       await this.driver.findElements(
         By.xpath(
-          "//div[contains(@class, 'messageList@messageList')]" +
-            "//div[contains(@class, 'cardItem@messageList')]"
+          "//div[contains(@class, 'messageList@activeNotification')]" +
+            "//div[contains(@class, 'cardItem@activeNotification')]"
         )
       )
     ).to.be.empty;

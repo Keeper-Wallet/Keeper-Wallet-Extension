@@ -1,19 +1,19 @@
 import { NetworkName } from 'networks/types';
 
-import type { DebugWalletInput } from './debug';
-import type { EncodedSeedWalletInput } from './encodedSeed';
-import type { LedgerWalletInput } from './ledger';
-import type { PrivateKeyWalletInput } from './privateKey';
-import type { SeedWalletInput } from './seed';
-import type { WxWalletInput } from './wx';
-
-export type CreateWalletInput =
-  | ({ type: 'seed' } & SeedWalletInput)
-  | ({ type: 'encodedSeed' } & EncodedSeedWalletInput)
-  | ({ type: 'privateKey' } & PrivateKeyWalletInput)
-  | ({ type: 'wx' } & WxWalletInput)
-  | ({ type: 'ledger' } & LedgerWalletInput)
-  | ({ type: 'debug' } & DebugWalletInput);
+export type CreateWalletInput = { name: string } & (
+  | { type: 'debug'; address: string }
+  | { type: 'encodedSeed'; encodedSeed: string }
+  | { type: 'ledger'; address: string; id: number; publicKey: string }
+  | { type: 'privateKey'; privateKey: string }
+  | { type: 'seed'; seed: string }
+  | {
+      type: 'wx';
+      address: string;
+      publicKey: string;
+      username: string;
+      uuid: string;
+    }
+);
 
 export type WalletAccount = {
   address: string;
@@ -22,12 +22,12 @@ export type WalletAccount = {
   networkCode: string;
   publicKey: string;
 } & (
-  | { type: 'seed' }
-  | { type: 'encodedSeed' }
-  | { type: 'privateKey' }
-  | { type: 'ledger'; id: number }
-  | { type: 'wx'; uuid: string; username: string }
   | { type: 'debug' }
+  | { type: 'encodedSeed' }
+  | { type: 'ledger'; id: number }
+  | { type: 'privateKey' }
+  | { type: 'seed' }
+  | { type: 'wx'; uuid: string; username: string }
 );
 
 export type WalletPrivateData = {
@@ -37,12 +37,12 @@ export type WalletPrivateData = {
   networkCode: string;
   publicKey: string;
 } & (
-  | { type: 'seed'; seed: string }
-  | { type: 'encodedSeed'; encodedSeed: string }
-  | { type: 'privateKey'; privateKey: string }
-  | { type: 'ledger'; id: number }
-  | { type: 'wx'; uuid: string; username: string }
   | { type: 'debug' }
+  | { type: 'encodedSeed'; encodedSeed: string }
+  | { type: 'ledger'; id: number }
+  | { type: 'privateKey'; privateKey: string }
+  | { type: 'seed'; seed: string }
+  | { type: 'wx'; uuid: string; username: string }
 );
 
 export type WalletPrivateDataOfType<T extends WalletPrivateData['type']> =

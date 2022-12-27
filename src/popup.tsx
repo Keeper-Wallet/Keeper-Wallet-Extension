@@ -28,10 +28,7 @@ import { PopupRoot } from './popupRoot';
 import { initSentry } from './sentry/init';
 import { setLoading } from './store/actions/localState';
 import { RootWrapper } from './ui/components/RootWrapper';
-import Background, {
-  BackgroundGetStateResult,
-  BackgroundUiApi,
-} from './ui/services/Background';
+import Background, { BackgroundUiApi } from './ui/services/Background';
 
 initSentry({
   source: 'popup',
@@ -71,15 +68,14 @@ Promise.all([
       return;
     }
 
-    const stateChanges: Partial<Record<string, unknown>> &
-      Partial<BackgroundGetStateResult> = await Background.getState([
-      'initialized',
-      'locked',
-      ...('currentNetwork' in changes ? (['assets'] as const) : []), // assets change when the network changes
-    ]);
+    const stateChanges = Object.fromEntries(
+      Object.entries(changes).map(([key, v]) => [key, v.newValue])
+    );
 
-    for (const key in changes) {
-      stateChanges[key] = changes[key].newValue;
+    // we need to update assets when network changes
+    if ('currentNetwork' in changes) {
+      const { assets } = await Background.getState(['assets']);
+      stateChanges.assets = assets;
     }
 
     updateState(stateChanges);
@@ -136,31 +132,26 @@ Promise.all([
     );
   }
 
-  Promise.all([background.getState(), background.getNetworks()]).then(
-    ([state, networks]) => {
-      setUser({ id: state.userId });
-      setTag('network', state.currentNetwork);
-      updateState({ ...state, networks });
-      store.dispatch(setLoading(false));
+  background.getState().then(state => {
+    setUser({ id: state.userId });
+    setTag('network', state.currentNetwork);
+    updateState(state);
+    store.dispatch(setLoading(false));
 
-      Background.init(background);
+    Background.init(background);
 
-      document.addEventListener('mousemove', () => Background.updateIdle());
-      document.addEventListener('keyup', () => Background.updateIdle());
-      document.addEventListener('mousedown', () => Background.updateIdle());
-      document.addEventListener('focus', () => Background.updateIdle());
-      window.addEventListener('beforeunload', () => background.identityClear());
+    document.addEventListener('mousemove', () => Background.updateIdle());
+    document.addEventListener('keyup', () => Background.updateIdle());
+    document.addEventListener('mousedown', () => Background.updateIdle());
+    document.addEventListener('focus', () => Background.updateIdle());
+    window.addEventListener('beforeunload', () => background.identityClear());
 
-      if (Browser.extension.getViews({ type: 'popup' }).length > 0) {
-        Background.closeNotificationWindow();
-      }
-
-      if (!state.initialized) {
-        Background.showTab(
-          `${window.location.origin}/accounts.html`,
-          'accounts'
-        );
-      }
+    if (Browser.extension.getViews({ type: 'popup' }).length > 0) {
+      Background.closeNotificationWindow();
     }
-  );
+
+    if (!state.initialized) {
+      Background.showTab(`${window.location.origin}/accounts.html`, 'accounts');
+    }
+  });
 });

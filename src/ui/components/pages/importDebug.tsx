@@ -1,4 +1,4 @@
-import { validators } from '@waves/waves-transactions';
+import { isAddressString } from 'messages/utils';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,8 @@ import * as styles from 'ui/components/pages/importDebug.module.css';
 import { Button, ErrorMessage, Input } from 'ui/components/ui';
 import { WalletTypes } from 'ui/services/Background';
 
+import { NETWORK_CONFIG } from '../../../constants';
+
 export function ImportDebug() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -15,11 +17,9 @@ export function ImportDebug() {
   const accounts = usePopupSelector(state => state.accounts);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const customCodes = usePopupSelector(state => state.customCodes);
-  const networks = usePopupSelector(state => state.networks);
+
   const networkCode =
-    customCodes[currentNetwork] ||
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    networks.find(n => currentNetwork === n.name)!.code;
+    customCodes[currentNetwork] || NETWORK_CONFIG[currentNetwork].networkCode;
 
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
@@ -41,7 +41,7 @@ export function ImportDebug() {
       return t('importDebug.requiredError');
     }
 
-    if (!validators.isValidAddress(address, networkCode.charCodeAt(0))) {
+    if (!isAddressString(address, networkCode.charCodeAt(0))) {
       return t('importDebug.invalidAddressError', {
         networkName: currentNetwork,
       });
@@ -76,7 +76,6 @@ export function ImportDebug() {
                 type: 'debug',
                 address,
                 name,
-                networkCode,
               },
               WalletTypes.Debug
             )

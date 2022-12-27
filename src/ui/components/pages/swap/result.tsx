@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Balance } from 'ui/components/ui/balance/Balance';
 import { Button } from 'ui/components/ui/buttons/Button';
 
+import { NETWORK_CONFIG } from '../../../../constants';
 import { SwapLayout } from './layout';
 import * as styles from './result.module.css';
 
@@ -48,11 +49,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const selectedAccount = usePopupSelector(state => state.selectedAccount);
 
-  const server = usePopupSelector(
-    state =>
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      state.networks.find(net => net.name === state.currentNetwork)!.server
-  );
+  const { nodeBaseUrl } = NETWORK_CONFIG[currentNetwork];
 
   const [swapStatus, setSwapStatus] = useState(SwapStatus.Pending);
   const [receivedMoney, setReceivedMoney] = useState<Money | null>(null);
@@ -60,7 +57,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
   useEffect(() => {
     let cancelled = false;
 
-    const txStatusUrl = new URL('/transactions/status', server);
+    const txStatusUrl = new URL('/transactions/status', nodeBaseUrl);
     txStatusUrl.searchParams.set('id', transactionId);
 
     let timeout: number;
@@ -79,7 +76,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
         if (txStatus.applicationStatus === 'succeeded') {
           const txInfoUrl = new URL(
             `/transactions/info/${transactionId}`,
-            server
+            nodeBaseUrl
           );
 
           try {
@@ -159,7 +156,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAccount?.address, server, transactionId]);
+  }, [selectedAccount?.address, nodeBaseUrl, transactionId]);
 
   const explorerBaseUrl = explorerBaseUrlsByNetwork[currentNetwork];
 

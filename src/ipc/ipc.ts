@@ -121,13 +121,20 @@ export function handleMethodCallRequests<K extends string>(
 
         throw err;
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
+    } catch (err) {
       sendResponse({
         keeperMethodCallResponse: {
           id,
           isError: true,
-          error: { ...err, message: err.message ?? String(err) },
+          error:
+            err instanceof Response
+              ? { message: await err.text() }
+              : err && typeof err === 'object'
+              ? {
+                  ...err,
+                  message: String('message' in err ? err.message : err),
+                }
+              : { message: String(err) },
         },
       });
     }

@@ -2,11 +2,11 @@ import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { Long, TRANSACTION_TYPE, TransactionFromNode } from '@waves/ts-types';
 import clsx from 'clsx';
+import { MessageIcon } from 'messages/_common/icon';
 import { useTranslation } from 'react-i18next';
 
 import { usePopupSelector } from '../../../../popup/store/react';
 import { getTxDetailLink } from '../../../urls';
-import { TxIcon } from '../../transactions/BaseTransaction';
 import { Balance, Loader } from '../../ui';
 import { AddressRecipient } from '../../ui/Address/Recipient';
 import { Tooltip } from '../../ui/tooltip';
@@ -484,7 +484,7 @@ export function HistoryItem({ tx, className }: Props) {
             )}
             {...props}
           >
-            <TxIcon txType={messageType} className={styles.historyIcon} />
+            <MessageIcon type={messageType} className={styles.historyIcon} />
             {isTxFailed && (
               <div className={styles.txSubIconContainer}>
                 <div className={styles.txSubIcon}>

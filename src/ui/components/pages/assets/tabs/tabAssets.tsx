@@ -1,12 +1,12 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { AssetsRecord } from 'assets/types';
+import { BalanceAssets } from 'balances/types';
 import clsx from 'clsx';
 import { usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList as List } from 'react-window';
-import { BalanceAssets } from 'store/reducers/updateState';
 import { AssetItem } from 'ui/components/pages/assets//assetItem';
 import { icontains } from 'ui/components/pages/assets/helpers';
 import * as styles from 'ui/components/pages/styles/assets.styl';
@@ -21,7 +21,9 @@ const Row = ({
   style,
 }: {
   data: {
-    assetEntries: Array<[string, { balance: string | number | BigNumber }]>;
+    assetEntries: Array<
+      [string, { balance: string | number | BigNumber } | undefined]
+    >;
     assets: AssetsRecord;
     onInfoClick: (assetId: string) => void;
     onSendClick: (assetId: string) => void;
@@ -31,7 +33,7 @@ const Row = ({
   style: React.CSSProperties;
 }) => {
   const { assetEntries, assets, onInfoClick, onSendClick, onSwapClick } = data;
-  const [assetId, { balance }] = assetEntries[index];
+  const [assetId, { balance = 0 } = {}] = assetEntries[index];
   const asset = assets[assetId];
 
   return (

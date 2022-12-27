@@ -1,12 +1,21 @@
-import * as libCrypto from '@waves/ts-lib-crypto';
-import { validators } from '@waves/waves-transactions';
+import {
+  base58Decode,
+  base58Encode,
+  createAddress,
+  createPrivateKey,
+  createPublicKey,
+  utf8Encode,
+} from '@keeper-wallet/waves-crypto';
 import clsx from 'clsx';
+import { isAddressString, isBase58 } from 'messages/utils';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { newAccountSelect, selectAccount } from 'store/actions/localState';
+import invariant from 'tiny-invariant';
 
+import { NETWORK_CONFIG } from '../../../constants';
 import {
   Button,
   ErrorMessage,
@@ -27,15 +36,6 @@ const SEED_TAB_INDEX = 0;
 const ENCODED_SEED_TAB_INDEX = 1;
 const PRIVATE_KEY_TAB_INDEX = 2;
 
-function isValidBase58(str: string) {
-  try {
-    libCrypto.base58Decode(str);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 function stripBase58Prefix(str: string) {
   return str.replace(/^base58:/, '');
 }
@@ -47,7 +47,6 @@ export function ImportSeed() {
   const accounts = usePopupSelector(state => state.accounts);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const customCodes = usePopupSelector(state => state.customCodes);
-  const networks = usePopupSelector(state => state.networks);
 
   const [activeTab, setActiveTab] = useState(SEED_TAB_INDEX);
 
@@ -58,139 +57,205 @@ export function ImportSeed() {
   const [privateKeyValue, setPrivateKeyValue] = useState<string>('');
 
   const networkCode =
-    customCodes[currentNetwork] ||
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    networks.find(n => currentNetwork === n.name)!.code;
+    customCodes[currentNetwork] || NETWORK_CONFIG[currentNetwork].networkCode;
 
-  let address: string | null = null;
-  let validationError: React.ReactElement | string | null = null;
+  const [address, setAddress] = useState<string>();
 
-  const base58PrefixErrorSwitchTabEl = (
-    <InlineButton
-      className={styles.errorButton}
-      onClick={() => {
-        let newEncodedSeedValue = '';
+  const [validationError, setValidationError] = useState<
+    React.ReactElement | string
+  >();
 
-        if (activeTab === SEED_TAB_INDEX) {
-          newEncodedSeedValue = seedValue;
-        } else if (activeTab === PRIVATE_KEY_TAB_INDEX) {
-          newEncodedSeedValue = privateKeyValue;
-        }
-
-        setEncodedSeedValue(newEncodedSeedValue);
-        setShowValidationError(false);
-        setActiveTab(ENCODED_SEED_TAB_INDEX);
-      }}
-    />
+  const findExistingAccount = useCallback(
+    (addr: string | undefined) =>
+      addr && accounts.find(acc => acc.address === addr),
+    [accounts]
   );
 
-  if (activeTab === SEED_TAB_INDEX) {
-    const trimmedSeedValue = seedValue.trim();
+  const [isAddressInProgress, setIsAddressInProgress] = useState(false);
 
-    if (!trimmedSeedValue) {
-      validationError = t('importSeed.requiredError');
-    } else if (trimmedSeedValue.length < SEED_MIN_LENGTH) {
-      validationError = t('importSeed.seedLengthError', {
-        minLength: SEED_MIN_LENGTH,
-      });
-    } else if (
-      trimmedSeedValue.startsWith('base58:') &&
-      isValidBase58(stripBase58Prefix(trimmedSeedValue))
-    ) {
-      validationError = (
-        <Trans
-          i18nKey="importSeed.base58PrefixError"
-          t={t}
-          components={{
-            switchTab: base58PrefixErrorSwitchTabEl,
-          }}
-        />
-      );
-    } else if (validators.isValidAddress(trimmedSeedValue)) {
-      validationError = t('importSeed.seedIsAddressError');
-    } else if (/^alias:/i.test(trimmedSeedValue)) {
-      validationError = t('importSeed.seedIsAliasError');
-    } else if (validators.isHash(trimmedSeedValue)) {
-      validationError = (
-        <Trans
-          i18nKey="importSeed.seedIsPublicOrPrivateKeyError"
-          t={t}
-          components={{
-            switchTab: (
-              <InlineButton
-                className={styles.errorButton}
-                onClick={() => {
-                  setPrivateKeyValue(seedValue);
-                  setShowValidationError(false);
-                  setActiveTab(PRIVATE_KEY_TAB_INDEX);
-                }}
-              />
-            ),
-          }}
-        />
-      );
-    } else {
-      address = libCrypto.address(trimmedSeedValue, networkCode);
-    }
-  } else if (activeTab === ENCODED_SEED_TAB_INDEX) {
-    if (!encodedSeedValue) {
-      validationError = t('importSeed.requiredError');
-    } else {
-      const unprefixed = encodedSeedValue.replace(/^base58:/, '');
+  useEffect(() => {
+    const base58PrefixErrorSwitchTabButton = (
+      <InlineButton
+        className={styles.errorButton}
+        onClick={() => {
+          let newEncodedSeedValue = '';
 
-      if (!isValidBase58(unprefixed)) {
-        validationError = t('importSeed.base58DecodeError');
-      } else if (unprefixed.length < ENCODED_SEED_MIN_LENGTH) {
-        validationError = t('importSeed.encodedSeedLengthError', {
-          minLength: ENCODED_SEED_MIN_LENGTH,
-        });
-      } else {
-        address = libCrypto.address(
-          libCrypto.base58Decode(unprefixed),
-          networkCode
+          if (activeTab === SEED_TAB_INDEX) {
+            newEncodedSeedValue = seedValue;
+          } else if (activeTab === PRIVATE_KEY_TAB_INDEX) {
+            newEncodedSeedValue = privateKeyValue;
+          }
+
+          setEncodedSeedValue(newEncodedSeedValue);
+          setShowValidationError(false);
+          setActiveTab(ENCODED_SEED_TAB_INDEX);
+        }}
+      />
+    );
+
+    function validateAddress(addr: string) {
+      const existingAccount = findExistingAccount(addr);
+
+      if (existingAccount) {
+        setValidationError(
+          t('importSeed.accountExistsError', {
+            name: existingAccount.name,
+          })
         );
-      }
-    }
-  } else if (activeTab === PRIVATE_KEY_TAB_INDEX) {
-    if (!privateKeyValue) {
-      validationError = t('importSeed.requiredError');
-    } else if (
-      privateKeyValue.startsWith('base58:') &&
-      isValidBase58(stripBase58Prefix(privateKeyValue))
-    ) {
-      validationError = (
-        <Trans
-          i18nKey="importSeed.base58PrefixError"
-          t={t}
-          components={{
-            switchTab: base58PrefixErrorSwitchTabEl,
-          }}
-        />
-      );
-    } else if (!isValidBase58(privateKeyValue)) {
-      validationError = t('importSeed.base58DecodeError');
-    } else {
-      const privateKey = libCrypto.base58Decode(privateKeyValue);
-
-      if (privateKey.length !== libCrypto.PRIVATE_KEY_LENGTH) {
-        validationError = t('importSeed.invalidPrivateKeyLengthError', {
-          length: libCrypto.PRIVATE_KEY_LENGTH,
-        });
       } else {
-        const publicKey = libCrypto.publicKey({ privateKey });
-        address = libCrypto.address({ publicKey }, networkCode);
+        setValidationError(undefined);
       }
     }
-  }
 
-  const existingAccount =
-    address && accounts.find(acc => acc.address === address);
+    if (activeTab === SEED_TAB_INDEX) {
+      const trimmedSeedValue = seedValue.trim();
 
-  if (existingAccount) {
-    validationError = t('importSeed.accountExistsError', {
-      name: existingAccount.name,
-    });
-  }
+      if (!trimmedSeedValue) {
+        setValidationError(t('importSeed.requiredError'));
+      } else if (trimmedSeedValue.length < SEED_MIN_LENGTH) {
+        setValidationError(
+          t('importSeed.seedLengthError', {
+            minLength: SEED_MIN_LENGTH,
+          })
+        );
+      } else if (
+        trimmedSeedValue.startsWith('base58:') &&
+        isBase58(stripBase58Prefix(trimmedSeedValue))
+      ) {
+        setValidationError(
+          <Trans
+            i18nKey="importSeed.base58PrefixError"
+            t={t}
+            components={{ switchTab: base58PrefixErrorSwitchTabButton }}
+          />
+        );
+      } else if (isAddressString(trimmedSeedValue)) {
+        setValidationError(t('importSeed.seedIsAddressError'));
+      } else if (/^alias:/i.test(trimmedSeedValue)) {
+        setValidationError(t('importSeed.seedIsAliasError'));
+      } else if (
+        isBase58(trimmedSeedValue) &&
+        base58Decode(trimmedSeedValue).length === 32
+      ) {
+        setValidationError(
+          <Trans
+            i18nKey="importSeed.seedIsPublicOrPrivateKeyError"
+            t={t}
+            components={{
+              switchTab: (
+                <InlineButton
+                  className={styles.errorButton}
+                  onClick={() => {
+                    setPrivateKeyValue(seedValue);
+                    setShowValidationError(false);
+                    setActiveTab(PRIVATE_KEY_TAB_INDEX);
+                  }}
+                />
+              ),
+            }}
+          />
+        );
+      } else {
+        setIsAddressInProgress(true);
+
+        createPrivateKey(utf8Encode(trimmedSeedValue))
+          .then(createPublicKey)
+          .then(publicKey => {
+            const newAddress = base58Encode(
+              createAddress(publicKey, networkCode.charCodeAt(0))
+            );
+
+            validateAddress(newAddress);
+            setAddress(newAddress);
+          })
+          .finally(() => {
+            setIsAddressInProgress(false);
+          });
+      }
+    } else if (activeTab === ENCODED_SEED_TAB_INDEX) {
+      if (!encodedSeedValue) {
+        setValidationError(t('importSeed.requiredError'));
+      } else {
+        const unprefixed = stripBase58Prefix(encodedSeedValue);
+
+        if (!isBase58(unprefixed)) {
+          setValidationError(t('importSeed.base58DecodeError'));
+        } else if (unprefixed.length < ENCODED_SEED_MIN_LENGTH) {
+          setValidationError(
+            t('importSeed.encodedSeedLengthError', {
+              minLength: ENCODED_SEED_MIN_LENGTH,
+            })
+          );
+        } else {
+          setIsAddressInProgress(true);
+
+          createPrivateKey(base58Decode(unprefixed))
+            .then(createPublicKey)
+            .then(publicKey => {
+              const newAddress = base58Encode(
+                createAddress(publicKey, networkCode.charCodeAt(0))
+              );
+
+              validateAddress(newAddress);
+              setAddress(newAddress);
+            })
+            .finally(() => {
+              setIsAddressInProgress(false);
+            });
+        }
+      }
+    } else if (activeTab === PRIVATE_KEY_TAB_INDEX) {
+      if (!privateKeyValue) {
+        setValidationError(t('importSeed.requiredError'));
+      } else if (
+        privateKeyValue.startsWith('base58:') &&
+        isBase58(stripBase58Prefix(privateKeyValue))
+      ) {
+        setValidationError(
+          <Trans
+            i18nKey="importSeed.base58PrefixError"
+            t={t}
+            components={{ switchTab: base58PrefixErrorSwitchTabButton }}
+          />
+        );
+      } else if (!isBase58(privateKeyValue)) {
+        setValidationError(t('importSeed.base58DecodeError'));
+      } else {
+        const privateKey = base58Decode(privateKeyValue);
+
+        if (privateKey.length !== 32) {
+          setValidationError(
+            t('importSeed.invalidPrivateKeyLengthError', { length: 32 })
+          );
+        } else {
+          setIsAddressInProgress(true);
+
+          createPublicKey(privateKey)
+            .then(publicKey => {
+              const newAddress = base58Encode(
+                createAddress(publicKey, networkCode.charCodeAt(0))
+              );
+
+              validateAddress(newAddress);
+              setAddress(newAddress);
+            })
+            .finally(() => {
+              setIsAddressInProgress(false);
+            });
+        }
+      }
+    }
+  }, [
+    activeTab,
+    encodedSeedValue,
+    findExistingAccount,
+    networkCode,
+    privateKeyValue,
+    seedValue,
+    t,
+  ]);
+
+  const existingAccount = findExistingAccount(address);
 
   return (
     <div className={styles.content}>
@@ -201,6 +266,10 @@ export function ImportSeed() {
       <form
         onSubmit={event => {
           event.preventDefault();
+
+          if (isAddressInProgress) {
+            return;
+          }
 
           if (showValidationError && existingAccount) {
             dispatch(selectAccount(existingAccount));
@@ -213,6 +282,8 @@ export function ImportSeed() {
           if (validationError) {
             return;
           }
+
+          invariant(address);
 
           if (activeTab === SEED_TAB_INDEX) {
             dispatch(

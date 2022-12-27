@@ -71,13 +71,14 @@ export function ExportPasswordModal({
             </div>
 
             <Input
-              wrapperClassName="margin1"
+              autoComplete="current-password"
               data-testid="passwordInput"
               error={passwordError}
               forwardRef={passwordInputRef}
               type="password"
-              view="password"
               value={password}
+              view="password"
+              wrapperClassName="margin1"
               onChange={event => {
                 setPassword(event.currentTarget.value);
               }}

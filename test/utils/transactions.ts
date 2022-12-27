@@ -6,7 +6,7 @@ export const ISSUE = {
     name: 'ShortToken',
     description: 'Full description of ShortToken',
     quantity: '9223372036854775807',
-    precision: 8,
+    precision: 8 as const,
     reissuable: true,
     script: 'base64:BQbtKNoM',
   },
@@ -18,7 +18,7 @@ export const ISSUE_WITHOUT_SCRIPT = {
     name: 'ShortToken',
     description: 'Full description of ShortToken',
     quantity: '9223372036854775807',
-    precision: 8,
+    precision: 8 as const,
     reissuable: true,
     script: '',
   },
@@ -41,7 +41,7 @@ export const TRANSFER_WITHOUT_ATTACHMENT = {
   data: {
     amount: {
       amount: 123456790,
-      assetId: '7sP5abE9nGRwZxkgaEXgkQDZ3ERBcm9PLHixaUE5SYoT',
+      assetId: 'WAVES',
     },
     recipient: 'alice',
   },
@@ -131,11 +131,11 @@ export const MASS_TRANSFER_WITHOUT_ATTACHMENT = {
   data: {
     totalAmount: {
       amount: 0,
-      assetId: '7sP5abE9nGRwZxkgaEXgkQDZ3ERBcm9PLHixaUE5SYoT',
+      assetId: 'WAVES',
     },
     transfers: [
-      { amount: 1, recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD' },
-      { amount: 1, recipient: 'merry' },
+      { amount: 120, recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD' },
+      { amount: 3, recipient: 'merry' },
     ],
   },
 };

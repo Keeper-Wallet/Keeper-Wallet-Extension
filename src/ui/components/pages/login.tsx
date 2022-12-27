@@ -36,7 +36,7 @@ export function Login() {
 
         <div className="margin-main-big relative">
           <Input
-            autoComplete="off"
+            autoComplete="current-password"
             autoFocus
             error={!!error}
             id="loginPassword"

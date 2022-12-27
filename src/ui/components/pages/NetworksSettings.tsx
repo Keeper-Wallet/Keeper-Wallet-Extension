@@ -5,6 +5,7 @@ import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
 
+import { NETWORK_CONFIG } from '../../../constants';
 import {
   setCustomCode,
   setCustomMatcher,
@@ -12,18 +13,6 @@ import {
 } from '../../../store/actions/network';
 import { Button, Copy, ErrorMessage, Input, Modal } from '../ui';
 import * as styles from './styles/settings.styl';
-
-interface StateProps {
-  networks: Array<{
-    code: string;
-    matcher: string;
-    name: unknown;
-    server: string;
-  }>;
-  currentNetwork: NetworkName;
-  customNodes: Partial<Record<NetworkName, string | null>>;
-  customMatcher: Partial<Record<NetworkName, string | null>>;
-}
 
 interface DispatchProps {
   setCustomNode: (payload: {
@@ -40,7 +29,7 @@ interface DispatchProps {
   }) => void;
 }
 
-type Props = WithTranslation & StateProps & DispatchProps;
+type Props = WithTranslation & ReturnType<typeof mapToProps> & DispatchProps;
 
 interface State {
   currentMatcher?: string | null;
@@ -72,18 +61,15 @@ class NetworksSettingsComponent extends PureComponent<Props, State> {
   _tSetDefault: ReturnType<typeof setTimeout> | undefined;
 
   static getDerivedStateFromProps(
-    props: Readonly<Props>,
+    { currentNetwork, customMatcher, customNodes }: Readonly<Props>,
     state: State
   ): Partial<State> | null {
     state = { ...state };
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const defaultServers = props.networks.find(
-      item => item.name === props.currentNetwork
-    )!;
+    const defaultServers = NETWORK_CONFIG[currentNetwork];
 
-    const defaultNode = defaultServers.server;
-    const currentNode = props.customNodes[props.currentNetwork];
+    const defaultNode = defaultServers.nodeBaseUrl;
+    const currentNode = customNodes[currentNetwork];
     const isDefault = state.node === defaultNode;
     const isCurrent = currentNode && state.node === currentNode;
     const hasChanges =
@@ -92,8 +78,8 @@ class NetworksSettingsComponent extends PureComponent<Props, State> {
       hasChanges || state.node != null
         ? state.node
         : currentNode || defaultNode;
-    const defaultMatcher = defaultServers.matcher;
-    const currentMatcher = props.customMatcher[props.currentNetwork];
+    const defaultMatcher = defaultServers.matcherBaseUrl;
+    const currentMatcher = customMatcher[currentNetwork];
     const isDefaultMatcher = state.matcher === defaultMatcher;
     const isCurrentMatcher = currentMatcher && state.matcher === currentMatcher;
     const hasChangesMatcher =
@@ -118,7 +104,7 @@ class NetworksSettingsComponent extends PureComponent<Props, State> {
       hasChangesMatcher,
       isDefaultMatcher,
       isCurrentMatcher,
-      showSetDefaultBtn: props.currentNetwork !== 'custom',
+      showSetDefaultBtn: currentNetwork !== 'custom',
     };
   }
 
@@ -153,15 +139,14 @@ class NetworksSettingsComponent extends PureComponent<Props, State> {
   async validate() {
     let hasErrors = false;
     const { node, matcher } = this.state;
-    const { networks, currentNetwork } = this.props;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const { code } = networks.find(({ name }) => name === currentNetwork)!;
+    const { currentNetwork } = this.props;
+    const { networkCode } = NETWORK_CONFIG[currentNetwork];
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const newCode = await getNetworkByte(node!);
       this.setState({ newCode });
-      if (code && code !== newCode) {
+      if (networkCode && networkCode !== newCode) {
         throw new Error('Incorrect node network byte');
       }
     } catch (e) {
@@ -326,10 +311,10 @@ class NetworksSettingsComponent extends PureComponent<Props, State> {
   }
 
   saveCode() {
-    const { networks, currentNetwork } = this.props;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const { code } = networks.find(({ name }) => name === currentNetwork)!;
-    if (!code) {
+    const { currentNetwork } = this.props;
+    const { networkCode } = NETWORK_CONFIG[currentNetwork];
+
+    if (!networkCode) {
       this.props.setCustomCode({
         code: this.state.newCode,
         network: currentNetwork,
@@ -384,22 +369,14 @@ class NetworksSettingsComponent extends PureComponent<Props, State> {
   }
 }
 
-const mapToProps = (store: PopupState): StateProps => {
-  return {
-    networks: store.networks,
-    currentNetwork: store.currentNetwork,
-    customNodes: store.customNodes,
-    customMatcher: store.customMatcher,
-  };
-};
+const mapToProps = (store: PopupState) => ({
+  currentNetwork: store.currentNetwork,
+  customNodes: store.customNodes,
+  customMatcher: store.customMatcher,
+});
 
-const actions = {
+export const NetworksSettings = connect(mapToProps, {
   setCustomNode,
   setCustomMatcher,
   setCustomCode,
-};
-
-export const NetworksSettings = connect(
-  mapToProps,
-  actions
-)(withTranslation()(NetworksSettingsComponent));
+})(withTranslation()(NetworksSettingsComponent));

@@ -1,0 +1,21 @@
+.root {
+  padding: 10px 14px;
+  border: 1px dashed #dae1e9;
+  border-radius: 2px;
+  background: #f8f9fb;
+  font-family: monospace;
+}
+
+.root_base58::before,
+.root_plain::before {
+  color: #ffaf00;
+  font-weight: 500;
+}
+
+.root_base58::before {
+  content: 'base58: ';
+}
+
+.root_plain::before {
+  content: 'text: ';
+}

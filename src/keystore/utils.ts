@@ -1,14 +1,18 @@
-import { seedUtils } from '@waves/waves-transactions';
+import {
+  base64Encode,
+  encryptSeed,
+  utf8Encode,
+} from '@keeper-wallet/waves-crypto';
 import { NetworkName } from 'networks/types';
 import { PreferencesAccount } from 'preferences/types';
 
 import background from '../ui/services/Background';
 import { KeystoreAccount, KeystoreProfiles } from './types';
 
-const encryptProfiles = async (
+async function encryptProfiles(
   accountsToExport: PreferencesAccount[],
   password: string
-) => {
+) {
   const accounts = await Promise.all(
     accountsToExport.map(
       async (acc): Promise<KeystoreAccount & { network: NetworkName }> => {
@@ -75,18 +79,30 @@ const encryptProfiles = async (
     profiles[network].accounts.push(acc);
   });
 
-  return btoa(seedUtils.encryptSeed(JSON.stringify(profiles), password));
-};
+  const encrypted = await encryptSeed(
+    utf8Encode(JSON.stringify(profiles)),
+    utf8Encode(password)
+  );
 
-const encryptAddresses = async (
+  return btoa(base64Encode(encrypted));
+}
+
+async function encryptAddresses(
   addresses: Record<string, string>,
   password: string,
-  encrypted: boolean | undefined
-) => {
-  return encrypted
-    ? btoa(seedUtils.encryptSeed(JSON.stringify(addresses), password))
-    : btoa(encodeURIComponent(JSON.stringify(addresses)));
-};
+  shouldEncrypt: boolean
+) {
+  if (shouldEncrypt) {
+    const encrypted = await encryptSeed(
+      utf8Encode(JSON.stringify(addresses)),
+      utf8Encode(password)
+    );
+
+    return btoa(base64Encode(encrypted));
+  }
+
+  return btoa(encodeURIComponent(JSON.stringify(addresses)));
+}
 
 function download(json: string, filename: string) {
   const anchorEl = document.createElement('a');
@@ -101,7 +117,7 @@ export async function downloadKeystore(
   accounts: PreferencesAccount[] | undefined,
   addresses: Record<string, string> | undefined,
   password: string,
-  encrypted?: boolean | undefined
+  encrypted = false
 ) {
   const correctPassword = await background.checkPassword(password);
 
@@ -110,8 +126,10 @@ export async function downloadKeystore(
   }
 
   const now = new Date();
+
   const pad = (zeroes: number, value: number) =>
     value.toString().padStart(zeroes, '0');
+
   const nowStr = `${pad(2, now.getFullYear() % 100)}${pad(
     2,
     now.getMonth() + 1

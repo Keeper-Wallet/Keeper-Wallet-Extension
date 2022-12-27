@@ -41,14 +41,6 @@ const extendValues = (defaultValues: any, newValues: any) => {
   );
 };
 
-interface NetworkConfigItem {
-  code: string;
-  server: string;
-  matcher: string;
-}
-
-type NetworkConfig = Record<string, NetworkConfigItem>;
-
 export class RemoteConfigController extends EventEmitter {
   store;
 
@@ -59,8 +51,6 @@ export class RemoteConfigController extends EventEmitter {
       extensionStorage.getInitState({
         whitelist: DEFAULT_MAIN_CONFIG.whitelist,
         config: {
-          networks: DEFAULT_MAIN_CONFIG.networks,
-          network_config: DEFAULT_MAIN_CONFIG.network_config,
           messages_config: DEFAULT_MAIN_CONFIG.messages_config,
           pack_config: DEFAULT_MAIN_CONFIG.pack_config,
           idle: DEFAULT_MAIN_CONFIG.idle,
@@ -68,7 +58,6 @@ export class RemoteConfigController extends EventEmitter {
         assetsConfig: DEFAULT_MAIN_CONFIG.assets,
         ignoreErrorsConfig: DEFAULT_MAIN_CONFIG.ignoreErrors,
         identityConfig: DEFAULT_IDENTITY_CONFIG,
-        feeConfig: DEFAULT_MAIN_CONFIG.fee,
         nftConfig: DEFAULT_MAIN_CONFIG.nfts,
         status: STATUS.PENDING,
       })
@@ -132,24 +121,6 @@ export class RemoteConfigController extends EventEmitter {
     }
   }
 
-  getNetworkConfig(): NetworkConfig {
-    try {
-      const { network_config } = this.store.getState().config;
-      return extendValues(DEFAULT_MAIN_CONFIG.network_config, network_config);
-    } catch (e) {
-      return DEFAULT_MAIN_CONFIG.network_config;
-    }
-  }
-
-  getNetworks() {
-    try {
-      const { networks } = this.store.getState().config;
-      return networks || DEFAULT_MAIN_CONFIG.networks;
-    } catch (e) {
-      return DEFAULT_MAIN_CONFIG.networks;
-    }
-  }
-
   shouldIgnoreError(context: IgnoreErrorsContext, message: string) {
     const { ignoreErrorsConfig } = this.store.getState();
 
@@ -173,11 +144,6 @@ export class RemoteConfigController extends EventEmitter {
     ];
   }
 
-  getFeeConfig() {
-    const { feeConfig } = this.store.getState();
-    return feeConfig;
-  }
-
   getAssetsConfig() {
     const { assetsConfig } = this.store.getState();
     return assetsConfig;
@@ -195,7 +161,6 @@ export class RemoteConfigController extends EventEmitter {
 
         this.store.updateState({
           assetsConfig: config.assets,
-          feeConfig: config.fee,
           ignoreErrorsConfig: { ...ignoreErrorsConfig, ...config.ignoreErrors },
           nftConfig: config.nfts,
         });

@@ -1,4 +1,9 @@
-import { seedUtils } from '@waves/waves-transactions';
+import {
+  base64Decode,
+  decryptSeed,
+  utf8Decode,
+  utf8Encode,
+} from '@keeper-wallet/waves-crypto';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,31 +14,44 @@ import {
   isEthereumAddress,
 } from 'ui/utils/ethereum';
 
-import { WalletTypes } from '../../../services/Background';
 import { ImportKeystoreChooseFile } from './chooseFile';
 
 interface EncryptedAddressBook {
-  type: WalletTypes;
-  decrypt: (password?: string) => Record<string, string>;
+  decrypt: (password?: string) => Promise<Record<string, string>>;
 }
 
 function parseAddressBook(json: string): EncryptedAddressBook | null {
-  const { addresses } = JSON.parse(json);
+  const parsedJson: unknown = JSON.parse(json);
 
-  return addresses && typeof addresses === 'string'
-    ? {
-        type: WalletTypes.Keystore,
-        decrypt: password => {
-          try {
-            return password
-              ? JSON.parse(seedUtils.decryptSeed(atob(addresses), password))
-              : JSON.parse(decodeURIComponent(atob(addresses)));
-          } catch (err) {
-            return null;
-          }
-        },
+  if (
+    !parsedJson ||
+    typeof parsedJson !== 'object' ||
+    !('addresses' in parsedJson) ||
+    typeof parsedJson.addresses !== 'string'
+  ) {
+    return null;
+  }
+
+  const { addresses } = parsedJson;
+
+  return {
+    decrypt: async password => {
+      try {
+        if (password) {
+          const decrypted = await decryptSeed(
+            base64Decode(atob(addresses)),
+            utf8Encode(password)
+          );
+
+          return JSON.parse(utf8Decode(decrypted));
+        }
+
+        return JSON.parse(decodeURIComponent(atob(addresses)));
+      } catch (err) {
+        return null;
       }
-    : null;
+    },
+  };
 }
 
 const suffixRe = /\((\d+)\)$/;
@@ -42,8 +60,8 @@ function getFormattedAddresses(
   addresses: Record<string, string>,
   keystoreAddresses: Record<string, string>
 ) {
-  return Object.entries(keystoreAddresses).reduce(
-    (acc, [keystoreAddress, keystoreName]) => {
+  return Object.fromEntries(
+    Object.entries(keystoreAddresses).map(([keystoreAddress, keystoreName]) => {
       let sameName = Object.values(addresses || {}).find(
         name => keystoreName === name
       );
@@ -65,14 +83,13 @@ function getFormattedAddresses(
         );
       }
 
-      return {
-        ...acc,
-        [isEthereumAddress(keystoreAddress)
+      return [
+        isEthereumAddress(keystoreAddress)
           ? fromEthereumToWavesAddress(keystoreAddress)
-          : keystoreAddress]: keystoreName,
-      };
-    },
-    {}
+          : keystoreAddress,
+        keystoreName,
+      ];
+    })
   );
 }
 
@@ -105,7 +122,7 @@ export function ImportAddressBook() {
             return;
           }
 
-          const keystoreAddresses = addressBook.decrypt(password);
+          const keystoreAddresses = await addressBook.decrypt(password);
 
           if (!keystoreAddresses) {
             setError(t('importKeystore.errorDecrypt'));

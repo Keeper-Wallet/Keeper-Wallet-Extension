@@ -14,7 +14,7 @@
       "prismjs",
       {
         "languages": ["json"],
-        "theme": "okaidia",
+        "theme": "solarizedlight",
         "css": true
       }
     ]

@@ -1,6 +1,8 @@
 import type { PERMISSIONS } from './constants';
 
-export type PermissionType = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
+export type PermissionType =
+  | (typeof PERMISSIONS)[keyof typeof PERMISSIONS]
+  | 'whiteList';
 
 interface ApprovedItem {
   amount: string;
@@ -11,7 +13,7 @@ export interface PermissionObject {
   type: PermissionType;
   approved?: ApprovedItem[];
   time?: number;
-  canUse?: boolean;
+  canUse?: boolean | null;
   totalAmount?: undefined;
   interval?: undefined;
 }

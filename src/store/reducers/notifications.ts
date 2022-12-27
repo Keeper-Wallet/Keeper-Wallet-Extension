@@ -1,4 +1,4 @@
-import { MessageStoreItem } from '../../messages/types';
+import { Message } from '../../messages/types';
 import { NotificationsStoreItem } from '../../notifications/types';
 import { AppAction } from '../../store/types';
 import { ACTION } from '../actions/constants';
@@ -15,97 +15,52 @@ export function notifications(
   }
 }
 
-export const activeNotification = (
-  store: NotificationsStoreItem[] | null | undefined = null,
-  { type, payload }: AppAction
-) => {
-  switch (type) {
-    case ACTION.NOTIFICATIONS.SET:
-      if (!store && payload.length === 1) {
-        return payload[0];
-      }
-
-      if (store) {
-        const { origin } = store[0];
-        const newItem = payload.find(([item]) => item.origin === origin);
-        if (newItem) {
-          return newItem;
-        }
-      }
-      break;
-    case ACTION.NOTIFICATIONS.SET_ACTIVE:
-      return payload;
-  }
-
-  return store;
-};
-
-export interface ActivePopupState {
-  msg: MessageStoreItem | null;
-  notify: NotificationsStoreItem[] | null;
+interface ActivePopupState {
+  msg?: Message;
+  notify?: NotificationsStoreItem[];
 }
 
-export const activePopup = (
+export function activePopup(
   state: ActivePopupState | null = null,
   action: AppAction
-): ActivePopupState | null => {
+): ActivePopupState | null {
   switch (action.type) {
     case ACTION.MESSAGES.SET_ACTIVE_AUTO:
-      return getActiveFromState(
-        state,
-        action.payload.messages,
-        action.payload.allMessages,
-        action.payload.notifications
-      );
+      if (state != null) {
+        const { msg, notify } = state;
+
+        if (msg) {
+          return {
+            msg:
+              action.payload.allMessages?.find(item => item.id === msg.id) ??
+              action.payload.allMessages?.[0],
+          };
+        }
+
+        if (notify) {
+          return {
+            notify:
+              action.payload.notifications.find(
+                ([item]) => item.origin === notify[0].origin
+              ) ?? action.payload.notifications[0],
+          };
+        }
+      }
+
+      return action.payload.messages.length +
+        action.payload.notifications.length >
+        1
+        ? null
+        : action.payload.messages.length === 1
+        ? { msg: action.payload.messages[0] }
+        : { notify: action.payload.notifications[0] };
     case ACTION.MESSAGES.UPDATE_ACTIVE:
       return action.payload;
     case ACTION.MESSAGES.SET_ACTIVE_MESSAGE:
-      return { notify: null, msg: action.payload };
+      return { msg: action.payload };
     case ACTION.MESSAGES.SET_ACTIVE_NOTIFICATION:
-      return { msg: null, notify: action.payload };
+      return { notify: action.payload };
     default:
       return state;
   }
-};
-
-const getActiveFromState = (
-  state: ActivePopupState | null,
-  messages: MessageStoreItem[] = [],
-  allMessages: MessageStoreItem[] = [],
-  // eslint-disable-next-line @typescript-eslint/no-shadow
-  notifications: NotificationsStoreItem[][] = []
-): ActivePopupState | null => {
-  // Can activeMessage
-  if (state != null && (state.msg || state.notify)) {
-    let { msg, notify } = state;
-
-    // Update from messages
-    if (msg) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const msgItem = allMessages.find(item => item.id === msg!.id);
-      msg = msgItem || allMessages[0] || null;
-    }
-
-    // Update from notifications
-    if (notify) {
-      const { origin } = notify[0];
-      const newItem = notifications.find(([item]) => item.origin === origin);
-      notify = newItem || notifications[0] || null;
-    }
-
-    return { msg, notify };
-  }
-
-  // To msgList
-  if (messages.length + notifications.length > 1) {
-    return null;
-  }
-
-  // Has one message
-  if (messages.length === 1) {
-    return { msg: messages[0], notify: null };
-  }
-
-  // Has one notification
-  return { notify: notifications[0], msg: null };
-};
+}

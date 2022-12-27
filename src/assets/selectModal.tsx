@@ -1,11 +1,11 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { BalanceAssets } from 'balances/types';
 import clsx from 'clsx';
 import ColorHash from 'color-hash';
 import { NetworkName } from 'networks/types';
 import { cloneElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BalanceAssets } from 'store/reducers/updateState';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Input } from 'ui/components/ui/input';
 import { Tooltip } from 'ui/components/ui/tooltip';

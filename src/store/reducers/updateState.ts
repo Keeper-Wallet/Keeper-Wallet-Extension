@@ -1,12 +1,10 @@
 import { AssetsRecord } from '../../assets/types';
-import { AssetBalance } from '../../balances/types';
-import { MessageStoreItem } from '../../messages/types';
+import { Message } from '../../messages/types';
 import { NetworkName } from '../../networks/types';
 import { PreferencesAccount } from '../../preferences/types';
 import { ACTION } from '../actions/constants';
 import { AppAction, AppActionPayload } from '../types';
 
-export * from './feeConfig';
 export * from './localState';
 export * from './nftConfig';
 export * from './notifications';
@@ -78,16 +76,10 @@ export function selectedAccount(
   }
 }
 
-export const networks = createSimpleReducer([], ACTION.UPDATE_NETWORKS);
-
 export const currentNetwork = createSimpleReducer(
   NetworkName.Mainnet,
   ACTION.UPDATE_CURRENT_NETWORK
 );
-
-export type BalanceAssets = {
-  [assetId: string]: AssetBalance;
-};
 
 export const balances = createSimpleReducer({}, ACTION.UPDATE_BALANCES);
 
@@ -103,7 +95,7 @@ export const idleOptions = createSimpleReducer(
 );
 
 // eslint-disable-next-line @typescript-eslint/no-shadow
-export const messages = (state: MessageStoreItem[] = [], action: AppAction) => {
+export const messages = (state: Message[] = [], action: AppAction) => {
   if (action.type === ACTION.UPDATE_MESSAGES) {
     return [...action.payload.unapprovedMessages];
   }

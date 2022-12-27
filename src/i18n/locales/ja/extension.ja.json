@@ -482,12 +482,6 @@
       "disallowed": "禁止されました。"
     }
   },
-  "plateComponent": {
-    "copy": "コピー",
-    "copied": "コピーされました。",
-    "collapse": "折畳",
-    "expand": "展開"
-  },
   "qrCode": { "download": "QRコードをダウンロード" },
   "send": {
     "amountInputLabel": "数量",
@@ -577,7 +571,6 @@
     "exchangeChannelUnavailableError": "サービスが応答していません",
     "exchangeChannelUnknownError": "このスワップには利用できません",
     "failMessage": "スワップに失敗しました。再度試してください。",
-    "ledgerFailMessage": "リクエストはレッジャーに却下されました。",
     "fromInputLabel": "スワップ元",
     "insufficientFundsError": "資金不足",
     "maxAmountExceeded": "数量は {{ maxAmount }}を超えてはいけません",

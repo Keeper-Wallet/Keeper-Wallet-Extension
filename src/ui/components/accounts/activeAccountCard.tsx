@@ -21,8 +21,8 @@ const UsdAmount = ({ amount }: { amount: BigNumber | null }) =>
 
 interface Props {
   account: PreferencesAccount;
-  wavesBalance?: string | BigNumber | Money;
   amountInUsd: BigNumber | null;
+  wavesBalance?: Money;
   onClick: (account: PreferencesAccount) => void;
   onCopy: () => void;
   onOtherAccountsClick: () => void;

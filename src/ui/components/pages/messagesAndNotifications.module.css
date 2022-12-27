@@ -1,0 +1,76 @@
+.root {
+  position: relative;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-basic50);
+}
+
+.header {
+  position: relative;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--color-basic100);
+  height: 48px;
+  background: var(--color-white);
+  font-weight: normal;
+  text-align: center;
+}
+
+.messageCount {
+  margin-right: 8px;
+  padding: 0 6px;
+  display: block;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--color-submit400);
+  color: var(--color-white);
+  line-height: 20px;
+  text-align: center;
+}
+
+.walletWrapper {
+  padding: 14px 14px 0;
+  width: 100%;
+}
+
+.scrollBox {
+  flex: 1 1 0;
+  padding: 14px;
+  overflow: auto;
+}
+
+.clearAllBtn {
+  padding: 4px 6px;
+  border-radius: 4px;
+  background: var(--color-basic100);
+  font-size: 12px;
+}
+
+.cardItem {
+  margin-top: 24px;
+  cursor: pointer;
+}
+
+.messageTransactionIcon {
+  margin: 0 10px 0 0;
+  width: 48px;
+  height: 48px;
+  background: url(../../assets/img/t-message-48.svg) center no-repeat;
+}
+
+.notificationCard {
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.notificationEllipsis {
+  max-width: 228px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

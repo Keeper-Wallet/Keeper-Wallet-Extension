@@ -1,7 +1,8 @@
 import { useDebouncedValue } from '_core/useDebouncedValue';
-import { libs, validators } from '@waves/waves-transactions';
+import { base58Decode } from '@keeper-wallet/waves-crypto';
 import { WavesDomainsClient } from '@waves-domains/client';
 import clsx from 'clsx';
+import { isAddressString } from 'messages/utils';
 import { NetworkName } from 'networks/types';
 import { usePopupSelector } from 'popup/store/react';
 import { PreferencesAccount } from 'preferences/types';
@@ -225,11 +226,11 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
   const accounts = usePopupSelector(state => state.accounts);
   const addresses = usePopupSelector<Record<string, string>>(state =>
     Object.entries(state.addresses).reduce((acc, [address, name]) => {
-      if (!validators.isValidAddress(address, chainId)) {
+      if (!isAddressString(address, chainId)) {
         return acc;
       }
 
-      return libs.crypto.base58Decode(address)[1] === chainId
+      return base58Decode(address)[1] === chainId
         ? { ...acc, [address]: name }
         : acc;
     }, {})
