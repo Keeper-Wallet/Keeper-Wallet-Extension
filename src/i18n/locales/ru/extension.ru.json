@@ -582,7 +582,7 @@
     "minimumReceived": "Минимальная сумма к получению",
     "minimumReceivedTooltip": "Минимальная сумма, которую вы получите, с учетом допуска проскальзывания",
     "notAvailable": "Недоступно",
-    "notSwappablePairTooltip": "Обмен между {{ assetTicker1 }} и {{ assetTicker2 }} не поддерживается",
+    "notSwappablePairTooltip": "Обмен между {{ assetDisplayName1 }} и {{ assetDisplayName2 }} не поддерживается",
     "priceImpactTooltip": "Разница между ценой на бирже и расчетной ценой из-за размера сделки.",
     "priceLabel": "Цена",
     "primaryLabel": "Основной",

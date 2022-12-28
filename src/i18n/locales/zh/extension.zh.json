@@ -572,7 +572,7 @@
     "minimumReceived": "最小接收",
     "minimumReceivedTooltip": "考虑滑点容忍在内，您将收到的最小数量",
     "notAvailable": "N/A",
-    "notSwappablePairTooltip": "不支持 {{ assetTicker1 }} 和{{ assetTicker2 }}的资产兑换",
+    "notSwappablePairTooltip": "不支持 {{ assetDisplayName1 }} 和{{ assetDisplayName2 }}的资产兑换",
     "priceImpactTooltip": "显示兑换价格和因交易大小造成的预估价格之间的差异",
     "priceLabel": "价格",
     "primaryLabel": "首要",

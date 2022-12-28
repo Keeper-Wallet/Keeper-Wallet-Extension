@@ -4,7 +4,6 @@ import { captureException } from '@sentry/browser';
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { swappableAssetIds } from 'assets/constants';
 import { AssetDetail } from 'assets/types';
 import { useAssetIdByTicker } from 'assets/utils';
 import { convertFeeToAsset } from 'fee/utils';
@@ -70,16 +69,19 @@ export function Swap() {
   }, [currentNetwork, minimumFee, selectedAccount?.address]);
 
   const assets = usePopupSelector(state => state.assets);
+  const swappableAssetIdsByVendor = usePopupSelector(
+    state => state.swappableAssetIdsByVendor
+  );
 
   const swappableAssetEntries = useMemo(
     () =>
-      swappableAssetIds.mainnet.map(
+      Array.from(new Set(Object.values(swappableAssetIdsByVendor).flat())).map(
         (assetId): [string, AssetDetail | undefined] => [
           assetId,
           assets[assetId],
         ]
       ),
-    [assets]
+    [assets, swappableAssetIdsByVendor]
   );
 
   useEffect(() => {

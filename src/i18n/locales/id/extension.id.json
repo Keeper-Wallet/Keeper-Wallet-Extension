@@ -589,7 +589,7 @@
     "minimumReceived": "Minimum Diterima",
     "minimumReceivedTooltip": "Jumlah minimum yang akan Anda terima, dengan mempertimbangkan toleransi selip",
     "notAvailable": "N/A",
-    "notSwappablePairTooltip": " Pertukaranantara {{ assetTicker1 }} dan {{ assetTicker2 }} tidak didukung",
+    "notSwappablePairTooltip": " Pertukaranantara {{ assetDisplayName1 }} dan {{ assetDisplayName2 }} tidak didukung",
     "priceImpactTooltip": "Selisih antara harga exchanger dan perkiraan harga karena ukuran perdagangan.",
     "priceLabel": "Price",
     "primaryLabel": "Primer",
