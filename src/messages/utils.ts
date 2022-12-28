@@ -244,7 +244,7 @@ export function makeTxBytes(
           }).finish();
     case TRANSACTION_TYPE.TRANSFER:
       return tx.version < 3
-        ? binary.serializeTx(tx)
+        ? binary.serializeTx({ ...tx, attachment: tx.attachment ?? '' })
         : waves.Transaction.encode({
             ...protobufCommon,
             fee: amountToProto(tx.fee, tx.feeAssetId),
@@ -308,7 +308,7 @@ export function makeTxBytes(
           }).finish();
     case TRANSACTION_TYPE.MASS_TRANSFER:
       return tx.version < 2
-        ? binary.serializeTx(tx)
+        ? binary.serializeTx({ ...tx, attachment: tx.attachment ?? '' })
         : waves.Transaction.encode({
             ...protobufCommon,
             fee: amountToProto(tx.fee),
