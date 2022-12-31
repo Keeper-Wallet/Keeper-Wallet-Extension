@@ -2,7 +2,13 @@ import { expect } from 'chai';
 import * as mocha from 'mocha';
 import { By, until, WebElement } from 'selenium-webdriver';
 
-import { App, CreateNewAccount, Settings, Windows } from './utils/actions';
+import {
+  App,
+  ContentScript,
+  CreateNewAccount,
+  Settings,
+  Windows,
+} from './utils/actions';
 import {
   CUSTOMLIST,
   DEFAULT_ANIMATION_DELAY,
@@ -399,13 +405,12 @@ describe('Settings', function () {
         this: mocha.Context,
         origin: string
       ) {
-        // this requests permission first
-        const permissionRequest = () => {
-          window.result = KeeperWallet.publicState();
-        };
-
         await this.driver.get(`https://${origin}`);
-        await this.driver.executeScript(permissionRequest);
+
+        await ContentScript.waitForKeeperWallet.call(this);
+        await this.driver.executeScript(() => {
+          window.result = KeeperWallet.publicState();
+        });
       }
 
       after(async function () {

@@ -1,7 +1,13 @@
 import { expect } from 'chai';
 import { By, until } from 'selenium-webdriver';
 
-import { App, CreateNewAccount, Settings, Windows } from './utils/actions';
+import {
+  App,
+  ContentScript,
+  CreateNewAccount,
+  Settings,
+  Windows,
+} from './utils/actions';
 import {
   CUSTOMLIST,
   DEFAULT_PAGE_LOAD_DELAY,
@@ -66,6 +72,7 @@ describe('Messages', function () {
       await this.driver.get(`https://${origin}`);
 
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      await ContentScript.waitForKeeperWallet.call(this);
       await this.driver.executeAsyncScript(sendNotification);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
@@ -99,6 +106,7 @@ describe('Messages', function () {
     await this.driver.get(`https://${CUSTOMLIST[0]}`);
 
     const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    await ContentScript.waitForKeeperWallet.call(this);
     await this.driver.executeScript(sendNotification);
     [messageWindow] = await waitForNewWindows(1);
     await this.driver.switchTo().window(messageWindow);
@@ -161,6 +169,7 @@ describe('Messages', function () {
     await this.driver.get(`https://${CUSTOMLIST[1]}`);
 
     const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    await ContentScript.waitForKeeperWallet.call(this);
     await this.driver.executeScript(sendNotification);
     [messageWindow] = await waitForNewWindows(1);
     await this.driver.switchTo().window(messageWindow);
@@ -230,6 +239,7 @@ describe('Messages', function () {
     await this.driver.get(`https://${CUSTOMLIST[1]}`);
 
     const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    await ContentScript.waitForKeeperWallet.call(this);
     await this.driver.executeAsyncScript(sendNotification);
     [messageWindow] = await waitForNewWindows(1);
     await this.driver.switchTo().window(messageWindow);
@@ -263,6 +273,8 @@ describe('Messages', function () {
 
     const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
     for (let success = 0; success < 2; ) {
+      await ContentScript.waitForKeeperWallet.call(this);
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = await this.driver.executeAsyncScript<any>(
         sendNotification
@@ -301,6 +313,7 @@ describe('Messages', function () {
     await this.driver.switchTo().window(tabOrigin);
     await this.driver.get(`https://${WHITELIST[4]}`);
 
+    await ContentScript.waitForKeeperWallet.call(this);
     await this.driver.executeAsyncScript(sendNotification);
     expect(messageWindow).not.to.be.null;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
