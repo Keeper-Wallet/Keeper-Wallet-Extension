@@ -8,7 +8,6 @@ import { ActiveNotificationPage } from '../ui/components/pages/activeNotificatio
 import { AddressBook } from '../ui/components/pages/AddressBook';
 import { ChangeAccountName } from '../ui/components/pages/changeAccountName';
 import { ChangePassword } from '../ui/components/pages/ChangePassword';
-import { ChangeTxAccount } from '../ui/components/pages/changeTxAccount';
 import { DeleteAccount } from '../ui/components/pages/deleteAccount';
 import { DeleteAllAccounts } from '../ui/components/pages/deleteAllAccounts/deleteAllAccounts';
 import { ErrorPage } from '../ui/components/pages/errorPage';
@@ -257,10 +256,6 @@ export const routes: RouteObject[] = [
       {
         path: '/messages-and-notifications',
         element: <MessagesAndNotificationsPage />,
-      },
-      {
-        path: '/change-tx-account',
-        element: <ChangeTxAccount />,
       },
       {
         path: '/forgot-password',

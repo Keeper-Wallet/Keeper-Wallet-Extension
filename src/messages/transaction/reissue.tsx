@@ -75,22 +75,16 @@ export function ReissueCard({
 
 export function ReissueScreen({
   message,
-  selectAccount,
   selectedAccount,
   tx,
 }: {
   message: MessageOfType<'transaction'>;
-  selectAccount: () => void;
   selectedAccount: PreferencesAccount;
   tx: MessageTxReissue;
 }) {
   return (
     <div className={transactionsStyles.transaction}>
-      <MessageHeader
-        message={message}
-        selectedAccount={selectedAccount}
-        selectAccount={selectAccount}
-      />
+      <MessageHeader message={message} selectedAccount={selectedAccount} />
 
       <div
         className={clsx(transactionsStyles.txScrollBox, 'transactionContent')}

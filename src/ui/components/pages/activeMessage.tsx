@@ -65,13 +65,7 @@ export function ActiveMessagePage() {
 
   if (activeMessage.status === MessageStatus.UnApproved) {
     return (
-      <Message
-        message={activeMessage}
-        selectAccount={() => {
-          navigate('/change-tx-account');
-        }}
-        selectedAccount={selectedAccount}
-      />
+      <Message message={activeMessage} selectedAccount={selectedAccount} />
     );
   }
 
@@ -93,7 +87,6 @@ export function ActiveMessagePage() {
   return (
     <div className={transactionsStyles.transaction}>
       <MessageHeader
-        hideButton
         message={activeMessage}
         selectedAccount={selectedAccount}
       />

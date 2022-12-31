@@ -77,22 +77,16 @@ export function SetScriptCard({
 
 export function SetScriptScreen({
   message,
-  selectAccount,
   selectedAccount,
   tx,
 }: {
   message: MessageOfType<'transaction'>;
-  selectAccount: () => void;
   selectedAccount: PreferencesAccount;
   tx: MessageTxSetScript;
 }) {
   return (
     <div className={styles.screen}>
-      <MessageHeader
-        message={message}
-        selectedAccount={selectedAccount}
-        selectAccount={selectAccount}
-      />
+      <MessageHeader message={message} selectedAccount={selectedAccount} />
 
       <div className={clsx(styles.scrollBox, 'transactionContent')}>
         <div className="margin-main">

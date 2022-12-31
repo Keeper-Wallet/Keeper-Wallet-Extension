@@ -55,22 +55,16 @@ export function DataCard({
 
 export function DataScreen({
   message,
-  selectAccount,
   selectedAccount,
   tx,
 }: {
   message: MessageOfType<'transaction'>;
-  selectAccount: () => void;
   selectedAccount: PreferencesAccount;
   tx: MessageTxData;
 }) {
   return (
     <div className={transactionsStyles.transaction}>
-      <MessageHeader
-        message={message}
-        selectedAccount={selectedAccount}
-        selectAccount={selectAccount}
-      />
+      <MessageHeader message={message} selectedAccount={selectedAccount} />
 
       <div
         className={clsx(transactionsStyles.txScrollBox, 'transactionContent')}

@@ -55,22 +55,16 @@ export function CancelOrderCard({
 
 export function CancelOrderScreen({
   message,
-  selectAccount,
   selectedAccount,
 }: {
   message: MessageOfType<'cancelOrder'>;
-  selectAccount: () => void;
   selectedAccount: PreferencesAccount;
 }) {
   const { t } = useTranslation();
 
   return (
     <div className={transactionsStyles.transaction}>
-      <MessageHeader
-        message={message}
-        selectAccount={selectAccount}
-        selectedAccount={selectedAccount}
-      />
+      <MessageHeader message={message} selectedAccount={selectedAccount} />
 
       <div className={`${transactionsStyles.txScrollBox} transactionContent`}>
         <div className="margin-main">

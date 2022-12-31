@@ -93,22 +93,16 @@ export function TransferCard({
 
 export function TransferScreen({
   message,
-  selectAccount,
   selectedAccount,
   tx,
 }: {
   message: MessageOfType<'transaction'>;
-  selectAccount: () => void;
   selectedAccount: PreferencesAccount;
   tx: MessageTxTransfer;
 }) {
   return (
     <div className={transactionsStyles.transaction}>
-      <MessageHeader
-        message={message}
-        selectedAccount={selectedAccount}
-        selectAccount={selectAccount}
-      />
+      <MessageHeader message={message} selectedAccount={selectedAccount} />
 
       <div
         className={clsx(transactionsStyles.txScrollBox, 'transactionContent')}

@@ -10,7 +10,7 @@ import {
   deleteNotifications,
   setShowNotification,
 } from '../../../store/actions/notifications';
-import { TransactionWallet } from '../wallets/TransactionWallet';
+import { TransactionWallet } from '../wallets/txWallet';
 import * as styles from './activeNotification.module.css';
 
 export function ActiveNotificationPage() {
@@ -40,14 +40,7 @@ export function ActiveNotificationPage() {
   return (
     <div className={styles.messageList}>
       <div className={styles.walletWrapper}>
-        <TransactionWallet
-          account={selectedAccount}
-          hideButton={false}
-          type="clean"
-          onSelect={() => {
-            navigate('/change-tx-account');
-          }}
-        />
+        <TransactionWallet account={selectedAccount} />
       </div>
 
       <div className={clsx(styles.messageListScrollBox)}>
