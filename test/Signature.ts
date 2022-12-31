@@ -121,7 +121,7 @@ describe('Signature', function () {
     expectedAccountName: string
   ) {
     const accountNameEl = await this.driver.wait(
-      until.elementLocated(By.css('[class^="accountName@wallet"]')),
+      until.elementLocated(By.css('[class^="name@wallet"]')),
       this.wait
     );
 
