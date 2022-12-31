@@ -2,18 +2,18 @@ import { PreferencesAccount } from 'preferences/types';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Avatar } from '../ui/avatar/Avatar';
-import { Copy } from '../ui/copy/Copy';
-import { Ellipsis } from '../ui/ellipsis/Ellipsis';
-import { Modal } from '../ui/modal/Modal';
-import { Tooltip } from '../ui/tooltip';
-import * as styles from './txWallet.module.css';
+import { Avatar } from '../../ui/components/ui/avatar/Avatar';
+import { Copy } from '../../ui/components/ui/copy/Copy';
+import { Ellipsis } from '../../ui/components/ui/ellipsis/Ellipsis';
+import { Modal } from '../../ui/components/ui/modal/Modal';
+import { Tooltip } from '../../ui/components/ui/tooltip';
+import * as styles from './wallet.module.css';
 
 interface Props {
   account: PreferencesAccount;
 }
 
-export function TransactionWallet({ account }: Props) {
+export function MessageWallet({ account }: Props) {
   const { t } = useTranslation();
   const [showCopiedNotification, setShowCopiedNotification] = useState(false);
 

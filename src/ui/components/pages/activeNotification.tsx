@@ -6,11 +6,11 @@ import invariant from 'tiny-invariant';
 import { Button, DateFormat, Input } from 'ui/components/ui';
 import Background from 'ui/services/Background';
 
+import { MessageWallet } from '../../../messages/_common/wallet';
 import {
   deleteNotifications,
   setShowNotification,
 } from '../../../store/actions/notifications';
-import { TransactionWallet } from '../wallets/txWallet';
 import * as styles from './activeNotification.module.css';
 
 export function ActiveNotificationPage() {
@@ -40,7 +40,7 @@ export function ActiveNotificationPage() {
   return (
     <div className={styles.messageList}>
       <div className={styles.walletWrapper}>
-        <TransactionWallet account={selectedAccount} />
+        <MessageWallet account={selectedAccount} />
       </div>
 
       <div className={clsx(styles.messageListScrollBox)}>
