@@ -320,7 +320,7 @@ describe('Others', function () {
 
       expect(
         await this.driver
-          .findElement(By.css('[class^="accountName@wallet"]'))
+          .findElement(By.css('[class^="name@wallet"]'))
           .getText()
       ).to.equal('rich');
 
