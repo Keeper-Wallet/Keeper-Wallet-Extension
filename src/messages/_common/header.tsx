@@ -4,7 +4,7 @@ import { PreferencesAccount } from 'preferences/types';
 import { useTranslation } from 'react-i18next';
 
 import * as styles from '../../ui/components/pages/styles/transactions.module.css';
-import { TransactionWallet } from '../../ui/components/wallets/txWallet';
+import { MessageWallet } from './wallet';
 
 interface Props {
   message: Message;
@@ -31,7 +31,7 @@ export function MessageHeader({ message, selectedAccount }: Props) {
         )}
       </div>
 
-      <TransactionWallet account={selectedAccount} />
+      <MessageWallet account={selectedAccount} />
     </div>
   );
 }

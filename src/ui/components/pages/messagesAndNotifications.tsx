@@ -3,6 +3,7 @@ import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
 
+import { MessageWallet } from '../../../messages/_common/wallet';
 import { getMessageConfig } from '../../../messages/getMessageConfig';
 import {
   deleteNotifications,
@@ -10,7 +11,6 @@ import {
   setActiveNotification,
 } from '../../../store/actions/notifications';
 import { Button } from '../ui/buttons/Button';
-import { TransactionWallet } from '../wallets/txWallet';
 import * as styles from './messagesAndNotifications.module.css';
 import * as transactionsStyles from './styles/transactions.module.css';
 
@@ -33,7 +33,7 @@ export function MessagesAndNotificationsPage() {
       </header>
 
       <header className={styles.walletWrapper}>
-        <TransactionWallet account={selectedAccount} />
+        <MessageWallet account={selectedAccount} />
       </header>
 
       <div className={styles.scrollBox}>
