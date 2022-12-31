@@ -54,22 +54,16 @@ export function RequestCard({
 
 export function RequestScreen({
   message,
-  selectAccount,
   selectedAccount,
 }: {
   message: MessageOfType<'request'>;
-  selectAccount: () => void;
   selectedAccount: PreferencesAccount;
 }) {
   const { t } = useTranslation();
 
   return (
     <div className={transactionsStyles.transaction}>
-      <MessageHeader
-        message={message}
-        selectAccount={selectAccount}
-        selectedAccount={selectedAccount}
-      />
+      <MessageHeader message={message} selectedAccount={selectedAccount} />
 
       <div
         className={clsx(transactionsStyles.txScrollBox, 'transactionContent')}

@@ -53,17 +53,11 @@ export function Root() {
 
   if (!locked && haveAccounts) {
     if (haveActiveMessage) {
-      if (
-        !['/active-message', '/change-tx-account'].includes(location.pathname)
-      ) {
+      if (location.pathname !== '/active-message') {
         return <Navigate replace to="/active-message" />;
       }
     } else if (haveActiveNotification) {
-      if (
-        !['/active-notification', '/change-tx-account'].includes(
-          location.pathname
-        )
-      ) {
+      if (location.pathname !== '/active-notification') {
         return <Navigate replace to="/active-notification" />;
       }
     } else if (haveMessagesOrNotifications) {
@@ -74,14 +68,10 @@ export function Root() {
   }
 
   if (
-    (!haveActiveMessage &&
-      ['/active-message', '/change-tx-account'].includes(location.pathname)) ||
-    (!haveActiveNotification &&
-      ['/active-notification', '/change-tx-account'].includes(
-        location.pathname
-      )) ||
-    (!haveMessagesOrNotifications &&
-      location.pathname === '/messages-and-notifications')
+    (location.pathname === '/active-message' && !haveActiveMessage) ||
+    (location.pathname === '/active-notification' && !haveActiveNotification) ||
+    (location.pathname === '/messages-and-notifications' &&
+      !haveMessagesOrNotifications)
   ) {
     return <Navigate replace to="/" />;
   }

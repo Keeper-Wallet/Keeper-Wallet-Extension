@@ -58,7 +58,6 @@ export function TransactionCard({
 
 export function TransactionScreen(props: {
   message: MessageOfType<'transaction'>;
-  selectAccount: () => void;
   selectedAccount: PreferencesAccount;
 }) {
   switch (props.message.data.type) {

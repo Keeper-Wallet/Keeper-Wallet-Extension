@@ -72,22 +72,16 @@ export function SetAssetScriptCard({
 
 export function SetAssetScriptScreen({
   message,
-  selectAccount,
   selectedAccount,
   tx,
 }: {
   message: MessageOfType<'transaction'>;
-  selectAccount: () => void;
   selectedAccount: PreferencesAccount;
   tx: MessageTxSetAssetScript;
 }) {
   return (
     <div className={transactionsStyles.transaction}>
-      <MessageHeader
-        message={message}
-        selectedAccount={selectedAccount}
-        selectAccount={selectAccount}
-      />
+      <MessageHeader message={message} selectedAccount={selectedAccount} />
 
       <div className={`${transactionsStyles.txScrollBox} transactionContent`}>
         <div className="margin-main">

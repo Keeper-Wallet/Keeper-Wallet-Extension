@@ -61,22 +61,16 @@ export function WavesAuthCard({
 
 export function WavesAuthScreen({
   message,
-  selectAccount,
   selectedAccount,
 }: {
   message: MessageOfType<'wavesAuth'>;
-  selectAccount: () => void;
   selectedAccount: PreferencesAccount;
 }) {
   const { t } = useTranslation();
 
   return (
     <div className={transactionsStyles.transaction}>
-      <MessageHeader
-        message={message}
-        selectAccount={selectAccount}
-        selectedAccount={selectedAccount}
-      />
+      <MessageHeader message={message} selectedAccount={selectedAccount} />
 
       <div
         className={clsx(transactionsStyles.txScrollBox, 'transactionContent')}

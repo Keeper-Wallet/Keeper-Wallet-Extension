@@ -4,19 +4,14 @@ import { PreferencesAccount } from 'preferences/types';
 import { useTranslation } from 'react-i18next';
 
 import * as styles from '../../ui/components/pages/styles/transactions.module.css';
-import { TransactionWallet } from '../../ui/components/wallets/TransactionWallet';
+import { TransactionWallet } from '../../ui/components/wallets/txWallet';
 
-export function MessageHeader({
-  hideButton,
-  message,
-  selectAccount,
-  selectedAccount,
-}: {
-  hideButton?: boolean;
+interface Props {
   message: Message;
-  selectAccount?: (account: PreferencesAccount) => void;
   selectedAccount: PreferencesAccount;
-}) {
+}
+
+export function MessageHeader({ message, selectedAccount }: Props) {
   const { t } = useTranslation();
 
   return (
@@ -36,12 +31,7 @@ export function MessageHeader({
         )}
       </div>
 
-      <TransactionWallet
-        account={selectedAccount}
-        hideButton={hideButton}
-        type="clean"
-        onSelect={selectAccount}
-      />
+      <TransactionWallet account={selectedAccount} />
     </div>
   );
 }

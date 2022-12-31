@@ -64,11 +64,9 @@ const INTERVAL_VALUES = {
 
 export function AuthOriginScreen({
   message,
-  selectAccount,
   selectedAccount,
 }: {
   message: MessageOfType<'authOrigin'>;
-  selectAccount: () => void;
   selectedAccount: PreferencesAccount;
 }) {
   const { t } = useTranslation();
@@ -98,11 +96,7 @@ export function AuthOriginScreen({
 
   return (
     <div className={transactionsStyles.transaction}>
-      <MessageHeader
-        message={message}
-        selectAccount={selectAccount}
-        selectedAccount={selectedAccount}
-      />
+      <MessageHeader message={message} selectedAccount={selectedAccount} />
 
       <div
         className={clsx(transactionsStyles.txScrollBox, 'transactionContent')}

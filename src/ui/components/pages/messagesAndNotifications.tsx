@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
+import invariant from 'tiny-invariant';
 
 import { getMessageConfig } from '../../../messages/getMessageConfig';
 import {
@@ -9,7 +10,7 @@ import {
   setActiveNotification,
 } from '../../../store/actions/notifications';
 import { Button } from '../ui/buttons/Button';
-import { TransactionWallet } from '../wallets/TransactionWallet';
+import { TransactionWallet } from '../wallets/txWallet';
 import * as styles from './messagesAndNotifications.module.css';
 import * as transactionsStyles from './styles/transactions.module.css';
 
@@ -19,6 +20,7 @@ export function MessagesAndNotificationsPage() {
   const messages = usePopupSelector(state => state.messages);
   const notifications = usePopupSelector(state => state.notifications);
   const selectedAccount = usePopupSelector(state => state.selectedAccount);
+  invariant(selectedAccount);
 
   return (
     <div className={styles.root}>
@@ -31,12 +33,7 @@ export function MessagesAndNotificationsPage() {
       </header>
 
       <header className={styles.walletWrapper}>
-        <TransactionWallet
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          account={selectedAccount!}
-          hideButton
-          type="clean"
-        />
+        <TransactionWallet account={selectedAccount} />
       </header>
 
       <div className={styles.scrollBox}>

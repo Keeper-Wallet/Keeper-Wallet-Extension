@@ -34,11 +34,7 @@ interface MessageConfig<T extends Message['type']> {
     message: MessageOfType<T>;
   }>;
   screen: React.ComponentType<{
-    // approve: () => void;
-    // autoClickProtection: boolean;
     message: MessageOfType<T>;
-    // reject: () => void;
-    selectAccount: () => void;
     selectedAccount: PreferencesAccount;
   }>;
   final: React.ComponentType<{

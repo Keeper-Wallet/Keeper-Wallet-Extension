@@ -104,22 +104,16 @@ export function AuthCard({
 
 export function AuthScreen({
   message,
-  selectAccount,
   selectedAccount,
 }: {
   message: MessageOfType<'auth'>;
-  selectAccount: () => void;
   selectedAccount: PreferencesAccount;
 }) {
   const { t } = useTranslation();
 
   return (
     <div className={transactionsStyles.transaction}>
-      <MessageHeader
-        message={message}
-        selectAccount={selectAccount}
-        selectedAccount={selectedAccount}
-      />
+      <MessageHeader message={message} selectedAccount={selectedAccount} />
 
       <div
         className={clsx(transactionsStyles.txScrollBox, 'transactionContent')}
