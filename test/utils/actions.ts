@@ -241,6 +241,17 @@ export const CreateNewAccount = {
   },
 };
 
+export const ContentScript = {
+  waitForKeeperWallet(this: mocha.Context) {
+    return this.driver.executeAsyncScript<void>((done: () => void) => {
+      (function poll() {
+        if (typeof KeeperWallet !== 'undefined') done();
+        else setTimeout(() => poll(), 100);
+      })();
+    });
+  },
+};
+
 export const Settings = {
   async clearCustomList(this: mocha.Context) {
     await this.driver

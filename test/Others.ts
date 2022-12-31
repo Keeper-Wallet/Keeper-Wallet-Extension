@@ -5,6 +5,7 @@ import { By, until } from 'selenium-webdriver';
 import {
   App,
   Assets,
+  ContentScript,
   CreateNewAccount,
   Network,
   Windows,
@@ -300,6 +301,7 @@ describe('Others', function () {
       await this.driver.switchTo().window(prevHandle);
 
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      await ContentScript.waitForKeeperWallet.call(this);
       await this.driver.executeScript(() => {
         KeeperWallet.auth({ data: 'hello' });
       });
