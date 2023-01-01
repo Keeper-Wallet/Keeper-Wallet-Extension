@@ -1273,9 +1273,9 @@
     ethereum-cryptography "^1.1.2"
 
 "@faergeek/eslint-config@^5.0.142":
-  version "5.0.153"
-  resolved "https://registry.yarnpkg.com/@faergeek/eslint-config/-/eslint-config-5.0.153.tgz#12dcb63af420de1200f5e7bc21ff7ba59c6c6a4d"
-  integrity sha512-s1LdFC8BA8b3ZqAiguLPElc6Zv8IQz3vc1eRDFDoVRYEc4FEoo8y9B7Yw5ErgdaAvAomM1/UGa3jBCE2OplDew==
+  version "5.0.154"
+  resolved "https://registry.yarnpkg.com/@faergeek/eslint-config/-/eslint-config-5.0.154.tgz#160e8727e51ab07818d9f3ce801d2c4f7158e385"
+  integrity sha512-mBclevkg8gYpQrT3JvRwnOjl4kfbpsnAWEO5h15ifNoq89mqe0CgAPr9G/sB2+9S8evX6L7LsqQnhG0VwYTk0g==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.0.0"
     "@typescript-eslint/parser" "^5.0.0"
@@ -4094,9 +4094,9 @@ eslint-plugin-import@^2.26.0:
     tsconfig-paths "^3.14.1"
 
 eslint-plugin-jest@^27.0.0:
-  version "27.1.7"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-27.1.7.tgz#0351e904afb8d66b7f70452929556dfdc8daba0d"
-  integrity sha512-0QVzf+og4YI1Qr3UoprkqqhezAZjFffdi62b0IurkCXMqPtRW84/UT4CKsYT80h/D82LA9avjO/80Ou1LdgbaQ==
+  version "27.2.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-27.2.0.tgz#8e9976705642bea1981596c0ba5e3f46d449f3fc"
+  integrity sha512-KGIYtelk4rIhKocxRKUEeX+kJ0ZCab/CiSgS8BMcKD7AY7YxXhlg/d51oF5jq2rOrtuJEDYWRwXD95l6l2vtrA==
   dependencies:
     "@typescript-eslint/utils" "^5.10.0"
 
