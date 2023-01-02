@@ -2,11 +2,11 @@ import { base58Encode, utf8Encode } from '@keeper-wallet/waves-crypto';
 import { sha256 } from '@noble/hashes/sha256';
 import { captureException, setUser, withScope } from '@sentry/browser';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { detect } from 'detect-browser';
 import { Message } from 'messages/types';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
-import { detect } from '../lib/detectBrowser';
 import { ExtensionStorage } from '../storage/storage';
 import { NetworkController } from './network';
 
