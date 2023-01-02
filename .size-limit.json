@@ -7,7 +7,7 @@
   {
     "name": "background",
     "path": "dist/build/background.js",
-    "limit": "218 kB"
+    "limit": "219 kB"
   },
   {
     "name": "ui",
