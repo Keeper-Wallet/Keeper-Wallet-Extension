@@ -112,7 +112,7 @@ export type MessageInput = {
         isRequest?: boolean;
         origin?: string;
         successPath?: string;
-        type: typeof TRANSACTION_TYPE[keyof typeof TRANSACTION_TYPE];
+        type: (typeof TRANSACTION_TYPE)[keyof typeof TRANSACTION_TYPE];
         data: {
           alias?: string;
           amount?: IMoneyLike | number;
@@ -132,7 +132,7 @@ export type MessageInput = {
       type: 'transactionPackage';
       origin?: string;
       data: Array<{
-        type: typeof TRANSACTION_TYPE[keyof typeof TRANSACTION_TYPE];
+        type: (typeof TRANSACTION_TYPE)[keyof typeof TRANSACTION_TYPE];
         data: {
           fee?: IMoneyLike;
           leaseId?: string;
@@ -163,7 +163,7 @@ export type MessageInputOfType<T extends MessageInput['type']> = Extract<
 >;
 
 interface TxData {
-  type: typeof TRANSACTION_TYPE[keyof typeof TRANSACTION_TYPE];
+  type: (typeof TRANSACTION_TYPE)[keyof typeof TRANSACTION_TYPE];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   referrer?: string | URL;

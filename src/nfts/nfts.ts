@@ -16,7 +16,7 @@ const vendors = {
   [NftVendorId.WavesDomains]: new WavesDomainsNftVendor(),
 };
 
-export type NftInfo = typeof vendors[keyof typeof vendors] extends NftVendor<
+export type NftInfo = (typeof vendors)[keyof typeof vendors] extends NftVendor<
   infer T
 >
   ? T

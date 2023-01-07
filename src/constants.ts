@@ -18,7 +18,7 @@ export const MSG_STATUSES = {
   NEW_NOTIFICATION: 'new_notify',
 } as const;
 
-export type MsgStatus = typeof MSG_STATUSES[keyof typeof MSG_STATUSES];
+export type MsgStatus = (typeof MSG_STATUSES)[keyof typeof MSG_STATUSES];
 
 export const STATUS = {
   ERROR: -1,

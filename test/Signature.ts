@@ -619,7 +619,7 @@ describe('Signature', function () {
     }
 
     function setTxVersion(
-      tx: Parameters<typeof KeeperWallet['signTransaction']>[0],
+      tx: Parameters<(typeof KeeperWallet)['signTransaction']>[0],
       version: number
     ) {
       return { ...tx, data: { ...tx.data, version } };
@@ -3393,7 +3393,7 @@ describe('Signature', function () {
     async function performSignOrder(
       this: mocha.Context,
       script: (
-        tx: Parameters<typeof KeeperWallet['signTransaction']>[0]
+        tx: Parameters<(typeof KeeperWallet)['signTransaction']>[0]
       ) => void,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       tx: any
@@ -4025,14 +4025,14 @@ describe('Signature', function () {
   describe('Multiple transactions package', function () {
     async function performSignTransactionPackage(
       this: mocha.Context,
-      tx: Array<Parameters<typeof KeeperWallet['signTransaction']>[0]>,
+      tx: Array<Parameters<(typeof KeeperWallet)['signTransaction']>[0]>,
       name: string
     ) {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(
         (
           // eslint-disable-next-line @typescript-eslint/no-shadow
-          tx: Array<Parameters<typeof KeeperWallet['signTransaction']>[0]>,
+          tx: Array<Parameters<(typeof KeeperWallet)['signTransaction']>[0]>,
           // eslint-disable-next-line @typescript-eslint/no-shadow
           name: string
         ) => {
