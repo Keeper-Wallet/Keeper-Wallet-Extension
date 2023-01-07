@@ -830,7 +830,7 @@ export const makeBytes = {
       serializePrimitives.BASE58_STRING(input.senderPublicKey),
       serializePrimitives.LONG(input.timestamp)
     ),
-  order: (arg: ReturnType<typeof convertFromSa['order']>) =>
+  order: (arg: ReturnType<(typeof convertFromSa)['order']>) =>
     arg.version < 4
       ? binary.serializeOrder(arg)
       : orderToProtoBytes(convertBigNumberToLong(arg)),

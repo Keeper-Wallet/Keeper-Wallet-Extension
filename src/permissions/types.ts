@@ -1,6 +1,6 @@
 import type { PERMISSIONS } from './constants';
 
-export type PermissionType = typeof PERMISSIONS[keyof typeof PERMISSIONS];
+export type PermissionType = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 
 interface ApprovedItem {
   amount: string;
