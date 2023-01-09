@@ -1617,8 +1617,8 @@ export class MessageController extends EventEmitter {
               ? null
               : messageInputTx.data.initialFee.assetId),
           payment: payment.map(p => ({
-            ...p,
             amount: moneyLikeToMoney(p, assets).toCoins(),
+            assetId: p.assetId === 'WAVES' ? null : p.assetId,
           })),
           proofs,
           senderPublicKey,
