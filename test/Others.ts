@@ -68,7 +68,7 @@ describe('Others', function () {
     beforeEach(async function () {
       const assetCard = await HomeScreen.getAssetByName('WAVES');
       await assetCard.moreButton.moveTo();
-      await assetCard.clickButton.click();
+      await assetCard.sendButton.click();
     });
 
     afterEach(async function () {
@@ -143,9 +143,8 @@ describe('Others', function () {
 
       expect(EmptyHomeScreen.root).toBeDisabled();
 
-      await browser.createWindow('tab');
+      const newTab = (await browser.createWindow('tab')).handle;
 
-      const newTab = await browser.getWindowHandle();
       await browser.switchToWindow(tabAccounts);
       await browser.closeWindow();
       await browser.switchToWindow(newTab);
@@ -155,7 +154,7 @@ describe('Others', function () {
       await browser.navigateTo('https://example.com');
 
       const prevHandle = await browser.getWindowHandle();
-      await browser.switchToWindow('tab');
+      await browser.switchToWindow((await browser.createWindow('tab')).handle);
       await stopServiceWorker();
       await browser.closeWindow();
       await browser.switchToWindow(prevHandle);

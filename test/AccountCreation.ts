@@ -226,8 +226,9 @@ describe('Account creation', function () {
               ConfirmBackupScreen.suggestedPillsContainer;
             for (const word of rightSeed.split(' ')) {
               const pill = await suggestedPillsContainer.getPillByText(word);
+              await pill.waitForDisplayed();
               await pill.click();
-              await pill.waitForExist({ reverse: true });
+              await pill.waitForDisplayed({ reverse: true });
             }
 
             await ConfirmBackupScreen.confirmButton.click();
@@ -297,13 +298,10 @@ describe('Account creation', function () {
 
     it('first account via "Import account"', async () => {
       await ImportFormScreen.importBySeedButton.click();
-
       await ImportUsingSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
       await ImportUsingSeedScreen.importAccountButton.click();
-
       await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST.NAME);
       await NewWalletNameScreen.continueButton.click();
-
       expect(ImportSuccessScreen.root).toBeDisplayed();
       await ImportSuccessScreen.addAnotherAccountButton.click();
       expect(ImportFormScreen.root).toBeDisplayed();

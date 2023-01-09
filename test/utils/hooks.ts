@@ -71,7 +71,7 @@ export const mochaHooks = () => ({
     this.nodeUrl = 'http://waves-private-node:6869';
 
     const browser = await remote({
-      logLevel: 'warn',
+      logLevel: 'silent',
       capabilities: {
         browserName: 'chrome',
         'goog:chromeOptions': {

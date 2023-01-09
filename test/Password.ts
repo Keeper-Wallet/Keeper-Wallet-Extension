@@ -23,7 +23,7 @@ describe('Password management', () => {
   let tabKeeper: string, tabAccounts: string;
 
   after(async function () {
-    await App.closeBgTabs.call(this, tabKeeper);
+    await App.closeBgTabs(tabKeeper);
   });
 
   describe('Create password', function () {

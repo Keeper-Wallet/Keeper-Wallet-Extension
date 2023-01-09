@@ -61,7 +61,7 @@ describe('Messages', function () {
     const tabKeeper = await browser.getWindowHandle();
     await browser.openKeeperPopup();
     await Settings.clearCustomList();
-    await App.closeBgTabs.call(this, tabKeeper);
+    await App.closeBgTabs(tabKeeper);
     await App.resetVault();
   });
 

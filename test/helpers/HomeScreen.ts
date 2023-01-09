@@ -3,8 +3,8 @@ const AssetCard = (wrapped: WebdriverIO.Element) => ({
     return wrapped.findByTestId$('moreBtn');
   },
 
-  get clickButton() {
-    return wrapped;
+  get sendButton() {
+    return wrapped.findByTestId$("sendBtn");
   },
 });
 
@@ -48,7 +48,7 @@ export const HomeScreen = {
   async getAssetByName(name: string) {
     return AssetCard(
       await this.root
-        .findByText$(name, { selector: "[class*='assetTitle@assetItem']" })
+        .findByText$(name, { selector: "[class*='assetName@assetItem']" })
         .$(".//ancestor::*[contains(@class, 'assetCard@assetItem')]")
     );
   },

@@ -1,5 +1,7 @@
 export const GeneralSettingsScreen = {
   setSessionTimeoutByName: async (name: string) => {
+    const currentValue = await browser.$("[class*='trigger@Select-module']").getText();
+    if (currentValue === name) return;
     await browser.$("[class*='trigger@Select-module']").click();
     await browser
       .findByText$(name, { selector: "[class*='item@Select-module']" })
@@ -11,8 +13,8 @@ export const GeneralSettingsScreen = {
   },
 
   get changePasswordLink() {
-    return this.root.$('#changePassword');
-  },
+    return this.root.$("#changePassword");
+  }
 };
 
 const Permission = (wrapped: WebdriverIO.Element) => ({
@@ -29,12 +31,12 @@ const Permission = (wrapped: WebdriverIO.Element) => ({
   },
 
   get origin() {
-    return wrapped.$('div');
+    return wrapped.$("div");
   },
 
   get enableCheckbox() {
-    return wrapped.$('button');
-  },
+    return wrapped.$("button");
+  }
 });
 
 export const PermissionControlSettingsScreen = {
@@ -49,7 +51,7 @@ export const PermissionControlSettingsScreen = {
   },
 
   get whiteListLink() {
-    return this.root.findByText$('White list');
+    return this.root.findByText$("White list");
   },
 
   async getPermissionByOrigin(origin: string) {
@@ -80,8 +82,8 @@ export const PermissionControlSettingsScreen = {
   get modalAllowMessagesCheckbox() {
     return browser
       .$("[class*='modalWrapper@modal']")
-      .findByText$('Allow sending messages');
-  },
+      .findByText$("Allow sending messages");
+  }
 };
 
 export const ExportAndImportSettingsScreen = {
@@ -90,8 +92,8 @@ export const ExportAndImportSettingsScreen = {
   },
 
   get exportAccountsLink() {
-    return this.root.findByText$('Export accounts');
-  },
+    return this.root.findByText$("Export accounts");
+  }
 };
 
 export const NetworkSettingsScreen = {
@@ -100,16 +102,16 @@ export const NetworkSettingsScreen = {
   },
 
   get nodeAddress() {
-    return this.root.$('#node_address');
+    return this.root.$("#node_address");
   },
 
   get matcherAddress() {
-    return this.root.$('#node_address');
+    return this.root.$("#node_address");
   },
 
   get setDefaultButton() {
-    return this.root.$('#setDefault');
-  },
+    return this.root.$("#setDefault");
+  }
 };
 
 export const SettingsScreen = {
@@ -118,54 +120,54 @@ export const SettingsScreen = {
   },
 
   get generalSectionLink() {
-    return this.root.findByText$('General');
+    return this.root.findByText$("General");
   },
 
   get permissionsSectionLink() {
-    return this.root.findByText$('Permissions control');
+    return this.root.findByText$("Permissions control");
   },
 
   get exportAndImportSectionLink() {
-    return this.root.findByText$('Export and import');
+    return this.root.findByText$("Export and import");
   },
 
   get deleteAccountsButton() {
-    return this.root.findByText$('Delete accounts');
+    return this.root.findByText$("Delete accounts");
   },
 
   get logoutButton() {
-    return this.root.findByText$('Log out');
+    return this.root.findByText$("Log out");
   },
 
   get networkSectionLink() {
-    return this.root.findByText$('Network');
+    return this.root.findByText$("Network");
   },
 
   get clickProtectionButton() {
-    return this.root.findByTestId$('clickProtectionBtn');
+    return this.root.findByTestId$("clickProtectionBtn");
   },
 
   get clickProtectionIcon() {
-    return this.root.findByTestId$('clickProtectionIcon');
+    return this.root.findByTestId$("clickProtectionIcon");
   },
 
   get clickProtectionStatus() {
-    return this.root.findByTestId$('clickProtectionStatus');
+    return this.root.findByTestId$("clickProtectionStatus");
   },
 
   get suspiciousAssetsProtectionButton() {
-    return this.root.findByTestId$('showSuspiciousAssetsBtn');
+    return this.root.findByTestId$("showSuspiciousAssetsBtn");
   },
 
   get suspiciousAssetsProtectionIcon() {
-    return this.root.findByTestId$('showSuspiciousAssetsIcon');
+    return this.root.findByTestId$("showSuspiciousAssetsIcon");
   },
 
   get suspiciousAssetsProtectionStatus() {
-    return this.root.findByTestId$('showSuspiciousAssetsStatus');
+    return this.root.findByTestId$("showSuspiciousAssetsStatus");
   },
 
   get helpTooltip() {
     return browser.$("[class*='helpTooltip@settings']");
-  },
+  }
 };

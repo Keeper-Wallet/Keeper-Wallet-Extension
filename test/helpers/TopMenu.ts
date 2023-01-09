@@ -4,7 +4,7 @@ export const NetworksMenu = {
   },
 
   networkByName(network: string) {
-    return this.root.findByText$(network);
+    return this.root.findByText$(network, {selector: "[class*='chooseNetwork@network']"});
   },
 
   get editButton() {
