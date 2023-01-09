@@ -119,11 +119,7 @@ export async function downloadKeystore(
   password: string,
   encrypted = false
 ) {
-  const correctPassword = await background.checkPassword(password);
-
-  if (!correctPassword) {
-    throw new Error('Invalid password');
-  }
+  await background.assertPasswordIsValid(password);
 
   const now = new Date();
 

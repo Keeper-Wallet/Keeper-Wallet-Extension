@@ -477,7 +477,7 @@ class BackgroundService extends EventEmitter {
 
       newPassword: this.vaultController.update.bind(this.vaultController),
 
-      checkPassword: this.walletController.checkPassword.bind(
+      assertPasswordIsValid: this.walletController.assertPasswordIsValid.bind(
         this.walletController
       ),
 
