@@ -207,11 +207,11 @@ class Background {
     return this.background!.initVault(password);
   }
 
-  async checkPassword(password: string): Promise<string> {
+  async assertPasswordIsValid(password: string) {
     await this.initPromise;
     this._connect();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-    return (await this.background!.checkPassword(password)) as any;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return await this.background!.assertPasswordIsValid(password);
   }
 
   async getAccountSeed(

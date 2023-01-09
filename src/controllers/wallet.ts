@@ -325,13 +325,8 @@ export class WalletController extends EventEmitter {
     this.store.updateState({ WalletController: { vault: undefined } });
   }
 
-  async checkPassword(password: string) {
-    try {
-      await this.#restoreWallets(password);
-      return true;
-    } catch {
-      return false;
-    }
+  async assertPasswordIsValid(password: string) {
+    await this.#restoreWallets(password);
   }
 
   async newPassword(oldPassword: string, newPassword: string) {
@@ -385,7 +380,7 @@ export class WalletController extends EventEmitter {
     network: NetworkName,
     password: string
   ) {
-    await this.checkPassword(password);
+    await this.assertPasswordIsValid(password);
     return this.getWallet(address, network).getSeed();
   }
 
@@ -394,7 +389,7 @@ export class WalletController extends EventEmitter {
     network: NetworkName,
     password: string
   ) {
-    await this.checkPassword(password);
+    await this.assertPasswordIsValid(password);
     return this.getWallet(address, network).getEncodedSeed();
   }
 
@@ -403,7 +398,7 @@ export class WalletController extends EventEmitter {
     network: NetworkName,
     password: string
   ) {
-    await this.checkPassword(password);
+    await this.assertPasswordIsValid(password);
     const privateKey = await this.getWallet(address, network).getPrivateKey();
     return base58Encode(privateKey);
   }
