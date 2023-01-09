@@ -235,8 +235,11 @@ export function makeTxBytes(
             ...protobufCommon,
             fee: amountToProto(tx.fee),
             issue: {
-              ...tx,
               amount: Long.fromValue(tx.quantity),
+              decimals: tx.decimals || null,
+              description: tx.description || null,
+              name: tx.name,
+              reissuable: tx.reissuable || undefined,
               script: tx.script
                 ? base64Decode(tx.script.replace(/^base64:/, ''))
                 : null,
@@ -263,8 +266,8 @@ export function makeTxBytes(
             ...protobufCommon,
             fee: amountToProto(tx.fee),
             reissue: {
-              ...tx,
               assetAmount: amountToProto(tx.quantity, tx.assetId),
+              reissuable: tx.reissuable || undefined,
             },
           }).finish();
     case TRANSACTION_TYPE.BURN:
@@ -404,8 +407,9 @@ export function makeTxBytes(
         ...protobufCommon,
         fee: amountToProto(tx.fee),
         updateAssetInfo: {
-          ...tx,
           assetId: base58Decode(tx.assetId),
+          description: tx.description || null,
+          name: tx.name,
         },
       }).finish();
   }
