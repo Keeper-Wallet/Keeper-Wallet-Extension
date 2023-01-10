@@ -67,10 +67,7 @@ export type AppAction =
     }
   | {
       type: typeof ACTION.UPDATE_MESSAGES;
-      payload: {
-        unapprovedMessages: Message[];
-        messages: Message[];
-      };
+      payload: Message[];
       meta?: never;
     }
   | {
