@@ -136,8 +136,7 @@ export function createUpdateState(store: PopupStore) {
     ) {
       store.dispatch({
         type: ACTION.UPDATE_MESSAGES,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        payload: { unapprovedMessages, messages: messages! },
+        payload: unapprovedMessages,
       });
 
       setActiveAutoPayload.messages = unapprovedMessages;

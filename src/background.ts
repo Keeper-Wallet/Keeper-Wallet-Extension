@@ -497,8 +497,6 @@ class BackgroundService extends EventEmitter {
       getMessageById: async (id: string) =>
         this.messageController.getMessageById(id),
       clearMessages: async () => this.messageController.clearMessages(),
-      deleteMessage: async (id: string) =>
-        this.messageController.deleteMessage(id),
       approve: async (messageId: string) => {
         const message = await this.messageController.approve(messageId);
 
