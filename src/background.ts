@@ -517,19 +517,15 @@ class BackgroundService extends EventEmitter {
       // network
       setNetwork: async (network: NetworkName) =>
         this.networkController.setNetwork(network),
-      setCustomNode: async (
-        url: string | null | undefined,
-        network: NetworkName
-      ) => this.networkController.setCustomNode(url, network),
-      setCustomCode: async (code: string | undefined, network: NetworkName) => {
+      setCustomNode: async (url: string | null, network: NetworkName) =>
+        this.networkController.setCustomNode(url, network),
+      setCustomCode: async (code: string | null, network: NetworkName) => {
         await this.walletController.updateNetworkCode(network, code);
         this.networkController.setCustomCode(code, network);
         this.currentAccountController.restartPolling();
       },
-      setCustomMatcher: async (
-        url: string | null | undefined,
-        network: NetworkName
-      ) => this.networkController.setCustomMatcher(url, network),
+      setCustomMatcher: async (url: string | null, network: NetworkName) =>
+        this.networkController.setCustomMatcher(url, network),
 
       // asset information
       assetInfo: this.assetInfoController.assetInfo.bind(

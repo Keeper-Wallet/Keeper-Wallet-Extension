@@ -303,30 +303,21 @@ class Background {
     return this.background!.setNetwork(network);
   }
 
-  async setCustomNode(
-    url: string | null | undefined,
-    network: NetworkName
-  ): Promise<void> {
+  async setCustomNode(url: string | null, network: NetworkName) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.setCustomNode(url, network);
   }
 
-  async setCustomCode(
-    code: string | undefined,
-    network: NetworkName
-  ): Promise<void> {
+  async setCustomCode(code: string | null, network: NetworkName) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.setCustomCode(code, network);
   }
 
-  async setCustomMatcher(
-    url: string | null | undefined,
-    network: NetworkName
-  ): Promise<void> {
+  async setCustomMatcher(url: string | null, network: NetworkName) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

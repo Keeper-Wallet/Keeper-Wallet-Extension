@@ -79,18 +79,12 @@ const Networks = ({
 
 interface DispatchProps {
   setNetwork: (net: NetworkName) => Promise<void>;
-  setCustomNode: (payload: {
-    node: string;
-    network: NetworkName | null | undefined;
-  }) => void;
+  setCustomNode: (payload: { node: string; network: NetworkName }) => void;
   setCustomMatcher: (payload: {
     matcher: string;
-    network: NetworkName | null | undefined;
+    network: NetworkName;
   }) => void;
-  setCustomCode: (payload: {
-    code: string;
-    network: NetworkName | null | undefined;
-  }) => void;
+  setCustomCode: (payload: { code: string; network: NetworkName }) => void;
   setLoading: (show: boolean) => void;
 }
 
@@ -279,10 +273,10 @@ class NetworkComponent extends PureComponent<Props, IState> {
               onExited={this.resetSettingsHandler}
             >
               <NetworkSettings
-                node={net && net.nodeBaseUrl}
-                name={net && net.name}
                 matcher={net && net.matcherBaseUrl}
+                name={net && net.name}
                 networkCode={net && net.networkCode}
+                node={net && net.nodeBaseUrl}
                 onClose={this.closeSettingsHandler}
                 onSave={this.saveSettingsHandler}
               />

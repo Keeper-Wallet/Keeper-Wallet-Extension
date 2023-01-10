@@ -59,22 +59,19 @@ export class NetworkController {
     return this.store.getState().currentNetwork;
   }
 
-  setCustomNode(url: string | null | undefined, network = NetworkName.Mainnet) {
+  setCustomNode(url: string | null, network = NetworkName.Mainnet) {
     const { customNodes } = this.store.getState();
     customNodes[network] = url;
     this.store.updateState({ customNodes });
   }
 
-  setCustomMatcher(
-    url: string | null | undefined,
-    network = NetworkName.Mainnet
-  ) {
+  setCustomMatcher(url: string | null, network: NetworkName) {
     const { customMatchers } = this.store.getState();
     customMatchers[network] = url;
     this.store.updateState({ customMatchers });
   }
 
-  setCustomCode(code: string | undefined, network = NetworkName.Mainnet) {
+  setCustomCode(code: string | null, network: NetworkName) {
     const { customCodes } = this.store.getState();
     customCodes[network] = code;
     this.store.updateState({ customCodes });

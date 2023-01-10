@@ -318,17 +318,17 @@ export type AppAction =
     }
   | {
       type: typeof ACTION.CHANGE_NODE;
-      payload: { node: string | null | undefined; network: NetworkName };
+      payload: { node: string | null; network: NetworkName };
       meta?: never;
     }
   | {
       type: typeof ACTION.CHANGE_NETWORK_CODE;
-      payload: { code: string | undefined; network: NetworkName };
+      payload: { code: string | null; network: NetworkName };
       meta?: never;
     }
   | {
       type: typeof ACTION.CHANGE_MATCHER;
-      payload: { network: NetworkName; matcher: string | null | undefined };
+      payload: { matcher: string | null; network: NetworkName };
       meta?: never;
     };
 

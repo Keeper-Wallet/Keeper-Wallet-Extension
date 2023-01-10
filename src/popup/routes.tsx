@@ -17,7 +17,7 @@ import { ExportAndImport } from '../ui/components/pages/ExportAndImport';
 import { Info } from '../ui/components/pages/Info';
 import { LangsSettings } from '../ui/components/pages/LangsSettings';
 import { MessagesAndNotificationsPage } from '../ui/components/pages/messagesAndNotifications';
-import { NetworksSettings } from '../ui/components/pages/NetworksSettings';
+import { NetworkSettings } from '../ui/components/pages/networkSettings';
 import { NftCollection } from '../ui/components/pages/nfts/nftCollection';
 import { NftInfo } from '../ui/components/pages/nfts/nftInfo';
 import { OtherAccountsPage } from '../ui/components/pages/otherAccounts';
@@ -195,7 +195,7 @@ export const routes: RouteObject[] = [
         element: (
           <>
             <Menu hasBack hasLogo />
-            <NetworksSettings />
+            <NetworkSettings />
           </>
         ),
       },

@@ -1,7 +1,7 @@
 import { base58Decode } from '@keeper-wallet/waves-crypto';
 import { NetworkName } from 'networks/types';
 
-function getNetworkByteByAddress(address: string): string {
+function getNetworkCodeByAddress(address: string): string {
   return String.fromCharCode(base58Decode(address)[1]);
 }
 
@@ -19,23 +19,23 @@ export function getNetworkByNetworkCode(networkCode: string): NetworkName {
 }
 
 export function getNetworkByAddress(address: string): NetworkName {
-  return getNetworkByNetworkCode(getNetworkByteByAddress(address));
+  return getNetworkByNetworkCode(getNetworkCodeByAddress(address));
 }
 
-export async function getNetworkByte(url: string) {
+export async function getNetworkCode(url: string) {
   const response = await fetch(new URL('/blocks/headers/last', url));
 
   if (!response.ok) {
     throw response;
   }
 
-  const { generator } = (await response.json()) as { generator: string };
+  const { generator }: { generator: string } = await response.json();
 
   if (!generator) {
     throw new Error('Incorrect node url');
   }
 
-  const networkCode = getNetworkByteByAddress(generator);
+  const networkCode = getNetworkCodeByAddress(generator);
 
   if (!networkCode) {
     throw new Error('Incorrect node byte');

@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import * as mocha from 'mocha';
 import { By, until, WebElement } from 'selenium-webdriver';
 
+import { clear } from './utils';
 import {
   App,
   ContentScript,
@@ -153,7 +154,7 @@ describe('Settings', function () {
         until.elementIsVisible(
           this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, 'networkTab@settings')]")
+              By.xpath("//form[contains(@class, 'networkTab@settings')]")
             ),
             this.wait
           )
@@ -187,7 +188,7 @@ describe('Settings', function () {
         expect(nodeUrl).not.to.be.empty;
       });
       it('Can be changed', async function () {
-        await nodeUrlInput.clear();
+        await clear(nodeUrlInput);
         expect(await nodeUrlInput.getText()).not.to.be.equal(nodeUrl);
       });
       it('Can be copied');
@@ -198,7 +199,7 @@ describe('Settings', function () {
         expect(matcherUrl).not.to.be.empty;
       });
       it('Can be changed', async function () {
-        await matcherUrlInput.clear();
+        await clear(matcherUrlInput);
         expect(await matcherUrlInput.getAttribute('value')).not.to.be.equal(
           matcherUrl
         );
