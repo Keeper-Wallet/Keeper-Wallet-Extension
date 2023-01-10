@@ -60,9 +60,9 @@ export interface StorageLocalState {
   cognitoSessions: string | undefined;
   currentLocale: string;
   currentNetwork: NetworkName;
-  customCodes: Record<NetworkName, string | null | undefined>;
-  customMatchers: Record<NetworkName, string | null | undefined>;
-  customNodes: Record<NetworkName, string | null | undefined>;
+  customCodes: Record<NetworkName, string | null>;
+  customMatchers: Record<NetworkName, string | null>;
+  customNodes: Record<NetworkName, string | null>;
   data: TrashItem[];
   identityConfig: typeof DEFAULT_IDENTITY_CONFIG;
   idleOptions: IdleOptions;

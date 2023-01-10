@@ -2,7 +2,7 @@ import { NetworkName } from 'networks/types';
 import { PureComponent } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, ErrorMessage, Input } from 'ui/components/ui';
-import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
+import { getMatcherPublicKey, getNetworkCode } from 'ui/utils/waves';
 
 import * as styles from './networkSettings.styl';
 
@@ -19,7 +19,7 @@ interface Props extends WithTranslation {
 }
 
 export interface INetworkData {
-  name: NetworkName | null | undefined;
+  name: NetworkName;
   code: string | null | undefined;
   node: string | null | undefined;
   matcher: string | null | undefined;
@@ -33,7 +33,7 @@ interface State extends Partial<Props> {
 }
 
 class NetworkSettingsComponent extends PureComponent<Props, State> {
-  state: State = {};
+  state: Readonly<State> = {};
 
   static getDerivedStateFromProps(
     props: Readonly<Props>,
@@ -174,19 +174,15 @@ class NetworkSettingsComponent extends PureComponent<Props, State> {
 
     const { node, name, matcher, networkCode: code } = this.state;
 
-    this.props.onSave({
-      name,
-      node,
-      matcher,
-      code,
-    });
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.props.onSave({ code, matcher, name: name!, node });
   }
 
   private validateNode() {
     const { node } = this.state;
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return getNetworkByte(node!)
+    return getNetworkCode(node!)
       .then(networkCode => this.setState({ nodeError: false, networkCode }))
       .catch(() => {
         this.setState({ nodeError: true });

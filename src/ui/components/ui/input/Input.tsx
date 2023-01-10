@@ -28,7 +28,7 @@ export type InputProps = {
   maxLength?: number;
   placeholder?: string;
   spellCheck?: boolean;
-  type?: string;
+  type?: React.HTMLInputTypeAttribute;
   value?: string | readonly string[] | number;
   view?: View;
   wrapperClassName?: string;

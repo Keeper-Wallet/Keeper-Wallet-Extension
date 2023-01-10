@@ -12,8 +12,8 @@ export function setNetwork(
 }
 
 export const setCustomNode = (payload: {
-  network: NetworkName | null | undefined;
-  node: string | null | undefined;
+  network: NetworkName;
+  node: string | null;
 }) => {
   return {
     type: ACTION.CHANGE_NODE,
@@ -22,8 +22,8 @@ export const setCustomNode = (payload: {
 };
 
 export const setCustomCode = (payload: {
-  network: NetworkName | null | undefined;
-  code: string | undefined;
+  network: NetworkName;
+  code: string | null;
 }) => {
   return {
     type: ACTION.CHANGE_NETWORK_CODE,
@@ -32,8 +32,8 @@ export const setCustomCode = (payload: {
 };
 
 export const setCustomMatcher = (payload: {
-  network: NetworkName | null | undefined;
-  matcher: string | null | undefined;
+  network: NetworkName;
+  matcher: string | null;
 }) => {
   return {
     type: ACTION.CHANGE_MATCHER,

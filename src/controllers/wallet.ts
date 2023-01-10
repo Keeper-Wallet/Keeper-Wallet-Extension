@@ -273,7 +273,7 @@ export class WalletController extends EventEmitter {
     this.emit('updateWallets');
   }
 
-  async updateNetworkCode(network: NetworkName, code: string | undefined) {
+  async updateNetworkCode(network: NetworkName, code: string | null) {
     let changed = false;
 
     await Promise.all(
