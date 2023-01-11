@@ -1,5 +1,5 @@
 import { seedUtils } from '@waves/waves-transactions';
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -78,8 +78,8 @@ function getFormattedAddresses(
 
 export function ImportAddressBook() {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const addresses = useAppSelector(state => state.addresses);
+  const dispatch = usePopupDispatch();
+  const addresses = usePopupSelector(state => state.addresses);
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

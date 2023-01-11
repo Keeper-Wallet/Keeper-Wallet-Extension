@@ -1,4 +1,3 @@
-import { init as initSentry } from '@sentry/react';
 import { verifyCustomData } from '@waves/waves-transactions';
 import { TSignedData } from '@waves/waves-transactions/dist/requests/custom-data';
 import { BalancesItem } from 'balances/types';
@@ -27,6 +26,7 @@ import { NetworkName } from 'networks/types';
 import { PERMISSIONS } from 'permissions/constants';
 import { PermissionObject } from 'permissions/types';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';
+import { initSentry } from 'sentry/init';
 import { UiState } from 'store/reducers/updateState';
 import { CreateWalletInput } from 'wallets/types';
 import Browser from 'webextension-polyfill';
@@ -70,43 +70,17 @@ log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 const bgPromise = setupBackgroundService();
 
 initSentry({
-  dsn: __SENTRY_DSN__,
-  environment: __SENTRY_ENVIRONMENT__,
-  release: __SENTRY_RELEASE__,
-  autoSessionTracking: false,
-  initialScope: {
-    tags: {
-      source: 'background',
-    },
-  },
-  beforeSend: async (event, hint) => {
-    const message =
-      hint &&
-      hint.originalException &&
-      typeof hint.originalException === 'object' &&
-      'message' in hint.originalException &&
-      typeof hint.originalException.message === 'string' &&
-      hint.originalException.message
-        ? hint.originalException.message
-        : String(hint?.originalException);
+  source: 'background',
+  shouldIgnoreError: async message => {
+    const bg = await bgPromise;
 
-    const backgroundService = await bgPromise;
-
-    const shouldIgnore =
-      backgroundService.remoteConfigController.shouldIgnoreError(
-        'beforeSend',
-        message
-      ) ||
-      backgroundService.remoteConfigController.shouldIgnoreError(
+    return (
+      bg.remoteConfigController.shouldIgnoreError('beforeSend', message) ||
+      bg.remoteConfigController.shouldIgnoreError(
         'beforeSendBackground',
         message
-      );
-
-    if (shouldIgnore) {
-      return null;
-    }
-
-    return event;
+      )
+    );
   },
 });
 
@@ -1132,35 +1106,35 @@ class BackgroundService extends EventEmitter {
     };
   }
 
-  setupUiConnection(port: Browser.Runtime.Port) {
+  setupUiConnection(sourcePort: Browser.Runtime.Port) {
+    let port: Browser.Runtime.Port | null = sourcePort;
     const api = this.getApi();
 
     pipe(
       fromPort<MethodCallRequestPayload<keyof typeof api>>(port),
-      handleMethodCallRequests(api, result => port.postMessage(result)),
-      subscribe({})
+      handleMethodCallRequests(api, result => port?.postMessage(result)),
+      subscribe({
+        complete: () => {
+          port = null;
+          this.off('ledger:signRequest', ui.ledgerSignRequest);
+          this.off('closePopupWindow', ui.closePopupWindow);
+        },
+      })
     );
 
     const ui = createIpcCallProxy<keyof UiApi, UiApi>(
-      request => port.postMessage(request),
+      request => port?.postMessage(request),
       fromPort(port)
     );
-
-    const handleDisconnect = () => {
-      port.onDisconnect.removeListener(handleDisconnect);
-      this.off('ledger:signRequest', ui.ledgerSignRequest);
-      this.off('closePopupWindow', ui.closePopupWindow);
-    };
 
     this.on('ledger:signRequest', ui.ledgerSignRequest);
     this.on('closePopupWindow', ui.closePopupWindow);
 
-    port.onDisconnect.addListener(handleDisconnect);
-
     this.statisticsController.sendOpenEvent();
   }
 
-  setupPageConnection(port: Browser.Runtime.Port) {
+  setupPageConnection(sourcePort: Browser.Runtime.Port) {
+    let port: Browser.Runtime.Port | null = sourcePort;
     const { sender } = port;
 
     if (!sender || !sender.url) {
@@ -1173,9 +1147,10 @@ class BackgroundService extends EventEmitter {
 
     pipe(
       fromPort<MethodCallRequestPayload<keyof typeof inpageApi>>(port),
-      handleMethodCallRequests(inpageApi, result => port.postMessage(result)),
+      handleMethodCallRequests(inpageApi, result => port?.postMessage(result)),
       subscribe({
         complete: () => {
+          port = null;
           this.messageController.removeMessagesFromConnection(connectionId);
 
           const messages = this.messageController.getUnapproved();

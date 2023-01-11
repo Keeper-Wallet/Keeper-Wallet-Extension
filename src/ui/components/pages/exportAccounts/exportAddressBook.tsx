@@ -1,4 +1,4 @@
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getNetworkByAddress } from 'ui/utils/waves';
@@ -9,7 +9,7 @@ import { ExportPasswordModal } from './passwordModal';
 
 export function ExportAddressBook() {
   const navigate = useNavigate();
-  const addresses = useAppSelector(state => state.addresses);
+  const addresses = usePopupSelector(state => state.addresses);
 
   const [addressesToExport, setAddressesToExport] = useState<Record<
     string,

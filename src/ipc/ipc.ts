@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 import { Source } from 'callbag';
 import create from 'callbag-create';
 import filter from 'callbag-filter';

@@ -1,4 +1,4 @@
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -14,8 +14,8 @@ export function ExportAndImport() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const addresses = useAppSelector(state => state.addresses);
-  const allNetworksAccounts = useAppSelector(
+  const addresses = usePopupSelector(state => state.addresses);
+  const allNetworksAccounts = usePopupSelector(
     state => state.allNetworksAccounts
   );
 

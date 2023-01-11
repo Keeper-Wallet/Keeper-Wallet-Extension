@@ -1,4 +1,4 @@
-import { useAppDispatch } from 'popup/store/react';
+import { usePopupDispatch } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { removeAddress } from 'store/actions/addresses';
 
@@ -14,7 +14,7 @@ interface Props {
 export function DeleteModal({ address, showModal, setShowModal }: Props) {
   const { t } = useTranslation();
 
-  const dispatch = useAppDispatch();
+  const dispatch = usePopupDispatch();
 
   return (
     <Modal animation={Modal.ANIMATION.FLASH} showModal={showModal}>

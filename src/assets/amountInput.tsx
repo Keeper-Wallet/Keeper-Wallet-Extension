@@ -1,6 +1,6 @@
 import BigNumber from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { IMaskInput } from 'react-imask';
 import { BalanceAssets } from 'store/reducers/updateState';
@@ -33,7 +33,7 @@ export function AssetAmountInput({
   onChange,
 }: Props) {
   const { t } = useTranslation();
-  const network = useAppSelector(state => state.currentNetwork);
+  const network = usePopupSelector(state => state.currentNetwork);
   const asset = balance.asset;
 
   const bigNumberValue = new BigNumber(value || '0');
@@ -68,20 +68,22 @@ export function AssetAmountInput({
           />
         </div>
 
-        <IMaskInput
-          className={styles.input}
-          data-testid="amountInput"
-          mapToRadix={['.', ',']}
-          mask={Number}
-          maxLength={23}
-          placeholder="0.0"
-          radix="."
-          scale={asset.precision}
-          thousandsSeparator={' '}
-          onAccept={(_, mask) => {
-            onChange(mask.unmaskedValue, mask.value);
-          }}
-        />
+        <div className={styles.inputWrapper}>
+          <IMaskInput
+            className={styles.input}
+            data-testid="amountInput"
+            mapToRadix={['.', ',']}
+            mask={Number}
+            maxLength={23}
+            placeholder="0.0"
+            radix="."
+            scale={asset.precision}
+            thousandsSeparator={' '}
+            onAccept={(_, mask) => {
+              onChange(mask.unmaskedValue, mask.value);
+            }}
+          />
+        </div>
 
         {showUsdAmount && (
           <UsdAmount

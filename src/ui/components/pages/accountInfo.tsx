@@ -1,5 +1,5 @@
 import { Asset, Money } from '@waves/data-entities';
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -24,13 +24,15 @@ export function AccountInfo() {
   const navigate = useNavigate();
   const params = useParams<{ address: string }>();
 
-  const dispatch = useAppDispatch();
-  const assets = useAppSelector(state => state.assets);
-  const balances = useAppSelector(state => state.balances);
-  const currentNetwork = useAppSelector(state => state.currentNetwork);
-  const notifications = useAppSelector(state => state.localState.notifications);
+  const dispatch = usePopupDispatch();
+  const assets = usePopupSelector(state => state.assets);
+  const balances = usePopupSelector(state => state.balances);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const notifications = usePopupSelector(
+    state => state.localState.notifications
+  );
 
-  const account = useAppSelector(state =>
+  const account = usePopupSelector(state =>
     state.accounts.find(x => x.address === params.address)
   );
 

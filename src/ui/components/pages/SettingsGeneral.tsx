@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,16 +9,16 @@ import * as styles from './styles/settings.styl';
 
 export function SettingsGeneral() {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const dispatch = usePopupDispatch();
   const { t } = useTranslation();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const idle = useAppSelector<Record<string, any>>(
+  const idle = usePopupSelector<Record<string, any>>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     state => (state.config as any)?.idle || {}
   );
 
-  const idleOptions = useAppSelector(state => state.idleOptions);
+  const idleOptions = usePopupSelector(state => state.idleOptions);
 
   const selectList = Object.entries(idle)
     .sort(([, a], [, b]) => a - b)

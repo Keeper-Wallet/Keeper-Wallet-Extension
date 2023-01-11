@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { NftList } from 'nfts/nftList';
 import { createNft } from 'nfts/nfts';
 import { DisplayMode, Nft } from 'nfts/types';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import * as styles from 'ui/components/pages/styles/assets.styl';
@@ -24,17 +24,17 @@ export function TabNfts() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const userAddress = useAppSelector(
+  const userAddress = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
     state => state.selectedAccount?.address!
   );
 
-  const networkCode = useAppSelector(
+  const networkCode = usePopupSelector(
     state => state.selectedAccount?.networkCode
   );
 
-  const myNfts = useAppSelector(state => state.balances[userAddress]?.nfts);
-  const nfts = useAppSelector(state => state.nfts);
+  const myNfts = usePopupSelector(state => state.balances[userAddress]?.nfts);
+  const nfts = usePopupSelector(state => state.nfts);
 
   const [filters, setFilters] = useUiState('nftFilters');
   const [term, setTerm] = [
@@ -42,7 +42,7 @@ export function TabNfts() {
     (value: string) => setFilters({ ...filters, term: value }),
   ];
 
-  const nftConfig = useAppSelector(state => state.nftConfig);
+  const nftConfig = usePopupSelector(state => state.nftConfig);
 
   const sortedNfts =
     myNfts && nfts

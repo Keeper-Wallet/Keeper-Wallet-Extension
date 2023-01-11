@@ -1,4 +1,4 @@
-import { addBreadcrumb } from '@sentry/react';
+import { addBreadcrumb } from '@sentry/browser';
 import EventEmitter from 'events';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
@@ -27,7 +27,7 @@ export class PreferencesController extends EventEmitter {
     this.store = new ObservableStore(
       extensionStorage.getInitState({
         currentLocale: initLangCode || 'en',
-        idleOptions: { type: 'idle', interval: 0 },
+        idleOptions: { type: '1h', interval: 60 * 60 * 1000 },
         accounts: [],
         selectedAccount: undefined,
       })

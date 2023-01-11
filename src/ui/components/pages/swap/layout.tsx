@@ -1,4 +1,4 @@
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 
 import { SwapAccountInfoHeader } from './accountInfoHeader';
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function SwapLayout({ children }: Props) {
-  const selectedAccount = useAppSelector(state => state.selectedAccount);
+  const selectedAccount = usePopupSelector(state => state.selectedAccount);
   const { t } = useTranslation();
 
   return (

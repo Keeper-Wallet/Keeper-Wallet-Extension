@@ -1,8 +1,6 @@
 export const WHITELIST = [
-  'oracles.wavesexplorer.com',
   'swop.fi',
   'testnet.waves.exchange',
-  'tokenrating.wavesexplorer.com',
   'vires.finance',
   'waves-dapp.com',
   'waves-ide.com',

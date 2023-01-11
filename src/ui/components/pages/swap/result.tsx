@@ -1,8 +1,8 @@
-import { captureException, withScope } from '@sentry/react';
+import { captureException, withScope } from '@sentry/browser';
 import { Asset, Money } from '@waves/data-entities';
 import clsx from 'clsx';
 import { NetworkName } from 'networks/types';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Balance } from 'ui/components/ui/balance/Balance';
@@ -44,11 +44,11 @@ const explorerBaseUrlsByNetwork = {
 
 export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
   const { t } = useTranslation();
-  const assets = useAppSelector(state => state.assets);
-  const currentNetwork = useAppSelector(state => state.currentNetwork);
-  const selectedAccount = useAppSelector(state => state.selectedAccount);
+  const assets = usePopupSelector(state => state.assets);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const selectedAccount = usePopupSelector(state => state.selectedAccount);
 
-  const server = useAppSelector(
+  const server = usePopupSelector(
     state =>
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       state.networks.find(net => net.name === state.currentNetwork)!.server

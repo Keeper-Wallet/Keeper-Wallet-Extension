@@ -1,5 +1,13 @@
 # Keeper Wallet
 
+[![""](https://badgen.net/chrome-web-store/v/lpilbniiabackdjcionkobglmddfbcjo)](https://chrome.google.com/webstore/detail/keeper-wallet/lpilbniiabackdjcionkobglmddfbcjo)
+[![""](https://badgen.net/chrome-web-store/users/lpilbniiabackdjcionkobglmddfbcjo)](https://chrome.google.com/webstore/detail/keeper-wallet/lpilbniiabackdjcionkobglmddfbcjo)
+[![""](https://badgen.net/chrome-web-store/rating/lpilbniiabackdjcionkobglmddfbcjo)](https://chrome.google.com/webstore/detail/keeper-wallet/lpilbniiabackdjcionkobglmddfbcjo)
+
+[![""](https://badgen.net/amo/v/waves-keeper)](https://addons.mozilla.org/ru/firefox/addon/waves-keeper/)
+[![""](https://badgen.net/amo/users/waves-keeper)](https://addons.mozilla.org/ru/firefox/addon/waves-keeper/)
+[![""](https://badgen.net/amo/rating/waves-keeper)](https://addons.mozilla.org/ru/firefox/addon/waves-keeper/reviews/)
+
 [en](./README.md) | ru
 
 Keeper Wallet — это расширение для браузера, которое обеспечивает безопасное взаимодействие с веб-сервисами на блокчейне Waves.

@@ -1,4 +1,4 @@
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 
 import { LoadingScreen } from './pages/loadingScreen';
 
@@ -7,7 +7,7 @@ interface Props {
 }
 
 export function RootWrapper({ children }: Props) {
-  const isLoading = useAppSelector(state => state.localState.loading);
+  const isLoading = usePopupSelector(state => state.localState.loading);
 
   return isLoading ? <LoadingScreen /> : children;
 }

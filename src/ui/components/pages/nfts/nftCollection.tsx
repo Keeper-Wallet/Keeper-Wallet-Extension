@@ -2,8 +2,7 @@ import { AssetDetail } from 'assets/types';
 import { NftList } from 'nfts/nftList';
 import { createNft } from 'nfts/nfts';
 import { DisplayMode, Nft } from 'nfts/types';
-import { useAppSelector } from 'popup/store/react';
-import { useRef } from 'react';
+import { usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -28,17 +27,17 @@ export function NftCollection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const userAddress = useAppSelector(
+  const userAddress = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
     state => state.selectedAccount?.address!
   );
 
-  const networkCode = useAppSelector(
+  const networkCode = usePopupSelector(
     state => state.selectedAccount?.networkCode
   );
 
-  const myNfts = useAppSelector(state => state.balances[userAddress]?.nfts);
-  const nfts = useAppSelector(state => state.nfts);
+  const myNfts = usePopupSelector(state => state.balances[userAddress]?.nfts);
+  const nfts = usePopupSelector(state => state.nfts);
 
   const [filters, setFilters] = useUiState('nftFilters');
   const [term, setTerm] = [
@@ -48,7 +47,7 @@ export function NftCollection() {
 
   const params = useParams<{ creator: string }>();
 
-  const nftConfig = useAppSelector(state => state.nftConfig);
+  const nftConfig = usePopupSelector(state => state.nftConfig);
 
   const getNftDetails = (asset: AssetDetail) =>
     createNft({
@@ -65,22 +64,16 @@ export function NftCollection() {
       })
     : PLACEHOLDERS;
 
-  const creatorRef = useRef(creatorNfts[0]);
-
-  const creatorUrl =
-    creatorRef.current.creatorUrl ||
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    getAccountLink(networkCode!, creatorRef.current.creator);
+  const creatorNft = creatorNfts.at(0);
 
   return (
     <div className={styles.root}>
       <div className={styles.header}>
         <div className={styles.title}>
-          {creatorRef.current?.creator ===
-          creatorRef.current?.displayCreator ? (
-            <Ellipsis text={creatorRef.current?.creator} size={12} />
+          {creatorNft?.creator === creatorNft?.displayCreator ? (
+            <Ellipsis text={creatorNft?.creator} size={12} />
           ) : (
-            creatorRef.current?.displayCreator
+            creatorNft?.displayCreator
           )}
         </div>
         <div>
@@ -91,7 +84,11 @@ export function NftCollection() {
                 rel="noopener noreferrer"
                 className="link"
                 target="_blank"
-                href={creatorUrl}
+                href={
+                  creatorNft?.creatorUrl ??
+                  (networkCode &&
+                    getAccountLink(networkCode, creatorNft?.creator))
+                }
                 {...props}
               >
                 <svg width="16" height="16" viewBox="0 0 16 16">

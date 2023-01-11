@@ -1,7 +1,7 @@
 import BigNumber from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
 import clsx from 'clsx';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { PreferencesAccount } from 'preferences/types';
 import { useTranslation } from 'react-i18next';
 
@@ -41,7 +41,7 @@ export function ActiveAccountCard({
   onSwapClick,
 }: Props) {
   const { t } = useTranslation();
-  const currentNetwork = useAppSelector(state => state.currentNetwork);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const isMainnet = currentNetwork === 'mainnet';
 
   return (

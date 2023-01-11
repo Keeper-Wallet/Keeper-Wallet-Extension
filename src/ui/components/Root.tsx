@@ -1,5 +1,5 @@
 import { useSentryNavigationBreadcrumbs } from '_core/useSentryNavigationBreadcrumbs';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useEffect, useRef } from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
@@ -10,23 +10,23 @@ export function Root() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const initialized = useAppSelector(state => state.state?.initialized);
-  const locked = useAppSelector(state => state.state?.locked);
-  const haveAccounts = useAppSelector(state => state.accounts.length !== 0);
+  const initialized = usePopupSelector(state => state.state?.initialized);
+  const locked = usePopupSelector(state => state.state?.locked);
+  const haveAccounts = usePopupSelector(state => state.accounts.length !== 0);
 
-  const haveActiveMessage = useAppSelector(
+  const haveActiveMessage = usePopupSelector(
     state => state.activePopup?.msg != null
   );
 
-  const haveActiveNotification = useAppSelector(
+  const haveActiveNotification = usePopupSelector(
     state => state.activePopup?.notify != null
   );
 
-  const haveMessagesOrNotifications = useAppSelector(
+  const haveMessagesOrNotifications = usePopupSelector(
     state => state.messages.length !== 0 || state.notifications.length !== 0
   );
 
-  const currentNetwork = useAppSelector(state => state.currentNetwork);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const prevNetworkRef = useRef(currentNetwork);
   useEffect(() => {
     if (currentNetwork === prevNetworkRef.current) {

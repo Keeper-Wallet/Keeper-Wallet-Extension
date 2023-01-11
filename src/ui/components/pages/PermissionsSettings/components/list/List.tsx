@@ -81,9 +81,7 @@ const getFilteredOrigins = (
         return permissions.includes(attr);
       }
 
-      return (
-        !permissions.includes('whiteList') && !permissions.includes('blackList')
-      );
+      return !permissions.includes('whiteList');
     })
     .reduce((acc, name) => {
       acc[name] = origins[name] || [];

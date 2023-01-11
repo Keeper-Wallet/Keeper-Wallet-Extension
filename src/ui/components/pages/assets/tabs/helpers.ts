@@ -6,8 +6,8 @@ import { useState } from 'react';
 import { TFunction } from 'react-i18next';
 
 import {
-  useAppDispatch,
-  useAppSelector,
+  usePopupDispatch,
+  usePopupSelector,
 } from '../../../../../popup/store/react';
 import { setUiState } from '../../../../../store/actions/uiState';
 import { UiState } from '../../../../../store/reducers/updateState';
@@ -15,8 +15,8 @@ import { UiState } from '../../../../../store/reducers/updateState';
 export function useUiState<T extends keyof UiState>(
   key: T
 ): [UiState[T] | null, (newState: UiState[T] | null) => void] {
-  const dispatch = useAppDispatch();
-  const initialValue = useAppSelector(state => state.uiState[key]);
+  const dispatch = usePopupDispatch();
+  const initialValue = usePopupSelector(state => state.uiState[key]);
   const [state, setState] = useState<UiState[T] | null>(initialValue);
   return [
     state,

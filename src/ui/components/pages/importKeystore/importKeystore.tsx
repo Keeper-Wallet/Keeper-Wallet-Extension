@@ -1,6 +1,6 @@
 import { seedUtils } from '@waves/waves-transactions';
 import { KeystoreProfiles } from 'keystore/types';
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -117,8 +117,8 @@ const suffixRe = /\((\d+)\)$/;
 
 export function ImportKeystore() {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const allNetworksAccounts = useAppSelector(
+  const dispatch = usePopupDispatch();
+  const allNetworksAccounts = usePopupSelector(
     state => state.allNetworksAccounts
   );
   const { t } = useTranslation();

@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 import { AssetDetail } from 'assets/types';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
@@ -34,7 +34,7 @@ const MARKETDATA_USD_ASSET_ID = 'DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p';
 const MARKETDATA_PERIOD_IN_MINUTES = 10;
 
 const STATIC_SERVICE_URL = 'https://api.keeper-wallet.app';
-const INFO_PERIOD_IN_MINUTES = 240;
+const INFO_PERIOD_IN_MINUTES = 60;
 
 const stablecoinAssetIds = new Set([
   '2thtesXvnVMcCnih9iZbJL3d2NQZMfzENJo8YFj6r5jU',
@@ -250,12 +250,7 @@ export class AssetInfoController {
       this.updateUsdPrices();
     }
 
-    if (
-      Object.keys(initState.assetLogos).length === 0 ||
-      Object.keys(initState.assetTickers).length === 0
-    ) {
-      this.updateInfo();
-    }
+    this.updateInfo();
 
     Browser.alarms.create('updateSuspiciousAssets', {
       periodInMinutes: SUSPICIOUS_PERIOD_IN_MINUTES,
@@ -423,8 +418,8 @@ export class AssetInfoController {
     this.store.updateState({ assets });
   }
 
-  async #fetchAssetsBatch(assetIds: string[]) {
-    const response = await fetch(new URL('assets/details', this.getNode()), {
+  async #fetchAssetsBatch(nodeUrl: string, assetIds: string[]) {
+    const response = await fetch(new URL('assets/details', nodeUrl), {
       method: 'POST',
       headers: {
         Accept: 'application/json;large-significand-format=string',
@@ -462,6 +457,7 @@ export class AssetInfoController {
     for (let start = 0; start < assetIds.length; ) {
       try {
         const assetsBatch = await this.#fetchAssetsBatch(
+          this.getNode(),
           assetIds.slice(start, start + maxAssetsPerRequest)
         );
 
@@ -551,21 +547,21 @@ export class AssetInfoController {
     const network = this.getNetwork();
 
     if (network === NetworkName.Mainnet) {
-      const resp = await fetch(new URL('/assets', STATIC_SERVICE_URL));
+      const resp = await fetch(new URL('/api/v1/assets', STATIC_SERVICE_URL));
 
       if (resp.ok) {
         const assets = (await resp.json()) as Array<{
           id: string;
           ticker: string;
-          uri: string;
+          url: string;
         }>;
 
         this.store.updateState(
           assets.reduce(
-            (acc, { id, ticker, uri }) => ({
+            (acc, { id, ticker, url }) => ({
               assetLogos: {
                 ...acc.assetLogos,
-                [id]: `${STATIC_SERVICE_URL}${uri}`,
+                [id]: url,
               },
               assetTickers: { ...acc.assetTickers, [id]: ticker },
             }),

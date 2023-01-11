@@ -1,5 +1,5 @@
 import { MessageStoreItem } from 'messages/types';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 
 import * as styles from '../../pages/styles/transactions.styl';
@@ -30,7 +30,7 @@ interface Props {
 export function TxInfo({ message: messageProp }: Props) {
   const { t } = useTranslation();
 
-  const messageFromState = useAppSelector(
+  const messageFromState = usePopupSelector(
     state => state.activePopup?.msg
   ) as Extract<MessageStoreItem, { type: 'transaction' }>;
 

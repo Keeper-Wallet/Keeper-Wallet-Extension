@@ -2,7 +2,7 @@ import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { AssetsRecord } from 'assets/types';
 import clsx from 'clsx';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList as List } from 'react-window';
@@ -66,13 +66,13 @@ interface Props {
 
 export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
   const { t } = useTranslation();
-  const assets = useAppSelector(state => state.assets);
-  const showSuspiciousAssets = useAppSelector(
+  const assets = usePopupSelector(state => state.assets);
+  const showSuspiciousAssets = usePopupSelector(
     state => state.uiState?.showSuspiciousAssets
   );
-  const address = useAppSelector(state => state.selectedAccount?.address);
+  const address = usePopupSelector(state => state.selectedAccount?.address);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const myAssets = useAppSelector(state => state.balances[address!]?.assets);
+  const myAssets = usePopupSelector(state => state.balances[address!]?.assets);
 
   const [filters, setFilters] = useUiState('assetFilters');
   const [term, setTerm] = [

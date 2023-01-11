@@ -703,7 +703,7 @@ export class MessageController extends EventEmitter {
             const id = getHash.transaction(
               makeBytes.transaction(
                 convertFromSa.transaction(
-                  await this._transformData(structuredClone(readyData)),
+                  await this._transformData(readyData),
                   this.networkController.getNetworkCode().charCodeAt(0),
                   message.account.type
                 )
@@ -768,7 +768,7 @@ export class MessageController extends EventEmitter {
         };
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const filledMessageData: any = structuredClone(result.data);
+        const filledMessageData: any = result.data;
 
         const convertedData = convertFromSa.order(
           {
@@ -834,7 +834,7 @@ export class MessageController extends EventEmitter {
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const filledMessageData: any = structuredClone(result.data);
+        const filledMessageData: any = result.data;
 
         const convertedData = convertFromSa.transaction(
           {

@@ -2,7 +2,7 @@ import './global.css';
 import './ui/styles/app.styl';
 import './ui/styles/icons.styl';
 
-import { setTag, setUser } from '@sentry/react';
+import { setTag, setUser } from '@sentry/browser';
 import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
 import i18next from 'i18next';
@@ -25,7 +25,7 @@ import { LedgerSignRequest } from './ledger/types';
 import { createPopupStore } from './popup/store/create';
 import { createUpdateState } from './popup/updateState';
 import { PopupRoot } from './popupRoot';
-import { initUiSentry } from './sentry';
+import { initSentry } from './sentry/init';
 import { setLoading } from './store/actions/localState';
 import { RootWrapper } from './ui/components/RootWrapper';
 import Background, {
@@ -33,9 +33,16 @@ import Background, {
   BackgroundUiApi,
 } from './ui/services/Background';
 
-initUiSentry({
-  ignoreErrorContext: 'beforeSendPopup',
+initSentry({
   source: 'popup',
+  shouldIgnoreError: async message => {
+    const [shouldIgnoreGlobal, shouldIgnoreContext] = await Promise.all([
+      Background.shouldIgnoreError('beforeSend', message),
+      Background.shouldIgnoreError('beforeSendPopup', message),
+    ]);
+
+    return shouldIgnoreGlobal || shouldIgnoreContext;
+  },
 });
 
 const store = createPopupStore();
@@ -96,14 +103,15 @@ Promise.all([
       },
     };
 
-    const port = Browser.runtime.connect();
+    let port: Browser.Runtime.Port | null = Browser.runtime.connect();
 
     pipe(
       fromPort<MethodCallRequestPayload<keyof UiApi>>(port),
-      handleMethodCallRequests(uiApi, result => port.postMessage(result)),
+      handleMethodCallRequests(uiApi, result => port?.postMessage(result)),
       subscribe({
         complete: () => {
           Background.setConnect(() => {
+            port = null;
             Background.init(connect());
           });
         },
@@ -111,7 +119,7 @@ Promise.all([
     );
 
     return createIpcCallProxy<keyof BackgroundUiApi, BackgroundUiApi>(
-      request => port.postMessage(request),
+      request => port?.postMessage(request),
       fromPort(port)
     );
   }

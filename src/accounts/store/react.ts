@@ -5,4 +5,5 @@ import type { AccountsState, AccountsStore } from './types';
 export const useAccountsSelector: TypedUseSelectorHook<AccountsState> =
   useSelector;
 
-export const useAppDispatch = () => useDispatch<AccountsStore['dispatch']>();
+export const useAccountsDispatch = () =>
+  useDispatch<AccountsStore['dispatch']>();

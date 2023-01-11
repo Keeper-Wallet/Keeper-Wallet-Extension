@@ -1,4 +1,4 @@
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,14 +10,14 @@ import * as styles from './styles/settings.styl';
 
 export function Settings() {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const dispatch = usePopupDispatch();
   const { t } = useTranslation();
 
-  const autoClickProtection = useAppSelector(
+  const autoClickProtection = usePopupSelector(
     state => state.uiState.autoClickProtection
   );
 
-  const showSuspiciousAssets = useAppSelector(
+  const showSuspiciousAssets = usePopupSelector(
     state => state.uiState.showSuspiciousAssets
   );
 

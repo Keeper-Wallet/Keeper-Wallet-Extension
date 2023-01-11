@@ -7,9 +7,8 @@ const platforms = require('./platforms.json');
 const DIST_FOLDER = path.resolve(__dirname, '..', 'dist');
 
 module.exports = class PlatformPlugin {
-  constructor({ clear, performance }) {
+  constructor({ clear }) {
     this.clear = clear;
-    this.performance = performance;
   }
 
   apply(compiler) {
@@ -61,15 +60,5 @@ module.exports = class PlatformPlugin {
           })
         )
     );
-
-    if (this.performance) {
-      compiler.hooks.done.tap('PerformanceSize', ({ compilation }) => {
-        Object.entries(compilation.assets).forEach(([name, source]) => {
-          if (name.endsWith('.js') && source.size() > 4000000) {
-            throw new Error(`${name} is larger than 4 MB`);
-          }
-        });
-      });
-    }
   }
 };

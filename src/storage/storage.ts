@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 import { AssetsRecord } from 'assets/types';
 import create from 'callbag-create';
 import pipe from 'callbag-pipe';
@@ -17,7 +17,7 @@ import Browser from 'webextension-polyfill';
 import {
   AssetsConfig,
   DEFAULT_IDENTITY_CONFIG,
-  DEFAULT_LEGACY_CONFIG,
+  DEFAULT_MAIN_CONFIG,
   FeeConfig,
   IgnoreErrorsConfig,
   NftConfig,
@@ -53,13 +53,12 @@ export interface StorageLocalState {
   assetsConfig: AssetsConfig;
   assetTickers: Record<string, string>;
   backup: string;
-  blacklist: string[];
   config: {
-    networks: typeof DEFAULT_LEGACY_CONFIG.NETWORKS;
-    network_config: typeof DEFAULT_LEGACY_CONFIG.NETWORK_CONFIG;
-    messages_config: typeof DEFAULT_LEGACY_CONFIG.MESSAGES_CONFIG;
-    pack_config: typeof DEFAULT_LEGACY_CONFIG.PACK_CONFIG;
-    idle: typeof DEFAULT_LEGACY_CONFIG.IDLE;
+    networks: typeof DEFAULT_MAIN_CONFIG.networks;
+    network_config: typeof DEFAULT_MAIN_CONFIG.network_config;
+    messages_config: typeof DEFAULT_MAIN_CONFIG.messages_config;
+    pack_config: typeof DEFAULT_MAIN_CONFIG.pack_config;
+    idle: typeof DEFAULT_MAIN_CONFIG.idle;
   };
   cognitoSessions: string | undefined;
   currentLocale: string;

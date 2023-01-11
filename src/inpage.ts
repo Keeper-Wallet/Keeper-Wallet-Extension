@@ -55,7 +55,7 @@ globalThis.KeeperWallet = {
   },
   on: (event, cb) => {
     let lastPublicState:
-      | Awaited<ReturnType<typeof KeeperWallet['publicState']>>
+      | Awaited<ReturnType<(typeof KeeperWallet)['publicState']>>
       | undefined;
 
     pipe(

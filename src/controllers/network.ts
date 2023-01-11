@@ -1,4 +1,4 @@
-import { addBreadcrumb, setTag } from '@sentry/react';
+import { addBreadcrumb, setTag } from '@sentry/browser';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 

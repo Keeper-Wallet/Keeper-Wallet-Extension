@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { SUPPORTED_LANGUAGES } from 'i18n/constants';
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -42,8 +42,8 @@ const Lang = ({ id, name, setSelected, selected }: LangProps) => {
 export const LangsSettings = () => {
   const { t } = useTranslation();
 
-  const dispatch = useAppDispatch();
-  const currentLocale = useAppSelector(state => state.currentLocale);
+  const dispatch = usePopupDispatch();
+  const currentLocale = usePopupSelector(state => state.currentLocale);
 
   const [selected, setSelected] = useState(currentLocale);
 

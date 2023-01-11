@@ -2,7 +2,7 @@ import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { validators } from '@waves/waves-transactions';
 import { createNft } from 'nfts/nfts';
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -21,20 +21,20 @@ export function Send() {
   const navigate = useNavigate();
 
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-  const chainId = useAppSelector(state =>
+  const dispatch = usePopupDispatch();
+  const chainId = usePopupSelector(state =>
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     state.selectedAccount?.networkCode!.charCodeAt(0)
   );
-  const accountBalance = useAppSelector(
+  const accountBalance = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
     state => state.balances[state.selectedAccount?.address!]
   );
   const assetBalances = accountBalance?.assets;
-  const assets = useAppSelector(state => state.assets);
+  const assets = usePopupSelector(state => state.assets);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const asset = useAppSelector(state => state.assets[params.assetId!]);
+  const asset = usePopupSelector(state => state.assets[params.assetId!]);
 
   const isNft =
     asset &&
@@ -42,13 +42,13 @@ export function Send() {
     new BigNumber(asset.quantity).eq(1) &&
     !asset.reissuable;
 
-  const userAddress = useAppSelector(
+  const userAddress = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
     state => state.selectedAccount?.address!
   );
 
-  const nftInfo = useAppSelector(state => asset && state.nfts?.[asset.id]);
-  const nftConfig = useAppSelector(state => state.nftConfig);
+  const nftInfo = usePopupSelector(state => asset && state.nfts?.[asset.id]);
+  const nftConfig = usePopupSelector(state => state.nftConfig);
 
   const displayName = useMemo(() => {
     if (!asset) {

@@ -1,5 +1,13 @@
 # Keeper Wallet
 
+[![""](https://badgen.net/chrome-web-store/v/lpilbniiabackdjcionkobglmddfbcjo)](https://chrome.google.com/webstore/detail/keeper-wallet/lpilbniiabackdjcionkobglmddfbcjo)
+[![""](https://badgen.net/chrome-web-store/users/lpilbniiabackdjcionkobglmddfbcjo)](https://chrome.google.com/webstore/detail/keeper-wallet/lpilbniiabackdjcionkobglmddfbcjo)
+[![""](https://badgen.net/chrome-web-store/rating/lpilbniiabackdjcionkobglmddfbcjo)](https://chrome.google.com/webstore/detail/keeper-wallet/lpilbniiabackdjcionkobglmddfbcjo)
+
+[![""](https://badgen.net/amo/v/waves-keeper)](https://addons.mozilla.org/ru/firefox/addon/waves-keeper/)
+[![""](https://badgen.net/amo/users/waves-keeper)](https://addons.mozilla.org/ru/firefox/addon/waves-keeper/)
+[![""](https://badgen.net/amo/rating/waves-keeper)](https://addons.mozilla.org/ru/firefox/addon/waves-keeper/reviews/)
+
 en | [ru](./README_ru.md)
 
 Keeper Wallet is a browser extension that enables secure interaction with Waves-enabled web services.

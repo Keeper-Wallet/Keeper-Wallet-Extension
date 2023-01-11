@@ -1,7 +1,7 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { AssetDetail } from 'assets/types';
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -20,17 +20,19 @@ import * as styles from './styles/assets.styl';
 export function PopupHome() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
+  const dispatch = usePopupDispatch();
 
-  const activeAccount = useAppSelector(state =>
+  const activeAccount = usePopupSelector(state =>
     state.accounts.find(
       ({ address }) => address === state.selectedAccount?.address
     )
   );
-  const assets = useAppSelector(state => state.assets);
-  const usdPrices = useAppSelector(state => state.usdPrices);
-  const balances = useAppSelector(state => state.balances);
-  const notifications = useAppSelector(state => state.localState.notifications);
+  const assets = usePopupSelector(state => state.assets);
+  const usdPrices = usePopupSelector(state => state.usdPrices);
+  const balances = usePopupSelector(state => state.balances);
+  const notifications = usePopupSelector(
+    state => state.localState.notifications
+  );
 
   const [activeTab, setActiveTab] = useUiState('assetsTab');
 

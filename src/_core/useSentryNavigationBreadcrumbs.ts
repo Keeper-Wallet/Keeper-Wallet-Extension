@@ -1,4 +1,4 @@
-import { addBreadcrumb } from '@sentry/react';
+import { addBreadcrumb } from '@sentry/browser';
 import { useEffect, useRef } from 'react';
 import { Location } from 'react-router-dom';
 

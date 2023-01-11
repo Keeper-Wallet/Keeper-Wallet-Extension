@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
@@ -6,7 +6,7 @@ import { swappableAssetIds } from 'assets/constants';
 import { AssetDetail } from 'assets/types';
 import { useAssetIdByTicker } from 'assets/utils';
 import { convertFeeToAsset } from 'fee/utils';
-import { useAppDispatch, useAppSelector } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -24,10 +24,10 @@ export function Swap() {
 
   const { t } = useTranslation();
 
-  const dispatch = useAppDispatch();
-  const selectedAccount = useAppSelector(state => state.selectedAccount);
-  const currentNetwork = useAppSelector(state => state.currentNetwork);
-  const feeConfig = useAppSelector(state => state.feeConfig);
+  const dispatch = usePopupDispatch();
+  const selectedAccount = usePopupSelector(state => state.selectedAccount);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const feeConfig = usePopupSelector(state => state.feeConfig);
 
   const usdnAssetId = useAssetIdByTicker(currentNetwork, 'USDN');
 
@@ -69,7 +69,7 @@ export function Swap() {
     };
   }, [currentNetwork, minimumFee, selectedAccount?.address]);
 
-  const assets = useAppSelector(state => state.assets);
+  const assets = usePopupSelector(state => state.assets);
 
   const swappableAssetEntries = useMemo(
     () =>
@@ -95,7 +95,7 @@ export function Swap() {
     }
   }, [swappableAssetEntries, dispatch]);
 
-  const accountBalance = useAppSelector(
+  const accountBalance = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
     state => state.balances[state.selectedAccount?.address!]
   );

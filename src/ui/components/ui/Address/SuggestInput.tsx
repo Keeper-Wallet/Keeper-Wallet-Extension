@@ -3,7 +3,7 @@ import { libs, validators } from '@waves/waves-transactions';
 import { WavesDomainsClient } from '@waves-domains/client';
 import clsx from 'clsx';
 import { NetworkName } from 'networks/types';
-import { useAppSelector } from 'popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { PreferencesAccount } from 'preferences/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -217,13 +217,13 @@ export type Props = Extract<InputProps, { multiLine?: false }> & {
 export function AddressSuggestInput({ onSuggest, ...props }: Props) {
   const { t } = useTranslation();
 
-  const currentNetwork = useAppSelector(state => state.currentNetwork);
-  const chainId = useAppSelector(state =>
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const chainId = usePopupSelector(state =>
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     state.selectedAccount?.networkCode!.charCodeAt(0)
   );
-  const accounts = useAppSelector(state => state.accounts);
-  const addresses = useAppSelector<Record<string, string>>(state =>
+  const accounts = usePopupSelector(state => state.accounts);
+  const addresses = usePopupSelector<Record<string, string>>(state =>
     Object.entries(state.addresses).reduce((acc, [address, name]) => {
       if (!validators.isValidAddress(address, chainId)) {
         return acc;

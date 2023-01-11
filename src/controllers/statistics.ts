@@ -1,4 +1,4 @@
-import { captureException, setUser, withScope } from '@sentry/react';
+import { captureException, setUser, withScope } from '@sentry/browser';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { libs } from '@waves/waves-transactions';
 import { MessageStoreItem } from 'messages/types';

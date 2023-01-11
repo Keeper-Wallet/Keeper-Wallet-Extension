@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import ColorHash from 'color-hash';
 
 import { useAssetLogo } from '../../../../assets/utils';
-import { useAppSelector } from '../../../../popup/store/react';
+import { usePopupSelector } from '../../../../popup/store/react';
 import * as styles from './assetLogo.module.css';
 
 interface Props {
@@ -24,7 +24,7 @@ export function AssetLogo({
     backgroundColor: new ColorHash().hex(assetId),
   };
 
-  const network = useAppSelector(state => state.currentNetwork);
+  const network = usePopupSelector(state => state.currentNetwork);
   const logoSrc = useAssetLogo(network, assetId);
 
   if (!logoSrc) {
