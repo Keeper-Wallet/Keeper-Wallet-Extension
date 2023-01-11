@@ -28,7 +28,7 @@ describe('Password management', () => {
 
   describe('Create password', function () {
     before(async function () {
-      tabKeeper = await this.driver.getWindowHandle();
+      tabKeeper = await browser.getWindowHandle();
 
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await browser.openKeeperPopup();

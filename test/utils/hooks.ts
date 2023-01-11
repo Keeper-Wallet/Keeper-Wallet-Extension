@@ -5,8 +5,6 @@ import {
   WebdriverIOQueriesChainable,
 } from '@testing-library/webdriverio';
 import * as mocha from 'mocha';
-import { Session, WebDriver } from 'selenium-webdriver';
-import { Executor, HttpClient } from 'selenium-webdriver/http';
 import {
   DockerComposeEnvironment,
   StartedDockerComposeEnvironment,
@@ -40,7 +38,6 @@ declare module 'webdriverio' {
 
 declare module 'mocha' {
   interface Context {
-    driver: WebDriver;
     nodeUrl: string;
     wait: number;
   }
@@ -90,11 +87,6 @@ export const mochaHooks = () => ({
 
     global.$ = browser.$.bind(browser);
     global.$$ = browser.$$.bind(browser);
-
-    this.driver = new WebDriver(
-      new Session(browser.sessionId, {}),
-      new Executor(new HttpClient('http://localhost:4444/wd/hub'))
-    );
 
     // detect Keeper Wallet extension URL
     await browser.navigateTo('chrome://system');

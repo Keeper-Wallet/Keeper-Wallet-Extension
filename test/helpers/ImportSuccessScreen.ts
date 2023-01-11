@@ -1,13 +1,13 @@
 export const ImportSuccessScreen = {
   get root() {
-    return browser.findByTestId$("importSuccessForm");
+    return browser.findByTestId$('importSuccessForm');
   },
 
   get addAnotherAccountButton() {
-    return this.root.findByText$("Add another account");
+    return this.root.findByText$('Add another account');
   },
 
   get finishButton() {
-    return this.root.findByText$("Finish");
-  }
+    return this.root.findByText$('Finish');
+  },
 };

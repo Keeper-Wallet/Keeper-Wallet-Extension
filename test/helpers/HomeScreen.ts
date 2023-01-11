@@ -4,7 +4,7 @@ const AssetCard = (wrapped: WebdriverIO.Element) => ({
   },
 
   get sendButton() {
-    return wrapped.findByTestId$("sendBtn");
+    return wrapped.findByTestId$('sendBtn');
   },
 });
 

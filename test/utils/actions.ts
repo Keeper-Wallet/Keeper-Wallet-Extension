@@ -1,17 +1,21 @@
-import { expect } from "expect-webdriverio";
+import { expect } from 'expect-webdriverio';
 
-import { ConfirmDeleteAccountsScreen } from "../helpers/ConfirmDeleteAccountsScreen";
-import { GetStartedScreen } from "../helpers/GetStartedScreen";
-import { HomeScreen } from "../helpers/HomeScreen";
-import { ImportFormScreen } from "../helpers/ImportFormScreen";
-import { ImportSuccessScreen } from "../helpers/ImportSuccessScreen";
-import { ImportUsingSeedScreen } from "../helpers/ImportUsingSeedScreen";
-import { NewAccountScreen } from "../helpers/NewAccountScreen";
-import { NewWalletNameScreen } from "../helpers/NewWalletNameScreen";
-import { OtherAccountsScreen } from "../helpers/OtherAccountsScreen";
-import { GeneralSettingsScreen, PermissionControlSettingsScreen, SettingsScreen } from "../helpers/SettingsScreen";
-import { NetworksMenu, TopMenu } from "../helpers/TopMenu";
-import { DEFAULT_PASSWORD } from "./constants";
+import { ConfirmDeleteAccountsScreen } from '../helpers/ConfirmDeleteAccountsScreen';
+import { GetStartedScreen } from '../helpers/GetStartedScreen';
+import { HomeScreen } from '../helpers/HomeScreen';
+import { ImportFormScreen } from '../helpers/ImportFormScreen';
+import { ImportSuccessScreen } from '../helpers/ImportSuccessScreen';
+import { ImportUsingSeedScreen } from '../helpers/ImportUsingSeedScreen';
+import { NewAccountScreen } from '../helpers/NewAccountScreen';
+import { NewWalletNameScreen } from '../helpers/NewWalletNameScreen';
+import { OtherAccountsScreen } from '../helpers/OtherAccountsScreen';
+import {
+  GeneralSettingsScreen,
+  PermissionControlSettingsScreen,
+  SettingsScreen,
+} from '../helpers/SettingsScreen';
+import { NetworksMenu, TopMenu } from '../helpers/TopMenu';
+import { DEFAULT_PASSWORD } from './constants';
 
 export const App = {
   initVault: async (password = DEFAULT_PASSWORD) => {
@@ -41,7 +45,7 @@ export const App = {
     await TopMenu.settingsButton.click();
     await SettingsScreen.deleteAccountsButton.click();
     await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
-      "DELETE ALL ACCOUNTS"
+      'DELETE ALL ACCOUNTS'
     );
     await ConfirmDeleteAccountsScreen.deleteAllButton.click();
 
@@ -57,7 +61,7 @@ export const App = {
     }
 
     await browser.switchToWindow(foreground);
-  }
+  },
 };
 
 export const PopupHome = {
@@ -73,17 +77,17 @@ export const PopupHome = {
   },
 
   getOtherAccountNames: async () => {
-    await $("[data-testid=\"otherAccountsButton\"]").click();
-    await $("[data-testid=\"otherAccountsPage\"]").waitForDisplayed();
+    await $('[data-testid="otherAccountsButton"]').click();
+    await $('[data-testid="otherAccountsPage"]').waitForDisplayed();
 
     const accountNames = await $$(
-      "[data-testid=\"accountCard\"] [data-testid=\"accountName\"]"
+      '[data-testid="accountCard"] [data-testid="accountName"]'
     ).map(accName => accName.getText());
 
-    await $("div.arrow-back-icon").click();
+    await $('div.arrow-back-icon').click();
 
     return accountNames;
-  }
+  },
 };
 
 export const AccountsHome = {
@@ -98,7 +102,7 @@ export const AccountsHome = {
 
     await ImportSuccessScreen.addAnotherAccountButton.click();
     await ImportFormScreen.root.waitForDisplayed();
-  }
+  },
 };
 
 export const Settings = {
@@ -114,11 +118,11 @@ export const Settings = {
   },
 
   setMinSessionTimeout: async () => {
-    await Settings.setSessionTimeout("Browser timeout");
+    await Settings.setSessionTimeout('Browser timeout');
   },
 
   setMaxSessionTimeout: async () => {
-    await Settings.setSessionTimeout("1 hour");
+    await Settings.setSessionTimeout('1 hour');
   },
 
   clearCustomList: async () => {
@@ -130,7 +134,7 @@ export const Settings = {
       await permission.detailsIcon.click();
       await PermissionControlSettingsScreen.modalDeleteButton.click();
     }
-  }
+  },
 };
 
 export const Network = {
@@ -138,7 +142,10 @@ export const Network = {
     const currentNetwork = await NetworksMenu.networkMenuButton.getText();
     if (currentNetwork === network) return;
     await NetworksMenu.networkMenuButton.click();
-    await NetworksMenu.networkByName(network).click();
+    await browser.pause(100);
+    const networkLink = await NetworksMenu.networkByName(network);
+    await networkLink.waitForDisplayed();
+    await networkLink.click();
   },
 
   checkNetwork: async (network: string) => {
@@ -150,7 +157,7 @@ export const Network = {
   switchToAndCheck: async (network: string) => {
     await Network.switchTo(network);
     await Network.checkNetwork(network);
-  }
+  },
 };
 
 export const Windows = {
@@ -170,12 +177,12 @@ export const Windows = {
             return newHandles.length >= count;
           },
           {
-            timeoutMsg: "waiting for new windows to appear"
+            timeoutMsg: 'waiting for new windows to appear',
           }
         );
 
         return newHandles;
-      }
+      },
     };
   },
 
@@ -187,8 +194,8 @@ export const Windows = {
         return !handles.includes(handle);
       },
       {
-        timeoutMsg: "waiting for window to close"
+        timeoutMsg: 'waiting for window to close',
       }
     );
-  }
+  },
 };

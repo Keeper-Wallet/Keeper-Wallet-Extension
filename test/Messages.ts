@@ -29,6 +29,13 @@ describe('Messages', function () {
       .catch(done);
   };
 
+  const sendNotificationWithoutWait = (...args: [done: () => void]) => {
+    const done = args[args.length - 1];
+
+    KeeperWallet.notification({ title: 'Hello!', message: 'World!' });
+    done();
+  };
+
   before(async function () {
     await App.initVault();
     await Settings.setMaxSessionTimeout();
@@ -87,10 +94,7 @@ describe('Messages', function () {
     await browser.navigateTo(`https://${CUSTOMLIST[0]}`);
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    await browser.execute(sendNotification);
-    await this.driver.executeScript(sendNotification);
+    await browser.executeAsync(sendNotificationWithoutWait);
     [messageWindow] = await waitForNewWindows(1);
     await browser.switchToWindow(messageWindow);
     await browser.refresh();
@@ -116,10 +120,10 @@ describe('Messages', function () {
     await browser.navigateTo(`https://${CUSTOMLIST[1]}`);
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
-    await this.driver.executeScript(sendNotification);
+    await browser.executeAsync(sendNotificationWithoutWait);
     [messageWindow] = await waitForNewWindows(1);
-    await this.driver.switchTo().window(messageWindow);
-    await this.driver.navigate().refresh();
+    await browser.switchToWindow(messageWindow);
+    await browser.refresh();
 
     await AuthTransactionScreen.permissionDetailsButton.click();
     await AuthTransactionScreen.authButton.click();
