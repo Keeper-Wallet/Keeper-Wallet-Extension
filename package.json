@@ -36,7 +36,7 @@
     "@waves/protobuf-serialization": "^1.4.3",
     "@waves/ts-types": "^1.0.12",
     "amazon-cognito-identity-js": "^6.0.0",
-    "buffer": "^4.9.2",
+    "buffer": "^6.0.0",
     "callbag-create": "^2.1.3",
     "callbag-filter": "^1.1.0",
     "callbag-map": "^1.1.0",
