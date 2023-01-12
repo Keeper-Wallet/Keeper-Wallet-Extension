@@ -12,7 +12,7 @@ interface Props {
   loading?: boolean;
   error: string | null;
   setError: (error: string | null) => void;
-  onSubmit: (result: string, password?: string) => void;
+  onSubmit: (result: string, password: string) => void;
 }
 
 export function ImportKeystoreChooseFile({
@@ -74,7 +74,7 @@ export function ImportKeystoreChooseFile({
       className={styles.root}
       onSubmit={event => {
         event.preventDefault();
-        onSubmit(result, showPassword ? password : undefined);
+        onSubmit(result, showPassword ? password : '');
       }}
     >
       <h2 className="title1 margin3 left">{title}</h2>
@@ -112,12 +112,13 @@ export function ImportKeystoreChooseFile({
             {t('importKeystore.passwordLabel')}
           </div>
           <Input
-            wrapperClassName="margin1"
+            autoComplete="current-password"
             data-testid="passwordInput"
             placeholder={placeholder}
             type="password"
-            view="password"
             value={password}
+            view="password"
+            wrapperClassName="margin1"
             onChange={event => {
               setPassword(event.currentTarget.value);
             }}

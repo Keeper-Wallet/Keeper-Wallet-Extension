@@ -115,6 +115,7 @@ async function makeConfig({
               loader: 'css-loader',
               options: {
                 modules: {
+                  exportLocalsConvention: 'dashesOnly',
                   localIdentName: '[local]@[name]#[contenthash:base64:5]',
                   namedExport: true,
                 },
@@ -152,16 +153,16 @@ async function makeConfig({
         }),
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
-        process: 'process',
       }),
       new webpack.DefinePlugin({
+        'process.env.NODE_DEBUG': 'undefined',
         'process.env.NODE_ENV': JSON.stringify(mode),
         __AMPLITUDE_API_KEY__: JSON.stringify(process.env.AMPLITUDE_API_KEY),
         __SENTRY_DSN__: JSON.stringify(process.env.SENTRY_DSN),
         __SENTRY_ENVIRONMENT__: JSON.stringify(process.env.SENTRY_ENVIRONMENT),
         __SENTRY_RELEASE__: JSON.stringify(process.env.SENTRY_RELEASE),
       }),
-      new MiniCssExtractPlugin(),
+      new MiniCssExtractPlugin({ ignoreOrder: true }),
       new PlatformPlugin({ clear: !dev }),
     ]
       .concat(plugins)
@@ -234,9 +235,18 @@ module.exports = async (_, { mode }) => [
     optimization: {
       splitChunks: {
         cacheGroups: {
+          defaultVendors: false,
+          default: false,
           vendors: {
+            priority: 10,
             test: /[\\/]node_modules[\\/]/,
             chunks: 'initial',
+            name: (_module, chunks, cacheGroupKey) =>
+              `${cacheGroupKey}-${chunks.map(chunk => chunk.name).join('&')}`,
+          },
+          common: {
+            chunks: 'initial',
+            minChunks: 2,
             name: (_module, chunks, cacheGroupKey) =>
               `${cacheGroupKey}-${chunks.map(chunk => chunk.name).join('&')}`,
           },

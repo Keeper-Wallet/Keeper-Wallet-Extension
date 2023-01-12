@@ -4,21 +4,26 @@ import { ledgerService, LedgerServiceStatus } from 'ledger/service';
 import { usePopupSelector } from 'popup/store/react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui/components/ui';
-import background from 'ui/services/Background';
+import { Button } from 'ui/components/ui/buttons/Button';
+import { Modal } from 'ui/components/ui/modal/Modal';
+import Background from 'ui/services/Background';
 
 import { Login } from './login';
 import * as styles from './signWrapper.module.css';
 
-type Props = {
-  onConfirm: (...args: unknown[]) => void;
+interface Props<F extends (...args: unknown[]) => void> {
   children: (renderProps: {
-    onPrepare: (...args: unknown[]) => void;
     pending: boolean;
-  }) => React.ReactChild;
-};
+    onPrepare: (...args: Parameters<F>) => void;
+  }) => React.ReactElement | string | number;
+  onConfirm: F;
+}
 
-export function SignWrapper({ onConfirm, children }: Props) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function SignWrapper<F extends (...args: any[]) => void>({
+  children,
+  onConfirm,
+}: Props<F>) {
   const { t } = useTranslation();
   const account = usePopupSelector(state => state.selectedAccount);
 
@@ -30,7 +35,7 @@ export function SignWrapper({ onConfirm, children }: Props) {
   const onReady = useCallback(() => onReadyHandler!(), [onReadyHandler]);
 
   const onPrepare = useCallback(
-    (...args: unknown[]) => {
+    (...args: Parameters<F>) => {
       switch (account?.type) {
         case 'wx':
           setPending(true);
@@ -38,16 +43,14 @@ export function SignWrapper({ onConfirm, children }: Props) {
           if (typeof onReadyHandler !== 'function') {
             // eslint-disable-next-line react-hooks/exhaustive-deps
             onReadyHandler = () =>
-              background.identityUpdate().then(() => {
+              Background.identityUpdate().then(() => {
                 onConfirm(...args);
                 setShowModal(false);
                 setPending(false);
               });
           }
 
-          background
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            .identityRestore(account.uuid!)
+          Background.identityRestore(account.uuid)
             .then(() => {
               onConfirm(...args);
               setPending(false);
@@ -67,8 +70,7 @@ export function SignWrapper({ onConfirm, children }: Props) {
             };
           }
 
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          ledgerService.updateStatus(account.networkCode!).then(() => {
+          ledgerService.updateStatus(account.networkCode).then(() => {
             if (ledgerService.status === LedgerServiceStatus.Ready) {
               setPending(false);
               onConfirm(...args);
@@ -108,8 +110,7 @@ export function SignWrapper({ onConfirm, children }: Props) {
               </h2>
 
               <Login
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                userData={{ username: account.username!, password: '' }}
+                userData={{ username: account.username, password: '' }}
                 onConfirm={onReady}
               />
             </div>
@@ -120,8 +121,7 @@ export function SignWrapper({ onConfirm, children }: Props) {
       {account?.type === 'ledger' && (
         <Modal animation={Modal.ANIMATION.FLASH} showModal={showModal}>
           <LedgerConnectModal
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-            networkCode={account?.networkCode!}
+            networkCode={account.networkCode}
             onClose={() => {
               setShowModal(false);
               setPending(false);

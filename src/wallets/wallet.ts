@@ -1,25 +1,12 @@
 import {
+  base58Decode,
   base58Encode,
-  messageDecrypt,
-  messageEncrypt,
-  sharedKey,
-  TBinaryIn,
-} from '@waves/ts-lib-crypto';
-import {
-  TCustomData,
-  TSignedData,
-} from '@waves/waves-transactions/dist/requests/custom-data';
-import {
-  IWavesAuth,
-  IWavesAuthParams,
-} from '@waves/waves-transactions/dist/transactions';
-import {
-  SaAuth,
-  SaCancelOrder,
-  SaOrder,
-  SaRequest,
-  SaTransaction,
-} from 'transactions/utils';
+  createSharedKey,
+  decryptMessage,
+  encryptMessage,
+  utf8Encode,
+} from '@keeper-wallet/waves-crypto';
+import { MessageTx } from 'messages/types';
 
 import { WalletAccount, WalletPrivateData } from './types';
 
@@ -31,53 +18,88 @@ export abstract class Wallet<TData extends WalletPrivateData> {
   }
 
   abstract getAccount(): WalletAccount;
-  abstract getSeed(): string;
-  abstract getPrivateKey(): string;
 
-  getEncodedSeed() {
-    return base58Encode(this.getSeed());
+  protected abstract signBytes(bytes: Uint8Array): Promise<Uint8Array>;
+
+  signAuth(bytes: Uint8Array) {
+    return this.signBytes(bytes);
   }
 
-  serialize() {
-    return this.data;
+  signCancelOrder(bytes: Uint8Array) {
+    return this.signBytes(bytes);
+  }
+
+  signCustomData(bytes: Uint8Array) {
+    return this.signBytes(bytes);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  signOrder(bytes: Uint8Array, _version: 1 | 2 | 3 | 4) {
+    return this.signBytes(bytes);
+  }
+
+  signRequest(bytes: Uint8Array) {
+    return this.signBytes(bytes);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  signTx(bytes: Uint8Array, _tx: MessageTx) {
+    return this.signBytes(bytes);
+  }
+
+  signWavesAuth(bytes: Uint8Array) {
+    return this.signBytes(bytes);
+  }
+
+  getSeed(): string {
+    throw new Error('Cannot get seed');
+  }
+
+  getEncodedSeed() {
+    return base58Encode(utf8Encode(this.getSeed()));
+  }
+
+  getPrivateKey(): Promise<Uint8Array> {
+    throw new Error('Cannot get private key');
+  }
+
+  async createSharedKey(publicKey: string, prefix: string) {
+    const privateKey = await this.getPrivateKey();
+
+    return createSharedKey(
+      privateKey,
+      base58Decode(publicKey),
+      utf8Encode(`${prefix || ''}waves`)
+    );
   }
 
   async encryptMessage(
     message: string,
-    publicKey: TBinaryIn,
+    publicKey: string,
     prefix = 'waveskeeper'
   ) {
-    const privateKey = this.getPrivateKey();
-    const shKey = sharedKey(privateKey, publicKey, prefix);
-    return base58Encode(messageEncrypt(shKey, message));
+    const sharedKey = await this.createSharedKey(publicKey, prefix);
+
+    const encryptedMessage = await encryptMessage(
+      sharedKey,
+      utf8Encode(message)
+    );
+
+    return base58Encode(encryptedMessage);
   }
 
   async decryptMessage(
-    message: TBinaryIn,
-    publicKey: TBinaryIn,
+    message: string,
+    publicKey: string,
     prefix = 'waveskeeper'
   ) {
-    const privateKey = this.getPrivateKey();
-    const shKey = sharedKey(privateKey, publicKey, prefix);
-    try {
-      return messageDecrypt(shKey, message);
-    } catch (e) {
-      throw new Error('message is invalid');
-    }
-  }
+    const sharedKey = await this.createSharedKey(publicKey, prefix);
 
-  async getKEK(publicKey: TBinaryIn, prefix: string) {
-    const privateKey = this.getPrivateKey();
-
-    return base58Encode(
-      sharedKey(privateKey, publicKey, `${prefix || ''}waves`)
+    const decryptedMessage = await decryptMessage(
+      sharedKey,
+      utf8Encode(message)
     );
+
+    return base58Encode(decryptedMessage);
   }
-  abstract signTx(tx: SaTransaction): Promise<string>;
-  abstract signAuth(auth: SaAuth): Promise<string>;
-  abstract signRequest(auth: SaRequest): Promise<string>;
-  abstract signOrder(auth: SaOrder): Promise<string>;
-  abstract signCancelOrder(auth: SaCancelOrder): Promise<string>;
-  abstract signWavesAuth(data: IWavesAuthParams): Promise<IWavesAuth>;
-  abstract signCustomData(data: TCustomData): Promise<TSignedData>;
 }

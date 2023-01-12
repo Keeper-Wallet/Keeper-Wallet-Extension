@@ -3,24 +3,43 @@ import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { AssetDetail, AssetsRecord } from 'assets/types';
 import { AssetBalance, BalancesItem } from 'balances/types';
-import { MessageStoreItem } from 'messages/types';
-import { getMoney } from 'ui/utils/converters';
+import {
+  MessageTx,
+  MessageTxAlias,
+  MessageTxBurn,
+  MessageTxCancelLease,
+  MessageTxData,
+  MessageTxInvokeScript,
+  MessageTxIssue,
+  MessageTxLease,
+  MessageTxMassTransfer,
+  MessageTxReissue,
+  MessageTxSetAssetScript,
+  MessageTxSetScript,
+  MessageTxSponsorship,
+  MessageTxTransfer,
+  MessageTxUpdateAssetInfo,
+} from 'messages/types';
+import invariant from 'tiny-invariant';
 
-import { FeeConfig } from '../constants';
-import * as invokeScriptParseTx from '../ui/components/transactions/ScriptInvocation/parseTx';
-import * as transferParseTx from '../ui/components/transactions/Transfer/parseTx';
-import { SPONSORED_FEE_TX_TYPES } from './constants';
+export async function getExtraFee(address: string, node: string) {
+  const response = await fetch(
+    new URL(`/addresses/scriptInfo/${address}`, node)
+  );
 
-export function convertFeeToAsset(
-  fee: Money,
-  asset: Asset,
-  feeConfig: FeeConfig
-) {
+  if (!response.ok) {
+    throw response;
+  }
+
+  const json: { extraFee: number } = await response.json();
+
+  return json.extraFee;
+}
+
+export function convertFeeToAsset(fee: Money, asset: Asset) {
   // eslint-disable-next-line @typescript-eslint/no-shadow
   const minSponsoredFee = (asset: Asset) =>
-    asset.id === 'WAVES'
-      ? feeConfig.calculate_fee_rules.default.fee
-      : asset.minSponsoredFee;
+    asset.id === 'WAVES' ? 10_0000 : asset.minSponsoredFee;
 
   return new Money(
     fee
@@ -37,108 +56,123 @@ export function convertFeeToAsset(
 export function getFeeOptions({
   assets,
   balance,
-  feeConfig,
   initialFee,
   txType,
   usdPrices,
 }: {
   assets: AssetsRecord;
   balance: BalancesItem | undefined;
-  feeConfig: FeeConfig;
   initialFee: Money;
-  txType: number;
+  txType: MessageTx['type'];
   usdPrices: Record<string, string>;
 }) {
-  const feeInWaves = convertFeeToAsset(
-    initialFee,
-    new Asset(assets.WAVES),
-    feeConfig
-  );
+  const feeInWaves = convertFeeToAsset(initialFee, new Asset(assets.WAVES));
 
-  return SPONSORED_FEE_TX_TYPES.includes(txType)
-    ? Object.entries(balance?.assets || {})
-        .map(([assetId, assetBalance]) => ({
-          asset: assets[assetId],
-          assetBalance,
-        }))
-        .filter(
-          (item): item is { asset: AssetDetail; assetBalance: AssetBalance } =>
-            item.asset != null
-        )
-        .map(({ asset, assetBalance }) => ({
-          assetBalance,
-          money: convertFeeToAsset(initialFee, new Asset(asset), feeConfig),
-        }))
-        .filter(
-          ({ assetBalance, money }) =>
-            assetBalance.minSponsoredAssetFee != null &&
-            new BigNumber(assetBalance.sponsorBalance).gte(
-              feeInWaves.getCoins()
-            ) &&
-            new BigNumber(assetBalance.balance).gte(money.getCoins())
-        )
-        .sort((a, b) => {
-          const aUsdSum = a.money
-            .getTokens()
-            .mul(usdPrices[a.money.asset.id] || '0');
+  if (
+    txType !== TRANSACTION_TYPE.TRANSFER &&
+    txType !== TRANSACTION_TYPE.INVOKE_SCRIPT
+  ) {
+    return [];
+  }
 
-          const bUsdSum = b.money
-            .getTokens()
-            .mul(usdPrices[b.money.asset.id] || '0');
+  return Object.entries(balance?.assets || {})
+    .map(([assetId, assetBalance]) => ({
+      asset: assets[assetId],
+      assetBalance,
+    }))
+    .filter(
+      (item): item is { asset: AssetDetail; assetBalance: AssetBalance } =>
+        item.asset != null
+    )
+    .map(({ asset, assetBalance }) => ({
+      assetBalance,
+      money: convertFeeToAsset(initialFee, new Asset(asset)),
+    }))
+    .filter(
+      ({ assetBalance, money }) =>
+        assetBalance.minSponsoredAssetFee != null &&
+        new BigNumber(assetBalance.sponsorBalance).gte(feeInWaves.getCoins()) &&
+        new BigNumber(assetBalance.balance).gte(money.getCoins())
+    )
+    .sort((a, b) => {
+      const aUsdSum = a.money
+        .getTokens()
+        .mul(usdPrices[a.money.asset.id] || '0');
 
-          if (aUsdSum.gt(bUsdSum)) {
-            return 1;
-          }
+      const bUsdSum = b.money
+        .getTokens()
+        .mul(usdPrices[b.money.asset.id] || '0');
 
-          if (aUsdSum.lt(bUsdSum)) {
-            return -1;
-          }
+      if (aUsdSum.gt(bUsdSum)) {
+        return 1;
+      }
 
-          const aSponsorBalance = new BigNumber(a.assetBalance.sponsorBalance);
-          const bSponsorBalance = new BigNumber(b.assetBalance.sponsorBalance);
+      if (aUsdSum.lt(bUsdSum)) {
+        return -1;
+      }
 
-          if (aSponsorBalance.gt(bSponsorBalance)) {
-            return -1;
-          }
+      const aSponsorBalance = new BigNumber(a.assetBalance.sponsorBalance);
+      const bSponsorBalance = new BigNumber(b.assetBalance.sponsorBalance);
 
-          if (aSponsorBalance.lt(bSponsorBalance)) {
-            return 1;
-          }
+      if (aSponsorBalance.gt(bSponsorBalance)) {
+        return -1;
+      }
 
-          return 0;
-        })
-    : [];
+      if (aSponsorBalance.lt(bSponsorBalance)) {
+        return 1;
+      }
+
+      return 0;
+    });
 }
 
 export function getSpendingAmountsForSponsorableTx({
   assets,
-  message,
+  messageTx,
 }: {
   assets: AssetsRecord;
-  message: MessageStoreItem;
-}): Money[] {
-  switch (message.data.type) {
-    case TRANSACTION_TYPE.TRANSFER:
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return [getMoney(transferParseTx.getAmount(message.data.data), assets)!];
+  messageTx:
+    | Omit<MessageTxIssue, 'fee' | 'id' | 'initialFee'>
+    | Omit<MessageTxTransfer, 'fee' | 'id' | 'initialFee' | 'initialFeeAssetId'>
+    | Omit<MessageTxReissue, 'fee' | 'id' | 'initialFee'>
+    | Omit<MessageTxBurn, 'fee' | 'id' | 'initialFee'>
+    | Omit<MessageTxLease, 'fee' | 'id' | 'initialFee'>
+    | Omit<MessageTxCancelLease, 'fee' | 'id' | 'initialFee'>
+    | Omit<MessageTxAlias, 'fee' | 'id' | 'initialFee'>
+    | Omit<MessageTxMassTransfer, 'fee' | 'id' | 'initialFee'>
+    | Omit<MessageTxData, 'fee' | 'id' | 'initialFee'>
+    | Omit<MessageTxSetScript, 'fee' | 'id' | 'initialFee'>
+    | Omit<MessageTxSponsorship, 'fee' | 'id' | 'initialFee'>
+    | Omit<MessageTxSetAssetScript, 'fee' | 'id' | 'initialFee'>
+    | Omit<
+        MessageTxInvokeScript,
+        'fee' | 'id' | 'initialFee' | 'initialFeeAssetId'
+      >
+    | Omit<MessageTxUpdateAssetInfo, 'fee' | 'id' | 'initialFee'>;
+}) {
+  switch (messageTx.type) {
+    case TRANSACTION_TYPE.TRANSFER: {
+      const asset = assets[messageTx.assetId ?? 'WAVES'];
+      invariant(asset);
+      return [new Money(messageTx.amount, new Asset(asset))];
+    }
     case TRANSACTION_TYPE.INVOKE_SCRIPT:
-      return (
-        invokeScriptParseTx
-          .getAmounts(message.data.data)
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          .map(amount => getMoney(amount, assets)!)
-      );
+      return messageTx.payment.map(({ amount, assetId }) => {
+        const asset = assets[assetId ?? 'WAVES'];
+        invariant(asset);
+        return new Money(amount, new Asset(asset));
+      });
     default:
       return [];
   }
 }
 
 export function isEnoughBalanceForFeeAndSpendingAmounts({
-  assetBalance,
+  balance,
   fee,
   spendingAmounts,
 }: {
-  assetBalance: AssetBalance;
+  balance: number | string;
   fee: Money;
   spendingAmounts: Money[];
 }) {
@@ -146,5 +180,5 @@ export function isEnoughBalanceForFeeAndSpendingAmounts({
     .filter(spending => spending.asset.id === fee.asset.id)
     .reduce((total, current) => total.add(current.getCoins()), fee.getCoins());
 
-  return new BigNumber(assetBalance.balance).gte(totalSpendingCoins);
+  return new BigNumber(balance).gte(totalSpendingCoins);
 }

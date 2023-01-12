@@ -4,7 +4,7 @@ import create from 'callbag-create';
 import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
 import { TrashItem } from 'controllers/trash';
-import { MessageStoreItem } from 'messages/types';
+import { Message } from 'messages/types';
 import { NetworkName } from 'networks/types';
 import { NftInfo } from 'nfts/nfts';
 import { NotificationsStoreItem } from 'notifications/types';
@@ -18,7 +18,6 @@ import {
   AssetsConfig,
   DEFAULT_IDENTITY_CONFIG,
   DEFAULT_MAIN_CONFIG,
-  FeeConfig,
   IgnoreErrorsConfig,
   NftConfig,
 } from '../constants';
@@ -54,8 +53,6 @@ export interface StorageLocalState {
   assetTickers: Record<string, string>;
   backup: string;
   config: {
-    networks: typeof DEFAULT_MAIN_CONFIG.networks;
-    network_config: typeof DEFAULT_MAIN_CONFIG.network_config;
     messages_config: typeof DEFAULT_MAIN_CONFIG.messages_config;
     pack_config: typeof DEFAULT_MAIN_CONFIG.pack_config;
     idle: typeof DEFAULT_MAIN_CONFIG.idle;
@@ -63,23 +60,22 @@ export interface StorageLocalState {
   cognitoSessions: string | undefined;
   currentLocale: string;
   currentNetwork: NetworkName;
-  customCodes: Record<NetworkName, string | null | undefined>;
-  customMatchers: Record<NetworkName, string | null | undefined>;
-  customNodes: Record<NetworkName, string | null | undefined>;
+  customCodes: Record<NetworkName, string | null>;
+  customMatchers: Record<NetworkName, string | null>;
+  customNodes: Record<NetworkName, string | null>;
   data: TrashItem[];
-  feeConfig: FeeConfig;
   identityConfig: typeof DEFAULT_IDENTITY_CONFIG;
   idleOptions: IdleOptions;
   ignoreErrorsConfig: IgnoreErrorsConfig;
-  initialized: boolean | null;
+  initialized: boolean;
   inPending: Record<string, string | null>;
   inShowMode: boolean | undefined;
   lastIdleKeeper: number | undefined;
   lastInstallKeeper: number | undefined;
   lastOpenKeeper: number | undefined;
   lastUpdateIdle: number;
-  locked: boolean | null;
-  messages: MessageStoreItem[];
+  locked: boolean;
+  messages: Message[];
   migrationVersion: number;
   nftConfig: NftConfig;
   nfts: Record<string, NftInfo>;
@@ -119,18 +115,11 @@ export class ExtensionStorage {
     };
   }
 
-  getInitState<
-    K extends keyof StorageLocalState,
-    F extends keyof StorageLocalState
-  >(
-    defaults: Pick<StorageLocalState, K> | StorageLocalState,
-    forced?: Pick<StorageLocalState, F> | StorageLocalState
+  getInitState<K extends keyof StorageLocalState>(
+    defaults: Pick<StorageLocalState, K> | StorageLocalState
   ): Pick<StorageLocalState, K>;
   getInitState<T extends Record<string, unknown>>(defaults: T, forced?: T): T;
-  getInitState(
-    defaults: Record<string, unknown>,
-    forced?: Record<string, unknown>
-  ) {
+  getInitState(defaults: Record<string, unknown>) {
     const defaultsInitState = Object.keys(defaults).reduce(
       (acc, key) =>
         Object.prototype.hasOwnProperty.call(this.#localState, key)
@@ -139,7 +128,7 @@ export class ExtensionStorage {
       {}
     );
 
-    const initState = { ...defaults, ...defaultsInitState, ...(forced || {}) };
+    const initState = { ...defaults, ...defaultsInitState };
     this.#state = { ...this.#state, ...initState };
     return initState;
   }

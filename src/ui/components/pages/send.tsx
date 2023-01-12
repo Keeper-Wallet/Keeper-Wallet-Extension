@@ -1,6 +1,6 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
-import { validators } from '@waves/waves-transactions';
+import { isAddressString, isAlias } from 'messages/utils';
 import { createNft } from 'nfts/nfts';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useMemo, useState } from 'react';
@@ -77,7 +77,7 @@ export function Send() {
   const currentBalance = asset
     ? Money.fromCoins(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        !isNft ? assetBalances![asset.id]?.balance : 1,
+        !isNft ? assetBalances![asset.id]?.balance ?? 0 : 1,
         new Asset(asset)
       )
     : null;
@@ -87,10 +87,7 @@ export function Send() {
   const [recipientValue, setRecipientValue] = useState('');
   const recipientError = !recipientValue
     ? t('send.recipientRequiredError')
-    : !(
-        validators.isValidAddress(recipientValue, chainId) ||
-        validators.isValidAlias(recipientValue)
-      )
+    : !(isAddressString(recipientValue, chainId) || isAlias(recipientValue))
     ? t('send.recipientInvalidError')
     : null;
   const showRecipientError = isTriedToSubmit && recipientError != null;
@@ -186,7 +183,7 @@ export function Send() {
                 (() => {
                   const balance = new Money(
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    new BigNumber(assetBalances![asset.id].balance),
+                    new BigNumber(assetBalances![asset.id]?.balance ?? 0),
                     new Asset(asset)
                   );
 
@@ -207,8 +204,8 @@ export function Send() {
                           )}
                         balance={balance}
                         label={t('send.amountInputLabel')}
+                        maskedValue={amountValueMasked}
                         showUsdAmount
-                        value={amountValueMasked}
                         onAssetChange={assetId => {
                           navigate(`/send/${assetId}`, { replace: true });
                         }}

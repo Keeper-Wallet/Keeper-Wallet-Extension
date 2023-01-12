@@ -8,9 +8,11 @@ export interface AssetBalance {
   minSponsoredAssetFee: string | null;
 }
 
+export type BalanceAssets = Partial<Record<string, AssetBalance>>;
+
 export interface BalancesItem {
   aliases?: string[];
-  assets?: Record<string, AssetBalance>;
+  assets?: BalanceAssets;
   available: string;
   leasedOut: string;
   network: NetworkName;

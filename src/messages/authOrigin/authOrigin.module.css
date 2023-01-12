@@ -1,0 +1,115 @@
+.smallCardContent {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+}
+
+.origin {
+  margin-bottom: 4px;
+  max-width: 250px;
+  overflow: hidden;
+  color: var(--color-basic500);
+  font-size: 12px;
+  text-overflow: ellipsis;
+}
+
+.title {
+  font-size: 18px;
+}
+
+.infoBlock {
+  margin-top: 12px;
+  display: flex;
+  gap: 6px;
+}
+
+.infoBlockIcon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.infoBlockText {
+  color: var(--color-basic500);
+}
+
+.permissionsDetails {
+  position: relative;
+  margin-top: 12px;
+  padding: 9px 11px;
+  border: solid 1px var(--color-basic100);
+  border-radius: 4px;
+  background-color: var(--color-white);
+}
+
+.permissionsSummary {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.permissionsSummary:before {
+  content: '';
+  width: 20px;
+  border-radius: 50%;
+  background: var(--color-info400) url(../../ui/assets/img/setting-14-white.svg)
+    center no-repeat;
+}
+
+.permissionsSummary::after {
+  content: ' ';
+  margin-left: auto;
+  align-self: center;
+  width: 14px;
+  height: 14px;
+  background: url(../../ui/assets/img/arrow-down-14-basic-200.svg) center
+    no-repeat;
+}
+
+.permissionsDetails[open] .permissionsSummary::after {
+  background-image: url(../../ui/assets/img/arrow-up-14-basic-200.svg);
+}
+
+.description {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 4px;
+  background: var(--color-basic50);
+  color: var(--color-basic500);
+}
+
+.selectTime {
+  margin-top: 12px;
+}
+
+.amount {
+  position: relative;
+  margin-top: 12px;
+}
+
+.amountInput {
+  padding-right: 60px;
+  font-size: 14px;
+}
+
+.waves {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  color: var(--color-submit400);
+}
+
+.allowMessagesWrapper {
+  margin-top: 12px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+}

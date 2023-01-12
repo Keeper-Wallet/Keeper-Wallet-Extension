@@ -123,13 +123,14 @@ export function SignInForm({ className, userData, signIn }: Props) {
           <Input data-testid="emailInput" value={maskedEmail} disabled />
         ) : (
           <Input
-            data-testid="emailInput"
-            value={email}
-            spellCheck={false}
-            onChange={handleEmailChange}
-            onBlur={handleEmailBlur}
-            error={!!errors.emailRequired}
+            autoComplete="email"
             autoFocus
+            data-testid="emailInput"
+            error={!!errors.emailRequired}
+            spellCheck={false}
+            value={email}
+            onBlur={handleEmailBlur}
+            onChange={handleEmailChange}
           />
         )}
 
@@ -144,14 +145,15 @@ export function SignInForm({ className, userData, signIn }: Props) {
         </div>
 
         <Input
-          data-testid="passwordInput"
-          type="password"
-          view="password"
-          value={password}
-          onChange={handlePasswordChange}
-          onBlur={handlePasswordBlur}
-          error={!!errors.passwordRequired}
+          autoComplete="current-password"
           autoFocus={!!userData?.username}
+          data-testid="passwordInput"
+          error={!!errors.passwordRequired}
+          onBlur={handlePasswordBlur}
+          onChange={handlePasswordChange}
+          type="password"
+          value={password}
+          view="password"
         />
         <ErrorMessage show={errors.passwordRequired != null}>
           {errors.passwordRequired}

@@ -1,0 +1,47 @@
+.screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: auto;
+  background: var(--color-basic50);
+}
+
+.scrollBox {
+  position: relative;
+  flex-grow: 1;
+  flex-shrink: 999;
+  padding-right: 14px;
+  padding-left: 14px;
+  overflow: auto;
+}
+
+.card {
+  position: relative;
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px 0 #9ba6b2;
+  background: var(--color-white);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  margin-right: 10px;
+  width: 48px;
+  height: 48px;
+}
+
+.data {
+  margin-bottom: 4px;
+  color: var(--color-basic500);
+  font-size: 12px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 500;
+}

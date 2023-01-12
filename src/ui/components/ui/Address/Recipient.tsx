@@ -1,9 +1,12 @@
-import { validators } from '@waves/waves-transactions';
 import clsx from 'clsx';
+import {
+  isAddressString,
+  isAlias,
+  processAliasOrAddress,
+} from 'messages/utils';
 import { usePopupSelector } from 'popup/store/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { processAliasOrAddress } from 'transactions/utils';
 import {
   fromEthereumToWavesAddress,
   fromWavesToEthereumAddress,
@@ -52,14 +55,14 @@ export function AddressRecipient({
     switch (true) {
       case isValidEthereumAddress(address):
         return ['ethereum', fromEthereumToWavesAddress(address, chainId)];
-      case validators.isValidAddress(address):
+      case isAddressString(address):
         return ['waves', fromWavesToEthereumAddress(address)];
       default:
         return [];
     }
   }, [address, chainId]);
 
-  if (validators.isValidAlias(address)) {
+  if (isAlias(address)) {
     return (
       <div className={className}>
         <p

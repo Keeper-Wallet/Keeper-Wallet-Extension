@@ -1,0 +1,16 @@
+.errorWrapper {
+  background: var(--color-basic100);
+  overflow-wrap: break-word;
+}
+
+.errorHeading {
+  margin-bottom: 12px;
+  padding-left: 26px;
+}
+
+.errorMessage {
+  max-height: 240px;
+  overflow: auto;
+  font-size: 10px;
+  white-space: pre-wrap;
+}

@@ -492,12 +492,6 @@
       "disallowed": "Tidak diizinkan!"
     }
   },
-  "plateComponent": {
-    "copy": "Salin",
-    "copied": "Disalin!",
-    "collapse": "Collapse",
-    "expand": "Perbesar"
-  },
   "qrCode": {
     "download": "Download QR code"
   },
@@ -589,7 +583,6 @@
     "exchangeChannelUnavailableError": "Layanan tidak merespons",
     "exchangeChannelUnknownError": "Tidak tersedia untuk pertukaran ini",
     "failMessage": "Swap tidak berhasil, silakan coba lagi",
-    "ledgerFailMessage": "Permintaan itu ditolak oleh Ledger.",
     "fromInputLabel": "Dari",
     "insufficientFundsError": "Dana tidak mencukupi",
     "maxAmountExceeded": "Jumlah tidak boleh melebihi {{ maxAmount }}",

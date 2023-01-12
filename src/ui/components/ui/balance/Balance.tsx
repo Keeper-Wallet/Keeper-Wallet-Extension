@@ -1,91 +1,62 @@
-import { BigNumber } from '@waves/bignumber';
-import { Asset, Money } from '@waves/data-entities';
-import { AssetsRecord } from 'assets/types';
-import { PopupState } from 'popup/store/types';
-import { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { Money } from '@waves/data-entities';
+import clsx from 'clsx';
 
-import { getAsset } from '../../../../store/actions/assets';
 import { Loader } from '../loader';
 import { UsdAmount } from '../UsdAmount';
 import * as styles from './Balance.module.css';
 
-const SEPARATOR = '.';
-
-const Loading = ({ children }: { children: React.ReactNode }) => (
-  <div>
-    <Loader />
-    {children}
-  </div>
-);
-
 interface Props {
-  balance: Money | string | BigNumber | undefined;
-  assetId?: string;
-  split?: boolean;
+  addSign?: string;
+  balance: Money | undefined;
+  children?: React.ReactNode;
+  className?: string;
+  isShortFormat?: boolean;
   showAsset?: boolean;
   showUsdAmount?: boolean;
-  isShortFormat?: boolean;
-  children?: React.ReactNode;
-  addSign?: string;
-  className?: string;
-  assets: AssetsRecord;
-  getAsset: (id: string) => void;
+  split?: boolean;
 }
 
-const BalanceComponent = ({
-  balance,
-  split,
-  // eslint-disable-next-line @typescript-eslint/no-shadow
-  getAsset,
+export function Balance({
   addSign,
+  balance,
+  children,
   className,
+  isShortFormat,
   showAsset,
   showUsdAmount,
-  isShortFormat,
-  children,
-  assets,
-  assetId = 'WAVES',
+  split,
   ...props
-}: Props) => {
-  let balanceOut: Money;
+}: Props) {
+  if (!balance) {
+    return (
+      <div>
+        <Loader />
+        {children}
+      </div>
+    );
+  }
 
-  useEffect(() => {
-    if (!assets[assetId]) {
-      getAsset(assetId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  switch (true) {
-    case !assets[assetId] || !balance:
-      return <Loading>{children}</Loading>;
-    case balance instanceof Money && !balance.getTokens().isNaN():
-      balanceOut = balance as Money;
-      break;
-    case new BigNumber(balance as string).isNaN() === false:
-      balanceOut = Money.fromTokens(balance as string, new Asset(assets.WAVES));
-      break;
-    default:
-      return <div>N/A</div>;
+  if (balance.getTokens().isNaN()) {
+    return <div>N/A</div>;
   }
 
   const tokens = (
-    isShortFormat ? balanceOut.toFormat() : balanceOut.toTokens()
+    isShortFormat ? balance.toFormat() : balance.toTokens()
   ).split('.');
-  const assetName = showAsset ? balanceOut.asset.displayName : null;
+
+  const assetName = showAsset ? balance.asset.displayName : null;
 
   if (!split) {
     return (
       <>
         <div {...props} className={`${styles.amount} ${className}`}>
-          {tokens.join(SEPARATOR)} {assetName} {children}
+          {tokens.join('.')} {assetName} {children}
         </div>
         {showUsdAmount && (
           <UsdAmount
             className={styles.usdAmountNote}
-            id={balanceOut.asset.id}
-            tokens={balanceOut.getTokens()}
+            id={balance.asset.id}
+            tokens={balance.getTokens()}
           />
         )}
       </>
@@ -94,30 +65,24 @@ const BalanceComponent = ({
 
   return (
     <>
-      <div {...props} className={`${styles.amount} ${className}`}>
-        {addSign ? <span>{addSign}</span> : null}
-        <span className="font700">{tokens[0]}</span>
-        {tokens[1] ? (
-          <span className="font400">
-            {SEPARATOR}
-            {tokens[1]}
-          </span>
-        ) : null}
+      <div {...props} className={clsx(className, styles.amount)}>
+        <span className="font700">
+          {addSign}
+          {tokens[0]}
+        </span>
+        {tokens[1] ? <span className="font400">.{tokens[1]}</span> : null}
         &nbsp;
         <span className="font400">{assetName}</span>
         {children}
       </div>
+
       {showUsdAmount && (
         <UsdAmount
           className={styles.usdAmount}
-          id={balanceOut.asset.id}
-          tokens={balanceOut.getTokens()}
+          id={balance.asset.id}
+          tokens={balance.getTokens()}
         />
       )}
     </>
   );
-};
-
-export const Balance = connect(({ assets }: PopupState) => ({ assets }), {
-  getAsset,
-})(BalanceComponent);
+}

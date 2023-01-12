@@ -1,0 +1,21 @@
+.root {
+  margin-bottom: 14px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.avatar {
+  flex: 0 0 auto;
+}
+
+.name {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  text-overflow: ellipsis;
+}

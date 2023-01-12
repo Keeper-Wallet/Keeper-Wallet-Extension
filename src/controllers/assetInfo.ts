@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/browser';
+import { isNotNull } from '_core/isNotNull';
 import { AssetDetail } from 'assets/types';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
@@ -329,7 +329,7 @@ export class AssetInfoController {
       : assets[network][assetId]?.isSuspicious;
   }
 
-  async assetInfo(assetId: string) {
+  async assetInfo(assetId: string | null) {
     const { assets } = this.store.getState();
     const network = this.getNetwork();
 
@@ -429,11 +429,7 @@ export class AssetInfoController {
     });
 
     if (!response.ok) {
-      throw new Error(
-        `Could not fetch assets batch: ${response.status} ${
-          response.statusText
-        } - ${await response.text()}`
-      );
+      throw response;
     }
 
     const assets: AssetInfoResponseItem[] = await response.json();
@@ -441,43 +437,50 @@ export class AssetInfoController {
     return assets;
   }
 
-  async updateAssets(assetIdsArg: string[]) {
+  async updateAssets(
+    assetIds: Array<string | null | undefined>,
+    { ignoreCache }: { ignoreCache?: boolean } = {}
+  ) {
     const { assets } = this.store.getState();
+    const network = this.getNetwork();
 
-    if (assetIdsArg.length === 0) {
+    const assetIdsToFetch = Array.from(
+      new Set(
+        assetIds
+          .filter(isNotNull)
+          .filter(id => id !== 'WAVES')
+          .filter(assetId => {
+            const asset = assets[network][assetId];
+
+            return (
+              ignoreCache || !asset || this.isMaxAgeExceeded(asset.lastUpdated)
+            );
+          })
+      )
+    );
+
+    if (assetIdsToFetch.length === 0) {
       return;
     }
 
-    const network = this.getNetwork();
-    const assetIds = Array.from(new Set(assetIdsArg));
-
     const { maxAssetsPerRequest } = this.#remoteConfig.getAssetsConfig();
 
-    const assetInfos: AssetInfoResponseItem[] = [];
-    for (let start = 0; start < assetIds.length; ) {
-      try {
-        const assetsBatch = await this.#fetchAssetsBatch(
-          this.getNode(),
-          assetIds.slice(start, start + maxAssetsPerRequest)
-        );
+    for (let i = 0; i < assetIdsToFetch.length; i += maxAssetsPerRequest) {
+      const assetInfos = await this.#fetchAssetsBatch(
+        this.getNode(),
+        assetIdsToFetch.slice(i, i + maxAssetsPerRequest)
+      );
 
-        assetInfos.push(...assetsBatch);
-        start += maxAssetsPerRequest;
-      } catch (err) {
-        captureException(err);
-        await new Promise(resolve => setTimeout(resolve, 10000));
-      }
+      assetInfos.forEach(assetInfo => {
+        assets[network][assetInfo.assetId] = {
+          ...assets[network][assetInfo.assetId],
+          ...this.toAssetDetails(assetInfo),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any;
+      });
+
+      this.store.updateState({ assets });
     }
-
-    assetInfos.forEach(assetInfo => {
-      assets[network][assetInfo.assetId] = {
-        ...assets[network][assetInfo.assetId],
-        ...this.toAssetDetails(assetInfo),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any;
-    });
-
-    this.store.updateState({ assets });
   }
 
   async updateSuspiciousAssets() {

@@ -4,7 +4,6 @@ import thunk, { ThunkDispatch } from 'redux-thunk';
 
 import * as middleware from '../../store/middleware';
 import type { AppAction } from '../../store/types';
-import { KEEPERWALLET_DEBUG } from '../../ui/appConfig';
 import { reducer } from './reducer';
 import type { AccountsState } from './types';
 
@@ -19,7 +18,9 @@ export function createAccountsStore() {
     applyMiddleware(
       thunk,
       ...Object.values(middleware),
-      ...(KEEPERWALLET_DEBUG ? [createLogger({ collapsed: true })] : [])
+      ...(process.env.NODE_ENV === 'development'
+        ? [createLogger({ collapsed: true })]
+        : [])
     )
   );
 

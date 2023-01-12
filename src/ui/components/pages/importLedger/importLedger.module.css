@@ -1,7 +1,11 @@
 .root {
   position: relative;
-  margin: 84px 58px 0;
+  margin-top: 84px;
   height: calc(100% - 180px);
+}
+
+.container {
+  margin: 0 58px;
 }
 
 .title {
@@ -49,10 +53,6 @@
   transform: translateY(-50%);
 }
 
-.avatarListArrow:disabled {
-  cursor: not-allowed;
-}
-
 .avatarListArrowLeft {
   left: -30px;
 }
@@ -74,5 +74,5 @@
 }
 
 .address {
-  margin: 0 -64px 40px;
+  margin-bottom: 40px;
 }

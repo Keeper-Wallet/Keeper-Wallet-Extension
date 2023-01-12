@@ -253,59 +253,6 @@ $layout-44 = 44px;
   padding: $layout-14;
   border-radius: 2px;
 
-  &-with-controls
-    max-height: 114px;
-    display: flex;
-    flex-direction: column;
-
-    &-short
-      max-height: 76px;
-
-    & > div:first-child
-      max-height: 110px;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding-right: 14px;
-      margin-right: -14px;
-
-    .buttons-wrapper
-      width: 100%;
-      display: flex;
-      justify-content: flex-end;
-      min-height: 27px;
-      margin-bottom: -13px;
-
-      button
-        padding: 0;
-        margin: 0 20px 0 10px;
-        color: $submit300;
-        font-size: 12px;
-        height: auto;
-        background: none transparent;
-        border: 0 none;
-        border-radius: 0;
-        position: relative;
-        width: auto!important;
-        flex-basis: auto;
-
-        &:not(:last-child)
-          &:after
-            content: '';
-            position: absolute;
-            height: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            background $basic500;
-            display: block;
-            right: -15px;
-            width: 1px;
-
-        &:hover
-          border: 0 none;
-
-        &:last-child
-          margin-right: 0;
-
 :global .transactionContent
   height: calc(100% - 204px);
   padding-bottom: 14px;
@@ -328,14 +275,6 @@ $layout-44 = 44px;
 
 :global .grow
   flex-grow: 1;
-
-// modals, errors, notifications
-:global #app-modal
-  position: absolute;
-  width: 100%;
-  display: block;
-  top: 0;
-  z-index: 1000;
 
 :global .cover {
   display: flex;

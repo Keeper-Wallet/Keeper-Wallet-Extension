@@ -1,8 +1,8 @@
+import { BalanceAssets } from 'balances/types';
 import clsx from 'clsx';
 import ColorHash from 'color-hash';
 import { NetworkName } from 'networks/types';
 import { useState } from 'react';
-import { BalanceAssets } from 'store/reducers/updateState';
 import { Modal } from 'ui/components/ui/modal/Modal';
 
 import * as styles from './assetSelect.module.css';

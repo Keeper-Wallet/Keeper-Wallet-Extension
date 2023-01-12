@@ -1,10 +1,16 @@
-import { seedUtils } from '@waves/waves-transactions';
+import {
+  base64Decode,
+  decryptSeed,
+  utf8Decode,
+  utf8Encode,
+} from '@keeper-wallet/waves-crypto';
 import { KeystoreProfiles } from 'keystore/types';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { batchAddAccounts } from 'store/actions/user';
+import invariant from 'tiny-invariant';
 import { getNetworkByNetworkCode } from 'ui/utils/waves';
 
 import { WalletTypes } from '../../../services/Background';
@@ -31,44 +37,64 @@ type ExchangeKeystoreAccount = {
 
 interface EncryptedKeystore {
   type: WalletTypes;
-  decrypt: (password: string) => KeystoreProfiles | null;
+  decrypt: (password: string) => Promise<KeystoreProfiles | null>;
 }
 
 function parseKeystore(json: string): EncryptedKeystore | null {
   try {
-    const { profiles, data } = JSON.parse(json);
+    const parsedJson: unknown = JSON.parse(json);
 
-    if (profiles) {
-      if (typeof profiles === 'string') {
-        return {
-          type: WalletTypes.Keystore,
-          decrypt: password => {
-            try {
-              return JSON.parse(
-                seedUtils.decryptSeed(atob(profiles), password)
-              );
-            } catch (err) {
-              return null;
-            }
-          },
-        };
-      }
-    } else if (data) {
-      const { encryptionRounds, saveUsers } = JSON.parse(atob(data));
+    if (!parsedJson || typeof parsedJson !== 'object') {
+      return null;
+    }
+
+    if ('profiles' in parsedJson && typeof parsedJson.profiles === 'string') {
+      const { profiles } = parsedJson;
+
+      return {
+        type: WalletTypes.Keystore,
+        decrypt: async password => {
+          try {
+            const decrypted = await decryptSeed(
+              base64Decode(atob(profiles)),
+              utf8Encode(password)
+            );
+
+            return JSON.parse(utf8Decode(decrypted));
+          } catch (err) {
+            return null;
+          }
+        },
+      };
+    }
+
+    if ('data' in parsedJson && typeof parsedJson.data === 'string') {
+      const parsedData: unknown = JSON.parse(atob(parsedJson.data));
 
       if (
-        typeof saveUsers === 'string' &&
-        typeof encryptionRounds === 'number'
+        parsedData &&
+        typeof parsedData === 'object' &&
+        'encryptionRounds' in parsedData &&
+        typeof parsedData.encryptionRounds === 'number' &&
+        'saveUsers' in parsedData &&
+        typeof parsedData.saveUsers === 'string'
       ) {
+        const { encryptionRounds, saveUsers } = parsedData;
+
         return {
           type: WalletTypes.KeystoreWx,
-          decrypt: password => {
+          decrypt: async password => {
             try {
-              const accounts: ExchangeKeystoreAccount[] = JSON.parse(
-                seedUtils.decryptSeed(saveUsers, password, encryptionRounds)
+              const decrypted = await decryptSeed(
+                base64Decode(saveUsers),
+                utf8Encode(password),
+                encryptionRounds
               );
 
-              // eslint-disable-next-line @typescript-eslint/no-shadow
+              const accounts: ExchangeKeystoreAccount[] = JSON.parse(
+                utf8Decode(decrypted)
+              );
+
               const profiles: KeystoreProfiles = {
                 custom: { accounts: [] },
                 mainnet: { accounts: [] },
@@ -99,7 +125,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
                 });
 
               return profiles;
-            } catch (err) {
+            } catch {
               return null;
             }
           },
@@ -108,7 +134,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
     }
 
     return null;
-  } catch (err) {
+  } catch {
     return null;
   }
 }
@@ -149,8 +175,7 @@ export function ImportKeystore() {
               return;
             }
 
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const newProfiles = keystore.decrypt(password!);
+            const newProfiles = await keystore.decrypt(password);
 
             if (!newProfiles) {
               setError(t('importKeystore.errorDecrypt'));
@@ -194,7 +219,7 @@ export function ImportKeystore() {
             });
             setWalletType(keystore.type);
             setProfiles(newProfiles);
-          } catch (err) {
+          } catch {
             setError(t('importKeystore.errorUnexpected'));
           }
 
@@ -212,6 +237,8 @@ export function ImportKeystore() {
         navigate('/');
       }}
       onSubmit={async selectedAccounts => {
+        invariant(walletType);
+
         await dispatch(
           batchAddAccounts(
             selectedAccounts.map(acc => ({
@@ -219,8 +246,7 @@ export function ImportKeystore() {
               ...acc,
               network: getNetworkByNetworkCode(acc.networkCode),
             })),
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            walletType!
+            walletType
           )
         );
 

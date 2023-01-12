@@ -1,45 +1,64 @@
-import { BigNumber } from '@waves/bignumber';
 import {
-  address,
-  privateKey,
-  publicKey,
+  base58Encode,
+  createAddress,
+  createPrivateKey,
+  createPublicKey,
   signBytes,
-} from '@waves/ts-lib-crypto';
-import { customData, wavesAuth } from '@waves/waves-transactions';
-import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
-import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
+  utf8Encode,
+} from '@keeper-wallet/waves-crypto';
 import { NetworkName } from 'networks/types';
-import * as create from 'parse-json-bignumber';
-import {
-  convertFromSa,
-  makeBytes,
-  SaAuth,
-  SaCancelOrder,
-  SaOrder,
-  SaRequest,
-  SaTransaction,
-} from 'transactions/utils';
 
 import { WalletPrivateDataOfType } from './types';
 import { Wallet } from './wallet';
 
-const { stringify } = create({ BigNumber });
-
-export interface SeedWalletInput {
-  name: string;
-  network: NetworkName;
-  networkCode: string;
-  seed: string;
-}
-
 export class SeedWallet extends Wallet<WalletPrivateDataOfType<'seed'>> {
-  constructor({ name, network, networkCode, seed }: SeedWalletInput) {
-    super({
-      address: address(seed, networkCode),
+  static async create({
+    name,
+    network,
+    networkCode,
+    seed,
+  }: {
+    name: string;
+    network: NetworkName;
+    networkCode: string;
+    seed: string;
+  }) {
+    const privateKey = await createPrivateKey(utf8Encode(seed));
+    const publicKey = await createPublicKey(privateKey);
+
+    return new this({
+      address: base58Encode(
+        createAddress(publicKey, networkCode.charCodeAt(0))
+      ),
       name,
       network,
       networkCode,
-      publicKey: publicKey(seed),
+      publicKey: base58Encode(publicKey),
+      seed,
+    });
+  }
+
+  constructor({
+    address,
+    name,
+    network,
+    networkCode,
+    publicKey,
+    seed,
+  }: {
+    address: string;
+    name: string;
+    network: NetworkName;
+    networkCode: string;
+    publicKey: string;
+    seed: string;
+  }) {
+    super({
+      address,
+      name,
+      network,
+      networkCode,
+      publicKey,
       seed,
       type: 'seed',
     });
@@ -60,58 +79,13 @@ export class SeedWallet extends Wallet<WalletPrivateDataOfType<'seed'>> {
     return this.data.seed;
   }
 
-  getPrivateKey() {
-    return privateKey(this.getSeed());
+  async getPrivateKey() {
+    return createPrivateKey(utf8Encode(this.getSeed()));
   }
 
-  private signBytes(bytes: Uint8Array) {
-    return signBytes(this.data.seed, bytes);
-  }
+  protected async signBytes(bytes: Uint8Array) {
+    const privateKey = await this.getPrivateKey();
 
-  async signTx(tx: SaTransaction) {
-    const result = convertFromSa.transaction(
-      tx,
-      this.data.networkCode.charCodeAt(0),
-      'seed'
-    );
-
-    result.proofs.push(this.signBytes(makeBytes.transaction(result)));
-
-    return stringify(result);
-  }
-
-  async signAuth(auth: SaAuth) {
-    return this.signBytes(makeBytes.auth(convertFromSa.auth(auth)));
-  }
-
-  async signRequest(request: SaRequest) {
-    return this.signBytes(makeBytes.request(convertFromSa.request(request)));
-  }
-
-  async signOrder(order: SaOrder) {
-    const result = convertFromSa.order(
-      order,
-      this.data.networkCode.charCodeAt(0)
-    );
-
-    result.proofs.push(this.signBytes(makeBytes.order(result)));
-
-    return stringify(result);
-  }
-
-  async signCancelOrder(cancelOrder: SaCancelOrder) {
-    const result = convertFromSa.cancelOrder(cancelOrder);
-
-    result.signature = this.signBytes(makeBytes.cancelOrder(result));
-
-    return stringify(result);
-  }
-
-  async signWavesAuth(data: IWavesAuthParams) {
-    return wavesAuth(data, this.getSeed());
-  }
-
-  async signCustomData(data: TCustomData) {
-    return customData(data, this.getSeed());
+    return signBytes(privateKey, bytes);
   }
 }

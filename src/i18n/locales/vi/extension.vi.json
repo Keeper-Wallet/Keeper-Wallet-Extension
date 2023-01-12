@@ -482,12 +482,6 @@
       "disallowed": "Đã ngừng cho phép!"
     }
   },
-  "plateComponent": {
-    "copy": "Sao chép",
-    "copied": "Đã sao chép!",
-    "collapse": "Sụp đổ",
-    "expand": "Mở rộng"
-  },
   "qrCode": { "download": "Tải xuống mã QR" },
   "send": {
     "amountInputLabel": "Số lượng",
@@ -577,7 +571,6 @@
     "exchangeChannelUnavailableError": "Dịch vụ không phản hồi",
     "exchangeChannelUnknownError": "Giao dịch swap này không khả dụng",
     "failMessage": "Swap không thành công, hãy thử lại",
-    "ledgerFailMessage": "Yêu cầu bị Leger từ chối",
     "fromInputLabel": "Từ",
     "insufficientFundsError": "Không đủ tiền",
     "maxAmountExceeded": "Số lượng không được vượt quá “ {{ maxAmount }}",

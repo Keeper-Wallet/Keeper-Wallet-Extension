@@ -9,6 +9,7 @@ import { Button } from 'ui/components/ui/buttons/Button';
 import { ErrorMessage } from 'ui/components/ui/error';
 import { Input } from 'ui/components/ui/input';
 
+import { NETWORK_CONFIG } from '../../../../constants';
 import { LedgerAvatarList } from './avatarList';
 import * as styles from './importLedger.module.css';
 
@@ -53,7 +54,6 @@ export function ImportLedger() {
   const accounts = usePopupSelector(state => state.accounts);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const customCodes = usePopupSelector(state => state.customCodes);
-  const networks = usePopupSelector(state => state.networks);
 
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
@@ -121,9 +121,7 @@ export function ImportLedger() {
   }, [userIdInputValue, t]);
 
   const networkCode =
-    customCodes[currentNetwork] ||
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    networks.find(n => currentNetwork === n.name)!.code;
+    customCodes[currentNetwork] || NETWORK_CONFIG[currentNetwork].networkCode;
 
   const connectToLedger = useCallback(async () => {
     setConnectionError(null);
@@ -216,124 +214,132 @@ export function ImportLedger() {
 
   return (
     <div className={styles.root}>
-      <h2 className={styles.title}>{t('importLedger.title')}</h2>
+      <div className={styles.container}>
+        <h2 className={styles.title}>{t('importLedger.title')}</h2>
+      </div>
 
       {ledgerUsersPages[0] != null ? (
-        <div>
-          <p className={styles.instructions}>
-            {t('importLedger.selectAccountInstructions')}
-          </p>
+        <>
+          <div className={styles.container}>
+            <p className={styles.instructions}>
+              {t('importLedger.selectAccountInstructions')}
+            </p>
 
-          <div className={styles.avatarList}>
-            <div>
-              {isCurPageLoaded ? (
-                <LedgerAvatarList
-                  selectedId={selectedUserId}
-                  size={38}
-                  users={ledgerUsersPages[page]}
-                  onSelect={id => {
-                    setSelectAccountError(null);
-                    setSelectedUserId(id);
+            <div className={styles.avatarList}>
+              <div>
+                {isCurPageLoaded ? (
+                  <LedgerAvatarList
+                    selectedId={selectedUserId}
+                    size={38}
+                    users={ledgerUsersPages[page]}
+                    onSelect={id => {
+                      setSelectAccountError(null);
+                      setSelectedUserId(id);
+                    }}
+                  />
+                ) : getUsersError ? (
+                  <ErrorMessage className={styles.error} show>
+                    {getUsersError}
+                  </ErrorMessage>
+                ) : (
+                  t('importLedger.avatarListLoading')
+                )}
+              </div>
+
+              {page > 0 && (
+                <button
+                  className={clsx(
+                    styles.avatarListArrow,
+                    styles.avatarListArrowLeft
+                  )}
+                  disabled={!isCurPageLoaded}
+                  type="button"
+                  onClick={() => {
+                    setPage(prevState => prevState - 1);
                   }}
-                />
-              ) : getUsersError ? (
-                <ErrorMessage className={styles.error} show>
-                  {getUsersError}
-                </ErrorMessage>
-              ) : (
-                t('importLedger.avatarListLoading')
+                >
+                  <Arrow direction="left" />
+                </button>
+              )}
+
+              {page < MAX_PAGE && (
+                <button
+                  className={clsx(
+                    styles.avatarListArrow,
+                    styles.avatarListArrowRight
+                  )}
+                  disabled={!isCurPageLoaded}
+                  type="button"
+                  onClick={() => {
+                    setPage(prevState => prevState + 1);
+                  }}
+                >
+                  <Arrow direction="right" />
+                </button>
               )}
             </div>
 
-            {page > 0 && (
-              <button
-                className={clsx(
-                  styles.avatarListArrow,
-                  styles.avatarListArrowLeft
-                )}
-                disabled={!isCurPageLoaded}
-                type="button"
-                onClick={() => {
-                  setPage(prevState => prevState - 1);
-                }}
-              >
-                <Arrow direction="left" />
-              </button>
-            )}
-
-            {page < MAX_PAGE && (
-              <button
-                className={clsx(
-                  styles.avatarListArrow,
-                  styles.avatarListArrowRight
-                )}
-                disabled={!isCurPageLoaded}
-                type="button"
-                onClick={() => {
-                  setPage(prevState => prevState + 1);
-                }}
-              >
-                <Arrow direction="right" />
-              </button>
-            )}
-          </div>
-
-          <ErrorMessage className={styles.error} show={!!selectAccountError}>
-            {selectAccountError}
-          </ErrorMessage>
-
-          <div className="margin2">
-            <div className="tag1 basic500 input-title">
-              {t('importLedger.accountIdLabel')}
-            </div>
-
-            <Input
-              value={userIdInputValue}
-              onBlur={() => {
-                setUserIdInputValue(String(selectedUserId));
-              }}
-              onChange={event => {
-                setUserIdInputValue(event.currentTarget.value);
-              }}
-            />
-
-            <ErrorMessage show={userIdInputError != null}>
-              {userIdInputError}
+            <ErrorMessage className={styles.error} show={!!selectAccountError}>
+              {selectAccountError}
             </ErrorMessage>
+
+            <div className="margin2">
+              <div className="tag1 basic500 input-title">
+                {t('importLedger.accountIdLabel')}
+              </div>
+
+              <Input
+                value={userIdInputValue}
+                onBlur={() => {
+                  setUserIdInputValue(String(selectedUserId));
+                }}
+                onChange={event => {
+                  setUserIdInputValue(event.currentTarget.value);
+                }}
+              />
+
+              <ErrorMessage show={userIdInputError != null}>
+                {userIdInputError}
+              </ErrorMessage>
+            </div>
           </div>
 
           <div className={clsx(styles.address, 'grey-line')}>
             {selectedUser?.address}
           </div>
 
-          <Button
-            disabled={!selectedUser}
-            view="submit"
-            onClick={() => {
-              if (accounts.some(acc => acc.address === selectedUser.address)) {
-                setSelectAccountError(t('importLedger.accountExistsError'));
-                return;
-              }
+          <div className={styles.container}>
+            <Button
+              disabled={!selectedUser}
+              view="submit"
+              onClick={() => {
+                if (
+                  accounts.some(acc => acc.address === selectedUser.address)
+                ) {
+                  setSelectAccountError(t('importLedger.accountExistsError'));
+                  return;
+                }
 
-              dispatch(
-                newAccountSelect({
-                  type: 'ledger',
-                  address: selectedUser.address,
-                  id: selectedUser.id,
-                  publicKey: selectedUser.publicKey,
-                  name: '',
-                  hasBackup: true,
-                })
-              );
+                dispatch(
+                  newAccountSelect({
+                    type: 'ledger',
+                    address: selectedUser.address,
+                    id: selectedUser.id,
+                    publicKey: selectedUser.publicKey,
+                    name: '',
+                    hasBackup: true,
+                  })
+                );
 
-              navigate('/account-name');
-            }}
-          >
-            {t('importLedger.continueButton')}
-          </Button>
-        </div>
+                navigate('/account-name');
+              }}
+            >
+              {t('importLedger.continueButton')}
+            </Button>
+          </div>
+        </>
       ) : (
-        <div>
+        <div className={styles.container}>
           <p className={styles.instructions}>
             {t('importLedger.connectInstructions')}
           </p>

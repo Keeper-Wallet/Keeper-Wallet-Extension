@@ -1,0 +1,35 @@
+.root {
+  position: relative;
+}
+
+.copyBtnWrapper {
+  position: sticky;
+  top: 0;
+}
+
+.copyBtn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  margin-right: 0;
+  width: 14px;
+  height: 14px;
+  background: var(--color-basic50);
+  color: var(--color-basic500);
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+}
+
+.json {
+  padding: 10px 0;
+  overflow: auto;
+}
+
+.root:hover .copyBtn,
+.copyBtn:focus {
+  opacity: 1;
+}
+
+.copyBtn_feedback {
+  color: var(--color-success400);
+}

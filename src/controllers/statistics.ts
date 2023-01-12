@@ -1,11 +1,12 @@
+import { base58Encode, utf8Encode } from '@keeper-wallet/waves-crypto';
+import { sha256 } from '@noble/hashes/sha256';
 import { captureException, setUser, withScope } from '@sentry/browser';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { libs } from '@waves/waves-transactions';
-import { MessageStoreItem } from 'messages/types';
+import { detect } from 'detect-browser';
+import { Message } from 'messages/types';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
-import { detect } from '../lib/detectBrowser';
 import { ExtensionStorage } from '../storage/storage';
 import { NetworkController } from './network';
 
@@ -19,6 +20,13 @@ interface StatistictsEvent {
   user_properties: unknown;
   event_properties: unknown;
   event_type: unknown;
+}
+
+function createUserId() {
+  const date = Date.now();
+  const random = Math.round(Math.random() * 1000000000);
+
+  return base58Encode(sha256(utf8Encode(`${date}-${random}`)));
 }
 
 export class StatisticsController {
@@ -47,7 +55,7 @@ export class StatisticsController {
       userId: undefined,
     });
 
-    const userId = initState.userId || StatisticsController.createUserId();
+    const userId = initState.userId || createUserId();
     setUser({ id: userId });
     this.store = new ObservableStore({ ...initState, userId });
     extensionStorage.subscribe(this.store);
@@ -64,14 +72,6 @@ export class StatisticsController {
         this.sendIdleEvent();
       }
     });
-  }
-
-  static createUserId() {
-    const date = Date.now();
-    const random = Math.round(Math.random() * 1000000000);
-    return libs.crypto.base58Encode(
-      libs.crypto.sha256(libs.crypto.stringToBytes(`${date}-${random}`))
-    );
   }
 
   addEvent(event_type: string, event_properties = {}) {
@@ -205,26 +205,38 @@ export class StatisticsController {
     }
   }
 
-  sendTxEvent(message: MessageStoreItem) {
-    try {
-      if (message.type === 'transactionPackage') {
-        (message.data || []).forEach(data => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          this.sendTxEvent({ ...message, type: 'transaction', data } as any);
+  sendMessageEvent(message: Message) {
+    if (message.type === 'transactionPackage') {
+      message.data.forEach((data, index) => {
+        this.sendMessageEvent({
+          ...message,
+          broadcast: false,
+          data,
+          input: {
+            account: message.account,
+            broadcast: false,
+            data: message.input.data[index],
+            type: 'transaction',
+          },
+          result: message.result?.[index],
+          type: 'transaction',
         });
-      } else {
-        this.addEvent('approve', {
-          type: message.data.type,
-          msgType: message.type,
-          origin: message.origin,
-          dApp:
-            message.data.type === TRANSACTION_TYPE.INVOKE_SCRIPT
-              ? message.data.data.dApp
-              : undefined,
-        });
-      }
-    } catch (e) {
-      // ignore errors
+      });
+    } else if ('data' in message && 'type' in message.data) {
+      this.addEvent('approve', {
+        type: message.data.type,
+        msgType: message.type,
+        origin: message.origin,
+        dApp:
+          message.data.type === TRANSACTION_TYPE.INVOKE_SCRIPT
+            ? message.data.dApp
+            : undefined,
+      });
+    } else {
+      this.addEvent('approve', {
+        origin: message.origin,
+        msgType: message.type,
+      });
     }
   }
 

@@ -1,19 +1,14 @@
-import { AssetDetail } from 'assets/types';
 import type { __BackgroundUiApiDirect } from 'background';
 import type { IdentityUser } from 'controllers/IdentityController';
-import type {
-  SwapAssetsParams,
-  SwapAssetsResult,
-} from 'controllers/SwapController';
-import { MessageInputOfType } from 'messages/types';
-import { NetworkName } from 'networks/types';
-import { PreferencesAccount } from 'preferences/types';
-import { UiState } from 'store/reducers/updateState';
-import { SwapVendor } from 'swap/constants';
-import { IMoneyLike } from 'ui/utils/converters';
-import { CreateWalletInput } from 'wallets/types';
+import type { MessageInputOfType, MessageTx } from 'messages/types';
+import type { MoneyLike } from 'messages/types';
+import type { NetworkName } from 'networks/types';
+import type { PreferencesAccount } from 'preferences/types';
+import type { UiState } from 'store/reducers/updateState';
+import type { SwapVendor } from 'swap/constants';
+import type { CreateWalletInput } from 'wallets/types';
 
-import { IgnoreErrorsContext } from '../../constants';
+import type { IgnoreErrorsContext } from '../../constants';
 import type { StorageLocalState } from '../../storage/storage';
 
 export type BackgroundUiApi = __BackgroundUiApiDirect;
@@ -105,7 +100,7 @@ class Background {
 
   async setNotificationPermissions(options: {
     origin: string;
-    canUse: boolean;
+    canUse: boolean | null;
   }) {
     await this.initPromise;
     this._connect();
@@ -135,23 +130,32 @@ class Background {
   }
 
   async addWallet(
-    data: Omit<CreateWalletInput, 'networkCode'> & { networkCode?: string }
+    input: CreateWalletInput,
+    network: NetworkName,
+    networkCode: string
   ) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.background!.addWallet(data);
+    return this.background!.addWallet(input, network, networkCode);
+  }
+
+  async batchAddWallets(
+    inputs: Array<
+      CreateWalletInput & { network: NetworkName; networkCode: string }
+    >
+  ) {
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.batchAddWallets(inputs);
   }
 
   async removeWallet(address: string, network: NetworkName): Promise<void> {
     await this.initPromise;
     this._connect();
-    if (address) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return this.background!.removeWallet(address, network);
-    }
-
-    return this.deleteVault();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.removeWallet(address, network);
   }
 
   async deleteVault() {
@@ -203,18 +207,18 @@ class Background {
     return this.background!.initVault(password);
   }
 
-  async checkPassword(password: string): Promise<string> {
+  async assertPasswordIsValid(password: string) {
     await this.initPromise;
     this._connect();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-    return (await this.background!.checkPassword(password)) as any;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return await this.background!.assertPasswordIsValid(password);
   }
 
   async getAccountSeed(
     address: string,
     network: NetworkName,
     password: string
-  ): Promise<string> {
+  ) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -225,7 +229,7 @@ class Background {
     address: string,
     network: NetworkName,
     password: string
-  ): Promise<string> {
+  ) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -236,7 +240,7 @@ class Background {
     address: string,
     network: NetworkName,
     password: string
-  ): Promise<string> {
+  ) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -264,21 +268,11 @@ class Background {
     return this.background!.clearMessages();
   }
 
-  async deleteMessage(id: string): Promise<void> {
+  async approve(messageId: string) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.background!.deleteMessage(id);
-  }
-
-  async approve(
-    messageId: string,
-    address: PreferencesAccount
-  ): Promise<unknown> {
-    await this.initPromise;
-    this._connect();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.background!.approve(messageId, address);
+    return this.background!.approve(messageId);
   }
 
   async reject(messageId: string, forever = false): Promise<void> {
@@ -288,7 +282,7 @@ class Background {
     return this.background!.reject(messageId, forever);
   }
 
-  async updateTransactionFee(messageId: string, fee: IMoneyLike) {
+  async updateTransactionFee(messageId: string, fee: MoneyLike) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -302,48 +296,42 @@ class Background {
     return this.background!.setNetwork(network);
   }
 
-  async setCustomNode(
-    url: string | null | undefined,
-    network: NetworkName
-  ): Promise<void> {
+  async setCustomNode(url: string | null, network: NetworkName) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.setCustomNode(url, network);
   }
 
-  async setCustomCode(
-    code: string | undefined,
-    network: NetworkName
-  ): Promise<void> {
+  async setCustomCode(code: string | null, network: NetworkName) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.setCustomCode(code, network);
   }
 
-  async setCustomMatcher(
-    url: string | null | undefined,
-    network: NetworkName
-  ): Promise<void> {
+  async setCustomMatcher(url: string | null, network: NetworkName) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.setCustomMatcher(url, network);
   }
 
-  async assetInfo(assetId: string): Promise<AssetDetail> {
+  async assetInfo(assetId: string) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.assetInfo(assetId || 'WAVES');
   }
 
-  async updateAssets(assetIds: string[]): Promise<AssetDetail> {
+  async updateAssets(
+    assetIds: string[],
+    options: { ignoreCache?: boolean } = {}
+  ) {
     await this.initPromise;
     this._connect();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-    return (await this.background!.updateAssets(assetIds)) as any;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return await this.background!.updateAssets(assetIds, options);
   }
 
   async setAddress(address: string, name: string): Promise<void> {
@@ -413,11 +401,18 @@ class Background {
     return this.background!.updateBalances();
   }
 
-  async swapAssets(params: SwapAssetsParams): Promise<SwapAssetsResult> {
+  async signTransaction(account: PreferencesAccount, tx: MessageTx) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.background!.swapAssets(params);
+    return this.background!.signTransaction(account, tx);
+  }
+
+  async broadcastTransaction(tx: MessageTx) {
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.broadcastTransaction(tx);
   }
 
   async signAndPublishTransaction(
@@ -549,7 +544,3 @@ export enum WalletTypes {
   KeystoreWx = 'keystore_wx',
   Debug = 'debug',
 }
-
-export type BackgroundGetStateResult = Awaited<
-  ReturnType<Background['getState']>
->;

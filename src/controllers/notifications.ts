@@ -1,23 +1,20 @@
 import EventEmitter from 'events';
-import log from 'loglevel';
 import { nanoid } from 'nanoid';
 import { NotificationsStoreItem } from 'notifications/types';
 import ObservableStore from 'obs-store';
 import { PreferencesAccount } from 'preferences/types';
 import Browser from 'webextension-polyfill';
 
-import { MSG_STATUSES, MsgStatus } from '../constants';
 import { ERRORS } from '../lib/keeperError';
 import { ExtensionStorage } from '../storage/storage';
 import { PermissionsController } from './permissions';
 import { RemoteConfigController } from './remoteConfig';
 
 export class NotificationsController extends EventEmitter {
-  private notifications;
-  private store;
-  private getMessagesConfig;
-  private canShowNotification;
-  private setNotificationPermissions;
+  #canShowNotification;
+  #getMessagesConfig;
+  #setNotificationPermissions;
+  #store;
 
   constructor({
     extensionStorage,
@@ -32,41 +29,71 @@ export class NotificationsController extends EventEmitter {
   }) {
     super();
 
-    this.notifications = extensionStorage.getInitState({
-      notifications: [],
-    });
+    this.#store = new ObservableStore(
+      extensionStorage.getInitState({
+        notifications: [],
+      })
+    );
 
-    this.store = new ObservableStore(this.notifications);
-    extensionStorage.subscribe(this.store);
+    extensionStorage.subscribe(this.#store);
 
-    this.getMessagesConfig = getMessagesConfig;
-    this.canShowNotification = canShowNotification;
-    this.setNotificationPermissions = setNotificationPermissions;
+    this.#getMessagesConfig = getMessagesConfig;
+    this.#canShowNotification = canShowNotification;
+    this.#setNotificationPermissions = setNotificationPermissions;
 
-    this.deleteAllByTime();
+    this.#deleteAllByTime();
 
     Browser.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'deleteMessages') {
-        this.deleteAllByTime();
+        this.#deleteAllByTime();
       }
     });
   }
 
-  validateNotification(
-    data: { message?: string; origin?: string; title?: string } | null
-  ): asserts data is { message: string; origin: string; title: string } {
-    const config = this.getMessagesConfig();
+  #deleteAllByTime() {
+    const { message_expiration_ms, update_messages_ms } =
+      this.#getMessagesConfig();
+
+    const { notifications } = this.#store.getState();
+
+    this.deleteNotifications(
+      notifications
+        .filter(
+          notification =>
+            Date.now() - notification.timestamp > message_expiration_ms
+        )
+        .map(notification => notification.id)
+    );
+
+    Browser.alarms.create('deleteMessages', {
+      delayInMinutes: update_messages_ms / 1000 / 60,
+    });
+  }
+
+  #updateNotifications(notifications: NotificationsStoreItem[]) {
+    this.#store.updateState({ ...this.#store.getState(), notifications });
+    this.emit('Update badge');
+  }
+
+  newNotification(data: {
+    address: string;
+    message: string | undefined;
+    origin: string;
+    timestamp: number;
+    title: string | undefined;
+    type: 'simple';
+  }) {
     const {
       notification_title_max,
       notification_message_max,
       notification_interval_min,
-    } = config;
+    } = this.#getMessagesConfig();
 
     if (!data || !data.origin) {
       throw ERRORS.NOTIFICATION_DATA_ERROR();
     }
 
-    const { title, message } = data;
+    const { message, title } = data;
 
     if (!title) {
       throw ERRORS.NOTIFICATION_DATA_ERROR(undefined, `title is required`);
@@ -86,167 +113,41 @@ export class NotificationsController extends EventEmitter {
       );
     }
 
-    this.canShowNotification(data.origin, notification_interval_min);
-  }
+    this.#canShowNotification(data.origin, notification_interval_min);
 
-  newNotification(data: {
-    address: string;
-    message?: string;
-    origin: string;
-    status: MsgStatus;
-    timestamp: number;
-    title?: string;
-    type: 'simple';
-  }) {
-    log.debug(`New notification ${data.type}: ${JSON.stringify(data)}`);
+    const { notifications } = this.#store.getState();
+    const id = nanoid();
 
-    this.validateNotification(data);
-
-    const notification = this._generateMessage(data);
-
-    const notifications = this.store.getState().notifications;
-
-    this._deleteNotificationsByLimit(
-      notifications,
-      this.getMessagesConfig().max_messages
+    this.#updateNotifications(
+      notifications.concat({
+        address: data.address,
+        id,
+        message,
+        origin: data.origin,
+        timestamp: data.timestamp || Date.now(),
+        title,
+        type: data.type,
+      })
     );
 
-    log.debug(`Generated notification ${JSON.stringify(notification)}`);
+    this.#setNotificationPermissions(data.origin, true, Date.now());
 
-    notifications.push(notification);
-    this._updateStore(notifications);
-    this.setNotificationPermissions(data.origin, true, Date.now());
-    return { id: notification.id };
+    return id;
   }
 
   deleteNotifications(ids: string[]) {
-    this._deleteMessages(ids);
-  }
+    const { notifications } = this.#store.getState();
 
-  getNotificationsByAccount(account: PreferencesAccount | undefined) {
-    if (!account || !account.address) {
-      return [];
-    }
-    return this.notifications.notifications.filter(
-      notification => notification.address === account.address
+    this.#updateNotifications(
+      notifications.filter(({ id }) => !ids.includes(id))
     );
   }
 
-  getGroupNotificationsByAccount(account: PreferencesAccount | undefined) {
-    const notifications = this.getNotificationsByAccount(account);
-    return [...notifications].reverse().reduce<{
-      items: NotificationsStoreItem[][];
-      hash: Record<string, NotificationsStoreItem[]>;
-    }>(
-      (acc, item) => {
-        if (!acc.hash[item.origin]) {
-          acc.hash[item.origin] = [];
-          acc.items.push(acc.hash[item.origin]);
-        }
-
-        acc.hash[item.origin].push(item);
-
-        return acc;
-      },
-      { items: [], hash: {} }
-    ).items;
-  }
-
-  deleteAllByTime() {
-    const { message_expiration_ms } = this.getMessagesConfig();
-    const time = Date.now();
-    const { notifications } = this.store.getState();
-    const toDelete: string[] = [];
-    notifications.forEach(({ id, timestamp }) => {
-      if (time - timestamp > message_expiration_ms) {
-        toDelete.push(id);
-      }
-    });
-
-    this._deleteMessages(toDelete);
-    this._updateMessagesByTimeout();
-  }
-
-  setMessageStatus(id: string, status: NotificationsStoreItem['status']) {
-    const { notifications } = this.store.getState();
-    const index = notifications.findIndex(msg => msg.id === id);
-    if (index > -1) {
-      notifications.splice(index, 1, { ...notifications[index], status });
-      this._updateStore(notifications);
-    }
-  }
-
-  deleteMsg(id: string) {
-    this._deleteMessages([id]);
-  }
-
-  _generateMessage({
-    address,
-    origin,
-    title,
-    type,
-    timestamp,
-    message,
-  }: {
-    address: NotificationsStoreItem['address'];
-    origin: NotificationsStoreItem['origin'];
-    title: NotificationsStoreItem['title'];
-    type: NotificationsStoreItem['type'];
-    timestamp: NotificationsStoreItem['timestamp'];
-    message: NotificationsStoreItem['message'];
-  }): NotificationsStoreItem {
-    return {
-      type,
-      title,
-      origin,
-      address,
-      message,
-      id: nanoid(),
-      timestamp: timestamp || Date.now(),
-      status: MSG_STATUSES.NEW_NOTIFICATION,
-    };
-  }
-
-  _deleteMessages(ids: string[]) {
-    const { notifications } = this.store.getState();
-    const newNotifications = notifications.filter(
-      ({ id }) => !ids.includes(id)
-    );
-    if (newNotifications.length !== notifications.length) {
-      this._updateStore(newNotifications);
-    }
-  }
-
-  _deleteNotificationsByLimit(
-    notifications: NotificationsStoreItem[],
-    limit: number
-  ) {
-    const toDelete: string[] = [];
-
-    while (notifications.length > limit) {
-      const oldest = notifications.sort((a, b) => a.timestamp - b.timestamp)[0];
-      if (oldest) {
-        toDelete.push(oldest.id);
-      } else {
-        break;
-      }
-    }
-
-    this._deleteMessages(toDelete);
-  }
-
-  _updateStore(notifications: NotificationsStoreItem[]) {
-    const data = { ...this.store.getState(), notifications };
-    this.store.updateState(data);
-    this.notifications = data;
-    this.emit('Update badge');
-  }
-
-  _updateMessagesByTimeout() {
-    const { update_messages_ms } = this.getMessagesConfig();
-
-    Browser.alarms.create('deleteMessages', {
-      delayInMinutes: update_messages_ms / 1000 / 60,
-    });
+  getNotifications(account: PreferencesAccount) {
+    return this.#store
+      .getState()
+      .notifications.filter(
+        notification => notification.address === account.address
+      );
   }
 }

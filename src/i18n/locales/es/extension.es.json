@@ -491,12 +491,6 @@
       "disallowed": "¡Prohibido!"
     }
   },
-  "plateComponent": {
-    "copy": "Copiar",
-    "copied": "¡Copiado!",
-    "collapse": "Colapsar",
-    "expand": "Expandir"
-  },
   "qrCode": {
     "download": "Descargar código QR"
   },
@@ -588,7 +582,6 @@
     "exchangeChannelUnavailableError": "El servicio no responde",
     "exchangeChannelUnknownError": "No disponible para este intercambio",
     "failMessage": "El intercambio no se realizó correctamente, inténtalo de nuevo",
-    "ledgerFailMessage": "La solicitud es rechazada en el Ledger",
     "fromInputLabel": "Desde",
     "insufficientFundsError": "Fondos insuficientes",
     "maxAmountExceeded": "La cantidad no debe exceder {{ maxAmount }}",

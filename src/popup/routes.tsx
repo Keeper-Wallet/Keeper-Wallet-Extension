@@ -3,6 +3,8 @@ import { RouteObject } from 'react-router-dom';
 import { Bottom } from '../ui/components/bottom/bottom';
 import { Menu } from '../ui/components/menu/Menu';
 import { AccountInfo } from '../ui/components/pages/accountInfo';
+import { ActiveMessagePage } from '../ui/components/pages/activeMessage';
+import { ActiveNotificationPage } from '../ui/components/pages/activeNotification';
 import { AddressBook } from '../ui/components/pages/AddressBook';
 import { ChangeAccountName } from '../ui/components/pages/changeAccountName';
 import { ChangePassword } from '../ui/components/pages/ChangePassword';
@@ -14,17 +16,14 @@ import { ExportAddressBook } from '../ui/components/pages/exportAccounts/exportA
 import { ExportAndImport } from '../ui/components/pages/ExportAndImport';
 import { Info } from '../ui/components/pages/Info';
 import { LangsSettings } from '../ui/components/pages/LangsSettings';
-import { Messages } from '../ui/components/pages/Messages';
-import { MessageList } from '../ui/components/pages/MessagesList';
-import { NetworksSettings } from '../ui/components/pages/NetworksSettings';
+import { MessagesAndNotificationsPage } from '../ui/components/pages/messagesAndNotifications';
+import { NetworkSettings } from '../ui/components/pages/networkSettings';
 import { NftCollection } from '../ui/components/pages/nfts/nftCollection';
 import { NftInfo } from '../ui/components/pages/nfts/nftInfo';
-import { Notifications } from '../ui/components/pages/Notifications';
 import { OtherAccountsPage } from '../ui/components/pages/otherAccounts';
 import { PermissionsSettings } from '../ui/components/pages/PermissionsSettings/PermissionSettings';
 import { PopupHome } from '../ui/components/pages/popupHome';
 import { SelectedAccountQr } from '../ui/components/pages/SelectedAccountQr';
-import { SelectTxAccount } from '../ui/components/pages/SelectTxAccount';
 import { Send } from '../ui/components/pages/send';
 import { Settings } from '../ui/components/pages/Settings';
 import { SettingsGeneral } from '../ui/components/pages/SettingsGeneral';
@@ -196,7 +195,7 @@ export const routes: RouteObject[] = [
         element: (
           <>
             <Menu hasBack hasLogo />
-            <NetworksSettings />
+            <NetworkSettings />
           </>
         ),
       },
@@ -241,7 +240,7 @@ export const routes: RouteObject[] = [
         element: (
           <>
             <Menu hasLogo />
-            <Notifications />
+            <ActiveNotificationPage />
           </>
         ),
       },
@@ -250,17 +249,13 @@ export const routes: RouteObject[] = [
         element: (
           <>
             <Menu hasLogo />
-            <Messages />
+            <ActiveMessagePage />
           </>
         ),
       },
       {
         path: '/messages-and-notifications',
-        element: <MessageList />,
-      },
-      {
-        path: '/change-tx-account',
-        element: <SelectTxAccount />,
+        element: <MessagesAndNotificationsPage />,
       },
       {
         path: '/forgot-password',

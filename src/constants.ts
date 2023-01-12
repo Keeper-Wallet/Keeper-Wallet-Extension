@@ -1,30 +1,47 @@
-import { TRANSACTION_TYPE } from '@waves/ts-types';
-
-export const KEEPERWALLET_DEBUG = process.env.NODE_ENV !== 'production';
+import { NetworkName } from 'networks/types';
 
 export const MAX_TX_HISTORY_ITEMS = 101;
 export const MAX_NFT_ITEMS = 1000;
-
-export const allowMatcher = ['dex.tokenomica.com', 'vfa.tokenomica.com'];
-
-export const MSG_STATUSES = {
-  UNAPPROVED: 'unapproved',
-  SIGNED: 'signed',
-  PUBLISHED: 'published',
-  FAILED: 'failed',
-  REJECTED: 'rejected',
-  REJECTED_FOREVER: 'rejected_forever',
-  SHOWED_NOTIFICATION: 'showed_notify',
-  NEW_NOTIFICATION: 'new_notify',
-} as const;
-
-export type MsgStatus = (typeof MSG_STATUSES)[keyof typeof MSG_STATUSES];
 
 export const STATUS = {
   ERROR: -1,
   OK: 1,
   PENDING: 0,
   UPDATED: 2,
+};
+
+export interface NetworkConfigItem {
+  matcherBaseUrl: string;
+  name: NetworkName;
+  networkCode: string;
+  nodeBaseUrl: string;
+}
+
+export const NETWORK_CONFIG: Record<NetworkName, NetworkConfigItem> = {
+  [NetworkName.Testnet]: {
+    matcherBaseUrl: 'https://matcher-testnet.waves.exchange/',
+    name: NetworkName.Testnet,
+    networkCode: 'T',
+    nodeBaseUrl: 'https://nodes-testnet.wavesnodes.com/',
+  },
+  [NetworkName.Mainnet]: {
+    matcherBaseUrl: 'https://matcher.waves.exchange/',
+    name: NetworkName.Mainnet,
+    networkCode: 'W',
+    nodeBaseUrl: 'https://nodes-keeper.wavesnodes.com/',
+  },
+  [NetworkName.Stagenet]: {
+    matcherBaseUrl: 'https://matcher-stagenet.waves.exchange/',
+    name: NetworkName.Stagenet,
+    networkCode: 'S',
+    nodeBaseUrl: 'https://nodes-stagenet.wavesnodes.com/',
+  },
+  [NetworkName.Custom]: {
+    matcherBaseUrl: '',
+    name: NetworkName.Custom,
+    networkCode: '',
+    nodeBaseUrl: '',
+  },
 };
 
 export const DEFAULT_MAIN_CONFIG = {
@@ -41,7 +58,6 @@ export const DEFAULT_MAIN_CONFIG = {
   messages_config: {
     message_expiration_ms: 30 * 60 * 1000,
     update_messages_ms: 30 * 1000,
-    max_messages: 100,
     notification_title_max: 20,
     notification_interval_min: 30 * 1000,
     notification_message_max: 250,
@@ -49,28 +65,6 @@ export const DEFAULT_MAIN_CONFIG = {
   pack_config: {
     max: 7,
     allow_tx: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
-  },
-  network_config: {
-    testnet: {
-      code: 'T',
-      server: 'https://nodes-testnet.wavesnodes.com/',
-      matcher: 'https://matcher-testnet.waves.exchange/',
-    },
-    mainnet: {
-      code: 'W',
-      server: 'https://nodes-keeper.wavesnodes.com/',
-      matcher: 'https://matcher.waves.exchange/',
-    },
-    stagenet: {
-      code: 'S',
-      server: 'https://nodes-stagenet.wavesnodes.com/',
-      matcher: 'https://matcher-stagenet.waves.exchange/',
-    },
-    custom: {
-      code: '',
-      server: '',
-      matcher: '',
-    },
   },
   idle: {
     idle: 0,
@@ -82,41 +76,6 @@ export const DEFAULT_MAIN_CONFIG = {
   },
   assets: {
     maxAssetsPerRequest: 100,
-  },
-  fee: {
-    smart_asset_extra_fee: 400000,
-    smart_account_extra_fee: 400000,
-    calculate_fee_rules: {
-      default: {
-        add_smart_asset_fee: true,
-        add_smart_account_fee: true,
-        min_price_step: 100000,
-        fee: 100000,
-      },
-      [TRANSACTION_TYPE.ISSUE]: {
-        fee: 100000000,
-        nftFee: 100000,
-      },
-      [TRANSACTION_TYPE.EXCHANGE]: {
-        add_smart_account_fee: false,
-        fee: 300000,
-      },
-      [TRANSACTION_TYPE.MASS_TRANSFER]: {
-        price_per_transfer: 50000,
-      },
-      [TRANSACTION_TYPE.DATA]: {
-        price_per_kb: 100000,
-      },
-      [TRANSACTION_TYPE.SET_SCRIPT]: {
-        price_per_kb: 100000,
-      },
-      [TRANSACTION_TYPE.SET_ASSET_SCRIPT]: {
-        fee: 100000000,
-      },
-      [TRANSACTION_TYPE.INVOKE_SCRIPT]: {
-        fee: 500000,
-      },
-    },
   },
   ignoreErrors: {
     ignoreAll: false,
@@ -140,7 +99,6 @@ export const DEFAULT_MAIN_CONFIG = {
 
 export type MainConfig = typeof DEFAULT_MAIN_CONFIG;
 export type AssetsConfig = MainConfig['assets'];
-export type FeeConfig = MainConfig['fee'];
 export type IgnoreErrorsConfig = MainConfig['ignoreErrors'];
 export type NftConfig = MainConfig['nfts'];
 

@@ -15,12 +15,16 @@ const action = {
   },
 };
 
+const contentSecurityPolicy =
+  "object-src 'self'; script-src 'self' 'wasm-unsafe-eval'";
+
 const manifestV2 = {
   manifest_version: 2,
   browser_action: action,
   background: {
     scripts: ['background.js'],
   },
+  content_security_policy: contentSecurityPolicy,
   web_accessible_resources: ['inpage.js'],
 };
 
@@ -29,6 +33,9 @@ const manifestV3 = {
   action,
   background: {
     service_worker: 'background.js',
+  },
+  content_security_policy: {
+    extension_pages: contentSecurityPolicy,
   },
   web_accessible_resources: [
     { resources: ['inpage.js'], matches: ['<all_urls>'] },

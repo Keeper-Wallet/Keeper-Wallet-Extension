@@ -1,0 +1,14 @@
+.cardContent {
+  text-align: center;
+}
+
+.smallCardContent {
+  display: flex;
+  align-items: center;
+}
+
+.originAddress {
+  margin-bottom: 4px;
+  padding-top: 7px;
+  font-size: 14px;
+}

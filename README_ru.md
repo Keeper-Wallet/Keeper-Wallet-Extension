@@ -1320,7 +1320,6 @@ KeeperWallet.signAndPublishTransaction({
 
 ```js
 {
-    type: 1002,
     data: {
         ...данные
     }
@@ -1347,7 +1346,6 @@ KeeperWallet.signAndPublishTransaction({
 
 ```js
 KeeperWallet.signOrder({
-  type: 1002,
   data: {
     matcherPublicKey: '7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy',
     orderType: 'sell',
@@ -1399,7 +1397,6 @@ KeeperWallet.signOrder({
 
 ```js
 {
-    type: 1003,
     data: {
         ...данные
     }
@@ -1415,7 +1412,6 @@ KeeperWallet.signOrder({
 
 ```js
 KeeperWallet.signCancelOrder({
-  type: 1003,
   data: {
     id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap',
   },
@@ -1438,7 +1434,6 @@ KeeperWallet.signCancelOrder({
 
 ```js
 KeeperWallet.signAndPublishCancelOrder({
-  type: 1003,
   priceAsset: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
   amountAsset: 'WAVES',
   data: {
@@ -1474,7 +1469,7 @@ KeeperWallet.signAndPublishCancelOrder({
 }
 ```
 
-В данный момент поддерживается только тип 1001: подписание данных для запроса на матчер на получение списка своих ордеров.
+В данный момент поддерживается только подписание данных для запроса на матчер на получение списка своих ордеров.
 
 Поля:
 
@@ -1485,7 +1480,6 @@ KeeperWallet.signAndPublishCancelOrder({
 
 ```js
 KeeperWallet.signRequest({
-  type: 1001,
   data: {
     timestamp: 234234242423423,
   },

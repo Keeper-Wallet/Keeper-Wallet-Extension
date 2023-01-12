@@ -10,7 +10,7 @@ import {
   base58Encode,
   blake2b,
   keccak,
-} from '@waves/ts-lib-crypto';
+} from '@keeper-wallet/waves-crypto';
 
 export function fromWavesToEthereumAddress(address: string) {
   const bytes = base58Decode(address);

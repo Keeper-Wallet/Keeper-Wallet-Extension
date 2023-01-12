@@ -1320,7 +1320,6 @@ Keeper Wallet's method for signing an order to the matcher (exchange service). A
 
 ```js
 {
-    type: 1002,
     data: {
         ...data
     }
@@ -1347,7 +1346,6 @@ Example:
 
 ```js
 KeeperWallet.signOrder({
-  type: 1002,
   data: {
     matcherPublicKey: '9cpfKN9suPNvfeUNphzxXMjcnn974eme8ZhWUjaktzU5',
     orderType: 'sell',
@@ -1398,7 +1396,6 @@ Keeper Wallet's method for signing cancellation of an order to the matcher. As i
 
 ```js
 {
-    type: 1003,
     data: {
         ...data
     }
@@ -1414,7 +1411,6 @@ Example:
 
 ```js
 KeeperWallet.signCancelOrder({
-  type: 1003,
   data: {
     id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap',
   },
@@ -1437,7 +1433,6 @@ Example:
 
 ```js
 KeeperWallet.signAndPublishCancelOrder({
-  type: 1003,
   priceAsset: 'WAVES',
   amountAsset: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
   data: {
@@ -1472,7 +1467,7 @@ Keeper Wallet's method for signing typified data, for signing requests on variou
 }
 ```
 
-Currently, the method supports only type 1001: signing data for a request to the matcher for your orders.
+Currently, the method supports only signing data for a request to the matcher for your orders.
 
 Fields:
 
@@ -1483,7 +1478,6 @@ Example:
 
 ```js
 KeeperWallet.signRequest({
-  type: 1001,
   data: {
     timestamp: 234234242423423,
   },

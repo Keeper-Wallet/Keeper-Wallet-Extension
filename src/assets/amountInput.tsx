@@ -1,9 +1,9 @@
 import BigNumber from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
+import { BalanceAssets } from 'balances/types';
 import { usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { IMaskInput } from 'react-imask';
-import { BalanceAssets } from 'store/reducers/updateState';
 
 import { UsdAmount } from '../ui/components/ui/UsdAmount';
 import * as styles from './amountInput.module.css';
@@ -14,8 +14,8 @@ interface Props {
   assetOptions: AssetSelectOption[];
   balance: Money;
   label: string;
+  maskedValue: string;
   showUsdAmount?: boolean;
-  value: string;
   onAssetChange: (newAssetId: string) => void;
   onBalanceClick?: () => void;
   onChange: (newValue: string, newMaskedValue: string) => void;
@@ -26,18 +26,14 @@ export function AssetAmountInput({
   assetOptions,
   balance,
   label,
+  maskedValue,
   showUsdAmount,
-  value,
   onAssetChange,
   onBalanceClick,
   onChange,
 }: Props) {
   const { t } = useTranslation();
   const network = usePopupSelector(state => state.currentNetwork);
-  const asset = balance.asset;
-
-  const bigNumberValue = new BigNumber(value || '0');
-  const tokens = Money.fromTokens(bigNumberValue, asset).getTokens();
 
   return (
     <div className={styles.root}>
@@ -63,7 +59,7 @@ export function AssetAmountInput({
             assetBalances={assetBalances}
             network={network}
             options={assetOptions}
-            value={asset.id}
+            value={balance.asset.id}
             onChange={onAssetChange}
           />
         </div>
@@ -77,8 +73,9 @@ export function AssetAmountInput({
             maxLength={23}
             placeholder="0.0"
             radix="."
-            scale={asset.precision}
+            scale={balance.asset.precision}
             thousandsSeparator={' '}
+            value={maskedValue}
             onAccept={(_, mask) => {
               onChange(mask.unmaskedValue, mask.value);
             }}
@@ -88,8 +85,8 @@ export function AssetAmountInput({
         {showUsdAmount && (
           <UsdAmount
             className={styles.usdAmount}
-            id={asset.id}
-            tokens={tokens}
+            id={balance.asset.id}
+            tokens={new BigNumber(maskedValue || '0')}
           />
         )}
       </div>

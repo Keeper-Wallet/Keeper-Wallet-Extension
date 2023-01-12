@@ -1,0 +1,12 @@
+.root {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.root td {
+  vertical-align: baseline;
+}
+
+.root td + td {
+  padding-left: 8px;
+}
