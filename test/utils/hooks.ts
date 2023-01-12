@@ -5,10 +5,6 @@ import {
   WebdriverIOQueriesChainable,
 } from '@testing-library/webdriverio';
 import * as mocha from 'mocha';
-import {
-  DockerComposeEnvironment,
-  StartedDockerComposeEnvironment,
-} from 'testcontainers';
 import { remote } from 'webdriverio';
 
 declare global {
@@ -41,25 +37,6 @@ declare module 'mocha' {
     nodeUrl: string;
     wait: number;
   }
-}
-
-interface GlobalFixturesContext {
-  compose: StartedDockerComposeEnvironment;
-}
-
-export async function mochaGlobalSetup(this: GlobalFixturesContext) {
-  this.compose = await new DockerComposeEnvironment(
-    '.',
-    'docker-compose.yml'
-  ).up([
-    'waves-private-node',
-    'chrome',
-    ...(process.env.TEST_WATCH ? [] : ['chrome-video']),
-  ]);
-}
-
-export async function mochaGlobalTeardown(this: GlobalFixturesContext) {
-  await this.compose.down();
 }
 
 export const mochaHooks = () => ({

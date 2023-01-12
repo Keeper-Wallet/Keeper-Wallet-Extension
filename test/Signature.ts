@@ -1,3 +1,5 @@
+import { base58Decode } from "@keeper-wallet/waves-crypto";
+import { BigNumber } from "@waves/bignumber";
 import { binary, serializePrimitives } from '@waves/marshall';
 import {
   base58Encode,
@@ -5,13 +7,16 @@ import {
   concat,
   verifySignature,
 } from '@waves/ts-lib-crypto';
-import { makeTxBytes, serializeCustomData } from '@waves/waves-transactions';
-import { orderToProtoBytes } from '@waves/waves-transactions/dist/proto-serialize';
-import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
-import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
 import { expect } from 'expect-webdriverio';
-import create from 'parse-json-bignumber';
+import {
+  makeAuthBytes,
+  makeCancelOrderBytes,
+  makeCustomDataBytes,
+  makeOrderBytes,
+  makeTxBytes,
+} from 'messages/utils';
 
+import { JSONbn } from "../src/_core/jsonBn";
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { MessagesScreen } from './helpers/MessagesScreen';
 import { AssetScriptTransactionScreen } from './helpers/transactions/AssetScriptTransactionScreen';
@@ -64,8 +69,6 @@ import {
   TRANSFER_WITHOUT_ATTACHMENT,
   UPDATE_ASSET_INFO,
 } from './utils/transactions';
-
-const { parse } = create();
 
 describe('Signature', function () {
   let tabOrigin: string;
@@ -405,7 +408,7 @@ describe('Signature', function () {
         publicKey: senderPublicKey,
       };
 
-      const bytes = serializeAuthData({
+      const bytes = makeAuthBytes({
         host: WHITELIST[3],
         data: 'generated auth data',
       });
@@ -610,15 +613,15 @@ describe('Signature', function () {
 
         expect(status).toBe('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: ISSUE.type,
-          version: 3,
+          version: 3 as const,
           senderPublicKey,
           name: ISSUE.data.name,
           description: ISSUE.data.description,
-          quantity: ISSUE.data.quantity,
+          quantity: new BigNumber(ISSUE.data.quantity),
           script: ISSUE.data.script,
           decimals: ISSUE.data.precision,
           reissuable: ISSUE.data.reissuable,
@@ -628,6 +631,7 @@ describe('Signature', function () {
 
         const bytes = makeTxBytes({
           ...expectedApproveResult,
+          quantity: ISSUE.data.quantity,
           timestamp: parsedApproveResult.timestamp,
         });
 
@@ -681,15 +685,15 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: ISSUE_WITHOUT_SCRIPT.type,
-            version: 3,
+            version: 3 as const,
             senderPublicKey,
             name: ISSUE_WITHOUT_SCRIPT.data.name,
             description: ISSUE_WITHOUT_SCRIPT.data.description,
-            quantity: ISSUE_WITHOUT_SCRIPT.data.quantity,
+            quantity: new BigNumber(ISSUE_WITHOUT_SCRIPT.data.quantity),
             decimals: ISSUE_WITHOUT_SCRIPT.data.precision,
             reissuable: ISSUE_WITHOUT_SCRIPT.data.reissuable,
             fee: 100400000,
@@ -698,6 +702,8 @@ describe('Signature', function () {
 
           const bytes = makeTxBytes({
             ...expectedApproveResult,
+            quantity: ISSUE_WITHOUT_SCRIPT.data.quantity,
+            script: null,
             timestamp: parsedApproveResult.timestamp,
           });
 
@@ -756,15 +762,15 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: ISSUE.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             name: ISSUE.data.name,
             description: ISSUE.data.description,
-            quantity: ISSUE.data.quantity,
+            quantity: new BigNumber(ISSUE.data.quantity),
             script: ISSUE.data.script,
             decimals: ISSUE.data.precision,
             reissuable: ISSUE.data.reissuable,
@@ -774,6 +780,7 @@ describe('Signature', function () {
 
           const bytes = makeTxBytes({
             ...expectedApproveResult,
+            quantity: ISSUE.data.quantity,
             timestamp: parsedApproveResult.timestamp,
           });
 
@@ -833,11 +840,11 @@ describe('Signature', function () {
 
         expect(status).toBe('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: TRANSFER.type,
-          version: 3,
+          version: 3 as const,
           senderPublicKey,
           assetId: TRANSFER.data.amount.assetId,
           recipient: TRANSFER.data.recipient,
@@ -895,16 +902,15 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: TRANSFER_WITHOUT_ATTACHMENT.type,
-            version: 3,
+            version: 3 as const,
             senderPublicKey,
-            assetId: TRANSFER_WITHOUT_ATTACHMENT.data.amount.assetId,
+            assetId: null,
             recipient: 'alias:T:alice',
             amount: TRANSFER_WITHOUT_ATTACHMENT.data.amount.amount,
-            attachment: '',
             fee: 500000,
             feeAssetId: null,
             chainId: 84,
@@ -956,11 +962,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: TRANSFER.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             assetId: TRANSFER.data.amount.assetId,
             recipient: TRANSFER.data.recipient,
@@ -1027,11 +1033,11 @@ describe('Signature', function () {
 
         expect(status).toBe('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: REISSUE.type,
-          version: 3,
+          version: 3 as const,
           senderPublicKey,
           assetId: REISSUE.data.assetId,
           quantity: REISSUE.data.quantity,
@@ -1080,11 +1086,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: REISSUE_WITH_MONEY_LIKE.type,
-            version: 3,
+            version: 3 as const,
             senderPublicKey,
             assetId: REISSUE_WITH_MONEY_LIKE.data.amount.assetId,
             quantity: REISSUE_WITH_MONEY_LIKE.data.amount.amount,
@@ -1138,11 +1144,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: REISSUE.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             assetId: REISSUE.data.assetId,
             quantity: REISSUE.data.quantity,
@@ -1200,11 +1206,11 @@ describe('Signature', function () {
 
         expect(status).toBe('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: BURN.type,
-          version: 3,
+          version: 3 as const,
           senderPublicKey,
           assetId: BURN.data.assetId,
           amount: BURN.data.amount,
@@ -1251,11 +1257,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: BURN_WITH_QUANTITY.type,
-            version: 3,
+            version: 3 as const,
             senderPublicKey,
             assetId: BURN_WITH_QUANTITY.data.assetId,
             amount: BURN_WITH_QUANTITY.data.quantity,
@@ -1307,11 +1313,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: BURN.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             assetId: BURN.data.assetId,
             amount: BURN.data.amount,
@@ -1373,11 +1379,11 @@ describe('Signature', function () {
 
         expect(status).toBe('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: LEASE.type,
-          version: 3,
+          version: 3 as const,
           senderPublicKey,
           amount: LEASE.data.amount,
           recipient: LEASE.data.recipient,
@@ -1425,11 +1431,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: LEASE_WITH_ALIAS.type,
-            version: 3,
+            version: 3 as const,
             senderPublicKey,
             amount: LEASE_WITH_ALIAS.data.amount,
             recipient: 'alias:T:bobby',
@@ -1482,11 +1488,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: LEASE_WITH_MONEY_LIKE.type,
-            version: 3,
+            version: 3 as const,
             senderPublicKey,
             amount: LEASE_WITH_MONEY_LIKE.data.amount.amount,
             recipient: LEASE_WITH_MONEY_LIKE.data.recipient,
@@ -1539,11 +1545,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: LEASE.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             amount: LEASE.data.amount,
             recipient: LEASE.data.recipient,
@@ -1609,11 +1615,11 @@ describe('Signature', function () {
 
         expect(status).toBe('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: CANCEL_LEASE.type,
-          version: 3,
+          version: 3 as const,
           senderPublicKey,
           leaseId: CANCEL_LEASE.data.leaseId,
           fee: 500000,
@@ -1660,11 +1666,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: CANCEL_LEASE.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             leaseId: CANCEL_LEASE.data.leaseId,
             fee: 500000,
@@ -1720,11 +1726,11 @@ describe('Signature', function () {
 
         expect(status).toBe('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: ALIAS.type,
-          version: 3,
+          version: 3 as const,
           senderPublicKey,
           alias: ALIAS.data.alias,
           fee: 500000,
@@ -1774,11 +1780,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: ALIAS.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             alias: ALIAS.data.alias,
             fee: 500000,
@@ -1875,11 +1881,11 @@ describe('Signature', function () {
 
         expect(status).toBe('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: MASS_TRANSFER.type,
-          version: 2,
+          version: 2 as const,
           senderPublicKey,
           assetId: MASS_TRANSFER.data.totalAmount.assetId,
           transfers: [
@@ -1942,19 +1948,18 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: MASS_TRANSFER_WITHOUT_ATTACHMENT.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
-            assetId: MASS_TRANSFER_WITHOUT_ATTACHMENT.data.totalAmount.assetId,
+            assetId: null,
             transfers: [
-              { amount: 1, recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD' },
-              { amount: 1, recipient: 'alias:T:merry' },
+              { amount: 120, recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD' },
+              { amount: 3, recipient: 'alias:T:merry' },
             ],
             fee: 600000,
-            attachment: '',
             chainId: 84,
           };
 
@@ -2015,11 +2020,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: MASS_TRANSFER.type,
-            version: 1,
+            version: 1 as const,
             senderPublicKey,
             assetId: MASS_TRANSFER.data.totalAmount.assetId,
             transfers: [
@@ -2114,19 +2119,37 @@ describe('Signature', function () {
 
         expect(status).toBe('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: DATA.type,
-          version: 2,
+          version: 2 as const,
           senderPublicKey,
           fee: 500000,
           chainId: 84,
-          data: DATA.data.data,
+          data: [
+            {
+              key: 'stringValue',
+              type: 'string',
+              value: 'Lorem ipsum dolor sit amet',
+            },
+            {
+              key: 'longMaxValue',
+              type: 'integer',
+              value: new BigNumber('9223372036854775807'),
+            },
+            { key: 'flagValue', type: 'boolean', value: true },
+            {
+              key: 'base64',
+              type: 'binary',
+              value: 'base64:BQbtKNoM',
+            },
+          ],
         };
 
         const bytes = makeTxBytes({
           ...expectedApproveResult,
+          data: DATA.data.data,
           timestamp: parsedApproveResult.timestamp,
         });
 
@@ -2185,19 +2208,37 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: DATA.type,
-            version: 1,
+            version: 1 as const,
             senderPublicKey,
             fee: 500000,
             chainId: 84,
-            data: DATA.data.data,
+            data: [
+              {
+                key: 'stringValue',
+                type: 'string',
+                value: 'Lorem ipsum dolor sit amet',
+              },
+              {
+                key: 'longMaxValue',
+                type: 'integer',
+                value: new BigNumber('9223372036854775807'),
+              },
+              { key: 'flagValue', type: 'boolean', value: true },
+              {
+                key: 'base64',
+                type: 'binary',
+                value: 'base64:BQbtKNoM',
+              },
+            ],
           };
 
           const bytes = makeTxBytes({
             ...expectedApproveResult,
+            data: DATA.data.data,
             timestamp: parsedApproveResult.timestamp,
           });
 
@@ -2250,11 +2291,11 @@ describe('Signature', function () {
 
         expect(status).toBe('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: SET_SCRIPT.type,
-          version: 2,
+          version: 2 as const,
           senderPublicKey,
           chainId: 84,
           fee: 500000,
@@ -2304,11 +2345,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: SET_SCRIPT_WITHOUT_SCRIPT.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             chainId: 84,
             fee: 500000,
@@ -2361,11 +2402,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: SET_SCRIPT.type,
-            version: 1,
+            version: 1 as const,
             senderPublicKey,
             chainId: 84,
             fee: 500000,
@@ -2430,11 +2471,11 @@ describe('Signature', function () {
 
         expect(status).toBe('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: SPONSORSHIP.type,
-          version: 2,
+          version: 2 as const,
           senderPublicKey,
           minSponsoredAssetFee: SPONSORSHIP.data.minSponsoredAssetFee.amount,
           assetId: SPONSORSHIP.data.minSponsoredAssetFee.assetId,
@@ -2482,11 +2523,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: SPONSORSHIP_REMOVAL.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             minSponsoredAssetFee: null,
             assetId: SPONSORSHIP_REMOVAL.data.minSponsoredAssetFee.assetId,
@@ -2539,11 +2580,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: SPONSORSHIP.type,
-            version: 1,
+            version: 1 as const,
             senderPublicKey,
             minSponsoredAssetFee: SPONSORSHIP.data.minSponsoredAssetFee.amount,
             assetId: SPONSORSHIP.data.minSponsoredAssetFee.assetId,
@@ -2605,11 +2646,11 @@ describe('Signature', function () {
 
         expect(status).toBe('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: SET_ASSET_SCRIPT.type,
-          version: 2,
+          version: 2 as const,
           senderPublicKey,
           assetId: SET_ASSET_SCRIPT.data.assetId,
           chainId: 84,
@@ -2660,11 +2701,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: SET_ASSET_SCRIPT.type,
-            version: 1,
+            version: 1 as const,
             senderPublicKey,
             assetId: SET_ASSET_SCRIPT.data.assetId,
             chainId: 84,
@@ -2777,11 +2818,11 @@ describe('Signature', function () {
 
         expect(status).toBe('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: INVOKE_SCRIPT.type,
-          version: 2,
+          version: 2 as const,
           senderPublicKey,
           dApp: INVOKE_SCRIPT.data.dApp,
           call: INVOKE_SCRIPT.data.call,
@@ -2845,11 +2886,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: INVOKE_SCRIPT_WITHOUT_CALL.type,
-            version: 2,
+            version: 2 as const,
             senderPublicKey,
             dApp: 'alias:T:chris',
             payment: INVOKE_SCRIPT_WITHOUT_CALL.data.payment,
@@ -2860,6 +2901,7 @@ describe('Signature', function () {
 
           const bytes = makeTxBytes({
             ...expectedApproveResult,
+            call: null,
             timestamp: parsedApproveResult.timestamp,
           });
 
@@ -2926,11 +2968,11 @@ describe('Signature', function () {
 
           expect(status).toBe('RESOLVED');
 
-          const parsedApproveResult = parse(approveResult);
+          const parsedApproveResult = JSONbn.parse(approveResult);
 
           const expectedApproveResult = {
             type: INVOKE_SCRIPT.type,
-            version: 1,
+            version: 1 as const,
             senderPublicKey,
             dApp: INVOKE_SCRIPT.data.dApp,
             call: INVOKE_SCRIPT.data.call,
@@ -3008,7 +3050,7 @@ describe('Signature', function () {
 
         expect(status).toBe('RESOLVED');
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           type: UPDATE_ASSET_INFO.type,
@@ -3152,9 +3194,9 @@ describe('Signature', function () {
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
-            const approveResult = await browser.execute(() => window.result);
+            const approveResult = await browser.execute(() => window.result) as string;
 
-            const parsedApproveResult = parse(approveResult);
+            const parsedApproveResult = JSONbn.parse(approveResult);
 
             const expectedApproveResult = {
               orderType: INPUT.data.orderType,
@@ -3237,9 +3279,9 @@ describe('Signature', function () {
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
-            const approveResult = await browser.execute(() => window.result);
+            const approveResult = await browser.execute(() => window.result) as string;
 
-            const parsedApproveResult = parse(approveResult);
+            const parsedApproveResult = JSONbn.parse(approveResult);
 
             const expectedApproveResult = {
               orderType: INPUT.data.orderType,
@@ -3326,9 +3368,9 @@ describe('Signature', function () {
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
-            const approveResult = await browser.execute(() => window.result);
+            const approveResult = await browser.execute(() => window.result) as string;
 
-            const parsedApproveResult = parse(approveResult);
+            const parsedApproveResult = JSONbn.parse(approveResult);
 
             const expectedApproveResult = {
               chainId: 84,
@@ -3347,7 +3389,7 @@ describe('Signature', function () {
               matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
             };
 
-            const bytes = orderToProtoBytes({
+            const bytes = makeOrderBytes({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
@@ -3415,9 +3457,9 @@ describe('Signature', function () {
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
-            const approveResult = await browser.execute(() => window.result);
+            const approveResult = await browser.execute(() => window.result) as string;
 
-            const parsedApproveResult = parse(approveResult);
+            const parsedApproveResult = JSONbn.parse(approveResult);
 
             const expectedApproveResult = {
               chainId: 84,
@@ -3436,7 +3478,7 @@ describe('Signature', function () {
               matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
             };
 
-            const bytes = orderToProtoBytes({
+            const bytes = makeOrderBytes({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
@@ -3503,9 +3545,9 @@ describe('Signature', function () {
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
-            const approveResult = await browser.execute(() => window.result);
+            const approveResult = await browser.execute(() => window.result) as string;
 
-            const parsedApproveResult = parse(approveResult);
+            const parsedApproveResult = JSONbn.parse(approveResult);
 
             const expectedApproveResult = {
               chainId: 84,
@@ -3524,7 +3566,7 @@ describe('Signature', function () {
               matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
             };
 
-            const bytes = orderToProtoBytes({
+            const bytes = makeOrderBytes({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
@@ -3576,16 +3618,16 @@ describe('Signature', function () {
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
-        const approveResult = await browser.execute(() => window.result);
+        const approveResult = await browser.execute(() => window.result) as string;
 
-        const parsedApproveResult = parse(approveResult);
+        const parsedApproveResult = JSONbn.parse(approveResult);
 
         const expectedApproveResult = {
           orderId: INPUT.data.id,
           sender: senderPublicKey,
         };
 
-        const bytes = cancelOrderParamsToBytes(expectedApproveResult);
+        const bytes = makeCancelOrderBytes(expectedApproveResult);
 
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
 
@@ -3774,15 +3816,15 @@ describe('Signature', function () {
         id: string;
         proofs: string[];
         timestamp: number;
-      }>(parse);
+      }>(result => JSONbn.parse(result));
 
       const expectedApproveResult0 = {
         type: ISSUE.type,
-        version: 3,
+        version: 3 as const,
         senderPublicKey,
         name: ISSUE.data.name,
         description: ISSUE.data.description,
-        quantity: ISSUE.data.quantity,
+        quantity: new BigNumber(ISSUE.data.quantity),
         script: ISSUE.data.script,
         decimals: ISSUE.data.precision,
         reissuable: ISSUE.data.reissuable,
@@ -3792,6 +3834,7 @@ describe('Signature', function () {
 
       const bytes0 = makeTxBytes({
         ...expectedApproveResult0,
+        quantity: ISSUE.data.quantity,
         timestamp: parsedApproveResult[0].timestamp,
       });
 
@@ -3808,7 +3851,7 @@ describe('Signature', function () {
 
       const expectedApproveResult1 = {
         type: TRANSFER.type,
-        version: 3,
+        version: 3 as const,
         senderPublicKey,
         assetId: TRANSFER.data.amount.assetId,
         recipient: TRANSFER.data.recipient,
@@ -3837,7 +3880,7 @@ describe('Signature', function () {
 
       const expectedApproveResult2 = {
         type: REISSUE.type,
-        version: 3,
+        version: 3 as const,
         senderPublicKey,
         assetId: REISSUE.data.assetId,
         quantity: REISSUE.data.quantity,
@@ -3864,7 +3907,7 @@ describe('Signature', function () {
 
       const expectedApproveResult3 = {
         type: BURN.type,
-        version: 3,
+        version: 3 as const,
         senderPublicKey,
         assetId: BURN.data.assetId,
         amount: BURN.data.amount,
@@ -3890,7 +3933,7 @@ describe('Signature', function () {
 
       const expectedApproveResult4 = {
         type: LEASE.type,
-        version: 3,
+        version: 3 as const,
         senderPublicKey,
         amount: LEASE.data.amount,
         recipient: LEASE.data.recipient,
@@ -3916,7 +3959,7 @@ describe('Signature', function () {
 
       const expectedApproveResult5 = {
         type: CANCEL_LEASE.type,
-        version: 3,
+        version: 3 as const,
         senderPublicKey,
         leaseId: CANCEL_LEASE.data.leaseId,
         fee: 500000,
@@ -3941,7 +3984,7 @@ describe('Signature', function () {
 
       const expectedApproveResult6 = {
         type: INVOKE_SCRIPT.type,
-        version: 2,
+        version: 2 as const,
         senderPublicKey,
         dApp: INVOKE_SCRIPT.data.dApp,
         call: INVOKE_SCRIPT.data.call,
@@ -4031,7 +4074,7 @@ describe('Signature', function () {
         expect(
           verifySignature(
             senderPublicKey,
-            serializeCustomData(expectedApproveResult),
+            makeCustomDataBytes(expectedApproveResult),
             parsedApproveResult.signature
           )
         ).toBe(true);
@@ -4118,8 +4161,8 @@ describe('Signature', function () {
         expect(
           verifySignature(
             senderPublicKey,
-            serializeCustomData(expectedApproveResult),
-            parsedApproveResult.signature
+            makeCustomDataBytes(expectedApproveResult),
+            base58Decode(parsedApproveResult.signature)
           )
         ).toBe(true);
       });
