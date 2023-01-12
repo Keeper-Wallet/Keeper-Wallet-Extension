@@ -318,7 +318,7 @@ class BackgroundService extends EventEmitter {
     this.walletController.on('updateWallets', () => {
       const accounts = this.walletController.getAccounts();
       this.preferencesController.syncAccounts(accounts);
-      this.currentAccountController.updateBalances();
+      this.currentAccountController.updateCurrentAccountBalance();
     });
 
     this.walletController
@@ -335,7 +335,7 @@ class BackgroundService extends EventEmitter {
       });
 
     this.networkController.store.subscribe(() =>
-      this.currentAccountController.updateBalances()
+      this.currentAccountController.updateCurrentAccountBalance()
     );
 
     // AssetInfo. Provides information about assets
@@ -605,9 +605,14 @@ class BackgroundService extends EventEmitter {
       },
       sendEvent: async (event: string, properties: Record<string, unknown>) =>
         this.statisticsController.addEvent(event, properties),
-      updateBalances: this.currentAccountController.updateBalances.bind(
-        this.currentAccountController
-      ),
+      updateCurrentAccountBalance:
+        this.currentAccountController.updateCurrentAccountBalance.bind(
+          this.currentAccountController
+        ),
+      updateOtherAccountsBalances:
+        this.currentAccountController.updateOtherAccountsBalances.bind(
+          this.currentAccountController
+        ),
       signAndPublishTransaction: async (
         data: MessageInputOfType<'transaction'>['data']
       ) => {

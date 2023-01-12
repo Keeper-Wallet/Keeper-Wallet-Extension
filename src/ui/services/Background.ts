@@ -394,11 +394,18 @@ class Background {
     return this.background!.sendEvent(event, properties);
   }
 
-  async updateBalances() {
+  async updateCurrentAccountBalance() {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.background!.updateBalances();
+    return await this.background!.updateCurrentAccountBalance();
+  }
+
+  async updateOtherAccountsBalances() {
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return await this.background!.updateOtherAccountsBalances();
   }
 
   async signTransaction(account: PreferencesAccount, tx: MessageTx) {

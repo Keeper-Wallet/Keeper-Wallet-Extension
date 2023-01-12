@@ -66,8 +66,11 @@ export function AccountInfo() {
     if (balanceItem) {
       const assetInstance = new Asset(wavesAsset);
 
-      balance = new Money(balanceItem.available, assetInstance);
-      leaseBalance = new Money(balanceItem.leasedOut, assetInstance);
+      if (typeof balanceItem.available !== 'undefined')
+        balance = new Money(balanceItem.available, assetInstance);
+
+      if (typeof balanceItem.leasedOut !== 'undefined')
+        leaseBalance = new Money(balanceItem.leasedOut, assetInstance);
     }
   }
 

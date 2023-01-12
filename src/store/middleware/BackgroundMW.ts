@@ -41,13 +41,14 @@ export const updateLang: AppMiddleware = store => next => action => {
   return next(action);
 };
 
-export const updateBalances: AppMiddleware = () => next => action => {
-  if (action.type === ACTION.GET_BALANCES) {
-    Background.updateBalances();
-  }
+export const updateCurrentAccountBalance: AppMiddleware =
+  () => next => action => {
+    if (action.type === ACTION.GET_BALANCES) {
+      Background.updateCurrentAccountBalance();
+    }
 
-  return next(action);
-};
+    return next(action);
+  };
 
 export const selectAccount: AppMiddleware = store => next => action => {
   if (
