@@ -49,7 +49,7 @@ export const App = {
     );
     await ConfirmDeleteAccountsScreen.deleteAllButton.click();
 
-    expect(GetStartedScreen.getStartedButton).toBeDisplayed();
+    expect(await GetStartedScreen.getStartedButton).toBeDisplayed();
   },
 
   closeBgTabs: async (foreground: string) => {

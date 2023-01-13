@@ -46,10 +46,10 @@ export const HomeScreen = {
   },
 
   async getAssetByName(name: string) {
-    return AssetCard(
-      await this.root
-        .findByText$(name, { selector: "[class*='assetName@assetItem']" })
-        .$(".//ancestor::*[contains(@class, 'assetCard@assetItem')]")
-    );
+    const element = await this.root
+      .findByText$(name, { selector: "[class*='assetName@']" })
+      .$(".//ancestor::*[contains(@class, 'assetCard@')]");
+    await element.waitForDisplayed();
+    return AssetCard(element);
   },
 };

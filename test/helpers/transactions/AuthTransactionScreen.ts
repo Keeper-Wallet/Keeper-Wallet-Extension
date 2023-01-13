@@ -1,7 +1,7 @@
 export const AuthTransactionScreen = {
   get root() {
     return browser.$(
-      "[class*='transaction@originAuth'], [class*='transaction@auth']"
+      "[class*='transaction@originAuth'], [class*='transaction@auth'], [class*='transaction@transactions']"
     );
   },
 
@@ -25,7 +25,7 @@ export const AuthTransactionScreen = {
   },
 
   get spendingLimitInput() {
-    return this.root.$("[class*='amountInput@settings']");
+    return this.root.$("[class*='amountInput@']");
   },
 
   get rejectArrowButton() {

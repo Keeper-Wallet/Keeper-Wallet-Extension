@@ -1,5 +1,5 @@
-import { base58Decode } from "@keeper-wallet/waves-crypto";
-import { BigNumber } from "@waves/bignumber";
+import { base58Decode } from '@keeper-wallet/waves-crypto';
+import { BigNumber } from '@waves/bignumber';
 import { binary, serializePrimitives } from '@waves/marshall';
 import {
   base58Encode,
@@ -8,15 +8,15 @@ import {
   verifySignature,
 } from '@waves/ts-lib-crypto';
 import { expect } from 'expect-webdriverio';
+
+import { JSONbn } from '../src/_core/jsonBn';
 import {
   makeAuthBytes,
   makeCancelOrderBytes,
   makeCustomDataBytes,
   makeOrderBytes,
   makeTxBytes,
-} from 'messages/utils';
-
-import { JSONbn } from "../src/_core/jsonBn";
+} from '../src/messages/utils';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { MessagesScreen } from './helpers/MessagesScreen';
 import { AssetScriptTransactionScreen } from './helpers/transactions/AssetScriptTransactionScreen';
@@ -333,11 +333,6 @@ describe('Signature', function () {
         '15': [2, 1],
         '16': [2, 1],
         '17': [1],
-        '18': [1],
-        '1000': [1],
-        '1001': [1],
-        '1002': [4, 3, 2, 1],
-        '1003': [1, 0],
       });
     });
   });
@@ -536,7 +531,7 @@ describe('Signature', function () {
     }
 
     function setTxVersion(
-      tx: Parameters<typeof KeeperWallet['signTransaction']>[0],
+      tx: Parameters<(typeof KeeperWallet)['signTransaction']>[0],
       version: number
     ) {
       return { ...tx, data: { ...tx.data, version } };
@@ -1923,11 +1918,11 @@ describe('Signature', function () {
           await checkMassTransferItems([
             {
               recipient: '3N5HNJz5otiU...BVv5HhYLdhiD',
-              amount: '1',
+              amount: '0.0000012',
             },
             {
               recipient: 'alias:T:merry',
-              amount: '1',
+              amount: '0.00000003',
             },
           ]);
 
@@ -2796,7 +2791,7 @@ describe('Signature', function () {
           },
           {
             type: 'string',
-            value: '"hello"',
+            value: 'hello',
           },
         ]);
 
@@ -2942,7 +2937,7 @@ describe('Signature', function () {
             },
             {
               type: 'string',
-              value: '"hello"',
+              value: 'hello',
             },
           ]);
 
@@ -3105,7 +3100,7 @@ describe('Signature', function () {
 
     async function performSignOrder(
       script: (
-        tx: Parameters<typeof KeeperWallet['signTransaction']>[0]
+        tx: Parameters<(typeof KeeperWallet)['signTransaction']>[0]
       ) => void,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       tx: any
@@ -3194,7 +3189,9 @@ describe('Signature', function () {
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
-            const approveResult = await browser.execute(() => window.result) as string;
+            const approveResult = (await browser.execute(
+              () => window.result
+            )) as string;
 
             const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -3279,7 +3276,9 @@ describe('Signature', function () {
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
-            const approveResult = await browser.execute(() => window.result) as string;
+            const approveResult = (await browser.execute(
+              () => window.result
+            )) as string;
 
             const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -3368,7 +3367,9 @@ describe('Signature', function () {
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
-            const approveResult = await browser.execute(() => window.result) as string;
+            const approveResult = (await browser.execute(
+              () => window.result
+            )) as string;
 
             const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -3457,7 +3458,9 @@ describe('Signature', function () {
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
-            const approveResult = await browser.execute(() => window.result) as string;
+            const approveResult = (await browser.execute(
+              () => window.result
+            )) as string;
 
             const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -3545,7 +3548,9 @@ describe('Signature', function () {
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
-            const approveResult = await browser.execute(() => window.result) as string;
+            const approveResult = (await browser.execute(
+              () => window.result
+            )) as string;
 
             const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -3618,7 +3623,9 @@ describe('Signature', function () {
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
-        const approveResult = await browser.execute(() => window.result) as string;
+        const approveResult = (await browser.execute(
+          () => window.result
+        )) as string;
 
         const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -3640,7 +3647,7 @@ describe('Signature', function () {
 
   describe('Multiple transactions package', function () {
     async function performSignTransactionPackage(
-      tx: Array<Parameters<typeof KeeperWallet['signTransaction']>[0]>,
+      tx: Array<Parameters<(typeof KeeperWallet)['signTransaction']>[0]>,
       name: string
     ) {
       await browser.switchToWindow(tabOrigin);
@@ -3648,7 +3655,7 @@ describe('Signature', function () {
       await browser.execute(
         (
           // eslint-disable-next-line @typescript-eslint/no-shadow
-          tx: Array<Parameters<typeof KeeperWallet['signTransaction']>[0]>,
+          tx: Array<Parameters<(typeof KeeperWallet)['signTransaction']>[0]>,
           // eslint-disable-next-line @typescript-eslint/no-shadow
           name: string
         ) => {
@@ -3715,7 +3722,7 @@ describe('Signature', function () {
         '-1 NonScriptToken',
       ]);
 
-      await checkPackageFees(['1.029 WAVES', '0.005 WAVES']);
+      await checkPackageFees(['1.034 WAVES']);
 
       await PackageTransactionScreen.showTransactionsButton.click();
       expect(await PackageTransactionScreen.getPackageItems()).toHaveLength(7);
@@ -3775,7 +3782,7 @@ describe('Signature', function () {
         },
         {
           type: 'string',
-          value: '"hello"',
+          value: 'hello',
         },
       ]);
 

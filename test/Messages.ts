@@ -1,4 +1,5 @@
 import { expect } from 'expect-webdriverio';
+import waitForExpect from 'wait-for-expect';
 
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { HomeScreen } from './helpers/HomeScreen';
@@ -82,7 +83,9 @@ describe('Messages', function () {
       await browser.switchToWindow(messageWindow);
       await browser.refresh();
 
-      expect(await MessagesScreen.messages).not.toHaveLength(0);
+      await waitForExpect(async () => {
+        expect(await MessagesScreen.messages).not.toHaveLength(0);
+      });
       await MessagesScreen.closeButton.click();
       await Windows.waitForWindowToClose(messageWindow);
       messageWindow = null;

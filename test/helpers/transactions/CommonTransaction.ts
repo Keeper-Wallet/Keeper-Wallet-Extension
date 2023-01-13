@@ -1,6 +1,6 @@
 export const CommonTransaction = {
   get root() {
-    return browser.$("[class*='transaction@']");
+    return browser.$("[class*='transaction@'], [class*='screen@']");
   },
 
   get transactionFee() {

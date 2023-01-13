@@ -1,6 +1,6 @@
 export const TransferTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@transfer']");
+    return browser.$("[class*='transaction@']");
   },
 
   get transferAmount() {

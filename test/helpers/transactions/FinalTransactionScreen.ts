@@ -1,6 +1,6 @@
 export const FinalTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@final']");
+    return browser.$("[class*='transaction@']");
   },
 
   get transactionContent() {

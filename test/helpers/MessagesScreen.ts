@@ -1,14 +1,16 @@
 export const MessagesScreen = {
   get root() {
-    return browser.$("[class*='messageList@messageList']");
+    return browser.$(
+      "[class*='messageList@'], [class*='root@messagesAndNotifications']"
+    );
   },
 
   get messages() {
-    return this.root.$$("[class*='messageItemInner@messageList']");
+    return this.root.$$("[class*='messageItemInner@']");
   },
 
   get messagesCards() {
-    return this.root.$$("[class*='cardItem@messageList']");
+    return this.root.$$("[class*='cardItem@']");
   },
 
   get closeButton() {

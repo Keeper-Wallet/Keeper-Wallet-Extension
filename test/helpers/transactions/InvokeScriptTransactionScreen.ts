@@ -16,7 +16,7 @@ const Payment = (wrapped: WebdriverIO.Element) => ({
 
 export const InvokeScriptTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@scriptInvocation']");
+    return browser.$("[class*='transaction@']");
   },
 
   get paymentsTitle() {

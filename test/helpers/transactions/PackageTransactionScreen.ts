@@ -98,7 +98,7 @@ const PackageItem = (wrapped: WebdriverIO.Element) => ({
 
 export const PackageTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@package']");
+    return browser.$("[class*='transaction@']");
   },
 
   get packageCountTitle() {

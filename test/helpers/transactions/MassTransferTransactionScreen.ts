@@ -10,7 +10,7 @@ const TransferItem = (wrapped: WebdriverIO.Element) => ({
 
 export const MassTransferTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@massTransfer']");
+    return browser.$("[class*='transaction@']");
   },
 
   get massTransferAmount() {
