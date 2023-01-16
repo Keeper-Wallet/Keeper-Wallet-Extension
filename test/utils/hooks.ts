@@ -54,12 +54,22 @@ export const mochaHooks = () => ({
       path: '/wd/hub',
       waitforTimeout: 15 * 1000,
     });
-    Object.defineProperty(global, 'browser', { value: browser });
+
+    Object.defineProperty(global, 'browser', {
+      configurable: true,
+      value: browser,
+    });
+
     configure({
       asyncUtilTimeout: 15 * 1000,
     });
+
     const queries = setupBrowser(browser);
-    Object.defineProperty(global, 'queries', { value: queries });
+
+    Object.defineProperty(global, 'queries', {
+      configurable: true,
+      value: queries,
+    });
 
     global.$ = browser.$.bind(browser);
     global.$$ = browser.$$.bind(browser);
