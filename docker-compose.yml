@@ -13,6 +13,9 @@ services:
       - '7900:7900'
     volumes:
       - .:/app:ro
+    healthcheck:
+      test: curl --fail http://localhost:4444/wd/hub/status
+      interval: 3s
   chrome-video:
     depends_on:
       - chrome
