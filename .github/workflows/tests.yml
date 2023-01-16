@@ -6,27 +6,6 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
-    services:
-      waves-private-node:
-        image: wavesplatform/waves-private-node
-        ports:
-          - 6869:6869
-      chrome:
-        image: selenium/standalone-chrome
-        options: --shm-size 2gb
-        ports:
-          - 4444:4444
-          - 5900:5900
-          - 7900:7900
-        volumes:
-          - /home/runner/work/Keeper-Wallet-Extension/Keeper-Wallet-Extension:/app
-      chrome-video:
-        env:
-          DISPLAY_CONTAINER_NAME: chrome
-          FILE_NAME: chrome_video.mp4
-        image: selenium/video:ffmpeg-4.3.1-20221202
-        volumes:
-          - /home/runner/work/Keeper-Wallet-Extension/Keeper-Wallet-Extension/test/videos:/videos
     steps:
       - uses: styfle/cancel-workflow-action@0.11.0
       - run: sudo chown -R $USER:$USER $GITHUB_WORKSPACE
@@ -37,7 +16,10 @@ jobs:
           node-version-file: .nvmrc
       - run: yarn install --frozen-lockfile
       - run: yarn run build
+      - run: docker compose up --wait
       - run: yarn test
+      - if: ${{ always() }}
+        run: docker compose down
       - if: ${{ failure() }}
         uses: actions/upload-artifact@v3
         with:
