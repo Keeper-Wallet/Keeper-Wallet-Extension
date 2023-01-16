@@ -1,13 +1,14 @@
 import { Asset, Money } from '@waves/data-entities';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { compareAccountsByLastUsed } from 'preferences/utils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { selectAccount } from 'store/actions/localState';
 import { SearchInput } from 'ui/components/ui/searchInput/searchInput';
 import background from 'ui/services/Background';
 
+import { startPolling } from '../../../_core/polling';
 import { AccountCard } from '../accounts/accountCard';
 import * as styles from './otherAccounts.module.css';
 
@@ -44,8 +45,15 @@ export function OtherAccountsPage() {
   const balancesMoney = Object.fromEntries(
     Object.entries(balances).map(([key, balance]) => [
       key,
-      balance && new Money(balance.available, wavesAsset),
+      typeof balance?.regular !== 'undefined'
+        ? new Money(balance.regular, wavesAsset)
+        : undefined,
     ])
+  );
+
+  useEffect(
+    () => startPolling(10000, () => background.updateOtherAccountsBalances()),
+    []
   );
 
   return (

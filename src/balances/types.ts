@@ -13,9 +13,10 @@ export type BalanceAssets = Partial<Record<string, AssetBalance>>;
 export interface BalancesItem {
   aliases?: string[];
   assets?: BalanceAssets;
-  available: string;
-  leasedOut: string;
-  network: NetworkName;
+  available?: string;
+  leasedOut?: string;
+  regular?: string;
+  network?: NetworkName;
   nfts?: AssetDetail[];
   txHistory?: TransactionFromNode[];
 }

@@ -35,7 +35,7 @@ const SLIPPAGE_TOLERANCE_OPTIONS = [0.1, 0.5, 1, 3];
 
 function getAssetBalance(asset: Asset, accountBalance: BalancesItem) {
   return asset.id === 'WAVES'
-    ? new Money(accountBalance.available, asset)
+    ? new Money(accountBalance.available || '0', asset)
     : new Money(accountBalance.assets?.[asset.id]?.balance || '0', asset);
 }
 
