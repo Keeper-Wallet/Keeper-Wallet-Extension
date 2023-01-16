@@ -35,13 +35,11 @@ declare module 'webdriverio' {
 declare module 'mocha' {
   interface Context {
     nodeUrl: string;
-    wait: number;
   }
 }
 
 export const mochaHooks = () => ({
   async beforeAll(this: mocha.Context) {
-    this.wait = 15 * 1000;
     this.nodeUrl = 'http://waves-private-node:6869';
 
     const browser = await remote({
@@ -54,7 +52,7 @@ export const mochaHooks = () => ({
         pageLoadStrategy: 'eager',
       },
       path: '/wd/hub',
-      waitforTimeout: this.wait,
+      waitforTimeout: 15 * 1000,
     });
     Object.defineProperty(global, 'browser', { value: browser });
     configure({
