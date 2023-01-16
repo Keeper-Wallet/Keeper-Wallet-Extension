@@ -51,6 +51,7 @@ export const mochaHooks = () => ({
         'goog:chromeOptions': {
           args: ['--load-extension=/app/dist/chrome', '--disable-web-security'],
         },
+        pageLoadStrategy: 'eager',
       },
       path: '/wd/hub',
       waitforTimeout: this.wait,
