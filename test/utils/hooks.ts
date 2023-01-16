@@ -74,7 +74,6 @@ export const mochaHooks = () => ({
     global.$ = browser.$.bind(browser);
     global.$$ = browser.$$.bind(browser);
 
-    // detect Keeper Wallet extension URL
     await browser.navigateTo('chrome://system');
 
     let keeperExtensionId: string | undefined;
