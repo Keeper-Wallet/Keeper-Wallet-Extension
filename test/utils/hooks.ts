@@ -42,22 +42,23 @@ export const mochaHooks = () => ({
   async beforeAll(this: mocha.Context) {
     this.nodeUrl = 'http://waves-private-node:6869';
 
-    const browser = await remote({
-      logLevel: 'silent',
-      capabilities: {
-        browserName: 'chrome',
-        'goog:chromeOptions': {
-          args: ['--load-extension=/app/dist/chrome', '--disable-web-security'],
-        },
-        pageLoadStrategy: 'eager',
-      },
-      path: '/wd/hub',
-      waitforTimeout: 15 * 1000,
-    });
-
     Object.defineProperty(global, 'browser', {
       configurable: true,
-      value: browser,
+      value: await remote({
+        logLevel: 'silent',
+        capabilities: {
+          browserName: 'chrome',
+          'goog:chromeOptions': {
+            args: [
+              '--load-extension=/app/dist/chrome',
+              '--disable-web-security',
+            ],
+          },
+          pageLoadStrategy: 'eager',
+        },
+        path: '/wd/hub',
+        waitforTimeout: 15 * 1000,
+      }),
     });
 
     configure({
