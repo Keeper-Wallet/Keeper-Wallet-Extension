@@ -2,11 +2,13 @@ version: '3'
 services:
   waves-private-node:
     image: wavesplatform/waves-private-node
+    platform: linux/amd64
     ports:
       - '6869:6869'
   chrome:
     image: selenium/standalone-chrome
     shm_size: 2gb
+    platform: linux/amd64
     ports:
       - '4444:4444'
       - '5900:5900'
@@ -23,5 +25,6 @@ services:
       - DISPLAY_CONTAINER_NAME=chrome
       - FILE_NAME=chrome_video.mp4
     image: selenium/video:ffmpeg-4.3.1-20221202
+    platform: linux/amd64
     volumes:
       - ./test/videos:/videos

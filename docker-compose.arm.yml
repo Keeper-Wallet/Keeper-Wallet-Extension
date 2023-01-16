@@ -2,3 +2,4 @@ version: '3'
 services:
   chrome:
     image: seleniarm/standalone-chromium
+    platform: linux/arm64/v8
