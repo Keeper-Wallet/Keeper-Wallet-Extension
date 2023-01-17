@@ -147,8 +147,8 @@ describe('Account management', function () {
         });
 
         it('Clicking "Copy" displays the password entry form', async () => {
-          await AccountInfoScreen.modalPasswordInput.waitForExist();
-          await AccountInfoScreen.modalCancelButton.click();
+          await AccountInfoScreen.passwordModal.passwordInput.waitForExist();
+          await AccountInfoScreen.passwordModal.cancelButton.click();
         });
 
         it('Clicking "Cancel" does not copy');
@@ -166,11 +166,11 @@ describe('Account management', function () {
       describe('Copying by clicking the "Copy" button', () => {
         before(async () => {
           await AccountInfoScreen.backupPhraseCopyButton.click();
-          await AccountInfoScreen.modalPasswordInput.waitForExist();
+          await AccountInfoScreen.passwordModal.passwordInput.waitForExist();
         });
 
         after(async () => {
-          await AccountInfoScreen.modalCancelButton.click();
+          await AccountInfoScreen.passwordModal.cancelButton.click();
         });
 
         it('Clicking "Cancel" does not copy');
