@@ -26,8 +26,6 @@ import {
 } from './utils/actions';
 
 describe('Account creation', function () {
-  this.timeout(60 * 1000);
-
   let tabKeeper: string, tabAccounts: string;
 
   async function deleteEachAndSwitchToAccounts() {
