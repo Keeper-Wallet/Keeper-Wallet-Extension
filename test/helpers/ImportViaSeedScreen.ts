@@ -1,4 +1,4 @@
-export const ImportUsingSeedScreen = {
+export const ImportViaSeedScreen = {
   get root() {
     return browser.$("[class*='content@importSeed']");
   },

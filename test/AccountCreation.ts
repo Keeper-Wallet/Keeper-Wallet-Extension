@@ -11,7 +11,7 @@ import { HomeScreen } from './helpers/HomeScreen';
 import { ImportFormScreen } from './helpers/ImportFormScreen';
 import { ImportKeystoreFileScreen } from './helpers/ImportKeystoreFileScreen';
 import { ImportSuccessScreen } from './helpers/ImportSuccessScreen';
-import { ImportUsingSeedScreen } from './helpers/ImportUsingSeedScreen';
+import { ImportViaSeedScreen } from './helpers/ImportViaSeedScreen';
 import { NewWalletNameScreen } from './helpers/NewWalletNameScreen';
 import { NewWalletScreen } from './helpers/NewWalletScreen';
 import { OtherAccountsScreen } from './helpers/OtherAccountsScreen';
@@ -293,9 +293,9 @@ describe('Account creation', function () {
     after(deleteEachAndSwitchToAccounts);
 
     it('first account via "Import account"', async () => {
-      await ImportFormScreen.importBySeedButton.click();
-      await ImportUsingSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
-      await ImportUsingSeedScreen.importAccountButton.click();
+      await ImportFormScreen.importViaSeedButton.click();
+      await ImportViaSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
+      await ImportViaSeedScreen.importAccountButton.click();
       await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST.NAME);
       await NewWalletNameScreen.continueButton.click();
       expect(ImportSuccessScreen.root).toBeDisplayed();
@@ -313,51 +313,51 @@ describe('Account creation', function () {
         before(async () => {
           await PopupHome.addAccount();
           await browser.switchToWindow(tabAccounts);
-          await ImportFormScreen.importBySeedButton.click();
+          await ImportFormScreen.importViaSeedButton.click();
         });
 
         describe('Seed phrase page', () => {
           it("Can't import seed with length less than 24 characters", async () => {
-            await ImportUsingSeedScreen.seedInput.setValue('too short seed');
-            await ImportUsingSeedScreen.importAccountButton.click();
+            await ImportViaSeedScreen.seedInput.setValue('too short seed');
+            await ImportViaSeedScreen.importAccountButton.click();
 
-            expect(ImportUsingSeedScreen.errorMessage).toHaveText(
+            expect(ImportViaSeedScreen.errorMessage).toHaveText(
               'Seed cannot be shorter than 24 characters'
             );
           });
 
           it('Can be switched to existing account', async () => {
-            await ImportUsingSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
-            expect(ImportUsingSeedScreen.switchAccountButton).toBeDisplayed();
-            expect(ImportUsingSeedScreen.errorMessage).toHaveTextContaining(
+            await ImportViaSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
+            expect(ImportViaSeedScreen.switchAccountButton).toBeDisplayed();
+            expect(ImportViaSeedScreen.errorMessage).toHaveTextContaining(
               'Account already known as'
             );
           });
 
           it('Any change in the seed changes the address', async () => {
-            await ImportUsingSeedScreen.seedInput.setValue(
+            await ImportViaSeedScreen.seedInput.setValue(
               ACCOUNTS.MORE_24_CHARS.SEED
             );
 
-            let prevAddress = await ImportUsingSeedScreen.address.getText();
+            let prevAddress = await ImportViaSeedScreen.address.getText();
 
             // insert char
-            await ImportUsingSeedScreen.seedInput.addValue('W');
-            expect(ImportUsingSeedScreen.address).not.toHaveText(prevAddress);
-            prevAddress = await ImportUsingSeedScreen.address.getText();
+            await ImportViaSeedScreen.seedInput.addValue('W');
+            expect(ImportViaSeedScreen.address).not.toHaveText(prevAddress);
+            prevAddress = await ImportViaSeedScreen.address.getText();
 
             // delete inserted char
             await browser.keys('Backspace');
-            expect(ImportUsingSeedScreen.address).not.toHaveText(prevAddress);
+            expect(ImportViaSeedScreen.address).not.toHaveText(prevAddress);
           });
 
           it('You can paste a seed from the clipboard');
 
           it('Correct seed entered', async () => {
-            await ImportUsingSeedScreen.seedInput.setValue(
+            await ImportViaSeedScreen.seedInput.setValue(
               ACCOUNTS.MORE_24_CHARS.SEED
             );
-            await ImportUsingSeedScreen.importAccountButton.click();
+            await ImportViaSeedScreen.importAccountButton.click();
           });
         });
 

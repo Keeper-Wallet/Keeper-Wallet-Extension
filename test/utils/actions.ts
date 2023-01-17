@@ -5,7 +5,7 @@ import { GetStartedScreen } from '../helpers/GetStartedScreen';
 import { HomeScreen } from '../helpers/HomeScreen';
 import { ImportFormScreen } from '../helpers/ImportFormScreen';
 import { ImportSuccessScreen } from '../helpers/ImportSuccessScreen';
-import { ImportUsingSeedScreen } from '../helpers/ImportUsingSeedScreen';
+import { ImportViaSeedScreen } from '../helpers/ImportViaSeedScreen';
 import { NewAccountScreen } from '../helpers/NewAccountScreen';
 import { NewWalletNameScreen } from '../helpers/NewWalletNameScreen';
 import { OtherAccountsScreen } from '../helpers/OtherAccountsScreen';
@@ -92,10 +92,10 @@ export const PopupHome = {
 
 export const AccountsHome = {
   importAccount: async (name: string, seed: string) => {
-    await ImportFormScreen.importBySeedButton.click();
+    await ImportFormScreen.importViaSeedButton.click();
 
-    await ImportUsingSeedScreen.seedInput.setValue(seed);
-    await ImportUsingSeedScreen.importAccountButton.click();
+    await ImportViaSeedScreen.seedInput.setValue(seed);
+    await ImportViaSeedScreen.importAccountButton.click();
 
     await NewWalletNameScreen.nameInput.setValue(name);
     await NewWalletNameScreen.continueButton.click();

@@ -5,7 +5,7 @@ import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { GetStartedScreen } from './helpers/GetStartedScreen';
 import { ImportFormScreen } from './helpers/ImportFormScreen';
 import { ImportSuccessScreen } from './helpers/ImportSuccessScreen';
-import { ImportUsingSeedScreen } from './helpers/ImportUsingSeedScreen';
+import { ImportViaSeedScreen } from './helpers/ImportViaSeedScreen';
 import { NewAccountScreen } from './helpers/NewAccountScreen';
 import { NewWalletNameScreen } from './helpers/NewWalletNameScreen';
 import { App, PopupHome, Windows } from './utils/actions';
@@ -84,9 +84,9 @@ describe('Tabs manipulation', function () {
     });
 
     async function importAccountUntilSuccess(name: string, seed: string) {
-      await ImportFormScreen.importBySeedButton.click();
-      await ImportUsingSeedScreen.seedInput.setValue(seed);
-      await ImportUsingSeedScreen.importAccountButton.click();
+      await ImportFormScreen.importViaSeedButton.click();
+      await ImportViaSeedScreen.seedInput.setValue(seed);
+      await ImportViaSeedScreen.importAccountButton.click();
 
       await NewWalletNameScreen.nameInput.setValue(name);
       await NewWalletNameScreen.continueButton.click();

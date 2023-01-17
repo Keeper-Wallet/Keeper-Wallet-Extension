@@ -7,7 +7,7 @@ export const ImportFormScreen = {
     return this.root.findByText$('Create a new account');
   },
 
-  get importBySeedButton() {
+  get importViaSeedButton() {
     return this.root.findByText$('Seed Phrase or Private Key');
   },
 
