@@ -7,7 +7,6 @@ import {
   concat,
   verifySignature,
 } from '@waves/ts-lib-crypto';
-import { expect } from 'expect-webdriverio';
 
 import { JSONbn } from '../src/_core/jsonBn';
 import {

@@ -1,4 +1,3 @@
-import { expect } from 'expect-webdriverio';
 import waitForExpect from 'wait-for-expect';
 
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';

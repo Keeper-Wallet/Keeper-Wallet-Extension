@@ -1,5 +1,3 @@
-import { expect } from 'expect-webdriverio';
-
 import { ChangePasswordScreen } from './helpers/ChangePasswordScreen';
 import { ConfirmDeleteAccountsScreen } from './helpers/ConfirmDeleteAccountsScreen';
 import { GetStartedScreen } from './helpers/GetStartedScreen';

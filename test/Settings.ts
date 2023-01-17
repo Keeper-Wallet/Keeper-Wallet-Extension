@@ -1,5 +1,3 @@
-import { expect } from 'expect-webdriverio';
-
 import { ChooseAccountsForm } from './helpers/ChooseAccountsForm';
 import { ConfirmDeleteAccountsScreen } from './helpers/ConfirmDeleteAccountsScreen';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';

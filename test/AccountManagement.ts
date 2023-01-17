@@ -1,5 +1,3 @@
-import { expect } from 'expect-webdriverio';
-
 import { AccountInfoScreen } from './helpers/AccountInfoScreen';
 import { ChangeAccountNameScreen } from './helpers/ChangeAccountNameScreen';
 import { DeleteAccountScreen } from './helpers/DeleteAccountScreen';

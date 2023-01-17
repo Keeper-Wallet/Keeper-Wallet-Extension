@@ -1,5 +1,3 @@
-import { expect } from 'expect-webdriverio';
-
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { HomeScreen } from './helpers/HomeScreen';
 import { SendAssetScreen } from './helpers/SendAssetScreen';
