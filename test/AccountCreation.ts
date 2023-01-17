@@ -34,8 +34,6 @@ describe('Account creation', function () {
       await AccountInfoScreen.deleteAccountButton.click();
       await DeleteAccountScreen.deleteAccountButton.click();
     }
-
-    await EmptyHomeScreen.root.waitForExist();
     await browser.switchToWindow(tabAccounts);
   }
 
