@@ -6,10 +6,10 @@ import { FinalTransactionScreen } from './helpers/transactions/FinalTransactionS
 import { TransferTransactionScreen } from './helpers/transactions/TransferTransactionScreen';
 import {
   AccountsHome,
-  App,
+  App, ContentScript,
   Network,
   PopupHome,
-  Windows,
+  Windows
 } from './utils/actions';
 
 describe('Others', function () {
@@ -155,6 +155,7 @@ describe('Others', function () {
       await browser.switchToWindow(prevHandle);
 
       const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
       await browser.execute(() => {
         KeeperWallet.auth({ data: 'hello' });
       });

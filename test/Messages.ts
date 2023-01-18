@@ -75,6 +75,7 @@ describe('Messages', function () {
       await browser.navigateTo(`https://${origin}`);
 
       const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
       await browser.executeAsync(sendNotification);
       [messageWindow] = await waitForNewWindows(1);
       await browser.switchToWindow(messageWindow);
@@ -94,6 +95,7 @@ describe('Messages', function () {
     await browser.navigateTo(`https://${CUSTOMLIST[0]}`);
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
+    await ContentScript.waitForKeeperWallet();
     await browser.executeAsync(sendNotificationWithoutWait);
     [messageWindow] = await waitForNewWindows(1);
     await browser.switchToWindow(messageWindow);
@@ -120,6 +122,7 @@ describe('Messages', function () {
     await browser.navigateTo(`https://${CUSTOMLIST[1]}`);
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
+    await ContentScript.waitForKeeperWallet();
     await browser.executeAsync(sendNotificationWithoutWait);
     [messageWindow] = await waitForNewWindows(1);
     await browser.switchToWindow(messageWindow);
@@ -151,6 +154,7 @@ describe('Messages', function () {
     await browser.navigateTo(`https://${CUSTOMLIST[1]}`);
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
+    await ContentScript.waitForKeeperWallet();
     await browser.executeAsync(sendNotification);
     [messageWindow] = await waitForNewWindows(1);
     await browser.switchToWindow(messageWindow);
@@ -191,6 +195,7 @@ describe('Messages', function () {
     await browser.switchToWindow(tabOrigin);
     await browser.navigateTo(`https://${WHITELIST[4]}`);
 
+    await ContentScript.waitForKeeperWallet();
     await browser.executeAsync(sendNotification);
     expect(messageWindow).not.toBeNull();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

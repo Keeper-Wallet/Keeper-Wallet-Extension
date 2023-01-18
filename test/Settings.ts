@@ -12,7 +12,7 @@ import { TopMenu } from './helpers/TopMenu';
 import { AuthTransactionScreen } from './helpers/transactions/AuthTransactionScreen';
 import { CommonTransaction } from './helpers/transactions/CommonTransaction';
 import { FinalTransactionScreen } from './helpers/transactions/FinalTransactionScreen';
-import { AccountsHome, App, Settings, Windows } from './utils/actions';
+import { AccountsHome, App, ContentScript, Settings, Windows } from './utils/actions';
 import {
   CUSTOMLIST,
   DEFAULT_ANIMATION_DELAY,
@@ -207,6 +207,7 @@ describe('Settings', function () {
         };
 
         await browser.navigateTo(`https://${origin}`);
+        await ContentScript.waitForKeeperWallet();
         await browser.execute(permissionRequest);
       }
 

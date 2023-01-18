@@ -120,6 +120,7 @@ describe('Signature', function () {
     it('removes messages and closes window when tab is reloaded', async function () {
       await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
       await browser.execute(() => {
         KeeperWallet.auth({ data: 'hello' });
       });
@@ -149,6 +150,7 @@ describe('Signature', function () {
       await browser.navigateTo(`https://${CUSTOMLIST[1]}`);
 
       const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
       await browser.execute(() => {
         KeeperWallet.auth({ data: 'hello' });
       });
@@ -175,6 +177,7 @@ describe('Signature', function () {
 
     it('does not close message window, if there are other messages left', async function () {
       const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
       await browser.execute(() => {
         KeeperWallet.auth({ data: 'hello' });
       });
@@ -190,6 +193,7 @@ describe('Signature', function () {
       await browser.switchToWindow(newTabOrigin);
       await browser.navigateTo(`https://${CUSTOMLIST[1]}`);
 
+      await ContentScript.waitForKeeperWallet();
       await browser.execute(() => {
         KeeperWallet.auth({ data: 'hello' });
       });
@@ -216,6 +220,7 @@ describe('Signature', function () {
     async function performPermissionRequest() {
       await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
       await ContentScript.waitForKeeperWallet();
       await browser.execute(() => {
         KeeperWallet.publicState().then(
@@ -346,6 +351,7 @@ describe('Signature', function () {
     async function performAuthRequest() {
       await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
       await browser.execute(() => {
         KeeperWallet.auth({ data: 'generated auth data' }).then(
           result => {
@@ -428,6 +434,7 @@ describe('Signature', function () {
     async function performMatcherRequest() {
       await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
       await browser.execute(
         // eslint-disable-next-line @typescript-eslint/no-shadow
         (senderPublicKey: string, timestamp: number) => {
@@ -510,6 +517,7 @@ describe('Signature', function () {
     async function performSignTransaction(tx: any) {
       await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-shadow
       await browser.execute((tx: any) => {
         KeeperWallet.signTransaction(tx).then(
@@ -3729,6 +3737,7 @@ describe('Signature', function () {
     ) {
       await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
       await browser.execute(
         (
           // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -4121,6 +4130,7 @@ describe('Signature', function () {
     async function performSignCustomData(data: any) {
       await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-shadow
       await browser.execute((data: any) => {
         KeeperWallet.signCustomData(data).then(
