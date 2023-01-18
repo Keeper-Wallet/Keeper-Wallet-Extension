@@ -170,7 +170,7 @@ describe('Messages', function () {
     for (let success = 0; success < 2; ) {
       await ContentScript.waitForKeeperWallet();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const result = (await browser.executeAsync(sendNotification)) as any;
+      const result = await browser.executeAsync<any, []>(sendNotification);
 
       if (result?.code !== '18') {
         success++;
