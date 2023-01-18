@@ -144,9 +144,7 @@ describe('Messages', function () {
     await TopMenu.settingsButton.click();
     await SettingsScreen.permissionsSectionLink.click();
 
-    (
-      await PermissionControlSettingsScreen.getPermissionByOrigin(CUSTOMLIST[1])
-    ).detailsIcon.click();
+    await(await PermissionControlSettingsScreen.getPermissionByOrigin(CUSTOMLIST[1])).detailsIcon.click();
     await PermissionControlSettingsScreen.modalAllowMessagesCheckbox.click();
     await PermissionControlSettingsScreen.modalSaveButton.click();
 
