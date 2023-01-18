@@ -172,11 +172,12 @@ describe('Messages', function () {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = await browser.executeAsync<any, []>(sendNotification);
 
-      if (result?.code !== '18') {
+      if (result?.code === '18') {
+        await browser.pause(5 * 1000);
+      } else {
         success++;
       }
 
-      await browser.pause(5 * 1000);
     }
     [messageWindow] = await waitForNewWindows(1);
     await browser.switchToWindow(messageWindow);
