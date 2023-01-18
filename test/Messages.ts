@@ -10,7 +10,7 @@ import {
 import { TopMenu } from './helpers/TopMenu';
 import { AuthTransactionScreen } from './helpers/transactions/AuthTransactionScreen';
 import { FinalTransactionScreen } from './helpers/transactions/FinalTransactionScreen';
-import { AccountsHome, App, Settings, Windows } from './utils/actions';
+import { AccountsHome, App, ContentScript, Settings, Windows } from './utils/actions';
 import {
   CUSTOMLIST,
   DEFAULT_PAGE_LOAD_DELAY,
@@ -168,6 +168,7 @@ describe('Messages', function () {
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
     for (let success = 0; success < 2; ) {
+      await ContentScript.waitForKeeperWallet();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = (await browser.executeAsync(sendNotification)) as any;
 
