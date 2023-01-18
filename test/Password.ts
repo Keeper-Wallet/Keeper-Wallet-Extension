@@ -45,7 +45,7 @@ describe('Password management', () => {
 
     it('Minimum password length 8 characters', async function () {
       await NewAccountScreen.passwordInput.setValue(PASSWORD.SHORT);
-      expect(NewAccountScreen.passwordError).toHaveText(
+      expect(await NewAccountScreen.passwordError).toHaveText(
         'Password is too short'
       );
     });
@@ -53,7 +53,7 @@ describe('Password management', () => {
     it('Passwords in both fields must mismatch', async function () {
       await NewAccountScreen.passwordInput.setValue(PASSWORD.DEFAULT);
       await NewAccountScreen.passwordConfirmationInput.setValue(PASSWORD.SHORT);
-      expect(NewAccountScreen.passwordConfirmationError).toHaveText(
+      expect(await NewAccountScreen.passwordConfirmationError).toHaveText(
         'Passwords do not match'
       );
     });
@@ -63,7 +63,7 @@ describe('Password management', () => {
       await NewAccountScreen.passwordConfirmationInput.setValue(
         PASSWORD.DEFAULT
       );
-      expect(NewAccountScreen.passwordConfirmationError).toHaveText('');
+      expect(await NewAccountScreen.passwordConfirmationError).toHaveText('');
     });
 
     it('The ability to paste the password from the clipboard');
@@ -76,8 +76,8 @@ describe('Password management', () => {
       await NewAccountScreen.termsAndConditionsLine.click();
       await NewAccountScreen.privacyPolicyLine.click();
       await NewAccountScreen.continueButton.click();
-      expect(ImportFormScreen.root).toBeDisplayed();
-      expect(ImportFormScreen.createNewAccountButton).toBeDisplayed();
+      expect(await ImportFormScreen.root).toBeDisplayed();
+      expect(await ImportFormScreen.createNewAccountButton).toBeDisplayed();
     });
   });
 
@@ -100,13 +100,13 @@ describe('Password management', () => {
 
     it('Minimum password length 8 characters', async function () {
       await ChangePasswordScreen.oldPasswordInput.setValue(PASSWORD.SHORT);
-      expect(ChangePasswordScreen.oldPasswordError).toHaveText(
+      expect(await ChangePasswordScreen.oldPasswordError).toHaveText(
         "Password can't be so short"
       );
       await ChangePasswordScreen.oldPasswordInput.clearValue();
 
       await ChangePasswordScreen.newPasswordInput.setValue(PASSWORD.SHORT);
-      expect(ChangePasswordScreen.newPasswordInput).toHaveText(
+      expect(await ChangePasswordScreen.newPasswordInput).toHaveText(
         "Password can't be so short"
       );
       await ChangePasswordScreen.newPasswordInput.clearValue();
@@ -119,7 +119,7 @@ describe('Password management', () => {
       await ChangePasswordScreen.passwordConfirmationInput.setValue(
         PASSWORD.SHORT
       );
-      expect(ChangePasswordScreen.newPasswordInput).toHaveText(
+      expect(await ChangePasswordScreen.newPasswordInput).toHaveText(
         'New passwords do not match'
       );
       await ChangePasswordScreen.newPasswordInput.clearValue();
@@ -127,20 +127,20 @@ describe('Password management', () => {
       await ChangePasswordScreen.passwordConfirmationInput.setValue(
         PASSWORD.DEFAULT
       );
-      expect(ChangePasswordScreen.passwordConfirmationError).toHaveText('');
+      expect(await ChangePasswordScreen.passwordConfirmationError).toHaveText('');
     });
 
     it('New password cannot match old', async function () {
       await ChangePasswordScreen.oldPasswordInput.setValue(PASSWORD.DEFAULT);
       await ChangePasswordScreen.newPasswordInput.setValue(PASSWORD.DEFAULT);
 
-      expect(ChangePasswordScreen.passwordConfirmationError).toHaveText(
+      expect(await ChangePasswordScreen.passwordConfirmationError).toHaveText(
         'Old password is equal new'
       );
 
       await ChangePasswordScreen.newPasswordInput.clearValue();
       await ChangePasswordScreen.newPasswordInput.setValue(PASSWORD.NEW);
-      expect(ChangePasswordScreen.passwordConfirmationError).toHaveText('');
+      expect(await ChangePasswordScreen.passwordConfirmationError).toHaveText('');
     });
 
     it('Successful password changed', async function () {
@@ -150,7 +150,7 @@ describe('Password management', () => {
         PASSWORD.NEW
       );
       await ChangePasswordScreen.saveButton.click();
-      expect(ChangePasswordScreen.notification).toHaveText('Password changed');
+      expect(await ChangePasswordScreen.notification).toHaveText('Password changed');
     });
   });
 
@@ -177,20 +177,20 @@ describe('Password management', () => {
 
     it('Logout', async function () {
       await performLogout();
-      expect(LoginScreen.root).toBeDisplayed();
+      expect(await LoginScreen.root).toBeDisplayed();
     });
 
     it('Incorrect password login', async function () {
       await LoginScreen.passwordInput.setValue(PASSWORD.DEFAULT);
       await LoginScreen.enterButton.click();
-      expect(LoginScreen.passwordError).toHaveText('Wrong password');
+      expect(await LoginScreen.passwordError).toHaveText('Wrong password');
       await LoginScreen.passwordInput.clearValue();
     });
 
     it('Correct password login', async function () {
       await LoginScreen.passwordInput.setValue(PASSWORD.NEW);
       await LoginScreen.enterButton.click();
-      expect(HomeScreen.root).toBeDisplayed();
+      expect(await HomeScreen.root).toBeDisplayed();
     });
 
     describe('Password reset', async function () {
@@ -200,16 +200,16 @@ describe('Password management', () => {
 
       it('"I forgot password" button opens recovery page and "Delete all" button is disabled', async function () {
         await LoginScreen.forgotPasswordLink.click();
-        expect(ConfirmDeleteAccountsScreen.root).toBeDisplayed();
-        expect(ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
+        expect(await ConfirmDeleteAccountsScreen.root).toBeDisplayed();
+        expect(await ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
       });
 
       it('Clicking "Cancel" button returns to login page and login is available', async function () {
         await ConfirmDeleteAccountsScreen.cancelButton.click();
-        expect(LoginScreen.passwordInput).toBeDisplayed();
+        expect(await LoginScreen.passwordInput).toBeDisplayed();
 
         await performLogin(PASSWORD.NEW);
-        expect(HomeScreen.root).toBeDisplayed();
+        expect(await HomeScreen.root).toBeDisplayed();
         await performLogout();
       });
 
@@ -226,18 +226,18 @@ describe('Password management', () => {
           await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
             'DELETE ALL ACCOUNTS'
           );
-          expect(ConfirmDeleteAccountsScreen.confirmPhraseError).toHaveText('');
-          expect(ConfirmDeleteAccountsScreen.deleteAllButton).toBeEnabled();
+          expect(await ConfirmDeleteAccountsScreen.confirmPhraseError).toHaveText('');
+          expect(await ConfirmDeleteAccountsScreen.deleteAllButton).toBeEnabled();
         });
 
         it('Entering wrong confirmation phrase disables "Delete all" button', async function () {
           await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
             'delete all accounts'
           );
-          expect(ConfirmDeleteAccountsScreen.confirmPhraseError).toHaveText(
+          expect(await ConfirmDeleteAccountsScreen.confirmPhraseError).toHaveText(
             'The phrase is entered incorrectly'
           );
-          expect(ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
+          expect(await ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
         });
 
         it('Entering right phrase and clicking "Delete all" removes all accounts', async function () {
@@ -246,7 +246,7 @@ describe('Password management', () => {
           );
           await ConfirmDeleteAccountsScreen.deleteAllButton.click();
 
-          expect(GetStartedScreen.root).toBeDisplayed();
+          expect(await GetStartedScreen.root).toBeDisplayed();
         });
       });
     });

@@ -48,7 +48,7 @@ describe('Account management', function () {
       await HomeScreen.otherAccountsButton.click();
       await (await OtherAccountsScreen.accounts)[0].root.click();
 
-      expect(HomeScreen.activeAccountName).toHaveText('poor');
+      expect(await HomeScreen.activeAccountName).toHaveText('poor');
     });
 
     it('Updating account balances on import');
@@ -200,8 +200,8 @@ describe('Account management', function () {
         newAccountName = currentAccountName.slice(1);
         await ChangeAccountNameScreen.newNameInput.setValue(newAccountName);
         await browser.keys('Tab');
-        expect(ChangeAccountNameScreen.error).toHaveText('');
-        expect(ChangeAccountNameScreen.saveButton).toBeEnabled();
+        expect(await ChangeAccountNameScreen.error).toHaveText('');
+        expect(await ChangeAccountNameScreen.saveButton).toBeEnabled();
       });
 
       it('Successfully changed account name', async () => {
@@ -221,7 +221,7 @@ describe('Account management', function () {
 
       it('Click "Back" on the account deletion confirmation screen - the account is not deleted', async () => {
         await TopMenu.backButton.click();
-        expect(await AccountInfoScreen.name).toBeDisabled();
+        expect(await AccountInfoScreen.name).toBeDisplayed();
       });
 
       it('Click "Delete account" deletes the account', async () => {

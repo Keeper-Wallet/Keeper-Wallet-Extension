@@ -149,7 +149,7 @@ export const Network = {
   checkNetwork: async (network: string) => {
     const networkMenuButton = NetworksMenu.networkMenuButton;
     await networkMenuButton.waitForDisplayed();
-    expect(networkMenuButton).toHaveText(network);
+    expect(await networkMenuButton).toHaveText(network);
   },
 
   switchToAndCheck: async (network: string) => {
@@ -195,5 +195,16 @@ export const Windows = {
         timeoutMsg: 'waiting for window to close',
       }
     );
+  },
+};
+
+export const ContentScript = {
+  waitForKeeperWallet() {
+    return browser.executeAsync((done: () => void) => {
+      (function poll() {
+        if (typeof KeeperWallet !== 'undefined') done();
+        else setTimeout(() => poll(), 100);
+      })();
+    });
   },
 };

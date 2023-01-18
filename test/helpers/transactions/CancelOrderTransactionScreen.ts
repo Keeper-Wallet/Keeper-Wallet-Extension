@@ -1,6 +1,6 @@
 export const CancelOrderTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@cancelOrder']");
+    return browser.$("[class*='transaction@']");
   },
 
   get orderId() {

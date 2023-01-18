@@ -97,7 +97,7 @@ describe('Settings', function () {
 
     describe('Node URL', function () {
       it('Is shown', async function () {
-        expect(NetworkSettingsScreen.nodeAddress).toBeDisplayed();
+        expect(await NetworkSettingsScreen.nodeAddress).toBeDisplayed();
       });
       it('Can be changed', async function () {
         await NetworkSettingsScreen.nodeAddress.clearValue();
@@ -108,7 +108,7 @@ describe('Settings', function () {
 
     describe('Matcher URL', function () {
       it('Is shown', async function () {
-        expect(NetworkSettingsScreen.matcherAddress).toBeDisplayed();
+        expect(await NetworkSettingsScreen.matcherAddress).toBeDisplayed();
       });
       it('Can be changed', async function () {
         await NetworkSettingsScreen.matcherAddress.clearValue();
@@ -122,8 +122,8 @@ describe('Settings', function () {
     describe('Set default', function () {
       it('Resets Node and Matcher URLs', async function () {
         await NetworkSettingsScreen.setDefaultButton.click();
-        expect(NetworkSettingsScreen.nodeAddress).toHaveValue(nodeUrl);
-        expect(NetworkSettingsScreen.matcherAddress).toHaveValue(matcherUrl);
+        expect(await NetworkSettingsScreen.nodeAddress).toHaveValue(nodeUrl);
+        expect(await NetworkSettingsScreen.matcherAddress).toHaveValue(matcherUrl);
       });
     });
   });
@@ -226,7 +226,7 @@ describe('Settings', function () {
           await browser.refresh();
 
           await AuthTransactionScreen.authButton.click();
-          expect(FinalTransactionScreen.root).toBeDisplayed();
+          expect(await FinalTransactionScreen.root).toBeDisplayed();
           await FinalTransactionScreen.closeButton.click();
           await Windows.waitForWindowToClose(messageWindow);
           await browser.switchToWindow(tabKeeper);
@@ -366,7 +366,7 @@ describe('Settings', function () {
         await Settings.setMinSessionTimeout();
 
         await browser.pause(BROWSER_TIMEOUT_DELAY);
-        expect(LoginScreen.root).toBeDisplayed();
+        expect(await LoginScreen.root).toBeDisplayed();
       });
 
       it('Logout after 5 min / 10 min / 1 hour');
@@ -376,30 +376,30 @@ describe('Settings', function () {
   describe('Root', function () {
     describe('Auto-click protection', function () {
       before(async function () {
-        expect(SettingsScreen.root).toBeDisplayed();
+        expect(await SettingsScreen.root).toBeDisplayed();
       });
 
       it('Can be enabled', async function () {
         await SettingsScreen.clickProtectionButton.click();
-        expect(SettingsScreen.clickProtectionButton).toHaveAttr(
+        expect(await SettingsScreen.clickProtectionButton).toHaveAttr(
           'data-teston',
           'true'
         );
-        expect(SettingsScreen.clickProtectionStatus).toHaveText('Enabled');
+        expect(await SettingsScreen.clickProtectionStatus).toHaveText('Enabled');
       });
 
       it('Can be disabled', async function () {
         await SettingsScreen.clickProtectionButton.click();
-        expect(SettingsScreen.clickProtectionButton).toHaveAttr(
+        expect(await SettingsScreen.clickProtectionButton).toHaveAttr(
           'data-teston',
           'false'
         );
-        expect(SettingsScreen.clickProtectionStatus).toHaveText('Disabled');
+        expect(await SettingsScreen.clickProtectionStatus).toHaveText('Disabled');
       });
 
       it('Display tooltip', async function () {
         await SettingsScreen.clickProtectionIcon.moveTo();
-        expect(SettingsScreen.helpTooltip).toHaveText(
+        expect(await SettingsScreen.helpTooltip).toHaveText(
           'Protect yourself from Clicker Trojans threats'
         );
       });
@@ -407,34 +407,34 @@ describe('Settings', function () {
 
     describe('Suspicious assets protection', function () {
       before(async function () {
-        expect(SettingsScreen.root).toBeDisplayed();
+        expect(await SettingsScreen.root).toBeDisplayed();
       });
 
       it('Can be disabled', async function () {
         await SettingsScreen.suspiciousAssetsProtectionButton.click();
-        expect(SettingsScreen.suspiciousAssetsProtectionButton).toHaveAttr(
+        expect(await SettingsScreen.suspiciousAssetsProtectionButton).toHaveAttr(
           'data-teston',
           'true'
         );
-        expect(SettingsScreen.suspiciousAssetsProtectionStatus).toHaveText(
+        expect(await SettingsScreen.suspiciousAssetsProtectionStatus).toHaveText(
           'Enable'
         );
       });
 
       it('Can be enabled', async function () {
         await SettingsScreen.suspiciousAssetsProtectionButton.click();
-        expect(SettingsScreen.suspiciousAssetsProtectionButton).toHaveAttr(
+        expect(await SettingsScreen.suspiciousAssetsProtectionButton).toHaveAttr(
           'data-teston',
           'false'
         );
-        expect(SettingsScreen.suspiciousAssetsProtectionStatus).toHaveText(
+        expect(await SettingsScreen.suspiciousAssetsProtectionStatus).toHaveText(
           'Disabled'
         );
       });
 
       it('Display tooltip', async function () {
         await SettingsScreen.suspiciousAssetsProtectionIcon.moveTo();
-        expect(SettingsScreen.helpTooltip).toHaveText(
+        expect(await SettingsScreen.helpTooltip).toHaveText(
           "Don't show balances and transactions related to suspicious assets"
         );
       });
@@ -448,38 +448,38 @@ describe('Settings', function () {
 
       it('Exit to the login screen', async function () {
         await SettingsScreen.logoutButton.click();
-        expect(LoginScreen.root).toBeDisplayed();
+        expect(await LoginScreen.root).toBeDisplayed();
       });
     });
 
     describe('Delete accounts', function () {
       it('Account deletion warning displays', async function () {
         await SettingsScreen.deleteAccountsButton.click();
-        expect(ConfirmDeleteAccountsScreen.root).toBeDisplayed();
+        expect(await ConfirmDeleteAccountsScreen.root).toBeDisplayed();
       });
 
       it('Clicking "Back" button cancels the deletion', async function () {
         await TopMenu.backButton.click();
-        expect(SettingsScreen.root).toBeDisplayed();
+        expect(await SettingsScreen.root).toBeDisplayed();
       });
 
       it('Clicking "Cancel" button cancels the deletion', async function () {
         await SettingsScreen.deleteAccountsButton.click();
         await ConfirmDeleteAccountsScreen.cancelButton.click();
-        expect(SettingsScreen.root).toBeDisplayed();
+        expect(await SettingsScreen.root).toBeDisplayed();
       });
 
       it('"Delete all" button is disabled', async function () {
         await SettingsScreen.deleteAccountsButton.click();
-        expect(ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
+        expect(await ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
       });
 
       it('Wrong confirmation phrase displays error', async function () {
         await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
           'delete all accounts'
         );
-        expect(ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
-        expect(ConfirmDeleteAccountsScreen.confirmPhraseError).toHaveText(
+        expect(await ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
+        expect(await ConfirmDeleteAccountsScreen.confirmPhraseError).toHaveText(
           'The phrase is entered incorrectly'
         );
       });
@@ -488,7 +488,7 @@ describe('Settings', function () {
         await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
           'DELETE ALL ACCOUNTS'
         );
-        expect(ConfirmDeleteAccountsScreen.deleteAllButton).toBeEnabled();
+        expect(await ConfirmDeleteAccountsScreen.deleteAllButton).toBeEnabled();
       });
 
       it('Clicking "Delete account" removes all accounts from current network', async function () {

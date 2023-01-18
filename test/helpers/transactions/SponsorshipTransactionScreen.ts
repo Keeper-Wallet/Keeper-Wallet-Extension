@@ -1,6 +1,6 @@
 export const SponsorshipTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@sponsorship']");
+    return browser.$("[class*='transaction@']");
   },
 
   get title() {

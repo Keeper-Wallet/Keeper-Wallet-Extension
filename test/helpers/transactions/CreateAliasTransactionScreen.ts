@@ -1,6 +1,6 @@
 export const CreateAliasTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@alias]");
+    return browser.$("[class*='transaction@']");
   },
 
   get aliasValue() {

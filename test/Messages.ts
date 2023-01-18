@@ -130,7 +130,7 @@ describe('Messages', function () {
     await AuthTransactionScreen.permissionDetailsButton.click();
     await AuthTransactionScreen.authButton.click();
 
-    expect(FinalTransactionScreen.transactionContent).toHaveText(
+    expect(await FinalTransactionScreen.transactionContent).toHaveText(
       'Request has been signed!'
     );
 
@@ -207,7 +207,7 @@ describe('Messages', function () {
     await MessagesScreen.clearAllButton.click();
     await browser.pause(DEFAULT_PAGE_LOAD_DELAY);
 
-    expect(HomeScreen.root).toBeDisplayed();
+    expect(await HomeScreen.root).toBeDisplayed();
 
     await browser.closeWindow();
     await browser.switchToWindow(tabOrigin);

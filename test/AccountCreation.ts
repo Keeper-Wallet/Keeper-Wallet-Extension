@@ -297,9 +297,9 @@ describe('Account creation', function () {
       await ImportViaSeedScreen.importAccountButton.click();
       await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST.NAME);
       await NewWalletNameScreen.continueButton.click();
-      expect(ImportSuccessScreen.root).toBeDisplayed();
+      expect(await ImportSuccessScreen.root).toBeDisplayed();
       await ImportSuccessScreen.addAnotherAccountButton.click();
-      expect(ImportFormScreen.root).toBeDisplayed();
+      expect(await ImportFormScreen.root).toBeDisplayed();
 
       await browser.switchToWindow(tabKeeper);
       await browser.openKeeperPopup();
@@ -320,15 +320,15 @@ describe('Account creation', function () {
             await ImportViaSeedScreen.seedInput.setValue('too short seed');
             await ImportViaSeedScreen.importAccountButton.click();
 
-            expect(ImportViaSeedScreen.errorMessage).toHaveText(
+            expect(await ImportViaSeedScreen.errorMessage).toHaveText(
               'Seed cannot be shorter than 24 characters'
             );
           });
 
           it('Can be switched to existing account', async () => {
             await ImportViaSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
-            expect(ImportViaSeedScreen.switchAccountButton).toBeDisplayed();
-            expect(ImportViaSeedScreen.errorMessage).toHaveTextContaining(
+            expect(await ImportViaSeedScreen.switchAccountButton).toBeDisplayed();
+            expect(await ImportViaSeedScreen.errorMessage).toHaveTextContaining(
               'Account already known as'
             );
           });
@@ -365,8 +365,8 @@ describe('Account creation', function () {
             await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST.NAME);
             await browser.keys('Tab');
 
-            expect(NewWalletNameScreen.error).toHaveText('name already exist');
-            expect(NewWalletNameScreen.continueButton).toBeDisabled();
+            expect(await NewWalletNameScreen.error).toHaveText('name already exist');
+            expect(await NewWalletNameScreen.continueButton).toBeDisabled();
           });
 
           it('Additional account successfully imported while entered correct account name', async () => {
@@ -375,17 +375,17 @@ describe('Account creation', function () {
             );
             await browser.keys('Tab');
 
-            expect(NewWalletNameScreen.error).toHaveText('');
+            expect(await NewWalletNameScreen.error).toHaveText('');
 
             await NewWalletNameScreen.continueButton.click();
 
             await ImportSuccessScreen.addAnotherAccountButton.click();
-            expect(ImportFormScreen.root).toBeExisting();
+            expect(await ImportFormScreen.root).toBeExisting();
 
             await browser.switchToWindow(tabKeeper);
             await browser.openKeeperPopup();
 
-            expect(HomeScreen.activeAccountName).toHaveText(
+            expect(await HomeScreen.activeAccountName).toHaveText(
               ACCOUNTS.MORE_24_CHARS.NAME
             );
             7;

@@ -1,6 +1,6 @@
 export const AssetScriptTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@assetScript']");
+    return browser.$("[class*='transaction@']");
   },
 
   get asset() {

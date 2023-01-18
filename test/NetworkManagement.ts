@@ -72,7 +72,7 @@ describe('Network management', function () {
       describe('Changing network settings by "Edit" button', function () {
         before(async function () {
           await NetworksMenu.editButton.click();
-          expect(CustomNetworkModal.root).toBeDisplayed();
+          expect(await CustomNetworkModal.root).toBeDisplayed();
         });
 
         beforeEach(async function () {
@@ -82,14 +82,14 @@ describe('Network management', function () {
 
         it('Node address is required field', async function () {
           await CustomNetworkModal.saveButton.click();
-          expect(CustomNetworkModal.addressError).toHaveText('URL is required');
+          expect(await CustomNetworkModal.addressError).toHaveText('URL is required');
         });
 
         it('The address of non-existed node was entered', async function () {
           await CustomNetworkModal.addressInput.setValue(invalidNodeUrl);
           await CustomNetworkModal.saveButton.click();
 
-          expect(CustomNetworkModal.addressError).toHaveText(
+          expect(await CustomNetworkModal.addressError).toHaveText(
             'Incorrect node address'
           );
         });
@@ -98,7 +98,7 @@ describe('Network management', function () {
           await CustomNetworkModal.addressInput.setValue(this.nodeUrl);
           await CustomNetworkModal.saveButton.click();
 
-          expect(NetworksMenu.editButton).toBeDisplayed();
+          expect(await NetworksMenu.editButton).toBeDisplayed();
         });
       });
     });

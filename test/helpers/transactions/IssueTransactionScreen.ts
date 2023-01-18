@@ -1,6 +1,6 @@
 export const IssueTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@issue]");
+    return browser.$("[class*='transaction@']");
   },
 
   get issueAmount() {

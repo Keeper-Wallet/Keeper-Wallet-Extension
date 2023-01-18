@@ -20,6 +20,6 @@ export const DataTransactionScreen = {
   },
 
   get contentScript() {
-    return this.root.findByTestId$('contentScript');
+    return this.root.findByTestId$('customDataBinary');
   },
 };

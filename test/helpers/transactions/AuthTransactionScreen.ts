@@ -1,7 +1,7 @@
 export const AuthTransactionScreen = {
   get root() {
     return browser.$(
-      "[class*='transaction@originAuth'], [class*='transaction@auth'], [class*='transaction@transactions']"
+      "[class*='transaction@']"
     );
   },
 

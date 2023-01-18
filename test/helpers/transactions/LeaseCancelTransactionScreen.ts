@@ -1,6 +1,6 @@
 export const LeaseCancelTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@cancelLease']");
+    return browser.$("[class*='transaction@']");
   },
 
   get cancelLeaseAmount() {

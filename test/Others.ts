@@ -91,13 +91,13 @@ describe('Others', function () {
 
       await SendAssetScreen.submitButton.click();
 
-      expect(TransferTransactionScreen.transferAmount).toHaveText(
+      expect(await TransferTransactionScreen.transferAmount).toHaveText(
         '-0.12300000 WAVES'
       );
-      expect(TransferTransactionScreen.recipient).toHaveText(
+      expect(await TransferTransactionScreen.recipient).toHaveText(
         'rich\n3MsX9C2M...yxZMg4cW'
       );
-      expect(TransferTransactionScreen.attachmentContent).toHaveText(
+      expect(await TransferTransactionScreen.attachmentContent).toHaveText(
         'This is an attachment'
       );
     });
@@ -108,13 +108,13 @@ describe('Others', function () {
       await SendAssetScreen.attachmentInput.setValue('This is an attachment');
       await SendAssetScreen.submitButton.click();
 
-      expect(TransferTransactionScreen.transferAmount).toHaveText(
+      expect(await TransferTransactionScreen.transferAmount).toHaveText(
         '-0.87654321 WAVES'
       );
-      expect(TransferTransactionScreen.recipient).toHaveText(
+      expect(await TransferTransactionScreen.recipient).toHaveText(
         'alias:T:an_alias'
       );
-      expect(TransferTransactionScreen.attachmentContent).toHaveText(
+      expect(await TransferTransactionScreen.attachmentContent).toHaveText(
         'This is an attachment'
       );
     });
@@ -139,7 +139,7 @@ describe('Others', function () {
       await browser.switchToWindow(tabAccounts);
       await browser.refresh();
 
-      expect(EmptyHomeScreen.root).toBeDisabled();
+      expect(await EmptyHomeScreen.root).toBeDisplayed();
 
       const newTab = (await browser.createWindow('tab')).handle;
 
@@ -165,9 +165,9 @@ describe('Others', function () {
       await browser.switchToWindow(messageWindow);
       await browser.refresh();
 
-      expect(CommonTransaction.originAddress).toHaveText('example.com');
-      expect(CommonTransaction.accountName).toHaveText('rich');
-      expect(CommonTransaction.originNetwork).toHaveText('Testnet');
+      expect(await CommonTransaction.originAddress).toHaveText('example.com');
+      expect(await CommonTransaction.accountName).toHaveText('rich');
+      expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
       await CommonTransaction.rejectButton.click();
       await FinalTransactionScreen.closeButton.click();

@@ -1,6 +1,6 @@
 export const ReissueTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@reissue']");
+    return browser.$("[class*='transaction@']");
   },
 
   get reissueAmount() {

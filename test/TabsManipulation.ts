@@ -43,7 +43,7 @@ describe('Tabs manipulation', function () {
       await browser.refresh();
 
       await GetStartedScreen.getStartedButton.click();
-      expect(NewAccountScreen.root).toBeDisplayed();
+      expect(await NewAccountScreen.root).toBeDisplayed();
       await NewAccountScreen.passwordInput.setValue(DEFAULT_PASSWORD);
       await NewAccountScreen.passwordConfirmationInput.setValue(
         DEFAULT_PASSWORD
@@ -52,7 +52,7 @@ describe('Tabs manipulation', function () {
       await NewAccountScreen.termsAndConditionsLine.click();
       await NewAccountScreen.continueButton.click();
 
-      expect(EmptyHomeScreen.root).toBeDisplayed();
+      expect(await EmptyHomeScreen.root).toBeDisplayed();
     });
   });
 
@@ -62,7 +62,7 @@ describe('Tabs manipulation', function () {
     });
 
     it('"add account" button appears in "popup" when password entered', async function () {
-      expect(EmptyHomeScreen.addButton).toBeDisplayed();
+      expect(await EmptyHomeScreen.addButton).toBeDisplayed();
     });
 
     it('new "accounts" appears when click "add account" button in "popup"', async function () {
@@ -100,12 +100,12 @@ describe('Tabs manipulation', function () {
         'waves private node seed with waves tokens'
       );
 
-      expect(ImportSuccessScreen.root).toBeDisplayed();
+      expect(await ImportSuccessScreen.root).toBeDisplayed();
     });
 
     it('import form displays after "add another account" button click', async function () {
       await ImportSuccessScreen.addAnotherAccountButton.click();
-      expect(ImportFormScreen.root).toBeDisplayed();
+      expect(await ImportFormScreen.root).toBeDisplayed();
     });
 
     it('"finish" button closes "accounts" tab', async function () {

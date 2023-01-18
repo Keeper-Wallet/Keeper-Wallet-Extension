@@ -1,6 +1,6 @@
 export const BurnTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@burn]");
+    return browser.$("[class*='transaction@']");
   },
 
   get burnAmount() {

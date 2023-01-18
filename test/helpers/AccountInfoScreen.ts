@@ -50,7 +50,7 @@ export const AccountInfoScreen = {
   },
   
   get passwordModal() {
-    return PasswordModal(this.root.$("[class*='modalWrapper@modal']"));
+    return PasswordModal(browser.$("[class*='modalWrapper@modal']"));
   },
 
   get name() {
