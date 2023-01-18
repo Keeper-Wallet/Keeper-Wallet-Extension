@@ -1,14 +1,20 @@
 import { base58Decode } from '@keeper-wallet/waves-crypto';
-import { BigNumber } from '@waves/bignumber';
-import { binary, serializePrimitives } from '@waves/marshall';
 import {
   base58Encode,
   blake2b,
-  concat,
   verifySignature,
-} from '@waves/ts-lib-crypto';
+} from '@keeper-wallet/waves-crypto';
+import { BigNumber } from '@waves/bignumber';
+import { binary } from '@waves/marshall';
+import Long from 'long';
 
 import { JSONbn } from '../src/_core/jsonBn';
+import {
+  MessageInputCancelOrder,
+  MessageInputCustomData,
+  MessageInputOrder,
+  MessageInputTx
+} from '../src/messages/types';
 import {
   makeAuthBytes,
   makeCancelOrderBytes,
@@ -17,6 +23,7 @@ import {
   makeTxBytes,
 } from '../src/messages/utils';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { HomeScreen } from './helpers/HomeScreen';
 import { MessagesScreen } from './helpers/MessagesScreen';
 import { AssetScriptTransactionScreen } from './helpers/transactions/AssetScriptTransactionScreen';
 import { AuthTransactionScreen } from './helpers/transactions/AuthTransactionScreen';
@@ -80,6 +87,7 @@ describe('Signature', function () {
   let messageWindow: string | null = null;
 
   const senderPublicKey = 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV';
+  const senderPublicKeyBytes = base58Decode(senderPublicKey);
 
   before(async function () {
     await App.initVault();
@@ -118,7 +126,6 @@ describe('Signature', function () {
 
   describe('Stale messages removal', function () {
     it('removes messages and closes window when tab is reloaded', async function () {
-      await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
       await browser.execute(() => {
@@ -170,6 +177,8 @@ describe('Signature', function () {
 
       await browser.switchToWindow((await browser.createWindow('tab')).handle);
       await browser.openKeeperPopup();
+      
+      expect(await HomeScreen.root).toBeDisplayed();
 
       await browser.closeWindow();
       await browser.switchToWindow(tabOrigin);
@@ -218,9 +227,7 @@ describe('Signature', function () {
 
   describe('Permission request from origin', function () {
     async function performPermissionRequest() {
-      await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
-      await ContentScript.waitForKeeperWallet();
       await ContentScript.waitForKeeperWallet();
       await browser.execute(() => {
         KeeperWallet.publicState().then(
@@ -276,6 +283,7 @@ describe('Signature', function () {
     });
 
     it('Reject forever', async function () {
+      await browser.switchToWindow(tabOrigin);
       await browser.navigateTo(`https://${CUSTOMLIST[1]}`);
 
       await performPermissionRequest();
@@ -297,6 +305,7 @@ describe('Signature', function () {
     });
 
     it('Approved', async function () {
+      await browser.switchToWindow(tabOrigin);
       await browser.navigateTo(`https://${CUSTOMLIST[0]}`);
 
       await performPermissionRequest();
@@ -349,7 +358,6 @@ describe('Signature', function () {
 
   describe('Authentication request from origin', function () {
     async function performAuthRequest() {
-      await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
       await browser.execute(() => {
@@ -389,32 +397,32 @@ describe('Signature', function () {
       const [status, result] = await getAuthRequestResult.call(this);
 
       expect(status).toBe('REJECTED');
-
+      
       expect(result).toStrictEqual({
         code: '10',
         data: 'rejected',
         message: 'User denied message',
       });
     });
-
+    
     it('Approved', async function () {
       await performAuthRequest();
       await AuthTransactionScreen.authButton.click();
       await FinalTransactionScreen.root.waitForDisplayed();
       await FinalTransactionScreen.closeButton.click();
-
+      
       await browser.switchToWindow(tabOrigin);
       const [status, result] = await getAuthRequestResult.call(this);
 
       expect(status).toBe('RESOLVED');
-
+      
       const expectedApproveResult = {
         host: WHITELIST[3],
         prefix: 'WavesWalletAuthentication',
         address: '3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW',
         publicKey: senderPublicKey,
       };
-
+      
       const bytes = makeAuthBytes({
         host: WHITELIST[3],
         data: 'generated auth data',
@@ -422,7 +430,7 @@ describe('Signature', function () {
 
       expect(result).toMatchObject(expectedApproveResult);
 
-      expect(verifySignature(senderPublicKey, bytes, result.signature)).toBe(
+      expect(await verifySignature(senderPublicKeyBytes, bytes, base58Decode(result.signature))).toBe(
         true
       );
     });
@@ -443,9 +451,6 @@ describe('Signature', function () {
               senderPublicKey,
               timestamp,
             },
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            type: 1001,
           }).then(
             result => {
               window.result = JSON.stringify(['RESOLVED', result]);
@@ -503,23 +508,22 @@ describe('Signature', function () {
 
       expect(status).toBe('RESOLVED');
 
-      const bytes = concat(
-        serializePrimitives.BASE58_STRING(senderPublicKey),
-        serializePrimitives.LONG(timestamp)
+      const bytes = Uint8Array.of(
+        ...senderPublicKeyBytes,
+        ...new Uint8Array(Long.fromNumber(timestamp).toBytesBE())
       );
 
-      expect(verifySignature(senderPublicKey, bytes, result)).toBe(true);
+      expect(await verifySignature(senderPublicKeyBytes, bytes, base58Decode(result))).toBe(true);
     });
   });
 
   describe('Transactions', function () {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async function performSignTransaction(tx: any) {
+    async function performSignTransaction(tx: MessageInputTx) {
       await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-shadow
-      await browser.execute((tx: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      await browser.execute((tx: MessageInputTx) => {
         KeeperWallet.signTransaction(tx).then(
           result => {
             window.result = JSON.stringify(['RESOLVED', result]);
@@ -544,10 +548,10 @@ describe('Signature', function () {
       );
     }
 
-    function setTxVersion(
-      tx: Parameters<(typeof KeeperWallet)['signTransaction']>[0],
+    function setTxVersion<T extends MessageInputTx>(
+      tx: T,
       version: number
-    ) {
+    ): T {
       return { ...tx, data: { ...tx.data, version } };
     }
 
@@ -652,7 +656,7 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
         ).toBe(true);
       });
 
@@ -661,9 +665,7 @@ describe('Signature', function () {
       describe('without script', function () {
         it('Rejected', async function () {
           await performSignTransaction(ISSUE_WITHOUT_SCRIPT);
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
+          expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
@@ -727,10 +729,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -805,10 +807,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -846,12 +848,14 @@ describe('Signature', function () {
         await checkTxFee('0.005 WAVES');
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
         await performSignTransaction(TRANSFER);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -883,7 +887,7 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
         ).toBe(true);
       });
 
@@ -947,10 +951,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -1010,10 +1014,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -1044,12 +1048,14 @@ describe('Signature', function () {
         await checkTxFee('0.005 WAVES');
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
         await performSignTransaction(REISSUE);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -1079,7 +1085,7 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
         ).toBe(true);
       });
 
@@ -1099,12 +1105,14 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(REISSUE_WITH_MONEY_LIKE);
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -1134,10 +1142,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -1159,12 +1167,14 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(setTxVersion(REISSUE, 2));
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -1194,10 +1204,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -1221,12 +1231,14 @@ describe('Signature', function () {
         await checkTxFee('0.005 WAVES');
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
         await performSignTransaction(BURN);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -1255,7 +1267,7 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
         ).toBe(true);
       });
 
@@ -1274,12 +1286,14 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(BURN_WITH_QUANTITY);
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -1308,10 +1322,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -1332,12 +1346,14 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(setTxVersion(BURN, 2));
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -1366,10 +1382,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -1400,12 +1416,14 @@ describe('Signature', function () {
         await checkTxFee('0.005 WAVES');
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
         await performSignTransaction(LEASE);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -1434,7 +1452,7 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
         ).toBe(true);
       });
 
@@ -1454,12 +1472,14 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(LEASE_WITH_ALIAS);
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -1488,10 +1508,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -1513,12 +1533,14 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(LEASE_WITH_MONEY_LIKE);
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -1547,10 +1569,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -1572,12 +1594,14 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(setTxVersion(LEASE, 2));
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -1606,10 +1630,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -1642,12 +1666,14 @@ describe('Signature', function () {
         await checkTxFee('0.005 WAVES');
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
         await performSignTransaction(CANCEL_LEASE);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -1675,7 +1701,7 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
         ).toBe(true);
       });
 
@@ -1695,12 +1721,14 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(setTxVersion(CANCEL_LEASE, 2));
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -1728,10 +1756,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -1755,12 +1783,14 @@ describe('Signature', function () {
         await checkTxFee('0.005 WAVES');
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
         await performSignTransaction(ALIAS);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -1788,7 +1818,7 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
         ).toBe(true);
       });
 
@@ -1811,12 +1841,14 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(setTxVersion(ALIAS, 2));
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -1843,14 +1875,14 @@ describe('Signature', function () {
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
 
           expect(parsedApproveResult.id).toBe(
-            base58Encode(blake2b([bytes[0], ...bytes.slice(36, -16)]))
+            base58Encode(blake2b(Uint8Array.of(bytes[0], ...bytes.subarray(36, -16))))
           );
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -1912,12 +1944,14 @@ describe('Signature', function () {
         await checkTxFee('0.006 WAVES');
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
         await performSignTransaction(MASS_TRANSFER);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -1950,7 +1984,7 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
         ).toBe(true);
       });
 
@@ -1980,6 +2014,7 @@ describe('Signature', function () {
           await checkTxFee('0.006 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
@@ -1987,6 +2022,7 @@ describe('Signature', function () {
           await performSignTransaction(MASS_TRANSFER_WITHOUT_ATTACHMENT);
 
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -2018,10 +2054,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -2055,12 +2091,14 @@ describe('Signature', function () {
           await checkTxFee('0.006 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(setTxVersion(MASS_TRANSFER, 1));
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -2093,10 +2131,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -2154,12 +2192,14 @@ describe('Signature', function () {
         await checkTxFee('0.005 WAVES');
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
         await performSignTransaction(DATA);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -2205,7 +2245,7 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
         ).toBe(true);
       });
 
@@ -2245,12 +2285,14 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(setTxVersion(DATA, 1));
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -2296,10 +2338,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -2330,12 +2372,14 @@ describe('Signature', function () {
         await checkTxFee('0.005 WAVES');
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
         await performSignTransaction(SET_SCRIPT);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -2363,7 +2407,7 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
         ).toBe(true);
       });
 
@@ -2386,12 +2430,14 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(SET_SCRIPT_WITHOUT_SCRIPT);
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -2420,10 +2466,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -2445,12 +2491,14 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(setTxVersion(SET_SCRIPT, 1));
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -2478,10 +2526,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -2514,12 +2562,14 @@ describe('Signature', function () {
         await checkTxFee('0.005 WAVES');
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
         await performSignTransaction(SPONSORSHIP);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -2548,7 +2598,7 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
         ).toBe(true);
       });
 
@@ -2568,12 +2618,14 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(SPONSORSHIP_REMOVAL);
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -2602,10 +2654,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -2627,12 +2679,14 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(setTxVersion(SPONSORSHIP, 1));
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -2661,10 +2715,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -2693,12 +2747,14 @@ describe('Signature', function () {
         await checkTxFee('1.004 WAVES');
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
         await performSignTransaction(SET_ASSET_SCRIPT);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -2727,7 +2783,7 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
         ).toBe(true);
       });
 
@@ -2749,6 +2805,7 @@ describe('Signature', function () {
           await checkTxFee('1.004 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
@@ -2756,6 +2813,7 @@ describe('Signature', function () {
           await performSignTransaction(setTxVersion(SET_ASSET_SCRIPT, 1));
 
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -2784,10 +2842,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -2869,12 +2927,14 @@ describe('Signature', function () {
         await checkTxFee('0.005 WAVES');
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
         await performSignTransaction(INVOKE_SCRIPT);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -2905,7 +2965,7 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
         ).toBe(true);
       });
 
@@ -2939,12 +2999,14 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
         it('Approved', async function () {
           await performSignTransaction(INVOKE_SCRIPT_WITHOUT_CALL);
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -2975,10 +3037,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -3019,6 +3081,7 @@ describe('Signature', function () {
           await checkTxFee('0.005 WAVES');
 
           await CommonTransaction.rejectButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
         });
 
@@ -3029,6 +3092,7 @@ describe('Signature', function () {
           );
 
           await CommonTransaction.approveButton.click();
+          await FinalTransactionScreen.root.waitForDisplayed();
           await FinalTransactionScreen.closeButton.click();
 
           await browser.switchToWindow(tabOrigin);
@@ -3059,10 +3123,10 @@ describe('Signature', function () {
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
           expect(
-            verifySignature(
-              senderPublicKey,
+            await verifySignature(
+              senderPublicKeyBytes,
               bytes,
-              parsedApproveResult.proofs[0]
+              base58Decode(parsedApproveResult.proofs[0])
             )
           ).toBe(true);
         });
@@ -3107,12 +3171,14 @@ describe('Signature', function () {
         await checkFee('0.001 WAVES');
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
         await performSignTransaction(UPDATE_ASSET_INFO);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -3142,15 +3208,14 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.proofs[0])
+          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
         ).toBe(true);
       });
     });
   });
 
   describe('Order', function () {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const createOrder = (tx: any) => {
+    const createOrder = (tx: MessageInputOrder) => {
       KeeperWallet.signOrder(tx).then(
         result => {
           window.result = result;
@@ -3161,8 +3226,7 @@ describe('Signature', function () {
       );
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const cancelOrder = (tx: any) => {
+    const cancelOrder = (tx: MessageInputCancelOrder) => {
       KeeperWallet.signCancelOrder(tx).then(
         result => {
           window.result = result;
@@ -3174,14 +3238,26 @@ describe('Signature', function () {
     };
 
     async function performSignOrder(
-      script: (
-        tx: Parameters<(typeof KeeperWallet)['signTransaction']>[0]
-      ) => void,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      tx: any
+      script: (tx: MessageInputOrder) => void,
+      tx: MessageInputOrder
     ) {
       await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
+      await browser.execute(script, tx);
+      [messageWindow] = await waitForNewWindows(1);
+      await browser.switchToWindow(messageWindow);
+      await browser.refresh();
+    }
+
+
+    async function performSignCancelOrder(
+      script: (tx: MessageInputCancelOrder) => void,
+      tx: MessageInputCancelOrder
+    ) {
+      await browser.switchToWindow(tabOrigin);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
       await browser.execute(script, tx);
       [messageWindow] = await waitForNewWindows(1);
       await browser.switchToWindow(messageWindow);
@@ -3220,7 +3296,6 @@ describe('Signature', function () {
       describe('version 3', () => {
         describe('basic', () => {
           const INPUT = {
-            type: 1002,
             data: {
               matcherPublicKey: '7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy',
               orderType: 'sell',
@@ -3238,7 +3313,7 @@ describe('Signature', function () {
                 assetId: 'WAVES',
               },
             },
-          };
+          } as const;
 
           it('Rejected', async function () {
             await performSignOrder(createOrder, INPUT);
@@ -3257,12 +3332,14 @@ describe('Signature', function () {
             await checkCreateOrderFee('0.03 WAVES');
 
             await CommonTransaction.rejectButton.click();
+            await FinalTransactionScreen.root.waitForDisplayed();
             await FinalTransactionScreen.closeButton.click();
           });
 
           it('Approved', async function () {
             await performSignOrder(createOrder, INPUT);
             await CommonTransaction.approveButton.click();
+            await FinalTransactionScreen.root.waitForDisplayed();
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
@@ -3297,10 +3374,10 @@ describe('Signature', function () {
             expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
             expect(
-              verifySignature(
-                senderPublicKey,
+              await verifySignature(
+                senderPublicKeyBytes,
                 bytes,
-                parsedApproveResult.proofs[0]
+                base58Decode(parsedApproveResult.proofs[0])
               )
             ).toBe(true);
           });
@@ -3308,7 +3385,6 @@ describe('Signature', function () {
 
         describe('with price precision conversion', function () {
           const INPUT = {
-            type: 1002,
             data: {
               matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
               orderType: 'buy',
@@ -3326,7 +3402,7 @@ describe('Signature', function () {
                 assetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
               },
             },
-          };
+          } as const;
 
           it('Rejected', async function () {
             await performSignOrder(createOrder, INPUT);
@@ -3345,6 +3421,7 @@ describe('Signature', function () {
             await checkCreateOrderFee('0.04077612 TXW-DEVa4f6df');
 
             await CommonTransaction.rejectButton.click();
+            await FinalTransactionScreen.root.waitForDisplayed();
             await FinalTransactionScreen.closeButton.click();
           });
 
@@ -3352,6 +3429,7 @@ describe('Signature', function () {
             await performSignOrder(createOrder, INPUT);
 
             await CommonTransaction.approveButton.click();
+            await FinalTransactionScreen.root.waitForDisplayed();
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
@@ -3386,10 +3464,10 @@ describe('Signature', function () {
             expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
             expect(
-              verifySignature(
-                senderPublicKey,
+              await verifySignature(
+                senderPublicKeyBytes,
                 bytes,
-                parsedApproveResult.proofs[0]
+                base58Decode(parsedApproveResult.proofs[0])
               )
             ).toBe(true);
           });
@@ -3399,11 +3477,10 @@ describe('Signature', function () {
       describe('version 4', () => {
         describe('with assetDecimals priceMode', function () {
           const INPUT = {
-            type: 1002,
             data: {
               version: 4,
               matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
-              orderType: 'buy' as const,
+              orderType: 'buy',
               expiration: Date.now() + 100000,
               priceMode: 'assetDecimals',
               amount: {
@@ -3419,7 +3496,7 @@ describe('Signature', function () {
                 assetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
               },
             },
-          };
+          } as const;
 
           it('Rejected', async function () {
             await performSignOrder(createOrder, INPUT);
@@ -3438,6 +3515,7 @@ describe('Signature', function () {
             await checkCreateOrderFee('0.04077612 TXW-DEVa4f6df');
 
             await CommonTransaction.rejectButton.click();
+            await FinalTransactionScreen.root.waitForDisplayed();
             await FinalTransactionScreen.closeButton.click();
           });
 
@@ -3445,6 +3523,7 @@ describe('Signature', function () {
             await performSignOrder(createOrder, INPUT);
 
             await CommonTransaction.approveButton.click();
+            await FinalTransactionScreen.root.waitForDisplayed();
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
@@ -3481,10 +3560,10 @@ describe('Signature', function () {
             expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
             expect(
-              verifySignature(
-                senderPublicKey,
+              await verifySignature(
+                senderPublicKeyBytes,
                 bytes,
-                parsedApproveResult.proofs[0]
+                base58Decode(parsedApproveResult.proofs[0])
               )
             ).toBe(true);
           });
@@ -3492,11 +3571,10 @@ describe('Signature', function () {
 
         describe('with fixedDecimals priceMode', function () {
           const INPUT = {
-            type: 1002,
             data: {
               version: 4,
               matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
-              orderType: 'buy' as const,
+              orderType: 'buy',
               expiration: Date.now() + 100000,
               priceMode: 'fixedDecimals',
               amount: {
@@ -3512,7 +3590,7 @@ describe('Signature', function () {
                 assetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
               },
             },
-          };
+          } as const;
 
           it('Rejected', async function () {
             await performSignOrder(createOrder, INPUT);
@@ -3531,6 +3609,7 @@ describe('Signature', function () {
             await checkCreateOrderFee('0.04077612 TXW-DEVa4f6df');
 
             await CommonTransaction.rejectButton.click();
+            await FinalTransactionScreen.root.waitForDisplayed();
             await FinalTransactionScreen.closeButton.click();
           });
 
@@ -3538,6 +3617,7 @@ describe('Signature', function () {
             await performSignOrder(createOrder, INPUT);
 
             await CommonTransaction.approveButton.click();
+            await FinalTransactionScreen.root.waitForDisplayed();
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
@@ -3574,10 +3654,10 @@ describe('Signature', function () {
             expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
             expect(
-              verifySignature(
-                senderPublicKey,
+              await verifySignature(
+                senderPublicKeyBytes,
                 bytes,
-                parsedApproveResult.proofs[0]
+                base58Decode(parsedApproveResult.proofs[0])
               )
             ).toBe(true);
           });
@@ -3585,11 +3665,10 @@ describe('Signature', function () {
 
         describe('without priceMode', function () {
           const INPUT = {
-            type: 1002,
             data: {
               version: 4,
               matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
-              orderType: 'buy' as const,
+              orderType: 'buy',
               expiration: Date.now() + 100000,
               amount: {
                 tokens: '1.000000',
@@ -3604,7 +3683,7 @@ describe('Signature', function () {
                 assetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
               },
             },
-          };
+          } as const;
 
           it('Rejected', async function () {
             await performSignOrder(createOrder, INPUT);
@@ -3623,6 +3702,7 @@ describe('Signature', function () {
             await checkCreateOrderFee('0.04077612 TXW-DEVa4f6df');
 
             await CommonTransaction.rejectButton.click();
+            await FinalTransactionScreen.root.waitForDisplayed();
             await FinalTransactionScreen.closeButton.click();
           });
 
@@ -3630,6 +3710,7 @@ describe('Signature', function () {
             await performSignOrder(createOrder, INPUT);
 
             await CommonTransaction.approveButton.click();
+            await FinalTransactionScreen.root.waitForDisplayed();
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
@@ -3666,10 +3747,10 @@ describe('Signature', function () {
             expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
             expect(
-              verifySignature(
-                senderPublicKey,
+              await verifySignature(
+                senderPublicKeyBytes,
                 bytes,
-                parsedApproveResult.proofs[0]
+                base58Decode(parsedApproveResult.proofs[0])
               )
             ).toBe(true);
           });
@@ -3679,10 +3760,9 @@ describe('Signature', function () {
 
     describe('Cancel', function () {
       const INPUT = {
-        type: 1003,
-        data: {
-          id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap',
-        },
+        amountAsset: '',
+        data: { id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap' },
+        priceAsset: '',
       };
 
       async function checkOrderId(orderId: string) {
@@ -3690,7 +3770,7 @@ describe('Signature', function () {
       }
 
       it('Rejected', async function () {
-        await performSignOrder(cancelOrder, INPUT);
+        await performSignCancelOrder(cancelOrder, INPUT);
 
         expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
         expect(await CommonTransaction.accountName).toHaveText('rich');
@@ -3699,12 +3779,14 @@ describe('Signature', function () {
         await checkOrderId(INPUT.data.id);
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
-        await performSignOrder(cancelOrder, INPUT);
+        await performSignCancelOrder(cancelOrder, INPUT);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -3724,7 +3806,7 @@ describe('Signature', function () {
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
 
         expect(
-          verifySignature(senderPublicKey, bytes, parsedApproveResult.signature)
+          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.signature))
         ).toBe(true);
       });
     });
@@ -3732,7 +3814,7 @@ describe('Signature', function () {
 
   describe('Multiple transactions package', function () {
     async function performSignTransactionPackage(
-      tx: Array<Parameters<(typeof KeeperWallet)['signTransaction']>[0]>,
+      tx: MessageInputTx[],
       name: string
     ) {
       await browser.switchToWindow(tabOrigin);
@@ -3741,7 +3823,7 @@ describe('Signature', function () {
       await browser.execute(
         (
           // eslint-disable-next-line @typescript-eslint/no-shadow
-          tx: Array<Parameters<(typeof KeeperWallet)['signTransaction']>[0]>,
+          tx: MessageInputTx[],
           // eslint-disable-next-line @typescript-eslint/no-shadow
           name: string
         ) => {
@@ -3787,11 +3869,7 @@ describe('Signature', function () {
     }
 
     it('Rejected', async function () {
-      await performSignTransactionPackage(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        PACKAGE as any,
-        'Test package'
-      );
+      await performSignTransactionPackage(PACKAGE,'Test package');
 
       expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
       expect(await CommonTransaction.accountName).toHaveText('rich');
@@ -3905,6 +3983,7 @@ describe('Signature', function () {
       expect(await invokeScript.fee).toHaveText('0.005 WAVES');
 
       await CommonTransaction.rejectButton.click();
+      await FinalTransactionScreen.root.waitForDisplayed();
       await FinalTransactionScreen.closeButton.click();
     });
 
@@ -3916,6 +3995,7 @@ describe('Signature', function () {
       );
 
       await CommonTransaction.approveButton.click();
+      await FinalTransactionScreen.root.waitForDisplayed();
       await FinalTransactionScreen.closeButton.click();
 
       await browser.switchToWindow(tabOrigin);
@@ -3955,10 +4035,10 @@ describe('Signature', function () {
       expect(parsedApproveResult[0].id).toBe(base58Encode(blake2b(bytes0)));
 
       expect(
-        verifySignature(
-          senderPublicKey,
+        await verifySignature(
+          senderPublicKeyBytes,
           bytes0,
-          parsedApproveResult[0].proofs[0]
+          base58Decode(parsedApproveResult[0].proofs[0])
         )
       ).toBe(true);
 
@@ -3984,10 +4064,10 @@ describe('Signature', function () {
       expect(parsedApproveResult[1].id).toBe(base58Encode(blake2b(bytes1)));
 
       expect(
-        verifySignature(
-          senderPublicKey,
+        await verifySignature(
+          senderPublicKeyBytes,
           bytes1,
-          parsedApproveResult[1].proofs[0]
+          base58Decode(parsedApproveResult[1].proofs[0])
         )
       ).toBe(true);
 
@@ -4011,10 +4091,10 @@ describe('Signature', function () {
       expect(parsedApproveResult[2].id).toBe(base58Encode(blake2b(bytes2)));
 
       expect(
-        verifySignature(
-          senderPublicKey,
+        await verifySignature(
+          senderPublicKeyBytes,
           bytes2,
-          parsedApproveResult[2].proofs[0]
+          base58Decode(parsedApproveResult[2].proofs[0])
         )
       ).toBe(true);
 
@@ -4037,10 +4117,10 @@ describe('Signature', function () {
       expect(parsedApproveResult[3].id).toBe(base58Encode(blake2b(bytes3)));
 
       expect(
-        verifySignature(
-          senderPublicKey,
+        await verifySignature(
+          senderPublicKeyBytes,
           bytes3,
-          parsedApproveResult[3].proofs[0]
+          base58Decode(parsedApproveResult[3].proofs[0])
         )
       ).toBe(true);
 
@@ -4063,10 +4143,10 @@ describe('Signature', function () {
       expect(parsedApproveResult[4].id).toBe(base58Encode(blake2b(bytes4)));
 
       expect(
-        verifySignature(
-          senderPublicKey,
+        await verifySignature(
+          senderPublicKeyBytes,
           bytes4,
-          parsedApproveResult[4].proofs[0]
+          base58Decode(parsedApproveResult[4].proofs[0])
         )
       ).toBe(true);
 
@@ -4088,10 +4168,10 @@ describe('Signature', function () {
       expect(parsedApproveResult[5].id).toBe(base58Encode(blake2b(bytes5)));
 
       expect(
-        verifySignature(
-          senderPublicKey,
+        await verifySignature(
+          senderPublicKeyBytes,
           bytes5,
-          parsedApproveResult[5].proofs[0]
+          base58Decode(parsedApproveResult[5].proofs[0])
         )
       ).toBe(true);
 
@@ -4116,10 +4196,10 @@ describe('Signature', function () {
       expect(parsedApproveResult[6].id).toBe(base58Encode(blake2b(bytes6)));
 
       expect(
-        verifySignature(
-          senderPublicKey,
+        await verifySignature(
+          senderPublicKeyBytes,
           bytes6,
-          parsedApproveResult[6].proofs[0]
+          base58Decode(parsedApproveResult[6].proofs[0])
         )
       ).toBe(true);
     });
@@ -4131,8 +4211,8 @@ describe('Signature', function () {
       await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-shadow
-      await browser.execute((data: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      await browser.execute((data: MessageInputCustomData) => {
         KeeperWallet.signCustomData(data).then(
           result => {
             window.result = JSON.stringify(result);
@@ -4162,12 +4242,14 @@ describe('Signature', function () {
         await checkData('base64:AADDEE==');
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
         await performSignCustomData(CUSTOM_DATA_V1);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -4186,10 +4268,10 @@ describe('Signature', function () {
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
 
         expect(
-          verifySignature(
-            senderPublicKey,
+          await verifySignature(
+            senderPublicKeyBytes,
             makeCustomDataBytes(expectedApproveResult),
-            parsedApproveResult.signature
+            base58Decode(parsedApproveResult.signature)
           )
         ).toBe(true);
       });
@@ -4248,12 +4330,14 @@ describe('Signature', function () {
         ]);
 
         await CommonTransaction.rejectButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
       });
 
       it('Approved', async function () {
         await performSignCustomData(CUSTOM_DATA_V2);
         await CommonTransaction.approveButton.click();
+        await FinalTransactionScreen.root.waitForDisplayed();
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
@@ -4273,8 +4357,8 @@ describe('Signature', function () {
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
 
         expect(
-          verifySignature(
-            senderPublicKey,
+          await verifySignature(
+            senderPublicKeyBytes,
             makeCustomDataBytes(expectedApproveResult),
             base58Decode(parsedApproveResult.signature)
           )
