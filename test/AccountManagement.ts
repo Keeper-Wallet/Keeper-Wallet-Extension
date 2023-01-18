@@ -5,14 +5,13 @@ import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { HomeScreen } from './helpers/HomeScreen';
 import { OtherAccountsScreen } from './helpers/OtherAccountsScreen';
 import { TopMenu } from './helpers/TopMenu';
-import { AccountsHome, App, Network, Settings, Windows } from './utils/actions';
+import { AccountsHome, App, Network, Windows } from './utils/actions';
 
-describe('Account management', function () {
+describe('Account management', function() {
   let tabKeeper: string, tabAccounts: string;
 
   before(async () => {
     await App.initVault();
-    await Settings.setMaxSessionTimeout();
     await browser.openKeeperPopup();
     tabKeeper = await browser.getWindowHandle();
 
@@ -228,7 +227,7 @@ describe('Account management', function () {
         await DeleteAccountScreen.deleteAccountButton.click();
         expect(
           (await HomeScreen.isDisplayed()) ||
-            (await EmptyHomeScreen.isDisplayed())
+          (await EmptyHomeScreen.isDisplayed())
         ).toBe(true);
       });
     });

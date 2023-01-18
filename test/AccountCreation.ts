@@ -20,7 +20,6 @@ import {
   App,
   Network,
   PopupHome,
-  Settings,
   Windows,
 } from './utils/actions';
 
@@ -38,7 +37,6 @@ describe('Account creation', function () {
 
   before(async () => {
     await App.initVault();
-    await Settings.setMaxSessionTimeout();
     await browser.openKeeperPopup();
     tabKeeper = await browser.getWindowHandle();
 

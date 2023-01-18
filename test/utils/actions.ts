@@ -119,10 +119,6 @@ export const Settings = {
     await Settings.setSessionTimeout('Browser timeout');
   },
 
-  setMaxSessionTimeout: async () => {
-    await Settings.setSessionTimeout('1 hour');
-  },
-
   clearCustomList: async () => {
     await TopMenu.settingsButton.click();
     await SettingsScreen.permissionsSectionLink.click();
