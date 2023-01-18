@@ -4,14 +4,14 @@ export const GeneralSettingsScreen = {
       .$("[class*='trigger@Select-module']")
       .getText();
     if (currentValue === name) return;
-    await browser.$("[class*='trigger@Select-module']").click();
+    await $("[class*='trigger@Select-module']").click();
     await browser
       .findByText$(name, { selector: "[class*='item@Select-module']" })
       .click();
   },
 
   get root() {
-    return browser.$("[class*='content@settings']");
+    return $("[class*='content@settings']");
   },
 
   get changePasswordLink() {
@@ -43,7 +43,7 @@ const Permission = (wrapped: WebdriverIO.Element) => ({
 
 export const PermissionControlSettingsScreen = {
   get root() {
-    return browser.$("[class*='content@permissionsSettings']");
+    return $("[class*='content@permissionsSettings']");
   },
 
   get permissionItems() {
@@ -61,11 +61,11 @@ export const PermissionControlSettingsScreen = {
   },
 
   get modalDeleteButton() {
-    return browser.$("[class*='modalWrapper@modal'] #delete");
+    return $("[class*='modalWrapper@modal'] #delete");
   },
 
   get modalSaveButton() {
-    return browser.$("[class*='modalWrapper@modal'] #save");
+    return $("[class*='modalWrapper@modal'] #save");
   },
 
   async modalSetResolutionTime(time: string) {
@@ -78,7 +78,7 @@ export const PermissionControlSettingsScreen = {
   },
 
   get modalSpendingLimitInput() {
-    return browser.$("[class*='amountInput@settings']");
+    return $("[class*='amountInput@settings']");
   },
 
   get modalAllowMessagesCheckbox() {
@@ -90,7 +90,7 @@ export const PermissionControlSettingsScreen = {
 
 export const ExportAndImportSettingsScreen = {
   get root() {
-    return browser.$("[class*='content@ExportAndImport']");
+    return $("[class*='content@ExportAndImport']");
   },
 
   get exportAccountsLink() {
@@ -100,7 +100,7 @@ export const ExportAndImportSettingsScreen = {
 
 export const NetworkSettingsScreen = {
   get root() {
-    return browser.$("[class*='networkTab@settings']");
+    return $("[class*='networkTab@settings']");
   },
 
   get nodeAddress() {
@@ -118,7 +118,7 @@ export const NetworkSettingsScreen = {
 
 export const SettingsScreen = {
   get root() {
-    return browser.$("[class*='content@settings']");
+    return $("[class*='content@settings']");
   },
 
   get generalSectionLink() {
@@ -170,6 +170,6 @@ export const SettingsScreen = {
   },
 
   get helpTooltip() {
-    return browser.$("[class*='helpTooltip@settings']");
+    return $("[class*='helpTooltip@settings']");
   },
 };

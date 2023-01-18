@@ -1,6 +1,6 @@
 export const SetScriptTransactionScreen = {
   get root() {
-    return browser.$("[class*='screen@']");
+    return $("[class*='screen@']");
   },
 
   get contentScript() {

@@ -1,6 +1,6 @@
 export const ChangeAccountNameScreen = {
   get root() {
-    return browser.$("[class*='content@changeName']");
+    return $("[class*='content@changeName']");
   },
 
   get currentName() {

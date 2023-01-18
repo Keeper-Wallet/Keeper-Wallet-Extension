@@ -1,6 +1,6 @@
 export const NetworksMenu = {
   get root() {
-    return browser.$("[class*='network@network']");
+    return $("[class*='network@network']");
   },
 
   networkByName(network: string) {
@@ -20,17 +20,17 @@ export const NetworksMenu = {
 
 export const TopMenu = {
   get backButton() {
-    return browser.$('.arrow-back-icon');
+    return $('.arrow-back-icon');
   },
 
   get settingsButton() {
-    return browser.$("[class*='settingsIcon@menu']");
+    return $("[class*='settingsIcon@menu']");
   },
 };
 
 export const CustomNetworkModal = {
   get root() {
-    return browser.$('#customNetwork');
+    return $('#customNetwork');
   },
 
   get addressInput() {

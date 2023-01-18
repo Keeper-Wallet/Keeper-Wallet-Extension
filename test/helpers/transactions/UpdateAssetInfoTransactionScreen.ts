@@ -1,6 +1,6 @@
 export const UpdateAssetInfoTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@']");
+    return $("[class*='transaction@']");
   },
 
   get assetId() {

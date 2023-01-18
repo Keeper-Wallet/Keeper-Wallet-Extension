@@ -1,6 +1,6 @@
 export const CreateOrderTransaction = {
   get root() {
-    return browser.$("[class*='transaction@']");
+    return $("[class*='transaction@']");
   },
 
   get orderTitle() {

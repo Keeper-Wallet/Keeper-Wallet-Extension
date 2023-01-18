@@ -1,6 +1,6 @@
 export const BackupSeedScreen = {
   get root() {
-    return browser.$("[class*='content@backupSeed']");
+    return $("[class*='content@backupSeed']");
   },
 
   get seed() {

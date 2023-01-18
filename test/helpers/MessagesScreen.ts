@@ -1,8 +1,6 @@
 export const MessagesScreen = {
   get root() {
-    return browser.$(
-      "[class*='messageList@'], [class*='root@messagesAndNotifications']"
-    );
+    return $("[class*='messageList@'], [class*='root@messagesAndNotifications']");
   },
 
   get messages() {

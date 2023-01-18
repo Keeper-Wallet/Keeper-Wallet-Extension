@@ -1,6 +1,6 @@
 export const NewWalletScreen = {
   get root() {
-    return browser.$("[class*='content@newwallet']");
+    return $("[class*='content@newwallet']");
   },
 
   get continueButton() {

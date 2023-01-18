@@ -12,7 +12,7 @@ const DataRow = (wrapped: WebdriverIO.Element) => ({
 
 export const DataTransactionScreen = {
   get root() {
-    return browser.$("[class*='transaction@']");
+    return $("[class*='transaction@']");
   },
 
   async getDataRows() {

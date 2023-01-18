@@ -1,6 +1,6 @@
 export const LoginScreen = {
   get root() {
-    return browser.$("[class*='content@login']");
+    return $("[class*='content@login']");
   },
 
   get passwordInput() {

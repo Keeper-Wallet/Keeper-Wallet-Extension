@@ -1,6 +1,6 @@
 export const GetStartedScreen = {
   get root() {
-    return browser.$("[class*='content@Welcome-module']");
+    return $("[class*='content@Welcome-module']");
   },
 
   get getStartedButton() {

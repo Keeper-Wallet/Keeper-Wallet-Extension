@@ -1,6 +1,6 @@
 export const ChangePasswordScreen = {
   get root() {
-    return browser.$("[class*='newPassword@changePassword']");
+    return $("[class*='newPassword@changePassword']");
   },
 
   get oldPasswordInput() {
@@ -32,6 +32,6 @@ export const ChangePasswordScreen = {
   },
 
   get notification() {
-    return browser.$('.modal.notification');
+    return $('.modal.notification');
   },
 };

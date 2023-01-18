@@ -16,7 +16,7 @@ const PillsContainer = (
 
 export const ConfirmBackupScreen = {
   get root() {
-    return browser.$("[class*='content@confirmBackup']");
+    return $("[class*='content@confirmBackup']");
   },
 
   get suggestedPillsContainer() {

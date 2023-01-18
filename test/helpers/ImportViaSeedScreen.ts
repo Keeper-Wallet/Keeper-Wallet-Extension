@@ -1,6 +1,6 @@
 export const ImportViaSeedScreen = {
   get root() {
-    return browser.$("[class*='content@importSeed']");
+    return $("[class*='content@importSeed']");
   },
 
   get seedInput() {

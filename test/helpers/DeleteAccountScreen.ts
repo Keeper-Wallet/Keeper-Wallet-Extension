@@ -1,6 +1,6 @@
 export const DeleteAccountScreen = {
   get root() {
-    return browser.$("[class*='content@deleteAccount']");
+    return $("[class*='content@deleteAccount']");
   },
 
   get deleteAccountButton() {

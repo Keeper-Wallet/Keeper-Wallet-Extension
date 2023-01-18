@@ -60,9 +60,7 @@ describe('Account management', function () {
 
       it('Opening the screen with the QR code of the address by clicking the "Show QR" button', async () => {
         await HomeScreen.showQRButton.click();
-        await browser
-          .$('[class^="content@SelectedAccountQr-module"]')
-          .waitForExist();
+        await $('[class^="content@SelectedAccountQr-module"]').waitForExist();
       });
 
       it('Check that QR matches the displayed address');

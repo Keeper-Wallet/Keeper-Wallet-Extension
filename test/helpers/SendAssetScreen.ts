@@ -1,6 +1,6 @@
 export const SendAssetScreen = {
   get root() {
-    return browser.$("[class*='root@send-module']");
+    return $("[class*='root@send-module']");
   },
 
   get recipientInput() {

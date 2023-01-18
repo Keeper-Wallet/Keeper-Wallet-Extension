@@ -1,6 +1,6 @@
 export const ImportKeystoreFileScreen = {
   get root() {
-    return browser.$("[class*='root@chooseFile']");
+    return $("[class*='root@chooseFile']");
   },
 
   get fileInput() {

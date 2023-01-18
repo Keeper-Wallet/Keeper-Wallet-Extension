@@ -120,7 +120,7 @@ describe('Others', function () {
   describe('Connection', () => {
     async function stopServiceWorker() {
       await browser.navigateTo('chrome://serviceworker-internals');
-      await browser.$('.content .stop').click();
+      await $('.content .stop').click();
     }
 
     it('ui waits until connection with background is established before trying to call methods', async function () {

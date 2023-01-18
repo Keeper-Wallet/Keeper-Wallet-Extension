@@ -14,7 +14,7 @@ const PasswordModal = (
 
 export const AccountInfoScreen = {
   get root() {
-    return browser.$("[class*='content@accountInfo']");
+    return $("[class*='content@accountInfo']");
   },
 
   get deleteAccountButton() {
@@ -52,7 +52,7 @@ export const AccountInfoScreen = {
   },
 
   get passwordModal() {
-    return PasswordModal(browser.$("[class*='modalWrapper@modal']"));
+    return PasswordModal($("[class*='modalWrapper@modal']"));
   },
 
   get name() {
@@ -60,6 +60,6 @@ export const AccountInfoScreen = {
   },
 
   get notification() {
-    return browser.$('.modal.notification');
+    return $('.modal.notification');
   },
 };
