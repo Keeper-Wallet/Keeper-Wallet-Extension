@@ -72,7 +72,6 @@ describe('Signature', function() {
 
   before(async function() {
     await App.initVault();
-    await browser.openKeeperPopup();
     await Network.switchToAndCheck('Testnet');
     const tabKeeper = await browser.getWindowHandle();
 

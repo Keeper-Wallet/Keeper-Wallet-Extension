@@ -28,7 +28,6 @@ describe('Settings', function() {
 
   before(async function() {
     await App.initVault();
-    await browser.openKeeperPopup();
     tabKeeper = await browser.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();

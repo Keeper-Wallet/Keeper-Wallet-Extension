@@ -12,7 +12,6 @@ describe('Account management', function() {
 
   before(async () => {
     await App.initVault();
-    await browser.openKeeperPopup();
     tabKeeper = await browser.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();

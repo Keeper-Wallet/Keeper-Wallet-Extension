@@ -31,7 +31,6 @@ describe('Messages', function() {
 
   before(async function() {
     await App.initVault();
-    await browser.openKeeperPopup();
     const tabKeeper = await browser.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();

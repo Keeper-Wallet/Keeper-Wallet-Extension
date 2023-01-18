@@ -9,7 +9,6 @@ import { AccountsHome, App, Network, PopupHome, Windows } from './utils/actions'
 describe('Others', function() {
   before(async function() {
     await App.initVault();
-    await browser.openKeeperPopup();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
     await EmptyHomeScreen.addButton.click();
