@@ -4,10 +4,16 @@ import { SendAssetScreen } from './helpers/SendAssetScreen';
 import { CommonTransaction } from './helpers/transactions/CommonTransaction';
 import { FinalTransactionScreen } from './helpers/transactions/FinalTransactionScreen';
 import { TransferTransactionScreen } from './helpers/transactions/TransferTransactionScreen';
-import { AccountsHome, App, Network, PopupHome, Windows } from './utils/actions';
+import {
+  AccountsHome,
+  App,
+  Network,
+  PopupHome,
+  Windows,
+} from './utils/actions';
 
-describe('Others', function() {
-  before(async function() {
+describe('Others', function () {
+  before(async function () {
     await App.initVault();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
@@ -31,7 +37,7 @@ describe('Others', function() {
     await browser.switchToWindow(newTab);
   });
 
-  after(async function() {
+  after(async function () {
     await browser.openKeeperPopup();
     await Network.switchToAndCheck('Mainnet');
     await App.resetVault();
@@ -49,23 +55,23 @@ describe('Others', function() {
 
   it('Send more transactions for signature when different screens are open');
 
-  describe('Send WAVES', function() {
+  describe('Send WAVES', function () {
     before(async () => {
       await browser.openKeeperPopup();
     });
 
-    beforeEach(async function() {
+    beforeEach(async function () {
       const assetCard = await HomeScreen.getAssetByName('WAVES');
       await assetCard.moreButton.moveTo();
       await assetCard.sendButton.click();
     });
 
-    afterEach(async function() {
+    afterEach(async function () {
       await TransferTransactionScreen.rejectButton.click();
       await FinalTransactionScreen.closeButton.click();
     });
 
-    it('Send WAVES to an address', async function() {
+    it('Send WAVES to an address', async function () {
       await SendAssetScreen.recipientInput.setValue(
         '3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW'
       );
@@ -93,7 +99,7 @@ describe('Others', function() {
       );
     });
 
-    it('Send assets to an alias', async function() {
+    it('Send assets to an alias', async function () {
       await SendAssetScreen.recipientInput.setValue('alias:T:an_alias');
       await SendAssetScreen.amountInput.setValue('0.87654321');
       await SendAssetScreen.attachmentInput.setValue('This is an attachment');
@@ -117,7 +123,7 @@ describe('Others', function() {
       await browser.$('.content .stop').click();
     }
 
-    it('ui waits until connection with background is established before trying to call methods', async function() {
+    it('ui waits until connection with background is established before trying to call methods', async function () {
       await stopServiceWorker();
       await browser.openKeeperPopup();
 
@@ -139,7 +145,7 @@ describe('Others', function() {
       await browser.switchToWindow(newTab);
     });
 
-    it('contentscript waits until connection is established before trying to call methods', async function() {
+    it('contentscript waits until connection is established before trying to call methods', async function () {
       await browser.navigateTo('https://example.com');
 
       const prevHandle = await browser.getWindowHandle();

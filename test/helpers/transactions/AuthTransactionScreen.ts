@@ -1,8 +1,6 @@
 export const AuthTransactionScreen = {
   get root() {
-    return browser.$(
-      "[class*='transaction@']"
-    );
+    return browser.$("[class*='transaction@']");
   },
 
   get permissionDetailsButton() {

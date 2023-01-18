@@ -82,7 +82,9 @@ describe('Network management', function () {
 
         it('Node address is required field', async function () {
           await CustomNetworkModal.saveButton.click();
-          expect(await CustomNetworkModal.addressError).toHaveText('URL is required');
+          expect(await CustomNetworkModal.addressError).toHaveText(
+            'URL is required'
+          );
         });
 
         it('The address of non-existed node was entered', async function () {

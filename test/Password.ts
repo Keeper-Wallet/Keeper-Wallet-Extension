@@ -127,7 +127,9 @@ describe('Password management', () => {
       await ChangePasswordScreen.passwordConfirmationInput.setValue(
         PASSWORD.DEFAULT
       );
-      expect(await ChangePasswordScreen.passwordConfirmationError).toHaveText('');
+      expect(await ChangePasswordScreen.passwordConfirmationError).toHaveText(
+        ''
+      );
     });
 
     it('New password cannot match old', async function () {
@@ -140,7 +142,9 @@ describe('Password management', () => {
 
       await ChangePasswordScreen.newPasswordInput.clearValue();
       await ChangePasswordScreen.newPasswordInput.setValue(PASSWORD.NEW);
-      expect(await ChangePasswordScreen.passwordConfirmationError).toHaveText('');
+      expect(await ChangePasswordScreen.passwordConfirmationError).toHaveText(
+        ''
+      );
     });
 
     it('Successful password changed', async function () {
@@ -150,7 +154,9 @@ describe('Password management', () => {
         PASSWORD.NEW
       );
       await ChangePasswordScreen.saveButton.click();
-      expect(await ChangePasswordScreen.notification).toHaveText('Password changed');
+      expect(await ChangePasswordScreen.notification).toHaveText(
+        'Password changed'
+      );
     });
   });
 
@@ -201,7 +207,9 @@ describe('Password management', () => {
       it('"I forgot password" button opens recovery page and "Delete all" button is disabled', async function () {
         await LoginScreen.forgotPasswordLink.click();
         expect(await ConfirmDeleteAccountsScreen.root).toBeDisplayed();
-        expect(await ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
+        expect(
+          await ConfirmDeleteAccountsScreen.deleteAllButton
+        ).toBeDisabled();
       });
 
       it('Clicking "Cancel" button returns to login page and login is available', async function () {
@@ -226,18 +234,24 @@ describe('Password management', () => {
           await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
             'DELETE ALL ACCOUNTS'
           );
-          expect(await ConfirmDeleteAccountsScreen.confirmPhraseError).toHaveText('');
-          expect(await ConfirmDeleteAccountsScreen.deleteAllButton).toBeEnabled();
+          expect(
+            await ConfirmDeleteAccountsScreen.confirmPhraseError
+          ).toHaveText('');
+          expect(
+            await ConfirmDeleteAccountsScreen.deleteAllButton
+          ).toBeEnabled();
         });
 
         it('Entering wrong confirmation phrase disables "Delete all" button', async function () {
           await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
             'delete all accounts'
           );
-          expect(await ConfirmDeleteAccountsScreen.confirmPhraseError).toHaveText(
-            'The phrase is entered incorrectly'
-          );
-          expect(await ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
+          expect(
+            await ConfirmDeleteAccountsScreen.confirmPhraseError
+          ).toHaveText('The phrase is entered incorrectly');
+          expect(
+            await ConfirmDeleteAccountsScreen.deleteAllButton
+          ).toBeDisabled();
         });
 
         it('Entering right phrase and clicking "Delete all" removes all accounts', async function () {

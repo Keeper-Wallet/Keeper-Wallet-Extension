@@ -6,19 +6,24 @@ import {
   ExportAndImportSettingsScreen,
   NetworkSettingsScreen,
   PermissionControlSettingsScreen,
-  SettingsScreen
+  SettingsScreen,
 } from './helpers/SettingsScreen';
 import { TopMenu } from './helpers/TopMenu';
 import { AuthTransactionScreen } from './helpers/transactions/AuthTransactionScreen';
 import { CommonTransaction } from './helpers/transactions/CommonTransaction';
 import { FinalTransactionScreen } from './helpers/transactions/FinalTransactionScreen';
 import { AccountsHome, App, Settings, Windows } from './utils/actions';
-import { CUSTOMLIST, DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD, WHITELIST } from './utils/constants';
+import {
+  CUSTOMLIST,
+  DEFAULT_ANIMATION_DELAY,
+  DEFAULT_PASSWORD,
+  WHITELIST,
+} from './utils/constants';
 
 const SPENDING_LIMIT = '1';
 const BROWSER_TIMEOUT_DELAY = 120 * 1000;
 
-describe('Settings', function() {
+describe('Settings', function () {
   let tabKeeper: string;
 
   async function performLogin(password: string) {
@@ -26,7 +31,7 @@ describe('Settings', function() {
     await LoginScreen.enterButton.click();
   }
 
-  before(async function() {
+  before(async function () {
     await App.initVault();
     tabKeeper = await browser.getWindowHandle();
 
@@ -55,12 +60,12 @@ describe('Settings', function() {
     await TopMenu.settingsButton.click();
   });
 
-  after(async function() {
+  after(async function () {
     await App.closeBgTabs(tabKeeper);
   });
 
-  describe('Export accounts', function() {
-    it('creates an encrypted keystore file containing account details', async function() {
+  describe('Export accounts', function () {
+    it('creates an encrypted keystore file containing account details', async function () {
       await SettingsScreen.exportAndImportSectionLink.click();
 
       await ExportAndImportSettingsScreen.exportAccountsLink.click();
@@ -75,35 +80,35 @@ describe('Settings', function() {
     });
   });
 
-  describe('Network', function() {
+  describe('Network', function () {
     let nodeUrl: string, matcherUrl: string;
 
-    before(async function() {
+    before(async function () {
       await SettingsScreen.networkSectionLink.click();
       nodeUrl = await NetworkSettingsScreen.nodeAddress.getValue();
       matcherUrl = await NetworkSettingsScreen.matcherAddress.getValue();
     });
 
-    after(async function() {
+    after(async function () {
       await TopMenu.backButton.click();
     });
 
-    describe('Node URL', function() {
-      it('Is shown', async function() {
+    describe('Node URL', function () {
+      it('Is shown', async function () {
         expect(await NetworkSettingsScreen.nodeAddress).toBeDisplayed();
       });
-      it('Can be changed', async function() {
+      it('Can be changed', async function () {
         await NetworkSettingsScreen.nodeAddress.clearValue();
         expect(NetworkSettingsScreen.nodeAddress).not.toHaveValue(nodeUrl);
       });
       it('Can be copied');
     });
 
-    describe('Matcher URL', function() {
-      it('Is shown', async function() {
+    describe('Matcher URL', function () {
+      it('Is shown', async function () {
         expect(await NetworkSettingsScreen.matcherAddress).toBeDisplayed();
       });
-      it('Can be changed', async function() {
+      it('Can be changed', async function () {
         await NetworkSettingsScreen.matcherAddress.clearValue();
         expect(NetworkSettingsScreen.matcherAddress).not.toHaveValue(
           matcherUrl
@@ -112,34 +117,36 @@ describe('Settings', function() {
       it('Can be copied');
     });
 
-    describe('Set default', function() {
-      it('Resets Node and Matcher URLs', async function() {
+    describe('Set default', function () {
+      it('Resets Node and Matcher URLs', async function () {
         await NetworkSettingsScreen.setDefaultButton.click();
         expect(await NetworkSettingsScreen.nodeAddress).toHaveValue(nodeUrl);
-        expect(await NetworkSettingsScreen.matcherAddress).toHaveValue(matcherUrl);
+        expect(await NetworkSettingsScreen.matcherAddress).toHaveValue(
+          matcherUrl
+        );
       });
     });
   });
 
-  describe('Permissions control', function() {
-    before(async function() {
+  describe('Permissions control', function () {
+    before(async function () {
       await SettingsScreen.permissionsSectionLink.click();
     });
 
-    after(async function() {
+    after(async function () {
       await TopMenu.backButton.click();
     });
 
     const checkChangingAutoLimitsInResourceSettings = () => {
-      describe('Changing auto-limits in resource settings', function() {
-        beforeEach(async function() {
+      describe('Changing auto-limits in resource settings', function () {
+        beforeEach(async function () {
           (
             await PermissionControlSettingsScreen.permissionItems
           )[0].detailsIcon.click();
           await browser.pause(DEFAULT_ANIMATION_DELAY);
         });
 
-        it('Enabling', async function() {
+        it('Enabling', async function () {
           await PermissionControlSettingsScreen.modalSetResolutionTime(
             'For 1 hour'
           );
@@ -153,9 +160,9 @@ describe('Settings', function() {
           ).toHaveText('Approved+ Automatic signing');
         });
 
-        it('Disabling', async function() {
+        it('Disabling', async function () {
           await PermissionControlSettingsScreen.modalSetResolutionTime(
-            'Don\'t automatically sign'
+            "Don't automatically sign"
           );
           await PermissionControlSettingsScreen.modalSaveButton.click();
           expect(
@@ -165,12 +172,12 @@ describe('Settings', function() {
       });
     };
 
-    describe('White list', function() {
-      before(async function() {
+    describe('White list', function () {
+      before(async function () {
         await PermissionControlSettingsScreen.whiteListLink.click();
       });
 
-      it('Default whitelisted services appears', async function() {
+      it('Default whitelisted services appears', async function () {
         for (const origin of WHITELIST) {
           expect(
             (
@@ -184,7 +191,7 @@ describe('Settings', function() {
 
       checkChangingAutoLimitsInResourceSettings();
 
-      describe('Verification of transactions with auto-limits', function() {
+      describe('Verification of transactions with auto-limits', function () {
         it('Transfer');
         it('MassTransfer');
         it('Data');
@@ -192,7 +199,7 @@ describe('Settings', function() {
       });
     });
 
-    describe('Custom list', function() {
+    describe('Custom list', function () {
       async function publicStateFromOrigin(origin: string) {
         // this requests permission first
         const permissionRequest = () => {
@@ -208,8 +215,8 @@ describe('Settings', function() {
         await Settings.clearCustomList();
       });
 
-      describe('Adding', function() {
-        it('Origin added to custom list', async function() {
+      describe('Adding', function () {
+        it('Origin added to custom list', async function () {
           const origin = CUSTOMLIST[0];
 
           const { waitForNewWindows } = await Windows.captureNewWindows();
@@ -237,7 +244,7 @@ describe('Settings', function() {
           ).toBeDisplayed();
         });
 
-        it('Origin added to custom list with auto-limits', async function() {
+        it('Origin added to custom list with auto-limits', async function () {
           const origin = CUSTOMLIST[1];
 
           const { waitForNewWindows } = await Windows.captureNewWindows();
@@ -271,15 +278,15 @@ describe('Settings', function() {
         });
       });
 
-      describe('Blocking', function() {
-        after(async function() {
+      describe('Blocking', function () {
+        after(async function () {
           await browser.openKeeperPopup();
 
           await TopMenu.settingsButton.click();
           await SettingsScreen.permissionsSectionLink.click();
         });
 
-        it('Block all messages from origin in custom list', async function() {
+        it('Block all messages from origin in custom list', async function () {
           const firstOrigin = (
             await PermissionControlSettingsScreen.permissionItems
           )[0];
@@ -294,20 +301,20 @@ describe('Settings', function() {
           expect(response).toStrictEqual({
             message: 'Api rejected by user',
             code: '12',
-            data: null
+            data: null,
           });
         });
       });
 
-      describe('Removing', function() {
-        after(async function() {
+      describe('Removing', function () {
+        after(async function () {
           await browser.openKeeperPopup();
 
           await TopMenu.settingsButton.click();
           await SettingsScreen.permissionsSectionLink.click();
         });
 
-        it('After deletion, requests generate permission request', async function() {
+        it('After deletion, requests generate permission request', async function () {
           const originToDelete =
             await PermissionControlSettingsScreen.getPermissionByOrigin(
               'waves.tech'
@@ -331,7 +338,7 @@ describe('Settings', function() {
 
       checkChangingAutoLimitsInResourceSettings();
 
-      describe('Verification of transactions with auto-limits', function() {
+      describe('Verification of transactions with auto-limits', function () {
         it('Transfer');
         it('MassTransfer');
         it('Data');
@@ -340,21 +347,21 @@ describe('Settings', function() {
     });
   });
 
-  describe('General', function() {
-    before(async function() {
+  describe('General', function () {
+    before(async function () {
       await SettingsScreen.generalSectionLink.click();
     });
 
-    after(async function() {
+    after(async function () {
       await TopMenu.backButton.click();
     });
 
-    describe('Session Timeout', function() {
-      afterEach(async function() {
+    describe('Session Timeout', function () {
+      afterEach(async function () {
         await performLogin(DEFAULT_PASSWORD);
       });
 
-      it('Logout after "Browser timeout"', async function() {
+      it('Logout after "Browser timeout"', async function () {
         await browser.openKeeperPopup();
         await Settings.setMinSessionTimeout();
 
@@ -366,31 +373,35 @@ describe('Settings', function() {
     });
   });
 
-  describe('Root', function() {
-    describe('Auto-click protection', function() {
-      before(async function() {
+  describe('Root', function () {
+    describe('Auto-click protection', function () {
+      before(async function () {
         expect(await SettingsScreen.root).toBeDisplayed();
       });
 
-      it('Can be enabled', async function() {
+      it('Can be enabled', async function () {
         await SettingsScreen.clickProtectionButton.click();
         expect(await SettingsScreen.clickProtectionButton).toHaveAttr(
           'data-teston',
           'true'
         );
-        expect(await SettingsScreen.clickProtectionStatus).toHaveText('Enabled');
+        expect(await SettingsScreen.clickProtectionStatus).toHaveText(
+          'Enabled'
+        );
       });
 
-      it('Can be disabled', async function() {
+      it('Can be disabled', async function () {
         await SettingsScreen.clickProtectionButton.click();
         expect(await SettingsScreen.clickProtectionButton).toHaveAttr(
           'data-teston',
           'false'
         );
-        expect(await SettingsScreen.clickProtectionStatus).toHaveText('Disabled');
+        expect(await SettingsScreen.clickProtectionStatus).toHaveText(
+          'Disabled'
+        );
       });
 
-      it('Display tooltip', async function() {
+      it('Display tooltip', async function () {
         await SettingsScreen.clickProtectionIcon.moveTo();
         expect(await SettingsScreen.helpTooltip).toHaveText(
           'Protect yourself from Clicker Trojans threats'
@@ -398,93 +409,95 @@ describe('Settings', function() {
       });
     });
 
-    describe('Suspicious assets protection', function() {
-      before(async function() {
+    describe('Suspicious assets protection', function () {
+      before(async function () {
         expect(await SettingsScreen.root).toBeDisplayed();
       });
 
-      it('Can be disabled', async function() {
+      it('Can be disabled', async function () {
         await SettingsScreen.suspiciousAssetsProtectionButton.click();
-        expect(await SettingsScreen.suspiciousAssetsProtectionButton).toHaveAttr(
-          'data-teston',
-          'true'
-        );
-        expect(await SettingsScreen.suspiciousAssetsProtectionStatus).toHaveText(
-          'Enable'
-        );
+        expect(
+          await SettingsScreen.suspiciousAssetsProtectionButton
+        ).toHaveAttr('data-teston', 'true');
+        expect(
+          await SettingsScreen.suspiciousAssetsProtectionStatus
+        ).toHaveText('Enable');
       });
 
-      it('Can be enabled', async function() {
+      it('Can be enabled', async function () {
         await SettingsScreen.suspiciousAssetsProtectionButton.click();
-        expect(await SettingsScreen.suspiciousAssetsProtectionButton).toHaveAttr(
-          'data-teston',
-          'false'
-        );
-        expect(await SettingsScreen.suspiciousAssetsProtectionStatus).toHaveText(
-          'Disabled'
-        );
+        expect(
+          await SettingsScreen.suspiciousAssetsProtectionButton
+        ).toHaveAttr('data-teston', 'false');
+        expect(
+          await SettingsScreen.suspiciousAssetsProtectionStatus
+        ).toHaveText('Disabled');
       });
 
-      it('Display tooltip', async function() {
+      it('Display tooltip', async function () {
         await SettingsScreen.suspiciousAssetsProtectionIcon.moveTo();
         expect(await SettingsScreen.helpTooltip).toHaveText(
-          'Don\'t show balances and transactions related to suspicious assets'
+          "Don't show balances and transactions related to suspicious assets"
         );
       });
     });
 
-    describe('Logout', function() {
-      after(async function() {
+    describe('Logout', function () {
+      after(async function () {
         await performLogin(DEFAULT_PASSWORD);
         await TopMenu.settingsButton.click();
       });
 
-      it('Exit to the login screen', async function() {
+      it('Exit to the login screen', async function () {
         await SettingsScreen.logoutButton.click();
         expect(await LoginScreen.root).toBeDisplayed();
       });
     });
 
-    describe('Delete accounts', function() {
-      it('Account deletion warning displays', async function() {
+    describe('Delete accounts', function () {
+      it('Account deletion warning displays', async function () {
         await SettingsScreen.deleteAccountsButton.click();
         expect(await ConfirmDeleteAccountsScreen.root).toBeDisplayed();
       });
 
-      it('Clicking "Back" button cancels the deletion', async function() {
+      it('Clicking "Back" button cancels the deletion', async function () {
         await TopMenu.backButton.click();
         expect(await SettingsScreen.root).toBeDisplayed();
       });
 
-      it('Clicking "Cancel" button cancels the deletion', async function() {
+      it('Clicking "Cancel" button cancels the deletion', async function () {
         await SettingsScreen.deleteAccountsButton.click();
         await ConfirmDeleteAccountsScreen.cancelButton.click();
         expect(await SettingsScreen.root).toBeDisplayed();
       });
 
-      it('"Delete all" button is disabled', async function() {
+      it('"Delete all" button is disabled', async function () {
         await SettingsScreen.deleteAccountsButton.click();
-        expect(await ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
+        expect(
+          await ConfirmDeleteAccountsScreen.deleteAllButton
+        ).toBeDisabled();
       });
 
-      it('Wrong confirmation phrase displays error', async function() {
+      it('Wrong confirmation phrase displays error', async function () {
         await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
           'delete all accounts'
         );
-        expect(await ConfirmDeleteAccountsScreen.deleteAllButton).toBeDisabled();
+        expect(
+          await ConfirmDeleteAccountsScreen.deleteAllButton
+        ).toBeDisabled();
         expect(await ConfirmDeleteAccountsScreen.confirmPhraseError).toHaveText(
           'The phrase is entered incorrectly'
         );
       });
 
-      it('Correct confirmation phrase enables "Delete all" button', async function() {
+      it('Correct confirmation phrase enables "Delete all" button', async function () {
         await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
           'DELETE ALL ACCOUNTS'
         );
         expect(await ConfirmDeleteAccountsScreen.deleteAllButton).toBeEnabled();
       });
 
-      it('Clicking "Delete account" removes all accounts from current network', async function() {
+      it('Clicking "Delete account" removes all accounts from current network', async function () {
         await ConfirmDeleteAccountsScreen.deleteAllButton.click();
         await browser.pause(1000);
         expect(await LoginScreen.root).toBeDisplayed();

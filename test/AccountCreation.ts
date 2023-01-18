@@ -324,7 +324,9 @@ describe('Account creation', function () {
 
           it('Can be switched to existing account', async () => {
             await ImportViaSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
-            expect(await ImportViaSeedScreen.switchAccountButton).toBeDisplayed();
+            expect(
+              await ImportViaSeedScreen.switchAccountButton
+            ).toBeDisplayed();
             expect(await ImportViaSeedScreen.errorMessage).toHaveTextContaining(
               'Account already known as'
             );
@@ -362,7 +364,9 @@ describe('Account creation', function () {
             await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST.NAME);
             await browser.keys('Tab');
 
-            expect(await NewWalletNameScreen.error).toHaveText('name already exist');
+            expect(await NewWalletNameScreen.error).toHaveText(
+              'name already exist'
+            );
             expect(await NewWalletNameScreen.continueButton).toBeDisabled();
           });
 
@@ -501,9 +505,7 @@ describe('Account creation', function () {
         const activeAccountName = await HomeScreen.activeAccountName.getText();
         await HomeScreen.otherAccountsButton.click();
         const otherAccountNames = await Promise.all(
-          (
-            await OtherAccountsScreen.accounts
-          ).map(async it => await it.name.getText())
+          (await OtherAccountsScreen.accounts).map(it => it.name.getText())
         );
         await TopMenu.backButton.click();
         return [activeAccountName, ...otherAccountNames];

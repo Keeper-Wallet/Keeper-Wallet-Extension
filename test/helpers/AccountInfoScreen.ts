@@ -1,12 +1,14 @@
-import { ChainablePromiseElement } from "webdriverio";
+import { ChainablePromiseElement } from 'webdriverio';
 
-const PasswordModal = (wrapped: ChainablePromiseElement<WebdriverIO.Element>) => ({
+const PasswordModal = (
+  wrapped: ChainablePromiseElement<WebdriverIO.Element>
+) => ({
   get passwordInput() {
     return wrapped.$("[class*='password@Input']");
   },
 
   get cancelButton() {
-    return wrapped.$("#passwordCancel");
+    return wrapped.$('#passwordCancel');
   },
 });
 
@@ -48,7 +50,7 @@ export const AccountInfoScreen = {
   get backupPhraseCopyButton() {
     return this.root.$("#accountInfoBackupPhrase [class*='lastIcon@copy']");
   },
-  
+
   get passwordModal() {
     return PasswordModal(browser.$("[class*='modalWrapper@modal']"));
   },
