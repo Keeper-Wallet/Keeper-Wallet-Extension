@@ -13,7 +13,6 @@ import { FinalTransactionScreen } from './helpers/transactions/FinalTransactionS
 import { AccountsHome, App, ContentScript, Settings, Windows } from './utils/actions';
 import {
   CUSTOMLIST,
-  DEFAULT_PAGE_LOAD_DELAY,
   WHITELIST,
 } from './utils/constants';
 
@@ -208,8 +207,6 @@ describe('Messages', function () {
 
   it('The "Clear all" button closes all messages', async function () {
     await MessagesScreen.clearAllButton.click();
-    await browser.pause(DEFAULT_PAGE_LOAD_DELAY);
-
     expect(await HomeScreen.root).toBeDisplayed();
 
     await browser.closeWindow();
