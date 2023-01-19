@@ -2,7 +2,7 @@ import { ChooseAccountsForm } from './helpers/ChooseAccountsForm';
 import { ConfirmDeleteAccountsScreen } from './helpers/ConfirmDeleteAccountsScreen';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { LoginScreen } from './helpers/LoginScreen';
-import { AuthTransactionScreen } from './helpers/messages/AuthTransactionScreen';
+import { AuthMessageScreen } from './helpers/messages/AuthMessageScreen';
 import { CommonTransaction } from './helpers/messages/CommonTransaction';
 import { FinalTransactionScreen } from './helpers/messages/FinalTransactionScreen';
 import { ExportAndImportSettingsScreen } from './helpers/settings/ExportAndImportSettingsScreen';
@@ -230,7 +230,7 @@ describe('Settings', function () {
           await browser.switchToWindow(messageWindow);
           await browser.refresh();
 
-          await AuthTransactionScreen.authButton.click();
+          await AuthMessageScreen.authButton.click();
           expect(await FinalTransactionScreen.root).toBeDisplayed();
           await FinalTransactionScreen.closeButton.click();
           await Windows.waitForWindowToClose(messageWindow);
@@ -258,12 +258,12 @@ describe('Settings', function () {
           await browser.switchToWindow(messageWindow);
           await browser.refresh();
 
-          await AuthTransactionScreen.permissionDetailsButton.click();
-          await AuthTransactionScreen.setResolutionTime('For 1 hour');
-          await AuthTransactionScreen.spendingLimitInput.setValue(
+          await AuthMessageScreen.permissionDetailsButton.click();
+          await AuthMessageScreen.setResolutionTime('For 1 hour');
+          await AuthMessageScreen.spendingLimitInput.setValue(
             SPENDING_LIMIT
           );
-          await AuthTransactionScreen.authButton.click();
+          await AuthMessageScreen.authButton.click();
 
           await FinalTransactionScreen.closeButton.click();
           await Windows.waitForWindowToClose(messageWindow);

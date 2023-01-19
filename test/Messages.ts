@@ -2,7 +2,7 @@ import waitForExpect from 'wait-for-expect';
 
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { HomeScreen } from './helpers/HomeScreen';
-import { AuthTransactionScreen } from './helpers/messages/AuthTransactionScreen';
+import { AuthMessageScreen } from './helpers/messages/AuthMessageScreen';
 import { FinalTransactionScreen } from './helpers/messages/FinalTransactionScreen';
 import { MessagesScreen } from './helpers/MessagesScreen';
 import { PermissionControlSettingsScreen } from './helpers/settings/PermissionControlSettingsScreen';
@@ -101,13 +101,13 @@ describe('Messages', function () {
     await browser.switchToWindow(messageWindow);
     await browser.refresh();
 
-    expect(AuthTransactionScreen.root).toBeDisplayed();
+    expect(AuthMessageScreen.root).toBeDisplayed();
   });
 
   it('When allowing access to messages - the message is instantly displayed', async function () {
-    await AuthTransactionScreen.permissionDetailsButton.click();
-    await AuthTransactionScreen.allowMessagesCheckbox.click();
-    await AuthTransactionScreen.authButton.click();
+    await AuthMessageScreen.permissionDetailsButton.click();
+    await AuthMessageScreen.allowMessagesCheckbox.click();
+    await AuthMessageScreen.authButton.click();
 
     expect(await MessagesScreen.messages).not.toHaveLength(0);
 
@@ -128,8 +128,8 @@ describe('Messages', function () {
     await browser.switchToWindow(messageWindow);
     await browser.refresh();
 
-    await AuthTransactionScreen.permissionDetailsButton.click();
-    await AuthTransactionScreen.authButton.click();
+    await AuthMessageScreen.permissionDetailsButton.click();
+    await AuthMessageScreen.authButton.click();
 
     expect(await FinalTransactionScreen.transactionContent).toHaveText(
       'Request has been signed!'

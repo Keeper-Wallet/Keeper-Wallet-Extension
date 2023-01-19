@@ -1,4 +1,4 @@
-export const AuthTransactionScreen = {
+export const AuthMessageScreen = {
   get root() {
     return $("[class*='transaction@']");
   },

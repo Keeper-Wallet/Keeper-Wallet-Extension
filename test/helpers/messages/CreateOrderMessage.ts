@@ -1,4 +1,4 @@
-export const CreateOrderTransaction = {
+export const CreateOrderMessage = {
   get root() {
     return $("[class*='transaction@']");
   },
