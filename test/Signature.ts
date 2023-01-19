@@ -2238,9 +2238,7 @@ describe('Signature', function () {
 
         const actualItems = await Promise.all(
           dataRows.map(async it => {
-            const key = await it.key.getText();
-            const type = await it.type.getText();
-            const value = await it.value.getText();
+            const [key, type, value] = await Promise.all([it.key.getText(), it.type.getText(), it.value.getText()]);
             return { key, type, value };
           })
         );
@@ -4441,9 +4439,7 @@ describe('Signature', function () {
           (
             await DataTransactionScreen.getDataRows()
           ).map(async it => {
-            const key = await it.key.getText();
-            const type = await it.type.getText();
-            const value = await it.value.getText();
+            const [key, type, value] = await Promise.all([it.key.getText(), it.type.getText(), it.value.getText()]);
             return {
               key,
               type,

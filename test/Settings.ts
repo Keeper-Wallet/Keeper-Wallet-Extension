@@ -492,7 +492,7 @@ describe('Settings', function () {
 
       it('Clicking "Delete account" removes all accounts from current network', async function () {
         await ConfirmDeleteAccountsScreen.deleteAllButton.click();
-        await browser.pause(1000);
+        await ConfirmDeleteAccountsScreen.root.waitForDisplayed({reverse: true});
         expect(await LoginScreen.root).toBeDisplayed();
       });
     });
