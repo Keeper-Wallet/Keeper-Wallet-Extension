@@ -244,11 +244,11 @@ describe('Signature', function () {
 
     async function getPermissionRequestResult() {
       return JSON.parse(
-        (await browser.execute(() => {
+        await browser.execute(() => {
           const { result } = window;
           delete window.result;
           return result;
-        })) as string
+        })
       );
     }
 
@@ -375,11 +375,11 @@ describe('Signature', function () {
 
     async function getAuthRequestResult() {
       return JSON.parse(
-        (await browser.execute(() => {
+        await browser.execute(() => {
           const { result } = window;
           delete window.result;
           return result;
-        })) as string
+        })
       );
     }
 
@@ -472,11 +472,11 @@ describe('Signature', function () {
 
     async function getMatcherRequestResult() {
       return JSON.parse(
-        (await browser.execute(() => {
+        await browser.execute(() => {
           const { result } = window;
           delete window.result;
           return result;
-        })) as string
+        })
       );
     }
 
@@ -544,11 +544,11 @@ describe('Signature', function () {
 
     async function getSignTransactionResult() {
       return JSON.parse(
-        (await browser.execute(() => {
+        await browser.execute(() => {
           const { result } = window;
           delete window.result;
           return result;
-        })) as string
+        })
       );
     }
 
@@ -3455,9 +3455,7 @@ describe('Signature', function () {
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
-            const approveResult = (await browser.execute(
-              () => window.result
-            )) as string;
+            const approveResult = await browser.execute(() => window.result);
 
             const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -3557,9 +3555,7 @@ describe('Signature', function () {
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
-            const approveResult = (await browser.execute(
-              () => window.result
-            )) as string;
+            const approveResult = await browser.execute(() => window.result);
 
             const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -3665,7 +3661,7 @@ describe('Signature', function () {
             await browser.switchToWindow(tabOrigin);
             const approveResult = (await browser.execute(
               () => window.result
-            )) as string;
+            ));
 
             const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -3771,7 +3767,7 @@ describe('Signature', function () {
             await browser.switchToWindow(tabOrigin);
             const approveResult = (await browser.execute(
               () => window.result
-            )) as string;
+            ));
 
             const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -3876,7 +3872,7 @@ describe('Signature', function () {
             await browser.switchToWindow(tabOrigin);
             const approveResult = (await browser.execute(
               () => window.result
-            )) as string;
+            ));
 
             const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -3950,7 +3946,7 @@ describe('Signature', function () {
         await browser.switchToWindow(tabOrigin);
         const approveResult = (await browser.execute(
           () => window.result
-        )) as string;
+        ));
 
         const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -4157,9 +4153,7 @@ describe('Signature', function () {
       await FinalTransactionScreen.closeButton.click();
 
       await browser.switchToWindow(tabOrigin);
-      const approveResult = (await browser.execute(
-        () => window.result
-      )) as string[];
+      const approveResult = await browser.execute(() => window.result as string[]);
 
       expect(approveResult).toHaveLength(7);
 
@@ -4409,9 +4403,7 @@ describe('Signature', function () {
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
-        const approveResult = (await browser.execute(
-          () => window.result
-        )) as string;
+        const approveResult = await browser.execute(() => window.result);
         const parsedApproveResult = JSON.parse(approveResult);
 
         const expectedApproveResult = {
@@ -4499,9 +4491,7 @@ describe('Signature', function () {
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
-        const approveResult = (await browser.execute(
-          () => window.result
-        )) as string;
+        const approveResult = await browser.execute(() => window.result);
 
         const parsedApproveResult = JSON.parse(approveResult);
 

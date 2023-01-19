@@ -10,7 +10,8 @@ import { remote } from 'webdriverio';
 
 declare global {
   interface Window {
-    result: unknown;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    result: any;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-namespace

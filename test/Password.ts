@@ -73,8 +73,8 @@ describe('Password management', () => {
       await NewAccountScreen.passwordConfirmationInput.setValue(
         PASSWORD.DEFAULT
       );
-      await NewAccountScreen.termsAndConditionsLine.click();
-      await NewAccountScreen.privacyPolicyLine.click();
+      await NewAccountScreen.termsAndConditionsCheckbox.click();
+      await NewAccountScreen.privacyPolicyCheckbox.click();
       await NewAccountScreen.continueButton.click();
       expect(await ImportFormScreen.root).toBeDisplayed();
       expect(await ImportFormScreen.createNewAccountButton).toBeDisplayed();

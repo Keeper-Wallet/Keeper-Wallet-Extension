@@ -11,13 +11,13 @@ export const NewAccountScreen = {
     return this.root.$('#second');
   },
 
-  get termsAndConditionsLine() {
+  get termsAndConditionsCheckbox() {
     return this.root.findByLabelText$(
       'I have read and agree with the Terms and Conditions'
     );
   },
 
-  get privacyPolicyLine() {
+  get privacyPolicyCheckbox() {
     return this.root.findByLabelText$(
       'I have read and agree with the Privacy Policy'
     );

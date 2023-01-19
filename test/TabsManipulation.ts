@@ -53,8 +53,8 @@ describe('Tabs manipulation', function () {
       await NewAccountScreen.passwordConfirmationInput.setValue(
         DEFAULT_PASSWORD
       );
-      await NewAccountScreen.privacyPolicyLine.click();
-      await NewAccountScreen.termsAndConditionsLine.click();
+      await NewAccountScreen.privacyPolicyCheckbox.click();
+      await NewAccountScreen.termsAndConditionsCheckbox.click();
       await NewAccountScreen.continueButton.click();
 
       expect(await EmptyHomeScreen.root).toBeDisplayed();

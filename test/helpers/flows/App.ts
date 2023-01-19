@@ -20,8 +20,8 @@ export const App = {
     await GetStartedScreen.getStartedButton.click();
     await NewAccountScreen.passwordInput.setValue(password);
     await NewAccountScreen.passwordConfirmationInput.setValue(password);
-    await NewAccountScreen.termsAndConditionsLine.click();
-    await NewAccountScreen.privacyPolicyLine.click();
+    await NewAccountScreen.termsAndConditionsCheckbox.click();
+    await NewAccountScreen.privacyPolicyCheckbox.click();
     await NewAccountScreen.continueButton.click();
     expect(await ImportFormScreen.root.isDisplayed()).toBe(true);
 
