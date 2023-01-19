@@ -112,7 +112,7 @@ export const Settings = {
     const permissions = await PermissionControlSettingsScreen.permissionItems;
     for (const permission of permissions) {
       await permission.detailsIcon.click();
-      await PermissionControlSettingsScreen.modalDeleteButton.click();
+      await PermissionControlSettingsScreen.permissionDetailsModal.deleteButton.click();
     }
   },
 };

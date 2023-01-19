@@ -150,8 +150,8 @@ describe('Messages', function () {
     await (
       await PermissionControlSettingsScreen.getPermissionByOrigin(CUSTOMLIST[1])
     ).detailsIcon.click();
-    await PermissionControlSettingsScreen.modalAllowMessagesCheckbox.click();
-    await PermissionControlSettingsScreen.modalSaveButton.click();
+    await PermissionControlSettingsScreen.permissionDetailsModal.allowMessagesCheckbox.click();
+    await PermissionControlSettingsScreen.permissionDetailsModal.saveButton.click();
 
     await browser.navigateTo(`https://${CUSTOMLIST[1]}`);
 

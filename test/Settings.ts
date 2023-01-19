@@ -19,7 +19,6 @@ import {
 } from './utils/actions';
 import {
   CUSTOMLIST,
-  DEFAULT_ANIMATION_DELAY,
   DEFAULT_PASSWORD,
   WHITELIST,
 } from './utils/constants';
@@ -144,33 +143,24 @@ describe('Settings', function () {
     const checkChangingAutoLimitsInResourceSettings = () => {
       describe('Changing auto-limits in resource settings', function () {
         beforeEach(async function () {
-          (
-            await PermissionControlSettingsScreen.permissionItems
-          )[0].detailsIcon.click();
-          await browser.pause(DEFAULT_ANIMATION_DELAY);
+          await (await PermissionControlSettingsScreen.permissionItems)[0].detailsIcon.click();
+          await PermissionControlSettingsScreen.permissionDetailsModal.root.waitForDisplayed();
         });
 
         it('Enabling', async function () {
-          await PermissionControlSettingsScreen.modalSetResolutionTime(
-            'For 1 hour'
-          );
-          await browser.pause(DEFAULT_ANIMATION_DELAY);
-          await PermissionControlSettingsScreen.modalSpendingLimitInput.setValue(
-            SPENDING_LIMIT
-          );
-          await PermissionControlSettingsScreen.modalSaveButton.click();
-          expect(
-            (await PermissionControlSettingsScreen.permissionItems)[0].status
-          ).toHaveText('Approved+ Automatic signing');
+          await PermissionControlSettingsScreen.permissionDetailsModal.setResolutionTime('For 1 hour');
+          await PermissionControlSettingsScreen.permissionDetailsModal.spendingLimitInput.setValue(SPENDING_LIMIT);
+          await PermissionControlSettingsScreen.permissionDetailsModal.saveButton.click();
+          expect(await (await PermissionControlSettingsScreen.permissionItems)[0].status).toHaveText('Approved+ Automatic signing');
         });
 
         it('Disabling', async function () {
-          await PermissionControlSettingsScreen.modalSetResolutionTime(
+          await PermissionControlSettingsScreen.permissionDetailsModal.setResolutionTime(
             "Don't automatically sign"
           );
-          await PermissionControlSettingsScreen.modalSaveButton.click();
+          await PermissionControlSettingsScreen.permissionDetailsModal.saveButton.click();
           expect(
-            (await PermissionControlSettingsScreen.permissionItems)[0].status
+            await (await PermissionControlSettingsScreen.permissionItems)[0].status
           ).toHaveText('Approved');
         });
       });
@@ -292,9 +282,7 @@ describe('Settings', function () {
         });
 
         it('Block all messages from origin in custom list', async function () {
-          const firstOrigin = (
-            await PermissionControlSettingsScreen.permissionItems
-          )[0];
+          const firstOrigin = (await PermissionControlSettingsScreen.permissionItems)[0];
           const origin = await firstOrigin.origin.getText();
           await firstOrigin.enableCheckbox.click();
           await publicStateFromOrigin(origin);
@@ -326,7 +314,7 @@ describe('Settings', function () {
             );
           const origin = await originToDelete.origin.getText();
           await originToDelete.detailsIcon.click();
-          await PermissionControlSettingsScreen.modalDeleteButton.click();
+          await PermissionControlSettingsScreen.permissionDetailsModal.deleteButton.click();
           const { waitForNewWindows } = await Windows.captureNewWindows();
           await publicStateFromOrigin(origin);
           const [messageWindow] = await waitForNewWindows(1);

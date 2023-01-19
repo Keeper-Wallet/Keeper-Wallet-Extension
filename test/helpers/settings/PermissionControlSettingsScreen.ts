@@ -1,3 +1,5 @@
+import { ChainablePromiseElement } from 'webdriverio';
+
 const Permission = (wrapped: WebdriverIO.Element) => ({
   get root() {
     return wrapped;
@@ -19,9 +21,43 @@ const Permission = (wrapped: WebdriverIO.Element) => ({
     return wrapped.$('button');
   },
 });
+
+const PermissionDetailsModal = (wrapped: ChainablePromiseElement<WebdriverIO.Element>) => ({
+  get root() {
+    return wrapped;
+  },
+  
+  get deleteButton() {
+    return wrapped.$("#delete");
+  },
+
+  get saveButton() {
+    return wrapped.$("#save");
+  },
+
+  async setResolutionTime(time: string) {
+    await wrapped.$("[class*='trigger@Select']").click();
+    await browser.findByText$(time, { selector: "[class*='item@Select']" }).click();
+  },
+
+  get spendingLimitInput() {
+    return wrapped.$("[class*='amountInput@settings']");
+  },
+
+  get allowMessagesCheckbox() {
+    return browser
+      .$("[class*='modalWrapper@modal']")
+      .findByText$('Allow sending messages');
+  },
+});
+
 export const PermissionControlSettingsScreen = {
   get root() {
     return $("[class*='content@permissionsSettings']");
+  },
+  
+  get permissionDetailsModal() {
+    return PermissionDetailsModal($("[class*='modalWrapper@modal']"));
   },
 
   get permissionItems() {
@@ -36,32 +72,5 @@ export const PermissionControlSettingsScreen = {
 
   async getPermissionByOrigin(origin: string) {
     return Permission(await this.root.findByText$(origin).parentElement());
-  },
-
-  get modalDeleteButton() {
-    return $("[class*='modalWrapper@modal'] #delete");
-  },
-
-  get modalSaveButton() {
-    return $("[class*='modalWrapper@modal'] #save");
-  },
-
-  async modalSetResolutionTime(time: string) {
-    await browser
-      .$("[class*='modalWrapper@modal'] [class*='trigger@Select']")
-      .click();
-    await browser
-      .findByText$(time, { selector: "[class*='item@Select']" })
-      .click();
-  },
-
-  get modalSpendingLimitInput() {
-    return $("[class*='amountInput@settings']");
-  },
-
-  get modalAllowMessagesCheckbox() {
-    return browser
-      .$("[class*='modalWrapper@modal']")
-      .findByText$('Allow sending messages');
   },
 };
