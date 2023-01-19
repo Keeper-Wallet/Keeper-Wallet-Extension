@@ -1,7 +1,9 @@
 import { AccountInfoScreen } from './helpers/AccountInfoScreen';
+import { CustomNetworkModal } from './helpers/CustomNetworkModal';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { HomeScreen } from './helpers/HomeScreen';
-import { CustomNetworkModal, NetworksMenu, TopMenu } from './helpers/TopMenu';
+import { NetworksMenu } from './helpers/NetworksMenu';
+import { TopMenu } from './helpers/TopMenu';
 import { AccountsHome, App, Network, Windows } from './utils/actions';
 
 describe('Network management', function () {

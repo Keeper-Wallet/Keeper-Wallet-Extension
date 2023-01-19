@@ -4,13 +4,14 @@ import { HomeScreen } from '../helpers/HomeScreen';
 import { ImportFormScreen } from '../helpers/ImportFormScreen';
 import { ImportSuccessScreen } from '../helpers/ImportSuccessScreen';
 import { ImportViaSeedScreen } from '../helpers/ImportViaSeedScreen';
+import { NetworksMenu } from '../helpers/NetworksMenu';
 import { NewAccountScreen } from '../helpers/NewAccountScreen';
 import { NewWalletNameScreen } from '../helpers/NewWalletNameScreen';
 import { OtherAccountsScreen } from '../helpers/OtherAccountsScreen';
 import { GeneralSettingsScreen } from '../helpers/settings/GeneralSettingsScreen';
 import { PermissionControlSettingsScreen } from '../helpers/settings/PermissionControlSettingsScreen';
 import { SettingsMenuScreen } from '../helpers/settings/SettingsMenuScreen';
-import { NetworksMenu, TopMenu } from '../helpers/TopMenu';
+import { TopMenu } from '../helpers/TopMenu';
 import { DEFAULT_PASSWORD } from './constants';
 
 export const App = {
