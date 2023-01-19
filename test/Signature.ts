@@ -22,7 +22,11 @@ import {
   makeOrderBytes,
   makeTxBytes,
 } from '../src/messages/utils';
+import { ContentScript } from './helpers/ContentScript';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { AccountsHome } from './helpers/flows/AccountsHome';
+import { App } from './helpers/flows/App';
+import { Network } from './helpers/flows/Network';
 import { HomeScreen } from './helpers/HomeScreen';
 import { AssetScriptTransactionScreen } from './helpers/messages/AssetScriptTransactionScreen';
 import { AuthMessageScreen } from './helpers/messages/AuthMessageScreen';
@@ -45,13 +49,7 @@ import { SponsorshipTransactionScreen } from './helpers/messages/SponsorshipTran
 import { TransferTransactionScreen } from './helpers/messages/TransferTransactionScreen';
 import { UpdateAssetInfoTransactionScreen } from './helpers/messages/UpdateAssetInfoTransactionScreen';
 import { MessagesScreen } from './helpers/MessagesScreen';
-import {
-  AccountsHome,
-  App,
-  ContentScript,
-  Network,
-  Windows,
-} from './utils/actions';
+import { Windows } from './helpers/Windows';
 import { CUSTOMLIST, WHITELIST } from './utils/constants';
 import { CUSTOM_DATA_V1, CUSTOM_DATA_V2 } from './utils/customData';
 import {
@@ -921,7 +919,7 @@ describe('Signature', function () {
 
           await expect(
             await TransferTransactionScreen.transferAmount
-          ).toHaveText('-123456790 NonScriptToken');
+          ).toHaveText('-1.23456790 WAVES');
           await expect(await TransferTransactionScreen.recipient).toHaveText(
             'alias:T:alice'
           );
@@ -2079,7 +2077,7 @@ describe('Signature', function () {
 
           await expect(
             await MassTransferTransactionScreen.massTransferAmount
-          ).toHaveText('-2 NonScriptToken');
+          ).toHaveText('-0.00000123 WAVES');
 
           await checkMassTransferItems([
             {
@@ -2238,7 +2236,11 @@ describe('Signature', function () {
 
         const actualItems = await Promise.all(
           dataRows.map(async it => {
-            const [key, type, value] = await Promise.all([it.key.getText(), it.type.getText(), it.value.getText()]);
+            const [key, type, value] = await Promise.all([
+              it.key.getText(),
+              it.type.getText(),
+              it.value.getText(),
+            ]);
             return { key, type, value };
           })
         );
@@ -3016,7 +3018,7 @@ describe('Signature', function () {
           await InvokeScriptTransactionScreen.paymentsTitle
         ).toHaveText('2 Payments');
         await expect(await InvokeScriptTransactionScreen.dApp).toHaveText(
-          INVOKE_SCRIPT.data.dApp
+          '3My2kBJaGfeM...3y8rAgfV2EAx'
         );
         await expect(await InvokeScriptTransactionScreen.function).toHaveText(
           INVOKE_SCRIPT.data.call.function
@@ -3116,7 +3118,7 @@ describe('Signature', function () {
             await InvokeScriptTransactionScreen.paymentsTitle
           ).toHaveText('No Payments');
           await expect(await InvokeScriptTransactionScreen.dApp).toHaveText(
-            INVOKE_SCRIPT_WITHOUT_CALL.data.dApp
+            `alias:T:${INVOKE_SCRIPT_WITHOUT_CALL.data.dApp}`
           );
           await expect(await InvokeScriptTransactionScreen.function).toHaveText(
             'default'
@@ -3190,7 +3192,7 @@ describe('Signature', function () {
             await InvokeScriptTransactionScreen.paymentsTitle
           ).toHaveText('2 Payments');
           await expect(await InvokeScriptTransactionScreen.dApp).toHaveText(
-            INVOKE_SCRIPT.data.dApp
+            '3My2kBJaGfeM...3y8rAgfV2EAx'
           );
           await expect(await InvokeScriptTransactionScreen.function).toHaveText(
             INVOKE_SCRIPT.data.call.function
@@ -3428,18 +3430,18 @@ describe('Signature', function () {
             await expect(await CreateOrderMessage.orderAmount).toHaveText(
               '-100.00000000 WAVES'
             );
-            await expect(
-              await CreateOrderMessage.orderPriceTitle
-            ).toHaveText('+0 NonScriptToken');
+            await expect(await CreateOrderMessage.orderPriceTitle).toHaveText(
+              '+0 NonScriptToken'
+            );
             await expect(await CreateOrderMessage.orderPrice).toHaveText(
               '0 NonScriptToken'
             );
             await expect(
               await CreateOrderMessage.orderMatcherPublicKey
             ).toHaveText(INPUT.data.matcherPublicKey);
-            await expect(
-              await CreateOrderMessage.createOrderFee
-            ).toHaveText('0.03 WAVES');
+            await expect(await CreateOrderMessage.createOrderFee).toHaveText(
+              '0.03 WAVES'
+            );
 
             await CommonTransaction.rejectButton.click();
             await FinalTransactionScreen.root.waitForDisplayed();
@@ -3529,18 +3531,18 @@ describe('Signature', function () {
             await expect(await CreateOrderMessage.orderAmount).toHaveText(
               '+1.000000 Tether USD'
             );
-            await expect(
-              await CreateOrderMessage.orderPriceTitle
-            ).toHaveText('-1.014002 USD-Nea272c');
+            await expect(await CreateOrderMessage.orderPriceTitle).toHaveText(
+              '-1.014002 USD-Nea272c'
+            );
             await expect(await CreateOrderMessage.orderPrice).toHaveText(
               '1.014002 USD-Nea272c'
             );
             await expect(
               await CreateOrderMessage.orderMatcherPublicKey
             ).toHaveText(INPUT.data.matcherPublicKey);
-            await expect(
-              await CreateOrderMessage.createOrderFee
-            ).toHaveText('0.04077612 TXW-DEVa4f6df');
+            await expect(await CreateOrderMessage.createOrderFee).toHaveText(
+              '0.04077612 TXW-DEVa4f6df'
+            );
 
             await CommonTransaction.rejectButton.click();
             await FinalTransactionScreen.root.waitForDisplayed();
@@ -3635,18 +3637,18 @@ describe('Signature', function () {
             await expect(await CreateOrderMessage.orderAmount).toHaveText(
               '+1.000000 Tether USD'
             );
-            await expect(
-              await CreateOrderMessage.orderPriceTitle
-            ).toHaveText('-1.014002 USD-Nea272c');
+            await expect(await CreateOrderMessage.orderPriceTitle).toHaveText(
+              '-1.014002 USD-Nea272c'
+            );
             await expect(await CreateOrderMessage.orderPrice).toHaveText(
               '1.014002 USD-Nea272c'
             );
             await expect(
               await CreateOrderMessage.orderMatcherPublicKey
             ).toHaveText(INPUT.data.matcherPublicKey);
-            await expect(
-              await CreateOrderMessage.createOrderFee
-            ).toHaveText('0.04077612 TXW-DEVa4f6df');
+            await expect(await CreateOrderMessage.createOrderFee).toHaveText(
+              '0.04077612 TXW-DEVa4f6df'
+            );
 
             await CommonTransaction.rejectButton.click();
             await FinalTransactionScreen.root.waitForDisplayed();
@@ -3741,18 +3743,18 @@ describe('Signature', function () {
             await expect(await CreateOrderMessage.orderAmount).toHaveText(
               '+1.000000 Tether USD'
             );
-            await expect(
-              await CreateOrderMessage.orderPriceTitle
-            ).toHaveText('-1.014002 USD-Nea272c');
+            await expect(await CreateOrderMessage.orderPriceTitle).toHaveText(
+              '-1.014002 USD-Nea272c'
+            );
             await expect(await CreateOrderMessage.orderPrice).toHaveText(
               '1.014002 USD-Nea272c'
             );
             await expect(
               await CreateOrderMessage.orderMatcherPublicKey
             ).toHaveText(INPUT.data.matcherPublicKey);
-            await expect(
-              await CreateOrderMessage.createOrderFee
-            ).toHaveText('0.04077612 TXW-DEVa4f6df');
+            await expect(await CreateOrderMessage.createOrderFee).toHaveText(
+              '0.04077612 TXW-DEVa4f6df'
+            );
 
             await CommonTransaction.rejectButton.click();
             await FinalTransactionScreen.root.waitForDisplayed();
@@ -3846,18 +3848,18 @@ describe('Signature', function () {
             await expect(await CreateOrderMessage.orderAmount).toHaveText(
               '+1.000000 Tether USD'
             );
-            await expect(
-              await CreateOrderMessage.orderPriceTitle
-            ).toHaveText('-1.014002 USD-Nea272c');
+            await expect(await CreateOrderMessage.orderPriceTitle).toHaveText(
+              '-1.014002 USD-Nea272c'
+            );
             await expect(await CreateOrderMessage.orderPrice).toHaveText(
               '1.014002 USD-Nea272c'
             );
             await expect(
               await CreateOrderMessage.orderMatcherPublicKey
             ).toHaveText(INPUT.data.matcherPublicKey);
-            await expect(
-              await CreateOrderMessage.createOrderFee
-            ).toHaveText('0.04077612 TXW-DEVa4f6df');
+            await expect(await CreateOrderMessage.createOrderFee).toHaveText(
+              '0.04077612 TXW-DEVa4f6df'
+            );
 
             await CommonTransaction.rejectButton.click();
             await FinalTransactionScreen.root.waitForDisplayed();
@@ -4439,7 +4441,11 @@ describe('Signature', function () {
           (
             await DataTransactionScreen.getDataRows()
           ).map(async it => {
-            const [key, type, value] = await Promise.all([it.key.getText(), it.type.getText(), it.value.getText()]);
+            const [key, type, value] = await Promise.all([
+              it.key.getText(),
+              it.type.getText(),
+              it.value.getText(),
+            ]);
             return {
               key,
               type,

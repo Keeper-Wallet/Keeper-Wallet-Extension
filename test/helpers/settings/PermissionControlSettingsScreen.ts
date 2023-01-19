@@ -22,22 +22,26 @@ const Permission = (wrapped: WebdriverIO.Element) => ({
   },
 });
 
-const PermissionDetailsModal = (wrapped: ChainablePromiseElement<WebdriverIO.Element>) => ({
+const PermissionDetailsModal = (
+  wrapped: ChainablePromiseElement<WebdriverIO.Element>
+) => ({
   get root() {
     return wrapped;
   },
-  
+
   get deleteButton() {
-    return wrapped.$("#delete");
+    return wrapped.$('#delete');
   },
 
   get saveButton() {
-    return wrapped.$("#save");
+    return wrapped.$('#save');
   },
 
   async setResolutionTime(time: string) {
     await wrapped.$("[class*='trigger@Select']").click();
-    await browser.findByText$(time, { selector: "[class*='item@Select']" }).click();
+    await browser
+      .findByText$(time, { selector: "[class*='item@Select']" })
+      .click();
   },
 
   get spendingLimitInput() {
@@ -55,7 +59,7 @@ export const PermissionControlSettingsScreen = {
   get root() {
     return $("[class*='content@permissionsSettings']");
   },
-  
+
   get permissionDetailsModal() {
     return PermissionDetailsModal($("[class*='modalWrapper@modal']"));
   },

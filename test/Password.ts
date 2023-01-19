@@ -1,5 +1,7 @@
 import { ChangePasswordScreen } from './helpers/ChangePasswordScreen';
 import { ConfirmDeleteAccountsScreen } from './helpers/ConfirmDeleteAccountsScreen';
+import { AccountsHome } from './helpers/flows/AccountsHome';
+import { App } from './helpers/flows/App';
 import { GetStartedScreen } from './helpers/GetStartedScreen';
 import { HomeScreen } from './helpers/HomeScreen';
 import { ImportFormScreen } from './helpers/ImportFormScreen';
@@ -8,7 +10,7 @@ import { NewAccountScreen } from './helpers/NewAccountScreen';
 import { GeneralSettingsScreen } from './helpers/settings/GeneralSettingsScreen';
 import { SettingsMenuScreen } from './helpers/settings/SettingsMenuScreen';
 import { TopMenu } from './helpers/TopMenu';
-import { AccountsHome, App, Windows } from './utils/actions';
+import { Windows } from './helpers/Windows';
 
 describe('Password management', () => {
   const PASSWORD = {

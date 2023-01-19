@@ -1,10 +1,13 @@
 import { AccountInfoScreen } from './helpers/AccountInfoScreen';
 import { CustomNetworkModal } from './helpers/CustomNetworkModal';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { AccountsHome } from './helpers/flows/AccountsHome';
+import { App } from './helpers/flows/App';
+import { Network } from './helpers/flows/Network';
 import { HomeScreen } from './helpers/HomeScreen';
 import { NetworksMenu } from './helpers/NetworksMenu';
 import { TopMenu } from './helpers/TopMenu';
-import { AccountsHome, App, Network, Windows } from './utils/actions';
+import { Windows } from './helpers/Windows';
 
 describe('Network management', function () {
   let tabKeeper: string;

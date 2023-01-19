@@ -37,8 +37,7 @@ export const InvokeScriptTransactionScreen = {
 
   async getPayments() {
     try {
-      return await this.root
-        .findAllByTestId$('invokeScriptPaymentItem');
+      return await this.root.findAllByTestId$('invokeScriptPaymentItem');
     } catch (e) {
       return [];
     }

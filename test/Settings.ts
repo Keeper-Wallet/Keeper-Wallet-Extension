@@ -1,6 +1,10 @@
 import { ChooseAccountsForm } from './helpers/ChooseAccountsForm';
 import { ConfirmDeleteAccountsScreen } from './helpers/ConfirmDeleteAccountsScreen';
+import { ContentScript } from './helpers/ContentScript';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { AccountsHome } from './helpers/flows/AccountsHome';
+import { App } from './helpers/flows/App';
+import { Settings } from './helpers/flows/Settings';
 import { LoginScreen } from './helpers/LoginScreen';
 import { AuthMessageScreen } from './helpers/messages/AuthMessageScreen';
 import { CommonTransaction } from './helpers/messages/CommonTransaction';
@@ -10,18 +14,8 @@ import { NetworkSettingsScreen } from './helpers/settings/NetworkSettingsScreen'
 import { PermissionControlSettingsScreen } from './helpers/settings/PermissionControlSettingsScreen';
 import { SettingsMenuScreen } from './helpers/settings/SettingsMenuScreen';
 import { TopMenu } from './helpers/TopMenu';
-import {
-  AccountsHome,
-  App,
-  ContentScript,
-  Settings,
-  Windows,
-} from './utils/actions';
-import {
-  CUSTOMLIST,
-  DEFAULT_PASSWORD,
-  WHITELIST,
-} from './utils/constants';
+import { Windows } from './helpers/Windows';
+import { CUSTOMLIST, DEFAULT_PASSWORD, WHITELIST } from './utils/constants';
 
 const SPENDING_LIMIT = '1';
 const BROWSER_TIMEOUT_DELAY = 120 * 1000;
@@ -143,15 +137,25 @@ describe('Settings', function () {
     const checkChangingAutoLimitsInResourceSettings = () => {
       describe('Changing auto-limits in resource settings', function () {
         beforeEach(async function () {
-          await (await PermissionControlSettingsScreen.permissionItems)[0].detailsIcon.click();
+          await (
+            await PermissionControlSettingsScreen.permissionItems
+          )[0].detailsIcon.click();
           await PermissionControlSettingsScreen.permissionDetailsModal.root.waitForDisplayed();
         });
 
         it('Enabling', async function () {
-          await PermissionControlSettingsScreen.permissionDetailsModal.setResolutionTime('For 1 hour');
-          await PermissionControlSettingsScreen.permissionDetailsModal.spendingLimitInput.setValue(SPENDING_LIMIT);
+          await PermissionControlSettingsScreen.permissionDetailsModal.setResolutionTime(
+            'For 1 hour'
+          );
+          await PermissionControlSettingsScreen.permissionDetailsModal.spendingLimitInput.setValue(
+            SPENDING_LIMIT
+          );
           await PermissionControlSettingsScreen.permissionDetailsModal.saveButton.click();
-          expect(await (await PermissionControlSettingsScreen.permissionItems)[0].status).toHaveText('Approved+ Automatic signing');
+          expect(
+            await (
+              await PermissionControlSettingsScreen.permissionItems
+            )[0].status
+          ).toHaveText('Approved+ Automatic signing');
         });
 
         it('Disabling', async function () {
@@ -160,7 +164,9 @@ describe('Settings', function () {
           );
           await PermissionControlSettingsScreen.permissionDetailsModal.saveButton.click();
           expect(
-            await (await PermissionControlSettingsScreen.permissionItems)[0].status
+            await (
+              await PermissionControlSettingsScreen.permissionItems
+            )[0].status
           ).toHaveText('Approved');
         });
       });
@@ -250,9 +256,7 @@ describe('Settings', function () {
 
           await AuthMessageScreen.permissionDetailsButton.click();
           await AuthMessageScreen.setResolutionTime('For 1 hour');
-          await AuthMessageScreen.spendingLimitInput.setValue(
-            SPENDING_LIMIT
-          );
+          await AuthMessageScreen.spendingLimitInput.setValue(SPENDING_LIMIT);
           await AuthMessageScreen.authButton.click();
 
           await FinalTransactionScreen.closeButton.click();
@@ -282,7 +286,9 @@ describe('Settings', function () {
         });
 
         it('Block all messages from origin in custom list', async function () {
-          const firstOrigin = (await PermissionControlSettingsScreen.permissionItems)[0];
+          const firstOrigin = (
+            await PermissionControlSettingsScreen.permissionItems
+          )[0];
           const origin = await firstOrigin.origin.getText();
           await firstOrigin.enableCheckbox.click();
           await publicStateFromOrigin(origin);
@@ -492,7 +498,9 @@ describe('Settings', function () {
 
       it('Clicking "Delete account" removes all accounts from current network', async function () {
         await ConfirmDeleteAccountsScreen.deleteAllButton.click();
-        await ConfirmDeleteAccountsScreen.root.waitForDisplayed({reverse: true});
+        await ConfirmDeleteAccountsScreen.root.waitForDisplayed({
+          reverse: true,
+        });
         expect(await LoginScreen.root).toBeDisplayed();
       });
     });

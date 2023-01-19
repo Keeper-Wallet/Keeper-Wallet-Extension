@@ -6,6 +6,10 @@ import { ChooseAccountsForm } from './helpers/ChooseAccountsForm';
 import { ConfirmBackupScreen } from './helpers/ConfirmBackupScreen';
 import { DeleteAccountScreen } from './helpers/DeleteAccountScreen';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { AccountsHome } from './helpers/flows/AccountsHome';
+import { App } from './helpers/flows/App';
+import { Network } from './helpers/flows/Network';
+import { PopupHome } from './helpers/flows/PopupHome';
 import { HomeScreen } from './helpers/HomeScreen';
 import { ImportFormScreen } from './helpers/ImportFormScreen';
 import { ImportKeystoreFileScreen } from './helpers/ImportKeystoreFileScreen';
@@ -15,13 +19,7 @@ import { NewWalletNameScreen } from './helpers/NewWalletNameScreen';
 import { NewWalletScreen } from './helpers/NewWalletScreen';
 import { OtherAccountsScreen } from './helpers/OtherAccountsScreen';
 import { TopMenu } from './helpers/TopMenu';
-import {
-  AccountsHome,
-  App,
-  Network,
-  PopupHome,
-  Windows,
-} from './utils/actions';
+import { Windows } from './helpers/Windows';
 
 describe('Account creation', function () {
   let tabKeeper: string, tabAccounts: string;

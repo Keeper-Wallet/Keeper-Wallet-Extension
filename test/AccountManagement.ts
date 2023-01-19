@@ -2,10 +2,13 @@ import { AccountInfoScreen } from './helpers/AccountInfoScreen';
 import { ChangeAccountNameScreen } from './helpers/ChangeAccountNameScreen';
 import { DeleteAccountScreen } from './helpers/DeleteAccountScreen';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { AccountsHome } from './helpers/flows/AccountsHome';
+import { App } from './helpers/flows/App';
+import { Network } from './helpers/flows/Network';
 import { HomeScreen } from './helpers/HomeScreen';
 import { OtherAccountsScreen } from './helpers/OtherAccountsScreen';
 import { TopMenu } from './helpers/TopMenu';
-import { AccountsHome, App, Network, Windows } from './utils/actions';
+import { Windows } from './helpers/Windows';
 
 describe('Account management', function () {
   let tabKeeper: string, tabAccounts: string;

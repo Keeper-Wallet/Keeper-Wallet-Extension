@@ -1,17 +1,15 @@
+import { ContentScript } from './helpers/ContentScript';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { AccountsHome } from './helpers/flows/AccountsHome';
+import { App } from './helpers/flows/App';
+import { Network } from './helpers/flows/Network';
+import { PopupHome } from './helpers/flows/PopupHome';
 import { HomeScreen } from './helpers/HomeScreen';
 import { CommonTransaction } from './helpers/messages/CommonTransaction';
 import { FinalTransactionScreen } from './helpers/messages/FinalTransactionScreen';
 import { TransferTransactionScreen } from './helpers/messages/TransferTransactionScreen';
 import { SendAssetScreen } from './helpers/SendAssetScreen';
-import {
-  AccountsHome,
-  App,
-  ContentScript,
-  Network,
-  PopupHome,
-  Windows,
-} from './utils/actions';
+import { Windows } from './helpers/Windows';
 
 describe('Others', function () {
   before(async function () {

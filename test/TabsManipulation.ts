@@ -1,13 +1,15 @@
 import waitForExpect from 'wait-for-expect';
 
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { App } from './helpers/flows/App';
+import { PopupHome } from './helpers/flows/PopupHome';
 import { GetStartedScreen } from './helpers/GetStartedScreen';
 import { ImportFormScreen } from './helpers/ImportFormScreen';
 import { ImportSuccessScreen } from './helpers/ImportSuccessScreen';
 import { ImportViaSeedScreen } from './helpers/ImportViaSeedScreen';
 import { NewAccountScreen } from './helpers/NewAccountScreen';
 import { NewWalletNameScreen } from './helpers/NewWalletNameScreen';
-import { App, PopupHome, Windows } from './utils/actions';
+import { Windows } from './helpers/Windows';
 import { DEFAULT_PASSWORD } from './utils/constants';
 
 describe('Tabs manipulation', function () {

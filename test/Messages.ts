@@ -1,6 +1,10 @@
 import waitForExpect from 'wait-for-expect';
 
+import { ContentScript } from './helpers/ContentScript';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { AccountsHome } from './helpers/flows/AccountsHome';
+import { App } from './helpers/flows/App';
+import { Settings } from './helpers/flows/Settings';
 import { HomeScreen } from './helpers/HomeScreen';
 import { AuthMessageScreen } from './helpers/messages/AuthMessageScreen';
 import { FinalTransactionScreen } from './helpers/messages/FinalTransactionScreen';
@@ -8,13 +12,7 @@ import { MessagesScreen } from './helpers/MessagesScreen';
 import { PermissionControlSettingsScreen } from './helpers/settings/PermissionControlSettingsScreen';
 import { SettingsMenuScreen } from './helpers/settings/SettingsMenuScreen';
 import { TopMenu } from './helpers/TopMenu';
-import {
-  AccountsHome,
-  App,
-  ContentScript,
-  Settings,
-  Windows,
-} from './utils/actions';
+import { Windows } from './helpers/Windows';
 import { CUSTOMLIST, WHITELIST } from './utils/constants';
 
 describe('Messages', function () {
