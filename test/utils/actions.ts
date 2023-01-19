@@ -72,19 +72,6 @@ export const PopupHome = {
     await accountName.waitForDisplayed();
     return await accountName.getText();
   },
-
-  getOtherAccountNames: async () => {
-    await $('[data-testid="otherAccountsButton"]').click();
-    await $('[data-testid="otherAccountsPage"]').waitForDisplayed();
-
-    const accountNames = await $$(
-      '[data-testid="accountCard"] [data-testid="accountName"]'
-    ).map(accName => accName.getText());
-
-    await $('div.arrow-back-icon').click();
-
-    return accountNames;
-  },
 };
 
 export const AccountsHome = {
