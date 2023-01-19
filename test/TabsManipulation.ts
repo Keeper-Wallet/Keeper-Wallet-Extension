@@ -36,6 +36,9 @@ describe('Tabs manipulation', function () {
     it('no more tabs appears when opened "popup" again', async function () {
       await browser.switchToWindow(tabKeeper);
       await browser.refresh();
+      await waitForExpect(async () => {
+        expect(await browser.getWindowHandles()).toHaveLength(2);
+      });
     });
 
     it('import form appears in "accounts" after password entered', async function () {
