@@ -216,7 +216,6 @@ describe('Account creation', function () {
               ConfirmBackupScreen.suggestedPillsContainer;
             for (const word of rightSeed.split(' ')) {
               const pill = await suggestedPillsContainer.getPillByText(word);
-              await pill.waitForDisplayed();
               await pill.click();
               await pill.waitForDisplayed({ reverse: true });
             }
