@@ -2,17 +2,21 @@ import { ChooseAccountsForm } from './helpers/ChooseAccountsForm';
 import { ConfirmDeleteAccountsScreen } from './helpers/ConfirmDeleteAccountsScreen';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { LoginScreen } from './helpers/LoginScreen';
-import {
-  ExportAndImportSettingsScreen,
-  NetworkSettingsScreen,
-  PermissionControlSettingsScreen,
-  SettingsScreen,
-} from './helpers/SettingsScreen';
+import { ExportAndImportSettingsScreen } from './helpers/settings/ExportAndImportSettingsScreen';
+import { NetworkSettingsScreen } from './helpers/settings/NetworkSettingsScreen';
+import { PermissionControlSettingsScreen } from './helpers/settings/PermissionControlSettingsScreen';
+import { SettingsMenuScreen } from './helpers/settings/SettingsMenuScreen';
 import { TopMenu } from './helpers/TopMenu';
 import { AuthTransactionScreen } from './helpers/transactions/AuthTransactionScreen';
 import { CommonTransaction } from './helpers/transactions/CommonTransaction';
 import { FinalTransactionScreen } from './helpers/transactions/FinalTransactionScreen';
-import { AccountsHome, App, ContentScript, Settings, Windows } from './utils/actions';
+import {
+  AccountsHome,
+  App,
+  ContentScript,
+  Settings,
+  Windows,
+} from './utils/actions';
 import {
   CUSTOMLIST,
   DEFAULT_ANIMATION_DELAY,
@@ -66,7 +70,7 @@ describe('Settings', function () {
 
   describe('Export accounts', function () {
     it('creates an encrypted keystore file containing account details', async function () {
-      await SettingsScreen.exportAndImportSectionLink.click();
+      await SettingsMenuScreen.exportAndImportSectionLink.click();
 
       await ExportAndImportSettingsScreen.exportAccountsLink.click();
       (
@@ -84,7 +88,7 @@ describe('Settings', function () {
     let nodeUrl: string, matcherUrl: string;
 
     before(async function () {
-      await SettingsScreen.networkSectionLink.click();
+      await SettingsMenuScreen.networkSectionLink.click();
       nodeUrl = await NetworkSettingsScreen.nodeAddress.getValue();
       matcherUrl = await NetworkSettingsScreen.matcherAddress.getValue();
     });
@@ -130,7 +134,7 @@ describe('Settings', function () {
 
   describe('Permissions control', function () {
     before(async function () {
-      await SettingsScreen.permissionsSectionLink.click();
+      await SettingsMenuScreen.permissionsSectionLink.click();
     });
 
     after(async function () {
@@ -234,7 +238,7 @@ describe('Settings', function () {
           await browser.openKeeperPopup();
 
           await TopMenu.settingsButton.click();
-          await SettingsScreen.permissionsSectionLink.click();
+          await SettingsMenuScreen.permissionsSectionLink.click();
 
           expect(
             (
@@ -267,7 +271,7 @@ describe('Settings', function () {
           await browser.openKeeperPopup();
 
           await TopMenu.settingsButton.click();
-          await SettingsScreen.permissionsSectionLink.click();
+          await SettingsMenuScreen.permissionsSectionLink.click();
 
           expect(
             (
@@ -284,7 +288,7 @@ describe('Settings', function () {
           await browser.openKeeperPopup();
 
           await TopMenu.settingsButton.click();
-          await SettingsScreen.permissionsSectionLink.click();
+          await SettingsMenuScreen.permissionsSectionLink.click();
         });
 
         it('Block all messages from origin in custom list', async function () {
@@ -312,7 +316,7 @@ describe('Settings', function () {
           await browser.openKeeperPopup();
 
           await TopMenu.settingsButton.click();
-          await SettingsScreen.permissionsSectionLink.click();
+          await SettingsMenuScreen.permissionsSectionLink.click();
         });
 
         it('After deletion, requests generate permission request', async function () {
@@ -350,7 +354,7 @@ describe('Settings', function () {
 
   describe('General', function () {
     before(async function () {
-      await SettingsScreen.generalSectionLink.click();
+      await SettingsMenuScreen.generalSectionLink.click();
     });
 
     after(async function () {
@@ -377,34 +381,34 @@ describe('Settings', function () {
   describe('Root', function () {
     describe('Auto-click protection', function () {
       before(async function () {
-        expect(await SettingsScreen.root).toBeDisplayed();
+        expect(await SettingsMenuScreen.root).toBeDisplayed();
       });
 
       it('Can be enabled', async function () {
-        await SettingsScreen.clickProtectionButton.click();
-        expect(await SettingsScreen.clickProtectionButton).toHaveAttr(
+        await SettingsMenuScreen.clickProtectionButton.click();
+        expect(await SettingsMenuScreen.clickProtectionButton).toHaveAttr(
           'data-teston',
           'true'
         );
-        expect(await SettingsScreen.clickProtectionStatus).toHaveText(
+        expect(await SettingsMenuScreen.clickProtectionStatus).toHaveText(
           'Enabled'
         );
       });
 
       it('Can be disabled', async function () {
-        await SettingsScreen.clickProtectionButton.click();
-        expect(await SettingsScreen.clickProtectionButton).toHaveAttr(
+        await SettingsMenuScreen.clickProtectionButton.click();
+        expect(await SettingsMenuScreen.clickProtectionButton).toHaveAttr(
           'data-teston',
           'false'
         );
-        expect(await SettingsScreen.clickProtectionStatus).toHaveText(
+        expect(await SettingsMenuScreen.clickProtectionStatus).toHaveText(
           'Disabled'
         );
       });
 
       it('Display tooltip', async function () {
-        await SettingsScreen.clickProtectionIcon.moveTo();
-        expect(await SettingsScreen.helpTooltip).toHaveText(
+        await SettingsMenuScreen.clickProtectionIcon.moveTo();
+        expect(await SettingsMenuScreen.helpTooltip).toHaveText(
           'Protect yourself from Clicker Trojans threats'
         );
       });
@@ -412,32 +416,32 @@ describe('Settings', function () {
 
     describe('Suspicious assets protection', function () {
       before(async function () {
-        expect(await SettingsScreen.root).toBeDisplayed();
+        expect(await SettingsMenuScreen.root).toBeDisplayed();
       });
 
       it('Can be disabled', async function () {
-        await SettingsScreen.suspiciousAssetsProtectionButton.click();
+        await SettingsMenuScreen.suspiciousAssetsProtectionButton.click();
         expect(
-          await SettingsScreen.suspiciousAssetsProtectionButton
+          await SettingsMenuScreen.suspiciousAssetsProtectionButton
         ).toHaveAttr('data-teston', 'true');
         expect(
-          await SettingsScreen.suspiciousAssetsProtectionStatus
+          await SettingsMenuScreen.suspiciousAssetsProtectionStatus
         ).toHaveText('Enable');
       });
 
       it('Can be enabled', async function () {
-        await SettingsScreen.suspiciousAssetsProtectionButton.click();
+        await SettingsMenuScreen.suspiciousAssetsProtectionButton.click();
         expect(
-          await SettingsScreen.suspiciousAssetsProtectionButton
+          await SettingsMenuScreen.suspiciousAssetsProtectionButton
         ).toHaveAttr('data-teston', 'false');
         expect(
-          await SettingsScreen.suspiciousAssetsProtectionStatus
+          await SettingsMenuScreen.suspiciousAssetsProtectionStatus
         ).toHaveText('Disabled');
       });
 
       it('Display tooltip', async function () {
-        await SettingsScreen.suspiciousAssetsProtectionIcon.moveTo();
-        expect(await SettingsScreen.helpTooltip).toHaveText(
+        await SettingsMenuScreen.suspiciousAssetsProtectionIcon.moveTo();
+        expect(await SettingsMenuScreen.helpTooltip).toHaveText(
           "Don't show balances and transactions related to suspicious assets"
         );
       });
@@ -450,30 +454,30 @@ describe('Settings', function () {
       });
 
       it('Exit to the login screen', async function () {
-        await SettingsScreen.logoutButton.click();
+        await SettingsMenuScreen.logoutButton.click();
         expect(await LoginScreen.root).toBeDisplayed();
       });
     });
 
     describe('Delete accounts', function () {
       it('Account deletion warning displays', async function () {
-        await SettingsScreen.deleteAccountsButton.click();
+        await SettingsMenuScreen.deleteAccountsButton.click();
         expect(await ConfirmDeleteAccountsScreen.root).toBeDisplayed();
       });
 
       it('Clicking "Back" button cancels the deletion', async function () {
         await TopMenu.backButton.click();
-        expect(await SettingsScreen.root).toBeDisplayed();
+        expect(await SettingsMenuScreen.root).toBeDisplayed();
       });
 
       it('Clicking "Cancel" button cancels the deletion', async function () {
-        await SettingsScreen.deleteAccountsButton.click();
+        await SettingsMenuScreen.deleteAccountsButton.click();
         await ConfirmDeleteAccountsScreen.cancelButton.click();
-        expect(await SettingsScreen.root).toBeDisplayed();
+        expect(await SettingsMenuScreen.root).toBeDisplayed();
       });
 
       it('"Delete all" button is disabled', async function () {
-        await SettingsScreen.deleteAccountsButton.click();
+        await SettingsMenuScreen.deleteAccountsButton.click();
         expect(
           await ConfirmDeleteAccountsScreen.deleteAllButton
         ).toBeDisabled();

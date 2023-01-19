@@ -1,4 +1,9 @@
-import { base58Decode, base58Encode, blake2b, verifySignature } from '@keeper-wallet/waves-crypto';
+import {
+  base58Decode,
+  base58Encode,
+  blake2b,
+  verifySignature,
+} from '@keeper-wallet/waves-crypto';
 import { BigNumber } from '@waves/bignumber';
 import { binary } from '@waves/marshall';
 import Long from 'long';
@@ -8,14 +13,14 @@ import {
   MessageInputCancelOrder,
   MessageInputCustomData,
   MessageInputOrder,
-  MessageInputTx
+  MessageInputTx,
 } from '../src/messages/types';
 import {
   makeAuthBytes,
   makeCancelOrderBytes,
   makeCustomDataBytes,
   makeOrderBytes,
-  makeTxBytes
+  makeTxBytes,
 } from '../src/messages/utils';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { HomeScreen } from './helpers/HomeScreen';
@@ -40,7 +45,13 @@ import { SetScriptTransactionScreen } from './helpers/transactions/SetScriptTran
 import { SponsorshipTransactionScreen } from './helpers/transactions/SponsorshipTransactionScreen';
 import { TransferTransactionScreen } from './helpers/transactions/TransferTransactionScreen';
 import { UpdateAssetInfoTransactionScreen } from './helpers/transactions/UpdateAssetInfoTransactionScreen';
-import { AccountsHome, App, ContentScript, Network, Windows } from './utils/actions';
+import {
+  AccountsHome,
+  App,
+  ContentScript,
+  Network,
+  Windows,
+} from './utils/actions';
 import { CUSTOMLIST, WHITELIST } from './utils/constants';
 import { CUSTOM_DATA_V1, CUSTOM_DATA_V2 } from './utils/customData';
 import {
@@ -68,7 +79,7 @@ import {
   SPONSORSHIP_REMOVAL,
   TRANSFER,
   TRANSFER_WITHOUT_ATTACHMENT,
-  UPDATE_ASSET_INFO
+  UPDATE_ASSET_INFO,
 } from './utils/transactions';
 
 describe('Signature', function () {
@@ -166,7 +177,7 @@ describe('Signature', function () {
 
       await browser.switchToWindow((await browser.createWindow('tab')).handle);
       await browser.openKeeperPopup();
-      
+
       expect(await HomeScreen.root).toBeDisplayed();
 
       await browser.closeWindow();
@@ -386,32 +397,32 @@ describe('Signature', function () {
       const [status, result] = await getAuthRequestResult.call(this);
 
       expect(status).toBe('REJECTED');
-      
+
       expect(result).toStrictEqual({
         code: '10',
         data: 'rejected',
         message: 'User denied message',
       });
     });
-    
+
     it('Approved', async function () {
       await performAuthRequest();
       await AuthTransactionScreen.authButton.click();
       await FinalTransactionScreen.root.waitForDisplayed();
       await FinalTransactionScreen.closeButton.click();
-      
+
       await browser.switchToWindow(tabOrigin);
       const [status, result] = await getAuthRequestResult.call(this);
 
       expect(status).toBe('RESOLVED');
-      
+
       const expectedApproveResult = {
         host: WHITELIST[3],
         prefix: 'WavesWalletAuthentication',
         address: '3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW',
         publicKey: senderPublicKey,
       };
-      
+
       const bytes = makeAuthBytes({
         host: WHITELIST[3],
         data: 'generated auth data',
@@ -419,9 +430,13 @@ describe('Signature', function () {
 
       expect(result).toMatchObject(expectedApproveResult);
 
-      expect(await verifySignature(senderPublicKeyBytes, bytes, base58Decode(result.signature))).toBe(
-        true
-      );
+      expect(
+        await verifySignature(
+          senderPublicKeyBytes,
+          bytes,
+          base58Decode(result.signature)
+        )
+      ).toBe(true);
     });
   });
 
@@ -502,7 +517,9 @@ describe('Signature', function () {
         ...new Uint8Array(Long.fromNumber(timestamp).toBytesBE())
       );
 
-      expect(await verifySignature(senderPublicKeyBytes, bytes, base58Decode(result))).toBe(true);
+      expect(
+        await verifySignature(senderPublicKeyBytes, bytes, base58Decode(result))
+      ).toBe(true);
     });
   });
 
@@ -537,10 +554,7 @@ describe('Signature', function () {
       );
     }
 
-    function setTxVersion<T extends MessageInputTx>(
-      tx: T,
-      version: number
-    ): T {
+    function setTxVersion<T extends MessageInputTx>(tx: T, version: number): T {
       return { ...tx, data: { ...tx.data, version } };
     }
 
@@ -551,20 +565,28 @@ describe('Signature', function () {
         expect(await CommonTransaction.accountName).toHaveText('rich');
         expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-        expect(await IssueTransactionScreen.issueType).toHaveText('Issue Smart Token');
-        await expect(await IssueTransactionScreen.issueAmount).toHaveText('92233720368.54775807 ShortToken');
+        expect(await IssueTransactionScreen.issueType).toHaveText(
+          'Issue Smart Token'
+        );
+        await expect(await IssueTransactionScreen.issueAmount).toHaveText(
+          '92233720368.54775807 ShortToken'
+        );
         await expect(await IssueTransactionScreen.issueDescription).toHaveText(
           ISSUE.data.description
         );
         await expect(await IssueTransactionScreen.issueDecimals).toHaveText(
-          `${(ISSUE.data.precision)}`
+          `${ISSUE.data.precision}`
         );
         await expect(await IssueTransactionScreen.issueReissuable).toHaveText(
           'Reissuable'
         );
-        await expect(await IssueTransactionScreen.contentScript).toHaveText('base64:BQbtKNoM');
+        await expect(await IssueTransactionScreen.contentScript).toHaveText(
+          'base64:BQbtKNoM'
+        );
 
-        await expect(await CommonTransaction.transactionFee).toHaveText('1.004 WAVES');
+        await expect(await CommonTransaction.transactionFee).toHaveText(
+          '1.004 WAVES'
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.closeButton.click();
@@ -617,7 +639,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).toBe(true);
       });
 
@@ -626,23 +652,31 @@ describe('Signature', function () {
       describe('without script', function () {
         it('Rejected', async function () {
           await performSignTransaction(ISSUE_WITHOUT_SCRIPT);
-          expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
+          expect(await CommonTransaction.originAddress).toHaveText(
+            WHITELIST[3]
+          );
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await IssueTransactionScreen.issueType).toHaveText('Issue Token');
-          await expect(await IssueTransactionScreen.issueAmount).toHaveText('92233720368.54775807 ShortToken');
-          await expect(await IssueTransactionScreen.issueDescription).toHaveText(
-            ISSUE.data.description
+          await expect(await IssueTransactionScreen.issueType).toHaveText(
+            'Issue Token'
           );
+          await expect(await IssueTransactionScreen.issueAmount).toHaveText(
+            '92233720368.54775807 ShortToken'
+          );
+          await expect(
+            await IssueTransactionScreen.issueDescription
+          ).toHaveText(ISSUE.data.description);
           await expect(await IssueTransactionScreen.issueDecimals).toHaveText(
-            `${(ISSUE.data.precision)}`
+            `${ISSUE.data.precision}`
           );
           await expect(await IssueTransactionScreen.issueReissuable).toHaveText(
             'Reissuable'
           );
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('1.004 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '1.004 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.closeButton.click();
@@ -714,20 +748,28 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await IssueTransactionScreen.issueType).toHaveText('Issue Smart Token');
-          await expect(await IssueTransactionScreen.issueAmount).toHaveText('92233720368.54775807 ShortToken');
-          await expect(await IssueTransactionScreen.issueDescription).toHaveText(
-            ISSUE.data.description
+          await expect(await IssueTransactionScreen.issueType).toHaveText(
+            'Issue Smart Token'
           );
+          await expect(await IssueTransactionScreen.issueAmount).toHaveText(
+            '92233720368.54775807 ShortToken'
+          );
+          await expect(
+            await IssueTransactionScreen.issueDescription
+          ).toHaveText(ISSUE.data.description);
           await expect(await IssueTransactionScreen.issueDecimals).toHaveText(
-            `${(ISSUE.data.precision)}`
+            `${ISSUE.data.precision}`
           );
           await expect(await IssueTransactionScreen.issueReissuable).toHaveText(
             'Reissuable'
           );
-          await expect(await IssueTransactionScreen.contentScript).toHaveText('base64:BQbtKNoM');
+          await expect(await IssueTransactionScreen.contentScript).toHaveText(
+            'base64:BQbtKNoM'
+          );
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('1.004 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '1.004 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.closeButton.click();
@@ -801,12 +843,16 @@ describe('Signature', function () {
         await expect(await TransferTransactionScreen.transferAmount).toHaveText(
           '-123456790 NonScriptToken'
         );
-        await expect(await TransferTransactionScreen.recipient).toHaveText('3N5HNJz5otiU...BVv5HhYLdhiD');
-        await expect(await TransferTransactionScreen.attachmentContent).toHaveText(
-          'base64:BQbtKNoM'
+        await expect(await TransferTransactionScreen.recipient).toHaveText(
+          '3N5HNJz5otiU...BVv5HhYLdhiD'
         );
+        await expect(
+          await TransferTransactionScreen.attachmentContent
+        ).toHaveText('base64:BQbtKNoM');
 
-        await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+        await expect(await CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.root.waitForDisplayed();
@@ -848,7 +894,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).toBe(true);
       });
 
@@ -869,12 +919,16 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await TransferTransactionScreen.transferAmount).toHaveText(
-            '-123456790 NonScriptToken'
+          await expect(
+            await TransferTransactionScreen.transferAmount
+          ).toHaveText('-123456790 NonScriptToken');
+          await expect(await TransferTransactionScreen.recipient).toHaveText(
+            'alias:T:alice'
           );
-          await expect(await TransferTransactionScreen.recipient).toHaveText('alias:T:alice');
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.closeButton.click();
@@ -933,15 +987,19 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await TransferTransactionScreen.transferAmount).toHaveText(
-            '-123456790 NonScriptToken'
+          await expect(
+            await TransferTransactionScreen.transferAmount
+          ).toHaveText('-123456790 NonScriptToken');
+          await expect(await TransferTransactionScreen.recipient).toHaveText(
+            '3N5HNJz5otiU...BVv5HhYLdhiD'
           );
-          await expect(await TransferTransactionScreen.recipient).toHaveText('3N5HNJz5otiU...BVv5HhYLdhiD');
-          await expect(await TransferTransactionScreen.attachmentContent).toHaveText(
-            'base64:BQbtKNoM'
-          );
+          await expect(
+            await TransferTransactionScreen.attachmentContent
+          ).toHaveText('base64:BQbtKNoM');
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.closeButton.click();
@@ -999,12 +1057,16 @@ describe('Signature', function () {
         expect(await CommonTransaction.accountName).toHaveText('rich');
         expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-        await expect(await ReissueTransactionScreen.reissueAmount).toHaveText('+123456790 NonScriptToken');
+        await expect(await ReissueTransactionScreen.reissueAmount).toHaveText(
+          '+123456790 NonScriptToken'
+        );
         await expect(await ReissueTransactionScreen.reissuableType).toHaveText(
           'Reissuable'
         );
 
-        await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+        await expect(await CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.root.waitForDisplayed();
@@ -1044,7 +1106,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).toBe(true);
       });
 
@@ -1058,12 +1124,16 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await ReissueTransactionScreen.reissueAmount).toHaveText('+123456790 NonScriptToken');
-          await expect(await ReissueTransactionScreen.reissuableType).toHaveText(
-            'Reissuable'
+          await expect(await ReissueTransactionScreen.reissueAmount).toHaveText(
+            '+123456790 NonScriptToken'
           );
+          await expect(
+            await ReissueTransactionScreen.reissuableType
+          ).toHaveText('Reissuable');
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -1122,12 +1192,16 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await ReissueTransactionScreen.reissueAmount).toHaveText('+123456790 NonScriptToken');
-          await expect(await ReissueTransactionScreen.reissuableType).toHaveText(
-            'Reissuable'
+          await expect(await ReissueTransactionScreen.reissueAmount).toHaveText(
+            '+123456790 NonScriptToken'
           );
+          await expect(
+            await ReissueTransactionScreen.reissuableType
+          ).toHaveText('Reissuable');
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -1185,9 +1259,13 @@ describe('Signature', function () {
         expect(await CommonTransaction.accountName).toHaveText('rich');
         expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-        await expect(await BurnTransactionScreen.burnAmount).toHaveText('-123456790 NonScriptToken');
+        await expect(await BurnTransactionScreen.burnAmount).toHaveText(
+          '-123456790 NonScriptToken'
+        );
 
-        await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+        await expect(await CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.root.waitForDisplayed();
@@ -1226,7 +1304,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).toBe(true);
       });
 
@@ -1240,9 +1322,13 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await BurnTransactionScreen.burnAmount).toHaveText('-123456790 NonScriptToken');
+          await expect(await BurnTransactionScreen.burnAmount).toHaveText(
+            '-123456790 NonScriptToken'
+          );
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -1300,9 +1386,13 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await BurnTransactionScreen.burnAmount).toHaveText('-123456790 NonScriptToken');
+          await expect(await BurnTransactionScreen.burnAmount).toHaveText(
+            '-123456790 NonScriptToken'
+          );
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -1359,12 +1449,16 @@ describe('Signature', function () {
         expect(await CommonTransaction.accountName).toHaveText('rich');
         expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-        await expect(await LeaseTransactionScreen.leaseAmount).toHaveText('1.23456790 WAVES');
+        await expect(await LeaseTransactionScreen.leaseAmount).toHaveText(
+          '1.23456790 WAVES'
+        );
         await expect(await LeaseTransactionScreen.leaseRecipient).toHaveText(
           '3N5HNJz5otiU...BVv5HhYLdhiD'
         );
 
-        await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+        await expect(await CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.root.waitForDisplayed();
@@ -1403,7 +1497,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).toBe(true);
       });
 
@@ -1417,12 +1515,16 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await LeaseTransactionScreen.leaseAmount).toHaveText('1.23456790 WAVES');
+          await expect(await LeaseTransactionScreen.leaseAmount).toHaveText(
+            '1.23456790 WAVES'
+          );
           await expect(await LeaseTransactionScreen.leaseRecipient).toHaveText(
             'alias:T:bobby'
           );
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -1480,12 +1582,16 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await LeaseTransactionScreen.leaseAmount).toHaveText('1.23456790 WAVES');
+          await expect(await LeaseTransactionScreen.leaseAmount).toHaveText(
+            '1.23456790 WAVES'
+          );
           await expect(await LeaseTransactionScreen.leaseRecipient).toHaveText(
             '3N5HNJz5otiU...BVv5HhYLdhiD'
           );
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -1543,12 +1649,16 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await LeaseTransactionScreen.leaseAmount).toHaveText('1.23456790 WAVES');
+          await expect(await LeaseTransactionScreen.leaseAmount).toHaveText(
+            '1.23456790 WAVES'
+          );
           await expect(await LeaseTransactionScreen.leaseRecipient).toHaveText(
             '3N5HNJz5otiU...BVv5HhYLdhiD'
           );
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -1605,14 +1715,16 @@ describe('Signature', function () {
         expect(await CommonTransaction.accountName).toHaveText('rich');
         expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-        await expect(await LeaseCancelTransactionScreen.cancelLeaseAmount).toHaveText(
-          '0.00000001 WAVES'
-        );
+        await expect(
+          await LeaseCancelTransactionScreen.cancelLeaseAmount
+        ).toHaveText('0.00000001 WAVES');
         await expect(
           await LeaseCancelTransactionScreen.cancelLeaseRecipient
         ).toHaveText('alias:T:merry');
 
-        await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+        await expect(await CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.root.waitForDisplayed();
@@ -1650,7 +1762,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).toBe(true);
       });
 
@@ -1664,14 +1780,16 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await LeaseCancelTransactionScreen.cancelLeaseAmount).toHaveText(
-            '0.00000001 WAVES'
-          );
+          await expect(
+            await LeaseCancelTransactionScreen.cancelLeaseAmount
+          ).toHaveText('0.00000001 WAVES');
           await expect(
             await LeaseCancelTransactionScreen.cancelLeaseRecipient
           ).toHaveText('alias:T:merry');
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -1727,9 +1845,13 @@ describe('Signature', function () {
         expect(await CommonTransaction.accountName).toHaveText('rich');
         expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-        await expect(await CreateAliasTransactionScreen.aliasValue).toHaveText('test_alias');
+        await expect(await CreateAliasTransactionScreen.aliasValue).toHaveText(
+          'test_alias'
+        );
 
-        await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+        await expect(await CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.root.waitForDisplayed();
@@ -1767,7 +1889,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).toBe(true);
       });
 
@@ -1785,9 +1911,13 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await CreateAliasTransactionScreen.aliasValue).toHaveText('test_alias');
+          await expect(
+            await CreateAliasTransactionScreen.aliasValue
+          ).toHaveText('test_alias');
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -1824,7 +1954,9 @@ describe('Signature', function () {
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
 
           expect(parsedApproveResult.id).toBe(
-            base58Encode(blake2b(Uint8Array.of(bytes[0], ...bytes.subarray(36, -16))))
+            base58Encode(
+              blake2b(Uint8Array.of(bytes[0], ...bytes.subarray(36, -16)))
+            )
           );
 
           expect(
@@ -1882,7 +2014,9 @@ describe('Signature', function () {
           await MassTransferTransactionScreen.massTransferAttachment
         ).toHaveText('base64:BQbtKNoM');
 
-        await expect(await CommonTransaction.transactionFee).toHaveText('0.006 WAVES');
+        await expect(await CommonTransaction.transactionFee).toHaveText(
+          '0.006 WAVES'
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.root.waitForDisplayed();
@@ -1925,7 +2059,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).toBe(true);
       });
 
@@ -1954,7 +2092,9 @@ describe('Signature', function () {
             },
           ]);
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.006 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.006 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -2035,7 +2175,9 @@ describe('Signature', function () {
             await MassTransferTransactionScreen.massTransferAttachment
           ).toHaveText('base64:BQbtKNoM');
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.006 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.006 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -2136,7 +2278,9 @@ describe('Signature', function () {
           },
         ]);
 
-        await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+        await expect(await CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.root.waitForDisplayed();
@@ -2192,7 +2336,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).toBe(true);
       });
 
@@ -2229,7 +2377,9 @@ describe('Signature', function () {
             },
           ]);
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -2303,12 +2453,16 @@ describe('Signature', function () {
         expect(await CommonTransaction.accountName).toHaveText('rich');
         expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-        await expect(await SetScriptTransactionScreen.scriptTitle).toHaveText('Set Script');
+        await expect(await SetScriptTransactionScreen.scriptTitle).toHaveText(
+          'Set Script'
+        );
         await expect(await SetScriptTransactionScreen.contentScript).toHaveText(
           'base64:BQbtKNoM'
         );
 
-        await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+        await expect(await CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.root.waitForDisplayed();
@@ -2346,7 +2500,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).toBe(true);
       });
 
@@ -2364,9 +2522,13 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await SetScriptTransactionScreen.scriptTitle).toHaveText('Remove Account Script');
+          await expect(await SetScriptTransactionScreen.scriptTitle).toHaveText(
+            'Remove Account Script'
+          );
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -2424,12 +2586,16 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await SetScriptTransactionScreen.scriptTitle).toHaveText('Set Script');
-          await expect(await SetScriptTransactionScreen.contentScript).toHaveText(
-            'base64:BQbtKNoM'
+          await expect(await SetScriptTransactionScreen.scriptTitle).toHaveText(
+            'Set Script'
           );
+          await expect(
+            await SetScriptTransactionScreen.contentScript
+          ).toHaveText('base64:BQbtKNoM');
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -2485,10 +2651,16 @@ describe('Signature', function () {
         expect(await CommonTransaction.accountName).toHaveText('rich');
         expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-        await expect(await SponsorshipTransactionScreen.title).toHaveText('Set Sponsorship');
-        await expect(await SponsorshipTransactionScreen.amount).toHaveText('123456790 NonScriptToken');
+        await expect(await SponsorshipTransactionScreen.title).toHaveText(
+          'Set Sponsorship'
+        );
+        await expect(await SponsorshipTransactionScreen.amount).toHaveText(
+          '123456790 NonScriptToken'
+        );
 
-        await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+        await expect(await CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.root.waitForDisplayed();
@@ -2527,7 +2699,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).toBe(true);
       });
 
@@ -2541,10 +2717,16 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await SponsorshipTransactionScreen.title).toHaveText('Disable Sponsorship');
-          await expect(await SponsorshipTransactionScreen.asset).toHaveText('NonScriptToken');
+          await expect(await SponsorshipTransactionScreen.title).toHaveText(
+            'Disable Sponsorship'
+          );
+          await expect(await SponsorshipTransactionScreen.asset).toHaveText(
+            'NonScriptToken'
+          );
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -2602,10 +2784,16 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await SponsorshipTransactionScreen.title).toHaveText('Set Sponsorship');
-          await expect(await SponsorshipTransactionScreen.amount).toHaveText('123456790 NonScriptToken');
+          await expect(await SponsorshipTransactionScreen.title).toHaveText(
+            'Set Sponsorship'
+          );
+          await expect(await SponsorshipTransactionScreen.amount).toHaveText(
+            '123456790 NonScriptToken'
+          );
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -2662,10 +2850,16 @@ describe('Signature', function () {
         expect(await CommonTransaction.accountName).toHaveText('rich');
         expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-        await expect(AssetScriptTransactionScreen.asset).toHaveText('NonScriptToken');
-        await expect(AssetScriptTransactionScreen.script).toHaveText('base64:BQbtKNoM');
+        await expect(AssetScriptTransactionScreen.asset).toHaveText(
+          'NonScriptToken'
+        );
+        await expect(AssetScriptTransactionScreen.script).toHaveText(
+          'base64:BQbtKNoM'
+        );
 
-        await expect(await CommonTransaction.transactionFee).toHaveText('1.004 WAVES');
+        await expect(await CommonTransaction.transactionFee).toHaveText(
+          '1.004 WAVES'
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.root.waitForDisplayed();
@@ -2704,7 +2898,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).toBe(true);
       });
 
@@ -2720,10 +2918,16 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(AssetScriptTransactionScreen.asset).toHaveText('NonScriptToken');
-          await expect(AssetScriptTransactionScreen.script).toHaveText('base64:BQbtKNoM');
+          await expect(AssetScriptTransactionScreen.asset).toHaveText(
+            'NonScriptToken'
+          );
+          await expect(AssetScriptTransactionScreen.script).toHaveText(
+            'base64:BQbtKNoM'
+          );
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('1.004 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '1.004 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -2810,11 +3014,15 @@ describe('Signature', function () {
         expect(await CommonTransaction.accountName).toHaveText('rich');
         expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-        await expect(await InvokeScriptTransactionScreen.paymentsTitle).toHaveText(
-          '2 Payments'
+        await expect(
+          await InvokeScriptTransactionScreen.paymentsTitle
+        ).toHaveText('2 Payments');
+        await expect(await InvokeScriptTransactionScreen.dApp).toHaveText(
+          INVOKE_SCRIPT.data.dApp
         );
-        await expect(await InvokeScriptTransactionScreen.dApp).toHaveText(INVOKE_SCRIPT.data.dApp);
-        await expect(await InvokeScriptTransactionScreen.function).toHaveText(INVOKE_SCRIPT.data.call.function);
+        await expect(await InvokeScriptTransactionScreen.function).toHaveText(
+          INVOKE_SCRIPT.data.call.function
+        );
 
         await checkArgs([
           {
@@ -2833,7 +3041,9 @@ describe('Signature', function () {
 
         await checkPayments(['0.00000001 WAVES', '1 NonScriptToken']);
 
-        await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+        await expect(await CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.root.waitForDisplayed();
@@ -2874,7 +3084,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).toBe(true);
       });
 
@@ -2900,14 +3114,20 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await InvokeScriptTransactionScreen.paymentsTitle).toHaveText(
-            'No Payments'
+          await expect(
+            await InvokeScriptTransactionScreen.paymentsTitle
+          ).toHaveText('No Payments');
+          await expect(await InvokeScriptTransactionScreen.dApp).toHaveText(
+            INVOKE_SCRIPT_WITHOUT_CALL.data.dApp
           );
-          await expect(await InvokeScriptTransactionScreen.dApp).toHaveText(INVOKE_SCRIPT_WITHOUT_CALL.data.dApp);
-          await expect(await InvokeScriptTransactionScreen.function).toHaveText('default');
+          await expect(await InvokeScriptTransactionScreen.function).toHaveText(
+            'default'
+          );
           await checkArgs([]);
           await checkPayments([]);
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -2968,11 +3188,15 @@ describe('Signature', function () {
           expect(await CommonTransaction.accountName).toHaveText('rich');
           expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-          await expect(await InvokeScriptTransactionScreen.paymentsTitle).toHaveText(
-            '2 Payments'
+          await expect(
+            await InvokeScriptTransactionScreen.paymentsTitle
+          ).toHaveText('2 Payments');
+          await expect(await InvokeScriptTransactionScreen.dApp).toHaveText(
+            INVOKE_SCRIPT.data.dApp
           );
-          await expect(await InvokeScriptTransactionScreen.dApp).toHaveText(INVOKE_SCRIPT.data.dApp);
-          await expect(await InvokeScriptTransactionScreen.function).toHaveText(INVOKE_SCRIPT.data.call.function);
+          await expect(await InvokeScriptTransactionScreen.function).toHaveText(
+            INVOKE_SCRIPT.data.call.function
+          );
 
           await checkArgs([
             {
@@ -2991,7 +3215,9 @@ describe('Signature', function () {
 
           await checkPayments(['0.00000001 WAVES', '1 NonScriptToken']);
 
-          await expect(await CommonTransaction.transactionFee).toHaveText('0.005 WAVES');
+          await expect(await CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
           await CommonTransaction.rejectButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
@@ -3057,15 +3283,17 @@ describe('Signature', function () {
         await expect(await UpdateAssetInfoTransactionScreen.assetId).toHaveText(
           UPDATE_ASSET_INFO.data.assetId
         );
-        await expect(await UpdateAssetInfoTransactionScreen.assetName).toHaveText(
-          UPDATE_ASSET_INFO.data.name
-        );
+        await expect(
+          await UpdateAssetInfoTransactionScreen.assetName
+        ).toHaveText(UPDATE_ASSET_INFO.data.name);
 
         await expect(
           await UpdateAssetInfoTransactionScreen.assetDescription
         ).toHaveText(UPDATE_ASSET_INFO.data.description);
 
-        await expect(await UpdateAssetInfoTransactionScreen.fee).toHaveText('0.001 WAVES');
+        await expect(await UpdateAssetInfoTransactionScreen.fee).toHaveText(
+          '0.001 WAVES'
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.root.waitForDisplayed();
@@ -3105,7 +3333,11 @@ describe('Signature', function () {
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
 
         expect(
-          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.proofs[0]))
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.proofs[0])
+          )
         ).toBe(true);
       });
     });
@@ -3146,7 +3378,6 @@ describe('Signature', function () {
       await browser.switchToWindow(messageWindow);
       await browser.refresh();
     }
-
 
     async function performSignCancelOrder(
       script: (tx: MessageInputCancelOrder) => void,
@@ -3193,14 +3424,24 @@ describe('Signature', function () {
             expect(await CommonTransaction.accountName).toHaveText('rich');
             expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-            await expect(await CreateOrderTransaction.orderTitle).toHaveText('Sell: WAVES/NonScriptToken');
-            await expect(await CreateOrderTransaction.orderAmount).toHaveText('-100.00000000 WAVES');
-            await expect(await CreateOrderTransaction.orderPriceTitle).toHaveText('+0 NonScriptToken');
-            await expect(await CreateOrderTransaction.orderPrice).toHaveText('0 NonScriptToken');
-            await expect(await CreateOrderTransaction.orderMatcherPublicKey).toHaveText(
-              INPUT.data.matcherPublicKey
+            await expect(await CreateOrderTransaction.orderTitle).toHaveText(
+              'Sell: WAVES/NonScriptToken'
             );
-            await expect(await CreateOrderTransaction.createOrderFee).toHaveText('0.03 WAVES');
+            await expect(await CreateOrderTransaction.orderAmount).toHaveText(
+              '-100.00000000 WAVES'
+            );
+            await expect(
+              await CreateOrderTransaction.orderPriceTitle
+            ).toHaveText('+0 NonScriptToken');
+            await expect(await CreateOrderTransaction.orderPrice).toHaveText(
+              '0 NonScriptToken'
+            );
+            await expect(
+              await CreateOrderTransaction.orderMatcherPublicKey
+            ).toHaveText(INPUT.data.matcherPublicKey);
+            await expect(
+              await CreateOrderTransaction.createOrderFee
+            ).toHaveText('0.03 WAVES');
 
             await CommonTransaction.rejectButton.click();
             await FinalTransactionScreen.root.waitForDisplayed();
@@ -3284,14 +3525,24 @@ describe('Signature', function () {
             expect(await CommonTransaction.accountName).toHaveText('rich');
             expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-            await expect(await CreateOrderTransaction.orderTitle).toHaveText('Buy: Tether USD/USD-Nea272c');
-            await expect(await CreateOrderTransaction.orderAmount).toHaveText('+1.000000 Tether USD');
-            await expect(await CreateOrderTransaction.orderPriceTitle).toHaveText('-1.014002 USD-Nea272c');
-            await expect(await CreateOrderTransaction.orderPrice).toHaveText('1.014002 USD-Nea272c');
-            await expect(await CreateOrderTransaction.orderMatcherPublicKey).toHaveText(
-              INPUT.data.matcherPublicKey
+            await expect(await CreateOrderTransaction.orderTitle).toHaveText(
+              'Buy: Tether USD/USD-Nea272c'
             );
-            await expect(await CreateOrderTransaction.createOrderFee).toHaveText('0.04077612 TXW-DEVa4f6df');
+            await expect(await CreateOrderTransaction.orderAmount).toHaveText(
+              '+1.000000 Tether USD'
+            );
+            await expect(
+              await CreateOrderTransaction.orderPriceTitle
+            ).toHaveText('-1.014002 USD-Nea272c');
+            await expect(await CreateOrderTransaction.orderPrice).toHaveText(
+              '1.014002 USD-Nea272c'
+            );
+            await expect(
+              await CreateOrderTransaction.orderMatcherPublicKey
+            ).toHaveText(INPUT.data.matcherPublicKey);
+            await expect(
+              await CreateOrderTransaction.createOrderFee
+            ).toHaveText('0.04077612 TXW-DEVa4f6df');
 
             await CommonTransaction.rejectButton.click();
             await FinalTransactionScreen.root.waitForDisplayed();
@@ -3380,14 +3631,24 @@ describe('Signature', function () {
             expect(await CommonTransaction.accountName).toHaveText('rich');
             expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-            await expect(await CreateOrderTransaction.orderTitle).toHaveText('Buy: Tether USD/USD-Nea272c');
-            await expect(await CreateOrderTransaction.orderAmount).toHaveText('+1.000000 Tether USD');
-            await expect(await CreateOrderTransaction.orderPriceTitle).toHaveText('-1.014002 USD-Nea272c');
-            await expect(await CreateOrderTransaction.orderPrice).toHaveText('1.014002 USD-Nea272c');
-            await expect(await CreateOrderTransaction.orderMatcherPublicKey).toHaveText(
-              INPUT.data.matcherPublicKey
+            await expect(await CreateOrderTransaction.orderTitle).toHaveText(
+              'Buy: Tether USD/USD-Nea272c'
             );
-            await expect(await CreateOrderTransaction.createOrderFee).toHaveText('0.04077612 TXW-DEVa4f6df');
+            await expect(await CreateOrderTransaction.orderAmount).toHaveText(
+              '+1.000000 Tether USD'
+            );
+            await expect(
+              await CreateOrderTransaction.orderPriceTitle
+            ).toHaveText('-1.014002 USD-Nea272c');
+            await expect(await CreateOrderTransaction.orderPrice).toHaveText(
+              '1.014002 USD-Nea272c'
+            );
+            await expect(
+              await CreateOrderTransaction.orderMatcherPublicKey
+            ).toHaveText(INPUT.data.matcherPublicKey);
+            await expect(
+              await CreateOrderTransaction.createOrderFee
+            ).toHaveText('0.04077612 TXW-DEVa4f6df');
 
             await CommonTransaction.rejectButton.click();
             await FinalTransactionScreen.root.waitForDisplayed();
@@ -3476,14 +3737,24 @@ describe('Signature', function () {
             expect(await CommonTransaction.accountName).toHaveText('rich');
             expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-            await expect(await CreateOrderTransaction.orderTitle).toHaveText('Buy: Tether USD/USD-Nea272c');
-            await expect(await CreateOrderTransaction.orderAmount).toHaveText('+1.000000 Tether USD');
-            await expect(await CreateOrderTransaction.orderPriceTitle).toHaveText('-1.014002 USD-Nea272c');
-            await expect(await CreateOrderTransaction.orderPrice).toHaveText('1.014002 USD-Nea272c');
-            await expect(await CreateOrderTransaction.orderMatcherPublicKey).toHaveText(
-              INPUT.data.matcherPublicKey
+            await expect(await CreateOrderTransaction.orderTitle).toHaveText(
+              'Buy: Tether USD/USD-Nea272c'
             );
-            await expect(await CreateOrderTransaction.createOrderFee).toHaveText('0.04077612 TXW-DEVa4f6df');
+            await expect(await CreateOrderTransaction.orderAmount).toHaveText(
+              '+1.000000 Tether USD'
+            );
+            await expect(
+              await CreateOrderTransaction.orderPriceTitle
+            ).toHaveText('-1.014002 USD-Nea272c');
+            await expect(await CreateOrderTransaction.orderPrice).toHaveText(
+              '1.014002 USD-Nea272c'
+            );
+            await expect(
+              await CreateOrderTransaction.orderMatcherPublicKey
+            ).toHaveText(INPUT.data.matcherPublicKey);
+            await expect(
+              await CreateOrderTransaction.createOrderFee
+            ).toHaveText('0.04077612 TXW-DEVa4f6df');
 
             await CommonTransaction.rejectButton.click();
             await FinalTransactionScreen.root.waitForDisplayed();
@@ -3571,14 +3842,24 @@ describe('Signature', function () {
             expect(await CommonTransaction.accountName).toHaveText('rich');
             expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-            await expect(await CreateOrderTransaction.orderTitle).toHaveText('Buy: Tether USD/USD-Nea272c');
-            await expect(await CreateOrderTransaction.orderAmount).toHaveText('+1.000000 Tether USD');
-            await expect(await CreateOrderTransaction.orderPriceTitle).toHaveText('-1.014002 USD-Nea272c');
-            await expect(await CreateOrderTransaction.orderPrice).toHaveText('1.014002 USD-Nea272c');
-            await expect(await CreateOrderTransaction.orderMatcherPublicKey).toHaveText(
-              INPUT.data.matcherPublicKey
+            await expect(await CreateOrderTransaction.orderTitle).toHaveText(
+              'Buy: Tether USD/USD-Nea272c'
             );
-            await expect(await CreateOrderTransaction.createOrderFee).toHaveText('0.04077612 TXW-DEVa4f6df');
+            await expect(await CreateOrderTransaction.orderAmount).toHaveText(
+              '+1.000000 Tether USD'
+            );
+            await expect(
+              await CreateOrderTransaction.orderPriceTitle
+            ).toHaveText('-1.014002 USD-Nea272c');
+            await expect(await CreateOrderTransaction.orderPrice).toHaveText(
+              '1.014002 USD-Nea272c'
+            );
+            await expect(
+              await CreateOrderTransaction.orderMatcherPublicKey
+            ).toHaveText(INPUT.data.matcherPublicKey);
+            await expect(
+              await CreateOrderTransaction.createOrderFee
+            ).toHaveText('0.04077612 TXW-DEVa4f6df');
 
             await CommonTransaction.rejectButton.click();
             await FinalTransactionScreen.root.waitForDisplayed();
@@ -3651,7 +3932,9 @@ describe('Signature', function () {
         expect(await CommonTransaction.accountName).toHaveText('rich');
         expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-        await expect(await CancelOrderTransactionScreen.orderId).toHaveText(INPUT.data.id);
+        await expect(await CancelOrderTransactionScreen.orderId).toHaveText(
+          INPUT.data.id
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.root.waitForDisplayed();
@@ -3681,7 +3964,11 @@ describe('Signature', function () {
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
 
         expect(
-          await verifySignature(senderPublicKeyBytes, bytes, base58Decode(parsedApproveResult.signature))
+          await verifySignature(
+            senderPublicKeyBytes,
+            bytes,
+            base58Decode(parsedApproveResult.signature)
+          )
         ).toBe(true);
       });
     });
@@ -3738,7 +4025,7 @@ describe('Signature', function () {
     }
 
     it('Rejected', async function () {
-      await performSignTransactionPackage(PACKAGE,'Test package');
+      await performSignTransactionPackage(PACKAGE, 'Test package');
 
       expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
       expect(await CommonTransaction.accountName).toHaveText('rich');
@@ -4106,7 +4393,9 @@ describe('Signature', function () {
         expect(await CommonTransaction.accountName).toHaveText('rich');
         expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
 
-        await expect(await DataTransactionScreen.contentScript).toHaveText('base64:AADDEE==');
+        await expect(await DataTransactionScreen.contentScript).toHaveText(
+          'base64:AADDEE=='
+        );
 
         await CommonTransaction.rejectButton.click();
         await FinalTransactionScreen.root.waitForDisplayed();

@@ -7,11 +7,9 @@ import { ImportViaSeedScreen } from '../helpers/ImportViaSeedScreen';
 import { NewAccountScreen } from '../helpers/NewAccountScreen';
 import { NewWalletNameScreen } from '../helpers/NewWalletNameScreen';
 import { OtherAccountsScreen } from '../helpers/OtherAccountsScreen';
-import {
-  GeneralSettingsScreen,
-  PermissionControlSettingsScreen,
-  SettingsScreen,
-} from '../helpers/SettingsScreen';
+import { GeneralSettingsScreen } from '../helpers/settings/GeneralSettingsScreen';
+import { PermissionControlSettingsScreen } from '../helpers/settings/PermissionControlSettingsScreen';
+import { SettingsMenuScreen } from '../helpers/settings/SettingsMenuScreen';
 import { NetworksMenu, TopMenu } from '../helpers/TopMenu';
 import { DEFAULT_PASSWORD } from './constants';
 
@@ -41,7 +39,7 @@ export const App = {
     await browser.openKeeperPopup();
 
     await TopMenu.settingsButton.click();
-    await SettingsScreen.deleteAccountsButton.click();
+    await SettingsMenuScreen.deleteAccountsButton.click();
     await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
       'DELETE ALL ACCOUNTS'
     );
@@ -111,7 +109,7 @@ export const Settings = {
     });
 
     await TopMenu.settingsButton.click();
-    await SettingsScreen.generalSectionLink.click();
+    await SettingsMenuScreen.generalSectionLink.click();
     await GeneralSettingsScreen.setSessionTimeoutByName(name);
   },
 
@@ -121,7 +119,7 @@ export const Settings = {
 
   clearCustomList: async () => {
     await TopMenu.settingsButton.click();
-    await SettingsScreen.permissionsSectionLink.click();
+    await SettingsMenuScreen.permissionsSectionLink.click();
 
     const permissions = await PermissionControlSettingsScreen.permissionItems;
     for (const permission of permissions) {

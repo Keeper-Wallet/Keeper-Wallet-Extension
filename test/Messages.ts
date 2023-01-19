@@ -3,18 +3,19 @@ import waitForExpect from 'wait-for-expect';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { HomeScreen } from './helpers/HomeScreen';
 import { MessagesScreen } from './helpers/MessagesScreen';
-import {
-  PermissionControlSettingsScreen,
-  SettingsScreen,
-} from './helpers/SettingsScreen';
+import { PermissionControlSettingsScreen } from './helpers/settings/PermissionControlSettingsScreen';
+import { SettingsMenuScreen } from './helpers/settings/SettingsMenuScreen';
 import { TopMenu } from './helpers/TopMenu';
 import { AuthTransactionScreen } from './helpers/transactions/AuthTransactionScreen';
 import { FinalTransactionScreen } from './helpers/transactions/FinalTransactionScreen';
-import { AccountsHome, App, ContentScript, Settings, Windows } from './utils/actions';
 import {
-  CUSTOMLIST,
-  WHITELIST,
-} from './utils/constants';
+  AccountsHome,
+  App,
+  ContentScript,
+  Settings,
+  Windows,
+} from './utils/actions';
+import { CUSTOMLIST, WHITELIST } from './utils/constants';
 
 describe('Messages', function () {
   let tabOrigin: string;
@@ -144,9 +145,11 @@ describe('Messages', function () {
     await browser.openKeeperPopup();
 
     await TopMenu.settingsButton.click();
-    await SettingsScreen.permissionsSectionLink.click();
+    await SettingsMenuScreen.permissionsSectionLink.click();
 
-    await(await PermissionControlSettingsScreen.getPermissionByOrigin(CUSTOMLIST[1])).detailsIcon.click();
+    await (
+      await PermissionControlSettingsScreen.getPermissionByOrigin(CUSTOMLIST[1])
+    ).detailsIcon.click();
     await PermissionControlSettingsScreen.modalAllowMessagesCheckbox.click();
     await PermissionControlSettingsScreen.modalSaveButton.click();
 
@@ -180,7 +183,6 @@ describe('Messages', function () {
       } else {
         success++;
       }
-
     }
     [messageWindow] = await waitForNewWindows(1);
     await browser.switchToWindow(messageWindow);

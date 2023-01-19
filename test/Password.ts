@@ -5,10 +5,8 @@ import { HomeScreen } from './helpers/HomeScreen';
 import { ImportFormScreen } from './helpers/ImportFormScreen';
 import { LoginScreen } from './helpers/LoginScreen';
 import { NewAccountScreen } from './helpers/NewAccountScreen';
-import {
-  GeneralSettingsScreen,
-  SettingsScreen,
-} from './helpers/SettingsScreen';
+import { GeneralSettingsScreen } from './helpers/settings/GeneralSettingsScreen';
+import { SettingsMenuScreen } from './helpers/settings/SettingsMenuScreen';
 import { TopMenu } from './helpers/TopMenu';
 import { AccountsHome, App, Windows } from './utils/actions';
 
@@ -88,7 +86,7 @@ describe('Password management', () => {
       await browser.openKeeperPopup();
 
       await TopMenu.settingsButton.click();
-      await SettingsScreen.generalSectionLink.click();
+      await SettingsMenuScreen.generalSectionLink.click();
       await GeneralSettingsScreen.changePasswordLink.click();
     });
 
@@ -163,7 +161,7 @@ describe('Password management', () => {
   describe('Etc', function () {
     async function performLogout() {
       await TopMenu.settingsButton.click();
-      await SettingsScreen.logoutButton.click();
+      await SettingsMenuScreen.logoutButton.click();
     }
 
     async function performLogin(password: string) {
