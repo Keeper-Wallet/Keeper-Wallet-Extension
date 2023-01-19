@@ -24,27 +24,27 @@ import {
 } from '../src/messages/utils';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { HomeScreen } from './helpers/HomeScreen';
+import { AssetScriptTransactionScreen } from './helpers/messages/AssetScriptTransactionScreen';
+import { AuthTransactionScreen } from './helpers/messages/AuthTransactionScreen';
+import { BurnTransactionScreen } from './helpers/messages/BurnTransactionScreen';
+import { CancelOrderTransactionScreen } from './helpers/messages/CancelOrderTransactionScreen';
+import { CommonTransaction } from './helpers/messages/CommonTransaction';
+import { CreateAliasTransactionScreen } from './helpers/messages/CreateAliasTransactionScreen';
+import { CreateOrderTransaction } from './helpers/messages/CreateOrderTransaction';
+import { DataTransactionScreen } from './helpers/messages/DataTransactionScreen';
+import { FinalTransactionScreen } from './helpers/messages/FinalTransactionScreen';
+import { InvokeScriptTransactionScreen } from './helpers/messages/InvokeScriptTransactionScreen';
+import { IssueTransactionScreen } from './helpers/messages/IssueTransactionScreen';
+import { LeaseCancelTransactionScreen } from './helpers/messages/LeaseCancelTransactionScreen';
+import { LeaseTransactionScreen } from './helpers/messages/LeaseTransactionScreen';
+import { MassTransferTransactionScreen } from './helpers/messages/MassTransferTransactionScreen';
+import { PackageTransactionScreen } from './helpers/messages/PackageTransactionScreen';
+import { ReissueTransactionScreen } from './helpers/messages/ReissueTransactionScreen';
+import { SetScriptTransactionScreen } from './helpers/messages/SetScriptTransactionScreen';
+import { SponsorshipTransactionScreen } from './helpers/messages/SponsorshipTransactionScreen';
+import { TransferTransactionScreen } from './helpers/messages/TransferTransactionScreen';
+import { UpdateAssetInfoTransactionScreen } from './helpers/messages/UpdateAssetInfoTransactionScreen';
 import { MessagesScreen } from './helpers/MessagesScreen';
-import { AssetScriptTransactionScreen } from './helpers/transactions/AssetScriptTransactionScreen';
-import { AuthTransactionScreen } from './helpers/transactions/AuthTransactionScreen';
-import { BurnTransactionScreen } from './helpers/transactions/BurnTransactionScreen';
-import { CancelOrderTransactionScreen } from './helpers/transactions/CancelOrderTransactionScreen';
-import { CommonTransaction } from './helpers/transactions/CommonTransaction';
-import { CreateAliasTransactionScreen } from './helpers/transactions/CreateAliasTransactionScreen';
-import { CreateOrderTransaction } from './helpers/transactions/CreateOrderTransaction';
-import { DataTransactionScreen } from './helpers/transactions/DataTransactionScreen';
-import { FinalTransactionScreen } from './helpers/transactions/FinalTransactionScreen';
-import { InvokeScriptTransactionScreen } from './helpers/transactions/InvokeScriptTransactionScreen';
-import { IssueTransactionScreen } from './helpers/transactions/IssueTransactionScreen';
-import { LeaseCancelTransactionScreen } from './helpers/transactions/LeaseCancelTransactionScreen';
-import { LeaseTransactionScreen } from './helpers/transactions/LeaseTransactionScreen';
-import { MassTransferTransactionScreen } from './helpers/transactions/MassTransferTransactionScreen';
-import { PackageTransactionScreen } from './helpers/transactions/PackageTransactionScreen';
-import { ReissueTransactionScreen } from './helpers/transactions/ReissueTransactionScreen';
-import { SetScriptTransactionScreen } from './helpers/transactions/SetScriptTransactionScreen';
-import { SponsorshipTransactionScreen } from './helpers/transactions/SponsorshipTransactionScreen';
-import { TransferTransactionScreen } from './helpers/transactions/TransferTransactionScreen';
-import { UpdateAssetInfoTransactionScreen } from './helpers/transactions/UpdateAssetInfoTransactionScreen';
 import {
   AccountsHome,
   App,

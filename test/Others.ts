@@ -1,9 +1,9 @@
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { HomeScreen } from './helpers/HomeScreen';
+import { CommonTransaction } from './helpers/messages/CommonTransaction';
+import { FinalTransactionScreen } from './helpers/messages/FinalTransactionScreen';
+import { TransferTransactionScreen } from './helpers/messages/TransferTransactionScreen';
 import { SendAssetScreen } from './helpers/SendAssetScreen';
-import { CommonTransaction } from './helpers/transactions/CommonTransaction';
-import { FinalTransactionScreen } from './helpers/transactions/FinalTransactionScreen';
-import { TransferTransactionScreen } from './helpers/transactions/TransferTransactionScreen';
 import {
   AccountsHome,
   App,

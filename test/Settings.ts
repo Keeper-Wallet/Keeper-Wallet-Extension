@@ -2,14 +2,14 @@ import { ChooseAccountsForm } from './helpers/ChooseAccountsForm';
 import { ConfirmDeleteAccountsScreen } from './helpers/ConfirmDeleteAccountsScreen';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { LoginScreen } from './helpers/LoginScreen';
+import { AuthTransactionScreen } from './helpers/messages/AuthTransactionScreen';
+import { CommonTransaction } from './helpers/messages/CommonTransaction';
+import { FinalTransactionScreen } from './helpers/messages/FinalTransactionScreen';
 import { ExportAndImportSettingsScreen } from './helpers/settings/ExportAndImportSettingsScreen';
 import { NetworkSettingsScreen } from './helpers/settings/NetworkSettingsScreen';
 import { PermissionControlSettingsScreen } from './helpers/settings/PermissionControlSettingsScreen';
 import { SettingsMenuScreen } from './helpers/settings/SettingsMenuScreen';
 import { TopMenu } from './helpers/TopMenu';
-import { AuthTransactionScreen } from './helpers/transactions/AuthTransactionScreen';
-import { CommonTransaction } from './helpers/transactions/CommonTransaction';
-import { FinalTransactionScreen } from './helpers/transactions/FinalTransactionScreen';
 import {
   AccountsHome,
   App,

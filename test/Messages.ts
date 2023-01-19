@@ -2,12 +2,12 @@ import waitForExpect from 'wait-for-expect';
 
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { HomeScreen } from './helpers/HomeScreen';
+import { AuthTransactionScreen } from './helpers/messages/AuthTransactionScreen';
+import { FinalTransactionScreen } from './helpers/messages/FinalTransactionScreen';
 import { MessagesScreen } from './helpers/MessagesScreen';
 import { PermissionControlSettingsScreen } from './helpers/settings/PermissionControlSettingsScreen';
 import { SettingsMenuScreen } from './helpers/settings/SettingsMenuScreen';
 import { TopMenu } from './helpers/TopMenu';
-import { AuthTransactionScreen } from './helpers/transactions/AuthTransactionScreen';
-import { FinalTransactionScreen } from './helpers/transactions/FinalTransactionScreen';
 import {
   AccountsHome,
   App,
