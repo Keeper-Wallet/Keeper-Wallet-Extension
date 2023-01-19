@@ -8,12 +8,6 @@ const Argument = (wrapped: WebdriverIO.Element) => ({
   },
 });
 
-const Payment = (wrapped: WebdriverIO.Element) => ({
-  get root() {
-    return wrapped;
-  },
-});
-
 export const InvokeScriptTransactionScreen = {
   get root() {
     return $("[class*='transaction@']");
@@ -44,8 +38,7 @@ export const InvokeScriptTransactionScreen = {
   async getPayments() {
     try {
       return await this.root
-        .findAllByTestId$('invokeScriptPaymentItem')
-        .map(it => Payment(it));
+        .findAllByTestId$('invokeScriptPaymentItem');
     } catch (e) {
       return [];
     }

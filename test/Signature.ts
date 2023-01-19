@@ -3001,7 +3001,7 @@ describe('Signature', function () {
           await InvokeScriptTransactionScreen.getPayments();
 
         const actualPayments = await Promise.all(
-          invokePayments.map(async it => it.root.getText())
+          invokePayments.map(it => it.getText())
         );
 
         expect(actualPayments).toStrictEqual(payments);
