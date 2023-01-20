@@ -577,7 +577,7 @@
     "minimumReceived": "รับขั้นต่ำ",
     "minimumReceivedTooltip": "จำนวนเงินขั้นต่ำที่คุณจะได้รับ, โปรดพิจารณาถึง slippage tolerance",
     "notAvailable": "ไม่มี",
-    "notSwappablePairTooltip": "ไม่รองรับการ swap ระหว่าง {{ assetTicker1 }} และ {{ assetTicker2 }}",
+    "notSwappablePairTooltip": "ไม่รองรับการ swap ระหว่าง {{ assetDisplayName1 }} และ {{ assetDisplayName2 }}",
     "priceImpactTooltip": "ความแตกต่างระหว่างราคาแลกเปลี่ยนและราคาประมาณการเนื่องจากปริมาณการซื้อขาย",
     "priceLabel": "ราคา",
     "primaryLabel": "Primary",

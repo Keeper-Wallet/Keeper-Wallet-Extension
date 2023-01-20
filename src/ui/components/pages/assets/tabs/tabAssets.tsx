@@ -4,6 +4,7 @@ import { AssetsRecord } from 'assets/types';
 import { BalanceAssets } from 'balances/types';
 import clsx from 'clsx';
 import { usePopupSelector } from 'popup/store/react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList as List } from 'react-window';
@@ -25,6 +26,7 @@ const Row = ({
       [string, { balance: string | number | BigNumber } | undefined]
     >;
     assets: AssetsRecord;
+    swappableAssetIdsSet: Set<string>;
     onInfoClick: (assetId: string) => void;
     onSendClick: (assetId: string) => void;
     onSwapClick: (assetId: string) => void;
@@ -32,7 +34,14 @@ const Row = ({
   index: number;
   style: React.CSSProperties;
 }) => {
-  const { assetEntries, assets, onInfoClick, onSendClick, onSwapClick } = data;
+  const {
+    assetEntries,
+    assets,
+    swappableAssetIdsSet,
+    onInfoClick,
+    onSendClick,
+    onSwapClick,
+  } = data;
   const [assetId, { balance = 0 } = {}] = assetEntries[index];
   const asset = assets[assetId];
 
@@ -41,6 +50,7 @@ const Row = ({
       <AssetItem
         balance={asset && new Money(new BigNumber(balance), new Asset(asset))}
         assetId={assetId}
+        isSwappable={swappableAssetIdsSet.has(assetId)}
         onInfoClick={onInfoClick}
         onSendClick={onSendClick}
         onSwapClick={onSwapClick}
@@ -75,6 +85,13 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
   const address = usePopupSelector(state => state.selectedAccount?.address);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const myAssets = usePopupSelector(state => state.balances[address!]?.assets);
+  const swappableAssetIdsByVendor = usePopupSelector(
+    state => state.swappableAssetIdsByVendor
+  );
+  const swappableAssetIdsSet = useMemo(
+    () => new Set(...Object.values(swappableAssetIdsByVendor).flat()),
+    [swappableAssetIdsByVendor]
+  );
 
   const [filters, setFilters] = useUiState('assetFilters');
   const [term, setTerm] = [
@@ -195,6 +212,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
                   itemData={{
                     assetEntries,
                     assets,
+                    swappableAssetIdsSet,
                     onInfoClick,
                     onSendClick,
                     onSwapClick,

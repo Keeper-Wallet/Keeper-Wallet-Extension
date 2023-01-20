@@ -49,6 +49,7 @@ export interface StorageLocalState {
   addresses: Record<string, string>;
   assetLogos: Record<string, string>;
   assets: Record<NetworkName, AssetsRecord>;
+  swappableAssetIdsByVendor: Record<string, string[]>;
   assetsConfig: AssetsConfig;
   assetTickers: Record<string, string>;
   backup: string;

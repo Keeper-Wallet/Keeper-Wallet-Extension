@@ -280,6 +280,23 @@ export function createUpdateState(store: PopupStore) {
       });
     }
 
+    const swappableAssetIdsByVendor = getParam(
+      stateChanges.swappableAssetIdsByVendor,
+      {}
+    );
+    if (
+      swappableAssetIdsByVendor &&
+      !deepEqual(
+        currentState.swappableAssetIdsByVendor,
+        swappableAssetIdsByVendor
+      )
+    ) {
+      store.dispatch({
+        type: ACTION.UPDATE_SWAPPABLE_ASSETS,
+        payload: swappableAssetIdsByVendor,
+      });
+    }
+
     const usdPrices = getParam(stateChanges.usdPrices, {});
     if (usdPrices && !deepEqual(usdPrices, currentState.usdPrices)) {
       store.dispatch({
