@@ -12,6 +12,7 @@ import { Provider } from 'react-redux';
 import invariant from 'tiny-invariant';
 import Browser from 'webextension-polyfill';
 
+import { SignProvider } from './_core/signContext';
 import type { UiApi } from './background';
 import { i18nextInit } from './i18n/init';
 import {
@@ -57,7 +58,9 @@ Promise.all([
     <StrictMode>
       <Provider store={store}>
         <RootWrapper>
-          <PopupRoot />
+          <SignProvider>
+            <PopupRoot />
+          </SignProvider>
         </RootWrapper>
       </Provider>
     </StrictMode>
