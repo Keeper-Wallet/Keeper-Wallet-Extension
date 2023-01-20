@@ -314,15 +314,21 @@ describe('Account creation', function () {
             await ImportViaSeedScreen.seedInput.setValue('too short seed');
             await ImportViaSeedScreen.importAccountButton.click();
 
-            expect(await ImportViaSeedScreen.errorMessage).toHaveText('Seed cannot be shorter than 24 characters');
+            expect(await ImportViaSeedScreen.errorMessage).toHaveText(
+              'Seed cannot be shorter than 24 characters'
+            );
           });
 
           it('Can be switched to existing account', async () => {
             await ImportViaSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
             await waitForExpect(async () => {
-              expect(await ImportViaSeedScreen.switchAccountButton).toBeDisplayed();
+              expect(
+                await ImportViaSeedScreen.switchAccountButton
+              ).toBeDisplayed();
             });
-            expect(await ImportViaSeedScreen.errorMessage).toHaveTextContaining('Account already known as');
+            expect(await ImportViaSeedScreen.errorMessage).toHaveTextContaining(
+              'Account already known as'
+            );
           });
 
           it('Any change in the seed changes the address', async () => {

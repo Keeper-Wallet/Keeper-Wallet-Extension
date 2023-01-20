@@ -27,7 +27,9 @@ export const InvokeScriptTransactionScreen = {
 
   async getArguments() {
     await this.root.waitForDisplayed();
-    return await this.root.queryAllByTestId$('invokeArgument').map(it => Argument(it));
+    return await this.root
+      .queryAllByTestId$('invokeArgument')
+      .map(it => Argument(it));
   },
 
   async getPayments() {

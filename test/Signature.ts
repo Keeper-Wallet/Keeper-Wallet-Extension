@@ -3659,9 +3659,7 @@ describe('Signature', function () {
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
-            const approveResult = (await browser.execute(
-              () => window.result
-            ));
+            const approveResult = await browser.execute(() => window.result);
 
             const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -3765,9 +3763,7 @@ describe('Signature', function () {
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
-            const approveResult = (await browser.execute(
-              () => window.result
-            ));
+            const approveResult = await browser.execute(() => window.result);
 
             const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -3870,9 +3866,7 @@ describe('Signature', function () {
             await FinalTransactionScreen.closeButton.click();
 
             await browser.switchToWindow(tabOrigin);
-            const approveResult = (await browser.execute(
-              () => window.result
-            ));
+            const approveResult = await browser.execute(() => window.result);
 
             const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -3944,9 +3938,7 @@ describe('Signature', function () {
         await FinalTransactionScreen.closeButton.click();
 
         await browser.switchToWindow(tabOrigin);
-        const approveResult = (await browser.execute(
-          () => window.result
-        ));
+        const approveResult = await browser.execute(() => window.result);
 
         const parsedApproveResult = JSONbn.parse(approveResult);
 
@@ -4153,7 +4145,9 @@ describe('Signature', function () {
       await FinalTransactionScreen.closeButton.click();
 
       await browser.switchToWindow(tabOrigin);
-      const approveResult = await browser.execute(() => window.result as string[]);
+      const approveResult = await browser.execute(
+        () => window.result as string[]
+      );
 
       expect(approveResult).toHaveLength(7);
 
