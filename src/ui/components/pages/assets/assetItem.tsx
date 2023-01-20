@@ -1,5 +1,4 @@
 import { Money } from '@waves/data-entities';
-import { isSwappableAsset } from 'assets/utils';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import Background from 'ui/services/Background';
@@ -14,6 +13,7 @@ import { MoreActions } from './moreActions';
 interface Props {
   balance: Money | undefined;
   assetId: string;
+  isSwappable: boolean;
   className?: string;
   onInfoClick: (assetId: string) => void;
   onSendClick: (assetId: string) => void;
@@ -23,6 +23,7 @@ interface Props {
 export function AssetItem({
   balance,
   assetId,
+  isSwappable,
   className,
   onInfoClick,
   onSendClick,
@@ -170,28 +171,27 @@ export function AssetItem({
             )}
           </Tooltip>
 
-          {currentNetwork === 'mainnet' &&
-            isSwappableAsset(currentNetwork, assetId) && (
-              <Tooltip content={t('assetInfo.swapAssetTooltip')}>
-                {props => (
-                  <button
-                    className={styles.swapBtn}
-                    type="button"
-                    onClick={() => onSwapClick(assetId)}
-                    {...props}
+          {currentNetwork === 'mainnet' && isSwappable && (
+            <Tooltip content={t('assetInfo.swapAssetTooltip')}>
+              {props => (
+                <button
+                  className={styles.swapBtn}
+                  type="button"
+                  onClick={() => onSwapClick(assetId)}
+                  {...props}
+                >
+                  <svg
+                    className={styles.swapIcon}
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
                   >
-                    <svg
-                      className={styles.swapIcon}
-                      width="14"
-                      height="14"
-                      viewBox="0 0 14 14"
-                    >
-                      <path d="m11.56 4.01-1.266-1.268a.6.6 0 0 1 .848-.848l2.291 2.29a.6.6 0 0 1 0 .85l-2.29 2.29a.6.6 0 1 1-.85-.848l1.268-1.267H4.99a.6.6 0 0 1 0-1.2h6.57ZM2.44 9.99l1.266 1.268a.6.6 0 1 1-.848.848L.567 9.816a.6.6 0 0 1 0-.85l2.29-2.29a.6.6 0 1 1 .849.848L2.439 8.791h6.57a.6.6 0 0 1 0 1.2h-6.57Z" />
-                    </svg>
-                  </button>
-                )}
-              </Tooltip>
-            )}
+                    <path d="m11.56 4.01-1.266-1.268a.6.6 0 0 1 .848-.848l2.291 2.29a.6.6 0 0 1 0 .85l-2.29 2.29a.6.6 0 1 1-.85-.848l1.268-1.267H4.99a.6.6 0 0 1 0-1.2h6.57ZM2.44 9.99l1.266 1.268a.6.6 0 1 1-.848.848L.567 9.816a.6.6 0 0 1 0-.85l2.29-2.29a.6.6 0 1 1 .849.848L2.439 8.791h6.57a.6.6 0 0 1 0 1.2h-6.57Z" />
+                  </svg>
+                </button>
+              )}
+            </Tooltip>
+          )}
         </MoreActions>
       )}
     </div>

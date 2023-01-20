@@ -574,7 +574,7 @@
     "minimumReceived": "Alınacak minimum tutar",
     "minimumReceivedTooltip": "Kayma toleransı dikkate alınarak, alacak olduğunuz minimum tutarı belirtir",
     "notAvailable": "Uygun Değil",
-    "notSwappablePairTooltip": " {{ assetTicker1 }} ve {{ assetTicker2 }} arasında swap işlemi desteklenmemektedir.",
+    "notSwappablePairTooltip": " {{ assetDisplayName1 }} ve {{ assetDisplayName2 }} arasında swap işlemi desteklenmemektedir.",
     "priceImpactTooltip": "Ticaretin büyüklüğü nedeniyle takas gerçekleştirenin fiyatı ile tahmini fiyat arasındaki fark.",
     "priceLabel": "Fiyat",
     "primaryLabel": "Birincil",

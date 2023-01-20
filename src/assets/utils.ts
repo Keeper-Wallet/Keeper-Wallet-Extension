@@ -1,7 +1,7 @@
 import { NetworkName } from 'networks/types';
 import { usePopupSelector } from 'popup/store/react';
 
-import { assetIds, assetLogosByNetwork, swappableAssetIds } from './constants';
+import { assetIds, assetLogosByNetwork } from './constants';
 
 export function useAssetLogo(network: NetworkName, assetId: string) {
   const logos = usePopupSelector(state => state.assetLogos);
@@ -24,11 +24,4 @@ export function useAssetIdByTicker(network: NetworkName, ticker: string) {
     Object.keys(tickers).find(id => tickers[id] === ticker) ||
     assetIds[network]?.[ticker]
   );
-}
-
-export function isSwappableAsset(
-  network: NetworkName.Mainnet,
-  assetId: string
-) {
-  return swappableAssetIds[network]?.includes(assetId) ?? false;
 }

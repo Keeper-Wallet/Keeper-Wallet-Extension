@@ -577,7 +577,7 @@
     "minimumReceived": "Nhận được tối thiểu",
     "minimumReceivedTooltip": "Số tiền tối thiểu bạn sẽ nhận được, có tính đến khả năng trượt giá",
     "notAvailable": "N/A",
-    "notSwappablePairTooltip": "Giao dịch swap giữa {{ assetTicker1 }} và {{ assetTicker2 }} không được hỗ trợ",
+    "notSwappablePairTooltip": "Giao dịch swap giữa {{ assetDisplayName1 }} và {{ assetDisplayName2 }} không được hỗ trợ",
     "priceImpactTooltip": "Sự khác biệt giữa giá trao đổi và giá ước tính do quy mô thương mại.",
     "priceLabel": "Giá",
     "primaryLabel": "Hàng đầu",

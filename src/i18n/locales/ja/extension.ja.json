@@ -577,7 +577,7 @@
     "minimumReceived": "最低受取数量",
     "minimumReceivedTooltip": "スリッページの許容範囲を考慮した最低受取数量",
     "notAvailable": "利用不可",
-    "notSwappablePairTooltip": "{{ assetTicker1 }} と {{ assetTicker2 }} のスワップはサポートされていません",
+    "notSwappablePairTooltip": "{{ assetDisplayName1 }} と {{ assetDisplayName2 }} のスワップはサポートされていません",
     "priceImpactTooltip": "取引数量による取引価格と見積価格の差",
     "priceLabel": "価格",
     "primaryLabel": "プライマリー",

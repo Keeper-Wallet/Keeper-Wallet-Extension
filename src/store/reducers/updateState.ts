@@ -104,6 +104,10 @@ export const assets = createSimpleReducer(
   {} as AssetsRecord,
   ACTION.SET_ASSETS
 );
+export const swappableAssetIdsByVendor = createSimpleReducer(
+  {},
+  ACTION.UPDATE_SWAPPABLE_ASSETS
+);
 export const usdPrices = createSimpleReducer({}, ACTION.SET_USD_PRICES);
 export const assetLogos = createSimpleReducer({}, ACTION.SET_ASSET_LOGOS);
 export const assetTickers = createSimpleReducer({}, ACTION.SET_ASSET_TICKERS);

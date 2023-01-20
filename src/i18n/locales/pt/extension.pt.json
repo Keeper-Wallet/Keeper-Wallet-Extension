@@ -588,7 +588,7 @@
     "minimumReceived": "Mínimo Recebido",
     "minimumReceivedTooltip": "Valor mínimo que você receberá, levando em consideração a tolerância ao slippage",
     "notAvailable": "N/D",
-    "notSwappablePairTooltip": "Swap entre {{ assetTicker1 }} e {{ assetTicker2 }} não é suportado",
+    "notSwappablePairTooltip": "Swap entre {{ assetDisplayName1 }} e {{ assetDisplayName2 }} não é suportado",
     "priceImpactTooltip": "A diferença entre o preço no conversor e o preço estimado devido ao tamanho da negociação.",
     "priceLabel": "Preço",
     "primaryLabel": "Primário",
