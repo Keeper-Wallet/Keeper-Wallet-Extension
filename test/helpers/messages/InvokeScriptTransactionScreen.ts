@@ -26,20 +26,12 @@ export const InvokeScriptTransactionScreen = {
   },
 
   async getArguments() {
-    try {
-      return await this.root
-        .findAllByTestId$('invokeArgument')
-        .map(it => Argument(it));
-    } catch (e) {
-      return [];
-    }
+    await this.root.waitForDisplayed();
+    return await this.root.queryAllByTestId$('invokeArgument').map(it => Argument(it));
   },
 
   async getPayments() {
-    try {
-      return await this.root.findAllByTestId$('invokeScriptPaymentItem');
-    } catch (e) {
-      return [];
-    }
+    await this.root.waitForDisplayed();
+    return await this.root.queryAllByTestId$('invokeScriptPaymentItem');
   },
 };
