@@ -3179,8 +3179,7 @@ describe('Signature', function () {
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await performSignTransaction(setTxVersion(INVOKE_SCRIPT as any, 1));
+          await performSignTransaction(setTxVersion(INVOKE_SCRIPT, 1));
 
           expect(await CommonTransaction.originAddress).toHaveText(
             WHITELIST[3]
@@ -4134,11 +4133,7 @@ describe('Signature', function () {
     });
 
     it('Approved', async function () {
-      await performSignTransactionPackage(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        PACKAGE as any,
-        'Test package'
-      );
+      await performSignTransactionPackage(PACKAGE, 'Test package');
 
       await CommonTransaction.approveButton.click();
       await FinalTransactionScreen.root.waitForDisplayed();
