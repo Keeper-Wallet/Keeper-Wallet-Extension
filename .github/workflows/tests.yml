@@ -19,6 +19,8 @@ jobs:
       - run: docker compose up --wait
       - run: yarn test
       - if: ${{ always() }}
+        uses: jwalton/gh-docker-logs@v2.2.0
+      - if: ${{ always() }}
         run: docker compose down
       - if: ${{ failure() }}
         uses: actions/upload-artifact@v3
