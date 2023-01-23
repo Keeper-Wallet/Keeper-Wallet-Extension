@@ -51,7 +51,7 @@ export const mochaHooks = () => ({
     Object.defineProperty(global, 'browser', {
       configurable: true,
       value: await remote({
-        logLevel: 'info',
+        logLevel: 'warn',
         capabilities: {
           browserName: 'chrome',
           'goog:chromeOptions': {
