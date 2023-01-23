@@ -34,15 +34,14 @@ export function createAccount(
   type: WalletTypes
 ): AccountsThunkAction<Promise<void>> {
   return async (dispatch, getState) => {
-    const { currentNetwork } = getState();
+    const { currentNetwork, customCodes } = getState();
+
+    const networkCode =
+      customCodes[currentNetwork] || NETWORK_CONFIG[currentNetwork].networkCode;
 
     dispatch(
       selectAccount(
-        await Background.addWallet(
-          account,
-          currentNetwork,
-          NETWORK_CONFIG[currentNetwork].networkCode
-        )
+        await Background.addWallet(account, currentNetwork, networkCode)
       )
     );
 
