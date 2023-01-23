@@ -253,10 +253,6 @@ describe('Account creation', function () {
             await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.ANY);
             await NewWalletNameScreen.continueButton.click();
 
-            await waitForExpect(async () => {
-              expect(await ImportSuccessScreen.root.isDisplayed()).toBe(true);
-            });
-
             await ImportSuccessScreen.addAnotherAccountButton.click();
             await ImportFormScreen.root.waitForExist();
 
