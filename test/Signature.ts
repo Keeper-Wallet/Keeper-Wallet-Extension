@@ -4345,8 +4345,7 @@ describe('Signature', function () {
   });
 
   describe('Custom data', function () {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async function performSignCustomData(data: any) {
+    async function performSignCustomData(data: MessageInputCustomData) {
       await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
