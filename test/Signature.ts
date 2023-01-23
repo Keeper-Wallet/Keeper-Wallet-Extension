@@ -3224,10 +3224,7 @@ describe('Signature', function () {
         });
 
         it('Approved', async function () {
-          await performSignTransaction(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            setTxVersion(INVOKE_SCRIPT as any, 1)
-          );
+          await performSignTransaction(setTxVersion(INVOKE_SCRIPT, 1));
 
           await CommonTransaction.approveButton.click();
           await FinalTransactionScreen.root.waitForDisplayed();
