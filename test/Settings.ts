@@ -367,8 +367,6 @@ describe('Settings', function () {
         await browser.pause(BROWSER_TIMEOUT_DELAY);
         expect(await LoginScreen.root).toBeDisplayed();
       });
-
-      it('Logout after 5 min / 10 min / 1 hour');
     });
   });
 
