@@ -18,6 +18,8 @@ jobs:
       - run: yarn run build
       - run: docker compose up --wait
       - run: yarn test
+      - uses: jwalton/gh-docker-logs@v2
+      - run: docker compose logs keeper-wallet-extension-chrome-1
       - if: ${{ always() }}
         run: docker compose down
       - if: ${{ failure() }}
