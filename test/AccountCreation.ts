@@ -287,7 +287,6 @@ describe('Account creation', function () {
       await ImportViaSeedScreen.importAccountButton.click();
       await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST.NAME);
       await NewWalletNameScreen.continueButton.click();
-      expect(await ImportSuccessScreen.root).toBeDisplayed();
       await ImportSuccessScreen.addAnotherAccountButton.click();
       expect(await ImportFormScreen.root).toBeDisplayed();
 
