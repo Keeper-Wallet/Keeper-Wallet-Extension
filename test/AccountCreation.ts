@@ -316,7 +316,6 @@ describe('Account creation', function () {
 
           it('Can be switched to existing account', async () => {
             await ImportViaSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
-            await ImportViaSeedScreen.importAccountButton.click();
             await waitForExpect(async () => {
               expect(
                 await ImportViaSeedScreen.switchAccountButton
