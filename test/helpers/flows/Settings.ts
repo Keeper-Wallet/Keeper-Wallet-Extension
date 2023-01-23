@@ -15,10 +15,6 @@ export const Settings = {
     await GeneralSettingsScreen.setSessionTimeoutByName(name);
   },
 
-  setMinSessionTimeout: async () => {
-    await Settings.setSessionTimeout('Browser timeout');
-  },
-
   clearCustomList: async () => {
     await TopMenu.settingsButton.click();
     await SettingsMenuScreen.permissionsSectionLink.click();

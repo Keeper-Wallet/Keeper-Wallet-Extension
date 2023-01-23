@@ -362,7 +362,7 @@ describe('Settings', function () {
 
       it('Logout after "Browser timeout"', async function () {
         await browser.openKeeperPopup();
-        await Settings.setMinSessionTimeout();
+        await Settings.setSessionTimeout('Browser timeout');
 
         await browser.pause(BROWSER_TIMEOUT_DELAY);
         expect(await LoginScreen.root).toBeDisplayed();
