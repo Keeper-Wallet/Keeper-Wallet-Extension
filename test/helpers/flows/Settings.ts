@@ -5,11 +5,6 @@ import { TopMenu } from '../TopMenu';
 
 export const Settings = {
   setSessionTimeout: async (name: string) => {
-    // refresh timeout by focus window
-    await browser.execute(() => {
-      window.focus();
-    });
-
     await TopMenu.settingsButton.click();
     await SettingsMenuScreen.generalSectionLink.click();
     await GeneralSettingsScreen.setSessionTimeoutByName(name);
