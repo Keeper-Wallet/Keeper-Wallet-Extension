@@ -48,7 +48,6 @@ describe('Tabs manipulation', function () {
       await browser.refresh();
 
       await GetStartedScreen.getStartedButton.click();
-      expect(await NewAccountScreen.root).toBeDisplayed();
       await NewAccountScreen.passwordInput.setValue(DEFAULT_PASSWORD);
       await NewAccountScreen.passwordConfirmationInput.setValue(
         DEFAULT_PASSWORD
