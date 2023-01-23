@@ -4137,7 +4137,9 @@ describe('Signature', function () {
       await FinalTransactionScreen.closeButton.click();
 
       await browser.switchToWindow(tabOrigin);
-      const approveResult = await browser.execute<string[], []>(() => window.result);
+      const approveResult = await browser.execute<string[], []>(
+        () => window.result
+      );
 
       expect(approveResult).toHaveLength(7);
 

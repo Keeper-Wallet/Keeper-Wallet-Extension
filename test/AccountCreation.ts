@@ -243,7 +243,7 @@ describe('Account creation', function () {
             await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.ANY);
             await browser.keys('Tab');
 
-            expect(await NewWalletNameScreen.error.getText()).toBe("");
+            expect(await NewWalletNameScreen.error.getText()).toBe('');
             expect(await NewWalletNameScreen.continueButton.isEnabled()).toBe(
               true
             );
@@ -316,6 +316,7 @@ describe('Account creation', function () {
 
           it('Can be switched to existing account', async () => {
             await ImportViaSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
+            await ImportViaSeedScreen.importAccountButton.click();
             await waitForExpect(async () => {
               expect(
                 await ImportViaSeedScreen.switchAccountButton
