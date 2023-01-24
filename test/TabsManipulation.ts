@@ -28,8 +28,10 @@ describe('Tabs manipulation', function () {
     it('new "accounts" appears when opened "popup"', async function () {
       tabKeeper = await browser.getWindowHandle();
       const { waitForNewWindows } = await Windows.captureNewWindows();
+      console.log(await browser.getWindowHandles());
       await browser.openKeeperPopup();
 
+      console.log(await browser.getWindowHandles());
       [tabAccounts] = await waitForNewWindows(1);
       await browser.switchToWindow(tabAccounts);
       await browser.refresh();
@@ -56,7 +58,7 @@ describe('Tabs manipulation', function () {
       await NewAccountScreen.termsAndConditionsCheckbox.click();
       await NewAccountScreen.continueButton.click();
 
-      expect(await EmptyHomeScreen.root).toBeDisplayed();
+      await expect(EmptyHomeScreen.root).toBeDisplayed();
     });
   });
 
@@ -66,7 +68,7 @@ describe('Tabs manipulation', function () {
     });
 
     it('"add account" button appears in "popup" when password entered', async function () {
-      expect(await EmptyHomeScreen.addButton).toBeDisplayed();
+      await expect(EmptyHomeScreen.addButton).toBeDisplayed();
     });
 
     it('new "accounts" appears when click "add account" button in "popup"', async function () {
@@ -104,12 +106,12 @@ describe('Tabs manipulation', function () {
         'waves private node seed with waves tokens'
       );
 
-      expect(await ImportSuccessScreen.root).toBeDisplayed();
+      await expect(ImportSuccessScreen.root).toBeDisplayed();
     });
 
     it('import form displays after "add another account" button click', async function () {
       await ImportSuccessScreen.addAnotherAccountButton.click();
-      expect(await ImportFormScreen.root).toBeDisplayed();
+      await expect(ImportFormScreen.root).toBeDisplayed();
     });
 
     it('"finish" button closes "accounts" tab', async function () {

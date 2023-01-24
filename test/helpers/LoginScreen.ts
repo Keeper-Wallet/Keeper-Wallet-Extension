@@ -8,7 +8,7 @@ export const LoginScreen = {
   },
 
   get passwordError() {
-    return this.root.$('#loginPasswordError');
+    return this.root.findByTestId$('loginPasswordError');
   },
 
   get enterButton() {

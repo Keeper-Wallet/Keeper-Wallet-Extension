@@ -14,7 +14,7 @@ export const Network = {
   checkNetwork: async (network: string) => {
     const networkMenuButton = NetworksMenu.networkMenuButton;
     await networkMenuButton.waitForDisplayed();
-    expect(await networkMenuButton).toHaveText(network);
+    await expect(networkMenuButton).toHaveText(network);
   },
 
   switchToAndCheck: async (network: string) => {

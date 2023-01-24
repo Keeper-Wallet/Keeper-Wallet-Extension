@@ -49,7 +49,7 @@ describe('Account management', function () {
       await HomeScreen.otherAccountsButton.click();
       await (await OtherAccountsScreen.accounts)[0].root.click();
 
-      expect(await HomeScreen.activeAccountName).toHaveText('poor');
+      await expect(HomeScreen.activeAccountName).toHaveText('poor');
     });
 
     it('Updating account balances on import');
@@ -82,7 +82,7 @@ describe('Account management', function () {
       it('Displays "not found" description if term is not account name, address, public key or email', async () => {
         await OtherAccountsScreen.searchInput.setValue('WRONG TERM');
         expect(await OtherAccountsScreen.accounts).toHaveLength(0);
-        expect(await OtherAccountsScreen.accountsNote).toHaveText(
+        await expect(OtherAccountsScreen.accountsNote).toHaveText(
           'No other accounts were found for the specified filters'
         );
       });
@@ -90,26 +90,32 @@ describe('Account management', function () {
       it('"x" appears and clear search input', async () => {
         await OtherAccountsScreen.searchInput.setValue('WRONG TERM');
         await OtherAccountsScreen.searchClearButton.click();
-        expect(await OtherAccountsScreen.searchInput).toHaveText('');
+        await expect(OtherAccountsScreen.searchInput).toHaveText('');
       });
 
       it('By existing account name', async () => {
         await OtherAccountsScreen.searchInput.setValue('ic');
-        expect((await OtherAccountsScreen.accounts)[0].name).toHaveText('rich');
+        await expect((await OtherAccountsScreen.accounts)[0].name).toHaveText(
+          'rich'
+        );
       });
 
       it('By existing account address', async () => {
         await OtherAccountsScreen.searchInput.setValue(
           '3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1'
         );
-        expect((await OtherAccountsScreen.accounts)[0].name).toHaveText('rich');
+        await expect((await OtherAccountsScreen.accounts)[0].name).toHaveText(
+          'rich'
+        );
       });
 
       it('By existing account public key', async () => {
         await OtherAccountsScreen.searchInput.setValue(
           'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV'
         );
-        expect((await OtherAccountsScreen.accounts)[0].name).toHaveText('rich');
+        await expect((await OtherAccountsScreen.accounts)[0].name).toHaveText(
+          'rich'
+        );
       });
 
       it('By existing email account');
@@ -188,10 +194,10 @@ describe('Account management', function () {
       it('A name that is already in use cannot be specified', async () => {
         await ChangeAccountNameScreen.newNameInput.setValue(currentAccountName);
         await browser.keys('Tab');
-        expect(await ChangeAccountNameScreen.error).toHaveText(
+        await expect(ChangeAccountNameScreen.error).toHaveText(
           'Name already exist'
         );
-        expect(await ChangeAccountNameScreen.saveButton).toBeDisabled();
+        await expect(ChangeAccountNameScreen.saveButton).toBeDisabled();
         await ChangeAccountNameScreen.newNameInput.clearValue();
       });
 
@@ -199,17 +205,17 @@ describe('Account management', function () {
         newAccountName = currentAccountName.slice(1);
         await ChangeAccountNameScreen.newNameInput.setValue(newAccountName);
         await browser.keys('Tab');
-        expect(await ChangeAccountNameScreen.error).toHaveText('');
-        expect(await ChangeAccountNameScreen.saveButton).toBeEnabled();
+        await expect(ChangeAccountNameScreen.error).toHaveText('');
+        await expect(ChangeAccountNameScreen.saveButton).toBeEnabled();
       });
 
       it('Successfully changed account name', async () => {
         await ChangeAccountNameScreen.saveButton.click();
 
-        expect(await AccountInfoScreen.notification).toHaveText(
+        await expect(AccountInfoScreen.notification).toHaveText(
           'Account name changed'
         );
-        expect(await AccountInfoScreen.name).toHaveText(newAccountName);
+        await expect(AccountInfoScreen.name).toHaveText(newAccountName);
       });
     });
 
@@ -220,7 +226,7 @@ describe('Account management', function () {
 
       it('Click "Back" on the account deletion confirmation screen - the account is not deleted', async () => {
         await TopMenu.backButton.click();
-        expect(await AccountInfoScreen.name).toBeDisplayed();
+        await expect(AccountInfoScreen.name).toBeDisplayed();
       });
 
       it('Click "Delete account" deletes the account', async () => {
@@ -240,7 +246,7 @@ describe('Account management', function () {
 
     it('By clicking on account - go to the account properties screen', async () => {
       (await OtherAccountsScreen.accounts)[0].accountInfoButton.click();
-      expect(await AccountInfoScreen.root).toBeDisplayed();
+      await expect(AccountInfoScreen.root).toBeDisplayed();
     });
 
     accountPropertiesShouldBeRight();
@@ -291,19 +297,19 @@ describe('Account management', function () {
     it('should preserve previously selected account for the network', async () => {
       await HomeScreen.otherAccountsButton.click();
       (await OtherAccountsScreen.accounts)[0].root.click();
-      expect(await HomeScreen.activeAccountName).toHaveText('second');
+      await expect(HomeScreen.activeAccountName).toHaveText('second');
 
       await Network.switchToAndCheck('Testnet');
 
       await HomeScreen.otherAccountsButton.click();
       (await OtherAccountsScreen.accounts)[0].root.click();
-      expect(await HomeScreen.activeAccountName).toHaveText('fourth');
+      await expect(HomeScreen.activeAccountName).toHaveText('fourth');
 
       await Network.switchToAndCheck('Mainnet');
-      expect(await HomeScreen.activeAccountName).toHaveText('second');
+      await expect(HomeScreen.activeAccountName).toHaveText('second');
 
       await Network.switchToAndCheck('Testnet');
-      expect(await HomeScreen.activeAccountName).toHaveText('fourth');
+      await expect(HomeScreen.activeAccountName).toHaveText('fourth');
     });
   });
 });

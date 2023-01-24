@@ -57,7 +57,7 @@ describe('Network management', function () {
 
         await TopMenu.backButton.click();
 
-        expect(await HomeScreen.root).toBeDisplayed();
+        await expect(HomeScreen.root).toBeDisplayed();
       });
     });
 
@@ -77,7 +77,7 @@ describe('Network management', function () {
       describe('Changing network settings by "Edit" button', function () {
         before(async function () {
           await NetworksMenu.editButton.click();
-          expect(await CustomNetworkModal.root).toBeDisplayed();
+          await expect(CustomNetworkModal.root).toBeDisplayed();
         });
 
         beforeEach(async function () {
@@ -87,7 +87,7 @@ describe('Network management', function () {
 
         it('Node address is required field', async function () {
           await CustomNetworkModal.saveButton.click();
-          expect(await CustomNetworkModal.addressError).toHaveText(
+          await expect(CustomNetworkModal.addressError).toHaveText(
             'URL is required'
           );
         });
@@ -96,7 +96,7 @@ describe('Network management', function () {
           await CustomNetworkModal.addressInput.setValue(invalidNodeUrl);
           await CustomNetworkModal.saveButton.click();
 
-          expect(await CustomNetworkModal.addressError).toHaveText(
+          await expect(CustomNetworkModal.addressError).toHaveText(
             'Incorrect node address'
           );
         });
@@ -105,7 +105,7 @@ describe('Network management', function () {
           await CustomNetworkModal.addressInput.setValue(this.nodeUrl);
           await CustomNetworkModal.saveButton.click();
 
-          expect(await NetworksMenu.editButton).toBeDisplayed();
+          await expect(NetworksMenu.editButton).toBeDisplayed();
         });
       });
     });

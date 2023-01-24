@@ -16,6 +16,6 @@ export const CustomNetworkModal = {
   },
 
   get addressError() {
-    return this.root.$('#nodeAddressError');
+    return this.root.findByTestId$('nodeAddressError');
   },
 };

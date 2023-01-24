@@ -5,6 +5,7 @@ import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { AccountsHome } from './helpers/flows/AccountsHome';
 import { App } from './helpers/flows/App';
 import { Settings } from './helpers/flows/Settings';
+import { GetStartedScreen } from './helpers/GetStartedScreen';
 import { LoginScreen } from './helpers/LoginScreen';
 import { AuthMessageScreen } from './helpers/messages/AuthMessageScreen';
 import { CommonTransaction } from './helpers/messages/CommonTransaction';
@@ -92,18 +93,20 @@ describe('Settings', function () {
 
     describe('Node URL', function () {
       it('Is shown', async function () {
-        expect(await NetworkSettingsScreen.nodeAddress).toBeDisplayed();
+        await expect(NetworkSettingsScreen.nodeAddress).toBeDisplayed();
       });
       it('Can be changed', async function () {
         await NetworkSettingsScreen.nodeAddress.clearValue();
-        expect(NetworkSettingsScreen.nodeAddress).not.toHaveValue(nodeUrl);
+        await expect(NetworkSettingsScreen.nodeAddress).not.toHaveValue(
+          nodeUrl
+        );
       });
       it('Can be copied');
     });
 
     describe('Matcher URL', function () {
       it('Is shown', async function () {
-        expect(await NetworkSettingsScreen.matcherAddress).toBeDisplayed();
+        await expect(NetworkSettingsScreen.matcherAddress).toBeDisplayed();
       });
       it('Can be changed', async function () {
         await NetworkSettingsScreen.matcherAddress.clearValue();
@@ -151,8 +154,8 @@ describe('Settings', function () {
             SPENDING_LIMIT
           );
           await PermissionControlSettingsScreen.permissionDetailsModal.saveButton.click();
-          expect(
-            await (
+          await expect(
+            (
               await PermissionControlSettingsScreen.permissionItems
             )[0].status
           ).toHaveText('Approved+ Automatic signing');
@@ -163,8 +166,8 @@ describe('Settings', function () {
             "Don't automatically sign"
           );
           await PermissionControlSettingsScreen.permissionDetailsModal.saveButton.click();
-          expect(
-            await (
+          await expect(
+            (
               await PermissionControlSettingsScreen.permissionItems
             )[0].status
           ).toHaveText('Approved');
@@ -179,7 +182,7 @@ describe('Settings', function () {
 
       it('Default whitelisted services appears', async function () {
         for (const origin of WHITELIST) {
-          expect(
+          await expect(
             (
               await PermissionControlSettingsScreen.getPermissionByOrigin(
                 origin
@@ -227,7 +230,7 @@ describe('Settings', function () {
           await browser.refresh();
 
           await AuthMessageScreen.authButton.click();
-          expect(await FinalTransactionScreen.root).toBeDisplayed();
+          await expect(FinalTransactionScreen.root).toBeDisplayed();
           await FinalTransactionScreen.closeButton.click();
           await Windows.waitForWindowToClose(messageWindow);
           await browser.switchToWindow(tabKeeper);
@@ -236,7 +239,7 @@ describe('Settings', function () {
           await TopMenu.settingsButton.click();
           await SettingsMenuScreen.permissionsSectionLink.click();
 
-          expect(
+          await expect(
             (
               await PermissionControlSettingsScreen.getPermissionByOrigin(
                 CUSTOMLIST[0]
@@ -267,7 +270,7 @@ describe('Settings', function () {
           await TopMenu.settingsButton.click();
           await SettingsMenuScreen.permissionsSectionLink.click();
 
-          expect(
+          await expect(
             (
               await PermissionControlSettingsScreen.getPermissionByOrigin(
                 origin
@@ -288,7 +291,7 @@ describe('Settings', function () {
         it('Block all messages from origin in custom list', async function () {
           const firstOrigin = (
             await PermissionControlSettingsScreen.permissionItems
-          )[0];
+          )[1];
           const origin = await firstOrigin.origin.getText();
           await firstOrigin.enableCheckbox.click();
           await publicStateFromOrigin(origin);
@@ -365,7 +368,7 @@ describe('Settings', function () {
         await Settings.setSessionTimeout('Browser timeout');
 
         await browser.pause(BROWSER_TIMEOUT_DELAY);
-        expect(await LoginScreen.root).toBeDisplayed();
+        await expect(LoginScreen.root).toBeDisplayed();
       });
     });
   });
@@ -373,34 +376,34 @@ describe('Settings', function () {
   describe('Root', function () {
     describe('Auto-click protection', function () {
       before(async function () {
-        expect(await SettingsMenuScreen.root).toBeDisplayed();
+        await expect(SettingsMenuScreen.root).toBeDisplayed();
       });
 
       it('Can be enabled', async function () {
         await SettingsMenuScreen.clickProtectionButton.click();
-        expect(await SettingsMenuScreen.clickProtectionButton).toHaveAttr(
+        await expect(SettingsMenuScreen.clickProtectionButton).toHaveAttr(
           'data-teston',
           'true'
         );
-        expect(await SettingsMenuScreen.clickProtectionStatus).toHaveText(
+        await expect(SettingsMenuScreen.clickProtectionStatus).toHaveText(
           'Enabled'
         );
       });
 
       it('Can be disabled', async function () {
         await SettingsMenuScreen.clickProtectionButton.click();
-        expect(await SettingsMenuScreen.clickProtectionButton).toHaveAttr(
+        await expect(SettingsMenuScreen.clickProtectionButton).toHaveAttr(
           'data-teston',
           'false'
         );
-        expect(await SettingsMenuScreen.clickProtectionStatus).toHaveText(
+        await expect(SettingsMenuScreen.clickProtectionStatus).toHaveText(
           'Disabled'
         );
       });
 
       it('Display tooltip', async function () {
         await SettingsMenuScreen.clickProtectionIcon.moveTo();
-        expect(await SettingsMenuScreen.helpTooltip).toHaveText(
+        await expect(SettingsMenuScreen.helpTooltip).toHaveText(
           'Protect yourself from Clicker Trojans threats'
         );
       });
@@ -408,32 +411,32 @@ describe('Settings', function () {
 
     describe('Suspicious assets protection', function () {
       before(async function () {
-        expect(await SettingsMenuScreen.root).toBeDisplayed();
+        await expect(SettingsMenuScreen.root).toBeDisplayed();
       });
 
       it('Can be disabled', async function () {
         await SettingsMenuScreen.suspiciousAssetsProtectionButton.click();
-        expect(
+        await expect(
           await SettingsMenuScreen.suspiciousAssetsProtectionButton
-        ).toHaveAttr('data-teston', 'true');
-        expect(
-          await SettingsMenuScreen.suspiciousAssetsProtectionStatus
-        ).toHaveText('Enable');
+        ).toHaveAttr('data-teston', 'false');
+        await expect(
+          SettingsMenuScreen.suspiciousAssetsProtectionStatus
+        ).toHaveText('Disabled');
       });
 
       it('Can be enabled', async function () {
         await SettingsMenuScreen.suspiciousAssetsProtectionButton.click();
-        expect(
-          await SettingsMenuScreen.suspiciousAssetsProtectionButton
-        ).toHaveAttr('data-teston', 'false');
-        expect(
-          await SettingsMenuScreen.suspiciousAssetsProtectionStatus
-        ).toHaveText('Disabled');
+        await expect(
+          SettingsMenuScreen.suspiciousAssetsProtectionButton
+        ).toHaveAttr('data-teston', 'true');
+        await expect(
+          SettingsMenuScreen.suspiciousAssetsProtectionStatus
+        ).toHaveText('Enabled');
       });
 
       it('Display tooltip', async function () {
         await SettingsMenuScreen.suspiciousAssetsProtectionIcon.moveTo();
-        expect(await SettingsMenuScreen.helpTooltip).toHaveText(
+        await expect(SettingsMenuScreen.helpTooltip).toHaveText(
           "Don't show balances and transactions related to suspicious assets"
         );
       });
@@ -447,31 +450,31 @@ describe('Settings', function () {
 
       it('Exit to the login screen', async function () {
         await SettingsMenuScreen.logoutButton.click();
-        expect(await LoginScreen.root).toBeDisplayed();
+        await expect(LoginScreen.root).toBeDisplayed();
       });
     });
 
     describe('Delete accounts', function () {
       it('Account deletion warning displays', async function () {
         await SettingsMenuScreen.deleteAccountsButton.click();
-        expect(await ConfirmDeleteAccountsScreen.root).toBeDisplayed();
+        await expect(ConfirmDeleteAccountsScreen.root).toBeDisplayed();
       });
 
       it('Clicking "Back" button cancels the deletion', async function () {
         await TopMenu.backButton.click();
-        expect(await SettingsMenuScreen.root).toBeDisplayed();
+        await expect(SettingsMenuScreen.root).toBeDisplayed();
       });
 
       it('Clicking "Cancel" button cancels the deletion', async function () {
         await SettingsMenuScreen.deleteAccountsButton.click();
         await ConfirmDeleteAccountsScreen.cancelButton.click();
-        expect(await SettingsMenuScreen.root).toBeDisplayed();
+        await expect(SettingsMenuScreen.root).toBeDisplayed();
       });
 
       it('"Delete all" button is disabled', async function () {
         await SettingsMenuScreen.deleteAccountsButton.click();
-        expect(
-          await ConfirmDeleteAccountsScreen.deleteAllButton
+        await expect(
+          ConfirmDeleteAccountsScreen.deleteAllButton
         ).toBeDisabled();
       });
 
@@ -479,10 +482,10 @@ describe('Settings', function () {
         await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
           'delete all accounts'
         );
-        expect(
-          await ConfirmDeleteAccountsScreen.deleteAllButton
+        await expect(
+          ConfirmDeleteAccountsScreen.deleteAllButton
         ).toBeDisabled();
-        expect(await ConfirmDeleteAccountsScreen.confirmPhraseError).toHaveText(
+        await expect(ConfirmDeleteAccountsScreen.confirmPhraseError).toHaveText(
           'The phrase is entered incorrectly'
         );
       });
@@ -491,15 +494,12 @@ describe('Settings', function () {
         await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
           'DELETE ALL ACCOUNTS'
         );
-        expect(await ConfirmDeleteAccountsScreen.deleteAllButton).toBeEnabled();
+        await expect(ConfirmDeleteAccountsScreen.deleteAllButton).toBeEnabled();
       });
 
       it('Clicking "Delete account" removes all accounts from current network', async function () {
         await ConfirmDeleteAccountsScreen.deleteAllButton.click();
-        await ConfirmDeleteAccountsScreen.root.waitForDisplayed({
-          reverse: true,
-        });
-        expect(await LoginScreen.root).toBeDisplayed();
+        await expect(GetStartedScreen.root).toBeDisplayed();
       });
     });
   });

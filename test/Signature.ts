@@ -82,7 +82,7 @@ import {
 
 describe('Signature', function () {
   let tabOrigin: string;
-  let messageWindow: string | null = null;
+  let messageWindow: string;
 
   const senderPublicKey = 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV';
   const senderPublicKeyBytes = base58Decode(senderPublicKey);
@@ -90,6 +90,7 @@ describe('Signature', function () {
   before(async function () {
     await App.initVault();
     await Network.switchToAndCheck('Testnet');
+
     const tabKeeper = await browser.getWindowHandle();
 
     const { waitForNewWindows } = await Windows.captureNewWindows();
@@ -107,45 +108,95 @@ describe('Signature', function () {
       'waves private node seed with waves tokens'
     );
 
-    tabOrigin = (await browser.createWindow('tab')).handle;
-
-    await browser.switchToWindow(tabAccounts);
-    await browser.closeWindow();
-    await browser.switchToWindow(tabOrigin);
+    tabOrigin = tabAccounts;
     await browser.navigateTo(`https://${WHITELIST[3]}`);
   });
 
-  after(async function () {
-    const tabKeeper = (await browser.createWindow('tab')).handle;
-    await browser.switchToWindow(tabKeeper);
-    await App.closeBgTabs(tabKeeper);
-    await App.resetVault();
-  });
+  const validateCommonFields = async (
+    address: string,
+    accountName: string,
+    network: string
+  ) => {
+    await expect(CommonTransaction.originAddress).toHaveText(address);
+    await expect(CommonTransaction.accountName).toHaveText(accountName);
+    await expect(CommonTransaction.originNetwork).toHaveText(network);
+  };
+
+  const checkThereAreNoMessages = async () => {
+    await browser.switchToWindow((await browser.createWindow('tab')).handle);
+    await browser.openKeeperPopup();
+    await expect(HomeScreen.root).toBeDisplayed();
+    await browser.closeWindow();
+  };
+
+  const authMessageCall = () => {
+    KeeperWallet.auth({ data: 'hello' });
+  };
+
+  const rejectTransaction = async ({ forever = false } = {}) => {
+    if (forever) {
+      await AuthMessageScreen.rejectArrowButton.click();
+      await AuthMessageScreen.addToBlacklistButton.click();
+    } else {
+      await CommonTransaction.rejectButton.click();
+    }
+    await FinalTransactionScreen.closeButton.click();
+  };
+
+  const approveTransaction = async () => {
+    await CommonTransaction.approveButton.click();
+    await browser.pause(100);
+    await FinalTransactionScreen.closeButton.click();
+  };
+
+  const getResult = async () => {
+    await browser.switchToWindow(tabOrigin);
+    return JSON.parse(
+      await browser.execute(() => {
+        const { result } = window;
+        delete window.result;
+        return result;
+      })
+    );
+  };
+
+  const validateRejectedResult = async ({ data = 'rejected' } = {}) => {
+    const [status, result] = await getResult();
+    expect(status).toBe('REJECTED');
+    expect(result).toStrictEqual({
+      message: 'User denied message',
+      data,
+      code: '10',
+    });
+  };
 
   describe('Stale messages removal', function () {
-    it('removes messages and closes window when tab is reloaded', async function () {
-      const { waitForNewWindows } = await Windows.captureNewWindows();
-      await ContentScript.waitForKeeperWallet();
-      await browser.execute(() => {
-        KeeperWallet.auth({ data: 'hello' });
-      });
-      [messageWindow] = await waitForNewWindows(1);
+    const triggerMessageWindow = async (
+      func: () => void,
+      options = { waitForNewWindow: true }
+    ) => {
+      if (options.waitForNewWindow) {
+        const { waitForNewWindows } = await Windows.captureNewWindows();
+        await ContentScript.waitForKeeperWallet();
+        await browser.execute(func);
+        [messageWindow] = await waitForNewWindows(1);
+      } else {
+        await ContentScript.waitForKeeperWallet();
+        await browser.execute(func);
+      }
       await browser.switchToWindow(messageWindow);
       await browser.refresh();
+    };
 
-      expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-      expect(await CommonTransaction.accountName).toHaveText('rich');
-      expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
+    it('removes messages and closes window when tab is reloaded', async function () {
+      await triggerMessageWindow(authMessageCall);
+      await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
       await browser.switchToWindow(tabOrigin);
       await browser.refresh();
-
       await Windows.waitForWindowToClose(messageWindow);
 
-      await browser.switchToWindow((await browser.createWindow('tab')).handle);
-      await browser.openKeeperPopup();
-
-      await browser.closeWindow();
+      await checkThereAreNoMessages();
       await browser.switchToWindow(tabOrigin);
     });
 
@@ -154,77 +205,41 @@ describe('Signature', function () {
       await browser.switchToWindow(newTabOrigin);
       await browser.navigateTo(`https://${CUSTOMLIST[1]}`);
 
-      const { waitForNewWindows } = await Windows.captureNewWindows();
-      await ContentScript.waitForKeeperWallet();
-      await browser.execute(() => {
-        KeeperWallet.auth({ data: 'hello' });
-      });
-      [messageWindow] = await waitForNewWindows(1);
-      await browser.switchToWindow(messageWindow);
-      await browser.refresh();
-
-      expect(await CommonTransaction.originAddress).toHaveText(CUSTOMLIST[1]);
-      expect(await CommonTransaction.accountName).toHaveText('rich');
-      expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
+      await triggerMessageWindow(authMessageCall);
+      await validateCommonFields(CUSTOMLIST[1], 'rich', 'Testnet');
 
       await browser.switchToWindow(newTabOrigin);
       await browser.closeWindow();
       await browser.switchToWindow(tabOrigin);
-
       await Windows.waitForWindowToClose(messageWindow);
 
-      await browser.switchToWindow((await browser.createWindow('tab')).handle);
-      await browser.openKeeperPopup();
-
-      expect(await HomeScreen.root).toBeDisplayed();
-
-      await browser.closeWindow();
+      await checkThereAreNoMessages();
       await browser.switchToWindow(tabOrigin);
     });
 
     it('does not close message window, if there are other messages left', async function () {
-      const { waitForNewWindows } = await Windows.captureNewWindows();
-      await ContentScript.waitForKeeperWallet();
-      await browser.execute(() => {
-        KeeperWallet.auth({ data: 'hello' });
-      });
-      [messageWindow] = await waitForNewWindows(1);
-      await browser.switchToWindow(messageWindow);
-      await browser.refresh();
-
-      expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-      expect(await CommonTransaction.accountName).toHaveText('rich');
-      expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
+      await triggerMessageWindow(authMessageCall);
+      await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
       const newTabOrigin = (await browser.createWindow('tab')).handle;
       await browser.switchToWindow(newTabOrigin);
       await browser.navigateTo(`https://${CUSTOMLIST[1]}`);
 
-      await ContentScript.waitForKeeperWallet();
-      await browser.execute(() => {
-        KeeperWallet.auth({ data: 'hello' });
-      });
-
-      await browser.switchToWindow(messageWindow);
-      await browser.refresh();
-
+      await triggerMessageWindow(authMessageCall, { waitForNewWindow: false });
       expect(await MessagesScreen.messagesCards).toHaveLength(2);
 
       await browser.switchToWindow(newTabOrigin);
       await browser.closeWindow();
 
       await browser.switchToWindow(messageWindow);
+      await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-      expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-      expect(await CommonTransaction.accountName).toHaveText('rich');
-      expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-      await CommonTransaction.rejectButton.click();
-      await FinalTransactionScreen.closeButton.click();
+      await rejectTransaction();
     });
   });
 
   describe('Permission request from origin', function () {
-    async function performPermissionRequest() {
+    const performPermissionRequest = async () => {
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
       await browser.execute(() => {
@@ -240,86 +255,39 @@ describe('Signature', function () {
       [messageWindow] = await waitForNewWindows(1);
       await browser.switchToWindow(messageWindow);
       await browser.refresh();
-    }
-
-    async function getPermissionRequestResult() {
-      return JSON.parse(
-        await browser.execute(() => {
-          const { result } = window;
-          delete window.result;
-          return result;
-        })
-      );
-    }
-
-    after(async function () {
-      await browser.navigateTo(`https://${WHITELIST[3]}`);
-    });
+    };
 
     it('Rejected', async function () {
       await browser.switchToWindow(tabOrigin);
       await browser.navigateTo(`https://${CUSTOMLIST[0]}`);
-
       await performPermissionRequest();
-      expect(await CommonTransaction.originAddress).toHaveText(CUSTOMLIST[0]);
-      expect(await CommonTransaction.accountName).toHaveText('rich');
-      expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-      await CommonTransaction.rejectButton.click();
-      await FinalTransactionScreen.root.waitForDisplayed();
-      await FinalTransactionScreen.closeButton.click();
-
-      await browser.switchToWindow(tabOrigin);
-      const [status, result] = await getPermissionRequestResult();
-
-      expect(status).toBe('REJECTED');
-      expect(result).toStrictEqual({
-        message: 'User denied message',
-        data: 'rejected',
-        code: '10',
-      });
+      await validateCommonFields(CUSTOMLIST[0], 'rich', 'Testnet');
+      await rejectTransaction();
+      await validateRejectedResult();
     });
 
     it('Reject forever', async function () {
       await browser.switchToWindow(tabOrigin);
       await browser.navigateTo(`https://${CUSTOMLIST[1]}`);
-
       await performPermissionRequest();
-
-      await AuthMessageScreen.rejectArrowButton.click();
-      await AuthMessageScreen.addToBlacklistButton.click();
-      await FinalTransactionScreen.closeButton.click();
-
-      await browser.switchToWindow(tabOrigin);
-      const [status, result] = await getPermissionRequestResult();
-
-      expect(status).toBe('REJECTED');
-
-      expect(result).toStrictEqual({
-        message: 'User denied message',
-        data: 'rejected_forever',
-        code: '10',
-      });
+      await validateCommonFields(CUSTOMLIST[1], 'rich', 'Testnet');
+      await rejectTransaction({ forever: true });
+      await validateRejectedResult({ data: 'rejected_forever' });
     });
 
     it('Approved', async function () {
       await browser.switchToWindow(tabOrigin);
       await browser.navigateTo(`https://${CUSTOMLIST[0]}`);
-
       await performPermissionRequest();
-      await AuthMessageScreen.authButton.click();
-      await FinalTransactionScreen.closeButton.click();
+      await approveTransaction();
 
-      await browser.switchToWindow(tabOrigin);
-      const [status, result] = await getPermissionRequestResult();
-
+      const [status, result] = await getResult();
       expect(status).toBe('RESOLVED');
       expect(result.initialized).toBe(true);
       expect(typeof result.version).toBe('string');
       expect(result.messages).toHaveLength(1);
       expect(typeof result.messages[0].id).toBe('string');
       expect(result.messages[0].status).toBe('signed');
-
       expect(result.account).toMatchObject({
         address: '3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW',
         name: 'rich',
@@ -328,13 +296,11 @@ describe('Signature', function () {
         publicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
         type: 'seed',
       });
-
       expect(result.network).toMatchObject({
         code: 'T',
         server: 'https://nodes-testnet.wavesnodes.com/',
         matcher: 'https://matcher-testnet.waves.exchange/',
       });
-
       expect(result.txVersion).toMatchObject({
         '3': [3, 2],
         '4': [3, 2],
@@ -355,7 +321,7 @@ describe('Signature', function () {
   });
 
   describe('Authentication request from origin', function () {
-    async function performAuthRequest() {
+    const performAuthRequest = async () => {
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
       await browser.execute(() => {
@@ -371,31 +337,15 @@ describe('Signature', function () {
       [messageWindow] = await waitForNewWindows(1);
       await browser.switchToWindow(messageWindow);
       await browser.refresh();
-    }
-
-    async function getAuthRequestResult() {
-      return JSON.parse(
-        await browser.execute(() => {
-          const { result } = window;
-          delete window.result;
-          return result;
-        })
-      );
-    }
+    };
 
     it('Rejected', async function () {
+      await browser.navigateTo(`https://${WHITELIST[3]}`);
       await performAuthRequest();
-      expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-      expect(await CommonTransaction.accountName).toHaveText('rich');
-      expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-      await CommonTransaction.rejectButton.click();
-      await FinalTransactionScreen.closeButton.click();
-
-      await browser.switchToWindow(tabOrigin);
-      const [status, result] = await getAuthRequestResult.call(this);
-
+      await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
+      await rejectTransaction();
+      const [status, result] = await getResult();
       expect(status).toBe('REJECTED');
-
       expect(result).toStrictEqual({
         code: '10',
         data: 'rejected',
@@ -404,30 +354,24 @@ describe('Signature', function () {
     });
 
     it('Approved', async function () {
-      await performAuthRequest();
-      await AuthMessageScreen.authButton.click();
-      await FinalTransactionScreen.root.waitForDisplayed();
-      await FinalTransactionScreen.closeButton.click();
-
       await browser.switchToWindow(tabOrigin);
-      const [status, result] = await getAuthRequestResult.call(this);
+      await browser.navigateTo(`https://${WHITELIST[3]}`);
+      await performAuthRequest();
+      await approveTransaction();
 
+      const [status, result] = await getResult();
       expect(status).toBe('RESOLVED');
-
       const expectedApproveResult = {
         host: WHITELIST[3],
         prefix: 'WavesWalletAuthentication',
         address: '3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW',
         publicKey: senderPublicKey,
       };
-
       const bytes = makeAuthBytes({
         host: WHITELIST[3],
         data: 'generated auth data',
       });
-
       expect(result).toMatchObject(expectedApproveResult);
-
       expect(
         await verifySignature(
           senderPublicKeyBytes,
@@ -440,11 +384,10 @@ describe('Signature', function () {
 
   describe('Matcher request', function () {
     const timestamp = Date.now();
-
-    async function performMatcherRequest() {
-      await browser.switchToWindow(tabOrigin);
+    const performMatcherRequest = async () => {
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
+       
       await browser.execute(
         // eslint-disable-next-line @typescript-eslint/no-shadow
         (senderPublicKey: string, timestamp: number) => {
@@ -468,53 +411,29 @@ describe('Signature', function () {
       [messageWindow] = await waitForNewWindows(1);
       await browser.switchToWindow(messageWindow);
       await browser.refresh();
-    }
-
-    async function getMatcherRequestResult() {
-      return JSON.parse(
-        await browser.execute(() => {
-          const { result } = window;
-          delete window.result;
-          return result;
-        })
-      );
-    }
+    };
 
     it('Rejected', async function () {
-      await performMatcherRequest();
-      expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-      expect(await CommonTransaction.accountName).toHaveText('rich');
-      expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-      await CommonTransaction.rejectButton.click();
-      await FinalTransactionScreen.closeButton.click();
-
       await browser.switchToWindow(tabOrigin);
-      const [status, result] = await getMatcherRequestResult.call(this);
-
-      expect(status).toBe('REJECTED');
-
-      expect(result).toStrictEqual({
-        code: '10',
-        data: 'rejected',
-        message: 'User denied message',
-      });
+      await browser.navigateTo(`https://${WHITELIST[3]}`);
+      await performMatcherRequest();
+      await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
+      await rejectTransaction();
+      await validateRejectedResult();
     });
 
     it('Approved', async function () {
-      await performMatcherRequest();
-      await CommonTransaction.approveButton.click();
-      await FinalTransactionScreen.closeButton.click();
-
       await browser.switchToWindow(tabOrigin);
-      const [status, result] = await getMatcherRequestResult();
+      await browser.navigateTo(`https://${WHITELIST[3]}`);
+      await performMatcherRequest();
+      await approveTransaction();
 
+      const [status, result] = await getResult();
       expect(status).toBe('RESOLVED');
-
       const bytes = Uint8Array.of(
         ...senderPublicKeyBytes,
         ...new Uint8Array(Long.fromNumber(timestamp).toBytesBE())
       );
-
       expect(
         await verifySignature(senderPublicKeyBytes, bytes, base58Decode(result))
       ).toBe(true);
@@ -522,11 +441,9 @@ describe('Signature', function () {
   });
 
   describe('Transactions', function () {
-    async function performSignTransaction(tx: MessageInputTx) {
-      await browser.switchToWindow(tabOrigin);
+    const performSignTransaction = async (input: MessageInputTx) => {
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
-      // eslint-disable-next-line @typescript-eslint/no-shadow
       await browser.execute((tx: MessageInputTx) => {
         KeeperWallet.signTransaction(tx).then(
           result => {
@@ -536,21 +453,11 @@ describe('Signature', function () {
             window.result = JSON.stringify(['REJECTED', err]);
           }
         );
-      }, tx);
+      }, input);
       [messageWindow] = await waitForNewWindows(1);
       await browser.switchToWindow(messageWindow);
       await browser.refresh();
-    }
-
-    async function getSignTransactionResult() {
-      return JSON.parse(
-        await browser.execute(() => {
-          const { result } = window;
-          delete window.result;
-          return result;
-        })
-      );
-    }
+    };
 
     function setTxVersion<T extends MessageInputTx>(tx: T, version: number): T {
       return { ...tx, data: { ...tx.data, version } };
@@ -558,61 +465,46 @@ describe('Signature', function () {
 
     describe('Issue', function () {
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignTransaction(ISSUE);
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        expect(await IssueTransactionScreen.issueType).toHaveText(
+        await expect(IssueTransactionScreen.issueType).toHaveText(
           'Issue Smart Token'
         );
-        await expect(await IssueTransactionScreen.issueAmount).toHaveText(
+        await expect(IssueTransactionScreen.issueAmount).toHaveText(
           '92233720368.54775807 ShortToken'
         );
-        await expect(await IssueTransactionScreen.issueDescription).toHaveText(
+        await expect(IssueTransactionScreen.issueDescription).toHaveText(
           ISSUE.data.description
         );
-        await expect(await IssueTransactionScreen.issueDecimals).toHaveText(
+        await expect(IssueTransactionScreen.issueDecimals).toHaveText(
           `${ISSUE.data.precision}`
         );
-        await expect(await IssueTransactionScreen.issueReissuable).toHaveText(
+        await expect(IssueTransactionScreen.issueReissuable).toHaveText(
           'Reissuable'
         );
-        await expect(await IssueTransactionScreen.contentScript).toHaveText(
+        await expect(IssueTransactionScreen.contentScript).toHaveText(
           'base64:BQbtKNoM'
         );
-
-        await expect(await CommonTransaction.transactionFee).toHaveText(
+        await expect(CommonTransaction.transactionFee).toHaveText(
           '1.004 WAVES'
         );
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.closeButton.click();
-
-        await browser.switchToWindow(tabOrigin);
-        const [status, approveResult] = await getSignTransactionResult();
-
-        expect(status).toBe('REJECTED');
-
-        expect(approveResult).toStrictEqual({
-          code: '10',
-          data: 'rejected',
-          message: 'User denied message',
-        });
+        await rejectTransaction();
+        await validateRejectedResult();
       });
 
       it('Approved', async function () {
-        await performSignTransaction(ISSUE);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const [status, approveResult] = await getSignTransactionResult();
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(ISSUE);
+        await approveTransaction();
 
+        const [status, result] = await getResult();
         expect(status).toBe('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: ISSUE.type,
           version: 3 as const,
@@ -626,16 +518,13 @@ describe('Signature', function () {
           fee: 100400000,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           quantity: ISSUE.data.quantity,
           timestamp: parsedApproveResult.timestamp,
         });
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -649,60 +538,43 @@ describe('Signature', function () {
 
       describe('without script', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(ISSUE_WITHOUT_SCRIPT);
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await expect(await IssueTransactionScreen.issueType).toHaveText(
+          await expect(IssueTransactionScreen.issueType).toHaveText(
             'Issue Token'
           );
-          await expect(await IssueTransactionScreen.issueAmount).toHaveText(
+          await expect(IssueTransactionScreen.issueAmount).toHaveText(
             '92233720368.54775807 ShortToken'
           );
-          await expect(
-            await IssueTransactionScreen.issueDescription
-          ).toHaveText(ISSUE.data.description);
-          await expect(await IssueTransactionScreen.issueDecimals).toHaveText(
+          await expect(IssueTransactionScreen.issueDescription).toHaveText(
+            ISSUE.data.description
+          );
+          await expect(IssueTransactionScreen.issueDecimals).toHaveText(
             `${ISSUE.data.precision}`
           );
-          await expect(await IssueTransactionScreen.issueReissuable).toHaveText(
+          await expect(IssueTransactionScreen.issueReissuable).toHaveText(
             'Reissuable'
           );
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '1.004 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.closeButton.click();
-
-          await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
-
-          expect(status).toBe('REJECTED');
-
-          expect(approveResult).toStrictEqual({
-            code: '10',
-            data: 'rejected',
-            message: 'User denied message',
-          });
+          await rejectTransaction();
+          await validateRejectedResult();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(ISSUE_WITHOUT_SCRIPT);
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(ISSUE_WITHOUT_SCRIPT);
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: ISSUE_WITHOUT_SCRIPT.type,
             version: 3 as const,
@@ -715,18 +587,15 @@ describe('Signature', function () {
             fee: 100400000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             quantity: ISSUE_WITHOUT_SCRIPT.data.quantity,
             script: null,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.script).toBe(null);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -739,63 +608,44 @@ describe('Signature', function () {
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(setTxVersion(ISSUE, 2));
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await expect(await IssueTransactionScreen.issueType).toHaveText(
+          await expect(IssueTransactionScreen.issueType).toHaveText(
             'Issue Smart Token'
           );
-          await expect(await IssueTransactionScreen.issueAmount).toHaveText(
+          await expect(IssueTransactionScreen.issueAmount).toHaveText(
             '92233720368.54775807 ShortToken'
           );
-          await expect(
-            await IssueTransactionScreen.issueDescription
-          ).toHaveText(ISSUE.data.description);
-          await expect(await IssueTransactionScreen.issueDecimals).toHaveText(
+          await expect(IssueTransactionScreen.issueDescription).toHaveText(
+            ISSUE.data.description
+          );
+          await expect(IssueTransactionScreen.issueDecimals).toHaveText(
             `${ISSUE.data.precision}`
           );
-          await expect(await IssueTransactionScreen.issueReissuable).toHaveText(
+          await expect(IssueTransactionScreen.issueReissuable).toHaveText(
             'Reissuable'
           );
-          await expect(await IssueTransactionScreen.contentScript).toHaveText(
+          await expect(IssueTransactionScreen.contentScript).toHaveText(
             'base64:BQbtKNoM'
           );
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '1.004 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.closeButton.click();
-
-          await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
-
-          expect(status).toBe('REJECTED');
-
-          expect(approveResult).toStrictEqual({
-            code: '10',
-            data: 'rejected',
-            message: 'User denied message',
-          });
+          await rejectTransaction();
+          await validateRejectedResult();
         });
 
         it('Approved', async function () {
           await performSignTransaction(setTxVersion(ISSUE, 2));
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.closeButton.click();
+          await approveTransaction();
 
-          await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
-
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: ISSUE.type,
             version: 2 as const,
@@ -809,16 +659,13 @@ describe('Signature', function () {
             fee: 100400000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             quantity: ISSUE.data.quantity,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -832,44 +679,35 @@ describe('Signature', function () {
 
     describe('Transfer', function () {
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignTransaction(TRANSFER);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-        await expect(await TransferTransactionScreen.transferAmount).toHaveText(
+        await expect(TransferTransactionScreen.transferAmount).toHaveText(
           '-123456790 NonScriptToken'
         );
-        await expect(await TransferTransactionScreen.recipient).toHaveText(
+        await expect(TransferTransactionScreen.recipient).toHaveText(
           '3N5HNJz5otiU...BVv5HhYLdhiD'
         );
-        await expect(
-          await TransferTransactionScreen.attachmentContent
-        ).toHaveText('base64:BQbtKNoM');
-
-        await expect(await CommonTransaction.transactionFee).toHaveText(
+        await expect(TransferTransactionScreen.attachmentContent).toHaveText(
+          'base64:BQbtKNoM'
+        );
+        await expect(CommonTransaction.transactionFee).toHaveText(
           '0.005 WAVES'
         );
-
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction(TRANSFER);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const [status, approveResult] = await getSignTransactionResult();
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(TRANSFER);
+        await approveTransaction();
 
+        const [status, result] = await getResult();
         expect(status).toBe('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: TRANSFER.type,
           version: 3 as const,
@@ -882,15 +720,12 @@ describe('Signature', function () {
           feeAssetId: null,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -909,42 +744,33 @@ describe('Signature', function () {
 
       describe('without attachment', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(TRANSFER_WITHOUT_ATTACHMENT);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
+          await expect(TransferTransactionScreen.transferAmount).toHaveText(
+            '-1.23456790 WAVES'
           );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(
-            await TransferTransactionScreen.transferAmount
-          ).toHaveText('-1.23456790 WAVES');
-          await expect(await TransferTransactionScreen.recipient).toHaveText(
+          await expect(TransferTransactionScreen.recipient).toHaveText(
             'alias:T:alice'
           );
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(TRANSFER_WITHOUT_ATTACHMENT);
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(TRANSFER_WITHOUT_ATTACHMENT);
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: TRANSFER_WITHOUT_ATTACHMENT.type,
             version: 3 as const,
@@ -956,15 +782,12 @@ describe('Signature', function () {
             feeAssetId: null,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -977,44 +800,36 @@ describe('Signature', function () {
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(setTxVersion(TRANSFER, 2));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
+          await expect(TransferTransactionScreen.transferAmount).toHaveText(
+            '-123456790 NonScriptToken'
           );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(
-            await TransferTransactionScreen.transferAmount
-          ).toHaveText('-123456790 NonScriptToken');
-          await expect(await TransferTransactionScreen.recipient).toHaveText(
+          await expect(TransferTransactionScreen.recipient).toHaveText(
             '3N5HNJz5otiU...BVv5HhYLdhiD'
           );
-          await expect(
-            await TransferTransactionScreen.attachmentContent
-          ).toHaveText('base64:BQbtKNoM');
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(TransferTransactionScreen.attachmentContent).toHaveText(
+            'base64:BQbtKNoM'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(setTxVersion(TRANSFER, 2));
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(TRANSFER, 2));
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: TRANSFER.type,
             version: 2 as const,
@@ -1027,15 +842,12 @@ describe('Signature', function () {
             feeAssetId: null,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -1049,41 +861,33 @@ describe('Signature', function () {
 
     describe('Reissue', function () {
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignTransaction(REISSUE);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-        await expect(await ReissueTransactionScreen.reissueAmount).toHaveText(
+        await expect(ReissueTransactionScreen.reissueAmount).toHaveText(
           '+123456790 NonScriptToken'
         );
-        await expect(await ReissueTransactionScreen.reissuableType).toHaveText(
+        await expect(ReissueTransactionScreen.reissuableType).toHaveText(
           'Reissuable'
         );
-
-        await expect(await CommonTransaction.transactionFee).toHaveText(
+        await expect(CommonTransaction.transactionFee).toHaveText(
           '0.005 WAVES'
         );
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction(REISSUE);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const [status, approveResult] = await getSignTransactionResult();
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(REISSUE);
+        await approveTransaction();
 
+        const [status, result] = await getResult();
         expect(status).toBe('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: REISSUE.type,
           version: 3 as const,
@@ -1094,15 +898,12 @@ describe('Signature', function () {
           chainId: 84,
           fee: 500000,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -1114,43 +915,33 @@ describe('Signature', function () {
 
       describe('with money-like', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(REISSUE_WITH_MONEY_LIKE);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(await ReissueTransactionScreen.reissueAmount).toHaveText(
+          await expect(ReissueTransactionScreen.reissueAmount).toHaveText(
             '+123456790 NonScriptToken'
           );
-          await expect(
-            await ReissueTransactionScreen.reissuableType
-          ).toHaveText('Reissuable');
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(ReissueTransactionScreen.reissuableType).toHaveText(
+            'Reissuable'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(REISSUE_WITH_MONEY_LIKE);
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(REISSUE_WITH_MONEY_LIKE);
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: REISSUE_WITH_MONEY_LIKE.type,
             version: 3 as const,
@@ -1161,15 +952,12 @@ describe('Signature', function () {
             chainId: 84,
             fee: 500000,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -1182,43 +970,33 @@ describe('Signature', function () {
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(setTxVersion(REISSUE, 2));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(await ReissueTransactionScreen.reissueAmount).toHaveText(
+          await expect(ReissueTransactionScreen.reissueAmount).toHaveText(
             '+123456790 NonScriptToken'
           );
-          await expect(
-            await ReissueTransactionScreen.reissuableType
-          ).toHaveText('Reissuable');
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(ReissueTransactionScreen.reissuableType).toHaveText(
+            'Reissuable'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(setTxVersion(REISSUE, 2));
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(REISSUE, 2));
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: REISSUE.type,
             version: 2 as const,
@@ -1229,15 +1007,12 @@ describe('Signature', function () {
             chainId: 84,
             fee: 500000,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -1251,38 +1026,30 @@ describe('Signature', function () {
 
     describe('Burn', function () {
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignTransaction(BURN);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-        await expect(await BurnTransactionScreen.burnAmount).toHaveText(
+        await expect(BurnTransactionScreen.burnAmount).toHaveText(
           '-123456790 NonScriptToken'
         );
-
-        await expect(await CommonTransaction.transactionFee).toHaveText(
+        await expect(CommonTransaction.transactionFee).toHaveText(
           '0.005 WAVES'
         );
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction(BURN);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const [status, approveResult] = await getSignTransactionResult();
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(BURN);
+        await approveTransaction();
 
+        const [status, result] = await getResult();
         expect(status).toBe('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: BURN.type,
           version: 3 as const,
@@ -1292,15 +1059,12 @@ describe('Signature', function () {
           chainId: 84,
           fee: 500000,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -1312,40 +1076,30 @@ describe('Signature', function () {
 
       describe('with quantity instead of amount', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(BURN_WITH_QUANTITY);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(await BurnTransactionScreen.burnAmount).toHaveText(
+          await expect(BurnTransactionScreen.burnAmount).toHaveText(
             '-123456790 NonScriptToken'
           );
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(BURN_WITH_QUANTITY);
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(BURN_WITH_QUANTITY);
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: BURN_WITH_QUANTITY.type,
             version: 3 as const,
@@ -1355,15 +1109,12 @@ describe('Signature', function () {
             chainId: 84,
             fee: 500000,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -1376,40 +1127,35 @@ describe('Signature', function () {
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(setTxVersion(BURN, 2));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
+          await expect(CommonTransaction.originAddress).toHaveText(
             WHITELIST[3]
           );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(await BurnTransactionScreen.burnAmount).toHaveText(
+          await expect(CommonTransaction.accountName).toHaveText('rich');
+          await expect(CommonTransaction.originNetwork).toHaveText('Testnet');
+          await expect(BurnTransactionScreen.burnAmount).toHaveText(
             '-123456790 NonScriptToken'
           );
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(setTxVersion(BURN, 2));
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(BURN, 2));
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: BURN.type,
             version: 2 as const,
@@ -1419,15 +1165,12 @@ describe('Signature', function () {
             chainId: 84,
             fee: 500000,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -1441,41 +1184,33 @@ describe('Signature', function () {
 
     describe('Lease', function () {
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignTransaction(LEASE);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-        await expect(await LeaseTransactionScreen.leaseAmount).toHaveText(
+        await expect(LeaseTransactionScreen.leaseAmount).toHaveText(
           '1.23456790 WAVES'
         );
-        await expect(await LeaseTransactionScreen.leaseRecipient).toHaveText(
+        await expect(LeaseTransactionScreen.leaseRecipient).toHaveText(
           '3N5HNJz5otiU...BVv5HhYLdhiD'
         );
-
-        await expect(await CommonTransaction.transactionFee).toHaveText(
+        await expect(CommonTransaction.transactionFee).toHaveText(
           '0.005 WAVES'
         );
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction(LEASE);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const [status, approveResult] = await getSignTransactionResult();
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(LEASE);
+        await approveTransaction();
 
+        const [status, result] = await getResult();
         expect(status).toBe('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: LEASE.type,
           version: 3 as const,
@@ -1485,15 +1220,12 @@ describe('Signature', function () {
           fee: 500000,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -1505,43 +1237,33 @@ describe('Signature', function () {
 
       describe('with alias', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(LEASE_WITH_ALIAS);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(await LeaseTransactionScreen.leaseAmount).toHaveText(
+          await expect(LeaseTransactionScreen.leaseAmount).toHaveText(
             '1.23456790 WAVES'
           );
-          await expect(await LeaseTransactionScreen.leaseRecipient).toHaveText(
+          await expect(LeaseTransactionScreen.leaseRecipient).toHaveText(
             'alias:T:bobby'
           );
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(LEASE_WITH_ALIAS);
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(LEASE_WITH_ALIAS);
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: LEASE_WITH_ALIAS.type,
             version: 3 as const,
@@ -1551,15 +1273,12 @@ describe('Signature', function () {
             fee: 500000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -1572,43 +1291,33 @@ describe('Signature', function () {
 
       describe('with money-like', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(LEASE_WITH_MONEY_LIKE);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(await LeaseTransactionScreen.leaseAmount).toHaveText(
+          await expect(LeaseTransactionScreen.leaseAmount).toHaveText(
             '1.23456790 WAVES'
           );
-          await expect(await LeaseTransactionScreen.leaseRecipient).toHaveText(
+          await expect(LeaseTransactionScreen.leaseRecipient).toHaveText(
             '3N5HNJz5otiU...BVv5HhYLdhiD'
           );
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(LEASE_WITH_MONEY_LIKE);
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(LEASE_WITH_MONEY_LIKE);
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: LEASE_WITH_MONEY_LIKE.type,
             version: 3 as const,
@@ -1618,15 +1327,12 @@ describe('Signature', function () {
             fee: 500000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -1639,43 +1345,33 @@ describe('Signature', function () {
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(setTxVersion(LEASE, 2));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(await LeaseTransactionScreen.leaseAmount).toHaveText(
+          await expect(LeaseTransactionScreen.leaseAmount).toHaveText(
             '1.23456790 WAVES'
           );
-          await expect(await LeaseTransactionScreen.leaseRecipient).toHaveText(
+          await expect(LeaseTransactionScreen.leaseRecipient).toHaveText(
             '3N5HNJz5otiU...BVv5HhYLdhiD'
           );
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(setTxVersion(LEASE, 2));
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(LEASE, 2));
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: LEASE.type,
             version: 2 as const,
@@ -1685,15 +1381,12 @@ describe('Signature', function () {
             fee: 500000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -1707,41 +1400,33 @@ describe('Signature', function () {
 
     describe('Cancel lease', function () {
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignTransaction(CANCEL_LEASE);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
+        await expect(LeaseCancelTransactionScreen.cancelLeaseAmount).toHaveText(
+          '0.00000001 WAVES'
+        );
         await expect(
-          await LeaseCancelTransactionScreen.cancelLeaseAmount
-        ).toHaveText('0.00000001 WAVES');
-        await expect(
-          await LeaseCancelTransactionScreen.cancelLeaseRecipient
+          LeaseCancelTransactionScreen.cancelLeaseRecipient
         ).toHaveText('alias:T:merry');
-
-        await expect(await CommonTransaction.transactionFee).toHaveText(
+        await expect(CommonTransaction.transactionFee).toHaveText(
           '0.005 WAVES'
         );
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction(CANCEL_LEASE);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const [status, approveResult] = await getSignTransactionResult();
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(CANCEL_LEASE);
+        await approveTransaction();
 
+        const [status, result] = await getResult();
         expect(status).toBe('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: CANCEL_LEASE.type,
           version: 3 as const,
@@ -1750,15 +1435,12 @@ describe('Signature', function () {
           fee: 500000,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -1770,43 +1452,33 @@ describe('Signature', function () {
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(setTxVersion(CANCEL_LEASE, 2));
-
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(
-            await LeaseCancelTransactionScreen.cancelLeaseAmount
+            LeaseCancelTransactionScreen.cancelLeaseAmount
           ).toHaveText('0.00000001 WAVES');
           await expect(
-            await LeaseCancelTransactionScreen.cancelLeaseRecipient
+            LeaseCancelTransactionScreen.cancelLeaseRecipient
           ).toHaveText('alias:T:merry');
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(setTxVersion(CANCEL_LEASE, 2));
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(CANCEL_LEASE, 2));
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: CANCEL_LEASE.type,
             version: 2 as const,
@@ -1815,15 +1487,12 @@ describe('Signature', function () {
             fee: 500000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -1837,38 +1506,30 @@ describe('Signature', function () {
 
     describe('Alias', function () {
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignTransaction(ALIAS);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-        await expect(await CreateAliasTransactionScreen.aliasValue).toHaveText(
+        await expect(CreateAliasTransactionScreen.aliasValue).toHaveText(
           'test_alias'
         );
-
-        await expect(await CommonTransaction.transactionFee).toHaveText(
+        await expect(CommonTransaction.transactionFee).toHaveText(
           '0.005 WAVES'
         );
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction(ALIAS);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const [status, approveResult] = await getSignTransactionResult();
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(ALIAS);
+        await approveTransaction();
 
+        const [status, result] = await getResult();
         expect(status).toBe('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: ALIAS.type,
           version: 3 as const,
@@ -1877,15 +1538,12 @@ describe('Signature', function () {
           fee: 500000,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -1901,40 +1559,30 @@ describe('Signature', function () {
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(setTxVersion(ALIAS, 2));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
+          await expect(CreateAliasTransactionScreen.aliasValue).toHaveText(
+            'test_alias'
           );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(
-            await CreateAliasTransactionScreen.aliasValue
-          ).toHaveText('test_alias');
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(setTxVersion(ALIAS, 2));
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(ALIAS, 2));
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: ALIAS.type,
             version: 2 as const,
@@ -1943,20 +1591,16 @@ describe('Signature', function () {
             fee: 500000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
-
           expect(parsedApproveResult.id).toBe(
             base58Encode(
               blake2b(Uint8Array.of(bytes[0], ...bytes.subarray(36, -16)))
             )
           );
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -1974,29 +1618,27 @@ describe('Signature', function () {
       ) {
         const transferItems =
           await MassTransferTransactionScreen.getTransferItems();
-
         const actualItems = await Promise.all(
           transferItems.map(async transferItem => {
-            const recipient = await transferItem.recipient.getText();
-            const amount = await transferItem.amount.getText();
+            const [recipient, amount] = await Promise.all([
+              transferItem.recipient.getText(),
+              transferItem.amount.getText(),
+            ]);
             return { recipient, amount };
           })
         );
-
         expect(actualItems).toStrictEqual(items);
       }
 
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignTransaction(MASS_TRANSFER);
-
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(
-          await MassTransferTransactionScreen.massTransferAmount
+          MassTransferTransactionScreen.massTransferAmount
         ).toHaveText('-2 NonScriptToken');
-
         await checkMassTransferItems([
           {
             recipient: '3N5HNJz5otiU...BVv5HhYLdhiD',
@@ -2007,33 +1649,25 @@ describe('Signature', function () {
             amount: '1',
           },
         ]);
-
         await expect(
-          await MassTransferTransactionScreen.massTransferAttachment
+          MassTransferTransactionScreen.massTransferAttachment
         ).toHaveText('base64:BQbtKNoM');
-
-        await expect(await CommonTransaction.transactionFee).toHaveText(
+        await expect(CommonTransaction.transactionFee).toHaveText(
           '0.006 WAVES'
         );
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction(MASS_TRANSFER);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const [status, approveResult] = await getSignTransactionResult();
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(MASS_TRANSFER);
+        await approveTransaction();
 
+        const [status, result] = await getResult();
         expect(status).toBe('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: MASS_TRANSFER.type,
           version: 2 as const,
@@ -2047,15 +1681,12 @@ describe('Signature', function () {
           attachment: '3ke2ct1rnYr52Y1jQvzNG',
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -2067,18 +1698,14 @@ describe('Signature', function () {
 
       describe('without attachment', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(MASS_TRANSFER_WITHOUT_ATTACHMENT);
-
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(
-            await MassTransferTransactionScreen.massTransferAmount
+            MassTransferTransactionScreen.massTransferAmount
           ).toHaveText('-0.00000123 WAVES');
-
           await checkMassTransferItems([
             {
               recipient: '3N5HNJz5otiU...BVv5HhYLdhiD',
@@ -2089,30 +1716,22 @@ describe('Signature', function () {
               amount: '0.00000003',
             },
           ]);
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.006 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(MASS_TRANSFER_WITHOUT_ATTACHMENT);
-
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(MASS_TRANSFER_WITHOUT_ATTACHMENT);
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: MASS_TRANSFER_WITHOUT_ATTACHMENT.type,
             version: 2 as const,
@@ -2125,15 +1744,12 @@ describe('Signature', function () {
             fee: 600000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -2146,18 +1762,14 @@ describe('Signature', function () {
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(setTxVersion(MASS_TRANSFER, 1));
-
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(
-            await MassTransferTransactionScreen.massTransferAmount
+            MassTransferTransactionScreen.massTransferAmount
           ).toHaveText('-2 NonScriptToken');
-
           await checkMassTransferItems([
             {
               recipient: '3N5HNJz5otiU...BVv5HhYLdhiD',
@@ -2168,33 +1780,25 @@ describe('Signature', function () {
               amount: '1',
             },
           ]);
-
           await expect(
-            await MassTransferTransactionScreen.massTransferAttachment
+            MassTransferTransactionScreen.massTransferAttachment
           ).toHaveText('base64:BQbtKNoM');
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.006 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(setTxVersion(MASS_TRANSFER, 1));
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(MASS_TRANSFER, 1));
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: MASS_TRANSFER.type,
             version: 1 as const,
@@ -2208,15 +1812,12 @@ describe('Signature', function () {
             attachment: '3ke2ct1rnYr52Y1jQvzNG',
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -2233,7 +1834,6 @@ describe('Signature', function () {
         entries: Array<{ key: string; type: string; value: string }>
       ) {
         const dataRows = await DataTransactionScreen.getDataRows();
-
         const actualItems = await Promise.all(
           dataRows.map(async it => {
             const [key, type, value] = await Promise.all([
@@ -2244,16 +1844,14 @@ describe('Signature', function () {
             return { key, type, value };
           })
         );
-
         expect(actualItems).toStrictEqual(entries);
       }
 
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignTransaction(DATA);
-
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await checkDataEntries([
           {
@@ -2277,29 +1875,22 @@ describe('Signature', function () {
             value: 'base64:BQbtKNoM',
           },
         ]);
-
-        await expect(await CommonTransaction.transactionFee).toHaveText(
+        await expect(CommonTransaction.transactionFee).toHaveText(
           '0.005 WAVES'
         );
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction(DATA);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const [status, approveResult] = await getSignTransactionResult();
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(DATA);
+        await approveTransaction();
 
+        const [status, result] = await getResult();
         expect(status).toBe('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: DATA.type,
           version: 2 as const,
@@ -2325,16 +1916,13 @@ describe('Signature', function () {
             },
           ],
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           data: DATA.data.data,
           timestamp: parsedApproveResult.timestamp,
         });
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -2346,13 +1934,10 @@ describe('Signature', function () {
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(setTxVersion(DATA, 1));
-
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await checkDataEntries([
             {
@@ -2376,29 +1961,22 @@ describe('Signature', function () {
               value: 'base64:BQbtKNoM',
             },
           ]);
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(setTxVersion(DATA, 1));
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(DATA, 1));
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: DATA.type,
             version: 1 as const,
@@ -2424,16 +2002,13 @@ describe('Signature', function () {
               },
             ],
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             data: DATA.data.data,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -2447,41 +2022,33 @@ describe('Signature', function () {
 
     describe('SetScript', function () {
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignTransaction(SET_SCRIPT);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-        await expect(await SetScriptTransactionScreen.scriptTitle).toHaveText(
+        await expect(SetScriptTransactionScreen.scriptTitle).toHaveText(
           'Set Script'
         );
-        await expect(await SetScriptTransactionScreen.contentScript).toHaveText(
+        await expect(SetScriptTransactionScreen.contentScript).toHaveText(
           'base64:BQbtKNoM'
         );
-
-        await expect(await CommonTransaction.transactionFee).toHaveText(
+        await expect(CommonTransaction.transactionFee).toHaveText(
           '0.005 WAVES'
         );
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction(SET_SCRIPT);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const [status, approveResult] = await getSignTransactionResult();
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(SET_SCRIPT);
+        await approveTransaction();
 
+        const [status, result] = await getResult();
         expect(status).toBe('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: SET_SCRIPT.type,
           version: 2 as const,
@@ -2490,15 +2057,12 @@ describe('Signature', function () {
           fee: 500000,
           script: SET_SCRIPT.data.script,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -2514,40 +2078,30 @@ describe('Signature', function () {
 
       describe('without script', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(SET_SCRIPT_WITHOUT_SCRIPT);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(await SetScriptTransactionScreen.scriptTitle).toHaveText(
+          await expect(SetScriptTransactionScreen.scriptTitle).toHaveText(
             'Remove Account Script'
           );
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(SET_SCRIPT_WITHOUT_SCRIPT);
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(SET_SCRIPT_WITHOUT_SCRIPT);
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: SET_SCRIPT_WITHOUT_SCRIPT.type,
             version: 2 as const,
@@ -2555,17 +2109,14 @@ describe('Signature', function () {
             chainId: 84,
             fee: 500000,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             script: null,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.script).toBe(null);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -2578,43 +2129,33 @@ describe('Signature', function () {
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(setTxVersion(SET_SCRIPT, 1));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(await SetScriptTransactionScreen.scriptTitle).toHaveText(
+          await expect(SetScriptTransactionScreen.scriptTitle).toHaveText(
             'Set Script'
           );
-          await expect(
-            await SetScriptTransactionScreen.contentScript
-          ).toHaveText('base64:BQbtKNoM');
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(SetScriptTransactionScreen.contentScript).toHaveText(
+            'base64:BQbtKNoM'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(setTxVersion(SET_SCRIPT, 1));
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(SET_SCRIPT, 1));
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: SET_SCRIPT.type,
             version: 1 as const,
@@ -2623,15 +2164,12 @@ describe('Signature', function () {
             fee: 500000,
             script: SET_SCRIPT.data.script,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -2645,41 +2183,33 @@ describe('Signature', function () {
 
     describe('Sponsorship', function () {
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignTransaction(SPONSORSHIP);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-        await expect(await SponsorshipTransactionScreen.title).toHaveText(
+        await expect(SponsorshipTransactionScreen.title).toHaveText(
           'Set Sponsorship'
         );
-        await expect(await SponsorshipTransactionScreen.amount).toHaveText(
+        await expect(SponsorshipTransactionScreen.amount).toHaveText(
           '123456790 NonScriptToken'
         );
-
-        await expect(await CommonTransaction.transactionFee).toHaveText(
+        await expect(CommonTransaction.transactionFee).toHaveText(
           '0.005 WAVES'
         );
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction(SPONSORSHIP);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const [status, approveResult] = await getSignTransactionResult();
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(SPONSORSHIP);
+        await approveTransaction();
 
+        const [status, result] = await getResult();
         expect(status).toBe('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: SPONSORSHIP.type,
           version: 2 as const,
@@ -2689,15 +2219,12 @@ describe('Signature', function () {
           fee: 500000,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -2709,43 +2236,33 @@ describe('Signature', function () {
 
       describe('removal', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(SPONSORSHIP_REMOVAL);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(await SponsorshipTransactionScreen.title).toHaveText(
+          await expect(SponsorshipTransactionScreen.title).toHaveText(
             'Disable Sponsorship'
           );
-          await expect(await SponsorshipTransactionScreen.asset).toHaveText(
+          await expect(SponsorshipTransactionScreen.asset).toHaveText(
             'NonScriptToken'
           );
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(SPONSORSHIP_REMOVAL);
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(SPONSORSHIP_REMOVAL);
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: SPONSORSHIP_REMOVAL.type,
             version: 2 as const,
@@ -2755,15 +2272,12 @@ describe('Signature', function () {
             fee: 500000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -2776,43 +2290,33 @@ describe('Signature', function () {
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(setTxVersion(SPONSORSHIP, 1));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(await SponsorshipTransactionScreen.title).toHaveText(
+          await expect(SponsorshipTransactionScreen.title).toHaveText(
             'Set Sponsorship'
           );
-          await expect(await SponsorshipTransactionScreen.amount).toHaveText(
+          await expect(SponsorshipTransactionScreen.amount).toHaveText(
             '123456790 NonScriptToken'
           );
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(setTxVersion(SPONSORSHIP, 1));
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(SPONSORSHIP, 1));
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: SPONSORSHIP.type,
             version: 1 as const,
@@ -2822,15 +2326,12 @@ describe('Signature', function () {
             fee: 500000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -2844,11 +2345,10 @@ describe('Signature', function () {
 
     describe('SetAssetScript', function () {
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignTransaction(SET_ASSET_SCRIPT);
-
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(AssetScriptTransactionScreen.asset).toHaveText(
           'NonScriptToken'
@@ -2856,29 +2356,22 @@ describe('Signature', function () {
         await expect(AssetScriptTransactionScreen.script).toHaveText(
           'base64:BQbtKNoM'
         );
-
-        await expect(await CommonTransaction.transactionFee).toHaveText(
+        await expect(CommonTransaction.transactionFee).toHaveText(
           '1.004 WAVES'
         );
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction(SET_ASSET_SCRIPT);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const [status, approveResult] = await getSignTransactionResult();
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(SET_ASSET_SCRIPT);
+        await approveTransaction();
 
+        const [status, result] = await getResult();
         expect(status).toBe('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: SET_ASSET_SCRIPT.type,
           version: 2 as const,
@@ -2888,15 +2381,12 @@ describe('Signature', function () {
           fee: 100400000,
           script: SET_ASSET_SCRIPT.data.script,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -2910,13 +2400,10 @@ describe('Signature', function () {
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(setTxVersion(SET_ASSET_SCRIPT, 1));
-
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
-          );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(AssetScriptTransactionScreen.asset).toHaveText(
             'NonScriptToken'
@@ -2924,30 +2411,22 @@ describe('Signature', function () {
           await expect(AssetScriptTransactionScreen.script).toHaveText(
             'base64:BQbtKNoM'
           );
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '1.004 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(setTxVersion(SET_ASSET_SCRIPT, 1));
-
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(SET_ASSET_SCRIPT, 1));
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: SET_ASSET_SCRIPT.type,
             version: 1 as const,
@@ -2957,15 +2436,12 @@ describe('Signature', function () {
             fee: 100400000,
             script: SET_ASSET_SCRIPT.data.script,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -2981,18 +2457,18 @@ describe('Signature', function () {
       async function checkArgs(args: Array<{ type: string; value: string }>) {
         const invokeArguments =
           await InvokeScriptTransactionScreen.getArguments();
-
         const actualArgs = await Promise.all(
           invokeArguments.map(async it => {
-            const type = await it.type.getText();
-            const value = await it.value.getText();
+            const [type, value] = await Promise.all([
+              it.type.getText(),
+              it.value.getText(),
+            ]);
             return {
               type,
               value,
             };
           })
         );
-
         expect(actualArgs).toStrictEqual(args);
       }
 
@@ -3008,22 +2484,20 @@ describe('Signature', function () {
       }
 
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignTransaction(INVOKE_SCRIPT);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-        await expect(
-          await InvokeScriptTransactionScreen.paymentsTitle
-        ).toHaveText('2 Payments');
-        await expect(await InvokeScriptTransactionScreen.dApp).toHaveText(
+        await expect(InvokeScriptTransactionScreen.paymentsTitle).toHaveText(
+          '2 Payments'
+        );
+        await expect(InvokeScriptTransactionScreen.dApp).toHaveText(
           '3My2kBJaGfeM...3y8rAgfV2EAx'
         );
-        await expect(await InvokeScriptTransactionScreen.function).toHaveText(
+        await expect(InvokeScriptTransactionScreen.function).toHaveText(
           INVOKE_SCRIPT.data.call.function
         );
-
         await checkArgs([
           {
             type: 'integer',
@@ -3038,31 +2512,23 @@ describe('Signature', function () {
             value: 'hello',
           },
         ]);
-
         await checkPayments(['0.00000001 WAVES', '1 NonScriptToken']);
-
-        await expect(await CommonTransaction.transactionFee).toHaveText(
+        await expect(CommonTransaction.transactionFee).toHaveText(
           '0.005 WAVES'
         );
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction(INVOKE_SCRIPT);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const [status, approveResult] = await getSignTransactionResult();
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(INVOKE_SCRIPT);
+        await approveTransaction();
 
+        const [status, result] = await getResult();
         expect(status).toBe('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: INVOKE_SCRIPT.type,
           version: 2 as const,
@@ -3074,15 +2540,12 @@ describe('Signature', function () {
           feeAssetId: null,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -3106,47 +2569,38 @@ describe('Signature', function () {
 
       describe('without call', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(INVOKE_SCRIPT_WITHOUT_CALL);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
+          await expect(InvokeScriptTransactionScreen.paymentsTitle).toHaveText(
+            'No Payments'
           );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(
-            await InvokeScriptTransactionScreen.paymentsTitle
-          ).toHaveText('No Payments');
-          await expect(await InvokeScriptTransactionScreen.dApp).toHaveText(
+          await expect(InvokeScriptTransactionScreen.dApp).toHaveText(
             `alias:T:${INVOKE_SCRIPT_WITHOUT_CALL.data.dApp}`
           );
-          await expect(await InvokeScriptTransactionScreen.function).toHaveText(
+          await expect(InvokeScriptTransactionScreen.function).toHaveText(
             'default'
           );
           await checkArgs([]);
           await checkPayments([]);
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(INVOKE_SCRIPT_WITHOUT_CALL);
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(INVOKE_SCRIPT_WITHOUT_CALL);
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: INVOKE_SCRIPT_WITHOUT_CALL.type,
             version: 2 as const,
@@ -3157,16 +2611,13 @@ describe('Signature', function () {
             feeAssetId: null,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             call: null,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -3179,24 +2630,20 @@ describe('Signature', function () {
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
           await performSignTransaction(setTxVersion(INVOKE_SCRIPT, 1));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          expect(await CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
+          await expect(InvokeScriptTransactionScreen.paymentsTitle).toHaveText(
+            '2 Payments'
           );
-          expect(await CommonTransaction.accountName).toHaveText('rich');
-          expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-          await expect(
-            await InvokeScriptTransactionScreen.paymentsTitle
-          ).toHaveText('2 Payments');
-          await expect(await InvokeScriptTransactionScreen.dApp).toHaveText(
+          await expect(InvokeScriptTransactionScreen.dApp).toHaveText(
             '3My2kBJaGfeM...3y8rAgfV2EAx'
           );
-          await expect(await InvokeScriptTransactionScreen.function).toHaveText(
+          await expect(InvokeScriptTransactionScreen.function).toHaveText(
             INVOKE_SCRIPT.data.call.function
           );
-
           await checkArgs([
             {
               type: 'integer',
@@ -3211,32 +2658,23 @@ describe('Signature', function () {
               value: 'hello',
             },
           ]);
-
           await checkPayments(['0.00000001 WAVES', '1 NonScriptToken']);
-
-          await expect(await CommonTransaction.transactionFee).toHaveText(
+          await expect(CommonTransaction.transactionFee).toHaveText(
             '0.005 WAVES'
           );
 
-          await CommonTransaction.rejectButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction(setTxVersion(INVOKE_SCRIPT, 1));
-
-          await CommonTransaction.approveButton.click();
-          await FinalTransactionScreen.root.waitForDisplayed();
-          await FinalTransactionScreen.closeButton.click();
-
           await browser.switchToWindow(tabOrigin);
-          const [status, approveResult] = await getSignTransactionResult();
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(INVOKE_SCRIPT, 1));
+          await approveTransaction();
 
+          const [status, result] = await getResult();
           expect(status).toBe('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: INVOKE_SCRIPT.type,
             version: 1 as const,
@@ -3248,15 +2686,12 @@ describe('Signature', function () {
             feeAssetId: null,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
@@ -3270,45 +2705,36 @@ describe('Signature', function () {
 
     describe('UpdateAssetInfo', function () {
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignTransaction(UPDATE_ASSET_INFO);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-        await expect(await UpdateAssetInfoTransactionScreen.assetId).toHaveText(
+        await expect(UpdateAssetInfoTransactionScreen.assetId).toHaveText(
           UPDATE_ASSET_INFO.data.assetId
         );
+        await expect(UpdateAssetInfoTransactionScreen.assetName).toHaveText(
+          UPDATE_ASSET_INFO.data.name
+        );
         await expect(
-          await UpdateAssetInfoTransactionScreen.assetName
-        ).toHaveText(UPDATE_ASSET_INFO.data.name);
-
-        await expect(
-          await UpdateAssetInfoTransactionScreen.assetDescription
+          UpdateAssetInfoTransactionScreen.assetDescription
         ).toHaveText(UPDATE_ASSET_INFO.data.description);
-
-        await expect(await UpdateAssetInfoTransactionScreen.fee).toHaveText(
+        await expect(UpdateAssetInfoTransactionScreen.fee).toHaveText(
           '0.001 WAVES'
         );
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction(UPDATE_ASSET_INFO);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const [status, approveResult] = await getSignTransactionResult();
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(UPDATE_ASSET_INFO);
+        await approveTransaction();
 
+        const [status, result] = await getResult();
         expect(status).toBe('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: UPDATE_ASSET_INFO.type,
           version: 1 as const,
@@ -3319,15 +2745,12 @@ describe('Signature', function () {
           fee: 100000,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -3366,7 +2789,6 @@ describe('Signature', function () {
       script: (tx: MessageInputOrder) => void,
       tx: MessageInputOrder
     ) {
-      await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
       await browser.execute(script, tx);
@@ -3379,7 +2801,6 @@ describe('Signature', function () {
       script: (tx: MessageInputCancelOrder) => void,
       tx: MessageInputCancelOrder
     ) {
-      await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
       await browser.execute(script, tx);
@@ -3412,49 +2833,40 @@ describe('Signature', function () {
           } as const;
 
           it('Rejected', async function () {
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
             await performSignOrder(createOrder, INPUT);
+            await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-            expect(await CommonTransaction.originAddress).toHaveText(
-              WHITELIST[3]
-            );
-            expect(await CommonTransaction.accountName).toHaveText('rich');
-            expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-            await expect(await CreateOrderMessage.orderTitle).toHaveText(
+            await expect(CreateOrderMessage.orderTitle).toHaveText(
               'Sell: WAVES/NonScriptToken'
             );
-            await expect(await CreateOrderMessage.orderAmount).toHaveText(
+            await expect(CreateOrderMessage.orderAmount).toHaveText(
               '-100.00000000 WAVES'
             );
-            await expect(await CreateOrderMessage.orderPriceTitle).toHaveText(
+            await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
               '+0 NonScriptToken'
             );
-            await expect(await CreateOrderMessage.orderPrice).toHaveText(
+            await expect(CreateOrderMessage.orderPrice).toHaveText(
               '0 NonScriptToken'
             );
-            await expect(
-              await CreateOrderMessage.orderMatcherPublicKey
-            ).toHaveText(INPUT.data.matcherPublicKey);
-            await expect(await CreateOrderMessage.createOrderFee).toHaveText(
+            await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
+              INPUT.data.matcherPublicKey
+            );
+            await expect(CreateOrderMessage.createOrderFee).toHaveText(
               '0.03 WAVES'
             );
 
-            await CommonTransaction.rejectButton.click();
-            await FinalTransactionScreen.root.waitForDisplayed();
-            await FinalTransactionScreen.closeButton.click();
+            await rejectTransaction();
           });
 
           it('Approved', async function () {
-            await performSignOrder(createOrder, INPUT);
-            await CommonTransaction.approveButton.click();
-            await FinalTransactionScreen.root.waitForDisplayed();
-            await FinalTransactionScreen.closeButton.click();
-
             await browser.switchToWindow(tabOrigin);
-            const approveResult = await browser.execute(() => window.result);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await approveTransaction();
 
-            const parsedApproveResult = JSONbn.parse(approveResult);
-
+            const parsedApproveResult = await getResult();
             const expectedApproveResult = {
               orderType: INPUT.data.orderType,
               version: 3,
@@ -3469,16 +2881,13 @@ describe('Signature', function () {
               senderPublicKey,
               matcherFeeAssetId: null,
             };
-
             const bytes = binary.serializeOrder({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
             });
-
             expect(parsedApproveResult).toMatchObject(expectedApproveResult);
             expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
             expect(
               await verifySignature(
                 senderPublicKeyBytes,
@@ -3511,50 +2920,40 @@ describe('Signature', function () {
           } as const;
 
           it('Rejected', async function () {
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
             await performSignOrder(createOrder, INPUT);
+            await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-            expect(await CommonTransaction.originAddress).toHaveText(
-              WHITELIST[3]
-            );
-            expect(await CommonTransaction.accountName).toHaveText('rich');
-            expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-            await expect(await CreateOrderMessage.orderTitle).toHaveText(
+            await expect(CreateOrderMessage.orderTitle).toHaveText(
               'Buy: Tether USD/USD-Nea272c'
             );
-            await expect(await CreateOrderMessage.orderAmount).toHaveText(
+            await expect(CreateOrderMessage.orderAmount).toHaveText(
               '+1.000000 Tether USD'
             );
-            await expect(await CreateOrderMessage.orderPriceTitle).toHaveText(
+            await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
               '-1.014002 USD-Nea272c'
             );
-            await expect(await CreateOrderMessage.orderPrice).toHaveText(
+            await expect(CreateOrderMessage.orderPrice).toHaveText(
               '1.014002 USD-Nea272c'
             );
-            await expect(
-              await CreateOrderMessage.orderMatcherPublicKey
-            ).toHaveText(INPUT.data.matcherPublicKey);
-            await expect(await CreateOrderMessage.createOrderFee).toHaveText(
+            await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
+              INPUT.data.matcherPublicKey
+            );
+            await expect(CreateOrderMessage.createOrderFee).toHaveText(
               '0.04077612 TXW-DEVa4f6df'
             );
 
-            await CommonTransaction.rejectButton.click();
-            await FinalTransactionScreen.root.waitForDisplayed();
-            await FinalTransactionScreen.closeButton.click();
+            await rejectTransaction();
           });
 
           it('Approved', async function () {
-            await performSignOrder(createOrder, INPUT);
-
-            await CommonTransaction.approveButton.click();
-            await FinalTransactionScreen.root.waitForDisplayed();
-            await FinalTransactionScreen.closeButton.click();
-
             await browser.switchToWindow(tabOrigin);
-            const approveResult = await browser.execute(() => window.result);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await approveTransaction();
 
-            const parsedApproveResult = JSONbn.parse(approveResult);
-
+            const parsedApproveResult = await getResult();
             const expectedApproveResult = {
               orderType: INPUT.data.orderType,
               version: 3,
@@ -3569,16 +2968,13 @@ describe('Signature', function () {
               senderPublicKey,
               matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
             };
-
             const bytes = binary.serializeOrder({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
             });
-
             expect(parsedApproveResult).toMatchObject(expectedApproveResult);
             expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
             expect(
               await verifySignature(
                 senderPublicKeyBytes,
@@ -3615,50 +3011,40 @@ describe('Signature', function () {
           } as const;
 
           it('Rejected', async function () {
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
             await performSignOrder(createOrder, INPUT);
+            await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-            expect(await CommonTransaction.originAddress).toHaveText(
-              WHITELIST[3]
-            );
-            expect(await CommonTransaction.accountName).toHaveText('rich');
-            expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-            await expect(await CreateOrderMessage.orderTitle).toHaveText(
+            await expect(CreateOrderMessage.orderTitle).toHaveText(
               'Buy: Tether USD/USD-Nea272c'
             );
-            await expect(await CreateOrderMessage.orderAmount).toHaveText(
+            await expect(CreateOrderMessage.orderAmount).toHaveText(
               '+1.000000 Tether USD'
             );
-            await expect(await CreateOrderMessage.orderPriceTitle).toHaveText(
+            await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
               '-1.014002 USD-Nea272c'
             );
-            await expect(await CreateOrderMessage.orderPrice).toHaveText(
+            await expect(CreateOrderMessage.orderPrice).toHaveText(
               '1.014002 USD-Nea272c'
             );
-            await expect(
-              await CreateOrderMessage.orderMatcherPublicKey
-            ).toHaveText(INPUT.data.matcherPublicKey);
-            await expect(await CreateOrderMessage.createOrderFee).toHaveText(
+            await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
+              INPUT.data.matcherPublicKey
+            );
+            await expect(CreateOrderMessage.createOrderFee).toHaveText(
               '0.04077612 TXW-DEVa4f6df'
             );
 
-            await CommonTransaction.rejectButton.click();
-            await FinalTransactionScreen.root.waitForDisplayed();
-            await FinalTransactionScreen.closeButton.click();
+            await rejectTransaction();
           });
 
           it('Approved', async function () {
-            await performSignOrder(createOrder, INPUT);
-
-            await CommonTransaction.approveButton.click();
-            await FinalTransactionScreen.root.waitForDisplayed();
-            await FinalTransactionScreen.closeButton.click();
-
             await browser.switchToWindow(tabOrigin);
-            const approveResult = await browser.execute(() => window.result);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await approveTransaction();
 
-            const parsedApproveResult = JSONbn.parse(approveResult);
-
+            const parsedApproveResult = await getResult();
             const expectedApproveResult = {
               chainId: 84,
               orderType: INPUT.data.orderType,
@@ -3675,16 +3061,13 @@ describe('Signature', function () {
               senderPublicKey,
               matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
             };
-
             const bytes = makeOrderBytes({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
             });
-
             expect(parsedApproveResult).toMatchObject(expectedApproveResult);
             expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
             expect(
               await verifySignature(
                 senderPublicKeyBytes,
@@ -3719,50 +3102,40 @@ describe('Signature', function () {
           } as const;
 
           it('Rejected', async function () {
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
             await performSignOrder(createOrder, INPUT);
+            await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-            expect(await CommonTransaction.originAddress).toHaveText(
-              WHITELIST[3]
-            );
-            expect(await CommonTransaction.accountName).toHaveText('rich');
-            expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-            await expect(await CreateOrderMessage.orderTitle).toHaveText(
+            await expect(CreateOrderMessage.orderTitle).toHaveText(
               'Buy: Tether USD/USD-Nea272c'
             );
-            await expect(await CreateOrderMessage.orderAmount).toHaveText(
+            await expect(CreateOrderMessage.orderAmount).toHaveText(
               '+1.000000 Tether USD'
             );
-            await expect(await CreateOrderMessage.orderPriceTitle).toHaveText(
+            await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
               '-1.014002 USD-Nea272c'
             );
-            await expect(await CreateOrderMessage.orderPrice).toHaveText(
+            await expect(CreateOrderMessage.orderPrice).toHaveText(
               '1.014002 USD-Nea272c'
             );
-            await expect(
-              await CreateOrderMessage.orderMatcherPublicKey
-            ).toHaveText(INPUT.data.matcherPublicKey);
-            await expect(await CreateOrderMessage.createOrderFee).toHaveText(
+            await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
+              INPUT.data.matcherPublicKey
+            );
+            await expect(CreateOrderMessage.createOrderFee).toHaveText(
               '0.04077612 TXW-DEVa4f6df'
             );
 
-            await CommonTransaction.rejectButton.click();
-            await FinalTransactionScreen.root.waitForDisplayed();
-            await FinalTransactionScreen.closeButton.click();
+            await rejectTransaction();
           });
 
           it('Approved', async function () {
-            await performSignOrder(createOrder, INPUT);
-
-            await CommonTransaction.approveButton.click();
-            await FinalTransactionScreen.root.waitForDisplayed();
-            await FinalTransactionScreen.closeButton.click();
-
             await browser.switchToWindow(tabOrigin);
-            const approveResult = await browser.execute(() => window.result);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await approveTransaction();
 
-            const parsedApproveResult = JSONbn.parse(approveResult);
-
+            const parsedApproveResult = await getResult();
             const expectedApproveResult = {
               chainId: 84,
               orderType: INPUT.data.orderType,
@@ -3779,16 +3152,13 @@ describe('Signature', function () {
               senderPublicKey,
               matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
             };
-
             const bytes = makeOrderBytes({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
             });
-
             expect(parsedApproveResult).toMatchObject(expectedApproveResult);
             expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
             expect(
               await verifySignature(
                 senderPublicKeyBytes,
@@ -3822,50 +3192,40 @@ describe('Signature', function () {
           } as const;
 
           it('Rejected', async function () {
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
             await performSignOrder(createOrder, INPUT);
+            await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-            expect(await CommonTransaction.originAddress).toHaveText(
-              WHITELIST[3]
-            );
-            expect(await CommonTransaction.accountName).toHaveText('rich');
-            expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-            await expect(await CreateOrderMessage.orderTitle).toHaveText(
+            await expect(CreateOrderMessage.orderTitle).toHaveText(
               'Buy: Tether USD/USD-Nea272c'
             );
-            await expect(await CreateOrderMessage.orderAmount).toHaveText(
+            await expect(CreateOrderMessage.orderAmount).toHaveText(
               '+1.000000 Tether USD'
             );
-            await expect(await CreateOrderMessage.orderPriceTitle).toHaveText(
+            await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
               '-1.014002 USD-Nea272c'
             );
-            await expect(await CreateOrderMessage.orderPrice).toHaveText(
+            await expect(CreateOrderMessage.orderPrice).toHaveText(
               '1.014002 USD-Nea272c'
             );
-            await expect(
-              await CreateOrderMessage.orderMatcherPublicKey
-            ).toHaveText(INPUT.data.matcherPublicKey);
-            await expect(await CreateOrderMessage.createOrderFee).toHaveText(
+            await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
+              INPUT.data.matcherPublicKey
+            );
+            await expect(CreateOrderMessage.createOrderFee).toHaveText(
               '0.04077612 TXW-DEVa4f6df'
             );
 
-            await CommonTransaction.rejectButton.click();
-            await FinalTransactionScreen.root.waitForDisplayed();
-            await FinalTransactionScreen.closeButton.click();
+            await rejectTransaction();
           });
 
           it('Approved', async function () {
-            await performSignOrder(createOrder, INPUT);
-
-            await CommonTransaction.approveButton.click();
-            await FinalTransactionScreen.root.waitForDisplayed();
-            await FinalTransactionScreen.closeButton.click();
-
             await browser.switchToWindow(tabOrigin);
-            const approveResult = await browser.execute(() => window.result);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await approveTransaction();
 
-            const parsedApproveResult = JSONbn.parse(approveResult);
-
+            const parsedApproveResult = await getResult();
             const expectedApproveResult = {
               chainId: 84,
               orderType: INPUT.data.orderType,
@@ -3882,16 +3242,13 @@ describe('Signature', function () {
               senderPublicKey,
               matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
             };
-
             const bytes = makeOrderBytes({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
             });
-
             expect(parsedApproveResult).toMatchObject(expectedApproveResult);
             expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
-
             expect(
               await verifySignature(
                 senderPublicKeyBytes,
@@ -3912,41 +3269,31 @@ describe('Signature', function () {
       };
 
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignCancelOrder(cancelOrder, INPUT);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-        await expect(await CancelOrderTransactionScreen.orderId).toHaveText(
+        await expect(CancelOrderTransactionScreen.orderId).toHaveText(
           INPUT.data.id
         );
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignCancelOrder(cancelOrder, INPUT);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const approveResult = await browser.execute(() => window.result);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignCancelOrder(cancelOrder, INPUT);
+        await approveTransaction();
 
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = await getResult();
         const expectedApproveResult = {
           orderId: INPUT.data.id,
           sender: senderPublicKey,
         };
-
         const bytes = makeCancelOrderBytes(expectedApproveResult);
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -3963,7 +3310,6 @@ describe('Signature', function () {
       tx: MessageInputTx[],
       name: string
     ) {
-      await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
       await browser.execute(
@@ -4009,16 +3355,14 @@ describe('Signature', function () {
     }
 
     it('Rejected', async function () {
+      await browser.switchToWindow(tabOrigin);
+      await browser.navigateTo(`https://${WHITELIST[3]}`);
       await performSignTransactionPackage(PACKAGE, 'Test package');
+      await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-      expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-      expect(await CommonTransaction.accountName).toHaveText('rich');
-      expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-      await expect(await PackageTransactionScreen.packageCountTitle).toHaveText(
+      await expect(PackageTransactionScreen.packageCountTitle).toHaveText(
         '7 Transactions'
       );
-
       await checkPackageAmounts([
         '+92233720368.54775807 ShortToken',
         '-123456790 NonScriptToken',
@@ -4029,71 +3373,71 @@ describe('Signature', function () {
         '-0.00000001 WAVES',
         '-1 NonScriptToken',
       ]);
-
       await checkPackageFees(['1.034 WAVES']);
-
       await PackageTransactionScreen.showTransactionsButton.click();
       expect(await PackageTransactionScreen.getPackageItems()).toHaveLength(7);
 
       const [issue, transfer, reissue, burn, lease, cancelLease, invokeScript] =
         await PackageTransactionScreen.getPackageItems();
 
-      expect(await issue.type).toHaveText('Issue Smart Token');
-      expect(await issue.amount).toHaveText('92233720368.54775807 ShortToken');
-      expect(await issue.description).toHaveText(
+      await expect(issue.type).toHaveText('Issue Smart Token');
+      await expect(issue.amount).toHaveText('92233720368.54775807 ShortToken');
+      await expect(issue.description).toHaveText(
         'Full description of ShortToken'
       );
-      expect(await issue.decimals).toHaveText('8');
-      expect(await issue.reissuable).toHaveText('Reissuable');
-      expect(await issue.contentScript).toHaveText('base64:BQbtKNoM');
-      expect(await issue.fee).toHaveText('1.004 WAVES');
+      await expect(issue.decimals).toHaveText('8');
+      await expect(issue.reissuable).toHaveText('Reissuable');
+      await expect(issue.contentScript).toHaveText('base64:BQbtKNoM');
+      await expect(issue.fee).toHaveText('1.004 WAVES');
 
-      expect(await transfer.transferAmount).toHaveText(
+      await expect(transfer.transferAmount).toHaveText(
         '-123456790 NonScriptToken'
       );
-      expect(await transfer.recipient).toHaveText(
+      await expect(transfer.recipient).toHaveText(
         '3N5HNJz5otiU...BVv5HhYLdhiD'
       );
-      expect(await transfer.attachmentContent).toHaveText('base64:BQbtKNoM');
-      expect(await transfer.fee).toHaveText('0.005 WAVES');
+      await expect(transfer.attachmentContent).toHaveText('base64:BQbtKNoM');
+      await expect(transfer.fee).toHaveText('0.005 WAVES');
 
-      expect(await reissue.reissueAmount).toHaveText(
+      await expect(reissue.reissueAmount).toHaveText(
         '+123456790 NonScriptToken'
       );
-      expect(await reissue.fee).toHaveText('0.005 WAVES');
+      await expect(reissue.fee).toHaveText('0.005 WAVES');
 
-      expect(await burn.burnAmount).toHaveText('-123456790 NonScriptToken');
-      expect(await burn.fee).toHaveText('0.005 WAVES');
+      await expect(burn.burnAmount).toHaveText('-123456790 NonScriptToken');
+      await expect(burn.fee).toHaveText('0.005 WAVES');
 
-      expect(await lease.leaseAmount).toHaveText('1.23456790 WAVES');
-      expect(await lease.leaseRecipient).toHaveText(
+      await expect(lease.leaseAmount).toHaveText('1.23456790 WAVES');
+      await expect(lease.leaseRecipient).toHaveText(
         '3N5HNJz5otiU...BVv5HhYLdhiD'
       );
-      expect(await lease.fee).toHaveText('0.005 WAVES');
+      await expect(lease.fee).toHaveText('0.005 WAVES');
 
-      expect(await cancelLease.cancelLeaseAmount).toHaveText(
+      await expect(cancelLease.cancelLeaseAmount).toHaveText(
         '0.00000001 WAVES'
       );
-      expect(await cancelLease.cancelLeaseRecipient).toHaveText(
+      await expect(cancelLease.cancelLeaseRecipient).toHaveText(
         'alias:T:merry'
       );
-      expect(await cancelLease.fee).toHaveText('0.005 WAVES');
+      await expect(cancelLease.fee).toHaveText('0.005 WAVES');
 
-      expect(await invokeScript.invokeScriptPaymentsTitle).toHaveText(
+      await expect(invokeScript.invokeScriptPaymentsTitle).toHaveText(
         '2 Payments'
       );
-      expect(await invokeScript.invokeScriptDApp).toHaveText(
-        INVOKE_SCRIPT.data.dApp
+      await expect(invokeScript.invokeScriptDApp).toHaveText(
+        '3My2kBJaGfeM...3y8rAgfV2EAx'
       );
-      expect(await invokeScript.invokeScriptFunction).toHaveText(
+      await expect(invokeScript.invokeScriptFunction).toHaveText(
         INVOKE_SCRIPT.data.call.function
       );
 
       const invokeArguments = await invokeScript.getInvokeArguments();
       const actualArgs = await Promise.all(
         invokeArguments.map(async it => {
-          const type = await it.type.getText();
-          const value = await it.value.getText();
+          const [type, value] = await Promise.all([
+            it.type.getText(),
+            it.value.getText(),
+          ]);
           return { type, value };
         })
       );
@@ -4122,33 +3466,28 @@ describe('Signature', function () {
         '1 NonScriptToken',
       ]);
 
-      expect(await invokeScript.fee).toHaveText('0.005 WAVES');
+      await expect(invokeScript.fee).toHaveText('0.005 WAVES');
 
-      await CommonTransaction.rejectButton.click();
-      await FinalTransactionScreen.root.waitForDisplayed();
-      await FinalTransactionScreen.closeButton.click();
+      await rejectTransaction();
     });
 
     it('Approved', async function () {
+      await browser.switchToWindow(tabOrigin);
+      await browser.navigateTo(`https://${WHITELIST[3]}`);
       await performSignTransactionPackage(PACKAGE, 'Test package');
-
-      await CommonTransaction.approveButton.click();
-      await FinalTransactionScreen.root.waitForDisplayed();
-      await FinalTransactionScreen.closeButton.click();
+      await approveTransaction();
 
       await browser.switchToWindow(tabOrigin);
-      const approveResult = await browser.execute<string[], []>(
+      const approvedResult = await browser.execute<string[], []>(
         () => window.result
       );
+      expect(approvedResult).toHaveLength(7);
 
-      expect(approveResult).toHaveLength(7);
-
-      const parsedApproveResult = approveResult.map<{
+      const parsedApproveResult = approvedResult.map<{
         id: string;
         proofs: string[];
         timestamp: number;
       }>(result => JSONbn.parse(result));
-
       const expectedApproveResult0 = {
         type: ISSUE.type,
         version: 3 as const,
@@ -4162,16 +3501,13 @@ describe('Signature', function () {
         fee: 100400000,
         chainId: 84,
       };
-
       const bytes0 = makeTxBytes({
         ...expectedApproveResult0,
         quantity: ISSUE.data.quantity,
         timestamp: parsedApproveResult[0].timestamp,
       });
-
       expect(parsedApproveResult[0]).toMatchObject(expectedApproveResult0);
       expect(parsedApproveResult[0].id).toBe(base58Encode(blake2b(bytes0)));
-
       expect(
         await verifySignature(
           senderPublicKeyBytes,
@@ -4192,15 +3528,12 @@ describe('Signature', function () {
         feeAssetId: null,
         chainId: 84,
       };
-
       const bytes1 = makeTxBytes({
         ...expectedApproveResult1,
         timestamp: parsedApproveResult[1].timestamp,
       });
-
       expect(parsedApproveResult[1]).toMatchObject(expectedApproveResult1);
       expect(parsedApproveResult[1].id).toBe(base58Encode(blake2b(bytes1)));
-
       expect(
         await verifySignature(
           senderPublicKeyBytes,
@@ -4219,15 +3552,12 @@ describe('Signature', function () {
         chainId: 84,
         fee: 500000,
       };
-
       const bytes2 = makeTxBytes({
         ...expectedApproveResult2,
         timestamp: parsedApproveResult[2].timestamp,
       });
-
       expect(parsedApproveResult[2]).toMatchObject(expectedApproveResult2);
       expect(parsedApproveResult[2].id).toBe(base58Encode(blake2b(bytes2)));
-
       expect(
         await verifySignature(
           senderPublicKeyBytes,
@@ -4245,15 +3575,12 @@ describe('Signature', function () {
         chainId: 84,
         fee: 500000,
       };
-
       const bytes3 = makeTxBytes({
         ...expectedApproveResult3,
         timestamp: parsedApproveResult[3].timestamp,
       });
-
       expect(parsedApproveResult[3]).toMatchObject(expectedApproveResult3);
       expect(parsedApproveResult[3].id).toBe(base58Encode(blake2b(bytes3)));
-
       expect(
         await verifySignature(
           senderPublicKeyBytes,
@@ -4271,15 +3598,12 @@ describe('Signature', function () {
         fee: 500000,
         chainId: 84,
       };
-
       const bytes4 = makeTxBytes({
         ...expectedApproveResult4,
         timestamp: parsedApproveResult[4].timestamp,
       });
-
       expect(parsedApproveResult[4]).toMatchObject(expectedApproveResult4);
       expect(parsedApproveResult[4].id).toBe(base58Encode(blake2b(bytes4)));
-
       expect(
         await verifySignature(
           senderPublicKeyBytes,
@@ -4296,15 +3620,12 @@ describe('Signature', function () {
         fee: 500000,
         chainId: 84,
       };
-
       const bytes5 = makeTxBytes({
         ...expectedApproveResult5,
         timestamp: parsedApproveResult[5].timestamp,
       });
-
       expect(parsedApproveResult[5]).toMatchObject(expectedApproveResult5);
       expect(parsedApproveResult[5].id).toBe(base58Encode(blake2b(bytes5)));
-
       expect(
         await verifySignature(
           senderPublicKeyBytes,
@@ -4324,15 +3645,12 @@ describe('Signature', function () {
         feeAssetId: null,
         chainId: 84,
       };
-
       const bytes6 = makeTxBytes({
         ...expectedApproveResult6,
         timestamp: parsedApproveResult[6].timestamp,
       });
-
       expect(parsedApproveResult[6]).toMatchObject(expectedApproveResult6);
       expect(parsedApproveResult[6].id).toBe(base58Encode(blake2b(bytes6)));
-
       expect(
         await verifySignature(
           senderPublicKeyBytes,
@@ -4345,7 +3663,6 @@ describe('Signature', function () {
 
   describe('Custom data', function () {
     async function performSignCustomData(data: MessageInputCustomData) {
-      await browser.switchToWindow(tabOrigin);
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
       // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -4366,40 +3683,32 @@ describe('Signature', function () {
 
     describe('Version 1', function () {
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignCustomData(CUSTOM_DATA_V1);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
-
-        await expect(await DataTransactionScreen.contentScript).toHaveText(
+        await expect(DataTransactionScreen.contentScript).toHaveText(
           'base64:AADDEE=='
         );
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignCustomData(CUSTOM_DATA_V1);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const approveResult = await browser.execute(() => window.result);
-        const parsedApproveResult = JSON.parse(approveResult);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignCustomData(CUSTOM_DATA_V1);
+        await approveTransaction();
 
+        const parsedApproveResult = await getResult();
         const expectedApproveResult = {
           binary: CUSTOM_DATA_V1.binary,
           version: CUSTOM_DATA_V1.version,
           publicKey: senderPublicKey,
           hash: 'BddvukE8EsQ22TC916wr9hxL5MTinpcxj7cKmyQFu1Qj',
         };
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,
@@ -4435,11 +3744,10 @@ describe('Signature', function () {
       }
 
       it('Rejected', async function () {
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
         await performSignCustomData(CUSTOM_DATA_V2);
-
-        expect(await CommonTransaction.originAddress).toHaveText(WHITELIST[3]);
-        expect(await CommonTransaction.accountName).toHaveText('rich');
-        expect(await CommonTransaction.originNetwork).toHaveText('Testnet');
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await checkDataEntries([
           {
@@ -4464,31 +3772,23 @@ describe('Signature', function () {
           },
         ]);
 
-        await CommonTransaction.rejectButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignCustomData(CUSTOM_DATA_V2);
-        await CommonTransaction.approveButton.click();
-        await FinalTransactionScreen.root.waitForDisplayed();
-        await FinalTransactionScreen.closeButton.click();
-
         await browser.switchToWindow(tabOrigin);
-        const approveResult = await browser.execute(() => window.result);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignCustomData(CUSTOM_DATA_V2);
+        await approveTransaction();
 
-        const parsedApproveResult = JSON.parse(approveResult);
-
+        const parsedApproveResult = await getResult();
         const expectedApproveResult = {
           data: CUSTOM_DATA_V2.data,
           version: CUSTOM_DATA_V2.version,
           publicKey: senderPublicKey,
           hash: 'CntDRDubtuhwBKsmCTtZzMLVF9TFK6hLoWP424V8Zz2K',
         };
-
         expect(parsedApproveResult).toMatchObject(expectedApproveResult);
-
         expect(
           await verifySignature(
             senderPublicKeyBytes,

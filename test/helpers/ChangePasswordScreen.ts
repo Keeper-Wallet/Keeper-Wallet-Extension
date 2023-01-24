@@ -8,7 +8,7 @@ export const ChangePasswordScreen = {
   },
 
   get oldPasswordError() {
-    return this.root.$('#oldError');
+    return this.root.findByTestId$('oldError');
   },
 
   get newPasswordInput() {
@@ -16,7 +16,7 @@ export const ChangePasswordScreen = {
   },
 
   get newPasswordError() {
-    return this.root.$('#firstError');
+    return this.root.findByTestId$('firstError');
   },
 
   get passwordConfirmationInput() {
@@ -24,7 +24,7 @@ export const ChangePasswordScreen = {
   },
 
   get passwordConfirmationError() {
-    return this.root.$('#secondError');
+    return this.root.findByTestId$('secondError');
   },
 
   get saveButton() {

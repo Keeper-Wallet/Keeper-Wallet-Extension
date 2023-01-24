@@ -5,21 +5,30 @@ services:
     platform: linux/amd64
     ports:
       - '6869:6869'
-  chrome:
-    environment:
-      - SE_NODE_SESSION_TIMEOUT=3000
-    image: selenium/standalone-chrome
-    shm_size: 4gb
-    platform: linux/amd64
+  selenium-hub:
+    image: selenium/hub:latest
+    container_name: selenium-hub
     ports:
+      - '4442:4442'
+      - '4443:4443'
       - '4444:4444'
+    healthcheck:
+      test: curl --fail http://localhost:4444/wd/hub/status
+      interval: 3s
+  chrome:
+    image: selenium/node-chrome:latest
+    shm_size: 4gb
+    depends_on:
+      - selenium-hub
+    ports:
       - '5900:5900'
       - '7900:7900'
     volumes:
       - .:/app:ro
-    healthcheck:
-      test: curl --fail http://localhost:4444/wd/hub/status
-      interval: 3s
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
   chrome-video:
     depends_on:
       - chrome

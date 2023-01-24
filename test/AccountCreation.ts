@@ -288,7 +288,7 @@ describe('Account creation', function () {
       await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST.NAME);
       await NewWalletNameScreen.continueButton.click();
       await ImportSuccessScreen.addAnotherAccountButton.click();
-      expect(await ImportFormScreen.root).toBeDisplayed();
+      await expect(ImportFormScreen.root).toBeDisplayed();
 
       await browser.switchToWindow(tabKeeper);
       await browser.openKeeperPopup();
@@ -309,7 +309,7 @@ describe('Account creation', function () {
             await ImportViaSeedScreen.seedInput.setValue('too short seed');
             await ImportViaSeedScreen.importAccountButton.click();
 
-            expect(await ImportViaSeedScreen.errorMessage).toHaveText(
+            await expect(ImportViaSeedScreen.errorMessage).toHaveText(
               'Seed cannot be shorter than 24 characters'
             );
           });
@@ -317,11 +317,11 @@ describe('Account creation', function () {
           it('Can be switched to existing account', async () => {
             await ImportViaSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
             await waitForExpect(async () => {
-              expect(
-                await ImportViaSeedScreen.switchAccountButton
+              await expect(
+                ImportViaSeedScreen.switchAccountButton
               ).toBeDisplayed();
             });
-            expect(await ImportViaSeedScreen.errorMessage).toHaveTextContaining(
+            await expect(ImportViaSeedScreen.errorMessage).toHaveTextContaining(
               'Account already known as'
             );
           });
@@ -335,12 +335,16 @@ describe('Account creation', function () {
 
             // insert char
             await ImportViaSeedScreen.seedInput.addValue('W');
-            expect(ImportViaSeedScreen.address).not.toHaveText(prevAddress);
+            await expect(ImportViaSeedScreen.address).not.toHaveText(
+              prevAddress
+            );
             prevAddress = await ImportViaSeedScreen.address.getText();
 
             // delete inserted char
             await browser.keys('Backspace');
-            expect(ImportViaSeedScreen.address).not.toHaveText(prevAddress);
+            await expect(ImportViaSeedScreen.address).not.toHaveText(
+              prevAddress
+            );
           });
 
           it('You can paste a seed from the clipboard');
@@ -358,10 +362,8 @@ describe('Account creation', function () {
             await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST.NAME);
             await browser.keys('Tab');
 
-            expect(await NewWalletNameScreen.error).toHaveText(
-              'name already exist'
-            );
-            expect(await NewWalletNameScreen.continueButton).toBeDisabled();
+            await expect(NewWalletNameScreen.error).toHaveText('Name already exist');
+            await expect(NewWalletNameScreen.continueButton).toBeDisabled();
           });
 
           it('Additional account successfully imported while entered correct account name', async () => {
@@ -370,17 +372,17 @@ describe('Account creation', function () {
             );
             await browser.keys('Tab');
 
-            expect(await NewWalletNameScreen.error).toHaveText('');
+            await expect(NewWalletNameScreen.error).toHaveText('');
 
             await NewWalletNameScreen.continueButton.click();
 
             await ImportSuccessScreen.addAnotherAccountButton.click();
-            expect(await ImportFormScreen.root).toBeExisting();
+            await expect(ImportFormScreen.root).toBeExisting();
 
             await browser.switchToWindow(tabKeeper);
             await browser.openKeeperPopup();
 
-            expect(await HomeScreen.activeAccountName).toHaveText(
+            await expect(HomeScreen.activeAccountName).toHaveText(
               ACCOUNTS.MORE_24_CHARS.NAME
             );
             7;

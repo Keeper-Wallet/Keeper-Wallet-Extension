@@ -12,11 +12,11 @@ export const CommonTransaction = {
   },
 
   get accountName() {
-    return this.root.$("[class*='accountName@wallet']");
+    return this.root.$("[class*='name@wallet']");
   },
 
   get originNetwork() {
-    return this.root.$("[class*='originNetwork@transactions']");
+    return this.root.findByTestId$('originNetwork');
   },
 
   get rejectButton() {

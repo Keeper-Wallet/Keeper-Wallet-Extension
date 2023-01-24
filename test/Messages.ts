@@ -99,7 +99,7 @@ describe('Messages', function () {
     await browser.switchToWindow(messageWindow);
     await browser.refresh();
 
-    expect(AuthMessageScreen.root).toBeDisplayed();
+    await expect(AuthMessageScreen.root).toBeDisplayed();
   });
 
   it('When allowing access to messages - the message is instantly displayed', async function () {
@@ -129,7 +129,7 @@ describe('Messages', function () {
     await AuthMessageScreen.permissionDetailsButton.click();
     await AuthMessageScreen.authButton.click();
 
-    expect(await FinalTransactionScreen.transactionContent).toHaveText(
+    await expect(FinalTransactionScreen.transactionContent).toHaveText(
       'Request has been signed!'
     );
 
@@ -207,7 +207,7 @@ describe('Messages', function () {
 
   it('The "Clear all" button closes all messages', async function () {
     await MessagesScreen.clearAllButton.click();
-    expect(await HomeScreen.root).toBeDisplayed();
+    await expect(HomeScreen.root).toBeDisplayed();
 
     await browser.closeWindow();
     await browser.switchToWindow(tabOrigin);
