@@ -7,6 +7,7 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
+      - run: cat /proc/meminfo
       - uses: styfle/cancel-workflow-action@0.11.0
       - run: sudo chown -R $USER:$USER $GITHUB_WORKSPACE
       - uses: actions/checkout@v3
@@ -17,6 +18,7 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn run build
       - run: docker compose up --wait
+      - run: docker exec keeper-wallet-extension-chrome-1 cat /proc/meminfo
       - run: yarn test
       - if: ${{ always() }}
         uses: jwalton/gh-docker-logs@v2.2.0
