@@ -6,6 +6,8 @@ services:
     ports:
       - '6869:6869'
   chrome:
+    environment:
+      - SE_NODE_SESSION_TIMEOUT=3000
     image: selenium/standalone-chrome
     shm_size: 2gb
     platform: linux/amd64
