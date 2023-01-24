@@ -9,7 +9,7 @@ services:
     environment:
       - SE_NODE_SESSION_TIMEOUT=3000
     image: selenium/standalone-chrome
-    shm_size: 2gb
+    shm_size: 4gb
     platform: linux/amd64
     ports:
       - '4444:4444'
