@@ -89,7 +89,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
     state => state.swappableAssetIdsByVendor
   );
   const swappableAssetIdsSet = useMemo(
-    () => new Set(...Object.values(swappableAssetIdsByVendor).flat()),
+    () => new Set(Object.values(swappableAssetIdsByVendor).flat()),
     [swappableAssetIdsByVendor]
   );
 
