@@ -629,10 +629,13 @@ class BackgroundService extends EventEmitter {
 
         await this.messageController.getMessageResult(message.id);
       },
-      signTransaction: (account: PreferencesAccount, tx: MessageTx) =>
-        this.walletController
+      signTransaction: async (account: PreferencesAccount, tx: MessageTx) => {
+        const signature = await this.walletController
           .getWallet(account.address, account.network)
-          .signTx(makeTxBytes(tx), tx),
+          .signTx(makeTxBytes(tx), tx);
+
+        return base58Encode(signature);
+      },
       broadcastTransaction: (tx: MessageTx) =>
         this.networkController.broadcastTransaction(tx),
       getExtraFee: (address: string, network: NetworkName) =>

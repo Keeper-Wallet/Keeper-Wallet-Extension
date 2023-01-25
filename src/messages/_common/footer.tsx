@@ -1,8 +1,8 @@
+import { useSign } from '_core/signContext';
 import clsx from 'clsx';
 import { usePopupSelector } from 'popup/store/react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
 import * as transactionsStyles from 'ui/components/pages/styles/transactions.module.css';
 import { ApproveBtn } from 'ui/components/ui/buttons/ApproveBtn';
 import { Button } from 'ui/components/ui/buttons/Button';
@@ -23,6 +23,40 @@ export function MessageFooter({ message }: Props) {
 
   const [isApprovePending, setIsApprovePending] = useState(false);
   const [isRejectPending, setIsRejectPending] = useState(false);
+
+  const onConfirm = useCallback(async () => {
+    try {
+      setIsApprovePending(true);
+      await Background.approve(message.id);
+      setIsApprovePending(false);
+    } catch (err) {
+      setIsApprovePending(false);
+
+      const errorMessage =
+        err && typeof err === 'object' && 'message' in err
+          ? String(err.message)
+          : String(err);
+
+      if (
+        message.origin &&
+        (await Background.shouldIgnoreError(
+          'contentScriptApprove',
+          errorMessage
+        ))
+      )
+        return;
+
+      if (
+        !message.origin &&
+        (await Background.shouldIgnoreError('popupApprove', errorMessage))
+      )
+        return;
+
+      throw err;
+    }
+  }, [message.id, message.origin]);
+
+  const { sign, isSignPending } = useSign(onConfirm);
 
   return (
     <div
@@ -49,59 +83,23 @@ export function MessageFooter({ message }: Props) {
         {t('sign.reject')}
       </Button>
 
-      <SignWrapper
-        onConfirm={async () => {
-          try {
-            setIsApprovePending(true);
-            await Background.approve(message.id);
-            setIsApprovePending(false);
-          } catch (err) {
-            setIsApprovePending(false);
-
-            const errorMessage =
-              err && typeof err === 'object' && 'message' in err
-                ? String(err.message)
-                : String(err);
-
-            if (
-              message.origin &&
-              (await Background.shouldIgnoreError(
-                'contentScriptApprove',
-                errorMessage
-              ))
-            )
-              return;
-
-            if (
-              !message.origin &&
-              (await Background.shouldIgnoreError('popupApprove', errorMessage))
-            )
-              return;
-
-            throw err;
-          }
-        }}
+      <ApproveBtn
+        autoClickProtection={autoClickProtection}
+        disabled={isSignPending || isApprovePending || isRejectPending}
+        id="approve"
+        loading={isSignPending || isApprovePending}
+        type="submit"
+        view="submit"
+        onClick={sign}
       >
-        {({ onPrepare, pending }) => (
-          <ApproveBtn
-            autoClickProtection={autoClickProtection}
-            disabled={pending || isApprovePending || isRejectPending}
-            id="approve"
-            loading={pending || isApprovePending}
-            type="submit"
-            view="submit"
-            onClick={onPrepare}
-          >
-            {t(
-              message.type === 'auth'
-                ? 'sign.auth'
-                : 'broadcast' in message && message.broadcast
-                ? 'sign.confirmButton'
-                : 'sign.signButton'
-            )}
-          </ApproveBtn>
+        {t(
+          message.type === 'auth'
+            ? 'sign.auth'
+            : 'broadcast' in message && message.broadcast
+            ? 'sign.confirmButton'
+            : 'sign.signButton'
         )}
-      </SignWrapper>
+      </ApproveBtn>
     </div>
   );
 }
