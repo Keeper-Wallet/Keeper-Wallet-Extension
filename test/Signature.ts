@@ -111,6 +111,12 @@ describe('Signature', function () {
     tabOrigin = tabAccounts;
     await browser.navigateTo(`https://${WHITELIST[3]}`);
   });
+  
+  after(async function () {
+    const tabKeeper = (await browser.createWindow('tab')).handle;
+    await App.closeBgTabs(tabKeeper);
+    await App.resetVault();
+  });
 
   const validateCommonFields = async (
     address: string,

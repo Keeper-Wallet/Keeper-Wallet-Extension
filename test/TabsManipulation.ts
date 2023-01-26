@@ -28,10 +28,8 @@ describe('Tabs manipulation', function () {
     it('new "accounts" appears when opened "popup"', async function () {
       tabKeeper = await browser.getWindowHandle();
       const { waitForNewWindows } = await Windows.captureNewWindows();
-      console.log(await browser.getWindowHandles());
       await browser.openKeeperPopup();
 
-      console.log(await browser.getWindowHandles());
       [tabAccounts] = await waitForNewWindows(1);
       await browser.switchToWindow(tabAccounts);
       await browser.refresh();
