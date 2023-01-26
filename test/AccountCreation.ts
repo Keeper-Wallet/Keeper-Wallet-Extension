@@ -362,7 +362,9 @@ describe('Account creation', function () {
             await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST.NAME);
             await browser.keys('Tab');
 
-            await expect(NewWalletNameScreen.error).toHaveText('Name already exist');
+            await expect(NewWalletNameScreen.error).toHaveText(
+              'Name already exist'
+            );
             await expect(NewWalletNameScreen.continueButton).toBeDisabled();
           });
 

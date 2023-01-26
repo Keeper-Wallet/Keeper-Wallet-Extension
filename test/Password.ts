@@ -108,7 +108,9 @@ describe('Password management', () => {
 
       await ChangePasswordScreen.newPasswordInput.setValue(PASSWORD.SHORT);
       await ChangePasswordScreen.oldPasswordInput.click();
-        await expect(ChangePasswordScreen.newPasswordError).toHaveText("Password is too short");
+      await expect(ChangePasswordScreen.newPasswordError).toHaveText(
+        'Password is too short'
+      );
       await ChangePasswordScreen.newPasswordInput.clearValue();
     });
 

@@ -111,7 +111,7 @@ describe('Signature', function () {
     tabOrigin = tabAccounts;
     await browser.navigateTo(`https://${WHITELIST[3]}`);
   });
-  
+
   after(async function () {
     const tabKeeper = (await browser.createWindow('tab')).handle;
     await App.closeBgTabs(tabKeeper);
@@ -393,7 +393,7 @@ describe('Signature', function () {
     const performMatcherRequest = async () => {
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
-       
+
       await browser.execute(
         // eslint-disable-next-line @typescript-eslint/no-shadow
         (senderPublicKey: string, timestamp: number) => {
