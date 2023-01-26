@@ -4,7 +4,7 @@ import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
-import { defaultAssetTickers, stablecoinAssetIds } from '../assets/constants';
+import { defaultAssetTickers } from '../assets/constants';
 import { ExtensionStorage, StorageLocalState } from '../storage/storage';
 import { NetworkController } from './network';
 import { RemoteConfigController } from './remoteConfig';
@@ -30,12 +30,8 @@ const SUSPICIOUS_LIST_URL =
 const SUSPICIOUS_PERIOD_IN_MINUTES = 60;
 const MAX_AGE = 60 * 60 * 1000;
 
-const MARKETDATA_URL = 'https://marketdata.wavesplatform.com/';
-const MARKETDATA_USD_ASSET_ID = 'DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p';
-const MARKETDATA_PERIOD_IN_MINUTES = 10;
-
-const STATIC_SERVICE_URL = 'https://api.keeper-wallet.app';
-const SWAPSERVICE_URL = 'https://swap-api.keeper-wallet.app';
+const DATA_SERVICE_URL = 'https://api.keeper-wallet.app';
+const SWAP_SERVICE_URL = 'https://swap-api.keeper-wallet.app';
 
 const INFO_PERIOD_IN_MINUTES = 60;
 const SWAPPABLE_ASSETS_UPDATE_PERIOD_IN_MINUTES = 240;
@@ -123,18 +119,11 @@ export class AssetInfoController {
       this.updateSuspiciousAssets();
     }
 
-    if (Object.keys(initState.usdPrices).length === 0) {
-      this.updateUsdPrices();
-    }
-
     this.updateInfo();
     this.updateSwappableAssetIdsByVendor();
 
     Browser.alarms.create('updateSuspiciousAssets', {
       periodInMinutes: SUSPICIOUS_PERIOD_IN_MINUTES,
-    });
-    Browser.alarms.create('updateUsdPrices', {
-      periodInMinutes: MARKETDATA_PERIOD_IN_MINUTES,
     });
     Browser.alarms.create('updateInfo', {
       periodInMinutes: INFO_PERIOD_IN_MINUTES,
@@ -147,9 +136,6 @@ export class AssetInfoController {
       switch (name) {
         case 'updateSuspiciousAssets':
           this.updateSuspiciousAssets();
-          break;
-        case 'updateUsdPrices':
-          this.updateUsdPrices();
           break;
         case 'updateInfo':
           this.updateInfo();
@@ -392,49 +378,39 @@ export class AssetInfoController {
     }
   }
 
-  async updateUsdPrices() {
-    const { usdPrices } = this.store.getState();
+  async updateUsdPricesByAssetIds(assetIds: string[]) {
     const network = this.getNetwork();
 
-    if (!usdPrices || network === NetworkName.Mainnet) {
-      const resp = await fetch(new URL('/api/tickers', MARKETDATA_URL));
-
-      if (resp.ok) {
-        const tickers = (await resp.json()) as Array<{
-          '24h_close': string;
-          amountAssetID: string;
-          priceAssetID: string;
-        }>;
-
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        const usdPrices = tickers.reduce<Record<string, string>>(
-          (acc, ticker) => {
-            if (
-              !stablecoinAssetIds.has(ticker.amountAssetID) &&
-              ticker.priceAssetID === MARKETDATA_USD_ASSET_ID
-            ) {
-              acc[ticker.amountAssetID] = ticker['24h_close'];
-            }
-
-            return acc;
-          },
-          {}
-        );
-
-        stablecoinAssetIds.forEach(ticker => {
-          usdPrices[ticker] = '1';
-        });
-
-        this.store.updateState({ usdPrices });
-      }
+    if (assetIds.length === 0 || network !== NetworkName.Mainnet) {
+      return;
     }
+
+    const { usdPrices } = this.store.getState();
+
+    const response = await fetch(new URL('/api/v1/rates', DATA_SERVICE_URL), {
+      method: 'POST',
+      body: JSON.stringify({ ids: assetIds }),
+    });
+
+    if (!response.ok) {
+      throw response;
+    }
+
+    const updatedUsdPrices: Record<string, string> = await response.json();
+
+    this.store.updateState({
+      usdPrices: {
+        ...usdPrices,
+        ...updatedUsdPrices,
+      },
+    });
   }
 
   async updateInfo() {
     const network = this.getNetwork();
 
     if (network === NetworkName.Mainnet) {
-      const resp = await fetch(new URL('/api/v1/assets', STATIC_SERVICE_URL));
+      const resp = await fetch(new URL('/api/v1/assets', DATA_SERVICE_URL));
 
       if (resp.ok) {
         const assets = (await resp.json()) as Array<{
@@ -463,7 +439,7 @@ export class AssetInfoController {
   }
 
   async updateSwappableAssetIdsByVendor() {
-    const resp = await fetch(new URL('/assets', SWAPSERVICE_URL));
+    const resp = await fetch(new URL('/assets', SWAP_SERVICE_URL));
     if (resp.ok) {
       const swappableAssetIdsByVendor = (await resp.json()) as Record<
         string,
