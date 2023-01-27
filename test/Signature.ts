@@ -139,7 +139,7 @@ describe('Signature', function () {
     KeeperWallet.auth({ data: 'hello' });
   }
 
-  async function  rejectTransaction({ forever = false } = {}) {
+  async function rejectTransaction({ forever = false } = {}) {
     if (forever) {
       await AuthMessageScreen.rejectArrowButton.click();
       await AuthMessageScreen.addToBlacklistButton.click();
