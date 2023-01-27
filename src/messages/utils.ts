@@ -170,9 +170,7 @@ export function makeOrderBytes(
               }[order.priceMode]
             : undefined,
         proofs: order.proofs?.map(base58Decode),
-        senderPublicKey: order.senderPublicKey
-          ? base58Decode(order.senderPublicKey)
-          : null,
+        senderPublicKey: base58Decode(order.senderPublicKey),
         timestamp: Long.fromValue(order.timestamp),
       }).finish();
 }

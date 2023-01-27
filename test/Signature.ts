@@ -2881,7 +2881,7 @@ describe('Signature', function () {
               orderType: INPUT.data.orderType,
               version: 3,
               assetPair: {
-                amountAsset: INPUT.data.amount.assetId,
+                amountAsset: null,
                 priceAsset: INPUT.data.price.assetId,
               },
               price: 0,

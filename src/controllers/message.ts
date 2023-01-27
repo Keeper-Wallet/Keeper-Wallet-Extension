@@ -1841,14 +1841,20 @@ export class MessageController extends EventEmitter {
           );
         }
 
-        const amountAssetId = messageInput.data.data.amount.assetId ?? 'WAVES';
+        const amountAssetId =
+          messageInput.data.data.amount.assetId === 'WAVES'
+            ? null
+            : messageInput.data.data.amount.assetId;
 
         const matcherFeeAssetId =
           messageInput.data.data.matcherFee.assetId === 'WAVES'
             ? null
             : messageInput.data.data.matcherFee.assetId;
 
-        const priceAssetId = messageInput.data.data.price.assetId ?? 'WAVES';
+        const priceAssetId =
+          messageInput.data.data.price.assetId === 'WAVES'
+            ? null
+            : messageInput.data.data.price.assetId;
 
         await this.assetInfoController.updateAssets([
           amountAssetId,
@@ -1858,10 +1864,10 @@ export class MessageController extends EventEmitter {
 
         const assets = this.assetInfoController.getAssets();
 
-        const amountAsset = assets[amountAssetId];
+        const amountAsset = assets[amountAssetId ?? 'WAVES'];
         invariant(amountAsset);
 
-        const priceAsset = assets[priceAssetId];
+        const priceAsset = assets[priceAssetId ?? 'WAVES'];
         invariant(priceAsset);
 
         const version = messageInput.data.data.version ?? 3;
@@ -1884,8 +1890,7 @@ export class MessageController extends EventEmitter {
             messageInput.data.data.matcherFee,
             assets
           ).toCoins(),
-          matcherFeeAssetId:
-            matcherFeeAssetId === 'WAVES' ? null : matcherFeeAssetId,
+          matcherFeeAssetId,
           matcherPublicKey:
             messageInput.data.data.matcherPublicKey ??
             (await this.networkController.getMatcherPublicKey()),
@@ -1904,7 +1909,7 @@ export class MessageController extends EventEmitter {
           priceMode: messageInput.data.data.priceMode ?? 'fixedDecimals',
           proofs: messageInput.data.data.proofs ?? [],
           senderPublicKey: messageInput.account.publicKey,
-          timestamp: Date.now(),
+          timestamp: messageInput.data.data.timestamp ?? Date.now(),
           version,
         };
 
