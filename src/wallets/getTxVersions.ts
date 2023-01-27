@@ -8,7 +8,8 @@ type TxVersions = {
   >;
 };
 
-const DEFAULT_TX_VERSIONS: TxVersions = {
+const DEFAULT_TX_VERSIONS: TxVersions &
+  Record<'1000' | '1001' | '1002' | '1003', number[]> = {
   [TRANSACTION_TYPE.ISSUE]: [3, 2],
   [TRANSACTION_TYPE.TRANSFER]: [3, 2],
   [TRANSACTION_TYPE.REISSUE]: [3, 2],
@@ -23,6 +24,10 @@ const DEFAULT_TX_VERSIONS: TxVersions = {
   [TRANSACTION_TYPE.SET_ASSET_SCRIPT]: [2, 1],
   [TRANSACTION_TYPE.INVOKE_SCRIPT]: [2, 1],
   [TRANSACTION_TYPE.UPDATE_ASSET_INFO]: [1],
+  '1000': [1],
+  '1001': [1],
+  '1002': [4, 3, 2, 1],
+  '1003': [1, 0],
 };
 
 const LEDGER_TX_VERSIONS: TxVersions = {
