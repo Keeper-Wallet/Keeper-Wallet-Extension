@@ -1,5 +1,4 @@
 {
-  "include": ["src/**/*", "test/**/*", "types/**/*"],
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./src",
@@ -7,13 +6,13 @@
     "lib": ["esnext", "dom"],
     "module": "esnext",
     "moduleResolution": "node",
+    "noEmit": true,
     "noErrorTruncation": true,
     "noUnusedLocals": true,
     "pretty": true,
     "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
-    "target": "esnext",
-    "types": ["long", "webpack/module"]
+    "target": "esnext"
   }
 }

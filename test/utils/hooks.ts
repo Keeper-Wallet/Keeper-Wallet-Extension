@@ -1,75 +1,124 @@
-import * as mocha from 'mocha';
 import {
-  Builder,
-  By,
-  Capabilities,
-  until,
-  WebDriver,
-} from 'selenium-webdriver';
-import * as chrome from 'selenium-webdriver/chrome';
+  configure,
+  setupBrowser,
+  WebdriverIOQueries,
+  WebdriverIOQueriesChainable,
+} from '@testing-library/webdriverio';
+import { expect } from 'expect-webdriverio';
+import * as mocha from 'mocha';
+import { remote } from 'webdriverio';
 
 declare global {
   interface Window {
-    result: unknown;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    result: any;
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace WebdriverIO {
+    interface Browser
+      extends WebdriverIOQueries,
+        WebdriverIOQueriesChainable<Browser> {
+      openKeeperPopup: () => Promise<void>;
+    }
+
+    interface Element
+      extends WebdriverIOQueries,
+        WebdriverIOQueriesChainable<Element> {}
+  }
+}
+
+declare module 'webdriverio' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface ChainablePromiseElement<T extends WebdriverIO.Element | undefined>
+    extends WebdriverIOQueriesChainable<T> {}
 }
 
 declare module 'mocha' {
   interface Context {
-    driver: WebDriver;
-    extensionUrl: string;
-    extensionPanel: string;
     nodeUrl: string;
-    wait: number;
   }
 }
 
 export const mochaHooks = () => ({
   async beforeAll(this: mocha.Context) {
-    this.wait = 15 * 1000;
+    this.nodeUrl = 'http://waves-private-node:6869';
 
-    const capabilities = new Capabilities().setPageLoadStrategy('eager');
+    Object.defineProperty(global, 'expect', {
+      configurable: true,
+      value: expect,
+    });
+    Object.defineProperty(global, 'browser', {
+      configurable: true,
+      value: await remote({
+        logLevel: 'warn',
+        capabilities: {
+          browserName: 'chrome',
+          'goog:chromeOptions': {
+            args: [
+              '--load-extension=/app/dist/chrome',
+              '--disable-web-security',
+            ],
+          },
+          pageLoadStrategy: 'eager',
+        },
+        path: '/wd/hub',
+        waitforTimeout: 15 * 1000,
+      }),
+    });
 
-    const chromeOptions = new chrome.Options().addArguments(
-      '--disable-web-security',
-      '--load-extension=/app/dist/chrome'
-    );
+    configure({
+      asyncUtilTimeout: 15 * 1000,
+    });
 
-    // there's no chrome builds for linux arm, so seleniarm uses chromium
-    if (process.arch === 'arm' || process.arch === 'arm64') {
-      chromeOptions.setChromeBinaryPath('/usr/bin/chromium');
-    }
+    setupBrowser(browser);
 
-    this.driver = new Builder()
-      .withCapabilities(capabilities)
-      .forBrowser('chrome')
-      .usingServer(`http://localhost:4444/wd/hub`)
-      .setChromeOptions(chromeOptions)
-      .build();
+    global.$ = browser.$.bind(browser);
+    global.$$ = browser.$$.bind(browser);
 
-    // detect Keeper Wallet extension URL
-    await this.driver.get('chrome://system');
-    for (const ext of (
-      await this.driver
-        .wait(until.elementLocated(By.css('div#extensions-value')))
-        .getText()
-    ).split('\n')) {
+    await browser.navigateTo('chrome://system');
+
+    let keeperExtensionId: string | undefined;
+
+    const extensionsValue = await $('#extensions-value').getText();
+    for (const ext of extensionsValue.split('\n')) {
       const [id, name] = ext.split(' : ');
-      if (name.toLowerCase() === 'Keeper Wallet'.toLowerCase()) {
-        this.extensionUrl = `chrome-extension://${id}/popup.html`;
-        this.extensionPanel = `chrome://extensions/?id=${id}`;
-        this.nodeUrl = 'http://waves-private-node:6869';
+
+      if (name.toLowerCase() === 'keeper wallet') {
+        keeperExtensionId = id;
         break;
       }
     }
 
-    // this helps extension to be ready
-    await this.driver.get('chrome://new-tab-page');
+    if (!keeperExtensionId) {
+      throw new Error('Could not find Keeper Wallet extension id');
+    }
+
+    // default clearValue doesn't produce input event for some reason ¯\_(ツ)_/¯
+    // https://github.com/webdriverio/webdriverio/issues/5869#issuecomment-964012560
+    browser.overwriteCommand(
+      'clearValue',
+      async function (this: WebdriverIO.Element) {
+        // https://w3c.github.io/webdriver/#keyboard-actions
+        await this.elementSendKeys(this.elementId, '\uE009a'); // Ctrl+a
+        await this.elementSendKeys(this.elementId, '\uE003'); // Backspace
+      },
+      true
+    );
+
+    browser.addCommand(
+      'openKeeperPopup',
+      async function (this: WebdriverIO.Browser) {
+        await this.navigateTo(
+          `chrome-extension://${keeperExtensionId}/popup.html`
+        );
+      }
+    );
   },
 
   async afterAll(this: mocha.Context) {
-    if (this.driver) {
-      await this.driver.quit();
+    if (typeof browser !== 'undefined') {
+      browser.deleteSession();
     }
   },
 });

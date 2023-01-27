@@ -1,86 +1,63 @@
-import { expect } from 'chai';
-import { By, until, WebElement } from 'selenium-webdriver';
-
-import { clear } from './utils';
-import { App, CreateNewAccount, Network, Windows } from './utils/actions';
-import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
+import { AccountInfoScreen } from './helpers/AccountInfoScreen';
+import { CustomNetworkModal } from './helpers/CustomNetworkModal';
+import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { AccountsHome } from './helpers/flows/AccountsHome';
+import { App } from './helpers/flows/App';
+import { Network } from './helpers/flows/Network';
+import { HomeScreen } from './helpers/HomeScreen';
+import { NetworksMenu } from './helpers/NetworksMenu';
+import { TopMenu } from './helpers/TopMenu';
+import { Windows } from './helpers/Windows';
 
 describe('Network management', function () {
   let tabKeeper: string;
 
-  before(async function () {
-    await App.initVault.call(this);
+  before(async () => {
+    await App.initVault();
   });
 
   after(async function () {
-    await Network.switchToAndCheck.call(this, 'Mainnet');
-    await App.closeBgTabs.call(this, tabKeeper);
-    await App.resetVault.call(this);
+    await Network.switchToAndCheck('Mainnet');
+    await App.closeBgTabs(tabKeeper);
+    await App.resetVault();
   });
 
   describe('Switching networks', function () {
-    it('Stagenet', async function () {
-      await Network.switchToAndCheck.call(this, 'Stagenet');
+    it('Stagenet', async () => {
+      await Network.switchToAndCheck('Stagenet');
     });
 
-    it('Mainnet', async function () {
-      await Network.switchToAndCheck.call(this, 'Mainnet');
+    it('Mainnet', async () => {
+      await Network.switchToAndCheck('Mainnet');
     });
 
     describe('Testnet', function () {
-      it('Successfully switched', async function () {
-        await Network.switchToAndCheck.call(this, 'Testnet');
+      it('Successfully switched', async () => {
+        await Network.switchToAndCheck('Testnet');
       });
 
       it('Imported testnet account starts with 3N or 3M', async function () {
-        tabKeeper = await this.driver.getWindowHandle();
+        tabKeeper = await browser.getWindowHandle();
 
-        const { waitForNewWindows } = await Windows.captureNewWindows.call(
-          this
-        );
-        await this.driver
-          .wait(
-            until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
-            this.wait
-          )
-          .click();
+        const { waitForNewWindows } = await Windows.captureNewWindows();
+        await EmptyHomeScreen.addButton.click();
         const [tabAccounts] = await waitForNewWindows(1);
 
-        await this.driver.switchTo().window(tabAccounts);
-        await this.driver.navigate().refresh();
+        await browser.switchToWindow(tabAccounts);
+        await browser.refresh();
 
-        await CreateNewAccount.importAccount.call(
-          this,
+        await AccountsHome.importAccount(
           'rich',
           'waves private node seed with waves tokens'
         );
-        await this.driver.switchTo().window(tabKeeper);
+        await browser.switchToWindow(tabKeeper);
 
-        await this.driver
-          .wait(
-            until.elementLocated(By.css('[data-testid="activeAccountCard"]')),
-            this.wait
-          )
-          .click();
+        await HomeScreen.activeAccountCard.click();
+        expect(await AccountInfoScreen.address.getText()).toMatch(/^3[MN]/i);
 
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'copyTextOverflow@copy')]")
-              ),
-              this.wait
-            )
-            .getText()
-        ).to.be.matches(/^3[MN]/i);
+        await TopMenu.backButton.click();
 
-        await this.driver.findElement(By.css('div.arrow-back-icon')).click();
-        this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'assets@assets')]")
-          ),
-          this.wait
-        );
+        await expect(HomeScreen.root).toBeDisplayed();
       });
     });
 
@@ -89,106 +66,46 @@ describe('Network management', function () {
       const customNetwork = 'Custom';
 
       it('Successfully switched', async function () {
-        await Network.switchTo.call(this, customNetwork);
+        await Network.switchTo(customNetwork);
 
-        await this.driver
-          .wait(
-            until.elementIsVisible(
-              this.driver.wait(
-                until.elementLocated(By.css('div#customNetwork')),
-                this.wait
-              )
-            ),
-            this.wait
-          )
-          .findElement(By.css('input#node_address'))
-          .sendKeys(this.nodeUrl);
+        await CustomNetworkModal.addressInput.setValue(this.nodeUrl);
+        await CustomNetworkModal.saveButton.click();
 
-        await this.driver
-          .findElement(By.css('button#networkSettingsSave'))
-          .click();
-
-        await Network.checkNetwork.call(this, customNetwork);
+        await Network.checkNetwork(customNetwork);
       });
 
       describe('Changing network settings by "Edit" button', function () {
-        let nodeAddressInput: WebElement,
-          nodeAddressError: WebElement,
-          matcherAddressInput: WebElement,
-          saveAndApplyBtn: WebElement;
-
         before(async function () {
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'editBtn@network')]")
-              )
-            )
-            .click();
-
-          await this.driver.wait(
-            until.elementIsVisible(
-              this.driver.wait(
-                until.elementLocated(By.css('div#customNetwork')),
-                this.wait
-              )
-            ),
-            this.wait
-          );
-
-          nodeAddressInput = this.driver.findElement(
-            By.css('input#node_address')
-          );
-          nodeAddressError = this.driver.findElement(
-            By.css('[data-testid="nodeAddressError"]')
-          );
-          matcherAddressInput = this.driver.findElement(
-            By.css('input#matcher_address')
-          );
-          saveAndApplyBtn = this.driver.findElement(
-            By.css('button#networkSettingsSave')
-          );
+          await NetworksMenu.editButton.click();
+          await expect(CustomNetworkModal.root).toBeDisplayed();
         });
 
         beforeEach(async function () {
-          await clear(nodeAddressInput);
-          await clear(matcherAddressInput);
+          await CustomNetworkModal.addressInput.clearValue();
+          await CustomNetworkModal.matcherAddressInput.clearValue();
         });
 
         it('Node address is required field', async function () {
-          await saveAndApplyBtn.click();
-          expect(await nodeAddressError.getText()).matches(/URL is required/i);
+          await CustomNetworkModal.saveButton.click();
+          await expect(CustomNetworkModal.addressError).toHaveText(
+            'URL is required'
+          );
         });
 
         it('The address of non-existed node was entered', async function () {
-          await nodeAddressInput.sendKeys(invalidNodeUrl);
-          await saveAndApplyBtn.click();
+          await CustomNetworkModal.addressInput.setValue(invalidNodeUrl);
+          await CustomNetworkModal.saveButton.click();
 
-          expect(
-            await this.driver.wait(
-              until.elementTextMatches(
-                this.driver.findElement(
-                  By.css('[data-testid="nodeAddressError"]')
-                ),
-                /Incorrect node address/i
-              ),
-              this.wait
-            )
-          ).not.to.be.throw;
+          await expect(CustomNetworkModal.addressError).toHaveText(
+            'Incorrect node address'
+          );
         });
 
         it('Matcher address is not required field', async function () {
-          await nodeAddressInput.sendKeys(this.nodeUrl);
-          await saveAndApplyBtn.click();
-          await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
+          await CustomNetworkModal.addressInput.setValue(this.nodeUrl);
+          await CustomNetworkModal.saveButton.click();
 
-          expect(
-            await this.driver.wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'editBtn@network')]")
-              )
-            )
-          ).not.to.be.throw;
+          await expect(NetworksMenu.editButton).toBeDisplayed();
         });
       });
     });

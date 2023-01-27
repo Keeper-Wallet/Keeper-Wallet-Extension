@@ -1,4 +1,3 @@
-import { JSONbn } from '_core/jsonBn';
 import {
   base16Decode,
   base58Decode,
@@ -15,6 +14,7 @@ import type { InvokeScriptCallArgument } from '@waves/ts-types';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import Long from 'long';
 
+import { JSONbn } from '../_core/jsonBn';
 import {
   MessageInputCustomData,
   MessageOrder,

@@ -1,248 +1,147 @@
-import * as mocha from 'mocha';
-import { By, until } from 'selenium-webdriver';
+import waitForExpect from 'wait-for-expect';
 
-import { App, Assets, Windows } from './utils/actions';
+import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { App } from './helpers/flows/App';
+import { PopupHome } from './helpers/flows/PopupHome';
+import { GetStartedScreen } from './helpers/GetStartedScreen';
+import { ImportFormScreen } from './helpers/ImportFormScreen';
+import { ImportSuccessScreen } from './helpers/ImportSuccessScreen';
+import { ImportViaSeedScreen } from './helpers/ImportViaSeedScreen';
+import { NewAccountScreen } from './helpers/NewAccountScreen';
+import { NewWalletNameScreen } from './helpers/NewWalletNameScreen';
+import { Windows } from './helpers/Windows';
 import { DEFAULT_PASSWORD } from './utils/constants';
 
 describe('Tabs manipulation', function () {
   let tabKeeper: string, tabAccounts: string;
 
-  after(async function () {
-    await App.open.call(this);
-    await App.resetVault.call(this);
+  after(async () => {
+    await browser.openKeeperPopup();
+    await App.resetVault();
   });
 
   describe('vault is empty', function () {
     after(async function () {
-      await App.closeBgTabs.call(this, tabKeeper);
+      await App.closeBgTabs(tabKeeper);
     });
 
     it('new "accounts" appears when opened "popup"', async function () {
-      tabKeeper = await this.driver.getWindowHandle();
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await App.open.call(this);
+      tabKeeper = await browser.getWindowHandle();
+      const { waitForNewWindows } = await Windows.captureNewWindows();
+      await browser.openKeeperPopup();
 
       [tabAccounts] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(tabAccounts);
-      await this.driver.navigate().refresh();
+      await browser.switchToWindow(tabAccounts);
+      await browser.refresh();
     });
 
     it('no more tabs appears when opened "popup" again', async function () {
-      await this.driver.switchTo().window(tabKeeper);
-      await this.driver.navigate().refresh();
-
-      await this.driver.wait(
-        async () => (await this.driver.getAllWindowHandles()).length === 2,
-        this.wait
-      );
+      await browser.switchToWindow(tabKeeper);
+      await browser.refresh();
+      await waitForExpect(async () => {
+        expect(await browser.getWindowHandles()).toHaveLength(2);
+      });
     });
 
     it('import form appears in "accounts" after password entered', async function () {
-      await this.driver.switchTo().window(tabAccounts);
-      await this.driver.navigate().refresh();
+      await browser.switchToWindow(tabAccounts);
+      await browser.refresh();
 
-      await this.driver
-        .wait(
-          until.elementIsVisible(
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="getStartedBtn"]')),
-              this.wait
-            )
-          ),
-          this.wait
-        )
-        .click();
-
-      await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="newAccountForm"]')),
-        this.wait
+      await GetStartedScreen.getStartedButton.click();
+      await NewAccountScreen.passwordInput.setValue(DEFAULT_PASSWORD);
+      await NewAccountScreen.passwordConfirmationInput.setValue(
+        DEFAULT_PASSWORD
       );
-      await this.driver
-        .wait(until.elementLocated(By.css('#first')), this.wait)
-        .sendKeys(DEFAULT_PASSWORD);
-      await this.driver
-        .findElement(By.css('#second'))
-        .sendKeys(DEFAULT_PASSWORD);
-      await this.driver.findElement(By.css('#termsAccepted')).click();
-      await this.driver.findElement(By.css('#conditionsAccepted')).click();
-      await this.driver
-        .wait(
-          until.elementIsEnabled(
-            this.driver.findElement(By.css('button[type=submit]'))
-          ),
-          this.wait
-        )
-        .click();
+      await NewAccountScreen.privacyPolicyCheckbox.click();
+      await NewAccountScreen.termsAndConditionsCheckbox.click();
+      await NewAccountScreen.continueButton.click();
 
-      await this.driver.wait(
-        until.elementLocated(
-          By.css(
-            '[data-testid="importForm"] [data-testid="createNewAccountBtn"]'
-          )
-        ),
-        this.wait
-      );
+      await expect(EmptyHomeScreen.root).toBeDisplayed();
     });
   });
 
   describe('vault initialized', function () {
     after(async function () {
-      await App.closeBgTabs.call(this, tabKeeper);
+      await App.closeBgTabs(tabKeeper);
     });
 
     it('"add account" button appears in "popup" when password entered', async function () {
-      await this.driver.wait(
-        until.elementIsVisible(
-          this.driver.wait(
-            until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
-            this.wait
-          )
-        ),
-        this.wait
-      );
+      await expect(EmptyHomeScreen.addButton).toBeDisplayed();
     });
 
     it('new "accounts" appears when click "add account" button in "popup"', async function () {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      tabKeeper = await this.driver.getWindowHandle();
-      await this.driver
-        .findElement(By.css('[data-testid="addAccountBtn"]'))
-        .click();
+      const { waitForNewWindows } = await Windows.captureNewWindows();
+      tabKeeper = await browser.getWindowHandle();
+      await EmptyHomeScreen.addButton.click();
       [tabAccounts] = await waitForNewWindows(1);
 
-      await this.driver.switchTo().window(tabAccounts);
-      await this.driver.navigate().refresh();
+      await browser.switchToWindow(tabAccounts);
+      await browser.refresh();
     });
 
     it('no more tabs appears when click "add account" button in "popup" again', async function () {
-      await this.driver.switchTo().window(tabKeeper);
-      await this.driver.navigate().refresh();
+      await browser.switchToWindow(tabKeeper);
+      await browser.refresh();
 
-      await this.driver.wait(
-        async () => (await this.driver.getAllWindowHandles()).length === 2,
-        this.wait
-      );
+      expect(await browser.getWindowHandles()).toHaveLength(2);
     });
 
-    async function importAccountUntilSuccess(
-      this: mocha.Context,
-      name: string,
-      seed: string
-    ) {
-      await this.driver
-        .wait(
-          until.elementIsVisible(
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="importSeed"]')),
-              this.wait
-            )
-          ),
-          this.wait
-        )
-        .click();
+    async function importAccountUntilSuccess(name: string, seed: string) {
+      await ImportFormScreen.importViaSeedButton.click();
+      await ImportViaSeedScreen.seedInput.setValue(seed);
+      await ImportViaSeedScreen.importAccountButton.click();
 
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="seedInput"]')),
-          this.wait
-        )
-        .sendKeys(seed);
-      await this.driver
-        .wait(
-          until.elementIsEnabled(
-            this.driver.findElement(By.css('[data-testid="continueBtn"]'))
-          ),
-          this.wait
-        )
-        .click();
-
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="newAccountNameInput"]')),
-          this.wait
-        )
-        .sendKeys(name);
-      await this.driver
-        .wait(
-          until.elementIsEnabled(
-            this.driver.findElement(By.css('[data-testid="continueBtn"]'))
-          ),
-          this.wait
-        )
-        .click();
+      await NewWalletNameScreen.nameInput.setValue(name);
+      await NewWalletNameScreen.continueButton.click();
     }
 
     it('success form displayed when import is done', async function () {
-      await this.driver.switchTo().window(tabAccounts);
-      await this.driver.navigate().refresh();
+      await browser.switchToWindow(tabAccounts);
+      await browser.refresh();
 
-      await importAccountUntilSuccess.call(
-        this,
+      await importAccountUntilSuccess(
         'rich',
         'waves private node seed with waves tokens'
       );
 
-      await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-        this.wait
-      );
+      await expect(ImportSuccessScreen.root).toBeDisplayed();
     });
 
     it('import form displays after "add another account" button click', async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="addAnotherAccountBtn"]')),
-          this.wait
-        )
-        .click();
-
-      await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="importForm"]')),
-        this.wait
-      );
+      await ImportSuccessScreen.addAnotherAccountButton.click();
+      await expect(ImportFormScreen.root).toBeDisplayed();
     });
 
     it('"finish" button closes "accounts" tab', async function () {
-      await importAccountUntilSuccess.call(
-        this,
+      await importAccountUntilSuccess(
         'poor',
         'waves private node seed without waves tokens'
       );
 
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-          this.wait
-        )
-        .findElement(By.css('[data-testid="finishBtn"]'))
-        .click();
-
-      await this.driver.wait(
-        async () => (await this.driver.getAllWindowHandles()).length === 1,
-        this.wait
-      );
+      await ImportSuccessScreen.finishButton.click();
+      await waitForExpect(async () => {
+        expect(await browser.getWindowHandles()).toHaveLength(1);
+      });
     });
 
     it('"accounts" appears when add another account from "popup"', async function () {
-      await this.driver.switchTo().window(tabKeeper);
+      await browser.switchToWindow(tabKeeper);
 
-      await Assets.addAccount.call(this);
+      await PopupHome.addAccount();
 
-      await this.driver.wait(
-        async () => (await this.driver.getAllWindowHandles()).length === 2,
-        this.wait
-      );
+      await waitForExpect(async () => {
+        expect(await browser.getWindowHandles()).toHaveLength(2);
+      });
     });
 
     it('no more tabs appears when add another account from "popup" again', async function () {
-      await this.driver.switchTo().window(tabKeeper);
+      await browser.switchToWindow(tabKeeper);
 
-      await Assets.addAccount.call(this);
+      await PopupHome.addAccount();
 
-      await this.driver.wait(
-        async () => (await this.driver.getAllWindowHandles()).length === 2,
-        this.wait
-      );
+      await waitForExpect(async () => {
+        expect(await browser.getWindowHandles()).toHaveLength(2);
+      });
     });
   });
 });

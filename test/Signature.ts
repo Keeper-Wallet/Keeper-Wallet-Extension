@@ -1,37 +1,55 @@
-import { JSONbn } from '_core/jsonBn';
 import {
   base58Decode,
   base58Encode,
   blake2b,
   verifySignature,
 } from '@keeper-wallet/waves-crypto';
-import BigNumber from '@waves/bignumber';
+import { BigNumber } from '@waves/bignumber';
 import { binary } from '@waves/marshall';
-import { expect } from 'chai';
 import Long from 'long';
+
+import { JSONbn } from '../src/_core/jsonBn';
 import {
   MessageInputCancelOrder,
   MessageInputCustomData,
   MessageInputOrder,
   MessageInputTx,
-} from 'messages/types';
+} from '../src/messages/types';
 import {
   makeAuthBytes,
   makeCancelOrderBytes,
   makeCustomDataBytes,
   makeOrderBytes,
   makeTxBytes,
-} from 'messages/utils';
-import * as mocha from 'mocha';
-import { By, until } from 'selenium-webdriver';
-
-import {
-  App,
-  ContentScript,
-  CreateNewAccount,
-  Network,
-  Windows,
-} from './utils/actions';
+} from '../src/messages/utils';
+import { ContentScript } from './helpers/ContentScript';
+import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { AccountsHome } from './helpers/flows/AccountsHome';
+import { App } from './helpers/flows/App';
+import { Network } from './helpers/flows/Network';
+import { HomeScreen } from './helpers/HomeScreen';
+import { AssetScriptTransactionScreen } from './helpers/messages/AssetScriptTransactionScreen';
+import { AuthMessageScreen } from './helpers/messages/AuthMessageScreen';
+import { BurnTransactionScreen } from './helpers/messages/BurnTransactionScreen';
+import { CancelOrderTransactionScreen } from './helpers/messages/CancelOrderTransactionScreen';
+import { CommonTransaction } from './helpers/messages/CommonTransaction';
+import { CreateAliasTransactionScreen } from './helpers/messages/CreateAliasTransactionScreen';
+import { CreateOrderMessage } from './helpers/messages/CreateOrderMessage';
+import { DataTransactionScreen } from './helpers/messages/DataTransactionScreen';
+import { FinalTransactionScreen } from './helpers/messages/FinalTransactionScreen';
+import { InvokeScriptTransactionScreen } from './helpers/messages/InvokeScriptTransactionScreen';
+import { IssueTransactionScreen } from './helpers/messages/IssueTransactionScreen';
+import { LeaseCancelTransactionScreen } from './helpers/messages/LeaseCancelTransactionScreen';
+import { LeaseTransactionScreen } from './helpers/messages/LeaseTransactionScreen';
+import { MassTransferTransactionScreen } from './helpers/messages/MassTransferTransactionScreen';
+import { PackageTransactionScreen } from './helpers/messages/PackageTransactionScreen';
+import { ReissueTransactionScreen } from './helpers/messages/ReissueTransactionScreen';
+import { SetScriptTransactionScreen } from './helpers/messages/SetScriptTransactionScreen';
+import { SponsorshipTransactionScreen } from './helpers/messages/SponsorshipTransactionScreen';
+import { TransferTransactionScreen } from './helpers/messages/TransferTransactionScreen';
+import { UpdateAssetInfoTransactionScreen } from './helpers/messages/UpdateAssetInfoTransactionScreen';
+import { MessagesScreen } from './helpers/MessagesScreen';
+import { Windows } from './helpers/Windows';
 import { CUSTOMLIST, WHITELIST } from './utils/constants';
 import { CUSTOM_DATA_V1, CUSTOM_DATA_V2 } from './utils/customData';
 import {
@@ -64,249 +82,173 @@ import {
 
 describe('Signature', function () {
   let tabOrigin: string;
-  let messageWindow: string | null = null;
+  let messageWindow: string;
 
   const senderPublicKey = 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV';
   const senderPublicKeyBytes = base58Decode(senderPublicKey);
 
   before(async function () {
-    await App.initVault.call(this);
-    await Network.switchToAndCheck.call(this, 'Testnet');
-    const tabKeeper = await this.driver.getWindowHandle();
+    await App.initVault();
+    await Network.switchToAndCheck('Testnet');
 
-    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-    await this.driver
-      .wait(
-        until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
-        this.wait
-      )
-      .click();
+    const tabKeeper = await browser.getWindowHandle();
+
+    const { waitForNewWindows } = await Windows.captureNewWindows();
+    await EmptyHomeScreen.addButton.click();
     const [tabAccounts] = await waitForNewWindows(1);
 
-    await this.driver.switchTo().window(tabKeeper);
-    await this.driver.close();
+    await browser.switchToWindow(tabKeeper);
+    await browser.closeWindow();
 
-    await this.driver.switchTo().window(tabAccounts);
-    await this.driver.navigate().refresh();
+    await browser.switchToWindow(tabAccounts);
+    await browser.refresh();
 
-    await CreateNewAccount.importAccount.call(
-      this,
+    await AccountsHome.importAccount(
       'rich',
       'waves private node seed with waves tokens'
     );
 
-    await this.driver.switchTo().newWindow('tab');
-    tabOrigin = await this.driver.getWindowHandle();
-
-    await this.driver.switchTo().window(tabAccounts);
-    await this.driver.close();
-    await this.driver.switchTo().window(tabOrigin);
-    await this.driver.get(`https://${WHITELIST[3]}`);
+    tabOrigin = tabAccounts;
+    await browser.navigateTo(`https://${WHITELIST[3]}`);
   });
 
   after(async function () {
-    await this.driver.switchTo().newWindow('tab');
-    const tabKeeper = await this.driver.getWindowHandle();
-    await App.closeBgTabs.call(this, tabKeeper);
-    await App.resetVault.call(this);
+    const tabKeeper = (await browser.createWindow('tab')).handle;
+    await App.closeBgTabs(tabKeeper);
+    await App.resetVault();
   });
 
-  async function checkOrigin(this: mocha.Context, expectedOrigin: string) {
-    const originEl = await this.driver.wait(
-      until.elementLocated(By.css('[class^="originAddress@transactions"]')),
-      this.wait
-    );
+  const validateCommonFields = async (
+    address: string,
+    accountName: string,
+    network: string
+  ) => {
+    await expect(CommonTransaction.originAddress).toHaveText(address);
+    await expect(CommonTransaction.accountName).toHaveText(accountName);
+    await expect(CommonTransaction.originNetwork).toHaveText(network);
+  };
 
-    const origin = await originEl.getText();
-
-    expect(origin).to.equal(expectedOrigin);
+  async function checkThereAreNoMessages() {
+    await browser.switchToWindow((await browser.createWindow('tab')).handle);
+    await browser.openKeeperPopup();
+    await expect(HomeScreen.root).toBeDisplayed();
+    await browser.closeWindow();
   }
 
-  async function checkAccountName(
-    this: mocha.Context,
-    expectedAccountName: string
-  ) {
-    const accountNameEl = await this.driver.wait(
-      until.elementLocated(By.css('[class^="name@wallet"]')),
-      this.wait
-    );
-
-    const accountName = await accountNameEl.getText();
-
-    expect(accountName).to.equal(expectedAccountName);
+  function authMessageCall() {
+    KeeperWallet.auth({ data: 'hello' });
   }
 
-  async function checkNetworkName(
-    this: mocha.Context,
-    expectedNetworkName: string
-  ) {
-    const networkNameEl = await this.driver.wait(
-      until.elementLocated(By.css('[data-testid="originNetwork"]')),
-      this.wait
-    );
-
-    const networkName = await networkNameEl.getText();
-
-    expect(networkName).to.equal(expectedNetworkName);
+  async function rejectTransaction({ forever = false } = {}) {
+    if (forever) {
+      await AuthMessageScreen.rejectArrowButton.click();
+      await AuthMessageScreen.addToBlacklistButton.click();
+    } else {
+      await CommonTransaction.rejectButton.click();
+    }
+    await FinalTransactionScreen.closeButton.click();
   }
 
-  async function approveMessage(this: mocha.Context, wait = this.wait) {
-    await this.driver
-      .wait(until.elementLocated(By.css('#approve')), wait)
-      .click();
+  async function approveTransaction() {
+    await CommonTransaction.approveButton.click();
+    await browser.pause(100);
+    await FinalTransactionScreen.closeButton.click();
+  }
 
-    await this.driver.wait(
-      until.elementLocated(By.css('.tx-approve-icon')),
-      this.wait
+  async function getResult() {
+    await browser.switchToWindow(tabOrigin);
+    return JSON.parse(
+      await browser.execute(() => {
+        const { result } = window;
+        delete window.result;
+        return result;
+      })
     );
   }
 
-  async function rejectMessage(this: mocha.Context, wait = this.wait) {
-    await this.driver
-      .wait(until.elementLocated(By.css('#reject')), wait)
-      .click();
-
-    await this.driver.wait(
-      until.elementLocated(By.css('.tx-reject-icon')),
-      this.wait
-    );
-  }
-
-  async function closeMessage(this: mocha.Context) {
-    await this.driver.findElement(By.css('#close')).click();
-    expect(messageWindow).not.to.be.null;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await Windows.waitForWindowToClose.call(this, messageWindow!);
-    messageWindow = null;
-    await this.driver.switchTo().window(tabOrigin);
+  async function validateRejectedResult({ data = 'rejected' } = {}) {
+    const [status, result] = await getResult();
+    expect(status).toBe('REJECTED');
+    expect(result).toStrictEqual({
+      message: 'User denied message',
+      data,
+      code: '10',
+    });
   }
 
   describe('Stale messages removal', function () {
+    async function triggerMessageWindow(
+      func: () => void,
+      options = { waitForNewWindow: true }
+    ) {
+      if (options.waitForNewWindow) {
+        const { waitForNewWindows } = await Windows.captureNewWindows();
+        await ContentScript.waitForKeeperWallet();
+        await browser.execute(func);
+        [messageWindow] = await waitForNewWindows(1);
+      } else {
+        await ContentScript.waitForKeeperWallet();
+        await browser.execute(func);
+      }
+      await browser.switchToWindow(messageWindow);
+      await browser.refresh();
+    }
+
     it('removes messages and closes window when tab is reloaded', async function () {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await ContentScript.waitForKeeperWallet.call(this);
-      await this.driver.executeScript(() => {
-        KeeperWallet.auth({ data: 'hello' });
-      });
-      [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
+      await triggerMessageWindow(authMessageCall);
+      await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-      await checkOrigin.call(this, WHITELIST[3]);
-      await checkAccountName.call(this, 'rich');
-      await checkNetworkName.call(this, 'Testnet');
+      await browser.switchToWindow(tabOrigin);
+      await browser.refresh();
+      await Windows.waitForWindowToClose(messageWindow);
 
-      await this.driver.switchTo().window(tabOrigin);
-      await this.driver.navigate().refresh();
-
-      await Windows.waitForWindowToClose.call(this, messageWindow);
-
-      await this.driver.switchTo().newWindow('tab');
-      await App.open.call(this);
-
-      await this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, 'assets@assets')]")
-        ),
-        this.wait
-      );
-
-      await this.driver.close();
-      await this.driver.switchTo().window(tabOrigin);
+      await checkThereAreNoMessages();
+      await browser.switchToWindow(tabOrigin);
     });
 
     it('removes messages and closes window when the tab is closed', async function () {
-      await this.driver.switchTo().newWindow('tab');
-      const newTabOrigin = await this.driver.getWindowHandle();
-      await this.driver.get(`https://${CUSTOMLIST[1]}`);
+      const newTabOrigin = (await browser.createWindow('tab')).handle;
+      await browser.switchToWindow(newTabOrigin);
+      await browser.navigateTo(`https://${CUSTOMLIST[1]}`);
 
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await ContentScript.waitForKeeperWallet.call(this);
-      await this.driver.executeScript(() => {
-        KeeperWallet.auth({ data: 'hello' });
-      });
-      [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
+      await triggerMessageWindow(authMessageCall);
+      await validateCommonFields(CUSTOMLIST[1], 'rich', 'Testnet');
 
-      await checkOrigin.call(this, CUSTOMLIST[1]);
-      await checkAccountName.call(this, 'rich');
-      await checkNetworkName.call(this, 'Testnet');
+      await browser.switchToWindow(newTabOrigin);
+      await browser.closeWindow();
+      await browser.switchToWindow(tabOrigin);
+      await Windows.waitForWindowToClose(messageWindow);
 
-      await this.driver.switchTo().window(newTabOrigin);
-      await this.driver.close();
-      await this.driver.switchTo().window(tabOrigin);
-
-      await Windows.waitForWindowToClose.call(this, messageWindow);
-
-      await this.driver.switchTo().newWindow('tab');
-      await App.open.call(this);
-
-      await this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, 'assets@assets')]")
-        ),
-        this.wait
-      );
-
-      await this.driver.close();
-      await this.driver.switchTo().window(tabOrigin);
+      await checkThereAreNoMessages();
+      await browser.switchToWindow(tabOrigin);
     });
 
     it('does not close message window, if there are other messages left', async function () {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await ContentScript.waitForKeeperWallet.call(this);
-      await this.driver.executeScript(() => {
-        KeeperWallet.auth({ data: 'hello' });
-      });
-      [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
+      await triggerMessageWindow(authMessageCall);
+      await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-      await checkOrigin.call(this, WHITELIST[3]);
-      await checkAccountName.call(this, 'rich');
-      await checkNetworkName.call(this, 'Testnet');
+      const newTabOrigin = (await browser.createWindow('tab')).handle;
+      await browser.switchToWindow(newTabOrigin);
+      await browser.navigateTo(`https://${CUSTOMLIST[1]}`);
 
-      await this.driver.switchTo().newWindow('tab');
-      const newTabOrigin = await this.driver.getWindowHandle();
-      await this.driver.get(`https://${CUSTOMLIST[1]}`);
+      await triggerMessageWindow(authMessageCall, { waitForNewWindow: false });
+      expect(await MessagesScreen.messagesCards).toHaveLength(2);
 
-      await ContentScript.waitForKeeperWallet.call(this);
-      await this.driver.executeScript(() => {
-        KeeperWallet.auth({ data: 'hello' });
-      });
+      await browser.switchToWindow(newTabOrigin);
+      await browser.closeWindow();
 
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
+      await browser.switchToWindow(messageWindow);
+      await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-      expect(
-        await this.driver.wait(
-          until.elementsLocated(
-            By.xpath(
-              "//div[contains(@class, 'cardItem@messagesAndNotifications')]"
-            )
-          ),
-          this.wait
-        )
-      ).to.have.length(2);
-
-      await this.driver.switchTo().window(newTabOrigin);
-      await this.driver.close();
-
-      await this.driver.switchTo().window(messageWindow);
-      await checkOrigin.call(this, WHITELIST[3]);
-      await checkAccountName.call(this, 'rich');
-      await checkNetworkName.call(this, 'Testnet');
-      await rejectMessage.call(this);
-      await closeMessage.call(this);
+      await rejectTransaction();
     });
   });
 
   describe('Permission request from origin', function () {
-    async function performPermissionRequest(this: mocha.Context) {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await ContentScript.waitForKeeperWallet.call(this);
-      await this.driver.executeScript(() => {
+    async function performPermissionRequest() {
+      const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
+      await browser.execute(() => {
         KeeperWallet.publicState().then(
           result => {
             window.result = JSON.stringify(['RESOLVED', result]);
@@ -317,98 +259,42 @@ describe('Signature', function () {
         );
       });
       [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
+      await browser.switchToWindow(messageWindow);
+      await browser.refresh();
     }
-
-    async function getPermissionRequestResult(this: mocha.Context) {
-      return JSON.parse(
-        await this.driver.executeScript<string>(() => {
-          const { result } = window;
-          delete window.result;
-          return result;
-        })
-      );
-    }
-
-    after(async function () {
-      await this.driver.get(`https://${WHITELIST[3]}`);
-    });
 
     it('Rejected', async function () {
-      await this.driver.get(`https://${CUSTOMLIST[0]}`);
-
-      await performPermissionRequest.call(this);
-      await checkOrigin.call(this, CUSTOMLIST[0]);
-      await checkAccountName.call(this, 'rich');
-      await checkNetworkName.call(this, 'Testnet');
-      await rejectMessage.call(this);
-      await closeMessage.call(this);
-
-      const [status, result] = await getPermissionRequestResult.call(this);
-
-      expect(status).to.equal('REJECTED');
-
-      expect(result).to.deep.equal({
-        message: 'User denied message',
-        data: 'rejected',
-        code: '10',
-      });
+      await browser.switchToWindow(tabOrigin);
+      await browser.navigateTo(`https://${CUSTOMLIST[0]}`);
+      await performPermissionRequest();
+      await validateCommonFields(CUSTOMLIST[0], 'rich', 'Testnet');
+      await rejectTransaction();
+      await validateRejectedResult();
     });
 
     it('Reject forever', async function () {
-      await this.driver.get(`https://${CUSTOMLIST[1]}`);
-
-      await performPermissionRequest.call(this);
-
-      await this.driver
-        .wait(
-          until.elementLocated(
-            By.css('[class^="dropdownButton@dropdownButton"]')
-          ),
-          this.wait
-        )
-        .click();
-
-      await this.driver
-        .wait(until.elementLocated(By.css('#rejectForever')), this.wait)
-        .click();
-
-      await this.driver.wait(
-        until.elementLocated(By.css('.tx-reject-icon')),
-        this.wait
-      );
-
-      await closeMessage.call(this);
-
-      const [status, result] = await getPermissionRequestResult.call(this);
-
-      expect(status).to.equal('REJECTED');
-
-      expect(result).to.deep.equal({
-        message: 'User denied message',
-        data: 'rejected_forever',
-        code: '10',
-      });
+      await browser.switchToWindow(tabOrigin);
+      await browser.navigateTo(`https://${CUSTOMLIST[1]}`);
+      await performPermissionRequest();
+      await validateCommonFields(CUSTOMLIST[1], 'rich', 'Testnet');
+      await rejectTransaction({ forever: true });
+      await validateRejectedResult({ data: 'rejected_forever' });
     });
 
     it('Approved', async function () {
-      await this.driver.get(`https://${CUSTOMLIST[0]}`);
+      await browser.switchToWindow(tabOrigin);
+      await browser.navigateTo(`https://${CUSTOMLIST[0]}`);
+      await performPermissionRequest();
+      await approveTransaction();
 
-      await performPermissionRequest.call(this);
-      await approveMessage.call(this);
-      await closeMessage.call(this);
-
-      const [status, result] = await getPermissionRequestResult.call(this);
-
-      expect(status).to.equal('RESOLVED');
-      expect(result.initialized).to.equal(true);
-      expect(typeof result.version).to.equal('string');
-      expect(result.messages).to.have.length(1);
-      expect(typeof result.messages[0].id).to.equal('string');
-      expect(result.messages[0].status).to.equal('signed');
-
-      expect(result.account).to.deep.contain({
+      const [status, result] = await getResult();
+      expect(status).toBe('RESOLVED');
+      expect(result.initialized).toBe(true);
+      expect(typeof result.version).toBe('string');
+      expect(result.messages).toHaveLength(1);
+      expect(typeof result.messages[0].id).toBe('string');
+      expect(result.messages[0].status).toBe('signed');
+      expect(result.account).toMatchObject({
         address: '3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW',
         name: 'rich',
         network: 'testnet',
@@ -416,14 +302,12 @@ describe('Signature', function () {
         publicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
         type: 'seed',
       });
-
-      expect(result.network).to.deep.contain({
+      expect(result.network).toMatchObject({
         code: 'T',
         server: 'https://nodes-testnet.wavesnodes.com/',
         matcher: 'https://matcher-testnet.waves.exchange/',
       });
-
-      expect(result.txVersion).to.deep.contain({
+      expect(result.txVersion).toMatchObject({
         '3': [3, 2],
         '4': [3, 2],
         '5': [3, 2],
@@ -443,10 +327,10 @@ describe('Signature', function () {
   });
 
   describe('Authentication request from origin', function () {
-    async function performAuthRequest(this: mocha.Context) {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await ContentScript.waitForKeeperWallet.call(this);
-      await this.driver.executeScript(() => {
+    async function performAuthRequest() {
+      const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
+      await browser.execute(() => {
         KeeperWallet.auth({ data: 'generated auth data' }).then(
           result => {
             window.result = JSON.stringify(['RESOLVED', result]);
@@ -457,33 +341,18 @@ describe('Signature', function () {
         );
       });
       [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
-    }
-
-    async function getAuthRequestResult(this: mocha.Context) {
-      return JSON.parse(
-        await this.driver.executeScript<string>(() => {
-          const { result } = window;
-          delete window.result;
-          return result;
-        })
-      );
+      await browser.switchToWindow(messageWindow);
+      await browser.refresh();
     }
 
     it('Rejected', async function () {
-      await performAuthRequest.call(this);
-      await checkOrigin.call(this, WHITELIST[3]);
-      await checkAccountName.call(this, 'rich');
-      await checkNetworkName.call(this, 'Testnet');
-      await rejectMessage.call(this);
-      await closeMessage.call(this);
-
-      const [status, result] = await getAuthRequestResult.call(this);
-
-      expect(status).to.equal('REJECTED');
-
-      expect(result).to.deep.equal({
+      await browser.navigateTo(`https://${WHITELIST[3]}`);
+      await performAuthRequest();
+      await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
+      await rejectTransaction();
+      const [status, result] = await getResult();
+      expect(status).toBe('REJECTED');
+      expect(result).toStrictEqual({
         code: '10',
         data: 'rejected',
         message: 'User denied message',
@@ -491,45 +360,41 @@ describe('Signature', function () {
     });
 
     it('Approved', async function () {
-      await performAuthRequest.call(this);
-      await approveMessage.call(this);
-      await closeMessage.call(this);
+      await browser.switchToWindow(tabOrigin);
+      await browser.navigateTo(`https://${WHITELIST[3]}`);
+      await performAuthRequest();
+      await approveTransaction();
 
-      const [status, result] = await getAuthRequestResult.call(this);
-
-      expect(status).to.equal('RESOLVED');
-
+      const [status, result] = await getResult();
+      expect(status).toBe('RESOLVED');
       const expectedApproveResult = {
         host: WHITELIST[3],
         prefix: 'WavesWalletAuthentication',
         address: '3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW',
         publicKey: senderPublicKey,
       };
-
       const bytes = makeAuthBytes({
         host: WHITELIST[3],
         data: 'generated auth data',
       });
-
-      expect(result).to.deep.contain(expectedApproveResult);
-
+      expect(result).toMatchObject(expectedApproveResult);
       expect(
         await verifySignature(
           senderPublicKeyBytes,
           bytes,
           base58Decode(result.signature)
         )
-      ).to.be.true;
+      ).toBe(true);
     });
   });
 
   describe('Matcher request', function () {
     const timestamp = Date.now();
+    async function performMatcherRequest() {
+      const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
 
-    async function performMatcherRequest(this: mocha.Context) {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await ContentScript.waitForKeeperWallet.call(this);
-      await this.driver.executeScript(
+      await browser.execute(
         // eslint-disable-next-line @typescript-eslint/no-shadow
         (senderPublicKey: string, timestamp: number) => {
           KeeperWallet.signRequest({
@@ -550,204 +415,102 @@ describe('Signature', function () {
         timestamp
       );
       [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
-    }
-
-    async function getMatcherRequestResult(this: mocha.Context) {
-      return JSON.parse(
-        await this.driver.executeScript<string>(() => {
-          const { result } = window;
-          delete window.result;
-          return result;
-        })
-      );
+      await browser.switchToWindow(messageWindow);
+      await browser.refresh();
     }
 
     it('Rejected', async function () {
-      await performMatcherRequest.call(this);
-      await checkOrigin.call(this, WHITELIST[3]);
-      await checkAccountName.call(this, 'rich');
-      await checkNetworkName.call(this, 'Testnet');
-      await rejectMessage.call(this);
-      await closeMessage.call(this);
-
-      const [status, result] = await getMatcherRequestResult.call(this);
-
-      expect(status).to.equal('REJECTED');
-
-      expect(result).to.deep.equal({
-        code: '10',
-        data: 'rejected',
-        message: 'User denied message',
-      });
+      await browser.switchToWindow(tabOrigin);
+      await browser.navigateTo(`https://${WHITELIST[3]}`);
+      await performMatcherRequest();
+      await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
+      await rejectTransaction();
+      await validateRejectedResult();
     });
 
     it('Approved', async function () {
-      await performMatcherRequest.call(this);
-      await approveMessage.call(this);
-      await closeMessage.call(this);
+      await browser.switchToWindow(tabOrigin);
+      await browser.navigateTo(`https://${WHITELIST[3]}`);
+      await performMatcherRequest();
+      await approveTransaction();
 
-      const [status, result] = await getMatcherRequestResult.call(this);
-
-      expect(status).to.equal('RESOLVED');
-
+      const [status, result] = await getResult();
+      expect(status).toBe('RESOLVED');
       const bytes = Uint8Array.of(
-        ...base58Decode(senderPublicKey),
+        ...senderPublicKeyBytes,
         ...new Uint8Array(Long.fromNumber(timestamp).toBytesBE())
       );
-
       expect(
         await verifySignature(senderPublicKeyBytes, bytes, base58Decode(result))
-      ).to.be.true;
+      ).toBe(true);
     });
   });
 
   describe('Transactions', function () {
-    async function performSignTransaction(
-      this: mocha.Context,
-      tx: MessageInputTx
-    ) {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await ContentScript.waitForKeeperWallet.call(this);
-      await this.driver.executeScript(
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        (tx: MessageInputTx) => {
-          KeeperWallet.signTransaction(tx).then(
-            result => {
-              window.result = JSON.stringify(['RESOLVED', result]);
-            },
-            err => {
-              window.result = JSON.stringify(['REJECTED', err]);
-            }
-          );
-        },
-        tx
-      );
+    const performSignTransaction = async (input: MessageInputTx) => {
+      const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
+      await browser.execute((tx: MessageInputTx) => {
+        KeeperWallet.signTransaction(tx).then(
+          result => {
+            window.result = JSON.stringify(['RESOLVED', result]);
+          },
+          err => {
+            window.result = JSON.stringify(['REJECTED', err]);
+          }
+        );
+      }, input);
       [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
-    }
-
-    async function getSignTransactionResult(this: mocha.Context) {
-      return JSON.parse(
-        await this.driver.executeScript<string>(() => {
-          const { result } = window;
-          delete window.result;
-          return result;
-        })
-      );
-    }
+      await browser.switchToWindow(messageWindow);
+      await browser.refresh();
+    };
 
     function setTxVersion<T extends MessageInputTx>(tx: T, version: number): T {
       return { ...tx, data: { ...tx.data, version } };
     }
 
-    async function checkTxFee(this: mocha.Context, fee: string) {
-      expect(
-        await this.driver.findElement(By.css('[data-testid="txFee"]')).getText()
-      ).to.equal(fee);
-    }
-
     describe('Issue', function () {
-      async function checkIssueType(this: mocha.Context, type: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueType"]'))
-            .getText()
-        ).to.equal(type);
-      }
-
-      async function checkIssueAmount(this: mocha.Context, amount: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueAmount"]'))
-            .getText()
-        ).to.equal(amount);
-      }
-
-      async function checkIssueDescription(
-        this: mocha.Context,
-        description: string
-      ) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueDescription"]'))
-            .getText()
-        ).to.equal(description);
-      }
-
-      async function checkIssueDecimals(this: mocha.Context, decimals: number) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueDecimals"]'))
-            .getText()
-        ).to.equal(String(decimals));
-      }
-
-      async function checkIssueReissuable(
-        this: mocha.Context,
-        reissuableText: string
-      ) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueReissuable"]'))
-            .getText()
-        ).to.equal(reissuableText);
-      }
-
-      async function checkIssueScript(this: mocha.Context, script: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="contentScript"]'))
-            .getText()
-        ).to.equal(script);
-      }
-
       it('Rejected', async function () {
-        await performSignTransaction.call(this, ISSUE);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(ISSUE);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkIssueType.call(this, 'Issue Smart Token');
-        await checkIssueAmount.call(this, '92233720368.54775807 ShortToken');
-        await checkIssueDescription.call(this, ISSUE.data.description);
-        await checkIssueDecimals.call(this, ISSUE.data.precision);
-        await checkIssueReissuable.call(this, 'Reissuable');
-        await checkIssueScript.call(this, 'base64:BQbtKNoM');
-
-        await checkTxFee.call(this, '1.004 WAVES');
-
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
-
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
+        await expect(IssueTransactionScreen.issueType).toHaveText(
+          'Issue Smart Token'
+        );
+        await expect(IssueTransactionScreen.issueAmount).toHaveText(
+          '92233720368.54775807 ShortToken'
+        );
+        await expect(IssueTransactionScreen.issueDescription).toHaveText(
+          ISSUE.data.description
+        );
+        await expect(IssueTransactionScreen.issueDecimals).toHaveText(
+          `${ISSUE.data.precision}`
+        );
+        await expect(IssueTransactionScreen.issueReissuable).toHaveText(
+          'Reissuable'
+        );
+        await expect(IssueTransactionScreen.contentScript).toHaveText(
+          'base64:BQbtKNoM'
+        );
+        await expect(CommonTransaction.transactionFee).toHaveText(
+          '1.004 WAVES'
         );
 
-        expect(status).to.equal('REJECTED');
-
-        expect(approveResult).to.deep.equal({
-          code: '10',
-          data: 'rejected',
-          message: 'User denied message',
-        });
+        await rejectTransaction();
+        await validateRejectedResult();
       });
 
       it('Approved', async function () {
-        await performSignTransaction.call(this, ISSUE);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(ISSUE);
+        await approveTransaction();
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const [status, result] = await getResult();
+        expect(status).toBe('RESOLVED');
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: ISSUE.type,
           version: 3 as const,
@@ -761,71 +524,63 @@ describe('Signature', function () {
           fee: 100400000,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           quantity: ISSUE.data.quantity,
           timestamp: parsedApproveResult.timestamp,
         });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+        expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
             base58Decode(parsedApproveResult.proofs[0])
           )
-        ).to.be.true;
+        ).toBe(true);
       });
 
       it('Copying script to the clipboard');
 
       describe('without script', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, ISSUE_WITHOUT_SCRIPT);
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(ISSUE_WITHOUT_SCRIPT);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkIssueType.call(this, 'Issue Token');
-          await checkIssueAmount.call(this, '92233720368.54775807 ShortToken');
-          await checkIssueDescription.call(this, ISSUE.data.description);
-          await checkIssueDecimals.call(this, ISSUE.data.precision);
-          await checkIssueReissuable.call(this, 'Reissuable');
-
-          await checkTxFee.call(this, '1.004 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
-
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
+          await expect(IssueTransactionScreen.issueType).toHaveText(
+            'Issue Token'
+          );
+          await expect(IssueTransactionScreen.issueAmount).toHaveText(
+            '92233720368.54775807 ShortToken'
+          );
+          await expect(IssueTransactionScreen.issueDescription).toHaveText(
+            ISSUE.data.description
+          );
+          await expect(IssueTransactionScreen.issueDecimals).toHaveText(
+            `${ISSUE.data.precision}`
+          );
+          await expect(IssueTransactionScreen.issueReissuable).toHaveText(
+            'Reissuable'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '1.004 WAVES'
           );
 
-          expect(status).to.equal('REJECTED');
-
-          expect(approveResult).to.deep.equal({
-            code: '10',
-            data: 'rejected',
-            message: 'User denied message',
-          });
+          await rejectTransaction();
+          await validateRejectedResult();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, ISSUE_WITHOUT_SCRIPT);
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(ISSUE_WITHOUT_SCRIPT);
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: ISSUE_WITHOUT_SCRIPT.type,
             version: 3 as const,
@@ -838,73 +593,65 @@ describe('Signature', function () {
             fee: 100400000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             quantity: ISSUE_WITHOUT_SCRIPT.data.quantity,
             script: null,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.script).to.equal(null);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.script).toBe(null);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, setTxVersion(ISSUE, 2));
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(ISSUE, 2));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkIssueType.call(this, 'Issue Smart Token');
-          await checkIssueAmount.call(this, '92233720368.54775807 ShortToken');
-          await checkIssueDescription.call(this, ISSUE.data.description);
-          await checkIssueDecimals.call(this, ISSUE.data.precision);
-          await checkIssueReissuable.call(this, 'Reissuable');
-          await checkIssueScript.call(this, 'base64:BQbtKNoM');
-
-          await checkTxFee.call(this, '1.004 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
-
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
+          await expect(IssueTransactionScreen.issueType).toHaveText(
+            'Issue Smart Token'
+          );
+          await expect(IssueTransactionScreen.issueAmount).toHaveText(
+            '92233720368.54775807 ShortToken'
+          );
+          await expect(IssueTransactionScreen.issueDescription).toHaveText(
+            ISSUE.data.description
+          );
+          await expect(IssueTransactionScreen.issueDecimals).toHaveText(
+            `${ISSUE.data.precision}`
+          );
+          await expect(IssueTransactionScreen.issueReissuable).toHaveText(
+            'Reissuable'
+          );
+          await expect(IssueTransactionScreen.contentScript).toHaveText(
+            'base64:BQbtKNoM'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '1.004 WAVES'
           );
 
-          expect(status).to.equal('REJECTED');
-
-          expect(approveResult).to.deep.equal({
-            code: '10',
-            data: 'rejected',
-            message: 'User denied message',
-          });
+          await rejectTransaction();
+          await validateRejectedResult();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, setTxVersion(ISSUE, 2));
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await performSignTransaction(setTxVersion(ISSUE, 2));
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: ISSUE.type,
             version: 2 as const,
@@ -918,90 +665,55 @@ describe('Signature', function () {
             fee: 100400000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             quantity: ISSUE.data.quantity,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
     });
 
     describe('Transfer', function () {
-      async function checkTransferAmount(this: mocha.Context, amount: string) {
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(By.css('[data-testid="transferAmount"]')),
-              this.wait
-            )
-            .getText()
-        ).to.equal(amount);
-      }
-
-      async function checkRecipient(this: mocha.Context, recipient: string) {
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(By.css('[data-testid="recipient"]')),
-              this.wait
-            )
-            .getText()
-        ).to.equal(recipient);
-      }
-
-      async function checkAttachment(this: mocha.Context, attachment: string) {
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(By.css('[data-testid="attachmentContent"]')),
-              this.wait
-            )
-            .getText()
-        ).to.equal(attachment);
-      }
-
       it('Rejected', async function () {
-        await performSignTransaction.call(this, TRANSFER);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(TRANSFER);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkTransferAmount.call(this, '-123456790 NonScriptToken');
-        await checkRecipient.call(this, '3N5HNJz5otiU...BVv5HhYLdhiD');
-        await checkAttachment.call(this, 'base64:BQbtKNoM');
-
-        await checkTxFee.call(this, '0.005 WAVES');
-
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await expect(TransferTransactionScreen.transferAmount).toHaveText(
+          '-123456790 NonScriptToken'
+        );
+        await expect(TransferTransactionScreen.recipient).toHaveText(
+          '3N5HNJz5otiU...BVv5HhYLdhiD'
+        );
+        await expect(TransferTransactionScreen.attachmentContent).toHaveText(
+          'base64:BQbtKNoM'
+        );
+        await expect(CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction.call(this, TRANSFER);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(TRANSFER);
+        await approveTransaction();
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const [status, result] = await getResult();
+        expect(status).toBe('RESOLVED');
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: TRANSFER.type,
           version: 3 as const,
@@ -1014,22 +726,19 @@ describe('Signature', function () {
           feeAssetId: null,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+        expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
             base58Decode(parsedApproveResult.proofs[0])
           )
-        ).to.be.true;
+        ).toBe(true);
       });
 
       // TODO this checks should be into unittests
@@ -1041,33 +750,33 @@ describe('Signature', function () {
 
       describe('without attachment', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, TRANSFER_WITHOUT_ATTACHMENT);
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(TRANSFER_WITHOUT_ATTACHMENT);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkTransferAmount.call(this, '-1.23456790 WAVES');
-          await checkRecipient.call(this, 'alias:T:alice');
+          await expect(TransferTransactionScreen.transferAmount).toHaveText(
+            '-1.23456790 WAVES'
+          );
+          await expect(TransferTransactionScreen.recipient).toHaveText(
+            'alias:T:alice'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, TRANSFER_WITHOUT_ATTACHMENT);
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(TRANSFER_WITHOUT_ATTACHMENT);
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: TRANSFER_WITHOUT_ATTACHMENT.type,
             version: 3 as const,
@@ -1079,55 +788,54 @@ describe('Signature', function () {
             feeAssetId: null,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, setTxVersion(TRANSFER, 2));
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(TRANSFER, 2));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkTransferAmount.call(this, '-123456790 NonScriptToken');
-          await checkRecipient.call(this, '3N5HNJz5otiU...BVv5HhYLdhiD');
-          await checkAttachment.call(this, 'base64:BQbtKNoM');
+          await expect(TransferTransactionScreen.transferAmount).toHaveText(
+            '-123456790 NonScriptToken'
+          );
+          await expect(TransferTransactionScreen.recipient).toHaveText(
+            '3N5HNJz5otiU...BVv5HhYLdhiD'
+          );
+          await expect(TransferTransactionScreen.attachmentContent).toHaveText(
+            'base64:BQbtKNoM'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, setTxVersion(TRANSFER, 2));
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(TRANSFER, 2));
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: TRANSFER.type,
             version: 2 as const,
@@ -1140,74 +848,52 @@ describe('Signature', function () {
             feeAssetId: null,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
     });
 
     describe('Reissue', function () {
-      async function checkReissueAmount(this: mocha.Context, amount: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="reissueAmount"]'))
-            .getText()
-        ).to.equal(amount);
-      }
-
-      async function checkReissueReissuable(
-        this: mocha.Context,
-        reissuableText: string
-      ) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="reissueReissuable"]'))
-            .getText()
-        ).to.equal(reissuableText);
-      }
-
       it('Rejected', async function () {
-        await performSignTransaction.call(this, REISSUE);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(REISSUE);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkReissueAmount.call(this, '+123456790 NonScriptToken');
-        await checkReissueReissuable.call(this, 'Reissuable');
+        await expect(ReissueTransactionScreen.reissueAmount).toHaveText(
+          '+123456790 NonScriptToken'
+        );
+        await expect(ReissueTransactionScreen.reissuableType).toHaveText(
+          'Reissuable'
+        );
+        await expect(CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
-        await checkTxFee.call(this, '0.005 WAVES');
-
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction.call(this, REISSUE);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(REISSUE);
+        await approveTransaction();
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const [status, result] = await getResult();
+        expect(status).toBe('RESOLVED');
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: REISSUE.type,
           version: 3 as const,
@@ -1218,53 +904,50 @@ describe('Signature', function () {
           chainId: 84,
           fee: 500000,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+        expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
             base58Decode(parsedApproveResult.proofs[0])
           )
-        ).to.be.true;
+        ).toBe(true);
       });
 
       describe('with money-like', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, REISSUE_WITH_MONEY_LIKE);
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(REISSUE_WITH_MONEY_LIKE);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkReissueAmount.call(this, '+123456790 NonScriptToken');
-          await checkReissueReissuable.call(this, 'Reissuable');
+          await expect(ReissueTransactionScreen.reissueAmount).toHaveText(
+            '+123456790 NonScriptToken'
+          );
+          await expect(ReissueTransactionScreen.reissuableType).toHaveText(
+            'Reissuable'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, REISSUE_WITH_MONEY_LIKE);
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(REISSUE_WITH_MONEY_LIKE);
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: REISSUE_WITH_MONEY_LIKE.type,
             version: 3 as const,
@@ -1275,54 +958,51 @@ describe('Signature', function () {
             chainId: 84,
             fee: 500000,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, setTxVersion(REISSUE, 2));
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(REISSUE, 2));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkReissueAmount.call(this, '+123456790 NonScriptToken');
-          await checkReissueReissuable.call(this, 'Reissuable');
+          await expect(ReissueTransactionScreen.reissueAmount).toHaveText(
+            '+123456790 NonScriptToken'
+          );
+          await expect(ReissueTransactionScreen.reissuableType).toHaveText(
+            'Reissuable'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, setTxVersion(REISSUE, 2));
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(REISSUE, 2));
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: REISSUE.type,
             version: 2 as const,
@@ -1333,62 +1013,49 @@ describe('Signature', function () {
             chainId: 84,
             fee: 500000,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
     });
 
     describe('Burn', function () {
-      async function checkBurnAmount(this: mocha.Context, amount: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="burnAmount"]'))
-            .getText()
-        ).to.equal(amount);
-      }
-
       it('Rejected', async function () {
-        await performSignTransaction.call(this, BURN);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(BURN);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkBurnAmount.call(this, '-123456790 NonScriptToken');
+        await expect(BurnTransactionScreen.burnAmount).toHaveText(
+          '-123456790 NonScriptToken'
+        );
+        await expect(CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
-        await checkTxFee.call(this, '0.005 WAVES');
-
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction.call(this, BURN);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(BURN);
+        await approveTransaction();
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const [status, result] = await getResult();
+        expect(status).toBe('RESOLVED');
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: BURN.type,
           version: 3 as const,
@@ -1398,52 +1065,47 @@ describe('Signature', function () {
           chainId: 84,
           fee: 500000,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+        expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
             base58Decode(parsedApproveResult.proofs[0])
           )
-        ).to.be.true;
+        ).toBe(true);
       });
 
       describe('with quantity instead of amount', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, BURN_WITH_QUANTITY);
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(BURN_WITH_QUANTITY);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkBurnAmount.call(this, '-123456790 NonScriptToken');
+          await expect(BurnTransactionScreen.burnAmount).toHaveText(
+            '-123456790 NonScriptToken'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, BURN_WITH_QUANTITY);
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(BURN_WITH_QUANTITY);
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: BURN_WITH_QUANTITY.type,
             version: 3 as const,
@@ -1453,53 +1115,53 @@ describe('Signature', function () {
             chainId: 84,
             fee: 500000,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, setTxVersion(BURN, 2));
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(BURN, 2));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkBurnAmount.call(this, '-123456790 NonScriptToken');
+          await expect(CommonTransaction.originAddress).toHaveText(
+            WHITELIST[3]
+          );
+          await expect(CommonTransaction.accountName).toHaveText('rich');
+          await expect(CommonTransaction.originNetwork).toHaveText('Testnet');
+          await expect(BurnTransactionScreen.burnAmount).toHaveText(
+            '-123456790 NonScriptToken'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, setTxVersion(BURN, 2));
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(BURN, 2));
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: BURN.type,
             version: 2 as const,
@@ -1509,74 +1171,52 @@ describe('Signature', function () {
             chainId: 84,
             fee: 500000,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
     });
 
     describe('Lease', function () {
-      async function checkLeaseAmount(this: mocha.Context, amount: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="leaseAmount"]'))
-            .getText()
-        ).to.equal(amount);
-      }
-
-      async function checkLeaseRecipient(
-        this: mocha.Context,
-        recipient: string
-      ) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="leaseRecipient"]'))
-            .getText()
-        ).to.equal(recipient);
-      }
-
       it('Rejected', async function () {
-        await performSignTransaction.call(this, LEASE);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(LEASE);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkLeaseAmount.call(this, '1.23456790 WAVES');
-        await checkLeaseRecipient.call(this, '3N5HNJz5otiU...BVv5HhYLdhiD');
+        await expect(LeaseTransactionScreen.leaseAmount).toHaveText(
+          '1.23456790 WAVES'
+        );
+        await expect(LeaseTransactionScreen.leaseRecipient).toHaveText(
+          '3N5HNJz5otiU...BVv5HhYLdhiD'
+        );
+        await expect(CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
-        await checkTxFee.call(this, '0.005 WAVES');
-
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction.call(this, LEASE);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(LEASE);
+        await approveTransaction();
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const [status, result] = await getResult();
+        expect(status).toBe('RESOLVED');
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: LEASE.type,
           version: 3 as const,
@@ -1586,53 +1226,50 @@ describe('Signature', function () {
           fee: 500000,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+        expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
             base58Decode(parsedApproveResult.proofs[0])
           )
-        ).to.be.true;
+        ).toBe(true);
       });
 
       describe('with alias', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, LEASE_WITH_ALIAS);
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(LEASE_WITH_ALIAS);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkLeaseAmount.call(this, '1.23456790 WAVES');
-          await checkLeaseRecipient.call(this, 'alias:T:bobby');
+          await expect(LeaseTransactionScreen.leaseAmount).toHaveText(
+            '1.23456790 WAVES'
+          );
+          await expect(LeaseTransactionScreen.leaseRecipient).toHaveText(
+            'alias:T:bobby'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, LEASE_WITH_ALIAS);
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(LEASE_WITH_ALIAS);
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: LEASE_WITH_ALIAS.type,
             version: 3 as const,
@@ -1642,54 +1279,51 @@ describe('Signature', function () {
             fee: 500000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
 
       describe('with money-like', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, LEASE_WITH_MONEY_LIKE);
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(LEASE_WITH_MONEY_LIKE);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkLeaseAmount.call(this, '1.23456790 WAVES');
-          await checkLeaseRecipient.call(this, '3N5HNJz5otiU...BVv5HhYLdhiD');
+          await expect(LeaseTransactionScreen.leaseAmount).toHaveText(
+            '1.23456790 WAVES'
+          );
+          await expect(LeaseTransactionScreen.leaseRecipient).toHaveText(
+            '3N5HNJz5otiU...BVv5HhYLdhiD'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, LEASE_WITH_MONEY_LIKE);
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(LEASE_WITH_MONEY_LIKE);
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: LEASE_WITH_MONEY_LIKE.type,
             version: 3 as const,
@@ -1699,54 +1333,51 @@ describe('Signature', function () {
             fee: 500000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, setTxVersion(LEASE, 2));
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(LEASE, 2));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkLeaseAmount.call(this, '1.23456790 WAVES');
-          await checkLeaseRecipient.call(this, '3N5HNJz5otiU...BVv5HhYLdhiD');
+          await expect(LeaseTransactionScreen.leaseAmount).toHaveText(
+            '1.23456790 WAVES'
+          );
+          await expect(LeaseTransactionScreen.leaseRecipient).toHaveText(
+            '3N5HNJz5otiU...BVv5HhYLdhiD'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, setTxVersion(LEASE, 2));
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(LEASE, 2));
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: LEASE.type,
             version: 2 as const,
@@ -1756,77 +1387,52 @@ describe('Signature', function () {
             fee: 500000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
     });
 
     describe('Cancel lease', function () {
-      async function checkCancelLeaseAmount(
-        this: mocha.Context,
-        amount: string
-      ) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="cancelLeaseAmount"]'))
-            .getText()
-        ).to.equal(amount);
-      }
-
-      async function checkCancelLeaseRecipient(
-        this: mocha.Context,
-        recipient: string
-      ) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="cancelLeaseRecipient"]'))
-            .getText()
-        ).to.equal(recipient);
-      }
-
       it('Rejected', async function () {
-        await performSignTransaction.call(this, CANCEL_LEASE);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(CANCEL_LEASE);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkCancelLeaseAmount.call(this, '0.00000001 WAVES');
-        await checkCancelLeaseRecipient.call(this, 'alias:T:merry');
+        await expect(LeaseCancelTransactionScreen.cancelLeaseAmount).toHaveText(
+          '0.00000001 WAVES'
+        );
+        await expect(
+          LeaseCancelTransactionScreen.cancelLeaseRecipient
+        ).toHaveText('alias:T:merry');
+        await expect(CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
-        await checkTxFee.call(this, '0.005 WAVES');
-
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction.call(this, CANCEL_LEASE);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(CANCEL_LEASE);
+        await approveTransaction();
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const [status, result] = await getResult();
+        expect(status).toBe('RESOLVED');
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: CANCEL_LEASE.type,
           version: 3 as const,
@@ -1835,59 +1441,50 @@ describe('Signature', function () {
           fee: 500000,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+        expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
             base58Decode(parsedApproveResult.proofs[0])
           )
-        ).to.be.true;
+        ).toBe(true);
       });
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(
-            this,
-            setTxVersion(CANCEL_LEASE, 2)
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(CANCEL_LEASE, 2));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
+
+          await expect(
+            LeaseCancelTransactionScreen.cancelLeaseAmount
+          ).toHaveText('0.00000001 WAVES');
+          await expect(
+            LeaseCancelTransactionScreen.cancelLeaseRecipient
+          ).toHaveText('alias:T:merry');
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
           );
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
 
-          await checkCancelLeaseAmount.call(this, '0.00000001 WAVES');
-          await checkCancelLeaseRecipient.call(this, 'alias:T:merry');
-
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(
-            this,
-            setTxVersion(CANCEL_LEASE, 2)
-          );
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(CANCEL_LEASE, 2));
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: CANCEL_LEASE.type,
             version: 2 as const,
@@ -1896,62 +1493,49 @@ describe('Signature', function () {
             fee: 500000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
     });
 
     describe('Alias', function () {
-      async function checkAliasValue(this: mocha.Context, value: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="aliasValue"]'))
-            .getText()
-        ).to.equal(value);
-      }
-
       it('Rejected', async function () {
-        await performSignTransaction.call(this, ALIAS);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(ALIAS);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkAliasValue.call(this, 'test_alias');
+        await expect(CreateAliasTransactionScreen.aliasValue).toHaveText(
+          'test_alias'
+        );
+        await expect(CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
-        await checkTxFee.call(this, '0.005 WAVES');
-
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction.call(this, ALIAS);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(ALIAS);
+        await approveTransaction();
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const [status, result] = await getResult();
+        expect(status).toBe('RESOLVED');
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: ALIAS.type,
           version: 3 as const,
@@ -1960,22 +1544,19 @@ describe('Signature', function () {
           fee: 500000,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+        expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
             base58Decode(parsedApproveResult.proofs[0])
           )
-        ).to.be.true;
+        ).toBe(true);
       });
 
       // TODO this checks should be into unittests
@@ -1984,32 +1565,30 @@ describe('Signature', function () {
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, setTxVersion(ALIAS, 2));
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(ALIAS, 2));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkAliasValue.call(this, 'test_alias');
+          await expect(CreateAliasTransactionScreen.aliasValue).toHaveText(
+            'test_alias'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, setTxVersion(ALIAS, 2));
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(ALIAS, 2));
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: ALIAS.type,
             version: 2 as const,
@@ -2018,94 +1597,55 @@ describe('Signature', function () {
             fee: 500000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-
-          expect(parsedApproveResult.id).to.equal(
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(
             base58Encode(
               blake2b(Uint8Array.of(bytes[0], ...bytes.subarray(36, -16)))
             )
           );
-
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
     });
 
     describe('MassTransfer', function () {
-      async function checkMassTransferAmount(
-        this: mocha.Context,
-        amount: string
-      ) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="massTransferAmount"]'))
-            .getText()
-        ).to.equal(amount);
-      }
-
       async function checkMassTransferItems(
-        this: mocha.Context,
         items: Array<{ recipient: string; amount: string }>
       ) {
-        const itemElements = await this.driver.findElements(
-          By.css('[data-testid="massTransferItem"]')
-        );
-
+        const transferItems =
+          await MassTransferTransactionScreen.getTransferItems();
         const actualItems = await Promise.all(
-          itemElements.map(async itemEl => {
+          transferItems.map(async transferItem => {
             const [recipient, amount] = await Promise.all([
-              itemEl
-                .findElement(
-                  By.css('[data-testid="massTransferItemRecipient"]')
-                )
-                .getText(),
-              itemEl
-                .findElement(By.css('[data-testid="massTransferItemAmount"]'))
-                .getText(),
+              transferItem.recipient.getText(),
+              transferItem.amount.getText(),
             ]);
-
-            return {
-              recipient,
-              amount,
-            };
+            return { recipient, amount };
           })
         );
-
-        expect(actualItems).to.deep.equal(items);
-      }
-
-      async function checkMassTransferAttachment(
-        this: mocha.Context,
-        attachment: string
-      ) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="massTransferAttachment"]'))
-            .getText()
-        ).to.equal(attachment);
+        expect(actualItems).toStrictEqual(items);
       }
 
       it('Rejected', async function () {
-        await performSignTransaction.call(this, MASS_TRANSFER);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(MASS_TRANSFER);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkMassTransferAmount.call(this, '-2 NonScriptToken');
-
-        await checkMassTransferItems.call(this, [
+        await expect(
+          MassTransferTransactionScreen.massTransferAmount
+        ).toHaveText('-2 NonScriptToken');
+        await checkMassTransferItems([
           {
             recipient: '3N5HNJz5otiU...BVv5HhYLdhiD',
             amount: '1',
@@ -2115,28 +1655,25 @@ describe('Signature', function () {
             amount: '1',
           },
         ]);
+        await expect(
+          MassTransferTransactionScreen.massTransferAttachment
+        ).toHaveText('base64:BQbtKNoM');
+        await expect(CommonTransaction.transactionFee).toHaveText(
+          '0.006 WAVES'
+        );
 
-        await checkMassTransferAttachment.call(this, 'base64:BQbtKNoM');
-
-        await checkTxFee.call(this, '0.006 WAVES');
-
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction.call(this, MASS_TRANSFER);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(MASS_TRANSFER);
+        await approveTransaction();
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const [status, result] = await getResult();
+        expect(status).toBe('RESOLVED');
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: MASS_TRANSFER.type,
           version: 2 as const,
@@ -2150,38 +1687,32 @@ describe('Signature', function () {
           attachment: '3ke2ct1rnYr52Y1jQvzNG',
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+        expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
             base58Decode(parsedApproveResult.proofs[0])
           )
-        ).to.be.true;
+        ).toBe(true);
       });
 
       describe('without attachment', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(
-            this,
-            MASS_TRANSFER_WITHOUT_ATTACHMENT
-          );
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(MASS_TRANSFER_WITHOUT_ATTACHMENT);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
-
-          await checkMassTransferAmount.call(this, '-0.00000123 WAVES');
-
-          await checkMassTransferItems.call(this, [
+          await expect(
+            MassTransferTransactionScreen.massTransferAmount
+          ).toHaveText('-0.00000123 WAVES');
+          await checkMassTransferItems([
             {
               recipient: '3N5HNJz5otiU...BVv5HhYLdhiD',
               amount: '0.0000012',
@@ -2191,30 +1722,22 @@ describe('Signature', function () {
               amount: '0.00000003',
             },
           ]);
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.006 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.006 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(
-            this,
-            MASS_TRANSFER_WITHOUT_ATTACHMENT
-          );
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(MASS_TRANSFER_WITHOUT_ATTACHMENT);
+          await approveTransaction();
 
-          await approveMessage.call(this);
-          await closeMessage.call(this);
-
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: MASS_TRANSFER_WITHOUT_ATTACHMENT.type,
             version: 2 as const,
@@ -2227,38 +1750,33 @@ describe('Signature', function () {
             fee: 600000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(
-            this,
-            setTxVersion(MASS_TRANSFER, 1)
-          );
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(MASS_TRANSFER, 1));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkMassTransferAmount.call(this, '-2 NonScriptToken');
-
-          await checkMassTransferItems.call(this, [
+          await expect(
+            MassTransferTransactionScreen.massTransferAmount
+          ).toHaveText('-2 NonScriptToken');
+          await checkMassTransferItems([
             {
               recipient: '3N5HNJz5otiU...BVv5HhYLdhiD',
               amount: '1',
@@ -2268,31 +1786,25 @@ describe('Signature', function () {
               amount: '1',
             },
           ]);
+          await expect(
+            MassTransferTransactionScreen.massTransferAttachment
+          ).toHaveText('base64:BQbtKNoM');
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.006 WAVES'
+          );
 
-          await checkMassTransferAttachment.call(this, 'base64:BQbtKNoM');
-
-          await checkTxFee.call(this, '0.006 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(
-            this,
-            setTxVersion(MASS_TRANSFER, 1)
-          );
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(MASS_TRANSFER, 1));
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: MASS_TRANSFER.type,
             version: 1 as const,
@@ -2306,67 +1818,48 @@ describe('Signature', function () {
             attachment: '3ke2ct1rnYr52Y1jQvzNG',
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
     });
 
     describe('Data', function () {
       async function checkDataEntries(
-        this: mocha.Context,
         entries: Array<{ key: string; type: string; value: string }>
       ) {
-        const dataRows = await this.driver.findElements(
-          By.css('[data-testid="dataRow"]')
-        );
-
+        const dataRows = await DataTransactionScreen.getDataRows();
         const actualItems = await Promise.all(
-          dataRows.map(async entryEl => {
+          dataRows.map(async it => {
             const [key, type, value] = await Promise.all([
-              entryEl
-                .findElement(By.css('[data-testid="dataRowKey"]'))
-                .getText(),
-              entryEl
-                .findElement(By.css('[data-testid="dataRowType"]'))
-                .getText(),
-              entryEl
-                .findElement(By.css('[data-testid="dataRowValue"]'))
-                .getText(),
+              it.key.getText(),
+              it.type.getText(),
+              it.value.getText(),
             ]);
-
-            return {
-              key,
-              type,
-              value,
-            };
+            return { key, type, value };
           })
         );
-
-        expect(actualItems).to.deep.equal(entries);
+        expect(actualItems).toStrictEqual(entries);
       }
 
       it('Rejected', async function () {
-        await performSignTransaction.call(this, DATA);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(DATA);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkDataEntries.call(this, [
+        await checkDataEntries([
           {
             key: 'stringValue',
             type: 'string',
@@ -2388,26 +1881,22 @@ describe('Signature', function () {
             value: 'base64:BQbtKNoM',
           },
         ]);
+        await expect(CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
-        await checkTxFee.call(this, '0.005 WAVES');
-
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction.call(this, DATA);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(DATA);
+        await approveTransaction();
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const [status, result] = await getResult();
+        expect(status).toBe('RESOLVED');
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: DATA.type,
           version: 2 as const,
@@ -2433,33 +1922,30 @@ describe('Signature', function () {
             },
           ],
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           data: DATA.data.data,
           timestamp: parsedApproveResult.timestamp,
         });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+        expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
             base58Decode(parsedApproveResult.proofs[0])
           )
-        ).to.be.true;
+        ).toBe(true);
       });
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, setTxVersion(DATA, 1));
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(DATA, 1));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkDataEntries.call(this, [
+          await checkDataEntries([
             {
               key: 'stringValue',
               type: 'string',
@@ -2481,26 +1967,22 @@ describe('Signature', function () {
               value: 'base64:BQbtKNoM',
             },
           ]);
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, setTxVersion(DATA, 1));
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(DATA, 1));
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: DATA.type,
             version: 1 as const,
@@ -2526,72 +2008,53 @@ describe('Signature', function () {
               },
             ],
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             data: DATA.data.data,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
     });
 
     describe('SetScript', function () {
-      async function checkScript(this: mocha.Context, script: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="contentScript"]'))
-            .getText()
-        ).to.equal(script);
-      }
-
-      async function checkSetScriptTitle(this: mocha.Context, title: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="setScriptTitle"]'))
-            .getText()
-        ).to.equal(title);
-      }
-
       it('Rejected', async function () {
-        await performSignTransaction.call(this, SET_SCRIPT);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(SET_SCRIPT);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkSetScriptTitle.call(this, 'Set Script');
-        await checkScript.call(this, 'base64:BQbtKNoM');
+        await expect(SetScriptTransactionScreen.scriptTitle).toHaveText(
+          'Set Script'
+        );
+        await expect(SetScriptTransactionScreen.contentScript).toHaveText(
+          'base64:BQbtKNoM'
+        );
+        await expect(CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
-        await checkTxFee.call(this, '0.005 WAVES');
-
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction.call(this, SET_SCRIPT);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(SET_SCRIPT);
+        await approveTransaction();
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const [status, result] = await getResult();
+        expect(status).toBe('RESOLVED');
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: SET_SCRIPT.type,
           version: 2 as const,
@@ -2600,22 +2063,19 @@ describe('Signature', function () {
           fee: 500000,
           script: SET_SCRIPT.data.script,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+        expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
             base58Decode(parsedApproveResult.proofs[0])
           )
-        ).to.be.true;
+        ).toBe(true);
       });
 
       it('Copying script to the clipboard');
@@ -2624,32 +2084,30 @@ describe('Signature', function () {
 
       describe('without script', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, SET_SCRIPT_WITHOUT_SCRIPT);
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(SET_SCRIPT_WITHOUT_SCRIPT);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkSetScriptTitle.call(this, 'Remove Account Script');
+          await expect(SetScriptTransactionScreen.scriptTitle).toHaveText(
+            'Remove Account Script'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, SET_SCRIPT_WITHOUT_SCRIPT);
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(SET_SCRIPT_WITHOUT_SCRIPT);
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: SET_SCRIPT_WITHOUT_SCRIPT.type,
             version: 2 as const,
@@ -2657,56 +2115,53 @@ describe('Signature', function () {
             chainId: 84,
             fee: 500000,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             script: null,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.script).to.not.exist;
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.script).toBe(null);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, setTxVersion(SET_SCRIPT, 1));
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(SET_SCRIPT, 1));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkSetScriptTitle.call(this, 'Set Script');
-          await checkScript.call(this, 'base64:BQbtKNoM');
+          await expect(SetScriptTransactionScreen.scriptTitle).toHaveText(
+            'Set Script'
+          );
+          await expect(SetScriptTransactionScreen.contentScript).toHaveText(
+            'base64:BQbtKNoM'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, setTxVersion(SET_SCRIPT, 1));
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(SET_SCRIPT, 1));
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: SET_SCRIPT.type,
             version: 1 as const,
@@ -2715,82 +2170,52 @@ describe('Signature', function () {
             fee: 500000,
             script: SET_SCRIPT.data.script,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
     });
 
     describe('Sponsorship', function () {
-      async function checkSponsorshipTitle(this: mocha.Context, title: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="sponsorshipTitle"]'))
-            .getText()
-        ).to.equal(title);
-      }
-
-      async function checkSponsorshipAmount(
-        this: mocha.Context,
-        amount: string
-      ) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="sponsorshipAmount"]'))
-            .getText()
-        ).to.equal(amount);
-      }
-
-      async function checkSponsorshipAsset(this: mocha.Context, asset: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="sponsorshipAsset"]'))
-            .getText()
-        ).to.equal(asset);
-      }
-
       it('Rejected', async function () {
-        await performSignTransaction.call(this, SPONSORSHIP);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(SPONSORSHIP);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkSponsorshipTitle.call(this, 'Set Sponsorship');
-        await checkSponsorshipAmount.call(this, '123456790 NonScriptToken');
+        await expect(SponsorshipTransactionScreen.title).toHaveText(
+          'Set Sponsorship'
+        );
+        await expect(SponsorshipTransactionScreen.amount).toHaveText(
+          '123456790 NonScriptToken'
+        );
+        await expect(CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
-        await checkTxFee.call(this, '0.005 WAVES');
-
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction.call(this, SPONSORSHIP);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(SPONSORSHIP);
+        await approveTransaction();
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const [status, result] = await getResult();
+        expect(status).toBe('RESOLVED');
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: SPONSORSHIP.type,
           version: 2 as const,
@@ -2800,53 +2225,50 @@ describe('Signature', function () {
           fee: 500000,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+        expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
             base58Decode(parsedApproveResult.proofs[0])
           )
-        ).to.be.true;
+        ).toBe(true);
       });
 
       describe('removal', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, SPONSORSHIP_REMOVAL);
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(SPONSORSHIP_REMOVAL);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkSponsorshipTitle.call(this, 'Disable Sponsorship');
-          await checkSponsorshipAsset.call(this, 'NonScriptToken');
+          await expect(SponsorshipTransactionScreen.title).toHaveText(
+            'Disable Sponsorship'
+          );
+          await expect(SponsorshipTransactionScreen.asset).toHaveText(
+            'NonScriptToken'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, SPONSORSHIP_REMOVAL);
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(SPONSORSHIP_REMOVAL);
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: SPONSORSHIP_REMOVAL.type,
             version: 2 as const,
@@ -2856,54 +2278,51 @@ describe('Signature', function () {
             fee: 500000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, setTxVersion(SPONSORSHIP, 1));
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(SPONSORSHIP, 1));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkSponsorshipTitle.call(this, 'Set Sponsorship');
-          await checkSponsorshipAmount.call(this, '123456790 NonScriptToken');
+          await expect(SponsorshipTransactionScreen.title).toHaveText(
+            'Set Sponsorship'
+          );
+          await expect(SponsorshipTransactionScreen.amount).toHaveText(
+            '123456790 NonScriptToken'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, setTxVersion(SPONSORSHIP, 1));
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(SPONSORSHIP, 1));
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: SPONSORSHIP.type,
             version: 1 as const,
@@ -2913,71 +2332,52 @@ describe('Signature', function () {
             fee: 500000,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
     });
 
     describe('SetAssetScript', function () {
-      async function checkAssetName(this: mocha.Context, asset: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="setAssetScriptAsset"]'))
-            .getText()
-        ).to.equal(asset);
-      }
-
-      async function checkScript(this: mocha.Context, script: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="contentScript"]'))
-            .getText()
-        ).to.equal(script);
-      }
-
       it('Rejected', async function () {
-        await performSignTransaction.call(this, SET_ASSET_SCRIPT);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(SET_ASSET_SCRIPT);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkAssetName.call(this, 'NonScriptToken');
-        await checkScript.call(this, 'base64:BQbtKNoM');
+        await expect(AssetScriptTransactionScreen.asset).toHaveText(
+          'NonScriptToken'
+        );
+        await expect(AssetScriptTransactionScreen.script).toHaveText(
+          'base64:BQbtKNoM'
+        );
+        await expect(CommonTransaction.transactionFee).toHaveText(
+          '1.004 WAVES'
+        );
 
-        await checkTxFee.call(this, '1.004 WAVES');
-
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction.call(this, SET_ASSET_SCRIPT);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(SET_ASSET_SCRIPT);
+        await approveTransaction();
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const [status, result] = await getResult();
+        expect(status).toBe('RESOLVED');
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: SET_ASSET_SCRIPT.type,
           version: 2 as const,
@@ -2987,62 +2387,52 @@ describe('Signature', function () {
           fee: 100400000,
           script: SET_ASSET_SCRIPT.data.script,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+        expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
             base58Decode(parsedApproveResult.proofs[0])
           )
-        ).to.be.true;
+        ).toBe(true);
       });
 
       it('Copying script to the clipboard');
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(
-            this,
-            setTxVersion(SET_ASSET_SCRIPT, 1)
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(SET_ASSET_SCRIPT, 1));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
+
+          await expect(AssetScriptTransactionScreen.asset).toHaveText(
+            'NonScriptToken'
           );
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await expect(AssetScriptTransactionScreen.script).toHaveText(
+            'base64:BQbtKNoM'
+          );
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '1.004 WAVES'
+          );
 
-          await checkAssetName.call(this, 'NonScriptToken');
-          await checkScript.call(this, 'base64:BQbtKNoM');
-
-          await checkTxFee.call(this, '1.004 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(
-            this,
-            setTxVersion(SET_ASSET_SCRIPT, 1)
-          );
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(SET_ASSET_SCRIPT, 1));
+          await approveTransaction();
 
-          await approveMessage.call(this);
-          await closeMessage.call(this);
-
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: SET_ASSET_SCRIPT.type,
             version: 1 as const,
@@ -3052,103 +2442,69 @@ describe('Signature', function () {
             fee: 100400000,
             script: SET_ASSET_SCRIPT.data.script,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
     });
 
     describe('InvokeScript', function () {
-      async function checkPaymentsTitle(this: mocha.Context, title: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="invokeScriptPaymentsTitle"]'))
-            .getText()
-        ).to.equal(title);
-      }
-
-      async function checkDApp(this: mocha.Context, dApp: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="invokeScriptDApp"]'))
-            .getText()
-        ).to.equal(dApp);
-      }
-
-      async function checkFunction(this: mocha.Context, fn: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="invokeScriptFunction"]'))
-            .getText()
-        ).to.equal(fn);
-      }
-
-      async function checkArgs(
-        this: mocha.Context,
-        args: Array<{ type: string; value: string }>
-      ) {
-        const argElements = await this.driver.findElements(
-          By.css('[data-testid="invokeArgument"]')
-        );
-
+      async function checkArgs(args: Array<{ type: string; value: string }>) {
+        const invokeArguments =
+          await InvokeScriptTransactionScreen.getArguments();
         const actualArgs = await Promise.all(
-          argElements.map(async el => {
+          invokeArguments.map(async it => {
             const [type, value] = await Promise.all([
-              el
-                .findElement(By.css('[data-testid="invokeArgumentType"]'))
-                .getText(),
-              el
-                .findElement(By.css('[data-testid="invokeArgumentValue"]'))
-                .getText(),
+              it.type.getText(),
+              it.value.getText(),
             ]);
-
             return {
               type,
               value,
             };
           })
         );
-
-        expect(actualArgs).to.deep.equal(args);
+        expect(actualArgs).toStrictEqual(args);
       }
 
-      async function checkPayments(this: mocha.Context, payments: string[]) {
-        const paymentElements = await this.driver.findElements(
-          By.css('[data-testid="invokeScriptPaymentItem"]')
-        );
+      async function checkPayments(payments: string[]) {
+        const invokePayments =
+          await InvokeScriptTransactionScreen.getPayments();
 
         const actualPayments = await Promise.all(
-          paymentElements.map(el => el.getText())
+          invokePayments.map(it => it.getText())
         );
 
-        expect(actualPayments).to.deep.equal(payments);
+        expect(actualPayments).toStrictEqual(payments);
       }
 
       it('Rejected', async function () {
-        await performSignTransaction.call(this, INVOKE_SCRIPT);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(INVOKE_SCRIPT);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkPaymentsTitle.call(this, '2 Payments');
-        await checkDApp.call(this, '3My2kBJaGfeM...3y8rAgfV2EAx');
-        await checkFunction.call(this, INVOKE_SCRIPT.data.call.function);
-
-        await checkArgs.call(this, [
+        await expect(InvokeScriptTransactionScreen.paymentsTitle).toHaveText(
+          '2 Payments'
+        );
+        await expect(InvokeScriptTransactionScreen.dApp).toHaveText(
+          '3My2kBJaGfeM...3y8rAgfV2EAx'
+        );
+        await expect(InvokeScriptTransactionScreen.function).toHaveText(
+          INVOKE_SCRIPT.data.call.function
+        );
+        await checkArgs([
           {
             type: 'integer',
             value: '42',
@@ -3162,31 +2518,23 @@ describe('Signature', function () {
             value: 'hello',
           },
         ]);
+        await checkPayments(['0.00000001 WAVES', '1 NonScriptToken']);
+        await expect(CommonTransaction.transactionFee).toHaveText(
+          '0.005 WAVES'
+        );
 
-        await checkPayments.call(this, [
-          '0.00000001 WAVES',
-          '1 NonScriptToken',
-        ]);
-
-        await checkTxFee.call(this, '0.005 WAVES');
-
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction.call(this, INVOKE_SCRIPT);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(INVOKE_SCRIPT);
+        await approveTransaction();
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const [status, result] = await getResult();
+        expect(status).toBe('RESOLVED');
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: INVOKE_SCRIPT.type,
           version: 2 as const,
@@ -3198,22 +2546,19 @@ describe('Signature', function () {
           feeAssetId: null,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+        expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
             base58Decode(parsedApproveResult.proofs[0])
           )
-        ).to.be.true;
+        ).toBe(true);
       });
 
       // TODO this checks should be into unittests
@@ -3230,38 +2575,38 @@ describe('Signature', function () {
 
       describe('without call', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(this, INVOKE_SCRIPT_WITHOUT_CALL);
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(INVOKE_SCRIPT_WITHOUT_CALL);
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-          await checkPaymentsTitle.call(this, 'No Payments');
-          await checkDApp.call(
-            this,
+          await expect(InvokeScriptTransactionScreen.paymentsTitle).toHaveText(
+            'No Payments'
+          );
+          await expect(InvokeScriptTransactionScreen.dApp).toHaveText(
             `alias:T:${INVOKE_SCRIPT_WITHOUT_CALL.data.dApp}`
           );
-          await checkFunction.call(this, 'default');
-          await checkArgs.call(this, []);
-          await checkPayments.call(this, []);
-          await checkTxFee.call(this, '0.005 WAVES');
+          await expect(InvokeScriptTransactionScreen.function).toHaveText(
+            'default'
+          );
+          await checkArgs([]);
+          await checkPayments([]);
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(this, INVOKE_SCRIPT_WITHOUT_CALL);
-          await approveMessage.call(this);
-          await closeMessage.call(this);
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(INVOKE_SCRIPT_WITHOUT_CALL);
+          await approveTransaction();
 
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: INVOKE_SCRIPT_WITHOUT_CALL.type,
             version: 2 as const,
@@ -3272,41 +2617,40 @@ describe('Signature', function () {
             feeAssetId: null,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             call: null,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
 
       describe('with legacy serialization', function () {
         it('Rejected', async function () {
-          await performSignTransaction.call(
-            this,
-            setTxVersion(INVOKE_SCRIPT, 1)
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(INVOKE_SCRIPT, 1));
+          await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
+
+          await expect(InvokeScriptTransactionScreen.paymentsTitle).toHaveText(
+            '2 Payments'
           );
-          await checkOrigin.call(this, WHITELIST[3]);
-          await checkAccountName.call(this, 'rich');
-          await checkNetworkName.call(this, 'Testnet');
-
-          await checkPaymentsTitle.call(this, '2 Payments');
-          await checkDApp.call(this, '3My2kBJaGfeM...3y8rAgfV2EAx');
-          await checkFunction.call(this, INVOKE_SCRIPT.data.call.function);
-
-          await checkArgs.call(this, [
+          await expect(InvokeScriptTransactionScreen.dApp).toHaveText(
+            '3My2kBJaGfeM...3y8rAgfV2EAx'
+          );
+          await expect(InvokeScriptTransactionScreen.function).toHaveText(
+            INVOKE_SCRIPT.data.call.function
+          );
+          await checkArgs([
             {
               type: 'integer',
               value: '42',
@@ -3320,35 +2664,23 @@ describe('Signature', function () {
               value: 'hello',
             },
           ]);
+          await checkPayments(['0.00000001 WAVES', '1 NonScriptToken']);
+          await expect(CommonTransaction.transactionFee).toHaveText(
+            '0.005 WAVES'
+          );
 
-          await checkPayments.call(this, [
-            '0.00000001 WAVES',
-            '1 NonScriptToken',
-          ]);
-
-          await checkTxFee.call(this, '0.005 WAVES');
-
-          await rejectMessage.call(this);
-          await closeMessage.call(this);
+          await rejectTransaction();
         });
 
         it('Approved', async function () {
-          await performSignTransaction.call(
-            this,
-            setTxVersion(INVOKE_SCRIPT, 1)
-          );
+          await browser.switchToWindow(tabOrigin);
+          await browser.navigateTo(`https://${WHITELIST[3]}`);
+          await performSignTransaction(setTxVersion(INVOKE_SCRIPT, 1));
+          await approveTransaction();
 
-          await approveMessage.call(this);
-          await closeMessage.call(this);
-
-          const [status, approveResult] = await getSignTransactionResult.call(
-            this
-          );
-
-          expect(status).to.equal('RESOLVED');
-
-          const parsedApproveResult = JSONbn.parse(approveResult);
-
+          const [status, result] = await getResult();
+          expect(status).toBe('RESOLVED');
+          const parsedApproveResult = JSONbn.parse(result);
           const expectedApproveResult = {
             type: INVOKE_SCRIPT.type,
             version: 1 as const,
@@ -3360,97 +2692,55 @@ describe('Signature', function () {
             feeAssetId: null,
             chainId: 84,
           };
-
           const bytes = makeTxBytes({
             ...expectedApproveResult,
             timestamp: parsedApproveResult.timestamp,
           });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+          expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+          expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
               base58Decode(parsedApproveResult.proofs[0])
             )
-          ).to.be.true;
+          ).toBe(true);
         });
       });
     });
 
     describe('UpdateAssetInfo', function () {
-      async function checkAssetId(this: mocha.Context, assetId: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="updateAssetInfoAssetId"]'))
-            .getText()
-        ).to.equal(assetId);
-      }
-
-      async function checkAssetName(this: mocha.Context, assetName: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="updateAssetInfoAssetName"]'))
-            .getText()
-        ).to.equal(assetName);
-      }
-
-      async function checkAssetDescription(
-        this: mocha.Context,
-        description: string
-      ) {
-        expect(
-          await this.driver
-            .findElement(
-              By.css('[data-testid="updateAssetInfoAssetDescription"]')
-            )
-            .getText()
-        ).to.equal(description);
-      }
-
-      async function checkFee(this: mocha.Context, fee: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="updateAssetInfoFee"]'))
-            .getText()
-        ).to.equal(fee);
-      }
-
       it('Rejected', async function () {
-        await performSignTransaction.call(this, UPDATE_ASSET_INFO);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(UPDATE_ASSET_INFO);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkAssetId.call(this, UPDATE_ASSET_INFO.data.assetId);
-        await checkAssetName.call(this, UPDATE_ASSET_INFO.data.name);
-
-        await checkAssetDescription.call(
-          this,
-          UPDATE_ASSET_INFO.data.description
+        await expect(UpdateAssetInfoTransactionScreen.assetId).toHaveText(
+          UPDATE_ASSET_INFO.data.assetId
+        );
+        await expect(UpdateAssetInfoTransactionScreen.assetName).toHaveText(
+          UPDATE_ASSET_INFO.data.name
+        );
+        await expect(
+          UpdateAssetInfoTransactionScreen.assetDescription
+        ).toHaveText(UPDATE_ASSET_INFO.data.description);
+        await expect(UpdateAssetInfoTransactionScreen.fee).toHaveText(
+          '0.001 WAVES'
         );
 
-        await checkFee.call(this, '0.001 WAVES');
-
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignTransaction.call(this, UPDATE_ASSET_INFO);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignTransaction(UPDATE_ASSET_INFO);
+        await approveTransaction();
 
-        const [status, approveResult] = await getSignTransactionResult.call(
-          this
-        );
-
-        expect(status).to.equal('RESOLVED');
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const [status, result] = await getResult();
+        expect(status).toBe('RESOLVED');
+        const parsedApproveResult = JSONbn.parse(result);
         const expectedApproveResult = {
           type: UPDATE_ASSET_INFO.type,
           version: 1 as const,
@@ -3461,22 +2751,19 @@ describe('Signature', function () {
           fee: 100000,
           chainId: 84,
         };
-
         const bytes = makeTxBytes({
           ...expectedApproveResult,
           timestamp: parsedApproveResult.timestamp,
         });
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-        expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+        expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
             base58Decode(parsedApproveResult.proofs[0])
           )
-        ).to.be.true;
+        ).toBe(true);
       });
     });
   });
@@ -3505,89 +2792,30 @@ describe('Signature', function () {
     };
 
     async function performSignOrder(
-      this: mocha.Context,
       script: (tx: MessageInputOrder) => void,
       tx: MessageInputOrder
     ) {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await ContentScript.waitForKeeperWallet.call(this);
-      await this.driver.executeScript(script, tx);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
+      await browser.execute(script, tx);
       [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
+      await browser.switchToWindow(messageWindow);
+      await browser.refresh();
     }
 
     async function performSignCancelOrder(
-      this: mocha.Context,
       script: (tx: MessageInputCancelOrder) => void,
       tx: MessageInputCancelOrder
     ) {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await ContentScript.waitForKeeperWallet.call(this);
-      await this.driver.executeScript(script, tx);
+      const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
+      await browser.execute(script, tx);
       [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
+      await browser.switchToWindow(messageWindow);
+      await browser.refresh();
     }
 
     describe('Create', function () {
-      async function checkCreateOrderTitle(this: mocha.Context, title: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="createOrderTitle"]'))
-            .getText()
-        ).to.equal(title);
-      }
-
-      async function checkCreateOrderTitleAmount(
-        this: mocha.Context,
-        amount: string
-      ) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="createOrderTitleAmount"]'))
-            .getText()
-        ).to.equal(amount);
-      }
-
-      async function checkCreateOrderTitlePrice(
-        this: mocha.Context,
-        price: string
-      ) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="createOrderTitlePrice"]'))
-            .getText()
-        ).to.equal(price);
-      }
-
-      async function checkCreateOrderPrice(this: mocha.Context, price: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="createOrderPrice"]'))
-            .getText()
-        ).to.equal(price);
-      }
-
-      async function checkCreateOrderMatcherPublicKey(
-        this: mocha.Context,
-        matcherPublicKey: string
-      ) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="createOrderMatcherPublicKey"]'))
-            .getText()
-        ).to.equal(matcherPublicKey);
-      }
-
-      async function checkCreateOrderFee(this: mocha.Context, fee: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="createOrderFee"]'))
-            .getText()
-        ).to.equal(fee);
-      }
-
       describe('version 3', () => {
         describe('basic', () => {
           const INPUT = {
@@ -3611,39 +2839,40 @@ describe('Signature', function () {
           } as const;
 
           it('Rejected', async function () {
-            await performSignOrder.call(this, createOrder, INPUT);
-            await checkOrigin.call(this, WHITELIST[3]);
-            await checkAccountName.call(this, 'rich');
-            await checkNetworkName.call(this, 'Testnet');
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-            await checkCreateOrderTitle.call(
-              this,
+            await expect(CreateOrderMessage.orderTitle).toHaveText(
               'Sell: WAVES/NonScriptToken'
             );
-            await checkCreateOrderTitleAmount.call(this, '-100.00000000 WAVES');
-            await checkCreateOrderTitlePrice.call(this, '+0 NonScriptToken');
-            await checkCreateOrderPrice.call(this, '0 NonScriptToken');
-            await checkCreateOrderMatcherPublicKey.call(
-              this,
+            await expect(CreateOrderMessage.orderAmount).toHaveText(
+              '-100.00000000 WAVES'
+            );
+            await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
+              '+0 NonScriptToken'
+            );
+            await expect(CreateOrderMessage.orderPrice).toHaveText(
+              '0 NonScriptToken'
+            );
+            await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
               INPUT.data.matcherPublicKey
             );
-            await checkCreateOrderFee.call(this, '0.03 WAVES');
+            await expect(CreateOrderMessage.createOrderFee).toHaveText(
+              '0.03 WAVES'
+            );
 
-            await rejectMessage.call(this, 60 * 1000);
-            await closeMessage.call(this);
+            await rejectTransaction();
           });
 
           it('Approved', async function () {
-            await performSignOrder.call(this, createOrder, INPUT);
-            await approveMessage.call(this, 60 * 1000);
-            await closeMessage.call(this);
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await approveTransaction();
 
-            const approveResult = await this.driver.executeScript<string>(
-              () => window.result
-            );
-
-            const parsedApproveResult = JSONbn.parse(approveResult);
-
+            const parsedApproveResult = await getResult();
             const expectedApproveResult = {
               orderType: INPUT.data.orderType,
               version: 3,
@@ -3658,25 +2887,20 @@ describe('Signature', function () {
               senderPublicKey,
               matcherFeeAssetId: null,
             };
-
             const bytes = binary.serializeOrder({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
             });
-
-            expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-            expect(parsedApproveResult.id).to.equal(
-              base58Encode(blake2b(bytes))
-            );
-
+            expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+            expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
             expect(
               await verifySignature(
                 senderPublicKeyBytes,
                 bytes,
                 base58Decode(parsedApproveResult.proofs[0])
               )
-            ).to.be.true;
+            ).toBe(true);
           });
         });
 
@@ -3702,46 +2926,40 @@ describe('Signature', function () {
           } as const;
 
           it('Rejected', async function () {
-            await performSignOrder.call(this, createOrder, INPUT);
-            await checkOrigin.call(this, WHITELIST[3]);
-            await checkAccountName.call(this, 'rich');
-            await checkNetworkName.call(this, 'Testnet');
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-            await checkCreateOrderTitle.call(
-              this,
+            await expect(CreateOrderMessage.orderTitle).toHaveText(
               'Buy: Tether USD/USD-Nea272c'
             );
-            await checkCreateOrderTitleAmount.call(
-              this,
+            await expect(CreateOrderMessage.orderAmount).toHaveText(
               '+1.000000 Tether USD'
             );
-            await checkCreateOrderTitlePrice.call(
-              this,
+            await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
               '-1.014002 USD-Nea272c'
             );
-            await checkCreateOrderPrice.call(this, '1.014002 USD-Nea272c');
-            await checkCreateOrderMatcherPublicKey.call(
-              this,
+            await expect(CreateOrderMessage.orderPrice).toHaveText(
+              '1.014002 USD-Nea272c'
+            );
+            await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
               INPUT.data.matcherPublicKey
             );
-            await checkCreateOrderFee.call(this, '0.04077612 TXW-DEVa4f6df');
+            await expect(CreateOrderMessage.createOrderFee).toHaveText(
+              '0.04077612 TXW-DEVa4f6df'
+            );
 
-            await rejectMessage.call(this, 60 * 1000);
-            await closeMessage.call(this);
+            await rejectTransaction();
           });
 
           it('Approved', async function () {
-            await performSignOrder.call(this, createOrder, INPUT);
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await approveTransaction();
 
-            await approveMessage.call(this, 60 * 1000);
-            await closeMessage.call(this);
-
-            const approveResult = await this.driver.executeScript<string>(
-              () => window.result
-            );
-
-            const parsedApproveResult = JSONbn.parse(approveResult);
-
+            const parsedApproveResult = await getResult();
             const expectedApproveResult = {
               orderType: INPUT.data.orderType,
               version: 3,
@@ -3756,25 +2974,20 @@ describe('Signature', function () {
               senderPublicKey,
               matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
             };
-
             const bytes = binary.serializeOrder({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
             });
-
-            expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-            expect(parsedApproveResult.id).to.equal(
-              base58Encode(blake2b(bytes))
-            );
-
+            expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+            expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
             expect(
               await verifySignature(
                 senderPublicKeyBytes,
                 bytes,
                 base58Decode(parsedApproveResult.proofs[0])
               )
-            ).to.be.true;
+            ).toBe(true);
           });
         });
       });
@@ -3804,81 +3017,70 @@ describe('Signature', function () {
           } as const;
 
           it('Rejected', async function () {
-            await performSignOrder.call(this, createOrder, INPUT);
-            await checkOrigin.call(this, WHITELIST[3]);
-            await checkAccountName.call(this, 'rich');
-            await checkNetworkName.call(this, 'Testnet');
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-            await checkCreateOrderTitle.call(
-              this,
+            await expect(CreateOrderMessage.orderTitle).toHaveText(
               'Buy: Tether USD/USD-Nea272c'
             );
-            await checkCreateOrderTitleAmount.call(
-              this,
+            await expect(CreateOrderMessage.orderAmount).toHaveText(
               '+1.000000 Tether USD'
             );
-            await checkCreateOrderTitlePrice.call(
-              this,
+            await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
               '-1.014002 USD-Nea272c'
             );
-            await checkCreateOrderPrice.call(this, '1.014002 USD-Nea272c');
-            await checkCreateOrderMatcherPublicKey.call(
-              this,
+            await expect(CreateOrderMessage.orderPrice).toHaveText(
+              '1.014002 USD-Nea272c'
+            );
+            await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
               INPUT.data.matcherPublicKey
             );
-            await checkCreateOrderFee.call(this, '0.04077612 TXW-DEVa4f6df');
+            await expect(CreateOrderMessage.createOrderFee).toHaveText(
+              '0.04077612 TXW-DEVa4f6df'
+            );
 
-            await rejectMessage.call(this, 60 * 1000);
-            await closeMessage.call(this);
+            await rejectTransaction();
           });
 
           it('Approved', async function () {
-            await performSignOrder.call(this, createOrder, INPUT);
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await approveTransaction();
 
-            await approveMessage.call(this, 60 * 1000);
-            await closeMessage.call(this);
-
-            const approveResult = await this.driver.executeScript<string>(
-              () => window.result
-            );
-
-            const parsedApproveResult = JSONbn.parse(approveResult);
-
+            const parsedApproveResult = await getResult();
             const expectedApproveResult = {
               chainId: 84,
               orderType: INPUT.data.orderType,
-              version: 4,
+              version: 4 as const,
               assetPair: {
                 amountAsset: INPUT.data.amount.assetId,
                 priceAsset: INPUT.data.price.assetId,
               },
               price: 101400200,
-              priceMode: 'assetDecimals',
+              priceMode: 'assetDecimals' as const,
               amount: 1000000,
               matcherFee: 4077612,
               matcherPublicKey: INPUT.data.matcherPublicKey,
               senderPublicKey,
               matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
-            } as const;
-
+            };
             const bytes = makeOrderBytes({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
             });
-
-            expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-            expect(parsedApproveResult.id).to.equal(
-              base58Encode(blake2b(bytes))
-            );
-
+            expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+            expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
             expect(
               await verifySignature(
                 senderPublicKeyBytes,
                 bytes,
                 base58Decode(parsedApproveResult.proofs[0])
               )
-            ).to.be.true;
+            ).toBe(true);
           });
         });
 
@@ -3906,81 +3108,70 @@ describe('Signature', function () {
           } as const;
 
           it('Rejected', async function () {
-            await performSignOrder.call(this, createOrder, INPUT);
-            await checkOrigin.call(this, WHITELIST[3]);
-            await checkAccountName.call(this, 'rich');
-            await checkNetworkName.call(this, 'Testnet');
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-            await checkCreateOrderTitle.call(
-              this,
+            await expect(CreateOrderMessage.orderTitle).toHaveText(
               'Buy: Tether USD/USD-Nea272c'
             );
-            await checkCreateOrderTitleAmount.call(
-              this,
+            await expect(CreateOrderMessage.orderAmount).toHaveText(
               '+1.000000 Tether USD'
             );
-            await checkCreateOrderTitlePrice.call(
-              this,
+            await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
               '-1.014002 USD-Nea272c'
             );
-            await checkCreateOrderPrice.call(this, '1.014002 USD-Nea272c');
-            await checkCreateOrderMatcherPublicKey.call(
-              this,
+            await expect(CreateOrderMessage.orderPrice).toHaveText(
+              '1.014002 USD-Nea272c'
+            );
+            await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
               INPUT.data.matcherPublicKey
             );
-            await checkCreateOrderFee.call(this, '0.04077612 TXW-DEVa4f6df');
+            await expect(CreateOrderMessage.createOrderFee).toHaveText(
+              '0.04077612 TXW-DEVa4f6df'
+            );
 
-            await rejectMessage.call(this, 60 * 1000);
-            await closeMessage.call(this);
+            await rejectTransaction();
           });
 
           it('Approved', async function () {
-            await performSignOrder.call(this, createOrder, INPUT);
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await approveTransaction();
 
-            await approveMessage.call(this, 60 * 1000);
-            await closeMessage.call(this);
-
-            const approveResult = await this.driver.executeScript<string>(
-              () => window.result
-            );
-
-            const parsedApproveResult = JSONbn.parse(approveResult);
-
+            const parsedApproveResult = await getResult();
             const expectedApproveResult = {
               chainId: 84,
               orderType: INPUT.data.orderType,
-              version: 4,
+              version: 4 as const,
               assetPair: {
                 amountAsset: INPUT.data.amount.assetId,
                 priceAsset: INPUT.data.price.assetId,
               },
               price: 101400200,
-              priceMode: 'fixedDecimals',
+              priceMode: 'fixedDecimals' as const,
               amount: 1000000,
               matcherFee: 4077612,
               matcherPublicKey: INPUT.data.matcherPublicKey,
               senderPublicKey,
               matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
-            } as const;
-
+            };
             const bytes = makeOrderBytes({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
             });
-
-            expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-            expect(parsedApproveResult.id).to.equal(
-              base58Encode(blake2b(bytes))
-            );
-
+            expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+            expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
             expect(
               await verifySignature(
                 senderPublicKeyBytes,
                 bytes,
                 base58Decode(parsedApproveResult.proofs[0])
               )
-            ).to.be.true;
+            ).toBe(true);
           });
         });
 
@@ -4007,81 +3198,70 @@ describe('Signature', function () {
           } as const;
 
           it('Rejected', async function () {
-            await performSignOrder.call(this, createOrder, INPUT);
-            await checkOrigin.call(this, WHITELIST[3]);
-            await checkAccountName.call(this, 'rich');
-            await checkNetworkName.call(this, 'Testnet');
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-            await checkCreateOrderTitle.call(
-              this,
+            await expect(CreateOrderMessage.orderTitle).toHaveText(
               'Buy: Tether USD/USD-Nea272c'
             );
-            await checkCreateOrderTitleAmount.call(
-              this,
+            await expect(CreateOrderMessage.orderAmount).toHaveText(
               '+1.000000 Tether USD'
             );
-            await checkCreateOrderTitlePrice.call(
-              this,
+            await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
               '-1.014002 USD-Nea272c'
             );
-            await checkCreateOrderPrice.call(this, '1.014002 USD-Nea272c');
-            await checkCreateOrderMatcherPublicKey.call(
-              this,
+            await expect(CreateOrderMessage.orderPrice).toHaveText(
+              '1.014002 USD-Nea272c'
+            );
+            await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
               INPUT.data.matcherPublicKey
             );
-            await checkCreateOrderFee.call(this, '0.04077612 TXW-DEVa4f6df');
+            await expect(CreateOrderMessage.createOrderFee).toHaveText(
+              '0.04077612 TXW-DEVa4f6df'
+            );
 
-            await rejectMessage.call(this, 60 * 1000);
-            await closeMessage.call(this);
+            await rejectTransaction();
           });
 
           it('Approved', async function () {
-            await performSignOrder.call(this, createOrder, INPUT);
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await approveTransaction();
 
-            await approveMessage.call(this, 60 * 1000);
-            await closeMessage.call(this);
-
-            const approveResult = await this.driver.executeScript<string>(
-              () => window.result
-            );
-
-            const parsedApproveResult = JSONbn.parse(approveResult);
-
+            const parsedApproveResult = await getResult();
             const expectedApproveResult = {
               chainId: 84,
               orderType: INPUT.data.orderType,
-              version: 4,
+              version: 4 as const,
               assetPair: {
                 amountAsset: INPUT.data.amount.assetId,
                 priceAsset: INPUT.data.price.assetId,
               },
               price: 101400200,
-              priceMode: 'fixedDecimals',
+              priceMode: 'fixedDecimals' as const,
               amount: 1000000,
               matcherFee: 4077612,
               matcherPublicKey: INPUT.data.matcherPublicKey,
               senderPublicKey,
               matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
-            } as const;
-
+            };
             const bytes = makeOrderBytes({
               ...expectedApproveResult,
               expiration: parsedApproveResult.expiration,
               timestamp: parsedApproveResult.timestamp,
             });
-
-            expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-            expect(parsedApproveResult.id).to.equal(
-              base58Encode(blake2b(bytes))
-            );
-
+            expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+            expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
             expect(
               await verifySignature(
                 senderPublicKeyBytes,
                 bytes,
                 base58Decode(parsedApproveResult.proofs[0])
               )
-            ).to.be.true;
+            ).toBe(true);
           });
         });
       });
@@ -4094,66 +3274,51 @@ describe('Signature', function () {
         priceAsset: '',
       };
 
-      async function checkOrderId(this: mocha.Context, orderId: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="cancelOrderOrderId"]'))
-            .getText()
-        ).to.equal(orderId);
-      }
-
       it('Rejected', async function () {
-        await performSignCancelOrder.call(this, cancelOrder, INPUT);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignCancelOrder(cancelOrder, INPUT);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkOrderId.call(this, INPUT.data.id);
+        await expect(CancelOrderTransactionScreen.orderId).toHaveText(
+          INPUT.data.id
+        );
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignCancelOrder.call(this, cancelOrder, INPUT);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignCancelOrder(cancelOrder, INPUT);
+        await approveTransaction();
 
-        const approveResult = await this.driver.executeScript<string>(
-          () => window.result
-        );
-
-        const parsedApproveResult = JSONbn.parse(approveResult);
-
+        const parsedApproveResult = await getResult();
         const expectedApproveResult = {
           orderId: INPUT.data.id,
           sender: senderPublicKey,
         };
-
         const bytes = makeCancelOrderBytes(expectedApproveResult);
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
             base58Decode(parsedApproveResult.signature)
           )
-        ).to.be.true;
+        ).toBe(true);
       });
     });
   });
 
   describe('Multiple transactions package', function () {
     async function performSignTransactionPackage(
-      this: mocha.Context,
       tx: MessageInputTx[],
       name: string
     ) {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await ContentScript.waitForKeeperWallet.call(this);
-      await this.driver.executeScript(
+      const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
+      await browser.execute(
         (
           // eslint-disable-next-line @typescript-eslint/no-shadow
           tx: MessageInputTx[],
@@ -4173,49 +3338,38 @@ describe('Signature', function () {
         name
       );
       [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
+      await browser.switchToWindow(messageWindow);
+      await browser.refresh();
     }
 
-    async function checkPackageCountTitle(this: mocha.Context, title: string) {
-      expect(
-        await this.driver
-          .findElement(By.css('[data-testid="packageCountTitle"]'))
-          .getText()
-      ).to.equal(title);
-    }
-
-    async function checkPackageAmounts(this: mocha.Context, amounts: string[]) {
-      const amountItems = await this.driver.findElements(
-        By.css('[data-testid="packageAmountItem"]')
-      );
-
+    async function checkPackageAmounts(amounts: string[]) {
       const actualAmounts = await Promise.all(
-        amountItems.map(el => el.getText())
+        await PackageTransactionScreen.packageAmounts.map(
+          async it => await it.getText()
+        )
       );
-
-      expect(actualAmounts).to.deep.equal(amounts);
+      expect(actualAmounts).toStrictEqual(amounts);
     }
 
-    async function checkPackageFees(this: mocha.Context, fees: string[]) {
-      const feeItems = await this.driver.findElements(
-        By.css('[data-testid="packageFeeItem"]')
+    async function checkPackageFees(fees: string[]) {
+      const actualFees = await Promise.all(
+        await PackageTransactionScreen.packageFees.map(
+          async it => await it.getText()
+        )
       );
-
-      const actualFees = await Promise.all(feeItems.map(el => el.getText()));
-
-      expect(actualFees).to.deep.equal(fees);
+      expect(actualFees).toStrictEqual(fees);
     }
 
     it('Rejected', async function () {
-      await performSignTransactionPackage.call(this, PACKAGE, 'Test package');
-      await checkOrigin.call(this, WHITELIST[3]);
-      await checkAccountName.call(this, 'rich');
-      await checkNetworkName.call(this, 'Testnet');
+      await browser.switchToWindow(tabOrigin);
+      await browser.navigateTo(`https://${WHITELIST[3]}`);
+      await performSignTransactionPackage(PACKAGE, 'Test package');
+      await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-      await checkPackageCountTitle.call(this, '7 Transactions');
-
-      await checkPackageAmounts.call(this, [
+      await expect(PackageTransactionScreen.packageCountTitle).toHaveText(
+        '7 Transactions'
+      );
+      await checkPackageAmounts([
         '+92233720368.54775807 ShortToken',
         '-123456790 NonScriptToken',
         '+123456790 NonScriptToken',
@@ -4225,170 +3379,75 @@ describe('Signature', function () {
         '-0.00000001 WAVES',
         '-1 NonScriptToken',
       ]);
-
-      await checkPackageFees.call(this, ['1.034 WAVES']);
-
-      await this.driver
-        .findElement(By.css('[data-testid="packageDetailsToggle"]'))
-        .click();
-
-      const packageElements = await this.driver.wait(
-        until.elementsLocated(By.css('[data-testid="packageItem"]')),
-        this.wait
-      );
-
-      expect(packageElements).to.have.length(7);
+      await checkPackageFees(['1.034 WAVES']);
+      await PackageTransactionScreen.showTransactionsButton.click();
+      expect(await PackageTransactionScreen.getPackageItems()).toHaveLength(7);
 
       const [issue, transfer, reissue, burn, lease, cancelLease, invokeScript] =
-        packageElements;
+        await PackageTransactionScreen.getPackageItems();
 
-      expect(
-        await issue.findElement(By.css('[data-testid="issueType"]')).getText()
-      ).to.equal('Issue Smart Token');
+      await expect(issue.type).toHaveText('Issue Smart Token');
+      await expect(issue.amount).toHaveText('92233720368.54775807 ShortToken');
+      await expect(issue.description).toHaveText(
+        'Full description of ShortToken'
+      );
+      await expect(issue.decimals).toHaveText('8');
+      await expect(issue.reissuable).toHaveText('Reissuable');
+      await expect(issue.contentScript).toHaveText('base64:BQbtKNoM');
+      await expect(issue.fee).toHaveText('1.004 WAVES');
 
-      expect(
-        await issue.findElement(By.css('[data-testid="issueAmount"]')).getText()
-      ).to.equal('92233720368.54775807 ShortToken');
+      await expect(transfer.transferAmount).toHaveText(
+        '-123456790 NonScriptToken'
+      );
+      await expect(transfer.recipient).toHaveText(
+        '3N5HNJz5otiU...BVv5HhYLdhiD'
+      );
+      await expect(transfer.attachmentContent).toHaveText('base64:BQbtKNoM');
+      await expect(transfer.fee).toHaveText('0.005 WAVES');
 
-      expect(
-        await issue
-          .findElement(By.css('[data-testid="issueDescription"]'))
-          .getText()
-      ).to.equal('Full description of ShortToken');
+      await expect(reissue.reissueAmount).toHaveText(
+        '+123456790 NonScriptToken'
+      );
+      await expect(reissue.fee).toHaveText('0.005 WAVES');
 
-      expect(
-        await issue
-          .findElement(By.css('[data-testid="issueDecimals"]'))
-          .getText()
-      ).to.equal('8');
+      await expect(burn.burnAmount).toHaveText('-123456790 NonScriptToken');
+      await expect(burn.fee).toHaveText('0.005 WAVES');
 
-      expect(
-        await issue
-          .findElement(By.css('[data-testid="issueReissuable"]'))
-          .getText()
-      ).to.equal('Reissuable');
+      await expect(lease.leaseAmount).toHaveText('1.23456790 WAVES');
+      await expect(lease.leaseRecipient).toHaveText(
+        '3N5HNJz5otiU...BVv5HhYLdhiD'
+      );
+      await expect(lease.fee).toHaveText('0.005 WAVES');
 
-      expect(
-        await issue
-          .findElement(By.css('[data-testid="contentScript"]'))
-          .getText()
-      ).to.equal('base64:BQbtKNoM');
+      await expect(cancelLease.cancelLeaseAmount).toHaveText(
+        '0.00000001 WAVES'
+      );
+      await expect(cancelLease.cancelLeaseRecipient).toHaveText(
+        'alias:T:merry'
+      );
+      await expect(cancelLease.fee).toHaveText('0.005 WAVES');
 
-      expect(
-        await issue.findElement(By.css('[data-testid="txFee"]')).getText()
-      ).to.equal('1.004 WAVES');
-
-      expect(
-        await transfer
-          .findElement(By.css('[data-testid="transferAmount"]'))
-          .getText()
-      ).to.equal('-123456790 NonScriptToken');
-
-      expect(
-        await transfer
-          .findElement(By.css('[data-testid="recipient"]'))
-          .getText()
-      ).to.equal('3N5HNJz5otiU...BVv5HhYLdhiD');
-
-      expect(
-        await transfer
-          .findElement(By.css('[data-testid="attachmentContent"]'))
-          .getText()
-      ).to.equal('base64:BQbtKNoM');
-
-      expect(
-        await transfer.findElement(By.css('[data-testid="txFee"]')).getText()
-      ).to.equal('0.005 WAVES');
-
-      expect(
-        await reissue
-          .findElement(By.css('[data-testid="reissueAmount"]'))
-          .getText()
-      ).to.equal('+123456790 NonScriptToken');
-
-      expect(
-        await reissue.findElement(By.css('[data-testid="txFee"]')).getText()
-      ).to.equal('0.005 WAVES');
-
-      expect(
-        await burn.findElement(By.css('[data-testid="burnAmount"]')).getText()
-      ).to.equal('-123456790 NonScriptToken');
-
-      expect(
-        await burn.findElement(By.css('[data-testid="txFee"]')).getText()
-      ).to.equal('0.005 WAVES');
-
-      expect(
-        await lease.findElement(By.css('[data-testid="leaseAmount"]')).getText()
-      ).to.equal('1.23456790 WAVES');
-
-      expect(
-        await lease
-          .findElement(By.css('[data-testid="leaseRecipient"]'))
-          .getText()
-      ).to.equal('3N5HNJz5otiU...BVv5HhYLdhiD');
-
-      expect(
-        await lease.findElement(By.css('[data-testid="txFee"]')).getText()
-      ).to.equal('0.005 WAVES');
-
-      expect(
-        await cancelLease
-          .findElement(By.css('[data-testid="cancelLeaseAmount"]'))
-          .getText()
-      ).to.equal('0.00000001 WAVES');
-
-      expect(
-        await cancelLease
-          .findElement(By.css('[data-testid="cancelLeaseRecipient"]'))
-          .getText()
-      ).to.equal('alias:T:merry');
-
-      expect(
-        await cancelLease.findElement(By.css('[data-testid="txFee"]')).getText()
-      ).to.equal('0.005 WAVES');
-
-      expect(
-        await invokeScript
-          .findElement(By.css('[data-testid="invokeScriptPaymentsTitle"]'))
-          .getText()
-      ).to.equal('2 Payments');
-
-      expect(
-        await invokeScript
-          .findElement(By.css('[data-testid="invokeScriptDApp"]'))
-          .getText()
-      ).to.equal('3My2kBJaGfeM...3y8rAgfV2EAx');
-
-      expect(
-        await invokeScript
-          .findElement(By.css('[data-testid="invokeScriptFunction"]'))
-          .getText()
-      ).to.equal(INVOKE_SCRIPT.data.call.function);
-
-      const argElements = await invokeScript.findElements(
-        By.css('[data-testid="invokeArgument"]')
+      await expect(invokeScript.invokeScriptPaymentsTitle).toHaveText(
+        '2 Payments'
+      );
+      await expect(invokeScript.invokeScriptDApp).toHaveText(
+        '3My2kBJaGfeM...3y8rAgfV2EAx'
+      );
+      await expect(invokeScript.invokeScriptFunction).toHaveText(
+        INVOKE_SCRIPT.data.call.function
       );
 
+      const invokeArguments = await invokeScript.getInvokeArguments();
       const actualArgs = await Promise.all(
-        argElements.map(async el => {
+        invokeArguments.map(async it => {
           const [type, value] = await Promise.all([
-            el
-              .findElement(By.css('[data-testid="invokeArgumentType"]'))
-              .getText(),
-            el
-              .findElement(By.css('[data-testid="invokeArgumentValue"]'))
-              .getText(),
+            it.type.getText(),
+            it.value.getText(),
           ]);
-
-          return {
-            type,
-            value,
-          };
+          return { type, value };
         })
       );
-
-      expect(actualArgs).to.deep.equal([
+      expect(actualArgs).toStrictEqual([
         {
           type: 'integer',
           value: '42',
@@ -4403,47 +3462,38 @@ describe('Signature', function () {
         },
       ]);
 
-      const paymentElements = await this.driver.findElements(
-        By.css('[data-testid="invokeScriptPaymentItem"]')
-      );
-
       const actualPayments = await Promise.all(
-        paymentElements.map(el => el.getText())
+        await invokeScript.invokeScriptPaymentItems.map(async it =>
+          it.getText()
+        )
       );
-
-      expect(actualPayments).to.deep.equal([
+      expect(actualPayments).toStrictEqual([
         '0.00000001 WAVES',
         '1 NonScriptToken',
       ]);
 
-      expect(
-        await invokeScript
-          .findElement(By.css('[data-testid="txFee"]'))
-          .getText()
-      ).to.equal('0.005 WAVES');
+      await expect(invokeScript.fee).toHaveText('0.005 WAVES');
 
-      await rejectMessage.call(this);
-      await closeMessage.call(this);
+      await rejectTransaction();
     });
 
     it('Approved', async function () {
-      await performSignTransactionPackage.call(this, PACKAGE, 'Test package');
+      await browser.switchToWindow(tabOrigin);
+      await browser.navigateTo(`https://${WHITELIST[3]}`);
+      await performSignTransactionPackage(PACKAGE, 'Test package');
+      await approveTransaction();
 
-      await approveMessage.call(this);
-      await closeMessage.call(this);
-
-      const approveResult = await this.driver.executeScript<string[]>(
+      await browser.switchToWindow(tabOrigin);
+      const approvedResult = await browser.execute<string[], []>(
         () => window.result
       );
+      expect(approvedResult).toHaveLength(7);
 
-      expect(approveResult).to.have.length(7);
-
-      const parsedApproveResult = approveResult.map<{
+      const parsedApproveResult = approvedResult.map<{
         id: string;
         proofs: string[];
         timestamp: number;
       }>(result => JSONbn.parse(result));
-
       const expectedApproveResult0 = {
         type: ISSUE.type,
         version: 3 as const,
@@ -4457,23 +3507,20 @@ describe('Signature', function () {
         fee: 100400000,
         chainId: 84,
       };
-
       const bytes0 = makeTxBytes({
         ...expectedApproveResult0,
         quantity: ISSUE.data.quantity,
         timestamp: parsedApproveResult[0].timestamp,
       });
-
-      expect(parsedApproveResult[0]).to.deep.contain(expectedApproveResult0);
-      expect(parsedApproveResult[0].id).to.equal(base58Encode(blake2b(bytes0)));
-
+      expect(parsedApproveResult[0]).toMatchObject(expectedApproveResult0);
+      expect(parsedApproveResult[0].id).toBe(base58Encode(blake2b(bytes0)));
       expect(
         await verifySignature(
           senderPublicKeyBytes,
           bytes0,
           base58Decode(parsedApproveResult[0].proofs[0])
         )
-      ).to.be.true;
+      ).toBe(true);
 
       const expectedApproveResult1 = {
         type: TRANSFER.type,
@@ -4487,22 +3534,19 @@ describe('Signature', function () {
         feeAssetId: null,
         chainId: 84,
       };
-
       const bytes1 = makeTxBytes({
         ...expectedApproveResult1,
         timestamp: parsedApproveResult[1].timestamp,
       });
-
-      expect(parsedApproveResult[1]).to.deep.contain(expectedApproveResult1);
-      expect(parsedApproveResult[1].id).to.equal(base58Encode(blake2b(bytes1)));
-
+      expect(parsedApproveResult[1]).toMatchObject(expectedApproveResult1);
+      expect(parsedApproveResult[1].id).toBe(base58Encode(blake2b(bytes1)));
       expect(
         await verifySignature(
           senderPublicKeyBytes,
           bytes1,
           base58Decode(parsedApproveResult[1].proofs[0])
         )
-      ).to.be.true;
+      ).toBe(true);
 
       const expectedApproveResult2 = {
         type: REISSUE.type,
@@ -4514,22 +3558,19 @@ describe('Signature', function () {
         chainId: 84,
         fee: 500000,
       };
-
       const bytes2 = makeTxBytes({
         ...expectedApproveResult2,
         timestamp: parsedApproveResult[2].timestamp,
       });
-
-      expect(parsedApproveResult[2]).to.deep.contain(expectedApproveResult2);
-      expect(parsedApproveResult[2].id).to.equal(base58Encode(blake2b(bytes2)));
-
+      expect(parsedApproveResult[2]).toMatchObject(expectedApproveResult2);
+      expect(parsedApproveResult[2].id).toBe(base58Encode(blake2b(bytes2)));
       expect(
         await verifySignature(
           senderPublicKeyBytes,
           bytes2,
           base58Decode(parsedApproveResult[2].proofs[0])
         )
-      ).to.be.true;
+      ).toBe(true);
 
       const expectedApproveResult3 = {
         type: BURN.type,
@@ -4540,22 +3581,19 @@ describe('Signature', function () {
         chainId: 84,
         fee: 500000,
       };
-
       const bytes3 = makeTxBytes({
         ...expectedApproveResult3,
         timestamp: parsedApproveResult[3].timestamp,
       });
-
-      expect(parsedApproveResult[3]).to.deep.contain(expectedApproveResult3);
-      expect(parsedApproveResult[3].id).to.equal(base58Encode(blake2b(bytes3)));
-
+      expect(parsedApproveResult[3]).toMatchObject(expectedApproveResult3);
+      expect(parsedApproveResult[3].id).toBe(base58Encode(blake2b(bytes3)));
       expect(
         await verifySignature(
           senderPublicKeyBytes,
           bytes3,
           base58Decode(parsedApproveResult[3].proofs[0])
         )
-      ).to.be.true;
+      ).toBe(true);
 
       const expectedApproveResult4 = {
         type: LEASE.type,
@@ -4566,22 +3604,19 @@ describe('Signature', function () {
         fee: 500000,
         chainId: 84,
       };
-
       const bytes4 = makeTxBytes({
         ...expectedApproveResult4,
         timestamp: parsedApproveResult[4].timestamp,
       });
-
-      expect(parsedApproveResult[4]).to.deep.contain(expectedApproveResult4);
-      expect(parsedApproveResult[4].id).to.equal(base58Encode(blake2b(bytes4)));
-
+      expect(parsedApproveResult[4]).toMatchObject(expectedApproveResult4);
+      expect(parsedApproveResult[4].id).toBe(base58Encode(blake2b(bytes4)));
       expect(
         await verifySignature(
           senderPublicKeyBytes,
           bytes4,
           base58Decode(parsedApproveResult[4].proofs[0])
         )
-      ).to.be.true;
+      ).toBe(true);
 
       const expectedApproveResult5 = {
         type: CANCEL_LEASE.type,
@@ -4591,22 +3626,19 @@ describe('Signature', function () {
         fee: 500000,
         chainId: 84,
       };
-
       const bytes5 = makeTxBytes({
         ...expectedApproveResult5,
         timestamp: parsedApproveResult[5].timestamp,
       });
-
-      expect(parsedApproveResult[5]).to.deep.contain(expectedApproveResult5);
-      expect(parsedApproveResult[5].id).to.equal(base58Encode(blake2b(bytes5)));
-
+      expect(parsedApproveResult[5]).toMatchObject(expectedApproveResult5);
+      expect(parsedApproveResult[5].id).toBe(base58Encode(blake2b(bytes5)));
       expect(
         await verifySignature(
           senderPublicKeyBytes,
           bytes5,
           base58Decode(parsedApproveResult[5].proofs[0])
         )
-      ).to.be.true;
+      ).toBe(true);
 
       const expectedApproveResult6 = {
         type: INVOKE_SCRIPT.type,
@@ -4619,125 +3651,93 @@ describe('Signature', function () {
         feeAssetId: null,
         chainId: 84,
       };
-
       const bytes6 = makeTxBytes({
         ...expectedApproveResult6,
         timestamp: parsedApproveResult[6].timestamp,
       });
-
-      expect(parsedApproveResult[6]).to.deep.contain(expectedApproveResult6);
-      expect(parsedApproveResult[6].id).to.equal(base58Encode(blake2b(bytes6)));
-
+      expect(parsedApproveResult[6]).toMatchObject(expectedApproveResult6);
+      expect(parsedApproveResult[6].id).toBe(base58Encode(blake2b(bytes6)));
       expect(
         await verifySignature(
           senderPublicKeyBytes,
           bytes6,
           base58Decode(parsedApproveResult[6].proofs[0])
         )
-      ).to.be.true;
+      ).toBe(true);
     });
   });
 
   describe('Custom data', function () {
-    async function performSignCustomData(
-      this: mocha.Context,
-      data: MessageInputCustomData
-    ) {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await ContentScript.waitForKeeperWallet.call(this);
-      await this.driver.executeScript(
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        (data: MessageInputCustomData) => {
-          KeeperWallet.signCustomData(data).then(
-            result => {
-              window.result = JSON.stringify(result);
-            },
-            () => {
-              window.result = null;
-            }
-          );
-        },
-        data
-      );
+    async function performSignCustomData(data: MessageInputCustomData) {
+      const { waitForNewWindows } = await Windows.captureNewWindows();
+      await ContentScript.waitForKeeperWallet();
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      await browser.execute((data: MessageInputCustomData) => {
+        KeeperWallet.signCustomData(data).then(
+          result => {
+            window.result = JSON.stringify(result);
+          },
+          () => {
+            window.result = null;
+          }
+        );
+      }, data);
       [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
+      await browser.switchToWindow(messageWindow);
+      await browser.refresh();
     }
 
     describe('Version 1', function () {
-      async function checkData(this: mocha.Context, script: string) {
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="customDataBinary"]'))
-            .getText()
-        ).to.equal(script);
-      }
-
       it('Rejected', async function () {
-        await performSignCustomData.call(this, CUSTOM_DATA_V1);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignCustomData(CUSTOM_DATA_V1);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkData.call(this, 'base64:AADDEE==');
+        await expect(DataTransactionScreen.contentScript).toHaveText(
+          'base64:AADDEE=='
+        );
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignCustomData.call(this, CUSTOM_DATA_V1);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignCustomData(CUSTOM_DATA_V1);
+        await approveTransaction();
 
-        const approveResult = await this.driver.executeScript<string>(
-          () => window.result
-        );
-
-        const parsedApproveResult = JSON.parse(approveResult);
-
+        const parsedApproveResult = await getResult();
         const expectedApproveResult = {
           binary: CUSTOM_DATA_V1.binary,
           version: CUSTOM_DATA_V1.version,
           publicKey: senderPublicKey,
           hash: 'BddvukE8EsQ22TC916wr9hxL5MTinpcxj7cKmyQFu1Qj',
         };
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             makeCustomDataBytes(expectedApproveResult),
             base58Decode(parsedApproveResult.signature)
           )
-        ).to.be.true;
+        ).toBe(true);
       });
     });
 
     describe('Version 2', function () {
       async function checkDataEntries(
-        this: mocha.Context,
         entries: Array<{ key: string; type: string; value: string }>
       ) {
-        const dataRows = await this.driver.findElements(
-          By.css('[data-testid="dataRow"]')
-        );
-
         const actualItems = await Promise.all(
-          dataRows.map(async entryEl => {
+          (
+            await DataTransactionScreen.getDataRows()
+          ).map(async it => {
             const [key, type, value] = await Promise.all([
-              entryEl
-                .findElement(By.css('[data-testid="dataRowKey"]'))
-                .getText(),
-              entryEl
-                .findElement(By.css('[data-testid="dataRowType"]'))
-                .getText(),
-              entryEl
-                .findElement(By.css('[data-testid="dataRowValue"]'))
-                .getText(),
+              it.key.getText(),
+              it.type.getText(),
+              it.value.getText(),
             ]);
-
             return {
               key,
               type,
@@ -4746,16 +3746,16 @@ describe('Signature', function () {
           })
         );
 
-        expect(actualItems).to.deep.equal(entries);
+        expect(actualItems).toStrictEqual(entries);
       }
 
       it('Rejected', async function () {
-        await performSignCustomData.call(this, CUSTOM_DATA_V2);
-        await checkOrigin.call(this, WHITELIST[3]);
-        await checkAccountName.call(this, 'rich');
-        await checkNetworkName.call(this, 'Testnet');
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignCustomData(CUSTOM_DATA_V2);
+        await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
-        await checkDataEntries.call(this, [
+        await checkDataEntries([
           {
             key: 'stringValue',
             type: 'string',
@@ -4778,37 +3778,30 @@ describe('Signature', function () {
           },
         ]);
 
-        await rejectMessage.call(this);
-        await closeMessage.call(this);
+        await rejectTransaction();
       });
 
       it('Approved', async function () {
-        await performSignCustomData.call(this, CUSTOM_DATA_V2);
-        await approveMessage.call(this);
-        await closeMessage.call(this);
+        await browser.switchToWindow(tabOrigin);
+        await browser.navigateTo(`https://${WHITELIST[3]}`);
+        await performSignCustomData(CUSTOM_DATA_V2);
+        await approveTransaction();
 
-        const approveResult = await this.driver.executeScript<string>(
-          () => window.result
-        );
-
-        const parsedApproveResult = JSON.parse(approveResult);
-
+        const parsedApproveResult = await getResult();
         const expectedApproveResult = {
           data: CUSTOM_DATA_V2.data,
           version: CUSTOM_DATA_V2.version,
           publicKey: senderPublicKey,
           hash: 'CntDRDubtuhwBKsmCTtZzMLVF9TFK6hLoWP424V8Zz2K',
         };
-
-        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-
+        expect(parsedApproveResult).toMatchObject(expectedApproveResult);
         expect(
           await verifySignature(
             senderPublicKeyBytes,
             makeCustomDataBytes(expectedApproveResult),
             base58Decode(parsedApproveResult.signature)
           )
-        ).to.be.true;
+        ).toBe(true);
       });
     });
   });

@@ -1,209 +1,121 @@
-import { expect } from 'chai';
-import { By, until, WebElement } from 'selenium-webdriver';
-
-import { clear } from './utils';
-import {
-  App,
-  Assets,
-  CreateNewAccount,
-  Network,
-  Windows,
-} from './utils/actions';
-import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './utils/constants';
+import { AccountInfoScreen } from './helpers/AccountInfoScreen';
+import { ChangeAccountNameScreen } from './helpers/ChangeAccountNameScreen';
+import { DeleteAccountScreen } from './helpers/DeleteAccountScreen';
+import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { AccountsHome } from './helpers/flows/AccountsHome';
+import { App } from './helpers/flows/App';
+import { Network } from './helpers/flows/Network';
+import { HomeScreen } from './helpers/HomeScreen';
+import { OtherAccountsScreen } from './helpers/OtherAccountsScreen';
+import { TopMenu } from './helpers/TopMenu';
+import { Windows } from './helpers/Windows';
 
 describe('Account management', function () {
   let tabKeeper: string, tabAccounts: string;
 
-  before(async function () {
-    await App.initVault.call(this, DEFAULT_PASSWORD);
-    tabKeeper = await this.driver.getWindowHandle();
+  before(async () => {
+    await App.initVault();
+    tabKeeper = await browser.getWindowHandle();
 
-    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-    await this.driver
-      .wait(
-        until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
-        this.wait
-      )
-      .click();
+    const { waitForNewWindows } = await Windows.captureNewWindows();
+    await EmptyHomeScreen.addButton.click();
     [tabAccounts] = await waitForNewWindows(1);
+    await browser.switchToWindow(tabAccounts);
+    await browser.refresh();
 
-    await this.driver.switchTo().window(tabAccounts);
-    await this.driver.navigate().refresh();
-
-    await CreateNewAccount.importAccount.call(
-      this,
+    await AccountsHome.importAccount(
       'poor',
       'waves private node seed without waves tokens'
     );
 
-    await CreateNewAccount.importAccount.call(
-      this,
+    await AccountsHome.importAccount(
       'rich',
       'waves private node seed with waves tokens'
     );
 
-    await this.driver.switchTo().window(tabKeeper);
-    await App.open.call(this);
+    await browser.switchToWindow(tabKeeper);
+    await browser.openKeeperPopup();
   });
 
-  after(async function () {
-    await App.closeBgTabs.call(this, tabKeeper);
-    await App.resetVault.call(this);
+  after(async () => {
+    await browser.switchToWindow(tabAccounts);
+    await browser.closeWindow();
+    await browser.switchToWindow(tabKeeper);
+    await App.resetVault();
   });
 
-  describe('Accounts list', function () {
-    it('Change active account', async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
-          this.wait
-        )
-        .click();
+  describe('Accounts list', () => {
+    it('Change active account', async () => {
+      await HomeScreen.otherAccountsButton.click();
+      await (await OtherAccountsScreen.accounts)[0].root.click();
 
-      await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="otherAccountsPage"]')),
-        this.wait
-      );
-
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="accountCard"]')),
-          this.wait
-        )
-        .click();
-
-      expect(await Assets.getActiveAccountName.call(this)).to.equal('poor');
+      await expect(HomeScreen.activeAccountName).toHaveText('poor');
     });
 
     it('Updating account balances on import');
-
     it('The balance reflects the leased WAVES');
-
     it('Copying the address of the active account on the accounts screen');
 
-    describe('Show QR', function () {
-      after(async function () {
-        await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+    describe('Show QR', () => {
+      after(async () => {
+        await TopMenu.backButton.click();
       });
 
-      it('Opening the screen with the QR code of the address by clicking the "Show QR" button', async function () {
-        await this.driver
-          .wait(
-            until.elementLocated(
-              By.css('[data-testid="activeAccountCard"] .showQrIcon')
-            ),
-            this.wait
-          )
-          .click();
-
-        await this.driver.wait(
-          until.elementLocated(
-            By.css('[class^="content@SelectedAccountQr-module"]')
-          ),
-          this.wait
-        );
+      it('Opening the screen with the QR code of the address by clicking the "Show QR" button', async () => {
+        await HomeScreen.showQRButton.click();
+        await $('[class^="content@SelectedAccountQr-module"]').waitForExist();
       });
 
       it('Check that QR matches the displayed address');
-
       it('Download QR code'); // file downloaded, filename equals "${address}.png"
     });
 
-    describe('Search', function () {
-      let searchInput: WebElement;
+    describe('Search', () => {
+      before(async () => {
+        await HomeScreen.otherAccountsButton.click();
+      });
 
-      before(async function () {
-        await this.driver
-          .wait(
-            until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
-            this.wait
-          )
-          .click();
-        searchInput = this.driver.wait(
-          until.elementLocated(By.css('[data-testid="accountsSearchInput"]')),
-          this.wait
+      after(async () => {
+        await TopMenu.backButton.click();
+      });
+
+      it('Displays "not found" description if term is not account name, address, public key or email', async () => {
+        await OtherAccountsScreen.searchInput.setValue('WRONG TERM');
+        expect(await OtherAccountsScreen.accounts).toHaveLength(0);
+        await expect(OtherAccountsScreen.accountsNote).toHaveText(
+          'No other accounts were found for the specified filters'
         );
       });
 
-      after(async function () {
-        await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+      it('"x" appears and clear search input', async () => {
+        await OtherAccountsScreen.searchInput.setValue('WRONG TERM');
+        await OtherAccountsScreen.searchClearButton.click();
+        await expect(OtherAccountsScreen.searchInput).toHaveText('');
       });
 
-      beforeEach(async function () {
-        await searchInput.clear();
-      });
-
-      it('Displays "not found" description if term is not account name, address, public key or email', async function () {
-        await searchInput.sendKeys('WRONG TERM');
-
-        expect(
-          await this.driver.findElements(By.css('[data-testid="accountCard"]'))
-        ).length(0);
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="accountsNote"]'))
-            .getText()
-        ).matches(/No other accounts were found for the specified filters/i);
-      });
-
-      it('"x" appears and clear search input', async function () {
-        await searchInput.sendKeys('WRONG TERM');
-        const searchClear = this.driver.findElement(
-          By.css('[data-testid="searchClear"]')
+      it('By existing account name', async () => {
+        await OtherAccountsScreen.searchInput.setValue('ic');
+        await expect((await OtherAccountsScreen.accounts)[0].name).toHaveText(
+          'rich'
         );
-        expect(await searchClear.isDisplayed()).to.be.true;
-        await searchClear.click();
-        expect(await searchInput.getText()).to.be.empty;
       });
 
-      it('By existing account name', async function () {
-        await searchInput.sendKeys(/* r */ 'ic' /* h */);
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.css(
-                  '[data-testid="accountCard"] [data-testid="accountName"]'
-                )
-              ),
-              this.wait
-            )
-            .getText()
-        ).to.be.equal('rich');
+      it('By existing account address', async () => {
+        await OtherAccountsScreen.searchInput.setValue(
+          '3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1'
+        );
+        await expect((await OtherAccountsScreen.accounts)[0].name).toHaveText(
+          'rich'
+        );
       });
 
-      it('By existing account address', async function () {
-        await searchInput.sendKeys('3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1');
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.css(
-                  '[data-testid="accountCard"] [data-testid="accountName"]'
-                )
-              ),
-              this.wait
-            )
-            .getText()
-        ).to.be.equal('rich');
-      });
-
-      it('By existing account public key', async function () {
-        await searchInput.sendKeys(
+      it('By existing account public key', async () => {
+        await OtherAccountsScreen.searchInput.setValue(
           'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV'
         );
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.css(
-                  '[data-testid="accountCard"] [data-testid="accountName"]'
-                )
-              ),
-              this.wait
-            )
-            .getText()
-        ).to.be.equal('rich');
+        await expect((await OtherAccountsScreen.accounts)[0].name).toHaveText(
+          'rich'
+        );
       });
 
       it('By existing email account');
@@ -211,373 +123,193 @@ describe('Account management', function () {
   });
 
   function accountPropertiesShouldBeRight() {
-    describe('Address', function () {
-      it('Is displayed', async function () {
-        expect(
-          await this.driver
-            .findElement(
-              By.xpath(
-                "//div[@id='accountInfoAddress']//div[contains(@class, 'copyTextOverflow@copy')]"
-              )
-            )
-            .getText()
-        ).matches(/\w+/i);
+    describe('Address', () => {
+      it('Is displayed', async () => {
+        expect(await AccountInfoScreen.address.getText()).toMatch(/\w+/i);
       });
 
       it('Copying by clicking the "Copy" button');
     });
 
-    describe('Public key', function () {
-      it('Is displayed', async function () {
-        expect(
-          await this.driver
-            .findElement(
-              By.xpath(
-                "//div[@id='accountInfoPublicKey']//div[contains(@class, 'copyTextOverflow@copy')]"
-              )
-            )
-            .getText()
-        ).matches(/\w+/i);
+    describe('Public key', () => {
+      it('Is displayed', async () => {
+        expect(await AccountInfoScreen.publicKey.getText()).toMatch(/\w+/i);
       });
 
       it('Copying by clicking the "Copy" button');
     });
 
-    describe('Private key', function () {
-      it('Is hidden', async function () {
-        expect(
-          await this.driver
-            .findElement(
-              By.xpath(
-                "//div[@id='accountInfoPrivateKey']//div[contains(@class, 'copyTextOverflow@copy')]"
-              )
-            )
-            .getText()
-        ).not.matches(/\w+/i);
+    describe('Private key', () => {
+      it('Is hidden', async () => {
+        expect(await AccountInfoScreen.privateKey.getText()).toMatch(/\w+/i);
       });
 
-      describe('Copying by clicking the "Copy" button', function () {
-        before(async function () {
-          await this.driver
-            .findElement(
-              By.xpath(
-                "//div[@id='accountInfoPrivateKey']//div[contains(@class, 'lastIcon@copy')]"
-              )
-            )
-            .click();
+      describe('Copying by clicking the "Copy" button', () => {
+        before(async () => {
+          await AccountInfoScreen.privateKeyCopyButton.click();
         });
 
-        it('Clicking "Copy" displays the password entry form', async function () {
-          await this.driver.wait(
-            until.elementLocated(By.css('form#enterPassword')),
-            this.wait
-          );
-          await this.driver
-            .findElement(By.css('button#passwordCancel'))
-            .click();
+        it('Clicking "Copy" displays the password entry form', async () => {
+          await AccountInfoScreen.passwordModal.passwordInput.waitForExist();
+          await AccountInfoScreen.passwordModal.cancelButton.click();
         });
 
         it('Clicking "Cancel" does not copy');
-
         it('Clicking "Copy" and entering the correct password will copy it');
       });
     });
 
-    describe('Backup phrase', function () {
-      it('Is hidden', async function () {
-        expect(
-          await this.driver
-            .findElement(
-              By.xpath(
-                "//div[@id='accountInfoBackupPhrase']//div[contains(@class, 'copyTextOverflow@copy')]"
-              )
-            )
-            .getText()
-        ).not.matches(/\w+/i);
+    describe('Backup phrase', () => {
+      it('Is hidden', async () => {
+        expect(await AccountInfoScreen.backupPhrase.getText()).not.toMatch(
+          /\w+/i
+        );
       });
 
-      describe('Copying by clicking the "Copy" button', function () {
-        before(async function () {
-          await this.driver
-            .findElement(
-              By.xpath(
-                "//div[@id='accountInfoBackupPhrase']//div[contains(@class, 'lastIcon@copy')]"
-              )
-            )
-            .click();
-          await this.driver.wait(
-            until.elementLocated(By.css('form#enterPassword')),
-            this.wait
-          );
+      describe('Copying by clicking the "Copy" button', () => {
+        before(async () => {
+          await AccountInfoScreen.backupPhraseCopyButton.click();
+          await AccountInfoScreen.passwordModal.passwordInput.waitForExist();
         });
 
-        after(async function () {
-          await this.driver
-            .findElement(By.css('button#passwordCancel'))
-            .click();
+        after(async () => {
+          await AccountInfoScreen.passwordModal.cancelButton.click();
         });
 
         it('Clicking "Cancel" does not copy');
-
         it('Clicking "Copy" and entering the correct password will copy it');
       });
     });
 
-    describe('Rename an account', function () {
-      let newAccountNameInput: WebElement,
-        newAccountNameErr: WebElement,
-        saveBtn: WebElement,
-        currentAccountName: string,
-        newAccountName: string;
+    describe('Rename an account', () => {
+      let currentAccountName: string;
+      let newAccountName: string;
 
-      before(async function () {
-        await this.driver
-          .wait(
-            until.elementLocated(
-              By.xpath("//button[contains(@class, 'accountName@accountInfo')]")
-            ),
-            this.wait
-          )
-          .click();
-        newAccountNameInput = this.driver.wait(
-          until.elementLocated(By.css('input#newAccountName')),
-          this.wait
-        );
-        newAccountNameErr = this.driver.findElement(
-          By.css('[data-testid="newAccountNameError"]')
-        );
-        saveBtn = this.driver.findElement(By.css('button#save'));
-        currentAccountName = await this.driver
-          .findElement(By.css('div#currentAccountName'))
-          .getText();
+      before(async () => {
+        await AccountInfoScreen.name.click();
+        currentAccountName =
+          await ChangeAccountNameScreen.currentName.getText();
       });
 
-      it('A name that is already in use cannot be specified', async function () {
-        await newAccountNameInput.sendKeys(currentAccountName);
-        await newAccountNameInput.sendKeys('\t');
-        expect(await newAccountNameErr.getText()).matches(
-          /Name already exist/i
+      it('A name that is already in use cannot be specified', async () => {
+        await ChangeAccountNameScreen.newNameInput.setValue(currentAccountName);
+        await browser.keys('Tab');
+        await expect(ChangeAccountNameScreen.error).toHaveText(
+          'Name already exist'
         );
-        expect(await saveBtn.isEnabled()).to.be.false;
-        await clear(newAccountNameInput);
+        await expect(ChangeAccountNameScreen.saveButton).toBeDisabled();
+        await ChangeAccountNameScreen.newNameInput.clearValue();
       });
 
-      it('Unique name specified', async function () {
+      it('Unique name specified', async () => {
         newAccountName = currentAccountName.slice(1);
-        await newAccountNameInput.sendKeys(newAccountName);
-        await newAccountNameInput.sendKeys('\t');
-        expect(await newAccountNameErr.getText()).to.be.empty;
-        expect(await saveBtn.isEnabled()).to.be.true;
+        await ChangeAccountNameScreen.newNameInput.setValue(newAccountName);
+        await browser.keys('Tab');
+        await expect(ChangeAccountNameScreen.error).toHaveText('');
+        await expect(ChangeAccountNameScreen.saveButton).toBeEnabled();
       });
 
-      it('Successfully changed account name', async function () {
-        await saveBtn.click();
+      it('Successfully changed account name', async () => {
+        await ChangeAccountNameScreen.saveButton.click();
 
-        expect(
-          await this.driver
-            .wait(
-              until.elementIsVisible(
-                this.driver.findElement(By.css('.modal.notification'))
-              ),
-              this.wait
-            )
-            .getText()
-        ).matches(/Account name changed/i);
-
-        await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-
-        expect(
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath(
-                  "//button[contains(@class, 'accountName@accountInfo')]//span"
-                )
-              ),
-              this.wait
-            )
-            .getText()
-        ).to.be.equal(newAccountName);
+        await expect(AccountInfoScreen.notification).toHaveText(
+          'Account name changed'
+        );
+        await expect(AccountInfoScreen.name).toHaveText(newAccountName);
       });
     });
 
-    describe('Delete account', function () {
-      beforeEach(async function () {
-        await this.driver
-          .wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'deleteButton@accountInfo')]")
-            ),
-            this.wait
-          )
-          .click();
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'content@deleteAccount-module')]")
-          ),
-          this.wait
-        );
+    describe('Delete account', () => {
+      beforeEach(async () => {
+        await AccountInfoScreen.deleteAccountButton.click();
       });
 
-      it('Click "Back" on the account deletion confirmation screen - the account is not deleted', async function () {
-        await this.driver.findElement(By.css('div.arrow-back-icon')).click();
-
-        expect(
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, 'content@accountInfo')]")
-            ),
-            this.wait
-          )
-        ).not.to.be.throw;
+      it('Click "Back" on the account deletion confirmation screen - the account is not deleted', async () => {
+        await TopMenu.backButton.click();
+        await expect(AccountInfoScreen.name).toBeDisplayed();
       });
 
-      it('Click "Delete account" deletes the account', async function () {
-        await this.driver.findElement(By.css('button#deleteAccount')).click();
-
+      it('Click "Delete account" deletes the account', async () => {
+        await DeleteAccountScreen.deleteAccountButton.click();
         expect(
-          await this.driver.wait(
-            until.elementLocated(
-              By.css('[data-testid="importForm"], [data-testid="assetsForm"]')
-            ),
-            this.wait
-          )
-        ).not.to.be.throw;
+          (await HomeScreen.isDisplayed()) ||
+            (await EmptyHomeScreen.isDisplayed())
+        ).toBe(true);
       });
     });
   }
 
-  describe('Inactive account', async function () {
-    before(async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
-          this.wait
-        )
-        .click();
+  describe('Inactive account', async () => {
+    before(async () => {
+      await HomeScreen.otherAccountsButton.click();
     });
 
-    it('By clicking on account - go to the account properties screen', async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="accountInfoButton"]')),
-          this.wait
-        )
-        .click();
-
-      expect(
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'content@accountInfo')]")
-          ),
-          this.wait
-        )
-      ).not.to.be.throw;
+    it('By clicking on account - go to the account properties screen', async () => {
+      (await OtherAccountsScreen.accounts)[0].accountInfoButton.click();
+      await expect(AccountInfoScreen.root).toBeDisplayed();
     });
 
-    accountPropertiesShouldBeRight.call(this);
+    accountPropertiesShouldBeRight();
   });
 
-  describe('Active account', async function () {
-    it('By clicking on account - go to the account properties screen', async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="activeAccountCard"]')),
-          this.wait
-        )
-        .click();
-
-      expect(
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'content@accountInfo')]")
-          ),
-          this.wait
-        )
-      ).not.to.be.throw;
+  describe('Active account', async () => {
+    it('By clicking on account - go to the account properties screen', async () => {
+      await HomeScreen.activeAccountCard.click();
     });
 
-    accountPropertiesShouldBeRight.call(this);
+    accountPropertiesShouldBeRight();
   });
 
-  describe('Switching networks', function () {
-    before(async function () {
-      await this.driver.switchTo().window(tabAccounts);
+  describe('Switching networks', () => {
+    before(async () => {
+      await browser.switchToWindow(tabAccounts);
 
-      await CreateNewAccount.importAccount.call(
-        this,
+      await AccountsHome.importAccount(
         'second',
         'second account for testing selected account preservation'
       );
-      await CreateNewAccount.importAccount.call(
-        this,
+
+      await AccountsHome.importAccount(
         'first',
         'first account for testing selected account preservation'
       );
 
-      await Network.switchToAndCheck.call(this, 'Testnet');
+      await Network.switchToAndCheck('Testnet');
 
-      await CreateNewAccount.importAccount.call(
-        this,
+      await AccountsHome.importAccount(
         'fourth',
         'fourth account for testing selected account preservation'
       );
-      await CreateNewAccount.importAccount.call(
-        this,
+
+      await AccountsHome.importAccount(
         'third',
         'third account for testing selected account preservation'
       );
 
-      await Network.switchToAndCheck.call(this, 'Mainnet');
-
-      await this.driver.switchTo().window(tabKeeper);
+      await Network.switchToAndCheck('Mainnet');
+      await browser.switchToWindow(tabKeeper);
     });
 
-    after(async function () {
-      await Network.switchToAndCheck.call(this, 'Mainnet');
+    after(async () => {
+      await Network.switchToAndCheck('Mainnet');
     });
 
-    it('should preserve previously selected account for the network', async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
-          this.wait
-        )
-        .click();
+    it('should preserve previously selected account for the network', async () => {
+      await HomeScreen.otherAccountsButton.click();
+      (await OtherAccountsScreen.accounts)[0].root.click();
+      await expect(HomeScreen.activeAccountName).toHaveText('second');
 
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="accountCard"]')),
-          this.wait
-        )
-        .click();
-      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
+      await Network.switchToAndCheck('Testnet');
 
-      expect(await Assets.getActiveAccountName.call(this)).to.equal('second');
+      await HomeScreen.otherAccountsButton.click();
+      (await OtherAccountsScreen.accounts)[0].root.click();
+      await expect(HomeScreen.activeAccountName).toHaveText('fourth');
 
-      await Network.switchToAndCheck.call(this, 'Testnet');
+      await Network.switchToAndCheck('Mainnet');
+      await expect(HomeScreen.activeAccountName).toHaveText('second');
 
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
-          this.wait
-        )
-        .click();
-
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="accountCard"]')),
-          this.wait
-        )
-        .click();
-      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-
-      expect(await Assets.getActiveAccountName.call(this)).to.equal('fourth');
-
-      await Network.switchToAndCheck.call(this, 'Mainnet');
-      expect(await Assets.getActiveAccountName.call(this)).to.equal('second');
-      await Network.switchToAndCheck.call(this, 'Testnet');
-      expect(await Assets.getActiveAccountName.call(this)).to.equal('fourth');
+      await Network.switchToAndCheck('Testnet');
+      await expect(HomeScreen.activeAccountName).toHaveText('fourth');
     });
   });
 });

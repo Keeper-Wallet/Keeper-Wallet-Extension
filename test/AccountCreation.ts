@@ -1,450 +1,265 @@
-import { expect } from 'chai';
-import * as mocha from 'mocha';
-import { By, Key, until, WebElement } from 'selenium-webdriver';
+import waitForExpect from 'wait-for-expect';
 
-import { clear } from './utils';
-import {
-  App,
-  Assets,
-  CreateNewAccount,
-  Network,
-  Windows,
-} from './utils/actions';
+import { AccountInfoScreen } from './helpers/AccountInfoScreen';
+import { BackupSeedScreen } from './helpers/BackupSeedScreen';
+import { ChooseAccountsForm } from './helpers/ChooseAccountsForm';
+import { ConfirmBackupScreen } from './helpers/ConfirmBackupScreen';
+import { DeleteAccountScreen } from './helpers/DeleteAccountScreen';
+import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
+import { AccountsHome } from './helpers/flows/AccountsHome';
+import { App } from './helpers/flows/App';
+import { Network } from './helpers/flows/Network';
+import { PopupHome } from './helpers/flows/PopupHome';
+import { HomeScreen } from './helpers/HomeScreen';
+import { ImportFormScreen } from './helpers/ImportFormScreen';
+import { ImportKeystoreFileScreen } from './helpers/ImportKeystoreFileScreen';
+import { ImportSuccessScreen } from './helpers/ImportSuccessScreen';
+import { ImportViaSeedScreen } from './helpers/ImportViaSeedScreen';
+import { NewWalletNameScreen } from './helpers/NewWalletNameScreen';
+import { NewWalletScreen } from './helpers/NewWalletScreen';
+import { OtherAccountsScreen } from './helpers/OtherAccountsScreen';
+import { TopMenu } from './helpers/TopMenu';
+import { Windows } from './helpers/Windows';
 
 describe('Account creation', function () {
-  async function deleteEachAndSwitchToAccounts(this: mocha.Context) {
-    const repeat = true;
-
-    while (repeat) {
-      await this.driver.wait(
-        until.elementLocated(
-          By.css('[data-testid="assetsForm"], [data-testid="importForm"]')
-        ),
-        this.wait
-      );
-
-      const activeAccountCards = await this.driver.findElements(
-        By.css('[data-testid="activeAccountCard"]')
-      );
-
-      if (!activeAccountCards.length) {
-        break; // the cycle
-      }
-
-      await activeAccountCards[0].click();
-
-      await this.driver
-        .wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, 'deleteButton@accountInfo')]")
-          ),
-          this.wait
-        )
-        .click();
-
-      await this.driver
-        .wait(until.elementLocated(By.id('deleteAccount')), this.wait)
-        .click();
-    }
-
-    expect(await this.driver.findElements(By.css('[data-testid="importForm"]')))
-      .not.to.be.empty;
-
-    await this.driver.switchTo().window(tabAccounts);
-  }
-
   let tabKeeper: string, tabAccounts: string;
 
-  before(async function () {
-    await App.initVault.call(this);
-    tabKeeper = await this.driver.getWindowHandle();
+  async function deleteEachAndSwitchToAccounts() {
+    while (!(await EmptyHomeScreen.isDisplayed())) {
+      await HomeScreen.activeAccountCard.click();
+      await AccountInfoScreen.deleteAccountButton.click();
+      await DeleteAccountScreen.deleteAccountButton.click();
+    }
+    await browser.switchToWindow(tabAccounts);
+  }
 
-    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-    await this.driver
-      .wait(
-        until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
-        this.wait
-      )
-      .click();
+  before(async () => {
+    await App.initVault();
+    tabKeeper = await browser.getWindowHandle();
+
+    const { waitForNewWindows } = await Windows.captureNewWindows();
+    await EmptyHomeScreen.addButton.click();
     [tabAccounts] = await waitForNewWindows(1);
-
-    await this.driver.switchTo().window(tabAccounts);
-    await this.driver.navigate().refresh();
+    await browser.switchToWindow(tabAccounts);
+    await browser.refresh();
   });
 
-  after(async function () {
-    await App.closeBgTabs.call(this, tabKeeper);
-    await App.resetVault.call(this);
+  after(async () => {
+    await browser.switchToWindow(tabAccounts);
+    await browser.closeWindow();
+    await browser.switchToWindow(tabKeeper);
+    await App.resetVault();
   });
 
-  describe('Create', function () {
+  describe('Create', () => {
     const ACCOUNTS = {
       FIRST: 'first',
       SECOND: 'second',
       ANY: 'account123!@#_аккаунт',
     };
-    const PILL_ANIMATION_DELAY = 200;
 
     after(deleteEachAndSwitchToAccounts);
 
-    it('first account via "Create a new account"', async function () {
-      await this.driver
-        .wait(
-          until.elementIsVisible(
-            this.driver.wait(
-              until.elementLocated(
-                By.css('[data-testid="createNewAccountBtn"]')
-              ),
-              this.wait
-            )
-          ),
-          this.wait
-        )
-        .click();
+    it('first account via "Create a new account"', async () => {
+      await ImportFormScreen.createNewAccountButton.click();
+      await NewWalletScreen.continueButton.click();
 
-      await this.driver
-        .wait(until.elementLocated(By.css('button#continue')), this.wait)
-        .click();
+      const seed = await BackupSeedScreen.seed.getText();
+      await BackupSeedScreen.continueButton.click();
 
-      const seed: string[] = (
-        await this.driver
-          .wait(until.elementLocated(By.css('div.cant-select')), this.wait)
-          .getText()
-      ).split(' ');
-      await this.driver.findElement(By.css('button#continue')).click();
-
-      for (const word of seed) {
-        await this.driver
-          .findElement(
-            By.xpath(
-              "//div[(contains(@class, 'selectedPill@pills') and not(contains(@class, 'hiddenPill@pills')))]" +
-                `//div[contains(@class, 'text@pills')][text()='${word}']`
-            )
-          )
-          .click();
-        await this.driver.sleep(PILL_ANIMATION_DELAY);
+      for (const word of seed.split(' ')) {
+        const pill =
+          await ConfirmBackupScreen.suggestedPillsContainer.getPillByText(word);
+        await pill.click();
+        await waitForExpect(async () => {
+          expect(await pill.isDisplayed()).toBe(false);
+        });
       }
-      await this.driver
-        .wait(until.elementLocated(By.css('button#confirmBackup')), this.wait)
-        .click();
 
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid=newAccountNameInput]')),
-          this.wait
-        )
-        .sendKeys(ACCOUNTS.FIRST);
+      await ConfirmBackupScreen.confirmButton.click();
+      await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST);
+      await NewWalletNameScreen.continueButton.click();
 
-      await this.driver
-        .findElement(By.css('[data-testid=continueBtn]'))
-        .click();
-
-      await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-        this.wait
-      );
-
-      await this.driver
-        .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-        .click();
-
-      await this.driver.switchTo().window(tabKeeper);
-
-      expect(await Assets.getActiveAccountName.call(this)).to.equal(
-        ACCOUNTS.FIRST
-      );
+      await ImportSuccessScreen.addAnotherAccountButton.click();
+      await browser.switchToWindow(tabKeeper);
+      expect(await HomeScreen.activeAccountName.getText()).toBe(ACCOUNTS.FIRST);
     });
 
-    describe('additional account via "Add account"', function () {
-      describe('When you already have 1 account', function () {
-        describe('Create new account page', function () {
-          before(async function () {
-            await Assets.addAccount.call(this);
-
-            await this.driver.switchTo().window(tabAccounts);
-
-            await this.driver
-              .wait(
-                until.elementIsVisible(
-                  await this.driver.wait(
-                    until.elementLocated(
-                      By.css('[data-testid="createNewAccountBtn"]')
-                    ),
-                    this.wait
-                  )
-                ),
-                this.wait
-              )
-              .click();
+    describe('additional account via "Add account"', () => {
+      describe('When you already have 1 account', () => {
+        describe('Create new account page', () => {
+          before(async () => {
+            await HomeScreen.otherAccountsButton.click();
+            await OtherAccountsScreen.addAccountButton.click();
+            await browser.switchToWindow(tabAccounts);
+            await ImportFormScreen.createNewAccountButton.click();
           });
 
-          it('Each time you open the "Create new account" screen, new addresses are generated', async function () {
-            const prevAddress = await this.driver
-              .wait(
-                until.elementLocated(
-                  By.xpath("//div[contains(@class, 'greyLine@newwallet')]")
-                )
-              )
-              .getText();
-            await this.driver
-              .findElement(By.css('div.arrow-back-icon'))
-              .click();
+          it('Each time you open the "Create new account" screen, new addresses are generated', async () => {
+            const prevAddress = await NewWalletScreen.accountAddress.getText();
+            await TopMenu.backButton.click();
 
-            await this.driver
-              .wait(
-                until.elementLocated(
-                  By.css('[data-testid="createNewAccountBtn"]')
-                ),
-                this.wait
-              )
-              .click();
-
-            expect(
-              await this.driver
-                .wait(
-                  until.elementLocated(
-                    By.xpath("//div[contains(@class, 'greyLine@newwallet')]")
-                  )
-                )
-                .getText()
-            ).to.be.not.equal(prevAddress);
+            await ImportFormScreen.createNewAccountButton.click();
+            const newAddress = await NewWalletScreen.accountAddress.getText();
+            expect(newAddress).not.toBe(prevAddress);
           });
 
-          it('You can select any account from the list of 5 generated', async function () {
-            const addressEl = this.driver.wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'greyLine@newwallet')]")
-              )
-            );
+          it('You can select any account from the list of 5 generated', async () => {
+            const avatarList = await NewWalletScreen.avatars;
+
+            expect(avatarList).toHaveLength(5);
+
             let prevAddress: string | null = null;
-            const avatarList = await this.driver.findElements(
-              By.xpath("//div[contains(@class, 'avatar@avatar')]")
-            );
-            expect(avatarList).length(5);
 
             for (const avatar of avatarList) {
               await avatar.click();
-              const currentAddress = await addressEl.getText();
-              expect(currentAddress).to.be.not.equal(prevAddress);
+              const currentAddress =
+                await NewWalletScreen.accountAddress.getText();
+              expect(currentAddress).not.toBe(prevAddress);
               prevAddress = currentAddress;
             }
 
-            await this.driver
-              .wait(until.elementLocated(By.css('button#continue')), this.wait)
-              .click();
+            await NewWalletScreen.continueButton.click();
           });
         });
 
         let rightSeed: string;
-        describe('Save backup phrase page', function () {
-          it('Backup phrase is visible', async function () {
-            const seedEl = this.driver.wait(
-              until.elementLocated(By.css('div.cant-select')),
-              this.wait
-            );
+        describe('Save backup phrase page', () => {
+          it('Backup phrase is visible', async () => {
+            rightSeed = await BackupSeedScreen.seed.getText();
+            expect(rightSeed.length).toBeGreaterThan(0);
 
-            expect(await seedEl.isDisplayed()).to.be.true;
-            rightSeed = await seedEl.getText();
-            expect(rightSeed).to.be.not.empty;
-
-            await this.driver.findElement(By.css('button#continue')).click();
+            await BackupSeedScreen.continueButton.click();
           });
 
           it('Backup phrase cannot be selected with cursor');
           it('Ability to copy backup phrase to clipboard');
         });
 
-        describe('Confirm backup page', function () {
-          let clearButton: WebElement;
-          const xpWriteVisiblePill =
-              "//div[(contains(@class, 'selectedPill@pills') and not(contains(@class, 'hiddenPill@pills')))]",
-            xpReadVisiblePill =
-              "//div[(contains(@class, 'pill@pills') and not(contains(@class, 'selectedPill@pills')) and not(contains(@class, 'hiddenPill@pills')))]",
-            PILLS_COUNT = 15;
+        describe('Confirm backup page', () => {
+          const PILLS_COUNT = 15;
 
-          it('Filling in a seed in the wrong word order', async function () {
+          it('Filling in a seed in the wrong word order', async () => {
             // there is no Confirm button. An error message and a "Clear" button are displayed
             const wrongSeed = rightSeed.split(' ').reverse();
+
+            const suggestedPills = ConfirmBackupScreen.suggestedPillsContainer;
+            const selectedPills = ConfirmBackupScreen.selectedPillsContainer;
             for (const word of wrongSeed) {
-              await this.driver
-                .findElement(
-                  By.xpath(
-                    `${xpWriteVisiblePill}//div[contains(@class, 'text@pills')][text()='${word}']`
-                  )
-                )
-                .click();
-              await this.driver.sleep(PILL_ANIMATION_DELAY);
-            }
-            const errorDiv = this.driver.wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'error@error')]")
-              ),
-              this.wait
-            );
-            expect(await errorDiv.isDisplayed()).to.be.true;
-            expect(await errorDiv.getText()).is.not.empty;
-            clearButton = this.driver.findElement(
-              By.xpath("//div[contains(@class, 'clearSeed@confirmBackup')]")
-            );
-            expect(
-              await this.driver
-                .findElement(
-                  By.xpath("//div[contains(@class, 'clearSeed@confirmBackup')]")
-                )
-                .isDisplayed()
-            ).to.be.true;
-            expect(
-              await this.driver.findElements(By.xpath(xpReadVisiblePill))
-            ).length(PILLS_COUNT);
-            expect(await this.driver.findElements(By.xpath(xpWriteVisiblePill)))
-              .to.be.empty;
-          });
-
-          it('The "Clear" button resets a completely filled phrase', async function () {
-            await clearButton.click();
-            await this.driver.sleep(PILL_ANIMATION_DELAY);
-
-            expect(
-              await this.driver.findElements(
-                By.xpath("//div[contains(@class, 'error@error')]")
-              )
-            ).to.be.empty;
-
-            expect(
-              await this.driver.findElements(
-                By.xpath("//div[contains(@class, 'clearSeed@confirmBackup')]")
-              )
-            ).to.be.empty;
-            expect(await this.driver.findElements(By.xpath(xpReadVisiblePill)))
-              .to.be.empty;
-            expect(
-              await this.driver.findElements(By.xpath(xpWriteVisiblePill))
-            ).length(PILLS_COUNT);
-          });
-
-          it('The word can be reset by clicking (any, not only the last)', async function () {
-            const writePills = await this.driver.wait(
-              until.elementsLocated(By.xpath(xpWriteVisiblePill)),
-              this.wait
-            );
-            for (const writePill of writePills) {
-              await writePill.click();
-              await this.driver.sleep(PILL_ANIMATION_DELAY);
-            }
-            await this.driver.wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, 'clearSeed@confirmBackup')]")
-              ),
-              this.wait
-            );
-            expect(
-              await this.driver.findElements(By.xpath(xpReadVisiblePill))
-            ).length(PILLS_COUNT);
-            expect(await this.driver.findElements(By.xpath(xpWriteVisiblePill)))
-              .to.be.empty;
-
-            const readPills = await this.driver.findElements(
-              By.xpath(
-                "//div[contains(@class, 'readSeed@confirmBackup')]" +
-                  "//div[(contains(@class, 'pill@pills') and not(contains(@class, 'hiddenPill@pills')))]"
-              )
-            );
-
-            for (const readPill of readPills) {
-              await readPill.click();
-              await this.driver.sleep(PILL_ANIMATION_DELAY);
+              const pill = await suggestedPills.getPillByText(word);
+              await pill.click();
+              await waitForExpect(async () => {
+                expect(await pill.isDisplayed()).toBe(false);
+              });
             }
 
-            expect(await this.driver.findElements(By.xpath(xpReadVisiblePill)))
-              .to.be.empty;
-            expect(
-              await this.driver.findElements(By.xpath(xpWriteVisiblePill))
-            ).length(PILLS_COUNT);
+            await waitForExpect(async () => {
+              expect(await ConfirmBackupScreen.errorMessage.getText()).toBe(
+                'Wrong order, try again'
+              );
+            });
+
+            expect(await selectedPills.getAllPills()).toHaveLength(PILLS_COUNT);
+            expect(await suggestedPills.getAllPills()).toHaveLength(0);
           });
 
-          it('Account name page opened while filling in the phrase in the correct order', async function () {
+          it('The "Clear" button resets a completely filled phrase', async () => {
+            await ConfirmBackupScreen.clearLink.click();
+            expect(await ConfirmBackupScreen.errorMessage.isDisplayed()).toBe(
+              false
+            );
+
+            const suggestedPills = ConfirmBackupScreen.suggestedPillsContainer;
+            const selectedPills = ConfirmBackupScreen.selectedPillsContainer;
+
+            await waitForExpect(async () => {
+              expect(await selectedPills.getAllPills()).toHaveLength(0);
+              expect(await suggestedPills.getAllPills()).toHaveLength(
+                PILLS_COUNT
+              );
+            });
+          });
+
+          it('The word can be reset by clicking (any, not only the last)', async () => {
+            const suggestedPillsContainer =
+              ConfirmBackupScreen.suggestedPillsContainer;
+            const selectedPillsContainer =
+              ConfirmBackupScreen.selectedPillsContainer;
+
+            for (const pill of await suggestedPillsContainer.getAllPills()) {
+              await pill.click();
+            }
+
+            const pills = await selectedPillsContainer.getAllPills();
+            expect(pills).toHaveLength(PILLS_COUNT);
+            for (const pill of pills) {
+              const prevPillsCount = (
+                await selectedPillsContainer.getAllPills()
+              ).length;
+              await pill.click();
+
+              await waitForExpect(async () => {
+                expect(await selectedPillsContainer.getAllPills()).toHaveLength(
+                  prevPillsCount - 1
+                );
+              });
+            }
+
+            expect(await selectedPillsContainer.getAllPills()).toHaveLength(0);
+            expect(await suggestedPillsContainer.getAllPills()).toHaveLength(
+              PILLS_COUNT
+            );
+          });
+
+          it('Account name page opened while filling in the phrase in the correct order', async () => {
+            const suggestedPillsContainer =
+              ConfirmBackupScreen.suggestedPillsContainer;
             for (const word of rightSeed.split(' ')) {
-              await this.driver
-                .findElement(
-                  By.xpath(
-                    `${xpWriteVisiblePill}//div[contains(@class, 'text@pills')][text()='${word}']`
-                  )
-                )
-                .click();
-              await this.driver.sleep(PILL_ANIMATION_DELAY);
+              const pill = await suggestedPillsContainer.getPillByText(word);
+              await pill.click();
+              await pill.waitForDisplayed({ reverse: true });
             }
-            await this.driver
-              .wait(
-                until.elementLocated(By.css('button#confirmBackup')),
-                this.wait
-              )
-              .click();
+
+            await ConfirmBackupScreen.confirmButton.click();
           });
         });
 
-        describe('Account name page', function () {
-          let accountNameInput: WebElement,
-            continueBtn: WebElement,
-            errorDiv: WebElement;
-          before(function () {
-            accountNameInput = this.driver.wait(
-              until.elementLocated(
-                By.css('[data-testid="newAccountNameInput"]')
-              ),
-              this.wait
-            );
-            continueBtn = this.driver.findElement(
-              By.css('[data-testid="continueBtn"]')
-            );
-            errorDiv = this.driver.findElement(
-              By.css('[data-testid="newAccountNameError"]')
-            );
-          });
+        describe('Account name page', () => {
+          it('Account cannot be given a name that is already in use', async () => {
+            await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST);
+            await browser.keys('Tab');
 
-          beforeEach(async function () {
-            await clear(accountNameInput);
-          });
-
-          it('Account cannot be given a name that is already in use', async function () {
-            await accountNameInput.sendKeys(ACCOUNTS.FIRST);
-            await accountNameInput.sendKeys('\t');
-            expect(await errorDiv.getText()).matches(/name already exist/i);
-            expect(await continueBtn.isEnabled()).to.be.false;
+            expect(await NewWalletNameScreen.error.getText()).toBe(
+              'Name already exist'
+            );
+            expect(await NewWalletNameScreen.continueButton.isEnabled()).toBe(
+              false
+            );
           });
 
           it('Ability to paste account name from clipboard');
 
-          it('In the account name, you can enter numbers, special characters and symbols from any layout', async function () {
-            await accountNameInput.sendKeys(ACCOUNTS.ANY);
-            await accountNameInput.sendKeys('\t');
-            expect(await errorDiv.getText()).to.be.empty;
-            expect(await continueBtn.isEnabled()).to.be.true;
+          it('In the account name, you can enter numbers, special characters and symbols from any layout', async () => {
+            await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.ANY);
+            await browser.keys('Tab');
+
+            expect(await NewWalletNameScreen.error.getText()).toBe('');
+            expect(await NewWalletNameScreen.continueButton.isEnabled()).toBe(
+              true
+            );
           });
 
-          it('Account successfully created and selected', async function () {
-            await accountNameInput.sendKeys(ACCOUNTS.ANY);
-            await continueBtn.click();
+          it('Account successfully created and selected', async () => {
+            await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.ANY);
+            await NewWalletNameScreen.continueButton.click();
 
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-              this.wait
-            );
+            await ImportSuccessScreen.addAnotherAccountButton.click();
+            await ImportFormScreen.root.waitForExist();
 
-            await this.driver
-              .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-              .click();
+            await browser.switchToWindow(tabKeeper);
+            await browser.openKeeperPopup();
 
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="importForm"]')),
-              this.wait
-            );
-
-            await this.driver.switchTo().window(tabKeeper);
-            await App.open.call(this);
-
-            expect(await Assets.getActiveAccountName.call(this)).to.equal(
-              ACCOUNTS.ANY
-            );
+            expect(await PopupHome.getActiveAccountName()).toBe(ACCOUNTS.ANY);
           });
         });
       });
@@ -455,254 +270,134 @@ describe('Account creation', function () {
     });
   });
 
-  describe('Import via seed', function () {
+  describe('Import via seed', () => {
     const ACCOUNTS = {
       FIRST: { SEED: 'this is first account seed', NAME: 'first' },
       MORE_24_CHARS: {
         SEED: 'there is more than 24 characters',
         NAME: 'more than 24 characters',
       },
-      LESS_24_CHARS: { SEED: 'too short seed', NAME: 'short' },
     };
 
     after(deleteEachAndSwitchToAccounts);
 
-    it('first account via "Import account"', async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="importSeed"]')),
-          this.wait
-        )
-        .click();
+    it('first account via "Import account"', async () => {
+      await ImportFormScreen.importViaSeedButton.click();
+      await ImportViaSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
+      await ImportViaSeedScreen.importAccountButton.click();
+      await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST.NAME);
+      await NewWalletNameScreen.continueButton.click();
+      await ImportSuccessScreen.addAnotherAccountButton.click();
+      await expect(ImportFormScreen.root).toBeDisplayed();
 
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="seedInput"]')),
-          this.wait
-        )
-        .sendKeys(ACCOUNTS.FIRST.SEED);
-      await this.driver
-        .wait(
-          until.elementIsEnabled(
-            this.driver.findElement(By.css('[data-testid="continueBtn"]'))
-          ),
-          this.wait
-        )
-        .click();
+      await browser.switchToWindow(tabKeeper);
+      await browser.openKeeperPopup();
 
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="newAccountNameInput"]')),
-          this.wait
-        )
-        .sendKeys(ACCOUNTS.FIRST.NAME);
-      await this.driver
-        .wait(
-          until.elementIsEnabled(
-            this.driver.findElement(By.css('[data-testid="continueBtn"]'))
-          ),
-          this.wait
-        )
-        .click();
-
-      await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-        this.wait
-      );
-
-      await this.driver
-        .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-        .click();
-
-      await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="importForm"]')),
-        this.wait
-      );
-
-      await this.driver.switchTo().window(tabKeeper);
-      await App.open.call(this);
-
-      expect(await Assets.getActiveAccountName.call(this)).to.be.equals(
-        ACCOUNTS.FIRST.NAME
-      );
+      expect(await PopupHome.getActiveAccountName()).toBe(ACCOUNTS.FIRST.NAME);
     });
 
-    describe('additional account via the "Add account"', function () {
-      describe('When you already have 1 account', function () {
-        before(async function () {
-          await Assets.addAccount.call(this);
-
-          await this.driver.switchTo().window(tabAccounts);
-          await this.driver
-            .wait(
-              until.elementIsVisible(
-                this.driver.wait(
-                  until.elementLocated(By.css('[data-testid="importSeed"]')),
-                  this.wait
-                )
-              ),
-              this.wait
-            )
-            .click();
+    describe('additional account via the "Add account"', () => {
+      describe('When you already have 1 account', () => {
+        before(async () => {
+          await PopupHome.addAccount();
+          await browser.switchToWindow(tabAccounts);
+          await ImportFormScreen.importViaSeedButton.click();
         });
-        describe('Seed phrase page', function () {
-          let seedTextarea: WebElement,
-            importAccountBtn: WebElement,
-            currentAddressDiv: WebElement;
 
-          before(function () {
-            seedTextarea = this.driver.wait(
-              until.elementLocated(By.css('[data-testid="seedInput"]')),
-              this.wait
-            );
-            importAccountBtn = this.driver.findElement(
-              By.css('[data-testid="continueBtn"]')
-            );
-            currentAddressDiv = this.driver.findElement(
-              By.css('[data-testid="address"]')
-            );
-          });
+        describe('Seed phrase page', () => {
+          it("Can't import seed with length less than 24 characters", async () => {
+            await ImportViaSeedScreen.seedInput.setValue('too short seed');
+            await ImportViaSeedScreen.importAccountButton.click();
 
-          beforeEach(async function () {
-            await clear(seedTextarea);
-          });
-
-          it("Can't import seed with length less than 24 characters", async function () {
-            await seedTextarea.sendKeys(ACCOUNTS.LESS_24_CHARS.SEED);
-            await this.driver
-              .findElement(By.css('[data-testid="continueBtn"]'))
-              .click();
-
-            const validationError = await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="validationError"]')),
-              this.wait
-            );
-            expect(await validationError.getText()).to.equal(
+            await expect(ImportViaSeedScreen.errorMessage).toHaveText(
               'Seed cannot be shorter than 24 characters'
             );
           });
 
-          it('Can be switched to existed account', async function () {
-            await seedTextarea.sendKeys(ACCOUNTS.FIRST.SEED);
-
-            const validationError = await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="validationError"]')),
-              this.wait
-            );
-
-            expect(
-              await this.driver
-                .findElement(By.css('[data-testid="continueBtn"]'))
-                .getText()
-            ).matches(/switch account/i);
-
-            expect(await validationError.getText()).matches(
-              /Account already known as .+/i
+          it('Can be switched to existing account', async () => {
+            await ImportViaSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
+            await waitForExpect(async () => {
+              await expect(
+                ImportViaSeedScreen.switchAccountButton
+              ).toBeDisplayed();
+            });
+            await expect(ImportViaSeedScreen.errorMessage).toHaveTextContaining(
+              'Account already known as'
             );
           });
 
-          it('Any change in the seed changes the address', async function () {
-            let lastAddress: string | null = null,
-              currentAddress: string;
-            // input seed
-            await seedTextarea.sendKeys(ACCOUNTS.MORE_24_CHARS.SEED);
-            currentAddress = await currentAddressDiv.getText();
-            expect(currentAddress).to.be.not.equal(lastAddress);
-            lastAddress = currentAddress;
+          it('Any change in the seed changes the address', async () => {
+            await ImportViaSeedScreen.seedInput.setValue(
+              ACCOUNTS.MORE_24_CHARS.SEED
+            );
+
+            let prevAddress = await ImportViaSeedScreen.address.getText();
+
             // insert char
-            await seedTextarea.sendKeys('W');
-            currentAddress = await currentAddressDiv.getText();
-            expect(currentAddress).to.be.not.equal(lastAddress);
-            lastAddress = currentAddress;
+            await ImportViaSeedScreen.seedInput.addValue('W');
+            await expect(ImportViaSeedScreen.address).not.toHaveText(
+              prevAddress
+            );
+            prevAddress = await ImportViaSeedScreen.address.getText();
+
             // delete inserted char
-            await seedTextarea.sendKeys(Key.BACK_SPACE);
-            expect(await currentAddressDiv.getText()).to.be.not.equal(
-              lastAddress
+            await browser.keys('Backspace');
+            await expect(ImportViaSeedScreen.address).not.toHaveText(
+              prevAddress
             );
           });
 
           it('You can paste a seed from the clipboard');
 
-          it('Correct seed entered', async function () {
-            await seedTextarea.sendKeys(ACCOUNTS.MORE_24_CHARS.SEED);
-            await importAccountBtn.click();
-
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="continueBtn"]')),
-              this.wait
+          it('Correct seed entered', async () => {
+            await ImportViaSeedScreen.seedInput.setValue(
+              ACCOUNTS.MORE_24_CHARS.SEED
             );
+            await ImportViaSeedScreen.importAccountButton.click();
           });
         });
 
-        describe('Account name page', function () {
-          let accountNameInput: WebElement,
-            continueBtn: WebElement,
-            errorDiv: WebElement;
+        describe('Account name page', () => {
+          it('The account cannot be given a name already in use', async () => {
+            await NewWalletNameScreen.nameInput.setValue(ACCOUNTS.FIRST.NAME);
+            await browser.keys('Tab');
 
-          before(function () {
-            accountNameInput = this.driver.wait(
-              until.elementLocated(
-                By.css('[data-testid="newAccountNameInput"]')
-              ),
-              this.wait
+            await expect(NewWalletNameScreen.error).toHaveText(
+              'Name already exist'
             );
-            continueBtn = this.driver.findElement(
-              By.css('[data-testid="continueBtn"]')
-            );
-            errorDiv = this.driver.findElement(
-              By.css('[data-testid="newAccountNameError"]')
-            );
+            await expect(NewWalletNameScreen.continueButton).toBeDisabled();
           });
 
-          beforeEach(async function () {
-            await clear(accountNameInput);
-          });
-
-          it('The account cannot be given a name already in use', async function () {
-            await accountNameInput.sendKeys(ACCOUNTS.FIRST.NAME);
-            await accountNameInput.sendKeys('\t');
-            expect(await errorDiv.getText()).matches(/name already exist/i);
-            expect(await continueBtn.isEnabled()).to.be.false;
-          });
-
-          it('Additional account successfully imported while entered correct account name', async function () {
-            await accountNameInput.sendKeys(ACCOUNTS.MORE_24_CHARS.NAME);
-            await accountNameInput.sendKeys('\t');
-            expect(errorDiv.getText()).to.be.empty;
-            expect(await continueBtn.isEnabled()).to.be.true;
-            await continueBtn.click();
-
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-              this.wait
-            );
-
-            await this.driver
-              .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-              .click();
-
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="importForm"]')),
-              this.wait
-            );
-
-            await this.driver.switchTo().window(tabKeeper);
-            await App.open.call(this);
-
-            expect(await Assets.getActiveAccountName.call(this)).to.equal(
+          it('Additional account successfully imported while entered correct account name', async () => {
+            await NewWalletNameScreen.nameInput.setValue(
               ACCOUNTS.MORE_24_CHARS.NAME
             );
+            await browser.keys('Tab');
+
+            await expect(NewWalletNameScreen.error).toHaveText('');
+
+            await NewWalletNameScreen.continueButton.click();
+
+            await ImportSuccessScreen.addAnotherAccountButton.click();
+            await expect(ImportFormScreen.root).toBeExisting();
+
+            await browser.switchToWindow(tabKeeper);
+            await browser.openKeeperPopup();
+
+            await expect(HomeScreen.activeAccountName).toHaveText(
+              ACCOUNTS.MORE_24_CHARS.NAME
+            );
+            7;
           });
         });
       });
 
       it('When you already have 2 accounts');
-
       it('When you already have 10 accounts');
     });
   });
 
-  describe('Import via keystore file', function () {
+  describe('Import via keystore file', () => {
     describe('validation', () => {
       it(
         'keeps "Continue" button disabled until both keystore file is selected and password is entered'
@@ -710,78 +405,42 @@ describe('Account creation', function () {
     });
 
     describe('file parsing and decryption', () => {
-      beforeEach(async function () {
-        await this.driver
-          .wait(until.elementLocated(By.css('[data-testid="importKeystore"]')))
-          .click();
+      beforeEach(async () => {
+        await ImportFormScreen.importByKeystoreFileButton.click();
       });
 
-      afterEach(async function () {
-        await this.driver
-          .findElement(
-            By.xpath("//div[contains(@class, 'arrowBackIcon@menu')]")
-          )
-          .click();
+      afterEach(async () => {
+        await TopMenu.backButton.click();
       });
 
-      function extractParsedAccountsFromDOM(this: mocha.Context) {
-        return this.driver
-          .findElements(By.css('[data-testid="accountsGroup"]'))
-          .then(accountGroups =>
-            Promise.all(
-              accountGroups.map(group =>
-                Promise.all([
-                  group
-                    .findElement(By.css('[data-testid="accountsGroupLabel"]'))
-                    .getText(),
-                  group
-                    .findElements(By.css('[data-testid="accountCard"]'))
-                    .then(accountCards =>
-                      Promise.all(
-                        accountCards.map(card =>
-                          Promise.all([
-                            card
-                              .findElement(
-                                By.css('[data-testid="accountName"]')
-                              )
-                              .getText(),
-                            card.getAttribute('title'),
-                          ]).then(([name, address]) => ({
-                            name,
-                            address,
-                          }))
-                        )
-                      )
-                    ),
-                ]).then(([label, accounts]) => ({
-                  label,
-                  accounts,
+      async function extractParsedAccountsFromDOM() {
+        const accountsGroups = await ChooseAccountsForm.accountsGroups;
+        return await Promise.all(
+          accountsGroups.map(async group => {
+            const accountCards = await group.accounts;
+            return {
+              label: await group.label.getText(),
+              accounts: await Promise.all(
+                accountCards.map(async account => ({
+                  name: await account.name.getText(),
+                  address: await account.getAddress(),
                 }))
-              )
-            )
-          );
+              ),
+            };
+          })
+        );
       }
 
-      it('can decrypt the correct keeper keystore file', async function () {
-        await this.driver
-          .wait(
-            until.elementLocated(By.css('[data-testid="fileInput"]')),
-            this.wait
-          )
-          .sendKeys('/app/test/fixtures/keystore-keeper.json');
-
-        await this.driver
-          .findElement(By.css('[data-testid="passwordInput"]'))
-          .sendKeys('xHZ7Zaxu2wuncWC');
-
-        const submitButton = await this.driver.findElement(
-          By.css('[data-testid="submitButton"]')
+      it('can decrypt the correct keeper keystore file', async () => {
+        await ImportKeystoreFileScreen.fileInput.addValue(
+          '/app/test/fixtures/keystore-keeper.json'
         );
+        await ImportKeystoreFileScreen.passwordInput.setValue(
+          'xHZ7Zaxu2wuncWC'
+        );
+        await ImportKeystoreFileScreen.continueButton.click();
 
-        await submitButton.click();
-        await this.driver.wait(until.stalenessOf(submitButton), this.wait);
-
-        expect(await extractParsedAccountsFromDOM.call(this)).to.deep.equal([
+        expect(await extractParsedAccountsFromDOM()).toStrictEqual([
           {
             label: 'Mainnet',
             accounts: [
@@ -804,23 +463,16 @@ describe('Account creation', function () {
         ]);
       });
 
-      it('can decrypt the correct exchange keystore file', async function () {
-        await this.driver
-          .findElement(By.css('[data-testid="fileInput"]'))
-          .sendKeys('/app/test/fixtures/keystore-exchange.json');
-
-        await this.driver
-          .findElement(By.css('[data-testid="passwordInput"]'))
-          .sendKeys('N72r78ByXBfNBnN#');
-
-        const submitButton = await this.driver.findElement(
-          By.css('[data-testid="submitButton"]')
+      it('can decrypt the correct exchange keystore file', async () => {
+        await ImportKeystoreFileScreen.fileInput.addValue(
+          '/app/test/fixtures/keystore-exchange.json'
         );
+        await ImportKeystoreFileScreen.passwordInput.setValue(
+          'N72r78ByXBfNBnN#'
+        );
+        await ImportKeystoreFileScreen.continueButton.click();
 
-        await submitButton.click();
-        await this.driver.wait(until.stalenessOf(submitButton), this.wait);
-
-        expect(await extractParsedAccountsFromDOM.call(this)).to.deep.equal([
+        expect(await extractParsedAccountsFromDOM()).toStrictEqual([
           {
             label: 'Mainnet',
             accounts: [
@@ -835,65 +487,40 @@ describe('Account creation', function () {
       it('shows an error if the password is wrong');
     });
 
-    describe('actual import', function () {
-      function extractAccountCheckboxesFromDOM(this: mocha.Context) {
-        return this.driver
-          .wait(
-            until.elementLocated(By.css('[data-testid="chooseAccountsForm"]')),
-            this.wait
-          )
-          .findElements(By.css('[data-testid="accountCard"]'))
-          .then(cards =>
-            Promise.all(
-              cards.map(card =>
-                Promise.all([
-                  card.getAttribute('title'),
-                  card
-                    .findElement(By.css('[data-testid="accountName"]'))
-                    .getText(),
-                  card.findElement(By.name('selected')).then(
-                    checkbox =>
-                      checkbox
-                        .getAttribute('checked')
-                        .then(checked => checked === 'true'),
-                    () => null
-                  ),
-                ]).then(([address, name, selected]) => ({
-                  address,
-                  name,
-                  selected,
-                }))
-              )
-            )
-          );
+    describe('actual import', () => {
+      async function extractAccountCheckboxesFromDOM() {
+        const accounts = await ChooseAccountsForm.accounts;
+        return await Promise.all(
+          accounts.map(async account => ({
+            name: await account.name.getText(),
+            address: await account.getAddress(),
+            selected: await account.isSelected(),
+          }))
+        );
       }
 
-      describe('when no accounts exist', function () {
-        it('allows to select and import all accounts', async function () {
-          await this.driver
-            .wait(
-              until.elementLocated(By.css('[data-testid="importKeystore"]'))
-            )
-            .click();
+      async function collectAllAccountNames() {
+        const activeAccountName = await HomeScreen.activeAccountName.getText();
+        await HomeScreen.otherAccountsButton.click();
+        const otherAccountNames = await Promise.all(
+          (await OtherAccountsScreen.accounts).map(it => it.name.getText())
+        );
+        await TopMenu.backButton.click();
+        return [activeAccountName, ...otherAccountNames];
+      }
 
-          await this.driver
-            .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/app/test/fixtures/keystore-keeper.json');
-
-          await this.driver
-            .findElement(By.css('[data-testid="passwordInput"]'))
-            .sendKeys('xHZ7Zaxu2wuncWC');
-
-          const submitButton = await this.driver.findElement(
-            By.css('[data-testid="submitButton"]')
+      describe('when no accounts exist', () => {
+        it('allows to select and import all accounts', async () => {
+          await ImportFormScreen.importByKeystoreFileButton.click();
+          await ImportKeystoreFileScreen.fileInput.addValue(
+            '/app/test/fixtures/keystore-keeper.json'
           );
+          await ImportKeystoreFileScreen.passwordInput.setValue(
+            'xHZ7Zaxu2wuncWC'
+          );
+          await ImportKeystoreFileScreen.continueButton.click();
 
-          await submitButton.click();
-          await this.driver.wait(until.stalenessOf(submitButton), this.wait);
-
-          expect(
-            await extractAccountCheckboxesFromDOM.call(this)
-          ).to.have.deep.ordered.members([
+          expect(await extractAccountCheckboxesFromDOM()).toStrictEqual([
             {
               name: 'test2',
               address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
@@ -916,25 +543,18 @@ describe('Account creation', function () {
             },
           ]);
 
-          await this.driver
-            .findElement(
-              By.css(
-                'input[type="checkbox"][value="3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi"]'
-              )
+          (
+            await ChooseAccountsForm.getAccountByAddress(
+              '3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi'
             )
-            .click();
-
-          await this.driver
-            .findElement(
-              By.css(
-                'input[type="checkbox"][value="3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r"]'
-              )
+          ).checkbox.click();
+          (
+            await ChooseAccountsForm.getAccountByAddress(
+              '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r'
             )
-            .click();
+          ).checkbox.click();
 
-          expect(
-            await extractAccountCheckboxesFromDOM.call(this)
-          ).to.have.deep.ordered.members([
+          expect(await extractAccountCheckboxesFromDOM()).toStrictEqual([
             {
               name: 'test2',
               address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
@@ -957,78 +577,35 @@ describe('Account creation', function () {
             },
           ]);
 
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+          await ChooseAccountsForm.importButton.click();
+          await ImportSuccessScreen.addAnotherAccountButton.click();
 
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-            this.wait
-          );
+          await browser.switchToWindow(tabKeeper);
+          await Network.switchToAndCheck('Testnet');
 
-          await this.driver
-            .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-            .click();
+          expect(await collectAllAccountNames()).toStrictEqual(['test']);
 
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importForm"]')),
-            this.wait
-          );
+          await Network.switchToAndCheck('Stagenet');
 
-          await this.driver.switchTo().window(tabKeeper);
-          await App.open.call(this);
-
-          await Network.switchToAndCheck.call(this, 'Testnet');
-
-          expect(
-            await Assets.getAllAccountNames.call(this)
-          ).to.have.ordered.members(['test']);
-
-          await Network.switchToAndCheck.call(this, 'Stagenet');
-
-          expect(
-            await Assets.getAllAccountNames.call(this)
-          ).to.have.ordered.members(['test4']);
+          expect(await collectAllAccountNames()).toStrictEqual(['test4']);
         });
       });
 
-      describe('when some, but not all accounts already exist', function () {
-        it('allows to select only unexisting accounts', async function () {
-          await Assets.addAccount.call(this);
+      describe('when some, but not all accounts already exist', () => {
+        it('allows to select only unexisting accounts', async () => {
+          await PopupHome.addAccount();
 
-          await this.driver.switchTo().window(tabAccounts);
-          await this.driver
-            .wait(
-              until.elementIsVisible(
-                this.driver.wait(
-                  until.elementLocated(
-                    By.css('[data-testid="importKeystore"]')
-                  ),
-                  this.wait
-                )
-              ),
-              this.wait
-            )
-            .click();
-
-          await this.driver
-            .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/app/test/fixtures/keystore-keeper.json');
-
-          await this.driver
-            .findElement(By.css('[data-testid="passwordInput"]'))
-            .sendKeys('xHZ7Zaxu2wuncWC');
-
-          const submitButton = await this.driver.findElement(
-            By.css('[data-testid="submitButton"]')
+          await browser.switchToWindow(tabAccounts);
+          await ImportFormScreen.importByKeystoreFileButton.click();
+          await ImportKeystoreFileScreen.fileInput.addValue(
+            '/app/test/fixtures/keystore-keeper.json'
           );
+          await ImportKeystoreFileScreen.passwordInput.setValue(
+            'xHZ7Zaxu2wuncWC'
+          );
+          await ImportKeystoreFileScreen.continueButton.click();
 
-          await submitButton.click();
-          await this.driver.wait(until.stalenessOf(submitButton), this.wait);
-
-          expect(
-            await extractAccountCheckboxesFromDOM.call(this)
-          ).to.have.deep.ordered.members([
+          expect(await extractAccountCheckboxesFromDOM()).toStrictEqual([
             {
               name: 'test2',
               address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
@@ -1051,84 +628,43 @@ describe('Account creation', function () {
             },
           ]);
 
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
+          await ChooseAccountsForm.importButton.click();
+          await ImportSuccessScreen.addAnotherAccountButton.click();
 
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-            this.wait
-          );
+          await browser.switchToWindow(tabKeeper);
+          await browser.openKeeperPopup();
+          await Network.switchToAndCheck('Testnet');
 
-          await this.driver
-            .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-            .click();
+          expect(await collectAllAccountNames()).toStrictEqual([
+            'test',
+            'test3',
+          ]);
 
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importForm"]')),
-            this.wait
-          );
+          await Network.switchToAndCheck('Stagenet');
 
-          await this.driver.switchTo().window(tabKeeper);
-          await App.open.call(this);
+          expect(await collectAllAccountNames()).toStrictEqual(['test4']);
 
-          await Network.switchToAndCheck.call(this, 'Testnet');
+          await Network.switchToAndCheck('Mainnet');
 
-          expect(
-            await Assets.getAllAccountNames.call(this)
-          ).to.have.ordered.members(['test', 'test3']);
-
-          await Network.switchToAndCheck.call(this, 'Stagenet');
-
-          expect(
-            await Assets.getAllAccountNames.call(this)
-          ).to.have.ordered.members(['test4']);
-
-          await Network.switchToAndCheck.call(this, 'Mainnet');
-
-          expect(
-            await Assets.getAllAccountNames.call(this)
-          ).to.have.ordered.members(['test2']);
+          expect(await collectAllAccountNames()).toStrictEqual(['test2']);
         });
       });
 
-      describe('when all accounts exist', function () {
-        it('does not allow selecting anything and shows the "Skip" button', async function () {
-          await Assets.addAccount.call(this);
+      describe('when all accounts exist', () => {
+        it('does not allow selecting anything and shows the "Skip" button', async () => {
+          await PopupHome.addAccount();
 
-          await this.driver.switchTo().window(tabAccounts);
-          await this.driver
-            .wait(
-              until.elementIsVisible(
-                this.driver.wait(
-                  until.elementLocated(
-                    By.css('[data-testid="importKeystore"]')
-                  ),
-                  this.wait
-                )
-              ),
-              this.wait
-            )
-            .click();
-
-          await this.driver
-            .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/app/test/fixtures/keystore-keeper.json');
-
-          await this.driver
-            .findElement(By.css('[data-testid="passwordInput"]'))
-            .sendKeys('xHZ7Zaxu2wuncWC');
-
-          const submitButton = await this.driver.findElement(
-            By.css('[data-testid="submitButton"]')
+          await browser.switchToWindow(tabAccounts);
+          await ImportFormScreen.importByKeystoreFileButton.click();
+          await ImportKeystoreFileScreen.fileInput.addValue(
+            '/app/test/fixtures/keystore-keeper.json'
           );
+          await ImportKeystoreFileScreen.passwordInput.setValue(
+            'xHZ7Zaxu2wuncWC'
+          );
+          await ImportKeystoreFileScreen.continueButton.click();
 
-          await submitButton.click();
-          await this.driver.wait(until.stalenessOf(submitButton), this.wait);
-
-          expect(
-            await extractAccountCheckboxesFromDOM.call(this)
-          ).to.have.deep.ordered.members([
+          expect(await extractAccountCheckboxesFromDOM()).toStrictEqual([
             {
               name: 'test2',
               address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
@@ -1151,155 +687,87 @@ describe('Account creation', function () {
             },
           ]);
 
-          await this.driver
-            .findElement(By.css('[data-testid="skipButton"]'))
-            .click();
-
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importForm"]')),
-            this.wait
-          );
+          await ChooseAccountsForm.skipButton.click();
+          await ImportFormScreen.root.waitForDisplayed();
         });
       });
 
-      describe('when the user already has an account with the same name, but different address', function () {
-        before(async function () {
-          await this.driver.switchTo().window(tabKeeper);
+      describe('when the user already has an account with the same name, but different address', () => {
+        before(async () => {
+          await browser.switchToWindow(tabKeeper);
         });
 
         beforeEach(deleteEachAndSwitchToAccounts);
 
-        it('adds suffix to the name', async function () {
-          await CreateNewAccount.importAccount.call(
-            this,
+        it('adds suffix to the name', async () => {
+          await AccountsHome.importAccount(
             'test2',
             'this is the seed for the test account'
           );
 
-          await this.driver
-            .wait(
-              until.elementLocated(By.css('[data-testid="importKeystore"]')),
-              this.wait
-            )
-            .click();
-
-          await this.driver
-            .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/app/test/fixtures/keystore-keeper.json');
-
-          await this.driver
-            .findElement(By.css('[data-testid="passwordInput"]'))
-            .sendKeys('xHZ7Zaxu2wuncWC');
-
-          const submitButton = await this.driver.findElement(
-            By.css('[data-testid="submitButton"]')
+          await ImportFormScreen.importByKeystoreFileButton.click();
+          await ImportKeystoreFileScreen.fileInput.addValue(
+            '/app/test/fixtures/keystore-keeper.json'
           );
+          await ImportKeystoreFileScreen.passwordInput.setValue(
+            'xHZ7Zaxu2wuncWC'
+          );
+          await ImportKeystoreFileScreen.continueButton.click();
 
-          await submitButton.click();
-          await this.driver.wait(until.stalenessOf(submitButton), this.wait);
+          expect(await extractAccountCheckboxesFromDOM()).toContainEqual({
+            name: 'test2 (1)',
+            address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
+            selected: true,
+          });
 
-          expect(
-            await extractAccountCheckboxesFromDOM.call(this)
-          ).to.include.deep.members([
-            {
-              name: 'test2 (1)',
-              address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
-              selected: true,
-            },
+          await ChooseAccountsForm.importButton.click();
+          await ImportSuccessScreen.addAnotherAccountButton.click();
+
+          await browser.switchToWindow(tabKeeper);
+          await browser.openKeeperPopup();
+
+          expect(await collectAllAccountNames()).toStrictEqual([
+            'test2',
+            'test2 (1)',
           ]);
-
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
-
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-            this.wait
-          );
-
-          await this.driver
-            .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-            .click();
-
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importForm"]')),
-            this.wait
-          );
-
-          await this.driver.switchTo().window(tabKeeper);
-          await App.open.call(this);
-
-          expect(
-            await Assets.getAllAccountNames.call(this)
-          ).to.have.ordered.members(['test2', 'test2 (1)']);
         });
 
-        it('increments the number in suffix if it already exists', async function () {
-          await CreateNewAccount.importAccount.call(
-            this,
+        it('increments the number in suffix if it already exists', async () => {
+          await AccountsHome.importAccount(
             'test2',
             'this is a seed for the test account'
           );
 
-          await CreateNewAccount.importAccount.call(
-            this,
+          await AccountsHome.importAccount(
             'test2 (1)',
             'this is an another seed for the test account'
           );
 
-          await this.driver
-            .findElement(By.css('[data-testid="importKeystore"]'))
-            .click();
-
-          await this.driver
-            .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/app/test/fixtures/keystore-keeper.json');
-
-          await this.driver
-            .findElement(By.css('[data-testid="passwordInput"]'))
-            .sendKeys('xHZ7Zaxu2wuncWC');
-
-          const submitButton = await this.driver.findElement(
-            By.css('[data-testid="submitButton"]')
+          await ImportFormScreen.importByKeystoreFileButton.click();
+          await ImportKeystoreFileScreen.fileInput.addValue(
+            '/app/test/fixtures/keystore-keeper.json'
           );
-
-          await submitButton.click();
-          await this.driver.wait(until.stalenessOf(submitButton), this.wait);
-
-          expect(
-            await extractAccountCheckboxesFromDOM.call(this)
-          ).to.include.deep.members([
-            {
-              name: 'test2 (2)',
-              address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
-              selected: true,
-            },
-          ]);
-
-          await this.driver
-            .findElement(By.css('[data-testid="submitButton"]'))
-            .click();
-
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-            this.wait
+          await ImportKeystoreFileScreen.passwordInput.setValue(
+            'xHZ7Zaxu2wuncWC'
           );
+          await ImportKeystoreFileScreen.continueButton.click();
 
-          await this.driver
-            .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
-            .click();
+          expect(await extractAccountCheckboxesFromDOM()).toContainEqual({
+            name: 'test2 (2)',
+            address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
+            selected: true,
+          });
 
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importForm"]')),
-            this.wait
-          );
+          await ChooseAccountsForm.importButton.click();
+          await ImportSuccessScreen.addAnotherAccountButton.click();
 
-          await this.driver.switchTo().window(tabKeeper);
-          await App.open.call(this);
+          await browser.switchToWindow(tabKeeper);
+          await browser.openKeeperPopup();
 
-          expect(
-            await Assets.getAllAccountNames.call(this)
-          ).to.have.ordered.members(['test2 (1)', 'test2', 'test2 (2)']);
+          const accountNames = await collectAllAccountNames();
+          ['test2 (1)', 'test2', 'test2 (2)'].forEach(name => {
+            expect(accountNames).toContainEqual(name);
+          });
         });
       });
     });
