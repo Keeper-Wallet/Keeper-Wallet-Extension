@@ -1,5 +1,8 @@
 version: '3'
 services:
   chrome:
-    image: seleniarm/standalone-chromium
+    image: seleniarm/node-chromium
+    platform: linux/arm64/v8
+  hub:
+    image: seleniarm/hub
     platform: linux/arm64/v8
