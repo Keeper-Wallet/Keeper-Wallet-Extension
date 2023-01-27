@@ -17,7 +17,7 @@ services:
       interval: 3s
   chrome:
     image: selenium/node-chrome:latest
-    shm_size: 4gb
+    shm_size: 2gb
     depends_on:
       - selenium-hub
     ports:
