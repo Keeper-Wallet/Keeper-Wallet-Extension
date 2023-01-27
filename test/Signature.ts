@@ -128,18 +128,18 @@ describe('Signature', function () {
     await expect(CommonTransaction.originNetwork).toHaveText(network);
   };
 
-  const checkThereAreNoMessages = async () => {
+  async function checkThereAreNoMessages() {
     await browser.switchToWindow((await browser.createWindow('tab')).handle);
     await browser.openKeeperPopup();
     await expect(HomeScreen.root).toBeDisplayed();
     await browser.closeWindow();
-  };
+  }
 
-  const authMessageCall = () => {
+  function authMessageCall() {
     KeeperWallet.auth({ data: 'hello' });
-  };
+  }
 
-  const rejectTransaction = async ({ forever = false } = {}) => {
+  async function  rejectTransaction({ forever = false } = {}) {
     if (forever) {
       await AuthMessageScreen.rejectArrowButton.click();
       await AuthMessageScreen.addToBlacklistButton.click();
@@ -147,15 +147,15 @@ describe('Signature', function () {
       await CommonTransaction.rejectButton.click();
     }
     await FinalTransactionScreen.closeButton.click();
-  };
+  }
 
-  const approveTransaction = async () => {
+  async function approveTransaction() {
     await CommonTransaction.approveButton.click();
     await browser.pause(100);
     await FinalTransactionScreen.closeButton.click();
-  };
+  }
 
-  const getResult = async () => {
+  async function getResult() {
     await browser.switchToWindow(tabOrigin);
     return JSON.parse(
       await browser.execute(() => {
@@ -164,9 +164,9 @@ describe('Signature', function () {
         return result;
       })
     );
-  };
+  }
 
-  const validateRejectedResult = async ({ data = 'rejected' } = {}) => {
+  async function validateRejectedResult({ data = 'rejected' } = {}) {
     const [status, result] = await getResult();
     expect(status).toBe('REJECTED');
     expect(result).toStrictEqual({
@@ -174,13 +174,13 @@ describe('Signature', function () {
       data,
       code: '10',
     });
-  };
+  }
 
   describe('Stale messages removal', function () {
-    const triggerMessageWindow = async (
+    async function triggerMessageWindow(
       func: () => void,
       options = { waitForNewWindow: true }
-    ) => {
+    ) {
       if (options.waitForNewWindow) {
         const { waitForNewWindows } = await Windows.captureNewWindows();
         await ContentScript.waitForKeeperWallet();
@@ -192,7 +192,7 @@ describe('Signature', function () {
       }
       await browser.switchToWindow(messageWindow);
       await browser.refresh();
-    };
+    }
 
     it('removes messages and closes window when tab is reloaded', async function () {
       await triggerMessageWindow(authMessageCall);
@@ -245,7 +245,7 @@ describe('Signature', function () {
   });
 
   describe('Permission request from origin', function () {
-    const performPermissionRequest = async () => {
+    async function performPermissionRequest() {
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
       await browser.execute(() => {
@@ -261,7 +261,7 @@ describe('Signature', function () {
       [messageWindow] = await waitForNewWindows(1);
       await browser.switchToWindow(messageWindow);
       await browser.refresh();
-    };
+    }
 
     it('Rejected', async function () {
       await browser.switchToWindow(tabOrigin);
@@ -327,7 +327,7 @@ describe('Signature', function () {
   });
 
   describe('Authentication request from origin', function () {
-    const performAuthRequest = async () => {
+    async function performAuthRequest() {
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
       await browser.execute(() => {
@@ -343,7 +343,7 @@ describe('Signature', function () {
       [messageWindow] = await waitForNewWindows(1);
       await browser.switchToWindow(messageWindow);
       await browser.refresh();
-    };
+    }
 
     it('Rejected', async function () {
       await browser.navigateTo(`https://${WHITELIST[3]}`);
@@ -390,7 +390,7 @@ describe('Signature', function () {
 
   describe('Matcher request', function () {
     const timestamp = Date.now();
-    const performMatcherRequest = async () => {
+    async function performMatcherRequest() {
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
 
@@ -417,7 +417,7 @@ describe('Signature', function () {
       [messageWindow] = await waitForNewWindows(1);
       await browser.switchToWindow(messageWindow);
       await browser.refresh();
-    };
+    }
 
     it('Rejected', async function () {
       await browser.switchToWindow(tabOrigin);
