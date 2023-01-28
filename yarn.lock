@@ -1342,9 +1342,9 @@
     ethereum-cryptography "^1.1.2"
 
 "@faergeek/eslint-config@^5.0.142":
-  version "5.0.161"
-  resolved "https://registry.yarnpkg.com/@faergeek/eslint-config/-/eslint-config-5.0.161.tgz#e0e3a66f66c4854826b65d679fbe8203db8e6cb9"
-  integrity sha512-3Ki2TFchUxcdUFrNp8Lja/S/wIsEPc9CSMmosoGwiMnrqM25vsIkUt8YMTKp2idkk5af0vHzV5GqaDwvXkLNmw==
+  version "5.0.162"
+  resolved "https://registry.yarnpkg.com/@faergeek/eslint-config/-/eslint-config-5.0.162.tgz#8f6d8742f6cb1e3cb27e60b2f3a2db0d103093d8"
+  integrity sha512-9cmOiSdrjlw57RECsulWmYkgVV9ciAGEwSMPVGqZVXQAwEH1RggPHWO/rZdfccllbhFNVUkSAe4i9sd/hp7gpQ==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.0.0"
     "@typescript-eslint/parser" "^5.0.0"
@@ -1352,7 +1352,7 @@
     eslint-plugin-jest "^27.0.0"
     eslint-plugin-react "^7.23.2"
     eslint-plugin-react-hooks "^4.2.0"
-    eslint-plugin-simple-import-sort "^9.0.0"
+    eslint-plugin-simple-import-sort "^10.0.0"
 
 "@faergeek/tiny-browser-hmr-webpack-plugin@^1.0.3":
   version "1.0.4"
@@ -4066,10 +4066,10 @@ eslint-plugin-react@^7.23.2:
     semver "^6.3.0"
     string.prototype.matchall "^4.0.8"
 
-eslint-plugin-simple-import-sort@^9.0.0:
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-simple-import-sort/-/eslint-plugin-simple-import-sort-9.0.0.tgz#04c97f06a2e526afd40e0ac694b70d1aaaec1aef"
-  integrity sha512-PtrLjyXP8kjRneWT1n0b99y/2Fyup37we7FVoWsI61/O7x4ztLohzhep/pxI/cYlECr/cQ2j6utckdvWpVwXNA==
+eslint-plugin-simple-import-sort@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-simple-import-sort/-/eslint-plugin-simple-import-sort-10.0.0.tgz#cc4ceaa81ba73252427062705b64321946f61351"
+  integrity sha512-AeTvO9UCMSNzIHRkg8S6c3RPy5YEwKWSQPx3DYghLedo2ZQxowPFLGDN1AZ2evfg6r6mjBSZSLxLFsWSu3acsw==
 
 eslint-scope@5.1.1, eslint-scope@^5.1.1:
   version "5.1.1"
