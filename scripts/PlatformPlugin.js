@@ -1,12 +1,17 @@
-const { mkdir, writeFile } = require('node:fs/promises');
-const path = require('node:path');
-const webpack = require('webpack');
-const adaptManifestToPlatform = require('./adaptManifestToPlatform');
-const platforms = require('./platforms.json');
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import webpack from 'webpack';
+
+import adaptManifestToPlatform from './adaptManifestToPlatform.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const DIST_FOLDER = path.resolve(__dirname, '..', 'dist');
 
-module.exports = class PlatformPlugin {
+export default class PlatformPlugin {
   constructor({ clear }) {
     this.clear = clear;
   }
@@ -35,30 +40,34 @@ module.exports = class PlatformPlugin {
     compiler.hooks.assetEmitted.tapPromise(
       'CopyAssetToPlatformFolder',
       (file, { content }) =>
-        Promise.all(
-          platforms.map(async platformName => {
-            report(`copying ${file} to ${platformName}`);
-            const platformFolder = path.resolve(DIST_FOLDER, platformName);
-            const platformFile = path.join(platformFolder, file);
-            const platformDir = path.dirname(platformFile);
+        readFile(path.resolve(__dirname, './platforms.json'), 'utf8')
+          .then(JSON.parse)
+          .then(platforms =>
+            Promise.all(
+              platforms.map(async platformName => {
+                report(`copying ${file} to ${platformName}`);
+                const platformFolder = path.resolve(DIST_FOLDER, platformName);
+                const platformFile = path.join(platformFolder, file);
+                const platformDir = path.dirname(platformFile);
 
-            await mkdir(platformDir, { recursive: true });
+                await mkdir(platformDir, { recursive: true });
 
-            if (file === 'manifest.json') {
-              await writeFile(
-                platformFile,
-                JSON.stringify(
-                  adaptManifestToPlatform(content, platformName),
-                  null,
-                  2
-                ),
-                'utf-8'
-              );
-            } else {
-              await writeFile(platformFile, content);
-            }
-          })
-        )
+                if (file === 'manifest.json') {
+                  await writeFile(
+                    platformFile,
+                    JSON.stringify(
+                      adaptManifestToPlatform(content, platformName),
+                      null,
+                      2
+                    ),
+                    'utf-8'
+                  );
+                } else {
+                  await writeFile(platformFile, content);
+                }
+              })
+            )
+          )
     );
   }
-};
+}

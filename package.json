@@ -1,5 +1,6 @@
 {
   "private": true,
+  "type": "module",
   "sideEffects": [
     "src/fonts/_fonts.css",
     "src/global.css",
