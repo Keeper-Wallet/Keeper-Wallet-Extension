@@ -1,13 +1,20 @@
-require('dotenv-flow/config');
-const path = require('node:path');
-const webpack = require('webpack');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-const PlatformPlugin = require('./scripts/PlatformPlugin');
+import 'dotenv-flow/config.js';
+
+import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import webpack from 'webpack';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+
+import PlatformPlugin from './scripts/PlatformPlugin.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function makeConfig({
   entry,
@@ -179,7 +186,7 @@ async function makeConfig({
   };
 }
 
-module.exports = async (_, { mode }) => [
+export default async (_, { mode }) => [
   await makeConfig({
     mode,
     name: 'background',

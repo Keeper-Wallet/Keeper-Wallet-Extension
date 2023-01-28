@@ -56,7 +56,7 @@ const platformValues = {
   opera: manifestV2,
 };
 
-module.exports = (buffer, platformName) => ({
+export default (buffer, platformName) => ({
   ...JSON.parse(buffer.toString('utf-8')),
   version: process.env.KEEPER_VERSION,
   ...platformValues[platformName],
