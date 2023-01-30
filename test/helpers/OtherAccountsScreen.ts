@@ -25,6 +25,14 @@ export const OtherAccountsScreen = {
     return this.root.queryAllByTestId$('accountCard').map(it => Account(it));
   },
 
+  async getAccountByName(accountName: string) {
+    return Account(
+      await this.root
+        .findByText$(accountName)
+        .$("./ancestor::*[@data-testid='accountCard']")
+    );
+  },
+
   get searchInput() {
     return this.root.findByTestId$('accountsSearchInput');
   },
