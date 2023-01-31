@@ -1,0 +1,54 @@
+name: Update test
+on:
+  push:
+    branches-ignore:
+      - master
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: styfle/cancel-workflow-action@0.11.0
+      - run: sudo chown -R $USER:$USER $GITHUB_WORKSPACE
+      # Build current branch
+      - name: Get Current branch source
+        uses: actions/checkout@v3
+        with:
+          clean: false
+      - uses: actions/setup-node@v3
+        with:
+          cache: yarn
+          node-version-file: .nvmrc
+      - run: yarn install --frozen-lockfile
+      - run: yarn run build
+      - name: Copy current dist to temp folder
+        run: |
+          sudo mkdir -m 777 new_dist
+          mv dist/chrome new_dist
+          sed -i 's/0.0.0/2.0.0/g' ./new_dist/chrome/manifest.json
+      # Build last tag
+      - name: Find last tag
+        run: echo ::set-output name=VALUE::$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
+        id: lastTag
+      - name: Get sources from last tag
+        uses: actions/checkout@v3
+        with:
+          ref: '${{ steps.lastTag.outputs.VALUE }}'
+          clean: false
+      - uses: actions/setup-node@v3
+        with:
+          cache: yarn
+          node-version-file: .nvmrc
+      - run: yarn install --frozen-lockfile
+      - run: yarn run build
+      - name: Set version to current dist
+        run: sed -i 's/0.0.0/1.0.0/g' ./dist/chrome/manifest.json
+      # Run tests
+      - run: docker compose up --wait
+      - run: yarn test:update
+      - if: ${{ always() }}
+        run: docker compose down
+      - if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: video
+          path: test/videos
