@@ -68,10 +68,7 @@ describe('Update extension', () => {
 
     expect(await collectAllAccountNames()).toStrictEqual(['Test', 'test2']);
     await Network.switchToAndCheck('Testnet');
-    expect(await collectAllAccountNames()).toStrictEqual([
-      'test',
-      'test3'
-    ]);
+    expect(await collectAllAccountNames()).toStrictEqual(['test', 'test3']);
 
     await Network.switchToAndCheck('Stagenet');
     expect(await collectAllAccountNames()).toStrictEqual(['test4']);
