@@ -51,7 +51,7 @@ describe('Update extension', () => {
     return [activeAccountName, ...otherAccountNames];
   }
 
-  it('Update', async () => {
+  it('accounts persist on update', async () => {
     const promisifiedExec = util.promisify(exec);
     await browser.openKeeperExtensionPage();
     await promisifiedExec('rm -rf dist/chrome');

@@ -1,4 +1,4 @@
-name: Update test
+name: Update extension test
 on:
   push:
     branches-ignore:
@@ -24,7 +24,6 @@ jobs:
         run: |
           sudo mkdir -m 777 new_dist
           mv dist/chrome new_dist
-          sed -i 's/0.0.0/2.0.0/g' ./new_dist/chrome/manifest.json
       # Build last tag
       - name: Find last tag
         run: echo ::set-output name=VALUE::$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
@@ -41,7 +40,6 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn run build
       - name: Set version to current dist
-        run: sed -i 's/0.0.0/1.0.0/g' ./dist/chrome/manifest.json
       # Run tests
       - run: docker compose up --wait
       - run: yarn test:update
