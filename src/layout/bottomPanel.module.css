@@ -1,0 +1,96 @@
+.root {
+  z-index: 10;
+  flex: 0 0 34px;
+  margin-top: auto;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 -1px 4px 0 #00000019;
+}
+
+.networkTooltipContent {
+  max-width: calc(357px - 14px * 2);
+}
+
+.network {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dropdownButton {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  color: var(--color-basic500);
+  font: inherit;
+}
+
+.dropdownButton:disabled {
+  opacity: 0.5;
+}
+
+.dropdownButtonText {
+  border-bottom: 1px dotted var(--color-basic500);
+}
+
+.dropdown {
+  position: absolute;
+  z-index: 10;
+  bottom: 6px;
+  left: 6px;
+  padding: 2px 8px;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px 0 #9ba6b266;
+  background-color: var(--color-white);
+}
+
+.dropdownItem {
+  padding: 6px 5px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  background: none;
+  color: var(--color-basic500);
+  font: inherit;
+  font-weight: normal;
+}
+
+.dropdownItem + .dropdownItem {
+  border-top: 1px solid var(--color-accent50);
+}
+
+.dropdownItem_selected,
+.dropdownItem:hover {
+  color: var(--color-black);
+}
+
+.dropdownItem_selected {
+  cursor: default;
+}
+
+.dropdownItem:is(.dropdownItem_selected, :hover) .networkIcon,
+.dropdownItem:not(.dropdownItem_selected, :hover) .networkIconActive {
+  display: none;
+}
+
+.editButton {
+  padding: 2px 6px;
+  border: 1px solid var(--color-basic200);
+  border-radius: 4px;
+  background: var(--color-basic100);
+  font-size: 11px;
+}
+
+.editButton:disabled {
+  opacity: 0.5;
+}
+
+.editButton:not(:disabled):hover {
+  background: var(--color-basic200);
+}

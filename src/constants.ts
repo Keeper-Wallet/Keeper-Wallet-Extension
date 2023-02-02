@@ -10,14 +10,15 @@ export const STATUS = {
   UPDATED: 2,
 };
 
-export interface NetworkConfigItem {
-  matcherBaseUrl: string;
-  name: NetworkName;
-  networkCode: string;
-  nodeBaseUrl: string;
-}
-
-export const NETWORK_CONFIG: Record<NetworkName, NetworkConfigItem> = {
+export const NETWORK_CONFIG: Record<
+  NetworkName,
+  {
+    matcherBaseUrl: string;
+    name: NetworkName;
+    networkCode: string;
+    nodeBaseUrl: string;
+  }
+> = {
   [NetworkName.Testnet]: {
     matcherBaseUrl: 'https://matcher-testnet.waves.exchange/',
     name: NetworkName.Testnet,

@@ -1,6 +1,6 @@
 import { RouteObject } from 'react-router-dom';
 
-import { Bottom } from '../ui/components/bottom/bottom';
+import { BottomPanel } from '../layout/bottomPanel';
 import { Menu } from '../ui/components/menu/Menu';
 import { AccountInfo } from '../ui/components/pages/accountInfo';
 import { ActiveMessagePage } from '../ui/components/pages/activeMessage';
@@ -41,7 +41,7 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasLogo hasSettings />
             <PopupHome />
-            <Bottom allowChangingNetwork />
+            <BottomPanel allowChangingNetwork />
           </>
         ),
       },
@@ -69,7 +69,7 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <ChangeAccountName />
-            <Bottom />
+            <BottomPanel />
           </>
         ),
       },
