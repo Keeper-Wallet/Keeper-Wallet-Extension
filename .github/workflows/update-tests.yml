@@ -39,7 +39,6 @@ jobs:
           node-version-file: .nvmrc
       - run: yarn install --frozen-lockfile
       - run: yarn run build
-      - name: Set version to current dist
       # Run tests
       - run: docker compose up --wait
       - run: yarn test:update
