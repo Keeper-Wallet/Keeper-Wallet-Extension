@@ -1,19 +1,19 @@
 export const NetworksMenu = {
   get root() {
-    return $("[class*='network@network']");
+    return $("[class*='network@bottomPanel']");
   },
 
   networkByName(network: string) {
     return this.root.findByText$(network, {
-      selector: "[class*='chooseNetwork@network']",
+      selector: "[class*='dropdownItem@bottomPanel']",
     });
   },
 
   get editButton() {
-    return this.root.$("[class*='editBtn@network']");
+    return this.root.$("[class*='editButton@bottomPanel']");
   },
 
   get networkMenuButton() {
-    return this.root.$("[class*='networkBottom@network']");
+    return this.root.$("[class*='dropdownButton@bottomPanel']");
   },
 };

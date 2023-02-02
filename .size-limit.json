@@ -2,7 +2,7 @@
   {
     "name": "css",
     "path": "dist/build/*.css",
-    "limit": "26 kB"
+    "limit": "25 kB"
   },
   {
     "name": "background",
@@ -17,7 +17,7 @@
       "dist/build/popup.js",
       "dist/build/vendors*.js"
     ],
-    "limit": "439 kB"
+    "limit": "438 kB"
   },
   {
     "name": "contentscript",
