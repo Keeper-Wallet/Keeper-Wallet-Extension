@@ -21,12 +21,11 @@ jobs:
         run: mv dist dist.new
       # Build last tag
       - name: Find last tag
-        run: echo ::set-output name=VALUE::$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
-        id: lastTag
+        run: echo 'LAST_TAG='$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`) >> $GITHUB_ENV
       - name: Get sources from last tag
         uses: actions/checkout@v3
         with:
-          ref: '${{ steps.lastTag.outputs.VALUE }}'
+          ref: '${{ env.LAST_TAG }}'
           clean: false
       - uses: actions/setup-node@v3
         with:
