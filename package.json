@@ -16,7 +16,7 @@
     "lint:stylelint": "stylelint '**/*.css'",
     "lint:typescript": "tsc -p src && tsc -p test",
     "test:dev": "mocha --inspect --watch",
-    "test": "mocha --exclude test/Update.ts",
+    "test": "mocha",
     "test:update": "mocha test/Update.ts",
     "build": "webpack --mode production",
     "zip": "node scripts/zip.js"
