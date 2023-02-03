@@ -36,9 +36,8 @@ describe('Update extension', () => {
   async function collectAllAccountNames() {
     const activeAccountName = await HomeScreen.activeAccountName.getText();
     await HomeScreen.otherAccountsButton.click();
-    const otherAccountNames = await Promise.all(
-      (await OtherAccountsScreen.accounts).map(it => it.name.getText())
-    );
+    const accounts = await OtherAccountsScreen.accounts;
+    const otherAccountNames = await Promise.all(accounts.map(it => it.name.getText()));
     await TopMenu.backButton.click();
     return [activeAccountName, ...otherAccountNames];
   }
