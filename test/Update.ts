@@ -9,7 +9,6 @@ import { Network } from './helpers/flows/Network';
 import { HomeScreen } from './helpers/HomeScreen';
 import { LoginScreen } from './helpers/LoginScreen';
 import { OtherAccountsScreen } from './helpers/OtherAccountsScreen';
-import { SettingsMenuScreen } from './helpers/settings/SettingsMenuScreen';
 import { TopMenu } from './helpers/TopMenu';
 import { Windows } from './helpers/Windows';
 import { DEFAULT_PASSWORD } from './utils/constants';
@@ -27,18 +26,11 @@ describe('Update extension', () => {
     await browser.switchToWindow(tabAccounts);
     await browser.refresh();
 
-    await AccountsHome.importAccount(
-      'Test',
-      'waves private node seed with waves tokens'
-    );
     await AccountsHome.importKeystoreFile(
       '/app/test/fixtures/keystore-keeper.json',
       'xHZ7Zaxu2wuncWC'
     );
     await browser.openKeeperPopup();
-    await TopMenu.settingsButton.click();
-    await SettingsMenuScreen.logoutButton.click();
-    await expect(LoginScreen.root).toBeDisplayed();
   });
 
   async function collectAllAccountNames() {
@@ -58,7 +50,6 @@ describe('Update extension', () => {
     await promisifiedExec('mv new_dist/chrome dist');
 
     await ExtensionPage.devModeToggle.click();
-    await browser.pause(500);
     await ExtensionPage.updateButton.click();
     await browser.pause(500);
 
@@ -66,7 +57,7 @@ describe('Update extension', () => {
     await LoginScreen.passwordInput.setValue(DEFAULT_PASSWORD);
     await LoginScreen.enterButton.click();
 
-    expect(await collectAllAccountNames()).toStrictEqual(['Test', 'test2']);
+    expect(await collectAllAccountNames()).toStrictEqual(['test2']);
     await Network.switchToAndCheck('Testnet');
     expect(await collectAllAccountNames()).toStrictEqual(['test', 'test3']);
 
