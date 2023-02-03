@@ -45,7 +45,7 @@ describe('Update extension', () => {
 
   it('accounts persist on update', async () => {
     await browser.openKeeperExtensionPage();
-    await rename('dist.old', 'dist');
+    await rename('dist.new', 'dist');
 
     await ExtensionPage.devModeToggle.click();
     await ExtensionPage.updateButton.click();
