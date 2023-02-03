@@ -18,9 +18,7 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn run build
       - name: Copy current dist to temp folder
-        run: |
-          sudo mkdir -m 777 new_dist
-          mv dist/chrome new_dist
+        run: mv dist dist.new
       # Build last tag
       - name: Find last tag
         run: echo ::set-output name=VALUE::$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)

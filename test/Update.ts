@@ -1,5 +1,4 @@
-import { exec } from 'child_process';
-import * as util from 'util';
+import { rename } from 'node:fs/promises';
 
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { ExtensionPage } from './helpers/ExtensionPage';
@@ -43,10 +42,8 @@ describe('Update extension', () => {
   }
 
   it('accounts persist on update', async () => {
-    const promisifiedExec = util.promisify(exec);
     await browser.openKeeperExtensionPage();
-    await promisifiedExec('rm -rf dist/chrome');
-    await promisifiedExec('mv new_dist/chrome dist');
+    await rename("dist.old", "dist");
 
     await ExtensionPage.devModeToggle.click();
     await ExtensionPage.updateButton.click();
