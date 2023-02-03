@@ -47,7 +47,6 @@ describe('Update extension', () => {
 
     await ExtensionPage.devModeToggle.click();
     await ExtensionPage.updateButton.click();
-    await browser.pause(500);
 
     await browser.openKeeperPopup();
     await LoginScreen.passwordInput.setValue(DEFAULT_PASSWORD);
