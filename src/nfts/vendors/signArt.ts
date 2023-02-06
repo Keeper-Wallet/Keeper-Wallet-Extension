@@ -1,3 +1,10 @@
+import { DataTransactionEntryString } from '@waves/ts-types/src/parts';
+import invariant from 'tiny-invariant';
+
+import {
+  dataEntriesToRecord,
+  fetchDataEntries,
+} from '../../nodeApi/dataEntries';
 import {
   CreateParams,
   FetchInfoParams,
@@ -5,7 +12,6 @@ import {
   NftVendor,
   NftVendorId,
 } from '../types';
-import { reduceDataEntries } from '../utils';
 
 const SIGN_ART_DAPP = '3PDBLdsUrcsiPxNbt8g2gQVoefKgzt3kJzV';
 const SIGN_ART_USER_DAPP = '3PGSWDgad4RtceQYXBpq2x73mXLRJYLRqRP';
@@ -47,72 +53,42 @@ export class SignArtNftVendor implements NftVendor<SignArtNftInfo> {
 
     const nftIds = nfts.map(nft => nft.assetId);
 
-    return fetch(signArtDataUrl(nodeUrl), {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        keys: nftIds.map(id => nftIdKey(id)),
-      }),
-    })
-      .then(response =>
-        response.ok
-          ? response.json()
-          : response.text().then(text => Promise.reject(new Error(text)))
-      )
-      .then(reduceDataEntries)
+    return fetchDataEntries<DataTransactionEntryString>(
+      signArtDataUrl(nodeUrl),
+      nftIds.map(id => nftIdKey(id))
+    )
+      .then(dataEntriesToRecord)
       .then(dataEntries =>
         nftIds.map(id => {
           const value = dataEntries[nftIdKey(id)];
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const [, artworkId, creator] = (value as string).match(
-            /art_sold_\d+_of_\d+_(\w+)_(\w+)/i
-          )!;
+
+          const match = value.match(/art_sold_\d+_of_\d+_(\w+)_(\w+)/i);
+          invariant(match);
+          const [, artworkId, creator] = match;
+
           return { artworkId, creator };
         })
       )
       .then(artworks =>
         Promise.all([
-          fetch(signArtDataUrl(nodeUrl), {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              keys: nftIds.flatMap((id, index) => {
-                const info = artworks[index];
-                return [
-                  `art_name_${info.artworkId}_${info.creator}`,
-                  `art_desc_${info.artworkId}_${info.creator}`,
-                  `art_display_cid_${info.artworkId}_${info.creator}`,
-                  `art_type_${info.artworkId}_${info.creator}`,
-                ];
-              }),
-            }),
-          }).then(response =>
-            response.ok
-              ? response.json()
-              : response.text().then(text => Promise.reject(new Error(text)))
+          fetchDataEntries<DataTransactionEntryString>(
+            signArtDataUrl(nodeUrl),
+            nftIds.flatMap((id, index) => {
+              const info = artworks[index];
+              return [
+                `art_name_${info.artworkId}_${info.creator}`,
+                `art_desc_${info.artworkId}_${info.creator}`,
+                `art_display_cid_${info.artworkId}_${info.creator}`,
+                `art_type_${info.artworkId}_${info.creator}`,
+              ];
+            })
           ),
-          fetch(signArtUserDataUrl(nodeUrl), {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              keys: nftIds.map((id, index) => {
-                const info = artworks[index];
-                return `user_name_${info.creator}`;
-              }),
-            }),
-          }).then(response =>
-            response.ok
-              ? response.json()
-              : response.text().then(text => Promise.reject(new Error(text)))
+          fetchDataEntries<DataTransactionEntryString>(
+            signArtUserDataUrl(nodeUrl),
+            nftIds.map((id, index) => {
+              const info = artworks[index];
+              return `user_name_${info.creator}`;
+            })
           ),
         ])
       )
@@ -123,8 +99,9 @@ export class SignArtNftVendor implements NftVendor<SignArtNftInfo> {
           const artDesc = artworksEntries[entriesPerAsset * index + 1];
           const artDisplayCid = artworksEntries[entriesPerAsset * index + 2];
           const userName = userNameEntries[index];
-          const [, artworkId, creator] =
-            artName.key.match(/art_name_(\w+)_(\w+)/i);
+          const match = artName.key.match(/art_name_(\w+)_(\w+)/i);
+          invariant(match);
+          const [, artworkId, creator] = match;
 
           return {
             id,

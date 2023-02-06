@@ -1,11 +1,15 @@
 import {
+  dataEntriesToRecord,
+  fetchDataEntries,
+} from '../../nodeApi/dataEntries';
+import {
   CreateParams,
   FetchInfoParams,
   NftAssetDetail,
   NftVendor,
   NftVendorId,
 } from '../types';
-import { capitalize, reduceDataEntries } from '../utils';
+import { capitalize } from '../utils';
 
 const DUCKLINGS_DAPP = '3PKmLiGEfqLWMC1H9xhzqvAZKUXfFm8uoeg';
 
@@ -37,22 +41,11 @@ export class DucklingsNftVendor implements NftVendor<DucklingsNftInfo> {
 
     const nftIds = nfts.map(nft => nft.assetId);
 
-    return fetch(ducklingDataUrl(nodeUrl), {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        keys: nftIds.map(ducklingLevelKey),
-      }),
-    })
-      .then(response =>
-        response.ok
-          ? response.json()
-          : response.text().then(text => Promise.reject(new Error(text)))
-      )
-      .then(reduceDataEntries)
+    return fetchDataEntries(
+      ducklingDataUrl(nodeUrl),
+      nftIds.map(ducklingLevelKey)
+    )
+      .then(dataEntriesToRecord)
       .then(dataEntries =>
         nftIds.map((id): DucklingsNftInfo => {
           // eslint-disable-next-line radix

@@ -13,6 +13,7 @@ import invariant from 'tiny-invariant';
 import Browser from 'webextension-polyfill';
 
 import { SignProvider } from './_core/signContext';
+import { UsdPricesProvider } from './_core/usdPrices';
 import type { UiApi } from './background';
 import { i18nextInit } from './i18n/init';
 import {
@@ -58,9 +59,11 @@ Promise.all([
     <StrictMode>
       <Provider store={store}>
         <RootWrapper>
-          <SignProvider>
-            <PopupRoot />
-          </SignProvider>
+          <UsdPricesProvider>
+            <SignProvider>
+              <PopupRoot />
+            </SignProvider>
+          </UsdPricesProvider>
         </RootWrapper>
       </Provider>
     </StrictMode>

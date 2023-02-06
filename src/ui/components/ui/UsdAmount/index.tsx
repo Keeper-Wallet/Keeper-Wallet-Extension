@@ -1,5 +1,9 @@
 import BigNumber from '@waves/bignumber';
 import { usePopupSelector } from 'popup/store/react';
+import { useMemo } from 'react';
+
+import { useUsdPrices } from '../../../../_core/usdPrices';
+import { Loader } from '../loader';
 
 interface Props {
   id: string;
@@ -8,18 +12,22 @@ interface Props {
 }
 
 export function UsdAmount({ id, tokens, className }: Props) {
-  const usdPrices = usePopupSelector(state => state.usdPrices);
-
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const isMainnet = currentNetwork === 'mainnet';
 
-  if (!usdPrices || !isMainnet) {
+  const usdPrices = useUsdPrices(useMemo(() => [id], [id]));
+
+  if (!isMainnet) {
     return null;
   }
 
-  return !usdPrices[id] || usdPrices[id] === '1' ? null : (
-    <p className={className}>{`≈ $${new BigNumber(usdPrices[id])
-      .mul(tokens)
-      .toFixed(2)}`}</p>
+  if (usdPrices[id] == null) {
+    return <Loader />;
+  }
+
+  return (
+    <p className={className}>
+      ≈ ${new BigNumber(usdPrices[id]).mul(tokens).toFixed(2)}
+    </p>
   );
 }

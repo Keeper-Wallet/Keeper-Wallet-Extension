@@ -2,7 +2,7 @@ import { RouteObject } from 'react-router-dom';
 import { ErrorPage } from 'ui/components/pages/errorPage';
 import { RootAccounts } from 'ui/components/RootAccounts';
 
-import { Bottom } from '../ui/components/bottom/bottom';
+import { BottomPanel } from '../layout/bottomPanel';
 import { Menu } from '../ui/components/menu/Menu';
 import { BackUpSeed } from '../ui/components/pages/BackupSeed';
 import { ConfirmBackup } from '../ui/components/pages/ConfirmBackup';
@@ -33,7 +33,7 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasLogo />
             <AccountsHome />
-            <Bottom allowChangingNetwork />
+            <BottomPanel allowChangingNetwork />
           </>
         ),
       },
@@ -43,7 +43,7 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <NewWallet />
-            <Bottom />
+            <BottomPanel />
           </>
         ),
       },
@@ -53,7 +53,7 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <BackUpSeed />
-            <Bottom />
+            <BottomPanel />
           </>
         ),
       },
@@ -63,7 +63,7 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <ConfirmBackup />
-            <Bottom />
+            <BottomPanel />
           </>
         ),
       },
@@ -73,7 +73,7 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <ImportDebug />
-            <Bottom />
+            <BottomPanel />
           </>
         ),
       },
@@ -83,7 +83,7 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <ImportSeed />
-            <Bottom />
+            <BottomPanel />
           </>
         ),
       },
@@ -111,7 +111,7 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <ImportEmail />
-            <Bottom />
+            <BottomPanel />
           </>
         ),
       },
@@ -121,7 +121,7 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <NewWalletName />
-            <Bottom />
+            <BottomPanel />
           </>
         ),
       },

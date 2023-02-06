@@ -98,15 +98,6 @@ export const assetIds: Record<NetworkName, Record<string, string>> = {
   },
 };
 
-export const stablecoinAssetIds = new Set([
-  '2thtesXvnVMcCnih9iZbJL3d2NQZMfzENJo8YFj6r5jU',
-  '34N9YcEETLWn93qYQ64EsP1x89tSruJU44RrEMSXXEPJ',
-  '6XtHjpXbs9RRJP2Sr9GUyVqzACcby9TkThHXnjVC5CDJ',
-  '8DLiYZjo3UUaRBTHU7Ayoqg4ihwb6YH1AfXrrhdjQ7K1',
-  '8zUYbdB8Q6mDhpcXYv52ji8ycfj4SDX4gJXS7YY3dA4R',
-  'DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p',
-]);
-
 export const defaultAssetTickers = {
   B1dG9exXzJdFASDF2MwCE7TYJE5My4UgVRx43nqDbF6s: 'ABTCLPC',
   '4NyYnDGopZvEAQ3TcBDJrJFWSiA2xzuAw83Ms8jT7WuK': 'ABTCLPM',
