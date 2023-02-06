@@ -45,11 +45,24 @@ describe('Update extension', () => {
 
   it('accounts persist on update', async () => {
     await browser.openKeeperExtensionPage();
-    await rm('dist', {recursive: true, force: true});
+    await rm('dist', { recursive: true, force: true });
     await rename('dist.new', 'dist');
 
     await ExtensionPage.devModeToggle.click();
+    await browser.pause(100);
     await ExtensionPage.updateButton.click();
+    browser.waitUntil(async () => {
+      return (
+        (await ExtensionPage.enableToggle.getAttribute('aria-pressed')) ===
+        'false'
+      );
+    }, {});
+    await browser.waitUntil(async () => {
+      return (
+        (await ExtensionPage.enableToggle.getAttribute('aria-pressed')) ===
+        'true'
+      );
+    }, {});
 
     await browser.openKeeperPopup();
     await LoginScreen.passwordInput.setValue(DEFAULT_PASSWORD);
