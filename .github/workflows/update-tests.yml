@@ -1,0 +1,45 @@
+name: Update extension test
+on:
+  push:
+    branches-ignore:
+      - master
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: styfle/cancel-workflow-action@0.11.0
+      # Build current branch
+      - name: Get Current branch source
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          cache: yarn
+          node-version-file: .nvmrc
+      - run: yarn install --frozen-lockfile
+      - run: yarn run build
+      - name: Copy current dist to temp folder
+        run: mv dist dist.new
+      # Build last tag
+      - name: Find last tag
+        run: echo 'LAST_TAG='$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`) >> $GITHUB_ENV
+      - name: Get sources from last tag
+        uses: actions/checkout@v3
+        with:
+          ref: '${{ env.LAST_TAG }}'
+          clean: false
+      - uses: actions/setup-node@v3
+        with:
+          cache: yarn
+          node-version-file: .nvmrc
+      - run: yarn install --frozen-lockfile
+      - run: yarn run build
+      # Run tests
+      - run: docker compose up --wait
+      - run: yarn test:update
+      - if: ${{ always() }}
+        run: docker compose down
+      - if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: video
+          path: test/videos
