@@ -3,7 +3,7 @@ export const Windows = {
     const prevHandlesSet = new Set(await browser.getWindowHandles());
 
     return {
-      waitForNewWindows: async (count: number, timeout = 5000) => {
+      waitForNewWindows: async (count: number) => {
         let newHandles: string[] = [];
 
         await browser.waitUntil(
@@ -16,7 +16,6 @@ export const Windows = {
           },
           {
             timeoutMsg: 'waiting for new windows to appear',
-            timeout,
           }
         );
 

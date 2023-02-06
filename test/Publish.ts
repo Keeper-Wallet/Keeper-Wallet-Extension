@@ -131,7 +131,7 @@ describe('Publish', function () {
         }
       );
     }, input);
-    [messageWindow] = await waitForNewWindows(1, 10000);
+    [messageWindow] = await waitForNewWindows(1);
     await browser.switchToWindow(messageWindow);
     await browser.refresh();
   }
