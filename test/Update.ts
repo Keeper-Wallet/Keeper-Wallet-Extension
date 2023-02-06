@@ -1,4 +1,4 @@
-import { rename, rmdir } from 'node:fs/promises';
+import { rename, rm } from 'node:fs/promises';
 
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { ExtensionPage } from './helpers/ExtensionPage';
@@ -45,7 +45,7 @@ describe('Update extension', () => {
 
   it('accounts persist on update', async () => {
     await browser.openKeeperExtensionPage();
-    await rmdir('dist');
+    await rm('dist', {recursive: true, force: true});
     await rename('dist.new', 'dist');
 
     await ExtensionPage.devModeToggle.click();
