@@ -96,8 +96,10 @@ describe('Publish', function () {
     await browser.refresh();
 
     await Network.switchTo('Custom');
-    await CustomNetworkModal.addressInput.setValue(this.nodeUrl);
-    await CustomNetworkModal.saveButton.click();
+    if (await CustomNetworkModal.root.isDisplayed()) {
+      await CustomNetworkModal.addressInput.setValue(this.nodeUrl);
+      await CustomNetworkModal.saveButton.click();
+    }
 
     await AccountsHome.importAccount('user2', USER_2_SEED);
     await AccountsHome.importAccount('user1', USER_1_SEED);
