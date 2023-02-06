@@ -24,6 +24,7 @@ export enum NftVendorId {
   DucksArtefact = 'ducks-artefact',
   SignArt = 'sign-art',
   WavesDomains = 'waves-domains',
+  Puzzle = 'puzzle',
   Unknown = 'unknown',
 }
 

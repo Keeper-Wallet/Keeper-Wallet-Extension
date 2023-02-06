@@ -3,6 +3,7 @@ import { NftList } from 'nfts/nftList';
 import { createNft } from 'nfts/nfts';
 import { DisplayMode, type Nft } from 'nfts/types';
 import { usePopupSelector } from 'popup/store/react';
+import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import * as styles from 'ui/components/pages/styles/assets.styl';
@@ -44,41 +45,46 @@ export function TabNfts() {
 
   const nftConfig = usePopupSelector(state => state.nftConfig);
 
-  const sortedNfts =
-    myNfts && nfts
-      ? sortAndFilterNfts(
-          myNfts.map(nft =>
-            createNft({
-              asset: nft,
-              config: nftConfig,
-              info: nfts?.[nft.id],
-              userAddress,
-            })
-          ),
-          { term }
-        )
-      : PLACEHOLDERS;
+  const sortedNfts = useMemo(
+    () =>
+      myNfts && nfts
+        ? sortAndFilterNfts(
+            myNfts.map(nft =>
+              createNft({
+                asset: nft,
+                config: nftConfig,
+                info: nfts?.[nft.id],
+                userAddress,
+              })
+            ),
+            { term }
+          )
+        : PLACEHOLDERS,
+    [myNfts, nftConfig, nfts, term, userAddress]
+  );
 
-  const [creatorNfts, creatorCounts] = sortedNfts.reduce<
-    [Nft[], Record<string, number>]
-  >(
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    ([creatorNfts, creatorCounts], current) => {
-      const creator = current.creator;
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      if (Object.prototype.hasOwnProperty.call(creatorCounts, creator!)) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        creatorCounts[creator!] += 1;
-        return [creatorNfts, creatorCounts];
-      }
+  const [creatorNfts, creatorCounts] = useMemo(
+    () =>
+      sortedNfts.reduce<[Nft[], Record<string, number>]>(
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        ([creatorNfts, creatorCounts], current) => {
+          const creator = current.creator;
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          if (Object.prototype.hasOwnProperty.call(creatorCounts, creator!)) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            creatorCounts[creator!] += 1;
+            return [creatorNfts, creatorCounts];
+          }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      creatorCounts[creator!] = 1;
-      creatorNfts.push(current);
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          creatorCounts[creator!] = 1;
+          creatorNfts.push(current);
 
-      return [creatorNfts, creatorCounts];
-    },
-    [[], {}]
+          return [creatorNfts, creatorCounts];
+        },
+        [[], {}]
+      ),
+    [sortedNfts]
   );
 
   return (
