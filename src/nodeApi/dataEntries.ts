@@ -13,12 +13,21 @@ export function dataEntriesToRecord<T extends DataTransactionEntry>(
 
 const NODE_DATA_KEYS_REQUEST_LIMIT = 1000;
 
-export function fetchDataEntries<T extends DataTransactionEntry>(
-  url: string,
-  allKeys: string[]
-) {
+function createDataUrl(nodeUrl: string, address: string) {
+  return new URL(`addresses/data/${address}`, nodeUrl).toString();
+}
+
+export function fetchDataEntries<T extends DataTransactionEntry>({
+  nodeUrl,
+  address,
+  keys: allKeys,
+}: {
+  nodeUrl: string;
+  address: string;
+  keys: string[];
+}) {
   return fetchInBatches(allKeys, NODE_DATA_KEYS_REQUEST_LIMIT, keys =>
-    fetch(url, {
+    fetch(createDataUrl(nodeUrl, address), {
       method: 'POST',
       headers: {
         Accept: 'application/json',

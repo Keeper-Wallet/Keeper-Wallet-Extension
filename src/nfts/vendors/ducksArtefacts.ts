@@ -40,7 +40,7 @@ export class DucksArtefactsNftVendor
       description: DUCK_ARTEFACTS_INFO[name]?.description,
       displayCreator: 'Ducks Artefacts',
       displayName: DUCK_ARTEFACTS_INFO[name]?.title || asset.name,
-      foreground: `https://wavesducks.com/ducks/artefacts/${asset.name}.svg`,
+      foreground: `https://wavesducks.com/api/v1/images/${asset.name}.svg`,
       id: asset.id,
       marketplaceUrl: `https://wavesducks.com/item/${asset.id}`,
       name: asset.name,

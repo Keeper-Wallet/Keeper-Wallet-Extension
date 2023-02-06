@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { useState } from 'react';
 import { Ellipsis } from 'ui/components/ui';
 
+import { InfoIcon } from '../icons/info';
 import * as styles from './nftCard.module.css';
 import { DisplayMode, type Nft } from './types';
 
@@ -13,25 +14,45 @@ export function NftCover({
   nft: Nft | undefined;
 }) {
   const [isLoading, setLoading] = useState(true);
-  const isVideo = nft?.foreground ? /\.mp4$/.test(nft?.foreground) : false;
+  const [errorsCount, setErrorsCount] = useState(0);
 
-  return isVideo ? (
+  if (errorsCount > 1) {
+    return (
+      <div className={clsx(styles.noContent, className)}>
+        <InfoIcon className={styles.noContentIcon} />
+        <span>Can’t preview this NFT</span>
+      </div>
+    );
+  }
+
+  return (
     <video
       autoPlay
       loop
+      muted
       className={clsx(styles.cover, className, isLoading && 'skeleton-glow')}
-      // eslint-disable-next-line react/no-unknown-property
-      onLoad={() => nft?.foreground && setLoading(false)}
-    >
-      <source src={nft?.foreground} type="video/mp4" />
-    </video>
-  ) : (
-    <img
-      src={nft?.foreground}
-      className={clsx(styles.cover, className, isLoading && 'skeleton-glow')}
+      poster={nft?.foreground}
       style={nft?.background}
-      onLoad={() => nft?.foreground && setLoading(false)}
-    />
+      onLoadedData={() => {
+        setLoading(false);
+      }}
+    >
+      <source
+        src={nft?.foreground}
+        onError={() => {
+          setErrorsCount(count => count + 1);
+        }}
+      />
+      <img
+        src={nft?.foreground}
+        onLoad={() => {
+          setLoading(false);
+        }}
+        onError={() => {
+          setErrorsCount(count => count + 1);
+        }}
+      />
+    </video>
   );
 }
 

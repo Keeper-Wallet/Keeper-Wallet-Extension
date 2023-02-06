@@ -19,10 +19,6 @@ interface DucklingsNftInfo {
   vendor: NftVendorId.Ducklings;
 }
 
-function ducklingDataUrl(nodeUrl: string) {
-  return new URL(`addresses/data/${DUCKLINGS_DAPP}`, nodeUrl).toString();
-}
-
 function ducklingLevelKey(id: string) {
   return `duckling_${id}_level`;
 }
@@ -41,10 +37,11 @@ export class DucklingsNftVendor implements NftVendor<DucklingsNftInfo> {
 
     const nftIds = nfts.map(nft => nft.assetId);
 
-    return fetchDataEntries(
-      ducklingDataUrl(nodeUrl),
-      nftIds.map(ducklingLevelKey)
-    )
+    return fetchDataEntries({
+      nodeUrl,
+      address: DUCKLINGS_DAPP,
+      keys: nftIds.map(ducklingLevelKey),
+    })
       .then(dataEntriesToRecord)
       .then(dataEntries =>
         nftIds.map((id): DucklingsNftInfo => {

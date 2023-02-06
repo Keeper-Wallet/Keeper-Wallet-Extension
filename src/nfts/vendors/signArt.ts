@@ -27,14 +27,6 @@ interface SignArtNftInfo {
   vendor: NftVendorId.SignArt;
 }
 
-function signArtDataUrl(nodeUrl: string) {
-  return new URL(`addresses/data/${SIGN_ART_DAPP}`, nodeUrl).toString();
-}
-
-function signArtUserDataUrl(nodeUrl: string) {
-  return new URL(`addresses/data/${SIGN_ART_USER_DAPP}`, nodeUrl).toString();
-}
-
 function nftIdKey(id: string) {
   return `nft_${id}`;
 }
@@ -53,10 +45,11 @@ export class SignArtNftVendor implements NftVendor<SignArtNftInfo> {
 
     const nftIds = nfts.map(nft => nft.assetId);
 
-    return fetchDataEntries<DataTransactionEntryString>(
-      signArtDataUrl(nodeUrl),
-      nftIds.map(id => nftIdKey(id))
-    )
+    return fetchDataEntries<DataTransactionEntryString>({
+      nodeUrl,
+      address: SIGN_ART_DAPP,
+      keys: nftIds.map(id => nftIdKey(id)),
+    })
       .then(dataEntriesToRecord)
       .then(dataEntries =>
         nftIds.map(id => {
@@ -71,9 +64,10 @@ export class SignArtNftVendor implements NftVendor<SignArtNftInfo> {
       )
       .then(artworks =>
         Promise.all([
-          fetchDataEntries<DataTransactionEntryString>(
-            signArtDataUrl(nodeUrl),
-            nftIds.flatMap((id, index) => {
+          fetchDataEntries<DataTransactionEntryString>({
+            nodeUrl,
+            address: SIGN_ART_DAPP,
+            keys: nftIds.flatMap((id, index) => {
               const info = artworks[index];
               return [
                 `art_name_${info.artworkId}_${info.creator}`,
@@ -81,15 +75,17 @@ export class SignArtNftVendor implements NftVendor<SignArtNftInfo> {
                 `art_display_cid_${info.artworkId}_${info.creator}`,
                 `art_type_${info.artworkId}_${info.creator}`,
               ];
-            })
-          ),
-          fetchDataEntries<DataTransactionEntryString>(
-            signArtUserDataUrl(nodeUrl),
-            nftIds.map((id, index) => {
+            }),
+          }),
+
+          fetchDataEntries<DataTransactionEntryString>({
+            nodeUrl,
+            address: SIGN_ART_USER_DAPP,
+            keys: nftIds.map((id, index) => {
               const info = artworks[index];
               return `user_name_${info.creator}`;
-            })
-          ),
+            }),
+          }),
         ])
       )
       .then(([artworksEntries, userNameEntries]) =>
