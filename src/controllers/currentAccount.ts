@@ -15,7 +15,7 @@ import { NftInfoController } from './NftInfoController';
 import { PreferencesController } from './preferences';
 import { VaultController } from './VaultController';
 
-const PERIOD_IN_SECONDS = 10;
+const PERIOD_IN_SECONDS = 5;
 
 export class CurrentAccountController {
   private store;
@@ -84,6 +84,8 @@ export class CurrentAccountController {
   }
 
   restartPolling() {
+    this.updateCurrentAccountBalance();
+
     Browser.alarms.create('updateCurrentAccountBalance', {
       periodInMinutes: PERIOD_IN_SECONDS / 60,
     });

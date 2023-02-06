@@ -440,8 +440,10 @@ class BackgroundService extends EventEmitter {
       // preferences
       setCurrentLocale: async (key: string) =>
         this.preferencesController.setCurrentLocale(key),
-      selectAccount: async (address: string, network: NetworkName) =>
-        this.preferencesController.selectAccount(address, network),
+      selectAccount: async (address: string, network: NetworkName) => {
+        this.preferencesController.selectAccount(address, network);
+        this.currentAccountController.restartPolling();
+      },
       editWalletName: async (
         address: string,
         name: string,
