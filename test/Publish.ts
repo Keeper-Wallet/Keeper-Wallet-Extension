@@ -793,6 +793,7 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await browser.pause(1000); // Wait for script transaction to be sent into blockchain
     });
 
     it('Invoke script with payment', async function () {
