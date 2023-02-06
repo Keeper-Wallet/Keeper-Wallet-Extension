@@ -118,7 +118,6 @@ export const mochaHooks = () => ({
 
   async afterAll(this: mocha.Context) {
     if (typeof browser !== 'undefined') {
-      await browser.pause(15000);
       browser.deleteSession();
     }
   },
