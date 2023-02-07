@@ -39,13 +39,9 @@ function AssetSelectItem({
   const listItemEl = (
     <li
       className={className}
-      onClick={
-        asset.disabled
-          ? undefined
-          : () => {
-              onSelect(asset.id);
-            }
-      }
+      onClick={() => {
+        onSelect(asset.id);
+      }}
     >
       <div className={styles.logo}>
         {logoSrc ? (
@@ -266,7 +262,7 @@ export function AssetSelectModal({
               <AssetSelectItem
                 className={clsx(styles.listItem, {
                   [styles.listItemSelected]: index === selectedIndex,
-                  [styles.listItemDisabled]: asset.disabled,
+                  [styles.listItemUnavailable]: asset.disabled,
                 })}
                 network={network}
                 asset={asset}

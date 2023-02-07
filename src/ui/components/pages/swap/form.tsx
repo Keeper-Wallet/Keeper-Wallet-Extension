@@ -118,6 +118,9 @@ export function SwapForm({
   const { t } = useTranslation();
 
   const assets = usePopupSelector(state => state.assets);
+  const swappableAssetIdsByVendor = usePopupSelector(
+    state => state.swappableAssetIdsByVendor
+  );
   const usdPrices = usePopupSelector(state => state.usdPrices);
   const accountBalance = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
@@ -223,7 +226,19 @@ export function SwapForm({
     state => state.selectedAccount?.address
   );
 
+  const isValidAssetPairSelected = useMemo(
+    () =>
+      Object.values(swappableAssetIdsByVendor).some(
+        ids => ids.includes(fromAsset.id) && ids.includes(toAsset.id)
+      ),
+    [swappableAssetIdsByVendor, fromAsset.id, toAsset.id]
+  );
+
   const swapParams = useMemo(() => {
+    if (!isValidAssetPairSelected) {
+      return null;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-shadow
     let fromAmountTokens = new BigNumber(fromAmountValue || '0');
 
@@ -250,6 +265,7 @@ export function SwapForm({
     fromAsset,
     slippageTolerance,
     toAsset.id,
+    isValidAssetPairSelected,
   ]);
 
   useEffect(() => {
@@ -406,9 +422,6 @@ export function SwapForm({
     }
   }, [swapVendorTouched, profitVendor]);
 
-  const swappableAssetIdsByVendor = usePopupSelector(
-    state => state.swappableAssetIdsByVendor
-  );
   const fromSwappableAssets = useMemo(() => {
     const availableIds = new Set(
       Object.values(swappableAssetIdsByVendor)
@@ -534,20 +547,15 @@ export function SwapForm({
           <div className={styles.swapDirectionBtnWrapper}>
             <button
               className={styles.swapDirectionBtn}
-              disabled={swapVendorInfo.type !== 'data'}
               type="button"
               onClick={() => {
-                if (swapVendorInfo.type !== 'data') {
-                  return;
-                }
-
                 setAssetIds(prevState => ({
                   fromAssetId: prevState.toAssetId,
                   toAssetId: prevState.fromAssetId,
                 }));
 
                 const newFromAmount =
-                  fromAmountValue === ''
+                  fromAmountValue === '' || swapVendorInfo.type !== 'data'
                     ? ''
                     : fromAmountTokens.eq(0)
                     ? '0'
@@ -680,7 +688,8 @@ export function SwapForm({
                       </div>
                     ) : (
                       <div className={styles.toAmountCardError}>
-                        {info.code === SwapClientErrorCode.INVALID_ASSET_PAIR
+                        {info.code === SwapClientErrorCode.INVALID_ASSET_PAIR ||
+                        !isValidAssetPairSelected
                           ? t('swap.exchangeChannelInvalidAssetPairError')
                           : info.code === SwapClientErrorCode.UNAVAILABLE
                           ? t('swap.exchangeChannelUnavailableError')
@@ -740,8 +749,10 @@ export function SwapForm({
               </div>
 
               <div className={styles.summaryValue}>
-                {swapVendorInfo.type === 'loading' || !minReceived ? (
+                {swapVendorInfo.type === 'loading' ? (
                   <Loader />
+                ) : !minReceived ? (
+                  t('swap.notAvailable')
                 ) : swapVendorInfo.type === 'data' ? (
                   <div>
                     <button
