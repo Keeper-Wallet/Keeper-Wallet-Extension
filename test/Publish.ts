@@ -2,9 +2,12 @@ import {
   base58Decode,
   base58Encode,
   blake2b,
+  createAddress,
+  createPrivateKey,
+  createPublicKey,
+  utf8Encode,
   verifySignature,
 } from '@keeper-wallet/waves-crypto';
-import { address, publicKey } from '@waves/ts-lib-crypto';
 import { makeTxBytes } from '@waves/waves-transactions';
 import waitForExpect from 'wait-for-expect';
 
@@ -27,7 +30,11 @@ import {
   USER_2_SEED,
   WHITELIST,
 } from './utils/constants';
-import { faucet, getNetworkByte, getTransactionStatus } from './utils/nodeInteraction';
+import {
+  faucet,
+  getNetworkByte,
+  getTransactionStatus,
+} from './utils/nodeInteraction';
 import {
   ALIAS,
   BURN,
@@ -48,7 +55,7 @@ import {
 const WAVES = Math.pow(10, 8); // waves token scale
 type Account = { address: string; publicKey: string };
 
-describe('Publish', function () {
+describe.only('Publish', function () {
   const hostNodeUrl = 'http://localhost:6869';
   let chainId: number;
   let issuer: Account, user1: Account, user2: Account;
@@ -61,17 +68,31 @@ describe('Publish', function () {
   async function prepareAccounts() {
     chainId = await getNetworkByte(hostNodeUrl);
 
+    const issuerPrivateKeyBytes = await createPrivateKey(
+      utf8Encode(ISSUER_SEED)
+    );
+    const issuerPublicKeyBytes = await createPublicKey(issuerPrivateKeyBytes);
     issuer = {
-      address: address(ISSUER_SEED, chainId),
-      publicKey: publicKey(ISSUER_SEED),
+      address: base58Encode(createAddress(issuerPublicKeyBytes, chainId)),
+      publicKey: base58Encode(issuerPublicKeyBytes),
     };
+
+    const user1PrivateKeyBytes = await createPrivateKey(
+      utf8Encode(USER_1_SEED)
+    );
+    const user1PublicKeyBytes = await createPublicKey(user1PrivateKeyBytes);
     user1 = {
-      address: address(USER_1_SEED, chainId),
-      publicKey: publicKey(USER_1_SEED),
+      address: base58Encode(createAddress(user1PublicKeyBytes, chainId)),
+      publicKey: base58Encode(user1PublicKeyBytes),
     };
+
+    const user2PrivateKeyBytes = await createPrivateKey(
+      utf8Encode(USER_2_SEED)
+    );
+    const user2PublicKeyBytes = await createPublicKey(user2PrivateKeyBytes);
     user2 = {
-      address: address(USER_2_SEED, chainId),
-      publicKey: publicKey(USER_2_SEED),
+      address: base58Encode(createAddress(user2PublicKeyBytes, chainId)),
+      publicKey: base58Encode(user2PublicKeyBytes),
     };
 
     await faucet({
@@ -201,7 +222,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
       assetWithMaxValuesId = parsedApproveResult.assetId;
     });
@@ -249,7 +272,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
 
@@ -299,7 +324,9 @@ describe('Publish', function () {
       ).toBe(true);
 
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
       smartAssetId = parsedApproveResult.assetId;
     });
@@ -350,7 +377,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
   });
@@ -395,7 +424,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
 
@@ -435,7 +466,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
 
@@ -475,7 +508,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
 
@@ -517,7 +552,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
 
@@ -559,7 +596,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
   });
@@ -608,7 +647,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
 
@@ -654,7 +695,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
   });
@@ -716,7 +759,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
 
@@ -784,7 +829,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
   });
@@ -833,7 +880,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
 
@@ -881,7 +930,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
 
@@ -927,7 +978,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
 
@@ -1014,7 +1067,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
 
@@ -1050,7 +1105,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
   });
@@ -1096,7 +1153,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
       leaseId = parsedApproveResult.id;
     });
@@ -1133,7 +1192,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
   });
@@ -1174,7 +1235,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
       await waitForExpect(async () => {
-        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+        expect(
+          await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)
+        ).toBe('confirmed');
       });
     });
   });

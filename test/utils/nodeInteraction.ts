@@ -26,7 +26,10 @@ export async function getNetworkByte(nodeUrl: string) {
   return getNetworkByteByAddress(generator);
 }
 
-export async function getTransactionStatus(transactionId: string, nodeUrl: string) {
+export async function getTransactionStatus(
+  transactionId: string,
+  nodeUrl: string
+) {
   const url = new URL('/transactions/status', nodeUrl);
   url.searchParams.set('id', transactionId);
   const response = await fetch(url);
