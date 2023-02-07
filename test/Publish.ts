@@ -6,6 +6,7 @@ import {
 } from '@keeper-wallet/waves-crypto';
 import { address, publicKey } from '@waves/ts-lib-crypto';
 import { makeTxBytes } from '@waves/waves-transactions';
+import waitForExpect from 'wait-for-expect';
 
 import { JSONbn } from '../src/_core/jsonBn';
 import { MessageInputTx } from '../src/messages/types';
@@ -26,7 +27,7 @@ import {
   USER_2_SEED,
   WHITELIST,
 } from './utils/constants';
-import { faucet, getNetworkByte } from './utils/nodeInteraction';
+import { faucet, getNetworkByte, getTransactionStatus } from './utils/nodeInteraction';
 import {
   ALIAS,
   BURN,
@@ -199,6 +200,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
       assetWithMaxValuesId = parsedApproveResult.assetId;
     });
 
@@ -244,6 +248,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
 
     it('Smart asset', async () => {
@@ -291,6 +298,9 @@ describe('Publish', function () {
         )
       ).toBe(true);
 
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
       smartAssetId = parsedApproveResult.assetId;
     });
 
@@ -339,6 +349,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
   });
 
@@ -381,6 +394,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
 
     it('Burn', async () => {
@@ -418,6 +434,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
 
     it('Set asset script', async () => {
@@ -455,6 +474,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
 
     it('Enable sponsorship fee', async () => {
@@ -494,6 +516,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
 
     it('Disable sponsorship fee', async () => {
@@ -533,6 +558,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
   });
 
@@ -579,6 +607,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
 
     it('Mass transfer', async () => {
@@ -622,6 +653,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
   });
 
@@ -681,6 +715,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
 
     it('Write MAX values to Data storage', async () => {
@@ -746,6 +783,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
   });
 
@@ -792,7 +832,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
-      await browser.pause(1000); // Wait for script transaction to be sent into blockchain
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
 
     it('Invoke script with payment', async function () {
@@ -838,6 +880,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
 
     it('Invoke with argument', async function () {
@@ -881,6 +926,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
 
     it('Invoke with long arguments and payments list', async function () {
@@ -965,6 +1013,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
 
     it('Remove script', async () => {
@@ -998,6 +1049,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
   });
 
@@ -1041,11 +1095,13 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
       leaseId = parsedApproveResult.id;
     });
 
     it('Cancel lease', async () => {
-      await browser.pause(1000); // Wait for lease transaction to be sent into blockchain
       const data = { leaseId };
       await performSignAndPublishTransaction({ ...CANCEL_LEASE, data });
       await approveTransaction();
@@ -1076,6 +1132,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
   });
 
@@ -1114,6 +1173,9 @@ describe('Publish', function () {
           base58Decode(parsedApproveResult.proofs[0])
         )
       ).toBe(true);
+      await waitForExpect(async () => {
+        expect(await getTransactionStatus(parsedApproveResult.id, hostNodeUrl)).toBe('confirmed');
+      });
     });
   });
 });
