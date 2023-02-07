@@ -51,7 +51,7 @@ describe('Publish', function () {
   const hostNodeUrl = 'http://localhost:6869';
   let chainId: number;
   let issuer: Account, user1: Account, user2: Account;
-  let testAppTab: string;
+  let dAppTab: string;
   let messageWindow: string | null = null;
 
   let smartAssetId: string;
@@ -110,14 +110,14 @@ describe('Publish', function () {
 
     await Network.switchTo('Custom');
 
-    testAppTab = (await browser.createWindow('tab')).handle;
-    await browser.switchToWindow(testAppTab);
+    dAppTab = (await browser.createWindow('tab')).handle;
+    await browser.switchToWindow(dAppTab);
     await browser.navigateTo(`https://${WHITELIST[3]}`);
 
     await browser.switchToWindow(tabAccounts);
     await browser.closeWindow();
 
-    await browser.switchToWindow(testAppTab);
+    await browser.switchToWindow(dAppTab);
   });
 
   async function performSignAndPublishTransaction(input: MessageInputTx) {
@@ -139,7 +139,7 @@ describe('Publish', function () {
   }
 
   async function getResult() {
-    await browser.switchToWindow(testAppTab);
+    await browser.switchToWindow(dAppTab);
     return JSON.parse(
       await browser.execute(() => {
         const { result } = window;
@@ -757,7 +757,7 @@ describe('Publish', function () {
     const account = await OtherAccountsScreen.getAccountByName(accountName);
     await account?.root.click();
     await browser.closeWindow();
-    await browser.switchToWindow(testAppTab);
+    await browser.switchToWindow(dAppTab);
   }
 
   describe('Installing the script on the account and calling it', () => {
