@@ -1,5 +1,4 @@
 import { base58Decode } from '@keeper-wallet/waves-crypto';
-import { create } from '@waves/node-api-js';
 import { broadcast, transfer } from '@waves/waves-transactions';
 
 import { DEFAULT_MINER_SEED } from './constants';
@@ -20,8 +19,8 @@ export async function faucet({
 }
 
 export async function getNetworkByte(nodeUrl: string) {
-  const nodeApi = create(nodeUrl);
-  const { generator } = await nodeApi.blocks.fetchHeadersLast();
+  const response = await fetch(new URL('/blocks/headers/last', nodeUrl));
+  const { generator } = await response.json();
 
   return getNetworkByteByAddress(generator);
 }
