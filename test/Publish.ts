@@ -227,7 +227,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
       assetWithMaxValuesId = parsedApproveResult.assetId;
     });
 
@@ -278,7 +278,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
 
     it('Smart asset', async () => {
@@ -330,7 +330,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
       smartAssetId = parsedApproveResult.assetId;
     });
 
@@ -383,7 +383,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
   });
 
@@ -430,7 +430,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
 
     it('Burn', async () => {
@@ -472,7 +472,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
 
     it('Set asset script', async () => {
@@ -514,7 +514,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
 
     it('Enable sponsorship fee', async () => {
@@ -558,7 +558,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
 
     it('Disable sponsorship fee', async () => {
@@ -602,7 +602,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
   });
 
@@ -653,7 +653,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
 
     it('Mass transfer', async () => {
@@ -702,7 +702,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
   });
 
@@ -766,7 +766,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
 
     it('Write MAX values to Data storage', async () => {
@@ -836,7 +836,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
   });
 
@@ -887,7 +887,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
 
     it('Invoke script with payment', async function () {
@@ -938,7 +938,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
 
     it('Invoke with argument', async function () {
@@ -987,7 +987,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
 
     it('Invoke with long arguments and payments list', async function () {
@@ -1077,7 +1077,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
 
     it('Remove script', async () => {
@@ -1115,7 +1115,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
   });
 
@@ -1163,7 +1163,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
       leaseId = parsedApproveResult.id;
     });
 
@@ -1202,7 +1202,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
   });
 
@@ -1245,7 +1245,7 @@ describe('Publish', function () {
         expect(
           await getTransactionStatus(parsedApproveResult.id, nodeUrl)
         ).toBe('confirmed');
-      });
+      }, 15000);
     });
   });
 });
