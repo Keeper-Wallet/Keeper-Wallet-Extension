@@ -143,10 +143,11 @@ describe('Publish', function () {
     await browser.switchToWindow(dAppTab);
   });
 
-
   after(async function () {
     const tabKeeper = (await browser.createWindow('tab')).handle;
     await App.closeBgTabs(tabKeeper);
+    await browser.openKeeperPopup();
+    await Network.switchTo('Mainnet');
     await App.resetVault();
   });
 
