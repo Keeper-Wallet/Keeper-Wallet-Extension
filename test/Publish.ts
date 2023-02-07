@@ -8,11 +8,11 @@ import {
   utf8Encode,
   verifySignature,
 } from '@keeper-wallet/waves-crypto';
-import { makeTxBytes } from '@waves/waves-transactions';
 import waitForExpect from 'wait-for-expect';
 
 import { JSONbn } from '../src/_core/jsonBn';
 import { MessageInputTx } from '../src/messages/types';
+import { makeTxBytes } from '../src/messages/utils';
 import { ContentScript } from './helpers/ContentScript';
 import { CustomNetworkModal } from './helpers/CustomNetworkModal';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
@@ -55,7 +55,7 @@ import {
 const WAVES = Math.pow(10, 8); // waves token scale
 type Account = { address: string; publicKey: string };
 
-describe.only('Publish', function () {
+describe('Publish', function () {
   const hostNodeUrl = 'http://localhost:6869';
   let chainId: number;
   let issuer: Account, user1: Account, user2: Account;
@@ -209,6 +209,7 @@ describe.only('Publish', function () {
       const bytes = makeTxBytes({
         ...expectedApproveResult,
         quantity: data.quantity,
+        script: null,
         timestamp: parsedApproveResult.timestamp,
       });
 
@@ -259,6 +260,7 @@ describe.only('Publish', function () {
       const bytes = makeTxBytes({
         ...expectedApproveResult,
         quantity: data.quantity,
+        script: null,
         timestamp: parsedApproveResult.timestamp,
       });
 
@@ -486,7 +488,7 @@ describe.only('Publish', function () {
       const parsedApproveResult = JSONbn.parse(result);
       const expectedApproveResult = {
         type: SET_ASSET_SCRIPT.type,
-        version: 2,
+        version: 2 as const,
         senderPublicKey: issuer.publicKey,
         assetId: data.assetId,
         fee: '100000000',
@@ -530,7 +532,7 @@ describe.only('Publish', function () {
       const parsedApproveResult = JSONbn.parse(result);
       const expectedApproveResult = {
         type: SPONSORSHIP.type,
-        version: 2,
+        version: 2 as const,
         senderPublicKey: issuer.publicKey,
         minSponsoredAssetFee: data.minSponsoredAssetFee.amount,
         assetId: data.minSponsoredAssetFee.assetId,
@@ -574,7 +576,7 @@ describe.only('Publish', function () {
       const parsedApproveResult = JSONbn.parse(result);
       const expectedApproveResult = {
         type: SPONSORSHIP.type,
-        version: 2,
+        version: 2 as const,
         senderPublicKey: issuer.publicKey,
         minSponsoredAssetFee: null,
         assetId: data.minSponsoredAssetFee.assetId,
@@ -682,6 +684,7 @@ describe.only('Publish', function () {
       };
       const bytes = makeTxBytes({
         ...expectedApproveResult,
+        assetId: null,
         timestamp: parsedApproveResult.timestamp,
       });
 
@@ -917,6 +920,7 @@ describe.only('Publish', function () {
       };
       const bytes = makeTxBytes({
         ...expectedApproveResult,
+        feeAssetId: null,
         timestamp: parsedApproveResult.timestamp,
       });
 
@@ -965,6 +969,7 @@ describe.only('Publish', function () {
       };
       const bytes = makeTxBytes({
         ...expectedApproveResult,
+        feeAssetId: null,
         timestamp: parsedApproveResult.timestamp,
       });
 
@@ -1054,6 +1059,7 @@ describe.only('Publish', function () {
       };
       const bytes = makeTxBytes({
         ...expectedApproveResult,
+        feeAssetId: null,
         timestamp: parsedApproveResult.timestamp,
       });
 
