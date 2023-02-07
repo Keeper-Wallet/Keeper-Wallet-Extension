@@ -143,6 +143,13 @@ describe('Publish', function () {
     await browser.switchToWindow(dAppTab);
   });
 
+
+  after(async function () {
+    const tabKeeper = (await browser.createWindow('tab')).handle;
+    await App.closeBgTabs(tabKeeper);
+    await App.resetVault();
+  });
+
   async function performSignAndPublishTransaction(input: MessageInputTx) {
     const { waitForNewWindows } = await Windows.captureNewWindows();
     await ContentScript.waitForKeeperWallet();
