@@ -27,9 +27,7 @@ export const OtherAccountsScreen = {
 
   async getAccountByName(accountName: string) {
     return Account(
-      await this.root
-        .findByText$(accountName)
-        .$("./ancestor::*[@data-testid='accountCard']")
+      await this.root.$(`.//*[@data-testid='accountCard' and contains(., '${accountName}')]`)
     );
   },
 
