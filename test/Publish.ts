@@ -755,7 +755,7 @@ describe('Publish', function () {
     await browser.openKeeperPopup();
     await HomeScreen.otherAccountsButton.click();
     const account = await OtherAccountsScreen.getAccountByName(accountName);
-    await account?.root.click();
+    await account.root.click();
     await browser.closeWindow();
     await browser.switchToWindow(dAppTab);
   }
