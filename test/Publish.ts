@@ -151,7 +151,6 @@ describe('Publish', function () {
 
   async function approveTransaction() {
     await CommonTransaction.approveButton.click();
-    await browser.pause(500);
     await FinalTransactionScreen.closeButton.click();
   }
 
@@ -761,7 +760,7 @@ describe('Publish', function () {
     await browser.switchToWindow(testAppTab);
   }
 
-  describe('Installing the script on the account and calling its', () => {
+  describe('Installing the script on the account and calling it', () => {
     it('Set script', async () => {
       await changeKeeperAccountAndClose('user1');
       await performSignAndPublishTransaction(SET_SCRIPT_COMPILED);

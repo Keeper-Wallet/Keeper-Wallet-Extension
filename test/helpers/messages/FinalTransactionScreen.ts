@@ -8,6 +8,6 @@ export const FinalTransactionScreen = {
   },
 
   get closeButton() {
-    return this.root.findByText$('Close');
+    return browser.findByText$('Close');
   },
 };
