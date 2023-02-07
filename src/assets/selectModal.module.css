@@ -40,12 +40,11 @@
 }
 
 .listItemSelected,
-.listItem:not(.listItemDisabled):hover {
+.listItem:not(.listItemUnavailable):hover {
   background: var(--color-basic100);
 }
 
-.listItemDisabled {
-  cursor: not-allowed;
+.listItemUnavailable {
   opacity: 0.5;
 }
 
