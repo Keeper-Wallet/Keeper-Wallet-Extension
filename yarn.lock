@@ -1336,9 +1336,9 @@
     ethereum-cryptography "^1.1.2"
 
 "@faergeek/eslint-config@^5.0.142":
-  version "5.0.165"
-  resolved "https://registry.yarnpkg.com/@faergeek/eslint-config/-/eslint-config-5.0.165.tgz#4f1fdf4a9a6622bbee49f40db35f13773e3ac8e3"
-  integrity sha512-VKRKe32UsM4U6cYZom/2YTlDklhI6ovFVdzq6UpgRCqOXQ56HXNBFT0BAz5cDsZS2IUku4WD2SzjiqpWuWHmew==
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@faergeek/eslint-config/-/eslint-config-5.1.0.tgz#263f8c9534b2c919cbfc731c19f9d47a485ad951"
+  integrity sha512-4fpdgctci2MHZqaH3rHOtbOuzzijrpUiUT4j1cvzsBcOcQYMn6kpUBLVcnqG3mqVIfHOTUgjAWZ/0jgliNYobw==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.0.0"
     "@typescript-eslint/parser" "^5.0.0"
