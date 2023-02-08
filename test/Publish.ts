@@ -123,11 +123,6 @@ describe('Publish', function () {
     await AccountsHome.importAccount('user1', USER_1_SEED);
     await AccountsHome.importAccount('issuer', ISSUER_SEED);
 
-    await Network.switchTo('Testnet');
-    await AccountsHome.importAccount('test', ISSUER_SEED);
-
-    await Network.switchTo('Custom');
-
     dAppTab = (await browser.createWindow('tab')).handle;
     await browser.switchToWindow(dAppTab);
     await browser.navigateTo(`https://${WHITELIST[3]}`);
