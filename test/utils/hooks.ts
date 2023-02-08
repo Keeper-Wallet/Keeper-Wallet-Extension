@@ -20,6 +20,7 @@ declare global {
       extends WebdriverIOQueries,
         WebdriverIOQueriesChainable<Browser> {
       openKeeperPopup: () => Promise<void>;
+      openKeeperExtensionPage: () => Promise<void>;
     }
 
     interface Element
@@ -112,6 +113,13 @@ export const mochaHooks = () => ({
         await this.navigateTo(
           `chrome-extension://${keeperExtensionId}/popup.html`
         );
+      }
+    );
+
+    browser.addCommand(
+      'openKeeperExtensionPage',
+      async function (this: WebdriverIO.Browser) {
+        await this.navigateTo(`chrome://extensions/?id=${keeperExtensionId}`);
       }
     );
   },
