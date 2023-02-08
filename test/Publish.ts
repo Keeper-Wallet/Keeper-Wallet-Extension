@@ -65,7 +65,7 @@ describe('Publish', function () {
   let smartAssetId: string;
   let assetWithMaxValuesId: string;
 
-  async function prepareAccounts() {
+  before(async function () {
     chainId = await getNetworkByte(nodeUrl);
 
     const issuerPrivateKeyBytes = await createPrivateKey(
@@ -94,17 +94,12 @@ describe('Publish', function () {
       address: base58Encode(createAddress(user2PublicKeyBytes, chainId)),
       publicKey: base58Encode(user2PublicKeyBytes),
     };
-
     await faucet({
       recipient: issuer.address,
       amount: 10 * WAVES_TOKEN_SCALE,
       nodeUrl,
       chainId,
     });
-  }
-
-  before(async function () {
-    await prepareAccounts();
     await App.initVault();
 
     const tabKeeper = await browser.getWindowHandle();
