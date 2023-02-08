@@ -10,6 +10,9 @@
   z-index: 2;
   top: 0;
   padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   border-bottom: 1px solid #edf0f4;
   background: #fff;
 }
@@ -38,12 +41,9 @@
 }
 
 .addAccountButton {
-  margin: 20px 0 40px;
-  padding: 0 14px 0 34px;
   border: 1px dashed #dae1e9;
   height: 32px;
   border-radius: 4px;
-  background: url(../../assets/img/add-14-basic-500.svg) 13px center no-repeat;
   color: #9ba6b2;
   font: inherit;
   font-size: 14px;
@@ -54,4 +54,16 @@
 
 .addAccountButton:hover {
   background-color: #edf0f4;
+}
+
+.addAccountButton_full {
+  margin: 20px 0 40px;
+  padding: 0 14px 0 34px;
+  background: url(../../assets/img/add-14-basic-500.svg) 13px center no-repeat;
+}
+
+.addAccountButton_small {
+  padding: 0;
+  width: 32px;
+  background: url(../../assets/img/add-14-basic-500.svg) center center no-repeat;
 }

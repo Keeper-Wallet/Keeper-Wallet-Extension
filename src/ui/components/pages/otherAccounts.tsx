@@ -1,4 +1,5 @@
 import { Asset, Money } from '@waves/data-entities';
+import clsx from 'clsx';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { compareAccountsByLastUsed } from 'preferences/utils';
 import { useEffect, useState } from 'react';
@@ -10,6 +11,7 @@ import background from 'ui/services/Background';
 
 import { startPolling } from '../../../_core/polling';
 import { AccountCard } from '../accounts/accountCard';
+import { Tooltip } from '../ui/tooltip';
 import * as styles from './otherAccounts.module.css';
 
 export function OtherAccountsPage() {
@@ -51,6 +53,11 @@ export function OtherAccountsPage() {
     ])
   );
 
+  const addAccount = () => {
+    background.showTab(`${window.location.origin}/accounts.html`, 'accounts');
+    navigate('/', { replace: true });
+  };
+
   useEffect(
     () => startPolling(10000, () => background.updateOtherAccountsBalances()),
     []
@@ -60,6 +67,20 @@ export function OtherAccountsPage() {
     <div className={styles.root} data-testid="otherAccountsPage">
       <header className={styles.header}>
         <h2 className={styles.title}>{t('otherAccounts.title')}</h2>
+
+        <Tooltip content={t('otherAccounts.addAccount')}>
+          {props => (
+            <button
+              {...props}
+              className={clsx(
+                styles.addAccountButton,
+                styles.addAccountButton_small
+              )}
+              type="button"
+              onClick={addAccount}
+            />
+          )}
+        </Tooltip>
       </header>
 
       <div className={styles.accounts}>
@@ -100,16 +121,13 @@ export function OtherAccountsPage() {
 
         <div className={styles.addAccount}>
           <button
-            className={styles.addAccountButton}
+            className={clsx(
+              styles.addAccountButton,
+              styles.addAccountButton_full
+            )}
             data-testid="addAccountButton"
             type="button"
-            onClick={() => {
-              background.showTab(
-                `${window.location.origin}/accounts.html`,
-                'accounts'
-              );
-              navigate('/', { replace: true });
-            }}
+            onClick={addAccount}
           >
             {t('otherAccounts.addAccount')}
           </button>
