@@ -4,7 +4,7 @@ import { MessageFinal } from 'messages/_common/final';
 import { MessageHeader } from 'messages/_common/header';
 import { MessageIcon } from 'messages/_common/icon';
 import { usePopupDispatch } from 'popup/store/react';
-import { PreferencesAccount } from 'preferences/types';
+import { type PreferencesAccount } from 'preferences/types';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setShowNotification } from 'store/actions/notifications';
@@ -18,7 +18,7 @@ import { Button } from '../../ui/components/ui/buttons/Button';
 import { DropdownButton } from '../../ui/components/ui/buttons/DropdownButton';
 import { Input } from '../../ui/components/ui/input/Input';
 import { Select } from '../../ui/components/ui/select/Select';
-import { MessageOfType } from '../types';
+import { type MessageOfType } from '../types';
 import * as styles from './authOrigin.module.css';
 
 export function AuthOriginCard({

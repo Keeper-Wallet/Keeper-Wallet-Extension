@@ -1,25 +1,25 @@
 import { captureException } from '@sentry/browser';
-import { AssetsRecord } from 'assets/types';
+import { type AssetsRecord } from 'assets/types';
 import create from 'callbag-create';
 import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
-import { TrashItem } from 'controllers/trash';
-import { Message } from 'messages/types';
-import { NetworkName } from 'networks/types';
-import { NftInfo } from 'nfts/nfts';
-import { NotificationsStoreItem } from 'notifications/types';
+import { type TrashItem } from 'controllers/trash';
+import { type Message } from 'messages/types';
+import { type NetworkName } from 'networks/types';
+import { type NftInfo } from 'nfts/nfts';
+import { type NotificationsStoreItem } from 'notifications/types';
 import type ObservableStore from 'obs-store';
-import { PermissionValue } from 'permissions/types';
-import { IdleOptions, PreferencesAccount } from 'preferences/types';
-import { UiState } from 'store/reducers/updateState';
+import { type PermissionValue } from 'permissions/types';
+import { type IdleOptions, type PreferencesAccount } from 'preferences/types';
+import { type UiState } from 'store/reducers/updateState';
 import Browser from 'webextension-polyfill';
 
 import {
-  AssetsConfig,
-  DEFAULT_IDENTITY_CONFIG,
-  DEFAULT_MAIN_CONFIG,
-  IgnoreErrorsConfig,
-  NftConfig,
+  type AssetsConfig,
+  type DEFAULT_IDENTITY_CONFIG,
+  type DEFAULT_MAIN_CONFIG,
+  type IgnoreErrorsConfig,
+  type NftConfig,
 } from '../constants';
 import { MIGRATIONS } from './migrations';
 

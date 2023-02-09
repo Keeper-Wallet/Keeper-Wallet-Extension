@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { Button } from 'ui/components/ui/buttons';
 
-import { TAutoAuth } from '../originSettings/OriginSettings';
+import { type TAutoAuth } from '../originSettings/OriginSettings';
 import * as styles from './list.styl';
 
 export const ListItem: React.FunctionComponent<IParams> = ({

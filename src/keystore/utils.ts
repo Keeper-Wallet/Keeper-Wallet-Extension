@@ -3,11 +3,11 @@ import {
   encryptSeed,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
-import { NetworkName } from 'networks/types';
-import { PreferencesAccount } from 'preferences/types';
+import { type NetworkName } from 'networks/types';
+import { type PreferencesAccount } from 'preferences/types';
 
 import background from '../ui/services/Background';
-import { KeystoreAccount, KeystoreProfiles } from './types';
+import { type KeystoreAccount, type KeystoreProfiles } from './types';
 
 async function encryptProfiles(
   accountsToExport: PreferencesAccount[],

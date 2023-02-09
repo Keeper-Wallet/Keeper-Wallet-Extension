@@ -1,4 +1,4 @@
-import { UiState } from '../reducers/updateState';
+import { type UiState } from '../reducers/updateState';
 import { ACTION } from './constants';
 
 export function setUiState(ui: Partial<UiState>) {

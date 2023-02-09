@@ -1,6 +1,6 @@
-import { DEFAULT_MAIN_CONFIG, NftConfig } from '../../constants';
+import { DEFAULT_MAIN_CONFIG, type NftConfig } from '../../constants';
 import { ACTION } from '../actions/constants';
-import { AppAction } from '../types';
+import { type AppAction } from '../types';
 
 export function nftConfig(
   state = DEFAULT_MAIN_CONFIG.nfts,

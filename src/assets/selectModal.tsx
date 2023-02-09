@@ -1,9 +1,9 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
-import { BalanceAssets } from 'balances/types';
+import { type BalanceAssets } from 'balances/types';
 import clsx from 'clsx';
 import ColorHash from 'color-hash';
-import { NetworkName } from 'networks/types';
+import { type NetworkName } from 'networks/types';
 import { cloneElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui/components/ui/buttons/Button';
@@ -11,7 +11,7 @@ import { Input } from 'ui/components/ui/input';
 import { Tooltip } from 'ui/components/ui/tooltip';
 
 import * as styles from './selectModal.module.css';
-import { AssetDetail } from './types';
+import { type AssetDetail } from './types';
 import { useAssetLogo } from './utils';
 
 export interface AssetSelectModalOption extends AssetDetail {

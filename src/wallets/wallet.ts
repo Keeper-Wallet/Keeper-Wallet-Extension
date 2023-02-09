@@ -6,9 +6,9 @@ import {
   encryptMessage,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
-import { MessageTx } from 'messages/types';
+import { type MessageTx } from 'messages/types';
 
-import { WalletAccount, WalletPrivateData } from './types';
+import { type WalletAccount, type WalletPrivateData } from './types';
 
 export abstract class Wallet<TData extends WalletPrivateData> {
   readonly data;

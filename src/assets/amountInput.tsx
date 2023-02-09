@@ -1,13 +1,13 @@
 import BigNumber from '@waves/bignumber';
-import { Money } from '@waves/data-entities';
-import { BalanceAssets } from 'balances/types';
+import { type Money } from '@waves/data-entities';
+import { type BalanceAssets } from 'balances/types';
 import { usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { IMaskInput } from 'react-imask';
 
 import { UsdAmount } from '../ui/components/ui/UsdAmount';
 import * as styles from './amountInput.module.css';
-import { AssetSelect, AssetSelectOption } from './assetSelect';
+import { AssetSelect, type AssetSelectOption } from './assetSelect';
 
 interface Props {
   assetBalances: BalanceAssets;

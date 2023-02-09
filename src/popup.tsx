@@ -20,17 +20,17 @@ import {
   createIpcCallProxy,
   fromPort,
   handleMethodCallRequests,
-  MethodCallRequestPayload,
+  type MethodCallRequestPayload,
 } from './ipc/ipc';
 import { ledgerService } from './ledger/service';
-import { LedgerSignRequest } from './ledger/types';
+import { type LedgerSignRequest } from './ledger/types';
 import { createPopupStore } from './popup/store/create';
 import { createUpdateState } from './popup/updateState';
 import { PopupRoot } from './popupRoot';
 import { initSentry } from './sentry/init';
 import { setLoading } from './store/actions/localState';
 import { RootWrapper } from './ui/components/RootWrapper';
-import Background, { BackgroundUiApi } from './ui/services/Background';
+import Background, { type BackgroundUiApi } from './ui/services/Background';
 
 initSentry({
   source: 'popup',

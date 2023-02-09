@@ -1,18 +1,21 @@
 import { isNotNull } from '_core/isNotNull';
 import { BigNumber } from '@waves/bignumber';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { MessageTx } from 'messages/types';
+import { type MessageTx } from 'messages/types';
 import ObservableStore from 'obs-store';
 import { PERMISSIONS } from 'permissions/constants';
 import {
-  PermissionObject,
-  PermissionType,
-  PermissionValue,
+  type PermissionObject,
+  type PermissionType,
+  type PermissionValue,
 } from 'permissions/types';
 
 import { ERRORS } from '../lib/keeperError';
-import { ExtensionStorage, StorageLocalState } from '../storage/storage';
-import { RemoteConfigController } from './remoteConfig';
+import {
+  type ExtensionStorage,
+  type StorageLocalState,
+} from '../storage/storage';
+import { type RemoteConfigController } from './remoteConfig';
 
 const findPermissionFabric =
   (permission: PermissionType) => (item: PermissionValue) => {

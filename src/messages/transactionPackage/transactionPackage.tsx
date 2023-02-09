@@ -1,7 +1,7 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { AssetsRecord } from 'assets/types';
+import { type AssetsRecord } from 'assets/types';
 import clsx from 'clsx';
 import { MessageFooter } from 'messages/_common/footer';
 import { MessageHeader } from 'messages/_common/header';
@@ -9,14 +9,14 @@ import { MessageIcon } from 'messages/_common/icon';
 import { TxInfo } from 'messages/transaction/common/info';
 import { TransactionCard } from 'messages/transaction/transaction';
 import { usePopupSelector } from 'popup/store/react';
-import { PreferencesAccount } from 'preferences/types';
+import { type PreferencesAccount } from 'preferences/types';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
 import { Balance } from 'ui/components/ui/balance/Balance';
 
 import * as transactionsStyles from '../../ui/components/pages/styles/transactions.module.css';
-import { MessageOfType, MessageTx } from '../types';
+import { type MessageOfType, type MessageTx } from '../types';
 import * as styles from './transactionPackage.module.css';
 
 function getBalanceChanges(tx: MessageTx, assets: AssetsRecord) {

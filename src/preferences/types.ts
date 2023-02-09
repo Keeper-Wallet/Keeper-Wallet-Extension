@@ -1,4 +1,4 @@
-import { WalletAccount } from 'wallets/types';
+import { type WalletAccount } from 'wallets/types';
 
 export interface IdleOptions {
   type: string;

@@ -1,4 +1,4 @@
-import { ChainablePromiseElement } from 'webdriverio';
+import { type ChainablePromiseElement } from 'webdriverio';
 
 const Permission = (wrapped: WebdriverIO.Element) => ({
   get root() {

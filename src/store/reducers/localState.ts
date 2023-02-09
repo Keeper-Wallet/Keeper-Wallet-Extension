@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 
 import { ACTION } from '../actions/constants';
-import { AppAction } from '../types';
+import { type AppAction } from '../types';
 
 export type NewAccountState = {
   address: string;

@@ -13,26 +13,26 @@ import {
 } from '@keeper-wallet/waves-crypto';
 import {
   AuthenticationDetails,
-  ChallengeName,
-  CognitoIdToken,
+  type ChallengeName,
+  type CognitoIdToken,
   CognitoUser,
   CognitoUserAttribute,
   CognitoUserPool,
-  ICognitoStorage,
+  type ICognitoStorage,
 } from 'amazon-cognito-identity-js';
-import { NetworkName } from 'networks/types';
+import { type NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import invariant from 'tiny-invariant';
 
 import { DEFAULT_IDENTITY_CONFIG } from '../constants';
 import {
-  ExtensionStorage,
-  StorageLocalState,
-  StorageSessionState,
+  type ExtensionStorage,
+  type StorageLocalState,
+  type StorageSessionState,
 } from '../storage/storage';
-import { NetworkController } from './network';
-import { PreferencesController } from './preferences';
-import { RemoteConfigController } from './remoteConfig';
+import { type NetworkController } from './network';
+import { type PreferencesController } from './preferences';
+import { type RemoteConfigController } from './remoteConfig';
 
 export type CodeDelivery = {
   type: 'SMS' | 'EMAIL' | string;

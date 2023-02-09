@@ -1,6 +1,6 @@
-import { AccountsState } from 'accounts/store/types';
+import { type AccountsState } from 'accounts/store/types';
 import { PureComponent } from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
+import { type WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import Background from 'ui/services/Background';

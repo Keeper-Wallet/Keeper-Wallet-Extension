@@ -6,14 +6,14 @@ import {
   generateRandomSeed,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
-import { PopupState } from 'popup/store/types';
+import { type PopupState } from 'popup/store/types';
 import { Component } from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
+import { type WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { NewAccountState } from 'store/reducers/localState';
+import { type NewAccountState } from 'store/reducers/localState';
 
 import { newAccountSelect } from '../../../store/actions/localState';
-import { WithNavigate, withNavigate } from '../../router';
+import { type WithNavigate, withNavigate } from '../../router';
 import { AvatarList, Button } from '../ui';
 import * as styles from './styles/newwallet.styl';
 

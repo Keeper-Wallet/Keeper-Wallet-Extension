@@ -1,13 +1,16 @@
 import { isNotNull } from '_core/isNotNull';
-import { AssetDetail } from 'assets/types';
+import { type AssetDetail } from 'assets/types';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
 import { defaultAssetTickers } from '../assets/constants';
-import { ExtensionStorage, StorageLocalState } from '../storage/storage';
-import { NetworkController } from './network';
-import { RemoteConfigController } from './remoteConfig';
+import {
+  type ExtensionStorage,
+  type StorageLocalState,
+} from '../storage/storage';
+import { type NetworkController } from './network';
+import { type RemoteConfigController } from './remoteConfig';
 
 const WAVES: AssetDetail = {
   quantity: '10000000000000000',

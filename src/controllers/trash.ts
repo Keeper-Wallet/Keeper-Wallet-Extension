@@ -1,6 +1,6 @@
 import ObservableStore from 'obs-store';
 
-import { ExtensionStorage } from '../storage/storage';
+import { type ExtensionStorage } from '../storage/storage';
 
 const MAX_ITEMS = 200;
 

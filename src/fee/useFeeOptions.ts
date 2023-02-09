@@ -1,5 +1,5 @@
-import { Money } from '@waves/data-entities';
-import { MessageTx } from 'messages/types';
+import { type Money } from '@waves/data-entities';
+import { type MessageTx } from 'messages/types';
 import { usePopupSelector } from 'popup/store/react';
 
 import { getFeeOptions } from './utils';

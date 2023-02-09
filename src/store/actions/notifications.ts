@@ -1,8 +1,8 @@
-import { PopupThunkAction } from 'popup/store/types';
+import { type PopupThunkAction } from 'popup/store/types';
 import Background from 'ui/services/Background';
 
-import { Message } from '../../messages/types';
-import { NotificationsStoreItem } from '../../notifications/types';
+import { type Message } from '../../messages/types';
+import { type NotificationsStoreItem } from '../../notifications/types';
 import { ACTION } from './constants';
 
 export function deleteNotifications(

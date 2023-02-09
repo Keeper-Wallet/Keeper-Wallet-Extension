@@ -13,30 +13,30 @@ import {
   createIpcCallProxy,
   fromPort,
   handleMethodCallRequests,
-  MethodCallRequestPayload,
+  type MethodCallRequestPayload,
 } from 'ipc/ipc';
-import { LedgerSignRequest } from 'ledger/types';
+import { type LedgerSignRequest } from 'ledger/types';
 import { ERRORS, KeeperError } from 'lib/keeperError';
 import { TabsManager } from 'lib/tabsManager';
 import {
-  MessageCustomDataSigned,
-  MessageInputOfType,
-  MessageOfType,
+  type MessageCustomDataSigned,
+  type MessageInputOfType,
+  type MessageOfType,
   MessageStatus,
-  MessageTx,
+  type MessageTx,
 } from 'messages/types';
 import { makeCustomDataBytes, makeTxBytes } from 'messages/utils';
 import { nanoid } from 'nanoid';
-import { NetworkName } from 'networks/types';
+import { type NetworkName } from 'networks/types';
 import { PERMISSIONS } from 'permissions/constants';
-import { PermissionObject } from 'permissions/types';
-import { IdleOptions, PreferencesAccount } from 'preferences/types';
+import { type PermissionObject } from 'permissions/types';
+import { type IdleOptions, type PreferencesAccount } from 'preferences/types';
 import { initSentry } from 'sentry/init';
-import { UiState } from 'store/reducers/updateState';
+import { type UiState } from 'store/reducers/updateState';
 import invariant from 'tiny-invariant';
 import Browser from 'webextension-polyfill';
 
-import { IgnoreErrorsContext } from './constants';
+import { type IgnoreErrorsContext } from './constants';
 import { AddressBookController } from './controllers/AddressBookController';
 import { AssetInfoController } from './controllers/assetInfo';
 import { CurrentAccountController } from './controllers/currentAccount';
@@ -58,8 +58,8 @@ import { WindowManager } from './lib/windowManager';
 import {
   backupStorage,
   createExtensionStorage,
-  ExtensionStorage,
-  StorageLocalState,
+  type ExtensionStorage,
+  type StorageLocalState,
 } from './storage/storage';
 import { getTxVersions } from './wallets/getTxVersions';
 

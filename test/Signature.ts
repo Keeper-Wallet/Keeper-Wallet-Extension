@@ -10,10 +10,10 @@ import Long from 'long';
 
 import { JSONbn } from '../src/_core/jsonBn';
 import {
-  MessageInputCancelOrder,
-  MessageInputCustomData,
-  MessageInputOrder,
-  MessageInputTx,
+  type MessageInputCancelOrder,
+  type MessageInputCustomData,
+  type MessageInputOrder,
+  type MessageInputTx,
 } from '../src/messages/types';
 import {
   makeAuthBytes,

@@ -1,4 +1,4 @@
-import { Money } from '@waves/data-entities';
+import { type Money } from '@waves/data-entities';
 import clsx from 'clsx';
 
 import { Loader } from '../loader';

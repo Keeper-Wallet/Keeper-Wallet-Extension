@@ -7,12 +7,12 @@ import Browser from 'webextension-polyfill';
 import {
   DEFAULT_IDENTITY_CONFIG,
   DEFAULT_MAIN_CONFIG,
-  IgnoreErrorsContext,
-  MainConfig,
+  type IgnoreErrorsContext,
+  type MainConfig,
   STATUS,
 } from '../constants';
-import { ExtensionStorage } from '../storage/storage';
-import { IdentityConfig } from './IdentityController';
+import { type ExtensionStorage } from '../storage/storage';
+import { type IdentityConfig } from './IdentityController';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const extendValues = (defaultValues: any, newValues: any) => {

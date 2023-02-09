@@ -1,5 +1,5 @@
 import { Asset, Money } from '@waves/data-entities';
-import { AssetDetail } from 'assets/types';
+import { type AssetDetail } from 'assets/types';
 import { useTranslation } from 'react-i18next';
 
 import { usePopupSelector } from '../../../../popup/store/react';

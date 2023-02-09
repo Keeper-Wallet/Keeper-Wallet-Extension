@@ -1,4 +1,4 @@
-import { PreferencesAccount } from 'preferences/types';
+import { type PreferencesAccount } from 'preferences/types';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

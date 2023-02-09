@@ -1,6 +1,6 @@
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { MessageTx } from 'messages/types';
-import { PreferencesAccount } from 'preferences/types';
+import { type MessageTx } from 'messages/types';
+import { type PreferencesAccount } from 'preferences/types';
 
 type TxVersions = {
   [T in MessageTx['type']]: Array<

@@ -1,6 +1,6 @@
-import { Message } from '../../messages/types';
-import { NotificationsStoreItem } from '../../notifications/types';
-import { AppAction } from '../../store/types';
+import { type Message } from '../../messages/types';
+import { type NotificationsStoreItem } from '../../notifications/types';
+import { type AppAction } from '../../store/types';
 import { ACTION } from '../actions/constants';
 
 export function notifications(

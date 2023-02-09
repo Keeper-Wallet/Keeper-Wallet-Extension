@@ -1,16 +1,16 @@
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { AssetsRecord } from 'assets/types';
+import { type AssetsRecord } from 'assets/types';
 import { deepEqual } from 'fast-equals';
-import { Nft, NftVendorId } from 'nfts/types';
+import { type Nft, NftVendorId } from 'nfts/types';
 import { useState } from 'react';
-import { TFunction } from 'react-i18next';
+import { type TFunction } from 'react-i18next';
 
 import {
   usePopupDispatch,
   usePopupSelector,
 } from '../../../../../popup/store/react';
 import { setUiState } from '../../../../../store/actions/uiState';
-import { UiState } from '../../../../../store/reducers/updateState';
+import { type UiState } from '../../../../../store/reducers/updateState';
 
 export function useUiState<T extends keyof UiState>(
   key: T

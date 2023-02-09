@@ -1,7 +1,7 @@
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
-import { ExtensionStorage } from '../storage/storage';
+import { type ExtensionStorage } from '../storage/storage';
 
 export class TabsManager {
   #store;

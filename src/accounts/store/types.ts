@@ -1,5 +1,5 @@
 import type { ThunkAction } from 'redux-thunk';
-import { AppAction } from 'store/types';
+import { type AppAction } from 'store/types';
 
 import type { createAccountsStore } from './create';
 import type { reducer } from './reducer';

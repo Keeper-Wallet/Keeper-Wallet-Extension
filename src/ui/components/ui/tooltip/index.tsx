@@ -1,4 +1,4 @@
-import { Placement } from '@popperjs/core';
+import { type Placement } from '@popperjs/core';
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';

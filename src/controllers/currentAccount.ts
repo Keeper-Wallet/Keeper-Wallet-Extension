@@ -1,19 +1,19 @@
 import { isNotNull } from '_core/isNotNull';
 import { BigNumber } from '@waves/bignumber';
-import { TransactionFromNode } from '@waves/ts-types';
-import { AssetBalance, BalancesItem } from 'balances/types';
+import { type TransactionFromNode } from '@waves/ts-types';
+import { type AssetBalance, type BalancesItem } from 'balances/types';
 import { collectBalances } from 'balances/utils';
-import { NftAssetDetail } from 'nfts/types';
+import { type NftAssetDetail } from 'nfts/types';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
 import { MAX_NFT_ITEMS, MAX_TX_HISTORY_ITEMS } from '../constants';
-import { ExtensionStorage } from '../storage/storage';
-import { AssetInfoController } from './assetInfo';
-import { NetworkController } from './network';
-import { NftInfoController } from './NftInfoController';
-import { PreferencesController } from './preferences';
-import { VaultController } from './VaultController';
+import { type ExtensionStorage } from '../storage/storage';
+import { type AssetInfoController } from './assetInfo';
+import { type NetworkController } from './network';
+import { type NftInfoController } from './NftInfoController';
+import { type PreferencesController } from './preferences';
+import { type VaultController } from './VaultController';
 
 const PERIOD_IN_SECONDS = 10;
 

@@ -1,13 +1,13 @@
 import { deepEqual } from 'fast-equals';
-import { NotificationsStoreItem } from 'notifications/types';
+import { type NotificationsStoreItem } from 'notifications/types';
 import type { StorageLocalState } from 'storage/storage';
 
-import { AssetsRecord } from '../assets/types';
+import { type AssetsRecord } from '../assets/types';
 import { collectBalances } from '../balances/utils';
-import { Message, MessageStatus } from '../messages/types';
-import { NetworkName } from '../networks/types';
+import { type Message, MessageStatus } from '../messages/types';
+import { type NetworkName } from '../networks/types';
 import { ACTION } from '../store/actions/constants';
-import { PopupStore } from './store/types';
+import { type PopupStore } from './store/types';
 
 function getParam<S, D>(param: S, defaultParam: D) {
   if (param) {

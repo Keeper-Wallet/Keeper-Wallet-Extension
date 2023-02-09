@@ -8,7 +8,7 @@ import { ApproveBtn } from 'ui/components/ui/buttons/ApproveBtn';
 import { Button } from 'ui/components/ui/buttons/Button';
 import Background from 'ui/services/Background';
 
-import { Message } from '../types';
+import { type Message } from '../types';
 
 interface Props {
   message: Message;

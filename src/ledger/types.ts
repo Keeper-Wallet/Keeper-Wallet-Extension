@@ -1,7 +1,7 @@
 import {
-  ISignData,
-  ISignOrderData,
-  ISignTxData,
+  type ISignData,
+  type ISignOrderData,
+  type ISignTxData,
 } from '@waves/ledger/lib/Waves';
 
 export type LedgerSignRequest = { id: string } & (

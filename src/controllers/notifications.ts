@@ -1,14 +1,14 @@
 import EventEmitter from 'events';
 import { nanoid } from 'nanoid';
-import { NotificationsStoreItem } from 'notifications/types';
+import { type NotificationsStoreItem } from 'notifications/types';
 import ObservableStore from 'obs-store';
-import { PreferencesAccount } from 'preferences/types';
+import { type PreferencesAccount } from 'preferences/types';
 import Browser from 'webextension-polyfill';
 
 import { ERRORS } from '../lib/keeperError';
-import { ExtensionStorage } from '../storage/storage';
-import { PermissionsController } from './permissions';
-import { RemoteConfigController } from './remoteConfig';
+import { type ExtensionStorage } from '../storage/storage';
+import { type PermissionsController } from './permissions';
+import { type RemoteConfigController } from './remoteConfig';
 
 export class NotificationsController extends EventEmitter {
   #canShowNotification;

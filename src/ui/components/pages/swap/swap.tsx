@@ -5,7 +5,7 @@ import { captureException } from '@sentry/browser';
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { AssetDetail } from 'assets/types';
+import { type AssetDetail } from 'assets/types';
 import { useAssetIdByTicker } from 'assets/utils';
 import { convertFeeToAsset } from 'fee/utils';
 import { computeTxHash, makeTxBytes } from 'messages/utils';
@@ -17,7 +17,7 @@ import invariant from 'tiny-invariant';
 import background from 'ui/services/Background';
 import Background from 'ui/services/Background';
 
-import { OnSwapParams, SwapForm } from './form';
+import { type OnSwapParams, SwapForm } from './form';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
 

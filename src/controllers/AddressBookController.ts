@@ -4,7 +4,7 @@ import {
   isEthereumAddress,
 } from 'ui/utils/ethereum';
 
-import { ExtensionStorage } from '../storage/storage';
+import { type ExtensionStorage } from '../storage/storage';
 
 export class AddressBookController {
   private store;

@@ -4,7 +4,7 @@ import {
   filterIpcRequests,
   fromPort,
   fromPostMessage,
-  MethodCallResponsePayload,
+  type MethodCallResponsePayload,
 } from 'ipc/ipc';
 import Browser from 'webextension-polyfill';
 

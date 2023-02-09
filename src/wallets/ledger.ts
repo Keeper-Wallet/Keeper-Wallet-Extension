@@ -1,15 +1,15 @@
 import { base58Decode } from '@keeper-wallet/waves-crypto';
 import {
-  ISignData,
-  ISignOrderData,
-  ISignTxData,
+  type ISignData,
+  type ISignOrderData,
+  type ISignTxData,
 } from '@waves/ledger/lib/Waves';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { AssetInfoController } from 'controllers/assetInfo';
-import { MessageTx } from 'messages/types';
-import { NetworkName } from 'networks/types';
+import { type AssetInfoController } from 'controllers/assetInfo';
+import { type MessageTx } from 'messages/types';
+import { type NetworkName } from 'networks/types';
 
-import { WalletPrivateDataOfType } from './types';
+import { type WalletPrivateDataOfType } from './types';
 import { Wallet } from './wallet';
 
 export interface LedgerApi {

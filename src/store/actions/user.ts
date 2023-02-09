@@ -1,8 +1,8 @@
-import { CreateWalletInput } from 'wallets/types';
+import { type CreateWalletInput } from 'wallets/types';
 
-import { AccountsThunkAction } from '../../accounts/store/types';
+import { type AccountsThunkAction } from '../../accounts/store/types';
 import { NETWORK_CONFIG } from '../../constants';
-import { NetworkName } from '../../networks/types';
+import { type NetworkName } from '../../networks/types';
 import Background, { WalletTypes } from '../../ui/services/Background';
 import { ACTION } from './constants';
 import { selectAccount } from './localState';

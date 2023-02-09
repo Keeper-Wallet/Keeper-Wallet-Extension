@@ -1,5 +1,5 @@
-import { NetworkName } from '../../networks/types';
-import { PopupThunkAction } from '../../popup/store/types';
+import { type NetworkName } from '../../networks/types';
+import { type PopupThunkAction } from '../../popup/store/types';
 import Background from '../../ui/services/Background';
 import { ACTION } from './constants';
 

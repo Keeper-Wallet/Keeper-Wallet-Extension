@@ -1,5 +1,5 @@
-import { Money } from '@waves/data-entities';
-import { PreferencesAccount } from 'preferences/types';
+import { type Money } from '@waves/data-entities';
+import { type PreferencesAccount } from 'preferences/types';
 import { useTranslation } from 'react-i18next';
 
 import { Avatar } from '../ui/avatar/Avatar';

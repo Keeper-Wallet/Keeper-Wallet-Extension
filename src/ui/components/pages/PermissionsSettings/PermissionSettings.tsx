@@ -1,8 +1,8 @@
 import { BigNumber } from '@waves/bignumber';
 import clsx from 'clsx';
-import { PopupState } from 'popup/store/types';
+import { type PopupState } from 'popup/store/types';
 import { PureComponent } from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
+import { type WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { setShowNotification } from 'store/actions/notifications';
 import {
@@ -17,8 +17,8 @@ import {
   List,
   OriginSettings,
   Tabs,
-  TAutoAuth,
-  TPermission,
+  type TAutoAuth,
+  type TPermission,
 } from './components';
 import * as styles from './permissionsSettings.styl';
 

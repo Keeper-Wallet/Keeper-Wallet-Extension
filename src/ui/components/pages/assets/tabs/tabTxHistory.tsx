@@ -1,7 +1,7 @@
-import { TRANSACTION_TYPE, TransactionFromNode } from '@waves/ts-types';
+import { TRANSACTION_TYPE, type TransactionFromNode } from '@waves/ts-types';
 import clsx from 'clsx';
 import { usePopupSelector } from 'popup/store/react';
-import { CSSProperties, useEffect, useRef } from 'react';
+import { type CSSProperties, useEffect, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { VariableSizeList } from 'react-window';

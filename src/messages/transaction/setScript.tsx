@@ -6,11 +6,11 @@ import { MessageHeader } from 'messages/_common/header';
 import { MessageIcon } from 'messages/_common/icon';
 import { TxInfo } from 'messages/transaction/common/info';
 import { stringifyTransaction } from 'messages/utils';
-import { PreferencesAccount } from 'preferences/types';
+import { type PreferencesAccount } from 'preferences/types';
 import { useTranslation } from 'react-i18next';
 
 import { Script } from '../_common/script';
-import { MessageOfType, MessageTxSetScript } from '../types';
+import { type MessageOfType, type MessageTxSetScript } from '../types';
 import * as styles from './setScript.module.css';
 
 export function SetScriptCard({

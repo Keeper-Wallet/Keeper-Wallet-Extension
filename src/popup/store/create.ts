@@ -1,6 +1,6 @@
 import { applyMiddleware, createStore } from 'redux';
 import { createLogger } from 'redux-logger';
-import thunk, { ThunkDispatch } from 'redux-thunk';
+import thunk, { type ThunkDispatch } from 'redux-thunk';
 
 import * as middleware from '../../store/middleware';
 import type { AppAction } from '../../store/types';

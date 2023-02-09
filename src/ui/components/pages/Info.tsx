@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
+import { type WithTranslation, withTranslation } from 'react-i18next';
 
 import { BigLogo } from '../head';
 import * as styles from './styles/info.styl';

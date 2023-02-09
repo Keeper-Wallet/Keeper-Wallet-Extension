@@ -1,4 +1,4 @@
-import { PreferencesAccount } from 'preferences/types';
+import { type PreferencesAccount } from 'preferences/types';
 
 import { MessageFinal } from './_common/final';
 import { AuthCard, AuthFinal, AuthScreen } from './auth/auth';
@@ -20,7 +20,7 @@ import {
   TransactionPackageCard,
   TransactionPackageScreen,
 } from './transactionPackage/transactionPackage';
-import { Message, MessageOfType } from './types';
+import { type Message, type MessageOfType } from './types';
 import {
   WavesAuthCard,
   WavesAuthFinal,

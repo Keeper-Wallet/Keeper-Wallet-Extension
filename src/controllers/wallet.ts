@@ -8,23 +8,23 @@ import {
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
 import { EventEmitter } from 'events';
-import { NetworkName } from 'networks/types';
+import { type NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import invariant from 'tiny-invariant';
 import { DebugWallet } from 'wallets/debug';
 import { EncodedSeedWallet } from 'wallets/encodedSeed';
-import { LedgerApi, LedgerWallet } from 'wallets/ledger';
+import { type LedgerApi, LedgerWallet } from 'wallets/ledger';
 import { PrivateKeyWallet } from 'wallets/privateKey';
 import { SeedWallet } from 'wallets/seed';
-import { CreateWalletInput, WalletPrivateData } from 'wallets/types';
-import { Wallet } from 'wallets/wallet';
+import { type CreateWalletInput, type WalletPrivateData } from 'wallets/types';
+import { type Wallet } from 'wallets/wallet';
 import { WxWallet } from 'wallets/wx';
 
 import { NETWORK_CONFIG } from '../constants';
-import { ExtensionStorage } from '../storage/storage';
-import { AssetInfoController } from './assetInfo';
-import { IdentityApi } from './IdentityController';
-import { TrashController } from './trash';
+import { type ExtensionStorage } from '../storage/storage';
+import { type AssetInfoController } from './assetInfo';
+import { type IdentityApi } from './IdentityController';
+import { type TrashController } from './trash';
 
 async function encryptVault(input: WalletPrivateData[], password: string) {
   const json = JSON.stringify(input);

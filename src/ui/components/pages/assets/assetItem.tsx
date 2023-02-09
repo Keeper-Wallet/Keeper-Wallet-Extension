@@ -1,4 +1,4 @@
-import { Money } from '@waves/data-entities';
+import { type Money } from '@waves/data-entities';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import Background from 'ui/services/Background';

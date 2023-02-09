@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Ellipsis } from 'ui/components/ui';
 
 import * as styles from './nftCard.module.css';
-import { DisplayMode, Nft } from './types';
+import { DisplayMode, type Nft } from './types';
 
 export function NftCover({
   className,

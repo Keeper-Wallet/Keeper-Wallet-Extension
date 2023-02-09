@@ -3,12 +3,12 @@ import { sha256 } from '@noble/hashes/sha256';
 import { captureException, setUser, withScope } from '@sentry/browser';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { detect } from 'detect-browser';
-import { Message } from 'messages/types';
+import { type Message } from 'messages/types';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
-import { ExtensionStorage } from '../storage/storage';
-import { NetworkController } from './network';
+import { type ExtensionStorage } from '../storage/storage';
+import { type NetworkController } from './network';
 
 interface StatistictsEvent {
   user_id: unknown;

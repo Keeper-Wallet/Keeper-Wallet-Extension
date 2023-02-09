@@ -1,5 +1,5 @@
 declare module 'callbag-tap' {
-  import { Source } from 'callbag';
+  import { type Source } from 'callbag';
 
   export default function tap<T>(
     operation: (data: T) => void

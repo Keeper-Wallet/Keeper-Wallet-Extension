@@ -1,5 +1,5 @@
 import { PureComponent } from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
+import { type WithTranslation, withTranslation } from 'react-i18next';
 
 import { CONFIG } from '../../appConfig';
 import background from '../../services/Background';

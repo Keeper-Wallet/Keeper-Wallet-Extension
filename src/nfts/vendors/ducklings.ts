@@ -3,10 +3,10 @@ import {
   fetchDataEntries,
 } from '../../nodeApi/dataEntries';
 import {
-  CreateParams,
-  FetchInfoParams,
-  NftAssetDetail,
-  NftVendor,
+  type CreateParams,
+  type FetchInfoParams,
+  type NftAssetDetail,
+  type NftVendor,
   NftVendorId,
 } from '../types';
 import { capitalize } from '../utils';

@@ -6,9 +6,9 @@ import {
   signBytes,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
-import { NetworkName } from 'networks/types';
+import { type NetworkName } from 'networks/types';
 
-import { WalletPrivateDataOfType } from './types';
+import { type WalletPrivateDataOfType } from './types';
 import { Wallet } from './wallet';
 
 export class SeedWallet extends Wallet<WalletPrivateDataOfType<'seed'>> {

@@ -4,7 +4,7 @@ import { ledgerService, LedgerServiceStatus } from 'ledger/service';
 import { usePopupSelector } from 'popup/store/react';
 import {
   createContext,
-  ReactNode,
+  type ReactNode,
   useCallback,
   useContext,
   useMemo,

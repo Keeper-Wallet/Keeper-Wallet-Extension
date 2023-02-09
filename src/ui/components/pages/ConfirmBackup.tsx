@@ -1,11 +1,11 @@
-import { AccountsState } from 'accounts/store/types';
+import { type AccountsState } from 'accounts/store/types';
 import { Component } from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
+import { type WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { NewAccountState } from 'store/reducers/localState';
-import { WithNavigate, withNavigate } from 'ui/router';
+import { type NewAccountState } from 'store/reducers/localState';
+import { type WithNavigate, withNavigate } from 'ui/router';
 
-import { Button, ErrorMessage, Pills, PillsListItem } from '../ui';
+import { Button, ErrorMessage, Pills, type PillsListItem } from '../ui';
 import * as styles from './styles/confirmBackup.styl';
 
 const SHUFFLE_COUNT = 500;

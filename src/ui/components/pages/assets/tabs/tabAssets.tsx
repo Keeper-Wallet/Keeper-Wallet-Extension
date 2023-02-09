@@ -1,7 +1,7 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
-import { AssetsRecord } from 'assets/types';
-import { BalanceAssets } from 'balances/types';
+import { type AssetsRecord } from 'assets/types';
+import { type BalanceAssets } from 'balances/types';
 import clsx from 'clsx';
 import { usePopupSelector } from 'popup/store/react';
 import { useMemo } from 'react';

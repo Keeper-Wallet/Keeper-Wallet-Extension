@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 
-import { AppMiddleware } from '../../store/types';
+import { type AppMiddleware } from '../../store/types';
 import Background from '../../ui/services/Background';
 import { ACTION } from '../actions/constants';
 import { notificationSelect } from '../actions/localState';

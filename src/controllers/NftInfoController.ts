@@ -1,10 +1,10 @@
 import { NetworkName } from 'networks/types';
 import { fetchNftInfo } from 'nfts/nfts';
-import { NftAssetDetail } from 'nfts/types';
+import { type NftAssetDetail } from 'nfts/types';
 import ObservableStore from 'obs-store';
 
-import { ExtensionStorage } from '../storage/storage';
-import { NetworkController } from './network';
+import { type ExtensionStorage } from '../storage/storage';
+import { type NetworkController } from './network';
 
 export class NftInfoController {
   private store;

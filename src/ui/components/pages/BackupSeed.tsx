@@ -2,7 +2,7 @@ import { useAccountsSelector } from 'accounts/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { NewAccountState } from 'store/reducers/localState';
+import { type NewAccountState } from 'store/reducers/localState';
 
 import { Button, Copy, Modal } from '../ui';
 import * as styles from './styles/backupSeed.styl';

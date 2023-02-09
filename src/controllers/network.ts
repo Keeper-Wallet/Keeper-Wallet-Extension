@@ -1,13 +1,13 @@
 import { JSONbn } from '_core/jsonBn';
 import { addBreadcrumb, setTag } from '@sentry/browser';
-import { TransactionFromNode } from '@waves/ts-types';
-import { MessageOrder, MessageTx } from 'messages/types';
+import { type TransactionFromNode } from '@waves/ts-types';
+import { type MessageOrder, type MessageTx } from 'messages/types';
 import { stringifyOrder, stringifyTransaction } from 'messages/utils';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 
 import { NETWORK_CONFIG } from '../constants';
-import { ExtensionStorage } from '../storage/storage';
+import { type ExtensionStorage } from '../storage/storage';
 
 export class NetworkController {
   store;

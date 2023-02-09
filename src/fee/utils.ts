@@ -1,24 +1,24 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { AssetDetail, AssetsRecord } from 'assets/types';
-import { AssetBalance, BalancesItem } from 'balances/types';
+import { type AssetDetail, type AssetsRecord } from 'assets/types';
+import { type AssetBalance, type BalancesItem } from 'balances/types';
 import {
-  MessageTx,
-  MessageTxAlias,
-  MessageTxBurn,
-  MessageTxCancelLease,
-  MessageTxData,
-  MessageTxInvokeScript,
-  MessageTxIssue,
-  MessageTxLease,
-  MessageTxMassTransfer,
-  MessageTxReissue,
-  MessageTxSetAssetScript,
-  MessageTxSetScript,
-  MessageTxSponsorship,
-  MessageTxTransfer,
-  MessageTxUpdateAssetInfo,
+  type MessageTx,
+  type MessageTxAlias,
+  type MessageTxBurn,
+  type MessageTxCancelLease,
+  type MessageTxData,
+  type MessageTxInvokeScript,
+  type MessageTxIssue,
+  type MessageTxLease,
+  type MessageTxMassTransfer,
+  type MessageTxReissue,
+  type MessageTxSetAssetScript,
+  type MessageTxSetScript,
+  type MessageTxSponsorship,
+  type MessageTxTransfer,
+  type MessageTxUpdateAssetInfo,
 } from 'messages/types';
 import invariant from 'tiny-invariant';
 

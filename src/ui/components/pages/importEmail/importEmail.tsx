@@ -10,7 +10,7 @@ import {
 } from '../../../../popup/store/react';
 import { newAccountSelect } from '../../../../store/actions/localState';
 import * as styles from './importEmail.module.css';
-import { Login, UserData } from './login';
+import { Login, type UserData } from './login';
 
 export function ImportEmail() {
   const navigate = useNavigate();

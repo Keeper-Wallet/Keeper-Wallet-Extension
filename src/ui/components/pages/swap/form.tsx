@@ -2,15 +2,15 @@ import { useDebouncedValue } from '_core/useDebouncedValue';
 import {
   SwapClient,
   SwapClientErrorCode,
-  SwapClientInvokeTransaction,
+  type SwapClientInvokeTransaction,
 } from '@keeper-wallet/swap-client';
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { AssetAmountInput } from 'assets/amountInput';
-import { AssetSelect, AssetSelectOption } from 'assets/assetSelect';
-import { AssetDetail } from 'assets/types';
-import { BalancesItem } from 'balances/types';
+import { AssetSelect, type AssetSelectOption } from 'assets/assetSelect';
+import { type AssetDetail } from 'assets/types';
+import { type BalancesItem } from 'balances/types';
 import clsx from 'clsx';
 import { useFeeOptions } from 'fee/useFeeOptions';
 import { convertFeeToAsset } from 'fee/utils';

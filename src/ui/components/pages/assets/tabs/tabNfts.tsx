@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { NftList } from 'nfts/nftList';
 import { createNft } from 'nfts/nfts';
-import { DisplayMode, Nft } from 'nfts/types';
+import { DisplayMode, type Nft } from 'nfts/types';
 import { usePopupSelector } from 'popup/store/react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';

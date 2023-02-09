@@ -1,9 +1,9 @@
 import {
-  CreateParams,
-  FetchInfoParams,
-  Nft,
-  NftAssetDetail,
-  NftVendor,
+  type CreateParams,
+  type FetchInfoParams,
+  type Nft,
+  type NftAssetDetail,
+  type NftVendor,
   NftVendorId,
 } from '../types';
 

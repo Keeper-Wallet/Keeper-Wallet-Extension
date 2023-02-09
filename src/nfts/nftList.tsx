@@ -1,11 +1,11 @@
 import clsx from 'clsx';
-import { CSSProperties } from 'react';
+import { type CSSProperties } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { VariableSizeList } from 'react-window';
 
 import { NftCard } from './nftCard';
 import * as styles from './nftList.module.css';
-import { DisplayMode, Nft } from './types';
+import { type DisplayMode, type Nft } from './types';
 
 const NFT_ROW_HEIGHT = 162;
 const NFT_ROW_MARGIN_BOTTOM = 8;

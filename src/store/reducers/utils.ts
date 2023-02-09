@@ -1,4 +1,4 @@
-import { AppAction } from '../types';
+import { type AppAction } from '../types';
 
 export const simpleFabric =
   <TInitialState>(defaultState: TInitialState) =>

@@ -1,7 +1,12 @@
-import { AssetDetail } from 'assets/types';
+import { type AssetDetail } from 'assets/types';
 
-import { NftConfig } from '../constants';
-import { Nft, NftAssetDetail, NftVendor, NftVendorId } from './types';
+import { type NftConfig } from '../constants';
+import {
+  type Nft,
+  type NftAssetDetail,
+  type NftVendor,
+  NftVendorId,
+} from './types';
 import { DucklingsNftVendor } from './vendors/ducklings';
 import { DucksNftVendor } from './vendors/ducks';
 import { DucksArtefactsNftVendor } from './vendors/ducksArtefacts';

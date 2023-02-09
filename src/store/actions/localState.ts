@@ -1,6 +1,6 @@
-import { PopupThunkAction } from '../../popup/store/types';
+import { type PopupThunkAction } from '../../popup/store/types';
 import Background from '../../ui/services/Background';
-import { AppAction, AppActionPayload } from '../types';
+import { type AppAction, type AppActionPayload } from '../types';
 import { ACTION } from './constants';
 import { setActiveMessage, setActiveNotification } from './notifications';
 

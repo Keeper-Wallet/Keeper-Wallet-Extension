@@ -1,7 +1,7 @@
-import { AssetDetail } from 'assets/types';
+import { type AssetDetail } from 'assets/types';
 import { NftList } from 'nfts/nftList';
 import { createNft } from 'nfts/nfts';
-import { DisplayMode, Nft } from 'nfts/types';
+import { DisplayMode, type Nft } from 'nfts/types';
 import { usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';

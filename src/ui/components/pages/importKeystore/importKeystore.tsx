@@ -4,7 +4,7 @@ import {
   utf8Decode,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
-import { KeystoreProfiles } from 'keystore/types';
+import { type KeystoreProfiles } from 'keystore/types';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

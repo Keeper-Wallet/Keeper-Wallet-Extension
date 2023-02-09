@@ -1,8 +1,8 @@
 import { base58Decode } from '@keeper-wallet/waves-crypto';
 import type { IdentityApi } from 'controllers/IdentityController';
-import { NetworkName } from 'networks/types';
+import { type NetworkName } from 'networks/types';
 
-import { WalletPrivateDataOfType } from './types';
+import { type WalletPrivateDataOfType } from './types';
 import { Wallet } from './wallet';
 
 export class WxWallet extends Wallet<WalletPrivateDataOfType<'wx'>> {

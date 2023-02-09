@@ -7,11 +7,11 @@ import { MessageHeader } from 'messages/_common/header';
 import { MessageIcon } from 'messages/_common/icon';
 import { TxInfo } from 'messages/transaction/common/info';
 import { stringifyTransaction } from 'messages/utils';
-import { PreferencesAccount } from 'preferences/types';
+import { type PreferencesAccount } from 'preferences/types';
 import { useTranslation } from 'react-i18next';
 
 import * as transactionsStyles from '../../ui/components/pages/styles/transactions.module.css';
-import { MessageOfType, MessageTxData } from '../types';
+import { type MessageOfType, type MessageTxData } from '../types';
 import * as styles from './data.module.css';
 
 export function DataCard({

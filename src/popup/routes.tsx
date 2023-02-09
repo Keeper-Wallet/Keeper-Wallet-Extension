@@ -1,4 +1,4 @@
-import { RouteObject } from 'react-router-dom';
+import { type RouteObject } from 'react-router-dom';
 
 import { BottomPanel } from '../layout/bottomPanel';
 import { Menu } from '../ui/components/menu/Menu';

@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/browser';
-import { Source } from 'callbag';
+import { type Source } from 'callbag';
 import create from 'callbag-create';
 import filter from 'callbag-filter';
 import map from 'callbag-map';
@@ -9,7 +9,7 @@ import take from 'callbag-take';
 import tap from 'callbag-tap';
 import { nanoid } from 'nanoid';
 import invariant from 'tiny-invariant';
-import Browser from 'webextension-polyfill';
+import type Browser from 'webextension-polyfill';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function fromPort<T = any>(port: Browser.Runtime.Port) {

@@ -1,4 +1,4 @@
-import { DataTransactionEntryString } from '@waves/ts-types/src/parts';
+import { type DataTransactionEntryString } from '@waves/ts-types/src/parts';
 import invariant from 'tiny-invariant';
 
 import {
@@ -6,10 +6,10 @@ import {
   fetchDataEntries,
 } from '../../nodeApi/dataEntries';
 import {
-  CreateParams,
-  FetchInfoParams,
-  NftAssetDetail,
-  NftVendor,
+  type CreateParams,
+  type FetchInfoParams,
+  type NftAssetDetail,
+  type NftVendor,
   NftVendorId,
 } from '../types';
 

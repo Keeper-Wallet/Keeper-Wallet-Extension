@@ -7,7 +7,7 @@ import {
   disallowOriginDone,
   pendingOrigin,
 } from '../actions/permissions';
-import { AppAction, AppMiddleware } from '../types';
+import { type AppAction, type AppMiddleware } from '../types';
 
 let _timer: ReturnType<typeof setTimeout>;
 

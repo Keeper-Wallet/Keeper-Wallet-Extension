@@ -1,8 +1,12 @@
 import { PureComponent } from 'react';
-import { TFunction, WithTranslation, withTranslation } from 'react-i18next';
-import { TTabTypes } from 'ui/components/pages/PermissionsSettings/PermissionSettings';
+import {
+  type TFunction,
+  type WithTranslation,
+  withTranslation,
+} from 'react-i18next';
+import { type TTabTypes } from 'ui/components/pages/PermissionsSettings/PermissionSettings';
 
-import { TAutoAuth } from '../originSettings';
+import { type TAutoAuth } from '../originSettings';
 import * as styles from './list.styl';
 import { ListItem } from './ListItem';
 

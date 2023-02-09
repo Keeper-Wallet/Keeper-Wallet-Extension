@@ -1,11 +1,11 @@
 import {
   configure,
   setupBrowser,
-  WebdriverIOQueries,
-  WebdriverIOQueriesChainable,
+  type WebdriverIOQueries,
+  type WebdriverIOQueriesChainable,
 } from '@testing-library/webdriverio';
 import { expect } from 'expect-webdriverio';
-import * as mocha from 'mocha';
+import type * as mocha from 'mocha';
 import { remote } from 'webdriverio';
 
 declare global {

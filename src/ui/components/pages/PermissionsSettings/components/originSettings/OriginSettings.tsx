@@ -1,7 +1,7 @@
 import { BigNumber } from '@waves/bignumber';
 import clsx from 'clsx';
 import { PureComponent } from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
+import { type WithTranslation, withTranslation } from 'react-i18next';
 import { Button, Input, Select } from 'ui/components/ui';
 
 import * as styles from './settings.styl';

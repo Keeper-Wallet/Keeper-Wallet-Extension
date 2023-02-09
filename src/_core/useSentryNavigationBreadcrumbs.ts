@@ -1,6 +1,6 @@
 import { addBreadcrumb } from '@sentry/browser';
 import { useEffect, useRef } from 'react';
-import { Location } from 'react-router-dom';
+import { type Location } from 'react-router-dom';
 
 export function useSentryNavigationBreadcrumbs(location: Location) {
   const prevPageRef = useRef<string | null>(null);

@@ -11,8 +11,8 @@ import Background from 'ui/services/Background';
 
 import * as styles from '../../../ui/components/pages/styles/transactions.module.css';
 import { DateFormat } from '../../../ui/components/ui';
-import { Balance, Select, SelectItem } from '../../../ui/components/ui';
-import { MessageOfType } from '../../types';
+import { Balance, Select, type SelectItem } from '../../../ui/components/ui';
+import { type MessageOfType } from '../../types';
 
 interface Props {
   message: MessageOfType<'transaction'>;

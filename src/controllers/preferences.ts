@@ -1,13 +1,13 @@
 import { addBreadcrumb } from '@sentry/browser';
 import EventEmitter from 'events';
-import { NetworkName } from 'networks/types';
+import { type NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
-import { IdleOptions } from 'preferences/types';
+import { type IdleOptions } from 'preferences/types';
 import { compareAccountsByLastUsed } from 'preferences/utils';
-import { WalletAccount } from 'wallets/types';
+import { type WalletAccount } from 'wallets/types';
 
-import { ExtensionStorage } from '../storage/storage';
-import { NetworkController } from './network';
+import { type ExtensionStorage } from '../storage/storage';
+import { type NetworkController } from './network';
 
 export class PreferencesController extends EventEmitter {
   store;

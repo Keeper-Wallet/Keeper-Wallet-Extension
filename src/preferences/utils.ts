@@ -1,4 +1,4 @@
-import { PreferencesAccount } from 'preferences/types';
+import { type PreferencesAccount } from 'preferences/types';
 
 export function compareAccountsByLastUsed(
   accA: PreferencesAccount,

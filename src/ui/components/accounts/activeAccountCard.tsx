@@ -1,8 +1,8 @@
-import BigNumber from '@waves/bignumber';
-import { Money } from '@waves/data-entities';
+import type BigNumber from '@waves/bignumber';
+import { type Money } from '@waves/data-entities';
 import clsx from 'clsx';
 import { usePopupSelector } from 'popup/store/react';
-import { PreferencesAccount } from 'preferences/types';
+import { type PreferencesAccount } from 'preferences/types';
 import { useTranslation } from 'react-i18next';
 
 import { Avatar } from '../ui/avatar/Avatar';

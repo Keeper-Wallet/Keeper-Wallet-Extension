@@ -1,4 +1,4 @@
-import { NetworkName } from 'networks/types';
+import { type NetworkName } from 'networks/types';
 
 export const assetIds: Record<NetworkName, Record<string, string>> = {
   mainnet: {
