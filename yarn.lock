@@ -3659,15 +3659,15 @@ devtools-protocol@0.0.981744:
   resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.981744.tgz#9960da0370284577d46c28979a0b32651022bacf"
   integrity sha512-0cuGS8+jhR67Fy7qG3i3Pc7Aw494sb9yG9QgpG97SFVWwolgYjlhJg7n+UaHxOQT30d1TYu/EYe9k01ivLErIg==
 
-devtools-protocol@^0.0.1092731:
-  version "0.0.1092731"
-  resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.1092731.tgz#ba3593dd915dadc821f60fbbeac0585a9fbfec59"
-  integrity sha512-T2LOqvUUDLB24Nr0krEjltTREnlPYSh2FeWuYRH1S8Y4KeUDvW30djvs4H7rNB1xtNAbYeRaF5J3G1LNnPQh7A==
-
 devtools-protocol@^0.0.1099658:
   version "0.0.1099658"
   resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.1099658.tgz#196614b4319fececf5995b068ba975cb6fa440a3"
   integrity sha512-TLmb9K05SMQkuzy09XvVoNcy65EXplu6r6U9FOP/7wBB7cuhPmvI4evHYWED0uswC6ifnKN5ECobdFP8Q8/bEg==
+
+devtools-protocol@^0.0.1102555:
+  version "0.0.1102555"
+  resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.1102555.tgz#51313366160ac8a38c2780fec08554d70390d9f0"
+  integrity sha512-OmVCJhmZCpab9UW4gKyp8EJ7ZETaCg2FteiTSik6nNF/FmCGVVrIzzzhMBIm1yncM0X/L6f8zk5LFq0JOeE0Mg==
 
 devtools@7.30.0:
   version "7.30.0"
@@ -8287,9 +8287,9 @@ webdriverio@8.3.3, webdriverio@^8.2.4:
     webdriver "8.3.2"
 
 webdriverio@^7.25.1:
-  version "7.30.0"
-  resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-7.30.0.tgz#b693b9af2710c6751980e2955d5dee8b92b4dcdd"
-  integrity sha512-GRz7XKMFKDKyTP5UxPeF3KciyZyzF44eZZtGhY6tk1PQqVtnyENwJkDVIFxcYttOsnLLj4BQuLfvf1WQF/xZbw==
+  version "7.30.1"
+  resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-7.30.1.tgz#c83fcf232ee5abf8cb38c4c87a409693dd9bd536"
+  integrity sha512-Eozs5JB91nogU42EQSvwsQyP9ovydXKSGzCTaI8xwpy2oSFKXWOI0ZPNIc+VcrDKWsa8SLomsuI/3lWl97o1Ew==
   dependencies:
     "@types/aria-query" "^5.0.0"
     "@types/node" "^18.0.0"
@@ -8304,7 +8304,7 @@ webdriverio@^7.25.1:
     css-shorthand-properties "^1.1.1"
     css-value "^0.0.1"
     devtools "7.30.0"
-    devtools-protocol "^0.0.1092731"
+    devtools-protocol "^0.0.1102555"
     fs-extra "^10.0.0"
     grapheme-splitter "^1.0.2"
     lodash.clonedeep "^4.5.0"
