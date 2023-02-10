@@ -451,7 +451,7 @@ describe('Signature', function () {
   });
 
   describe('Transactions', function () {
-    const performSignTransaction = async (input: MessageInputTx) => {
+    async function performSignTransaction(input: MessageInputTx) {
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
       await browser.execute((tx: MessageInputTx) => {
@@ -467,7 +467,7 @@ describe('Signature', function () {
       [messageWindow] = await waitForNewWindows(1);
       await browser.switchToWindow(messageWindow);
       await browser.refresh();
-    };
+    }
 
     function setTxVersion<T extends MessageInputTx>(tx: T, version: number): T {
       return { ...tx, data: { ...tx.data, version } };
@@ -2773,7 +2773,7 @@ describe('Signature', function () {
   });
 
   describe('Order', function () {
-    const createOrder = (tx: MessageInputOrder) => {
+    function createOrder(tx: MessageInputOrder) {
       KeeperWallet.signOrder(tx).then(
         result => {
           window.result = result;
@@ -2782,9 +2782,9 @@ describe('Signature', function () {
           window.result = null;
         }
       );
-    };
+    }
 
-    const cancelOrder = (tx: MessageInputCancelOrder) => {
+    function cancelOrder(tx: MessageInputCancelOrder) {
       KeeperWallet.signCancelOrder(tx).then(
         result => {
           window.result = result;
@@ -2793,7 +2793,7 @@ describe('Signature', function () {
           window.result = null;
         }
       );
-    };
+    }
 
     async function performSignOrder(
       script: (tx: MessageInputOrder) => void,
