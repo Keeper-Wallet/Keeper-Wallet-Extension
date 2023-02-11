@@ -11,7 +11,7 @@ import {
 import waitForExpect from 'wait-for-expect';
 
 import { JSONbn } from '../src/_core/jsonBn';
-import { MessageInputTx } from '../src/messages/types';
+import { type MessageInputTx } from '../src/messages/types';
 import { makeTxBytes } from '../src/messages/utils';
 import { ContentScript } from './helpers/ContentScript';
 import { CustomNetworkModal } from './helpers/CustomNetworkModal';
