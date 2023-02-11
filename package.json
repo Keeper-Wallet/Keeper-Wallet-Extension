@@ -132,7 +132,6 @@
     "size-limit": "^8.1.0",
     "source-map-loader": "^4.0.1",
     "stylelint": "^15.0.0",
-    "stylelint-config-prettier": "^9.0.3",
     "stylelint-order": "^6.0.0",
     "stylus": "^0.59.0",
     "stylus-loader": "^7.0.0",
