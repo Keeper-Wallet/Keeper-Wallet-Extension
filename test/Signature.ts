@@ -2994,6 +2994,93 @@ describe('Signature', function () {
             ).toBe(true);
           });
         });
+
+        describe('with different decimals', function () {
+          const INPUT = {
+            data: {
+              matcherPublicKey: '8QUAqtTckM5B8gvcuP7mMswat9SjKUuafJMusEoSn1Gy',
+              orderType: 'buy',
+              expiration: Date.now() + 100000,
+              amount: {
+                coins: 15637504,
+                assetId: '5Sh9KghfkZyhjwuodovDhB6PghDUGBHiAPZ4MkrPgKtX',
+              },
+              price: {
+                coins: 121140511,
+                assetId: 'WAVES',
+              },
+              matcherFee: {
+                tokens: '0.04077612',
+                assetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
+              },
+            },
+          } as const;
+
+          it('Rejected', async function () {
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
+
+            await expect(CreateOrderMessage.orderTitle).toHaveText(
+              'Buy: Tether USD/WAVES'
+            );
+            await expect(CreateOrderMessage.orderAmount).toHaveText(
+              '+15.637504 Tether USD'
+            );
+            await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
+              '-18.94335225 WAVES'
+            );
+            await expect(CreateOrderMessage.orderPrice).toHaveText(
+              '1.21140511 WAVES'
+            );
+            await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
+              INPUT.data.matcherPublicKey
+            );
+            await expect(CreateOrderMessage.createOrderFee).toHaveText(
+              '0.04077612 TXW-DEVa4f6df'
+            );
+
+            await rejectTransaction();
+          });
+
+          it('Approved', async function () {
+            await browser.switchToWindow(tabOrigin);
+            await browser.navigateTo(`https://${WHITELIST[3]}`);
+            await performSignOrder(createOrder, INPUT);
+            await approveTransaction();
+
+            const parsedApproveResult = await getResult();
+            const expectedApproveResult = {
+              orderType: INPUT.data.orderType,
+              version: 3,
+              assetPair: {
+                amountAsset: INPUT.data.amount.assetId,
+                priceAsset: null,
+              },
+              price: 12114051100,
+              amount: 15637504,
+              matcherFee: 4077612,
+              matcherPublicKey: INPUT.data.matcherPublicKey,
+              senderPublicKey,
+              matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
+            };
+            const bytes = binary.serializeOrder({
+              ...expectedApproveResult,
+              expiration: parsedApproveResult.expiration,
+              timestamp: parsedApproveResult.timestamp,
+            });
+            expect(parsedApproveResult).toMatchObject(expectedApproveResult);
+            expect(parsedApproveResult.id).toBe(base58Encode(blake2b(bytes)));
+            expect(
+              await verifySignature(
+                senderPublicKeyBytes,
+                bytes,
+                base58Decode(parsedApproveResult.proofs[0])
+              )
+            ).toBe(true);
+          });
+        });
       });
 
       describe('version 4', () => {

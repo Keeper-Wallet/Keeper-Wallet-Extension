@@ -44,7 +44,7 @@ export function OrderCard({
       .mul(
         new BigNumber(10).pow(
           message.data.version < 4 || message.data.priceMode === 'assetDecimals'
-            ? priceInput.asset.precision - amount.asset.precision - 8
+            ? amount.asset.precision - priceInput.asset.precision - 8
             : -8
         )
       ),
