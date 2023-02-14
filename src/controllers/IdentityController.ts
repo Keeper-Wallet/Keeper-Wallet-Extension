@@ -24,6 +24,7 @@ import { type NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import invariant from 'tiny-invariant';
 
+import { handleResponse } from '../_core/handleResponse';
 import { DEFAULT_IDENTITY_CONFIG } from '../constants';
 import {
   type ExtensionStorage,
@@ -593,7 +594,7 @@ export class IdentityController implements IdentityApi {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(body),
-    }).then(response => response.json());
+    }).then(handleResponse<{ signature: string }>);
   }
 
   private getIdToken(): CognitoIdToken {
