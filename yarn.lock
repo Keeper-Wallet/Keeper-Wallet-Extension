@@ -1356,9 +1356,9 @@
     eslint-plugin-simple-import-sort "^10.0.0"
 
 "@faergeek/tiny-browser-hmr-webpack-plugin@^1.0.3":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@faergeek/tiny-browser-hmr-webpack-plugin/-/tiny-browser-hmr-webpack-plugin-1.0.4.tgz#29deda4c08fe47102cb36f7efa9eb06ea6971b56"
-  integrity sha512-9KoX9XM2pw21Nyc3narmRvoq9ZkByGOCwjsYiJ7pc2JOzl1nnhf2ppTdbbufx75q7TZsv/SPmHXaXdnu1+Zczw==
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@faergeek/tiny-browser-hmr-webpack-plugin/-/tiny-browser-hmr-webpack-plugin-1.0.5.tgz#9a543e992e1f642f6004a583d12c776a7e04a514"
+  integrity sha512-tukWOEJu/HFMJ//julXi5wNmCeBtS+3h+9YWZgwtC4gJbF0yIPINqdBQEQDsw39irAzMsGmpt7VPHnxlaEFZKw==
   dependencies:
     ws "^8.10.0"
   optionalDependencies:
@@ -8523,7 +8523,12 @@ ws@^7.3.1:
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.9.tgz#54fa7db29f4c7cec68b1ddd3a89de099942bb591"
   integrity sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==
 
-ws@^8.10.0, ws@^8.8.0:
+ws@^8.10.0:
+  version "8.12.1"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.12.1.tgz#c51e583d79140b5e42e39be48c934131942d4a8f"
+  integrity sha512-1qo+M9Ba+xNhPB+YTWUlK6M17brTut5EXbcBaMRN5pH5dFrXz7lzz1ChFSUq3bOUl8yEvSenhHmYUNJxFzdJew==
+
+ws@^8.8.0:
   version "8.12.0"
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.12.0.tgz#485074cc392689da78e1828a9ff23585e06cddd8"
   integrity sha512-kU62emKIdKVeEIOIKVegvqpXMSTAMLJozpHZaJNDYqBjzlSYXQGviYwN1osDLJ9av68qHd4a2oSjd7yD4pacig==
