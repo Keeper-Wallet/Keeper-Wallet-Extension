@@ -7,5 +7,6 @@ jobs:
   report:
     runs-on: self-hosted
     steps:
+      - run: curl ifconfig.co
       - run: curl https://jira.wavesplatform.com/secure/RapidBoard.jspa?rapidView=237&projectKey=KEEP&view=detail&selectedIssue=KEEP-1160 --fail -I
 
