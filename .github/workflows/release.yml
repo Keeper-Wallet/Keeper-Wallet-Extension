@@ -4,7 +4,7 @@ on:
     types: [published]
 jobs:
   report:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: styfle/cancel-workflow-action@0.11.0
       - uses: Keeper-Wallet/jira-action@v1
