@@ -8,5 +8,5 @@ jobs:
     runs-on: self-hosted
     steps:
       - run: curl -4 icanhazip.com
-      - run: curl https://jira.wavesplatform.com/secure/RapidBoard.jspa?rapidView=237&projectKey=KEEP&view=detail&selectedIssue=KEEP-570 -I
+      - run: curl https://jira.wavesplatform.com/secure/RapidBoard.jspa?rapidView=237&projectKey=KEEP&view=detail&selectedIssue=KEEP-570
 
