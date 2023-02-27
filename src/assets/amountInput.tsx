@@ -15,6 +15,7 @@ interface Props {
   balance: Money;
   label: string;
   maskedValue: string;
+  value: string;
   showUsdAmount?: boolean;
   onAssetChange: (newAssetId: string) => void;
   onBalanceClick?: () => void;
@@ -27,6 +28,7 @@ export function AssetAmountInput({
   balance,
   label,
   maskedValue,
+  value,
   showUsdAmount,
   onAssetChange,
   onBalanceClick,
@@ -86,7 +88,7 @@ export function AssetAmountInput({
           <UsdAmount
             className={styles.usdAmount}
             id={balance.asset.id}
-            tokens={new BigNumber(maskedValue || '0')}
+            tokens={new BigNumber(value || '0')}
           />
         )}
       </div>

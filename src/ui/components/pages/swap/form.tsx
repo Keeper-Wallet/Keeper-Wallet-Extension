@@ -510,6 +510,7 @@ export function SwapForm({
             balance={fromAssetBalance}
             label={t('swap.fromInputLabel')}
             maskedValue={fromAmountValueMasked}
+            value={fromAmountValue}
             showUsdAmount
             onAssetChange={newAssetId => {
               setAssetIds(prevState => ({

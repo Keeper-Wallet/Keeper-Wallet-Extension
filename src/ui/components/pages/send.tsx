@@ -205,6 +205,7 @@ export function Send() {
                         balance={balance}
                         label={t('send.amountInputLabel')}
                         maskedValue={amountValueMasked}
+                        value={amountValue}
                         showUsdAmount
                         onAssetChange={assetId => {
                           navigate(`/send/${assetId}`, { replace: true });
