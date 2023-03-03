@@ -27,6 +27,7 @@ import { Select } from 'ui/components/ui/select/Select';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { UsdAmount } from 'ui/components/ui/UsdAmount';
 
+import { InfoIcon } from '../../../../icons/info';
 import * as styles from './form.module.css';
 import { SwapLayout } from './layout';
 
@@ -702,22 +703,32 @@ export function SwapForm({
                       <div className={styles.toAmountCardBadge}>
                         {profitTokens != null && !profitTokens.eq(0) ? (
                           <>
-                            {t('swap.profitLabel')}: +
-                            {profitTokens.toFixed(
-                              toAsset.precision,
-                              BigNumber.ROUND_MODE.ROUND_FLOOR
-                            )}{' '}
-                            {toAsset.displayName}
+                            {t('swap.profitLabel')}:
                             {usdPrice && usdPrice !== '1' && (
                               <>
                                 {' '}
-                                (≈ $
+                                $
                                 {new BigNumber(usdPrice)
                                   .mul(profitTokens)
                                   .toFixed(2)}
-                                )
                               </>
-                            )}
+                            )}{' '}
+                            <Tooltip
+                              content={`${profitTokens.toFixed(
+                                toAsset.precision,
+                                BigNumber.ROUND_MODE.ROUND_FLOOR
+                              )} ${toAsset.displayName}`}
+                              placement="top"
+                            >
+                              {props => (
+                                <span
+                                  {...props}
+                                  className={styles.profitInfoIcon}
+                                >
+                                  <InfoIcon />
+                                </span>
+                              )}
+                            </Tooltip>
                           </>
                         ) : (
                           t('swap.primaryLabel')
