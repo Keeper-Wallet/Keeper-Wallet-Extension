@@ -143,13 +143,22 @@
   position: absolute;
   top: -8px;
   left: -1px;
-  padding: 1px 8px;
+  padding: 1px 22px 1px 8px;
   border-radius: 4px;
   border-bottom-left-radius: 0;
   background: #0155ff;
   color: var(--color-white);
   font-size: 11px;
   font-weight: bold;
+}
+
+.profitInfoIcon {
+  position: absolute;
+  top: 1px;
+  right: 4px;
+  display: flex;
+  width: 14px;
+  fill: currentColor;
 }
 
 .slippageToleranceBtn {

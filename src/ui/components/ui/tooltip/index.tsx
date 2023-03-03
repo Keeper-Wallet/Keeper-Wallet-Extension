@@ -14,7 +14,7 @@ interface Props {
     ref: React.MutableRefObject<any>;
     onMouseEnter: () => void;
     onMouseLeave: () => void;
-  }) => React.ReactChild;
+  }) => React.ReactNode;
   content: React.ReactNode;
   placement?: Placement;
 }
