@@ -212,13 +212,15 @@ export function ImportLedger() {
     );
   }, [connectToLedger, isCurPageLoaded, isReady, page, t]);
 
+  console.log('ledgerUsersPages', ledgerUsersPages)
+
   return (
     <div className={styles.root}>
       <div className={styles.container}>
         <h2 className={styles.title}>{t('importLedger.title')}</h2>
       </div>
 
-      {ledgerUsersPages[0] != null ? (
+      {ledgerUsersPages?.[0] != null ? (
         <>
           <div className={styles.container}>
             <p className={styles.instructions}>
