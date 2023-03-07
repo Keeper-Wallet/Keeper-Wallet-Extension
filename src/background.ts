@@ -273,11 +273,12 @@ class BackgroundService extends EventEmitter {
       extensionStorage: this.extensionStorage,
       assetInfo: (...args) => this.assetInfoController.assetInfo(...args),
       ledger: {
-        signOrder: data =>
-          this.ledgerSign('order', {
-            ...data,
-            dataBuffer: Array.from(data.dataBuffer),
-          }),
+        signOrder: async () => '',
+        // signOrder: data =>
+        //   this.ledgerSign('order', {
+        //     ...data,
+        //     dataBuffer: Array.from(data.dataBuffer),
+        //   }),
         signRequest: data =>
           this.ledgerSign('request', {
             ...data,
@@ -1247,20 +1248,20 @@ class BackgroundService extends EventEmitter {
 
   ledgerSign(type: string, data: unknown) {
     return new Promise<string>((resolve, reject) => {
-      const requestId = nanoid();
+      // const requestId = nanoid();
 
-      this.emit('ledger:signRequest', { id: requestId, type, data });
+      // this.emit('ledger:signRequest', { id: requestId, type, data });
 
-      this.once(
-        `ledger:signResponse:${requestId}`,
-        (err: unknown, signature: string) => {
-          if (err) {
-            return reject(err);
-          }
-
-          resolve(signature);
-        }
-      );
+      // this.once(
+      //   `ledger:signResponse:${requestId}`,
+      //   (err: unknown, signature: string) => {
+      //     if (err) {
+      //       return reject(err);
+      //     }
+      //
+      //     resolve(signature);
+      //   }
+      // );
     });
   }
 }
