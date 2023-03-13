@@ -1447,9 +1447,9 @@
     eslint-plugin-simple-import-sort "^10.0.0"
 
 "@faergeek/tiny-browser-hmr-webpack-plugin@^1.0.3":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@faergeek/tiny-browser-hmr-webpack-plugin/-/tiny-browser-hmr-webpack-plugin-1.0.5.tgz#9a543e992e1f642f6004a583d12c776a7e04a514"
-  integrity sha512-tukWOEJu/HFMJ//julXi5wNmCeBtS+3h+9YWZgwtC4gJbF0yIPINqdBQEQDsw39irAzMsGmpt7VPHnxlaEFZKw==
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@faergeek/tiny-browser-hmr-webpack-plugin/-/tiny-browser-hmr-webpack-plugin-1.0.6.tgz#d074667e9fbe34080cafd977b912abdff42cdb28"
+  integrity sha512-e7IySKRTDK4bKMsSS1IU7NR27Pt4pZ2rZDOoNFXZsyfVqTV99gBsT9pmEInqwODUJBu9gid8NF+/5bwVuDkvmA==
   dependencies:
     ws "^8.10.0"
   optionalDependencies:
@@ -8307,9 +8307,9 @@ use-sync-external-store@^1.0.0:
   integrity sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==
 
 utf-8-validate@^6.0.0:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/utf-8-validate/-/utf-8-validate-6.0.2.tgz#2d80529963e4cc55ac5a1ca9dafdaa990d5ea16b"
-  integrity sha512-yd7PQEOW+EgecUzSD7XUXTyq/vREGXk7t7fzGfOvwOAr0Z64h5rfGrmkNk8+ddVmf/FrkjPPhVyYBa7fuSPVTg==
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/utf-8-validate/-/utf-8-validate-6.0.3.tgz#7d8c936d854e86b24d1d655f138ee27d2636d777"
+  integrity sha512-uIuGf9TWQ/y+0Lp+KGZCMuJWc3N9BHA+l/UmHd/oUHwJJDeysyTRxNQVkbzsIWfGFbRe3OcgML/i0mvVRPOyDA==
   dependencies:
     node-gyp-build "^4.3.0"
 
@@ -8689,7 +8689,12 @@ ws@^7.3.1:
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.9.tgz#54fa7db29f4c7cec68b1ddd3a89de099942bb591"
   integrity sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==
 
-ws@^8.10.0, ws@^8.8.0:
+ws@^8.10.0:
+  version "8.13.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.13.0.tgz#9a9fb92f93cf41512a0735c8f4dd09b8a1211cd0"
+  integrity sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==
+
+ws@^8.8.0:
   version "8.12.1"
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.12.1.tgz#c51e583d79140b5e42e39be48c934131942d4a8f"
   integrity sha512-1qo+M9Ba+xNhPB+YTWUlK6M17brTut5EXbcBaMRN5pH5dFrXz7lzz1ChFSUq3bOUl8yEvSenhHmYUNJxFzdJew==
