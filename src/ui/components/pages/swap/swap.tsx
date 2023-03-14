@@ -175,7 +175,7 @@ export function Swap() {
 
         // errors from nested invokes
         let match = errMessage.match(
-          /error\s+while\s+executing\s+account-script:\s*\w+\(code\s*=\s*(?:.+),\s*error\s*=\s*([\s\S]+)\s*,\s*log\s*=/im
+          /Error while executing dApp: \w+\(code\s*=\s*(?:.+),\s*error\s*=\s*([\s\S]+)\s*,\s*log\s*=/im
         );
 
         if (match) {
@@ -206,9 +206,7 @@ export function Swap() {
         }
 
         // errors from contract itself
-        match = errMessage.match(
-          /error\s+while\s+executing\s+account-script:\s*([\s\S]+)/im
-        );
+        match = errMessage.match(/Error while executing dApp: ([\s\S]+)/im);
 
         if (match) {
           const [, msg] = match;
