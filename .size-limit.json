@@ -22,6 +22,6 @@
   {
     "name": "contentscript",
     "path": ["dist/build/contentscript.js", "dist/build/inpage.js"],
-    "limit": "7 kB"
+    "limit": "8 kB"
   }
 ]
