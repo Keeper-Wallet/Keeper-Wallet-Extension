@@ -4956,9 +4956,9 @@ https-proxy-agent@5.0.1:
     debug "4"
 
 i18next-resources-to-backend@^1.0.0:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/i18next-resources-to-backend/-/i18next-resources-to-backend-1.1.2.tgz#8842a9373807c6f2edf08e63ae93aaa41d8098f3"
-  integrity sha512-Qr93d8wRNSSGg6JKCNxlLBansJ3GEqpwNnB9gGq2Yntqy92zWprtw0Gq1N5Hz8lIRoihW1EttltKTfAuy8y0uA==
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/i18next-resources-to-backend/-/i18next-resources-to-backend-1.1.3.tgz#bb6a47be1f65feaecc7a4e989b2a48864374e6a5"
+  integrity sha512-iDJITrMHoKLUa3B2wippgH62yM4f4wCEofeTj55rML9i7QrMDGKdr8FGCnSNNxRQzvW4546Qx6v2/xY3dAhvUA==
   dependencies:
     "@babel/runtime" "^7.20.6"
 
