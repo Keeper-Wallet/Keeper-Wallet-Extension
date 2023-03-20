@@ -396,7 +396,10 @@ export class AssetInfoController {
     });
 
     if (!response.ok) {
-      throw response;
+      const error = await response.text();
+      throw new Error(
+        `Could not fetch rates [${response.status} ${response.statusText}]: ${error}`
+      );
     }
 
     const updatedUsdPrices: Record<string, string> = await response.json();
