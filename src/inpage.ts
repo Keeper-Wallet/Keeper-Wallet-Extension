@@ -54,6 +54,10 @@ globalThis.KeeperWallet = {
     return Promise.resolve(globalThis.KeeperWallet);
   },
   on: (event, cb) => {
+    if (event !== 'update') {
+      return;
+    }
+
     let lastPublicState:
       | Awaited<ReturnType<(typeof KeeperWallet)['publicState']>>
       | undefined;
