@@ -124,7 +124,7 @@ export type AppAction =
     }
   | {
       type: typeof ACTION.SET_USD_PRICES;
-      payload: Record<string, string>;
+      payload: Partial<Record<string, string>>;
       meta?: never;
     }
   | {

@@ -61,9 +61,11 @@ export function PopupHome() {
           // eslint-disable-next-line @typescript-eslint/no-shadow
           const asset = assets[id];
 
-          if (asset && usdPrices[id]) {
+          const usdPrice = usdPrices[id];
+
+          if (asset && usdPrice) {
             const tokens = new Money(balance, new Asset(asset)).getTokens();
-            acc = acc.add(new BigNumber(usdPrices[id]).mul(tokens));
+            acc = acc.add(new BigNumber(usdPrice).mul(tokens));
           }
 
           return acc;
