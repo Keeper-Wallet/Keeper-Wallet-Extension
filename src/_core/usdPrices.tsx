@@ -1,6 +1,5 @@
 import {
   createContext,
-  type ReactNode,
   useCallback,
   useContext,
   useEffect,
@@ -10,10 +9,9 @@ import {
 } from 'react';
 import invariant from 'tiny-invariant';
 
+import { NetworkName } from '../networks/types';
 import { usePopupSelector } from '../popup/store/react';
 import Background from '../ui/services/Background';
-import { startPolling } from './polling';
-import { useDebouncedValue } from './useDebouncedValue';
 
 const USD_PRICES_UPDATE_INTERVAL = 5000;
 
@@ -21,42 +19,51 @@ const UsdPricesContext = createContext<
   ((assetIds: string[]) => (() => void) | undefined) | null
 >(null);
 
-export function UsdPricesProvider({ children }: { children: ReactNode }) {
-  const lastUpdatedAssetIdsTimestampsRef = useRef<Record<string, number>>({});
+export function UsdPricesProvider({ children }: { children: React.ReactNode }) {
   const [observedAssetIds, setObservedAssetIds] = useState<string[][]>([]);
-  const observedAssetIdsDebounced = useDebouncedValue(observedAssetIds, 100);
+
+  const assetIdsToFetch = useMemo(
+    () => Array.from(new Set(observedAssetIds.flat())),
+    [observedAssetIds]
+  );
+
+  const usdPrices = usePopupSelector(state => state.usdPrices);
+  const usdPricesRef = useRef(usdPrices);
 
   useEffect(() => {
-    const idsToUpdate = Array.from(new Set(observedAssetIdsDebounced.flat()));
+    usdPricesRef.current = usdPrices;
+  }, [usdPrices]);
 
-    if (idsToUpdate.length === 0) {
+  useEffect(() => {
+    if (assetIdsToFetch.length === 0) {
       return;
     }
 
-    return startPolling(USD_PRICES_UPDATE_INTERVAL, async () => {
-      const currentTime = new Date().getTime();
+    let cancelled = false;
+    let timeout: ReturnType<typeof setTimeout>;
 
-      const areAllAssetsUpToDate = idsToUpdate.every(id => {
-        const timestamp = lastUpdatedAssetIdsTimestampsRef.current[id];
-
-        if (timestamp == null) {
-          return false;
+    async function update({ firstRun }: { firstRun?: true } = {}) {
+      try {
+        if (
+          !firstRun ||
+          assetIdsToFetch.some(assetId => usdPricesRef.current[assetId] == null)
+        ) {
+          await Background.updateUsdPricesByAssetIds(assetIdsToFetch);
         }
-
-        return currentTime - timestamp < USD_PRICES_UPDATE_INTERVAL;
-      });
-
-      if (!areAllAssetsUpToDate) {
-        await Background.updateUsdPricesByAssetIds(idsToUpdate);
-
-        const updatedTime = new Date().getTime();
-
-        for (const id of idsToUpdate) {
-          lastUpdatedAssetIdsTimestampsRef.current[id] = updatedTime;
+      } finally {
+        if (!cancelled) {
+          timeout = setTimeout(update, USD_PRICES_UPDATE_INTERVAL);
         }
       }
-    });
-  }, [observedAssetIdsDebounced]);
+    }
+
+    update({ firstRun: true });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
+  }, [assetIdsToFetch]);
 
   const observe = useCallback((assetIds: string[]) => {
     setObservedAssetIds(ids => [...ids, assetIds]);
@@ -74,8 +81,9 @@ export function UsdPricesProvider({ children }: { children: ReactNode }) {
 }
 
 export function useUsdPrices(assetIds: string[]) {
-  const currentNetwork = usePopupSelector(state => state.currentNetwork);
-  const isMainnet = currentNetwork === 'mainnet';
+  const isMainnet = usePopupSelector(
+    state => state.currentNetwork === NetworkName.Mainnet
+  );
 
   const observe = useContext(UsdPricesContext);
   invariant(observe);

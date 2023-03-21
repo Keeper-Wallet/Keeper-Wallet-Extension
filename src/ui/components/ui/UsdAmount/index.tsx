@@ -21,13 +21,13 @@ export function UsdAmount({ id, tokens, className }: Props) {
     return null;
   }
 
-  if (usdPrices[id] == null) {
-    return <Loader />;
-  }
+  const usdPrice = usdPrices[id];
 
-  return (
+  return usdPrice == null ? (
+    <Loader />
+  ) : (
     <p className={className}>
-      ≈ ${new BigNumber(usdPrices[id]).mul(tokens).toFixed(2)}
+      ≈ ${new BigNumber(usdPrice).mul(tokens).toFixed(2)}
     </p>
   );
 }

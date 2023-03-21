@@ -64,7 +64,7 @@ export function getFeeOptions({
   balance: BalancesItem | undefined;
   initialFee: Money;
   txType: MessageTx['type'];
-  usdPrices: Record<string, string>;
+  usdPrices: Partial<Record<string, string>>;
 }) {
   const feeInWaves = convertFeeToAsset(initialFee, new Asset(assets.WAVES));
 
