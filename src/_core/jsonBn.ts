@@ -9,5 +9,5 @@ export const JSONbn = create({
     return bn.gt(Number.MAX_SAFE_INTEGER) ? bn : Number(v);
   },
   strict: true,
-  stringify: v => v.toString(),
+  stringify: v => String(v),
 });
