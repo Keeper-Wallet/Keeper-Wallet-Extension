@@ -286,7 +286,8 @@ export class CurrentAccountController {
 
     const balance: BalancesItem = {
       aliases,
-      available: wavesBalance.available.toString(),
+      available: wavesBalance.available,
+      regular: wavesBalance.regular,
       leasedOut: new BigNumber(wavesBalance.regular)
         .sub(wavesBalance.available)
         .toString(),
