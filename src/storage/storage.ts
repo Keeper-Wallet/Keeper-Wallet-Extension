@@ -4,6 +4,7 @@ import create from 'callbag-create';
 import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
 import { type TrashItem } from 'controllers/trash';
+import { deepEqual } from 'fast-equals';
 import { type Message } from 'messages/types';
 import { type NetworkName } from 'networks/types';
 import { type NftInfo } from 'nfts/nfts';
@@ -153,17 +154,28 @@ export class ExtensionStorage {
   subscribe<T extends Record<string, unknown>>(store: ObservableStore<T>) {
     pipe(
       create<T>(next => store.subscribe(next)),
-      subscribe(state => {
-        const newState = Object.entries(state).reduce(
-          (acc, [key, value]) => ({
-            ...acc,
-            [key]: value === undefined ? null : value,
-          }),
-          {}
+      subscribe(async updatedState => {
+        const currentState = await Browser.storage.local.get(
+          Object.keys(updatedState)
         );
 
-        this.#state = { ...this.#state, ...newState };
-        Browser.storage.local.set(newState);
+        const changedState = Object.fromEntries(
+          Object.entries(updatedState)
+            .map(
+              ([key, value]) =>
+                [key, value === undefined ? null : value] as const
+            )
+            .filter(([key, value]) => !deepEqual(currentState[key], value))
+        );
+
+        const changedKeys = Object.keys(changedState);
+
+        if (changedKeys.length === 0) {
+          return;
+        }
+
+        this.#state = { ...this.#state, ...changedState };
+        Browser.storage.local.set(changedState);
       })
     );
   }
