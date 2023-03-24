@@ -1,19 +1,42 @@
+import create from 'callbag-create';
 import filter from 'callbag-filter';
+import map from 'callbag-map';
 import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
-import { deepEqual } from 'fast-equals';
+import take from 'callbag-take';
 
-import type { __BackgroundPageApiDirect } from './background';
-import { createIpcCallProxy, fromPostMessage } from './ipc/ipc';
+import type { __BackgroundPageApiDirect, PublicState } from './background';
+import {
+  createIpcCallProxy,
+  fromMessagePort,
+  fromPostMessage,
+} from './ipc/ipc';
+
+const messagePortPromise = new Promise<MessagePort>(resolve =>
+  pipe(
+    fromPostMessage(location.origin, window),
+    map(value =>
+      typeof value === 'object' &&
+      value != null &&
+      'keeperMessagePort' in value &&
+      value.keeperMessagePort instanceof MessagePort
+        ? value.keeperMessagePort
+        : undefined
+    ),
+    filter(messagePort => messagePort != null),
+    take(1),
+    subscribe(messagePort => {
+      if (messagePort) {
+        resolve(messagePort);
+      }
+    })
+  )
+);
 
 declare global {
-  interface KeeperApi extends __BackgroundPageApiDirect {
-    on(
-      event: 'update',
-      cb: (
-        state: Awaited<ReturnType<__BackgroundPageApiDirect['publicState']>>
-      ) => void
-    ): void;
+  interface KeeperApi
+    extends Omit<__BackgroundPageApiDirect, 'subscribeToPublicState'> {
+    on(event: 'update', cb: (publicState: PublicState) => void): void;
     initialPromise: Promise<typeof KeeperWallet>;
   }
 
@@ -24,7 +47,48 @@ declare global {
 const proxy = createIpcCallProxy<
   keyof __BackgroundPageApiDirect,
   __BackgroundPageApiDirect
->(request => postMessage(request, location.origin), fromPostMessage());
+>(
+  request => {
+    messagePortPromise.then(messagePort => messagePort.postMessage(request));
+  },
+  create(next => {
+    messagePortPromise.then(messagePort => {
+      pipe(
+        fromMessagePort(messagePort),
+        subscribe(value => {
+          next(value);
+        })
+      );
+    });
+  })
+);
+
+const publicStateUpdates = create<PublicState>(next => {
+  proxy.subscribeToPublicState();
+
+  messagePortPromise.then(messagePort => {
+    pipe(
+      fromMessagePort(messagePort),
+      subscribe(value => {
+        if (typeof value !== 'object' || value == null || !('event' in value)) {
+          return;
+        }
+
+        switch (value.event) {
+          case 'disconnected':
+            proxy.subscribeToPublicState();
+            break;
+          case 'updatePublicState':
+            if ('publicState' in value) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              next(value.publicState as any);
+            }
+            break;
+        }
+      })
+    );
+  });
+});
 
 globalThis.KeeperWallet = {
   auth: proxy.auth,
@@ -49,7 +113,7 @@ globalThis.KeeperWallet = {
   get initialPromise() {
     // eslint-disable-next-line no-console
     console.warn(
-      "You don't need to use initialPromise anymore. If KeeperWallet variable is defined, you can call any api it right away"
+      "You don't need to use initialPromise anymore. If KeeperWallet variable is defined, you can call any api right away"
     );
     return Promise.resolve(globalThis.KeeperWallet);
   },
@@ -58,26 +122,10 @@ globalThis.KeeperWallet = {
       return;
     }
 
-    let lastPublicState:
-      | Awaited<ReturnType<(typeof KeeperWallet)['publicState']>>
-      | undefined;
-
     pipe(
-      fromPostMessage(),
-      filter(data => data.keeperMethod === 'updatePublicState'),
-      subscribe(async () => {
-        const isApproved = await KeeperWallet.resourceIsApproved();
-
-        if (!isApproved) {
-          return;
-        }
-
-        const updatedPublicState = await KeeperWallet.publicState();
-
-        if (!deepEqual(updatedPublicState, lastPublicState)) {
-          lastPublicState = updatedPublicState;
-          cb(updatedPublicState);
-        }
+      publicStateUpdates,
+      subscribe(value => {
+        cb(value);
       })
     );
   },

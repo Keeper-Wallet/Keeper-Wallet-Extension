@@ -1,4 +1,3 @@
-import { captureException } from '@sentry/browser';
 import { type Source } from 'callbag';
 import create from 'callbag-create';
 import filter from 'callbag-filter';
@@ -11,33 +10,10 @@ import { nanoid } from 'nanoid';
 import invariant from 'tiny-invariant';
 import type Browser from 'webextension-polyfill';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function fromPort<T = any>(port: Browser.Runtime.Port) {
-  return create<T>((next, error, complete) => {
-    function handleDisconnect() {
-      port.onDisconnect.removeListener(handleDisconnect);
-      port.onMessage.removeListener(handleMessage);
-      complete();
-    }
-
-    function handleMessage(message: T) {
-      next(message);
-    }
-
-    port.onDisconnect.addListener(handleDisconnect);
-    port.onMessage.addListener(handleMessage);
-  });
-}
-
-export function fromPostMessage() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return create<any>(next => {
-    function handleMessage(event: MessageEvent) {
-      if (
-        event.origin !== location.origin ||
-        event.source !== window ||
-        !event.data
-      ) {
+export function fromPostMessage(origin: string, source: MessageEventSource) {
+  return create(next => {
+    function handleMessage(event: MessageEvent<unknown>) {
+      if (event.origin !== origin || event.source !== source) {
         return;
       }
 
@@ -52,13 +28,49 @@ export function fromPostMessage() {
   });
 }
 
+export function fromMessagePort(port: MessagePort) {
+  return create(next => {
+    function handleMessage(event: MessageEvent<unknown>) {
+      next(event.data);
+    }
+
+    port.addEventListener('message', handleMessage);
+    port.start();
+
+    return () => {
+      port.removeEventListener('message', handleMessage);
+    };
+  });
+}
+
+export function fromWebExtensionPort(port: Browser.Runtime.Port) {
+  return create((next, _error, complete) => {
+    function stopListening() {
+      port.onDisconnect.removeListener(handleDisconnect);
+      port.onMessage.removeListener(next);
+    }
+
+    function handleDisconnect() {
+      stopListening();
+      complete();
+    }
+
+    port.onDisconnect.addListener(handleDisconnect);
+    port.onMessage.addListener(next);
+
+    return () => {
+      stopListening();
+    };
+  });
+}
+
 interface MethodCallRequest<K> {
   id: string;
   method: K;
   args: unknown[];
 }
 
-export interface MethodCallRequestPayload<K> {
+interface MethodCallRequestPayload<K> {
   keeperMethodCallRequest: MethodCallRequest<K>;
 }
 
@@ -72,7 +84,7 @@ type MethodCallResponse<T> =
   | { id: string; isError?: never; data: T }
   | { id: string; isError: true; error: { message: string } };
 
-export interface MethodCallResponsePayload<T = unknown> {
+interface MethodCallResponsePayload<T = unknown> {
   keeperMethodCallResponse?: MethodCallResponse<T>;
 }
 
@@ -82,45 +94,36 @@ export function handleMethodCallRequests<K extends string>(
     result: 'KEEPER_PONG' | MethodCallResponsePayload<unknown>
   ) => void
 ) {
-  return tap<'KEEPER_PING' | MethodCallRequestPayload<K>>(async data => {
+  return tap(async data => {
     if (data === 'KEEPER_PING') {
       sendResponse('KEEPER_PONG');
       return;
     }
 
-    if (!data.keeperMethodCallRequest) return;
+    if (
+      typeof data !== 'object' ||
+      data == null ||
+      !('keeperMethodCallRequest' in data) ||
+      typeof data.keeperMethodCallRequest !== 'object' ||
+      data.keeperMethodCallRequest == null ||
+      !('id' in data.keeperMethodCallRequest) ||
+      typeof data.keeperMethodCallRequest.id !== 'string' ||
+      !('method' in data.keeperMethodCallRequest) ||
+      typeof data.keeperMethodCallRequest.method !== 'string' ||
+      !('args' in data.keeperMethodCallRequest) ||
+      !Array.isArray(data.keeperMethodCallRequest.args)
+    ) {
+      return;
+    }
 
     const { id, method, args } = data.keeperMethodCallRequest;
 
     try {
-      const result = await api[method](...args);
+      const result = await api[method as K](...args);
 
-      try {
-        sendResponse({
-          keeperMethodCallResponse: { id, data: result },
-        });
-      } catch (err) {
-        if (
-          err instanceof DOMException &&
-          (err.code === 25 || err.name === 'DataCloneError')
-        ) {
-          captureException(
-            new Error(
-              `Method ${method} returned not clonable response, fix it please: ${err}`
-            )
-          );
-
-          sendResponse({
-            keeperMethodCallResponse: {
-              id,
-              data: JSON.parse(JSON.stringify(result)),
-            },
-          });
-          return;
-        }
-
-        throw err;
-      }
+      sendResponse({
+        keeperMethodCallResponse: { id, data: result },
+      });
     } catch (err) {
       sendResponse({
         keeperMethodCallResponse: {
@@ -141,60 +144,33 @@ export function handleMethodCallRequests<K extends string>(
   });
 }
 
-export function filterIpcRequests<K>(
-  source: Source<MethodCallRequestPayload<K>>
-) {
-  return pipe(
-    source,
-    filter<'KEEPER_PONG' | 'KEEPER_PING' | MethodCallRequestPayload<K>>(
-      data =>
-        data === 'KEEPER_PING' ||
-        data === 'KEEPER_PONG' ||
-        data.keeperMethodCallRequest != null
-    )
-  );
-}
-
 export function createIpcCallProxy<K extends string, T extends ApiObject<K>>(
   sendRequest: (
     payload: 'KEEPER_PING' | MethodCallRequestPayload<string>
   ) => void,
-  responseSource: Source<
-    'KEEPER_PONG' | MethodCallResponsePayload<Awaited<ReturnType<T[keyof T]>>>
-  >
+  responseSource: Source<unknown>
 ) {
-  let connectionPromise: Promise<void> | null = null;
-
   function ensureConnection() {
-    connectionPromise ??= new Promise<void>(resolve => {
+    return new Promise<void>(resolve => {
       let retryTimeout: ReturnType<typeof setTimeout>;
 
-      function sendPing() {
+      (function sendPing() {
         sendRequest('KEEPER_PING');
         retryTimeout = setTimeout(sendPing, 1000);
-      }
+      })();
 
       pipe(
         responseSource,
-        subscribe({
-          next: response => {
-            if (response !== 'KEEPER_PONG') {
-              return;
-            }
+        subscribe(response => {
+          if (response !== 'KEEPER_PONG') {
+            return;
+          }
 
-            clearTimeout(retryTimeout);
-            resolve();
-          },
-          complete: () => {
-            connectionPromise = null;
-          },
+          clearTimeout(retryTimeout);
+          resolve();
         })
       );
-
-      sendPing();
     });
-
-    return connectionPromise;
   }
 
   function getIpcMethod<Method extends K>(method: Method) {
@@ -210,7 +186,34 @@ export function createIpcCallProxy<K extends string, T extends ApiObject<K>>(
         pipe(
           responseSource,
           map(data =>
-            typeof data === 'object' ? data.keeperMethodCallResponse : undefined
+            typeof data === 'object' &&
+            data != null &&
+            'keeperMethodCallResponse' in data
+              ? data.keeperMethodCallResponse
+              : undefined
+          ),
+          map(
+            (
+              data
+            ):
+              | { error?: unknown; id: string; isError: true }
+              | { data?: unknown; id: string; isError?: never }
+              | undefined =>
+              typeof data === 'object' &&
+              data != null &&
+              'id' in data &&
+              typeof data.id === 'string'
+                ? 'isError' in data && data.isError === true
+                  ? {
+                      error: 'error' in data ? data.error : undefined,
+                      id: data.id,
+                      isError: data.isError,
+                    }
+                  : {
+                      data: 'data' in data ? data.data : undefined,
+                      id: data.id,
+                    }
+                : undefined
           ),
           filter(
             response => response?.id === request.keeperMethodCallRequest.id
@@ -222,7 +225,8 @@ export function createIpcCallProxy<K extends string, T extends ApiObject<K>>(
             if (response.isError) {
               reject(response.error);
             } else {
-              resolve(response.data);
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              resolve(response.data as any);
             }
           })
         );
