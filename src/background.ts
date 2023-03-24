@@ -7,13 +7,13 @@ import { collectBalances } from 'balances/utils';
 import pipe from 'callbag-pipe';
 import subscribe from 'callbag-subscribe';
 import EventEmitter from 'events';
+import { deepEqual } from 'fast-equals';
 import { getExtraFee } from 'fee/utils';
 import { SUPPORTED_LANGUAGES } from 'i18n/constants';
 import {
   createIpcCallProxy,
-  fromPort,
+  fromWebExtensionPort,
   handleMethodCallRequests,
-  type MethodCallRequestPayload,
 } from 'ipc/ipc';
 import { type LedgerSignRequest } from 'ledger/types';
 import { ERRORS, KeeperError } from 'lib/keeperError';
@@ -747,7 +747,11 @@ class BackgroundService extends EventEmitter {
     return { selectedAccount };
   }
 
-  getInpageApi(origin: string, connectionId: string) {
+  getInpageApi(
+    origin: string,
+    connectionId: string,
+    port: Browser.Runtime.Port
+  ) {
     const showNotification = () => {
       this.emit('Show notification');
     };
@@ -767,6 +771,8 @@ class BackgroundService extends EventEmitter {
     };
 
     const commonMessageInput = { connectionId, origin };
+
+    let subscribedToPublicState = false;
 
     return {
       signOrder: async (
@@ -1049,43 +1055,7 @@ class BackgroundService extends EventEmitter {
         return notificationId;
       },
 
-      publicState: async () => {
-        const { selectedAccount } = await this.validatePermission(
-          origin,
-          connectionId
-        );
-
-        const state = this.extensionStorage.getState();
-
-        return {
-          account: {
-            ...selectedAccount,
-            balance: collectBalances(state)[selectedAccount.address] || 0,
-          },
-          initialized: state.initialized,
-          locked: state.locked,
-          messages: state.messages
-            .filter(
-              message =>
-                message.account.address === selectedAccount.address &&
-                message.origin === origin
-            )
-            .map(message => ({
-              id: message.id,
-              status: message.status,
-              uid: message.ext_uuid,
-            })),
-          network: {
-            code: this.networkController.getNetworkCode(),
-            matcher: this.networkController.getMatcher(),
-            server: this.networkController.getNode(),
-          },
-          txVersion: getTxVersions(
-            selectedAccount ? selectedAccount.type : 'seed'
-          ),
-          version: Browser.runtime.getManifest().version,
-        };
-      },
+      publicState: () => this.getPublicState(origin, connectionId),
 
       resourceIsApproved: async () => {
         return this.permissionsController.hasPermission(
@@ -1176,6 +1146,46 @@ class BackgroundService extends EventEmitter {
 
         return wallet.decryptMessage(message, publicKey, prefix);
       },
+      subscribeToPublicState: async () => {
+        if (subscribedToPublicState) return;
+
+        let lastPublicState: PublicState | undefined;
+
+        if (
+          this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED)
+        ) {
+          lastPublicState = await this.getPublicState(origin, connectionId);
+        }
+
+        Browser.storage.onChanged.addListener(() => {
+          if (
+            !this.permissionsController.hasPermission(
+              origin,
+              PERMISSIONS.APPROVED
+            )
+          ) {
+            return;
+          }
+
+          this.getPublicState(origin, connectionId).then(
+            publicState => {
+              if (!port || deepEqual(publicState, lastPublicState)) return;
+
+              port.postMessage({ event: 'updatePublicState', publicState });
+              lastPublicState = publicState;
+            },
+            err => {
+              if (err instanceof KeeperError) {
+                return;
+              }
+
+              throw err;
+            }
+          );
+        });
+
+        subscribedToPublicState = true;
+      },
     };
   }
 
@@ -1184,7 +1194,7 @@ class BackgroundService extends EventEmitter {
     const api = this.getApi();
 
     pipe(
-      fromPort<MethodCallRequestPayload<keyof typeof api>>(port),
+      fromWebExtensionPort(port),
       handleMethodCallRequests(api, result => port?.postMessage(result)),
       subscribe({
         complete: () => {
@@ -1197,13 +1207,49 @@ class BackgroundService extends EventEmitter {
 
     const ui = createIpcCallProxy<keyof UiApi, UiApi>(
       request => port?.postMessage(request),
-      fromPort(port)
+      fromWebExtensionPort(port)
     );
 
     this.on('ledger:signRequest', ui.ledgerSignRequest);
     this.on('closePopupWindow', ui.closePopupWindow);
 
     this.statisticsController.sendOpenEvent();
+  }
+
+  async getPublicState(origin: string, connectionId: string) {
+    const { selectedAccount } = await this.validatePermission(
+      origin,
+      connectionId
+    );
+
+    const state = this.extensionStorage.getState();
+
+    return {
+      account: {
+        ...selectedAccount,
+        balance: collectBalances(state)[selectedAccount.address] || 0,
+      },
+      initialized: state.initialized,
+      locked: state.locked,
+      messages: state.messages
+        .filter(
+          message =>
+            message.account.address === selectedAccount.address &&
+            message.origin === origin
+        )
+        .map(message => ({
+          id: message.id,
+          status: message.status,
+          uid: message.ext_uuid,
+        })),
+      network: {
+        code: this.networkController.getNetworkCode(),
+        matcher: this.networkController.getMatcher(),
+        server: this.networkController.getNode(),
+      },
+      txVersion: getTxVersions(selectedAccount ? selectedAccount.type : 'seed'),
+      version: Browser.runtime.getManifest().version,
+    };
   }
 
   setupPageConnection(sourcePort: Browser.Runtime.Port) {
@@ -1216,10 +1262,10 @@ class BackgroundService extends EventEmitter {
 
     const origin = new URL(sender.url).hostname;
     const connectionId = nanoid();
-    const inpageApi = this.getInpageApi(origin, connectionId);
+    const inpageApi = this.getInpageApi(origin, connectionId, port);
 
     pipe(
-      fromPort<MethodCallRequestPayload<keyof typeof inpageApi>>(port),
+      fromWebExtensionPort(port),
       handleMethodCallRequests(inpageApi, result => port?.postMessage(result)),
       subscribe({
         complete: () => {
@@ -1274,4 +1320,8 @@ export type __BackgroundUiApiDirect = ReturnType<BackgroundService['getApi']>;
 
 export type __BackgroundPageApiDirect = ReturnType<
   BackgroundService['getInpageApi']
+>;
+
+export type PublicState = Awaited<
+  ReturnType<__BackgroundPageApiDirect['publicState']>
 >;

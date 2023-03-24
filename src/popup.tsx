@@ -18,9 +18,8 @@ import type { UiApi } from './background';
 import { i18nextInit } from './i18n/init';
 import {
   createIpcCallProxy,
-  fromPort,
+  fromWebExtensionPort,
   handleMethodCallRequests,
-  type MethodCallRequestPayload,
 } from './ipc/ipc';
 import { ledgerService } from './ledger/service';
 import { type LedgerSignRequest } from './ledger/types';
@@ -110,7 +109,7 @@ Promise.all([
     let port: Browser.Runtime.Port | null = Browser.runtime.connect();
 
     pipe(
-      fromPort<MethodCallRequestPayload<keyof UiApi>>(port),
+      fromWebExtensionPort(port),
       handleMethodCallRequests(uiApi, result => port?.postMessage(result)),
       subscribe({
         complete: () => {
@@ -124,7 +123,7 @@ Promise.all([
 
     return createIpcCallProxy<keyof BackgroundUiApi, BackgroundUiApi>(
       request => port?.postMessage(request),
-      fromPort(port)
+      fromWebExtensionPort(port)
     );
   }
 
