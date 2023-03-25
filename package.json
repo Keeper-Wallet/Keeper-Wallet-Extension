@@ -82,7 +82,7 @@
     "@babel/preset-typescript": "^7.18.6",
     "@faergeek/eslint-config": "^5.0.142",
     "@faergeek/tiny-browser-hmr-webpack-plugin": "^1.0.3",
-    "@keeper-wallet/swap-client": "^0.1.2",
+    "@keeper-wallet/swap-client": "^0.2.0",
     "@ledgerhq/hw-transport-webusb": "^6.24.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.9",
     "@size-limit/file": "^8.1.0",
