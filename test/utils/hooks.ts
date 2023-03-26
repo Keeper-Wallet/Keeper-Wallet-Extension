@@ -81,7 +81,7 @@ export const mochaHooks = () => ({
 
     let keeperExtensionId: string | undefined;
 
-    const extensionsValue = await $('#extensions-value').getText();
+    const extensionsValue = await $('#div-extensions-value').getText();
     for (const ext of extensionsValue.split('\n')) {
       const [id, name] = ext.split(' : ');
 
