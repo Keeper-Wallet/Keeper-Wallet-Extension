@@ -1604,9 +1604,9 @@
     long "^5.2.0"
 
 "@keeper-wallet/waves-crypto@^3.0.0":
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/@keeper-wallet/waves-crypto/-/waves-crypto-3.0.3.tgz#f0eeffdb18e526d1966aace9d28cf203034400e9"
-  integrity sha512-VUYH2tSkJPw/SjzeaiqK2j6o6L6qFMvg3RlQuaG94iBinE0WfQ1sTsau9pgcWRdmB4sYT0reJZUQjHVvKLQoTw==
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/@keeper-wallet/waves-crypto/-/waves-crypto-3.0.4.tgz#8d2095704199a2a996d0f669e53f2935454735af"
+  integrity sha512-yVNX4GdhtgT1sU6kjTNsmb5QpllCP/UyUGa1KLUtK0rgXeD5RoZF0fS9XS+Baqhf7L/HDs9K9FBhq745k+ItxQ==
   dependencies:
     "@noble/hashes" "^1.1.4"
     "@scure/base" "^1.1.1"
@@ -1699,10 +1699,15 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-6.10.1.tgz#5bd16082261d7364eabb511c788f00937dac588d"
   integrity sha512-z+ILK8Q3y+nfUl43ctCPuR4Y2bIxk/ooCQFwZxhtci1EhAtMDzMAx2W25qx8G1PPL9UUOdnUax19+F0OjXoj4w==
 
-"@noble/hashes@1.2.0", "@noble/hashes@^1.1.4", "@noble/hashes@^1.1.5", "@noble/hashes@~1.2.0":
+"@noble/hashes@1.2.0", "@noble/hashes@^1.1.5", "@noble/hashes@~1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.2.0.tgz#a3150eeb09cc7ab207ebf6d7b9ad311a9bdbed12"
   integrity sha512-FZfhjEDbT5GRswV3C6uvLPHMiVD6lQBmpoX5+eSiPaMTXte/IKqI5dykDxzZB/WBeK/CDuQRBWarPdi3FNY2zQ==
+
+"@noble/hashes@^1.1.4":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.3.0.tgz#085fd70f6d7d9d109671090ccae1d3bec62554a1"
+  integrity sha512-ilHEACi9DwqJB0pw7kv+Apvh50jiiSyR/cQ3y4W7lOR5mhvn/50FLUfsnfJz0BDZtl/RR16kXvptiv6q1msYZg==
 
 "@noble/secp256k1@1.7.1", "@noble/secp256k1@~1.7.0":
   version "1.7.1"
