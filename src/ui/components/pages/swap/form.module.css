@@ -122,11 +122,23 @@
   align-items: flex-end;
 }
 
+.toAmountCardValueRow {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
 .toAmountCardFormattedValue {
   overflow: hidden;
   font-size: 14px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.toAmountInfoIcon {
+  width: 16px;
+  height: 16px;
+  fill: var(--color-black);
 }
 
 .toAmountCardUsdAmount {
