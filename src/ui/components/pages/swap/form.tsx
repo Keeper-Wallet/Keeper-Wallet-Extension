@@ -72,6 +72,7 @@ type SwapInfoVendorState =
   | {
       type: 'data';
       minimumReceivedTokens: BigNumber;
+      originalMinimumReceivedTokens: BigNumber;
       priceImpact: number;
       toAmountTokens: BigNumber;
       tx: SwapClientInvokeTransaction;
@@ -320,6 +321,10 @@ export function SwapForm({
             type: 'data',
             minimumReceivedTokens: new Money(
               response.minimumReceivedCoins,
+              toAsset
+            ).getTokens(),
+            originalMinimumReceivedTokens: new Money(
+              response.originalMinimumReceivedCoins,
               toAsset
             ).getTokens(),
             priceImpact: response.priceImpact,
@@ -620,6 +625,22 @@ export function SwapForm({
                         : info.toAmountTokens
                       ).toFixed()
                 );
+                const minimumReceivedTokens = new BigNumber(
+                  info.type !== 'data'
+                    ? '0'
+                    : (fromAmountTokens.eq(0)
+                        ? new BigNumber(0)
+                        : info.minimumReceivedTokens
+                      ).toFixed()
+                );
+                const originalMinimumReceviedTokens = new BigNumber(
+                  info.type !== 'data'
+                    ? '0'
+                    : (fromAmountTokens.eq(0)
+                        ? new BigNumber(0)
+                        : info.originalMinimumReceivedTokens
+                      ).toFixed()
+                );
 
                 const formattedValue = amountTokens.toFormat(
                   toAssetBalance.asset.precision,
@@ -675,13 +696,32 @@ export function SwapForm({
                       <Loader />
                     ) : info.type === 'data' ? (
                       <div className={styles.toAmountCardValue}>
-                        <div
-                          className={styles.toAmountCardFormattedValue}
-                          title={formattedValue}
-                        >
-                          {formattedValue}
+                        <div className={styles.toAmountCardValueRow}>
+                          <div
+                            className={styles.toAmountCardFormattedValue}
+                            title={formattedValue}
+                          >
+                            {formattedValue}
+                          </div>
+                          {minimumReceivedTokens.lt(
+                            originalMinimumReceviedTokens
+                          ) ? (
+                            <Tooltip
+                              className={styles.tooltipContent}
+                              content={t('swap.amountDifferenceTooltip')}
+                              placement="top"
+                            >
+                              {props => (
+                                <div
+                                  {...props}
+                                  className={styles.toAmountInfoIcon}
+                                >
+                                  <InfoIcon />
+                                </div>
+                              )}
+                            </Tooltip>
+                          ) : null}
                         </div>
-
                         <UsdAmount
                           id={toAssetId}
                           className={styles.toAmountCardUsdAmount}

@@ -590,6 +590,7 @@
   },
   "swap": {
     "amountToSendError": "Could not perform swap due to SwopFi dApp state. Please try again or slightly increase slippage tolerance if possible",
+    "amountDifferenceTooltip": "Some vendors cache their results, so Keeper has adjusted them to give you the most up-to-date value",
     "closeBtnText": "Close",
     "exchangeChannelConnectionError": "Could not connect to swap service. Please try again later",
     "exchangeChannelInvalidAssetPairError": "Asset pair is not available",
