@@ -1,3 +1,5 @@
+import waitForExpect from 'wait-for-expect';
+
 import { AccountInfoScreen } from './helpers/AccountInfoScreen';
 import { CustomNetworkModal } from './helpers/CustomNetworkModal';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
@@ -96,9 +98,11 @@ describe('Network management', function () {
           await CustomNetworkModal.addressInput.setValue(invalidNodeUrl);
           await CustomNetworkModal.saveButton.click();
 
-          await expect(CustomNetworkModal.addressError).toHaveText(
-            'Incorrect node address'
-          );
+          await waitForExpect(async () => {
+            await expect(CustomNetworkModal.addressError).toHaveText(
+              'Incorrect node address'
+            );
+          });
         });
 
         it('Matcher address is not required field', async function () {
