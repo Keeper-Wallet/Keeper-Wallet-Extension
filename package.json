@@ -107,7 +107,7 @@
     "chai": "^4.3.4",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.1",
-    "css-minimizer-webpack-plugin": "^4.0.0",
+    "css-minimizer-webpack-plugin": "^5.0.0",
     "del": "^7.0.0",
     "dotenv-flow": "^3.2.0",
     "esbuild": "^0.17.0",
