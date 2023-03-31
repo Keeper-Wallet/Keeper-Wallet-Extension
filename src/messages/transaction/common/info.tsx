@@ -1,6 +1,7 @@
 import { Asset, Money } from '@waves/data-entities';
-import { useFeeOptions } from 'fee/useFeeOptions';
 import {
+  type FeeOption,
+  getFeeOptions,
   getSpendingAmountsForSponsorableTx,
   isEnoughBalanceForFeeAndSpendingAmounts,
 } from 'fee/utils';
@@ -12,7 +13,7 @@ import Background from 'ui/services/Background';
 import * as styles from '../../../ui/components/pages/styles/transactions.module.css';
 import { DateFormat } from '../../../ui/components/ui';
 import { Balance, Select, type SelectItem } from '../../../ui/components/ui';
-import { type MessageOfType } from '../../types';
+import type { MessageOfType } from '../../types';
 
 interface Props {
   message: MessageOfType<'transaction'>;
@@ -28,6 +29,11 @@ export function TxInfo({ message }: Props) {
       state.selectedAccount && state.balances[state.selectedAccount.address]
   );
 
+  const selectedAccount = usePopupSelector(state => state.selectedAccount);
+  invariant(selectedAccount);
+
+  const usdPrices = usePopupSelector(state => state.usdPrices);
+
   const initailFeeAsset =
     assets[
       ('initialFeeAssetId' in message.data && message.data.initialFeeAssetId) ||
@@ -35,19 +41,30 @@ export function TxInfo({ message }: Props) {
     ];
   invariant(initailFeeAsset);
 
-  let feeOptions = useFeeOptions({
-    initialFee: new Money(message.data.initialFee, new Asset(initailFeeAsset)),
-    txType: message.data.type,
-  }).filter(option =>
-    isEnoughBalanceForFeeAndSpendingAmounts({
-      balance: option.assetBalance.balance,
-      fee: option.money,
-      spendingAmounts: getSpendingAmountsForSponsorableTx({
-        assets,
-        messageTx: message.data,
-      }),
-    })
-  );
+  let feeOptions: FeeOption[] = [];
+
+  feeOptions =
+    message.data.senderPublicKey === selectedAccount.publicKey
+      ? getFeeOptions({
+          assets,
+          balance,
+          initialFee: new Money(
+            message.data.initialFee,
+            new Asset(initailFeeAsset)
+          ),
+          txType: message.data.type,
+          usdPrices,
+        }).filter(option =>
+          isEnoughBalanceForFeeAndSpendingAmounts({
+            balance: option.assetBalance.balance,
+            fee: option.money,
+            spendingAmounts: getSpendingAmountsForSponsorableTx({
+              assets,
+              messageTx: message.data,
+            }),
+          })
+        )
+      : [];
 
   const feeAsset =
     assets[
