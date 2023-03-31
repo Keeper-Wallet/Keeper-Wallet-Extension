@@ -15,7 +15,7 @@ import {
   type LeaseTransactionFromNode,
   TRANSACTION_TYPE,
 } from '@waves/ts-types';
-import { type AssetsRecord } from 'assets/types';
+import type { AssetsRecord } from 'assets/types';
 import EventEmitter from 'events';
 import { getExtraFee } from 'fee/utils';
 import Long from 'long';
@@ -57,15 +57,15 @@ import {
   type MoneyLike,
 } from '../messages/types';
 import { PERMISSIONS } from '../permissions/constants';
-import { type PreferencesAccount } from '../preferences/types';
-import { type ExtensionStorage } from '../storage/storage';
+import type { PreferencesAccount } from '../preferences/types';
+import type { ExtensionStorage } from '../storage/storage';
 import { getTxVersions } from '../wallets/getTxVersions';
-import { type AssetInfoController } from './assetInfo';
-import { type CurrentAccountController } from './currentAccount';
-import { type NetworkController } from './network';
-import { type PermissionsController } from './permissions';
-import { type RemoteConfigController } from './remoteConfig';
-import { type WalletController } from './wallet';
+import type { AssetInfoController } from './assetInfo';
+import type { CurrentAccountController } from './currentAccount';
+import type { NetworkController } from './network';
+import type { PermissionsController } from './permissions';
+import type { RemoteConfigController } from './remoteConfig';
+import type { WalletController } from './wallet';
 
 function moneyLikeToMoney(amount: MoneyLike, assets: AssetsRecord) {
   const asset = new Asset(assets[amount.assetId ?? 'WAVES'] ?? assets.WAVES);
@@ -618,8 +618,9 @@ export class MessageController extends EventEmitter {
         fee: feeMoney,
         spendingAmounts,
       })
-    )
+    ) {
       return;
+    }
 
     const feeOption = getFeeOptions({
       assets,
@@ -838,10 +839,11 @@ export class MessageController extends EventEmitter {
 
         const tx = {
           ...txParams,
-          ...(this.#getFeeInAssetWithEnoughBalance(assets, txParams, {
-            assetId: feeAssetId,
-            coins: fee,
-          }) ?? {
+          ...((senderPublicKey === account.publicKey &&
+            this.#getFeeInAssetWithEnoughBalance(assets, txParams, {
+              assetId: feeAssetId,
+              coins: fee,
+            })) || {
             fee,
             feeAssetId,
             initialFee,
@@ -1650,10 +1652,11 @@ export class MessageController extends EventEmitter {
 
         const tx = {
           ...txParams,
-          ...(this.#getFeeInAssetWithEnoughBalance(assets, txParams, {
-            assetId: feeAssetId,
-            coins: fee,
-          }) ?? {
+          ...((senderPublicKey === account.publicKey &&
+            this.#getFeeInAssetWithEnoughBalance(assets, txParams, {
+              assetId: feeAssetId,
+              coins: fee,
+            })) || {
             fee,
             feeAssetId,
             initialFee,
