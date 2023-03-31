@@ -8,6 +8,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList as List } from 'react-window';
+import invariant from 'tiny-invariant';
 import { AssetItem } from 'ui/components/pages/assets//assetItem';
 import { icontains } from 'ui/components/pages/assets/helpers';
 import * as styles from 'ui/components/pages/styles/assets.styl';
@@ -203,6 +204,9 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
         <div className={styles.assetList}>
           <AutoSizer>
             {({ height, width }) => {
+              invariant(width != null);
+              invariant(height != null);
+
               return (
                 <List
                   height={height}
