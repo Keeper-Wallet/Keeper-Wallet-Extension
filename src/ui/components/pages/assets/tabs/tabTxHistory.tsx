@@ -5,6 +5,7 @@ import { type CSSProperties, useEffect, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { VariableSizeList } from 'react-window';
+import invariant from 'tiny-invariant';
 import { icontains } from 'ui/components/pages/assets/helpers';
 import { HistoryItem } from 'ui/components/pages/assets/historyItem';
 import * as styles from 'ui/components/pages/styles/assets.styl';
@@ -357,6 +358,9 @@ export function TabTxHistory() {
         <div className={styles.historyList}>
           <AutoSizer>
             {({ height, width }) => {
+              invariant(width != null);
+              invariant(height != null);
+
               const hasMore =
                 txHistory && txHistory.length === MAX_TX_HISTORY_ITEMS;
               return (

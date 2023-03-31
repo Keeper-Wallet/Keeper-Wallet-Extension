@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { type CSSProperties } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { VariableSizeList } from 'react-window';
+import invariant from 'tiny-invariant';
 
 import { NftCard } from './nftCard';
 import * as styles from './nftList.module.css';
@@ -81,6 +82,9 @@ export function NftList({
     <div className={styles.nftList}>
       <AutoSizer>
         {({ height, width }) => {
+          invariant(width != null);
+          invariant(height != null);
+
           const len = Math.round(nfts.length / 2);
           return (
             <VariableSizeList
