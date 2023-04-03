@@ -33,8 +33,22 @@ import { initSentry } from 'sentry/init';
 import { type UiState } from 'store/reducers/updateState';
 import invariant from 'tiny-invariant';
 import Browser from 'webextension-polyfill';
-import { onEnd, pipe, publish } from 'wonka';
+import {
+  empty,
+  filter,
+  fromPromise,
+  onEnd,
+  onStart,
+  pipe,
+  publish,
+  share,
+  subscribe,
+  switchMap,
+  takeUntil,
+  tap,
+} from 'wonka';
 
+import { fromWebExtensionEvent } from './_core/wonka';
 import { type IgnoreErrorsContext } from './constants';
 import { AddressBookController } from './controllers/AddressBookController';
 import { AssetInfoController } from './controllers/assetInfo';
@@ -78,6 +92,11 @@ initSentry({
     );
   },
 });
+
+const storageChangesSource = pipe(
+  fromWebExtensionEvent(Browser.storage.onChanged),
+  share
+);
 
 Browser.runtime.onConnect.addListener(async remotePort => {
   const bgService = await bgPromise;
@@ -771,7 +790,40 @@ class BackgroundService extends EventEmitter {
 
     const commonMessageInput = { connectionId, origin };
 
-    let subscribedToPublicState = false;
+    const publicStateUpdates = (() => {
+      let lastPublicState: PublicState | undefined;
+
+      return pipe(
+        storageChangesSource,
+        takeUntil(fromWebExtensionEvent(port.onDisconnect)),
+        switchMap(([, areaName]) =>
+          areaName === 'local' &&
+          Boolean(
+            this.permissionsController.hasPermission(
+              origin,
+              PERMISSIONS.APPROVED
+            )
+          )
+            ? fromPromise(this.getPublicState(origin, connectionId))
+            : empty
+        ),
+        onStart(async () => {
+          if (
+            this.permissionsController.hasPermission(
+              origin,
+              PERMISSIONS.APPROVED
+            )
+          ) {
+            lastPublicState = await this.getPublicState(origin, connectionId);
+          }
+        }),
+        filter(publicState => !deepEqual(publicState, lastPublicState)),
+        tap(publicState => {
+          lastPublicState = publicState;
+        }),
+        share
+      );
+    })();
 
     return {
       signOrder: async (
@@ -1146,44 +1198,12 @@ class BackgroundService extends EventEmitter {
         return wallet.decryptMessage(message, publicKey, prefix);
       },
       subscribeToPublicState: async () => {
-        if (subscribedToPublicState) return;
-
-        let lastPublicState: PublicState | undefined;
-
-        if (
-          this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED)
-        ) {
-          lastPublicState = await this.getPublicState(origin, connectionId);
-        }
-
-        Browser.storage.onChanged.addListener(() => {
-          if (
-            !this.permissionsController.hasPermission(
-              origin,
-              PERMISSIONS.APPROVED
-            )
-          ) {
-            return;
-          }
-
-          this.getPublicState(origin, connectionId).then(
-            publicState => {
-              if (!port || deepEqual(publicState, lastPublicState)) return;
-
-              port.postMessage({ event: 'updatePublicState', publicState });
-              lastPublicState = publicState;
-            },
-            err => {
-              if (err instanceof KeeperError) {
-                return;
-              }
-
-              throw err;
-            }
-          );
-        });
-
-        subscribedToPublicState = true;
+        pipe(
+          publicStateUpdates,
+          subscribe(publicState => {
+            port.postMessage({ event: 'updatePublicState', publicState });
+          })
+        );
       },
     };
   }

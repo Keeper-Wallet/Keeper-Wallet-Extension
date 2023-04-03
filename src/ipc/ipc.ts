@@ -9,8 +9,11 @@ import {
   type Source,
   subscribe,
   take,
+  takeUntil,
   tap,
 } from 'wonka';
+
+import { fromWebExtensionEvent } from '../_core/wonka';
 
 export function fromPostMessage(origin: string, source: MessageEventSource) {
   return make(observer => {
@@ -46,24 +49,11 @@ export function fromMessagePort(port: MessagePort) {
 }
 
 export function fromWebExtensionPort(port: Browser.Runtime.Port) {
-  return make(observer => {
-    function stopListening() {
-      port.onDisconnect.removeListener(handleDisconnect);
-      port.onMessage.removeListener(observer.next);
-    }
-
-    function handleDisconnect() {
-      stopListening();
-      observer.complete();
-    }
-
-    port.onDisconnect.addListener(handleDisconnect);
-    port.onMessage.addListener(observer.next);
-
-    return () => {
-      stopListening();
-    };
-  });
+  return pipe(
+    fromWebExtensionEvent(port.onMessage),
+    takeUntil(fromWebExtensionEvent(port.onDisconnect)),
+    map(([message]) => message)
+  );
 }
 
 interface MethodCallRequest<K> {
