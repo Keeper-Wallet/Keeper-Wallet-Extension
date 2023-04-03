@@ -3,14 +3,13 @@ import './ui/styles/app.styl';
 import './ui/styles/icons.styl';
 
 import { setTag, setUser } from '@sentry/browser';
-import pipe from 'callbag-pipe';
-import subscribe from 'callbag-subscribe';
 import i18next from 'i18next';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import invariant from 'tiny-invariant';
 import Browser from 'webextension-polyfill';
+import { onEnd, pipe } from 'wonka';
 
 import { SignProvider } from './_core/signContext';
 import { UsdPricesProvider } from './_core/usdPrices';
@@ -111,13 +110,11 @@ Promise.all([
     pipe(
       fromWebExtensionPort(port),
       handleMethodCallRequests(uiApi, result => port?.postMessage(result)),
-      subscribe({
-        complete: () => {
-          Background.setConnect(() => {
-            port = null;
-            Background.init(connect());
-          });
-        },
+      onEnd(() => {
+        Background.setConnect(() => {
+          port = null;
+          Background.init(connect());
+        });
       })
     );
 

@@ -4,8 +4,6 @@ import {
   verifySignature,
 } from '@keeper-wallet/waves-crypto';
 import { collectBalances } from 'balances/utils';
-import pipe from 'callbag-pipe';
-import subscribe from 'callbag-subscribe';
 import EventEmitter from 'events';
 import { deepEqual } from 'fast-equals';
 import { getExtraFee } from 'fee/utils';
@@ -35,6 +33,7 @@ import { initSentry } from 'sentry/init';
 import { type UiState } from 'store/reducers/updateState';
 import invariant from 'tiny-invariant';
 import Browser from 'webextension-polyfill';
+import { onEnd, pipe, publish } from 'wonka';
 
 import { type IgnoreErrorsContext } from './constants';
 import { AddressBookController } from './controllers/AddressBookController';
@@ -1196,13 +1195,12 @@ class BackgroundService extends EventEmitter {
     pipe(
       fromWebExtensionPort(port),
       handleMethodCallRequests(api, result => port?.postMessage(result)),
-      subscribe({
-        complete: () => {
-          port = null;
-          this.off('ledger:signRequest', ui.ledgerSignRequest);
-          this.off('closePopupWindow', ui.closePopupWindow);
-        },
-      })
+      onEnd(() => {
+        port = null;
+        this.off('ledger:signRequest', ui.ledgerSignRequest);
+        this.off('closePopupWindow', ui.closePopupWindow);
+      }),
+      publish
     );
 
     const ui = createIpcCallProxy<keyof UiApi, UiApi>(
@@ -1267,27 +1265,25 @@ class BackgroundService extends EventEmitter {
     pipe(
       fromWebExtensionPort(port),
       handleMethodCallRequests(inpageApi, result => port?.postMessage(result)),
-      subscribe({
-        complete: () => {
-          port = null;
-          this.messageController.removeMessagesFromConnection(connectionId);
+      onEnd(() => {
+        port = null;
+        this.messageController.removeMessagesFromConnection(connectionId);
 
-          const selectedAccount =
-            this.preferencesController.getSelectedAccount();
+        const selectedAccount = this.preferencesController.getSelectedAccount();
 
-          const notificationsCount = selectedAccount
-            ? this.notificationsController.getNotifications(selectedAccount)
-                .length
-            : 0;
+        const notificationsCount = selectedAccount
+          ? this.notificationsController.getNotifications(selectedAccount)
+              .length
+          : 0;
 
-          const unapprovedMessagesCount =
-            this.messageController.getUnapproved().length;
+        const unapprovedMessagesCount =
+          this.messageController.getUnapproved().length;
 
-          if (unapprovedMessagesCount === 0 && notificationsCount === 0) {
-            this.emit('Close notification');
-          }
-        },
-      })
+        if (unapprovedMessagesCount === 0 && notificationsCount === 0) {
+          this.emit('Close notification');
+        }
+      }),
+      publish
     );
   }
 
