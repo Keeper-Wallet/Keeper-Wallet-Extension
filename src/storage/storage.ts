@@ -1,8 +1,5 @@
 import { captureException } from '@sentry/browser';
 import { type AssetsRecord } from 'assets/types';
-import create from 'callbag-create';
-import pipe from 'callbag-pipe';
-import subscribe from 'callbag-subscribe';
 import { type TrashItem } from 'controllers/trash';
 import { deepEqual } from 'fast-equals';
 import { type Message } from 'messages/types';
@@ -14,6 +11,7 @@ import { type PermissionValue } from 'permissions/types';
 import { type IdleOptions, type PreferencesAccount } from 'preferences/types';
 import { type UiState } from 'store/reducers/updateState';
 import Browser from 'webextension-polyfill';
+import { make, pipe, subscribe } from 'wonka';
 
 import {
   type AssetsConfig,
@@ -153,7 +151,13 @@ export class ExtensionStorage {
 
   subscribe<T extends Record<string, unknown>>(store: ObservableStore<T>) {
     pipe(
-      create<T>(next => store.subscribe(next)),
+      make<T>(observer => {
+        store.subscribe(observer.next);
+
+        return () => {
+          store.unsubscribe(observer.next);
+        };
+      }),
       subscribe(async updatedState => {
         const currentState = await Browser.storage.local.get(
           Object.keys(updatedState)

@@ -1,6 +1,5 @@
-import pipe from 'callbag-pipe';
-import subscribe from 'callbag-subscribe';
 import Browser from 'webextension-polyfill';
+import { onEnd, pipe, subscribe } from 'wonka';
 
 import { fromMessagePort, fromWebExtensionPort } from './ipc/ipc';
 
@@ -29,14 +28,12 @@ if (document.documentElement.tagName === 'HTML') {
 
               pipe(
                 fromWebExtensionPort(webExtensionPort),
-                subscribe({
-                  next: message => {
-                    inpagePort.postMessage(message);
-                  },
-                  complete: () => {
-                    webExtensionPort = undefined;
-                    inpagePort.postMessage({ event: 'disconnected' });
-                  },
+                onEnd(() => {
+                  webExtensionPort = undefined;
+                  inpagePort.postMessage({ event: 'disconnected' });
+                }),
+                subscribe(message => {
+                  inpagePort.postMessage(message);
                 })
               );
             }

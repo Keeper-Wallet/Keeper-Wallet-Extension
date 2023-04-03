@@ -1,23 +1,25 @@
-import { type Source } from 'callbag';
-import create from 'callbag-create';
-import filter from 'callbag-filter';
-import map from 'callbag-map';
-import pipe from 'callbag-pipe';
-import subscribe from 'callbag-subscribe';
-import take from 'callbag-take';
-import tap from 'callbag-tap';
 import { nanoid } from 'nanoid';
 import invariant from 'tiny-invariant';
 import type Browser from 'webextension-polyfill';
+import {
+  filter,
+  make,
+  map,
+  pipe,
+  type Source,
+  subscribe,
+  take,
+  tap,
+} from 'wonka';
 
 export function fromPostMessage(origin: string, source: MessageEventSource) {
-  return create(next => {
+  return make(observer => {
     function handleMessage(event: MessageEvent<unknown>) {
       if (event.origin !== origin || event.source !== source) {
         return;
       }
 
-      next(event.data);
+      observer.next(event.data);
     }
 
     addEventListener('message', handleMessage);
@@ -29,9 +31,9 @@ export function fromPostMessage(origin: string, source: MessageEventSource) {
 }
 
 export function fromMessagePort(port: MessagePort) {
-  return create(next => {
+  return make(observer => {
     function handleMessage(event: MessageEvent<unknown>) {
-      next(event.data);
+      observer.next(event.data);
     }
 
     port.addEventListener('message', handleMessage);
@@ -44,19 +46,19 @@ export function fromMessagePort(port: MessagePort) {
 }
 
 export function fromWebExtensionPort(port: Browser.Runtime.Port) {
-  return create((next, _error, complete) => {
+  return make(observer => {
     function stopListening() {
       port.onDisconnect.removeListener(handleDisconnect);
-      port.onMessage.removeListener(next);
+      port.onMessage.removeListener(observer.next);
     }
 
     function handleDisconnect() {
       stopListening();
-      complete();
+      observer.complete();
     }
 
     port.onDisconnect.addListener(handleDisconnect);
-    port.onMessage.addListener(next);
+    port.onMessage.addListener(observer.next);
 
     return () => {
       stopListening();

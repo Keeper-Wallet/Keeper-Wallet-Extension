@@ -1,9 +1,4 @@
-import create from 'callbag-create';
-import filter from 'callbag-filter';
-import map from 'callbag-map';
-import pipe from 'callbag-pipe';
-import subscribe from 'callbag-subscribe';
-import take from 'callbag-take';
+import { filter, make, map, pipe, subscribe, take } from 'wonka';
 
 import type { __BackgroundPageApiDirect, PublicState } from './background';
 import {
@@ -51,19 +46,21 @@ const proxy = createIpcCallProxy<
   request => {
     messagePortPromise.then(messagePort => messagePort.postMessage(request));
   },
-  create(next => {
+  make(observer => {
     messagePortPromise.then(messagePort => {
       pipe(
         fromMessagePort(messagePort),
         subscribe(value => {
-          next(value);
+          observer.next(value);
         })
       );
     });
+
+    return () => undefined;
   })
 );
 
-const publicStateUpdates = create<PublicState>(next => {
+const publicStateUpdates = make<PublicState>(observer => {
   proxy.subscribeToPublicState();
 
   messagePortPromise.then(messagePort => {
@@ -81,13 +78,15 @@ const publicStateUpdates = create<PublicState>(next => {
           case 'updatePublicState':
             if ('publicState' in value) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              next(value.publicState as any);
+              observer.next(value.publicState as any);
             }
             break;
         }
       })
     );
   });
+
+  return () => undefined;
 });
 
 globalThis.KeeperWallet = {

@@ -3030,56 +3030,6 @@ call-bind@^1.0.0, call-bind@^1.0.2:
     function-bind "^1.1.1"
     get-intrinsic "^1.0.2"
 
-callbag-create@^2.1.3:
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/callbag-create/-/callbag-create-2.1.3.tgz#43721deea5e7bf7dac8ec0b707cd8263700e1871"
-  integrity sha512-Md8MwUCqLcZfFc5jgC0/RYjBRcvCdIX87kpGZ819mLzQ+tXK6ozWSt8Mcj9sgQ+fWAGsttnrlmTk+qFeznHL1A==
-  dependencies:
-    callbag "^1.2.0"
-
-callbag-filter@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/callbag-filter/-/callbag-filter-1.1.0.tgz#d3116bf839702e859ee7e76eb9525925a6bff8b3"
-  integrity sha512-m6ZHEd9JYHBAYJAdeqgt3gIKSoZOizfJTxIPd8EvDwY8Dr44+slm090WvCrrlz2SZoU8mCqpmZ8TFrGKXHo/yw==
-  dependencies:
-    callbag "^1.1.0"
-
-callbag-map@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/callbag-map/-/callbag-map-1.1.0.tgz#6ddd28a3f634fbd2394ef136a181b4ba5e3b062c"
-  integrity sha512-/xFzvJCtx1xulZpFeI4wq+ZD7tkg417XOeJ3wS9v8bHLLpt+fHKXgbZ8TBnnIxywJN6Uu/ZhL+c1DzUG6KXYFQ==
-  dependencies:
-    callbag "^1.1.0"
-
-callbag-pipe@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/callbag-pipe/-/callbag-pipe-1.2.0.tgz#7c00f47774da0096a7c5afa8a14f7873b5be1daf"
-  integrity sha512-M+LdHUK0qJkm4CRe+I870ZzD/SnzcpTsfJRzFoB2hOkNXlrVdoj002KMkfdS4pHMfV6egzZFd8j+xJu6C4kwEQ==
-
-callbag-subscribe@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/callbag-subscribe/-/callbag-subscribe-1.5.1.tgz#1ecf12b1f041a6ae84bd071cbbaf8014eed2acc5"
-  integrity sha512-CRj2jKfcRvG8gap2ehsm/NxZVAjnwUApI+0ZY3bu6nyFfhhOzH+4RWpB/4RSJUZNN3ZILdSgAKQiUov/7ov9BQ==
-  dependencies:
-    callbag "^1.2.0"
-
-callbag-take@^1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/callbag-take/-/callbag-take-1.5.0.tgz#3062b42f8ed4ed7e021d2cd1306c029d2ef4a12d"
-  integrity sha512-8aOxp+gzfVQtDe+tk9PhKbC9QR9Vap4KFA0xccUiXFK9VjIS0fSt/Yi454viPpMhJkhRcx1BsjyF34Cj57W89A==
-  dependencies:
-    callbag "^1.1.0"
-
-callbag-tap@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/callbag-tap/-/callbag-tap-1.3.0.tgz#d35eb002deb35979cf388c3532d95fa9348e2cf2"
-  integrity sha512-K2SarqzmLgl2OuzPQY7sQc9JzJ/n3C9Xkug4bLJfuecnhTTv6+y7O1JJ5ky4yXyYZ1eWkMrztnheQhs62wBPhw==
-
-callbag@^1.1.0, callbag@^1.2.0:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/callbag/-/callbag-1.5.1.tgz#383464c8c2e81a584b8d7df9feace4f7720409f1"
-  integrity sha512-FGpkXYZ018Wpeevhsp7R2iABZuDamg54TaObKI48JBNGzMlkb9bRwS54eR0sgFksQpspsCan4iaaVbAbxm9MIg==
-
 callsites@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/callsites/-/callsites-3.1.0.tgz#b3630abd8943432f54b3f0519238e33cd7df2f73"
@@ -8642,6 +8592,11 @@ wildcard@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/wildcard/-/wildcard-2.0.0.tgz#a77d20e5200c6faaac979e4b3aadc7b3dd7f8fec"
   integrity sha512-JcKqAHLPxcdb9KM49dufGXn2x3ssnfjbcaQdLlfZsL9rH9wgDQjUtDxbo8NE0F6SFvydeu1VhZe7hZuHsB2/pw==
+
+wonka@^6.3.1:
+  version "6.3.1"
+  resolved "https://registry.yarnpkg.com/wonka/-/wonka-6.3.1.tgz#315b2a91e134c4032980836e6d97e13d0927634d"
+  integrity sha512-nJyGPcjuBiaLFn8QAlrHd+QjV9AlPO7snOWAhgx6aX0nQLMV6Wi0nqfrkmsXIH0efngbDOroOz2QyLnZMF16Hw==
 
 word-wrap@^1.2.3:
   version "1.2.3"
