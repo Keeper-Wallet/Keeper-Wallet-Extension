@@ -4,6 +4,7 @@ import {
   base58Encode,
   base64Decode,
   blake2b,
+  createAddress,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
 import { captureException } from '@sentry/browser';
@@ -17,7 +18,6 @@ import {
 } from '@waves/ts-types';
 import type { AssetsRecord } from 'assets/types';
 import EventEmitter from 'events';
-import { getExtraFee } from 'fee/utils';
 import Long from 'long';
 import {
   computeHash,
@@ -39,6 +39,7 @@ import invariant from 'tiny-invariant';
 import Browser from 'webextension-polyfill';
 
 import {
+  getExtraFee,
   getFeeOptions,
   getSpendingAmountsForSponsorableTx,
   isEnoughBalanceForFeeAndSpendingAmounts,
@@ -683,6 +684,12 @@ export class MessageController extends EventEmitter {
     const senderPublicKey =
       messageInputTx.data.senderPublicKey ?? account.publicKey;
 
+    const getSenderExtraFee = () =>
+      getExtraFee(
+        base58Encode(createAddress(base58Decode(senderPublicKey), chainId)),
+        this.networkController.getNode()
+      );
+
     const timestamp = messageInputTx.data.timestamp ?? Date.now();
 
     const assets = this.assetInfoController.getAssets();
@@ -722,9 +729,7 @@ export class MessageController extends EventEmitter {
           moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
 
         if (!fee) {
-          fee = new BigNumber(
-            await getExtraFee(account.address, this.networkController.getNode())
-          )
+          fee = new BigNumber(await getSenderExtraFee())
             .add(
               !messageInputTx.data.reissuable &&
                 messageInputTx.data.precision === 0 &&
@@ -820,9 +825,7 @@ export class MessageController extends EventEmitter {
 
         let { fee } = txParams;
         if (!fee) {
-          fee = new BigNumber(
-            await getExtraFee(account.address, this.networkController.getNode())
-          )
+          fee = new BigNumber(await getSenderExtraFee())
             .add(
               txParams.assetId && assets[txParams.assetId]?.hasScript
                 ? 50_0000
@@ -918,9 +921,7 @@ export class MessageController extends EventEmitter {
           moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
 
         if (!fee) {
-          fee = new BigNumber(
-            await getExtraFee(account.address, this.networkController.getNode())
-          )
+          fee = new BigNumber(await getSenderExtraFee())
             .add(
               txParams.assetId && assets[txParams.assetId]?.hasScript
                 ? 50_0000
@@ -1004,9 +1005,7 @@ export class MessageController extends EventEmitter {
           moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
 
         if (!fee) {
-          fee = new BigNumber(
-            await getExtraFee(account.address, this.networkController.getNode())
-          )
+          fee = new BigNumber(await getSenderExtraFee())
             .add(
               txParams.assetId && assets[txParams.assetId]?.hasScript
                 ? 50_0000
@@ -1079,9 +1078,7 @@ export class MessageController extends EventEmitter {
           moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
 
         if (!fee) {
-          fee = new BigNumber(
-            await getExtraFee(account.address, this.networkController.getNode())
-          )
+          fee = new BigNumber(await getSenderExtraFee())
             .add(10_0000)
             .toString();
         }
@@ -1150,9 +1147,7 @@ export class MessageController extends EventEmitter {
           moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
 
         if (!fee) {
-          fee = new BigNumber(
-            await getExtraFee(account.address, this.networkController.getNode())
-          )
+          fee = new BigNumber(await getSenderExtraFee())
             .add(10_0000)
             .toString();
         }
@@ -1202,9 +1197,7 @@ export class MessageController extends EventEmitter {
           moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
 
         if (!fee) {
-          fee = new BigNumber(
-            await getExtraFee(account.address, this.networkController.getNode())
-          )
+          fee = new BigNumber(await getSenderExtraFee())
             .add(10_0000)
             .toString();
         }
@@ -1272,9 +1265,7 @@ export class MessageController extends EventEmitter {
           moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
 
         if (!fee) {
-          fee = new BigNumber(
-            await getExtraFee(account.address, this.networkController.getNode())
-          )
+          fee = new BigNumber(await getSenderExtraFee())
             .add(
               (((txParams.transfers.length + 1) >> 1) + 1) *
                 (txParams.assetId && assets[txParams.assetId]?.hasScript
@@ -1366,9 +1357,7 @@ export class MessageController extends EventEmitter {
                   })),
                 }).finish();
 
-          fee = new BigNumber(
-            await getExtraFee(account.address, this.networkController.getNode())
-          )
+          fee = new BigNumber(await getSenderExtraFee())
             .add(getRoundedUpKbs(bytes.length) * 10_0000)
             .toString();
         }
@@ -1418,12 +1407,7 @@ export class MessageController extends EventEmitter {
 
         if (!fee) {
           if (txParams.script == null) {
-            fee = new BigNumber(
-              await getExtraFee(
-                account.address,
-                this.networkController.getNode()
-              )
-            )
+            fee = new BigNumber(await getSenderExtraFee())
               .add(10_0000)
               .toString();
           } else {
@@ -1431,12 +1415,7 @@ export class MessageController extends EventEmitter {
               base64Decode(txParams.script.replace(/^base64:/, '')).length
             );
 
-            fee = new BigNumber(
-              await getExtraFee(
-                account.address,
-                this.networkController.getNode()
-              )
-            )
+            fee = new BigNumber(await getSenderExtraFee())
               .add(kbs * 10_0000)
               .toString();
           }
@@ -1504,9 +1483,7 @@ export class MessageController extends EventEmitter {
           moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
 
         if (!fee) {
-          fee = new BigNumber(
-            await getExtraFee(account.address, this.networkController.getNode())
-          )
+          fee = new BigNumber(await getSenderExtraFee())
             .add(10_0000)
             .toString();
         }
@@ -1557,9 +1534,7 @@ export class MessageController extends EventEmitter {
           moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
 
         if (!fee) {
-          fee = new BigNumber(
-            await getExtraFee(account.address, this.networkController.getNode())
-          )
+          fee = new BigNumber(await getSenderExtraFee())
             .add(1_0000_0000)
             .toString();
         }
@@ -1637,9 +1612,7 @@ export class MessageController extends EventEmitter {
           moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
 
         if (!fee) {
-          fee = new BigNumber(
-            await getExtraFee(account.address, this.networkController.getNode())
-          )
+          fee = new BigNumber(await getSenderExtraFee())
             .add(50_0000)
             .toString();
         }
@@ -1703,9 +1676,7 @@ export class MessageController extends EventEmitter {
           moneyLikeToMoney(messageInputTx.data.fee, assets).toCoins();
 
         if (!fee) {
-          fee = new BigNumber(
-            await getExtraFee(account.address, this.networkController.getNode())
-          )
+          fee = new BigNumber(await getSenderExtraFee())
             .add(
               txParams.assetId && assets[txParams.assetId]?.hasScript
                 ? 50_0000
