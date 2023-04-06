@@ -153,11 +153,9 @@ export function createIpcCallProxy<K extends string, T extends ApiObject<K>>(
 
       pipe(
         responseSource,
-        subscribe(response => {
-          if (response !== 'KEEPER_PONG') {
-            return;
-          }
-
+        filter(response => response === 'KEEPER_PONG'),
+        take(1),
+        subscribe(() => {
           clearTimeout(retryTimeout);
           resolve();
         })
