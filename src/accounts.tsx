@@ -9,7 +9,7 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import invariant from 'tiny-invariant';
 import Browser from 'webextension-polyfill';
-import { onEnd, pipe } from 'wonka';
+import { onEnd, pipe, publish } from 'wonka';
 
 import { createAccountsStore } from './accounts/store/create';
 import { createUpdateState } from './accounts/updateState';
@@ -103,7 +103,8 @@ Promise.all([
           port = null;
           Background.init(connect());
         });
-      })
+      }),
+      publish
     );
 
     return createIpcCallProxy<keyof BackgroundUiApi, BackgroundUiApi>(
