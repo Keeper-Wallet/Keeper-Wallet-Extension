@@ -1,6 +1,6 @@
 import { isAddressString, isAlias } from 'messages/utils';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { removeAddress, setAddress } from 'store/actions/addresses';
 
@@ -32,10 +32,36 @@ export function EditModal({
   const [showNotification, setShowNotification] = useState(false);
 
   const [nameValue, setNameValue] = useState(name);
-  const [nameError, setNameError] = useState('');
-
   const [addressValue, setAddressValue] = useState(address);
-  const [addressError, setAddressError] = useState('');
+
+  const nameError = useMemo(() => {
+    const isNameExists = Object.values(addresses).find(
+      addressName => addressName === nameValue
+    );
+    const isNameChanged = name !== nameValue;
+
+    if (isNameChanged && isNameExists) {
+      return t('address.nameAlreadyExist');
+    }
+
+    if (
+      /^\s/g.test(nameValue) ||
+      isAddressString(nameValue) ||
+      isAlias(nameValue)
+    ) {
+      return t('address.nameInvalidError');
+    }
+  }, [addresses, name, nameValue, t]);
+
+  const addressError = useMemo(() => {
+    if (address !== addressValue && addresses[addressValue]) {
+      return t('address.addressAlreadyExist');
+    }
+
+    if (!isAddressString(addressValue)) {
+      return t('address.addressInvalidError');
+    }
+  }, [addresses, address, addressValue, t]);
 
   useEffect(() => {
     if (showModal) {
@@ -44,9 +70,7 @@ export function EditModal({
 
     setLoading(false);
     setNameValue(name);
-    setNameError('');
     setAddressValue(address);
-    setAddressError('');
   }, [name, address, showModal, setShowModal]);
 
   useEffect(() => {
@@ -86,32 +110,7 @@ export function EditModal({
               onSubmit={e => {
                 e.preventDefault();
 
-                const foundName = Object.values(addresses).find(
-                  addressName => addressName === nameValue
-                );
-                if (name !== nameValue && foundName) {
-                  setNameError(t('address.nameAlreadyExist'));
-                  return;
-                }
-
-                if (
-                  /^\s/g.test(nameValue) ||
-                  isAddressString(nameValue) ||
-                  isAlias(nameValue)
-                ) {
-                  setNameError(t('address.nameInvalidError'));
-                  return;
-                }
-
-                if (address !== addressValue && addresses[addressValue]) {
-                  setAddressError(t('address.addressAlreadyExist'));
-                  return;
-                }
-
-                if (!isAddressString(addressValue)) {
-                  setAddressError(t('address.addressInvalidError'));
-                  return;
-                }
+                if (nameError || addressError) return;
 
                 dispatch(
                   setAddress({ address: addressValue, name: nameValue })
@@ -129,7 +128,6 @@ export function EditModal({
                 <Input
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setNameValue(e.target.value);
-                    setNameError('');
                   }}
                   value={nameValue}
                   maxLength={35}
@@ -146,7 +144,6 @@ export function EditModal({
               <AddressInput
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setAddressValue(e.target.value);
-                  setAddressError('');
                 }}
                 value={addressValue}
                 addressError={addressError}
