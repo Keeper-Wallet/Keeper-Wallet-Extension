@@ -112,12 +112,12 @@ export function EditModal({
 
                 if (nameError || addressError) return;
 
+                if (address !== addressValue) {
+                  dispatch(removeAddress({ address }));
+                }
                 dispatch(
                   setAddress({ address: addressValue, name: nameValue })
                 );
-                if (name !== nameValue && address !== addressValue) {
-                  dispatch(removeAddress({ address }));
-                }
                 setLoading(true);
               }}
             >
