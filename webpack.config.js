@@ -165,6 +165,7 @@ async function makeConfig({
         'process.env.NODE_DEBUG': 'undefined',
         'process.env.NODE_ENV': JSON.stringify(mode),
         __AMPLITUDE_API_KEY__: JSON.stringify(process.env.AMPLITUDE_API_KEY),
+        __MIXPANEL_TOKEN__: JSON.stringify(process.env.MIXPANEL_TOKEN),
         __SENTRY_DSN__: JSON.stringify(process.env.SENTRY_DSN),
         __SENTRY_ENVIRONMENT__: JSON.stringify(process.env.SENTRY_ENVIRONMENT),
         __SENTRY_RELEASE__: JSON.stringify(process.env.SENTRY_RELEASE),

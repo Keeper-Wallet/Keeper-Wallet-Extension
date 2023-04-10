@@ -27,7 +27,6 @@
   "dependencies": {
     "@ethereumjs/util": "8.0.3",
     "@keeper-wallet/waves-crypto": "^3.0.0",
-    "@noble/hashes": "^1.1.5",
     "@popperjs/core": "^2.11.0",
     "@sentry/browser": "^7.26.0",
     "@waves-domains/client": "^0.3.0",

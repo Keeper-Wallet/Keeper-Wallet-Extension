@@ -148,7 +148,8 @@ export function Swap() {
           proofs: [signature],
         });
 
-        background.sendEvent('swapAssets', {
+        background.track({
+          eventType: 'swapAssets',
           fromAssetId,
           fromCoins: fromCoins.toFixed(),
           minReceivedCoins: minReceivedCoins.toFixed(),
@@ -222,7 +223,8 @@ export function Swap() {
             const actualAmountCoins = new BigNumber(match[1]);
             const expectedAmountCoins = new BigNumber(match[2]);
 
-            background.sendEvent('swapAssets', {
+            background.track({
+              eventType: 'swapAssets',
               actualAmountCoins: actualAmountCoins.toFixed(),
               expectedAmountCoins: expectedAmountCoins.toFixed(),
               expectedActualDelta: expectedAmountCoins
@@ -248,7 +250,8 @@ export function Swap() {
 
             const expectedAmountCoins = new BigNumber(match[1]);
 
-            background.sendEvent('swapAssets', {
+            background.track({
+              eventType: 'swapAssets',
               expectedAmountCoins: expectedAmountCoins.toFixed(),
               fromAssetId,
               fromCoins: fromCoins.toFixed(),

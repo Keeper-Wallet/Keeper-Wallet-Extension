@@ -46,7 +46,7 @@ export function createAccount(
     );
 
     if (type !== WalletTypes.Debug) {
-      Background.sendEvent('addWallet', { type });
+      Background.track({ eventType: 'addWallet', type });
     }
   };
 }
@@ -61,7 +61,7 @@ export function batchAddAccounts(
     await Background.batchAddWallets(accounts);
 
     if (type !== WalletTypes.Debug) {
-      Background.sendEvent('addWallet', { type });
+      Background.track({ eventType: 'addWallet', type });
     }
   };
 }

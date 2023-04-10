@@ -1,11 +1,11 @@
 import type { __BackgroundUiApiDirect } from 'background';
 import type { IdentityUser } from 'controllers/IdentityController';
+import type { AnalyticsEvent } from 'controllers/statistics';
 import type { MessageInputOfType, MessageTx } from 'messages/types';
 import type { MoneyLike } from 'messages/types';
 import type { NetworkName } from 'networks/types';
 import type { PreferencesAccount } from 'preferences/types';
 import type { UiState } from 'store/reducers/updateState';
-import type { SwapVendor } from 'swap/constants';
 import type { CreateWalletInput } from 'wallets/types';
 
 import type { IgnoreErrorsContext } from '../../constants';
@@ -376,29 +376,11 @@ class Background {
     return this.background!.deleteNotifications(ids);
   }
 
-  sendEvent(event: 'addWallet', properties: { type: string }): Promise<void>;
-  sendEvent(event: 'click', properties: { id: string }): Promise<void>;
-  sendEvent(
-    event: 'swapAssets',
-    properties: {
-      actualAmountCoins?: string;
-      expectedAmountCoins?: string;
-      expectedActualDelta?: string;
-      fromAssetId: string;
-      fromCoins: string;
-      minReceivedCoins: string;
-      slippageTolerance: number;
-      status: 'success' | 'lessThanExpected';
-      toAssetId: string;
-      toCoins: string;
-      vendor: SwapVendor;
-    }
-  ): Promise<void>;
-  async sendEvent(event: string, properties: Record<string, unknown> = {}) {
+  async track(event: AnalyticsEvent) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.background!.sendEvent(event, properties);
+    return this.background!.track(event);
   }
 
   async updateCurrentAccountBalance() {

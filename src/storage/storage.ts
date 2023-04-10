@@ -71,7 +71,6 @@ export interface StorageLocalState {
   inPending: Record<string, string | null>;
   inShowMode: boolean | undefined;
   lastIdleKeeper: number | undefined;
-  lastInstallKeeper: number | undefined;
   lastOpenKeeper: number | undefined;
   lastUpdateIdle: number;
   locked: boolean;
