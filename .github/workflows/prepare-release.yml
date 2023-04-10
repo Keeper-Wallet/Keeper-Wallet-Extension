@@ -27,6 +27,7 @@ jobs:
       - run: yarn run build
         env:
           AMPLITUDE_API_KEY: ${{ secrets.METRICS_TOKEN }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
           KEEPER_VERSION: ${{ steps.tagInfo.outputs.VERSION }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           SENTRY_ENVIRONMENT: ${{ steps.tagInfo.outputs.SENTRY_ENVIRONMENT }}

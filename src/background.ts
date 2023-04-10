@@ -3,6 +3,7 @@ import {
   base58Encode,
   verifySignature,
 } from '@keeper-wallet/waves-crypto';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { collectBalances } from 'balances/utils';
 import EventEmitter from 'events';
 import { deepEqual } from 'fast-equals';
@@ -17,6 +18,7 @@ import { type LedgerSignRequest } from 'ledger/types';
 import { ERRORS, KeeperError } from 'lib/keeperError';
 import { TabsManager } from 'lib/tabsManager';
 import {
+  type Message,
   type MessageCustomDataSigned,
   type MessageInputOfType,
   type MessageOfType,
@@ -62,7 +64,10 @@ import { NotificationsController } from './controllers/notifications';
 import { PermissionsController } from './controllers/permissions';
 import { PreferencesController } from './controllers/preferences';
 import { RemoteConfigController } from './controllers/remoteConfig';
-import { StatisticsController } from './controllers/statistics';
+import {
+  type AnalyticsEvent,
+  StatisticsController,
+} from './controllers/statistics';
 import { TrashController } from './controllers/trash';
 import { UiStateController } from './controllers/uiState';
 import { VaultController } from './controllers/VaultController';
@@ -116,11 +121,16 @@ Browser.runtime.onUpdateAvailable.addListener(async () => {
 Browser.runtime.onInstalled.addListener(async details => {
   const bgService = await bgPromise;
 
-  if (details.reason === 'update') {
-    bgService.assetInfoController.addTickersForExistingAssets();
-    bgService.vaultController.migrate();
-    bgService.addressBookController.migrate();
-    bgService.extensionStorage.clear();
+  switch (details.reason) {
+    case 'install':
+      bgService.statisticsController.track({ eventType: 'installKeeper' });
+      break;
+    case 'update':
+      bgService.assetInfoController.addTickersForExistingAssets();
+      bgService.vaultController.migrate();
+      bgService.addressBookController.migrate();
+      bgService.extensionStorage.clear();
+      break;
   }
 });
 
@@ -485,7 +495,7 @@ class BackgroundService extends EventEmitter {
 
       initVault: async (password: string) => {
         await this.vaultController.init(password);
-        this.statisticsController.addEvent('initVault');
+        this.statisticsController.track({ eventType: 'initVault' });
       },
 
       deleteVault: async () => {
@@ -518,7 +528,44 @@ class BackgroundService extends EventEmitter {
       approve: async (messageId: string) => {
         const message = await this.messageController.approve(messageId);
 
-        this.statisticsController.sendMessageEvent(message);
+        const trackMessageEvent = (msg: Message) => {
+          if (msg.type === 'transactionPackage') {
+            msg.data.forEach((data, index) => {
+              trackMessageEvent({
+                ...msg,
+                broadcast: false,
+                data,
+                result: msg.result?.[index],
+                type: 'transaction',
+                input: {
+                  account: msg.account,
+                  broadcast: false,
+                  data: msg.input.data[index],
+                  type: 'transaction',
+                },
+              });
+            });
+          } else if ('data' in msg && 'type' in msg.data) {
+            this.statisticsController.track({
+              eventType: 'approve',
+              origin: msg.origin,
+              msgType: msg.type,
+              type: msg.data.type,
+              dApp:
+                msg.data.type === TRANSACTION_TYPE.INVOKE_SCRIPT
+                  ? msg.data.dApp
+                  : undefined,
+            });
+          } else {
+            this.statisticsController.track({
+              eventType: 'approve',
+              origin: msg.origin,
+              msgType: msg.type,
+            });
+          }
+        };
+
+        trackMessageEvent(message);
         return message.result;
       },
       reject: async (messageId: string, forever?: boolean) =>
@@ -581,7 +628,7 @@ class BackgroundService extends EventEmitter {
 
       // origin settings
       allowOrigin: async (origin: string) => {
-        this.statisticsController.addEvent('allowOrigin', { origin });
+        this.statisticsController.track({ eventType: 'allowOrigin', origin });
         this.messageController.rejectByOrigin(origin);
         this.permissionsController.deletePermission(
           origin,
@@ -591,7 +638,7 @@ class BackgroundService extends EventEmitter {
       },
 
       disableOrigin: async (origin: string) => {
-        this.statisticsController.addEvent('disableOrigin', { origin });
+        this.statisticsController.track({ eventType: 'disableOrigin', origin });
         this.permissionsController.deletePermission(
           origin,
           PERMISSIONS.APPROVED
@@ -625,8 +672,8 @@ class BackgroundService extends EventEmitter {
           0
         );
       },
-      sendEvent: async (event: string, properties: Record<string, unknown>) =>
-        this.statisticsController.addEvent(event, properties),
+      track: async (event: AnalyticsEvent) =>
+        this.statisticsController.track(event),
       updateCurrentAccountBalance:
         this.currentAccountController.updateCurrentAccountBalance.bind(
           this.currentAccountController
@@ -1231,7 +1278,7 @@ class BackgroundService extends EventEmitter {
     this.on('ledger:signRequest', ui.ledgerSignRequest);
     this.on('closePopupWindow', ui.closePopupWindow);
 
-    this.statisticsController.sendOpenEvent();
+    this.statisticsController.track({ eventType: 'openKeeper' });
   }
 
   async getPublicState(origin: string, connectionId: string) {

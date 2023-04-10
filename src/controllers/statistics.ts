@@ -1,45 +1,105 @@
-import { base58Encode, utf8Encode } from '@keeper-wallet/waves-crypto';
-import { sha256 } from '@noble/hashes/sha256';
-import { captureException, setUser, withScope } from '@sentry/browser';
-import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { setUser } from '@sentry/browser';
 import { detect } from 'detect-browser';
-import { type Message } from 'messages/types';
+import { nanoid } from 'nanoid';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
-import { type ExtensionStorage } from '../storage/storage';
-import { type NetworkController } from './network';
+import type { Message, MessageTx } from '../messages/types';
+import type { NetworkName } from '../networks/types';
+import type { ExtensionStorage } from '../storage/storage';
+import type { SwapVendor } from '../swap/constants';
+import type { WalletTypes } from '../ui/services/Background';
+import type { NetworkController } from './network';
 
-interface StatistictsEvent {
-  user_id: unknown;
-  app_version: unknown;
-  platform: unknown;
-  language: unknown;
-  ip: unknown;
+const {
+  name: BROWSER_NAME,
+  os: PLATFORM,
+  version: BROWSER_VERSION,
+} = detect() ?? {};
+
+const BROWSER_VERSION_MAJOR = BROWSER_VERSION?.split('.')[0];
+const KEEPER_VERSION = Browser.runtime.getManifest().version;
+
+export type AnalyticsEvent =
+  | { eventType: 'installKeeper' }
+  | { eventType: 'idleKeeper' }
+  | { eventType: 'openKeeper' }
+  | { eventType: 'initVault' }
+  | {
+      eventType: 'addWallet';
+      type: WalletTypes;
+    }
+  | {
+      eventType: 'allowOrigin';
+      origin: string;
+    }
+  | {
+      eventType: 'disableOrigin';
+      origin: string;
+    }
+  | {
+      eventType: 'approve';
+      origin: string | undefined;
+      msgType: Message['type'];
+      type?: MessageTx['type'];
+      dApp?: string;
+    }
+  | {
+      eventType: 'swapAssets';
+      actualAmountCoins?: string;
+      expectedAmountCoins?: string;
+      expectedActualDelta?: string;
+      fromAssetId: string;
+      fromCoins: string;
+      minReceivedCoins: string;
+      slippageTolerance: number;
+      status: 'success' | 'lessThanExpected';
+      toAssetId: string;
+      toCoins: string;
+      vendor: SwapVendor;
+    };
+
+interface AmplitudeEvent {
+  app_version: string;
+  chainId: number;
+  event_properties: Record<string, unknown>;
+  event_type: string;
+  insert_id: string;
+  ip: string;
+  language: string;
+  network: NetworkName;
+  platform: string | null | undefined;
   time: number;
-  user_properties: unknown;
-  event_properties: unknown;
-  event_type: unknown;
+  user_id: string;
+  user_properties: {
+    browser_name: string | undefined;
+    browser_version: string | null | undefined;
+    browser_version_major: string | undefined;
+  };
 }
 
-function createUserId() {
-  const date = Date.now();
-  const random = Math.round(Math.random() * 1000000000);
-
-  return base58Encode(sha256(utf8Encode(`${date}-${random}`)));
+interface MixPanelEvent {
+  event: string;
+  properties: {
+    $browser: string | undefined;
+    $browser_version: string | undefined;
+    $insert_id: string;
+    $os: string | null | undefined;
+    $user_id: string;
+    chainId: number;
+    distinct_id: string;
+    network: NetworkName;
+    time: number;
+    token: string;
+    version: string;
+  };
 }
 
 export class StatisticsController {
-  private events: StatistictsEvent[] = [];
-  private sended = Promise.resolve();
-  _idle = 0;
-
-  private store;
-  private networkController;
-  private version;
-  private id;
-
-  private browser;
+  #amplitudeEventQueue: AmplitudeEvent[] = [];
+  #mixPanelEventQueue: MixPanelEvent[] = [];
+  #networkController;
+  #store;
 
   constructor({
     extensionStorage,
@@ -50,213 +110,172 @@ export class StatisticsController {
   }) {
     const initState = extensionStorage.getInitState({
       lastIdleKeeper: undefined,
-      lastInstallKeeper: undefined,
       lastOpenKeeper: undefined,
       userId: undefined,
     });
 
-    const userId = initState.userId || createUserId();
+    const userId = initState.userId || nanoid();
     setUser({ id: userId });
-    this.store = new ObservableStore({ ...initState, userId });
-    extensionStorage.subscribe(this.store);
+    this.#store = new ObservableStore({ ...initState, userId });
+    extensionStorage.subscribe(this.#store);
 
-    this.networkController = networkController;
-    this.version = Browser.runtime.getManifest().version;
-    this.id = Browser.runtime.id;
-    this.browser = detect();
-    this.sendInstallEvent();
-    this.sendIdleEvent();
+    this.#networkController = networkController;
+
+    this.track({ eventType: 'idleKeeper' });
+
+    Browser.alarms.create('idleEvent', {
+      periodInMinutes: 1,
+    });
 
     Browser.alarms.onAlarm.addListener(({ name }) => {
-      if (name === 'idleEvent') {
-        this.sendIdleEvent();
+      switch (name) {
+        case 'idleEvent':
+          this.track({ eventType: 'idleKeeper' });
+          break;
+        case 'drainEventQueues':
+          this.#drainAmplitudeEventQueue();
+          this.#drainMixPanelEventQueue();
+          break;
       }
     });
   }
 
-  addEvent(event_type: string, event_properties = {}) {
-    const userId = this.store.getState().userId;
-    const network = this.networkController.getNetwork();
-    const networkCode = this.networkController.getNetworkCode(network);
+  async #scheduleDrainEventQueues() {
+    const existingAlarm = await Browser.alarms.get('drainEventQueues');
 
-    const user_properties = {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      browser_name: this.browser!.name,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      browser_version: this.browser!.version,
-      browser_version_major:
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.browser!.version && this.browser!.version.split('.')[0],
-      environment: process.env.NODE_ENV,
-      network,
-      chainId: networkCode ? networkCode.charCodeAt(0) : undefined,
-      extensionId: this.id,
-    };
-
-    this.events.push({
-      user_id: userId,
-      app_version: this.version,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      platform: this.browser!.os,
-      language:
-        (navigator.languages && navigator.languages[0]) ||
-        navigator.language ||
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (navigator as any).userLanguage,
-      ip: '$remote',
-      time: Date.now(),
-      user_properties,
-      event_properties,
-      event_type,
-    });
-    return this.sendEvents();
+    if (!existingAlarm) {
+      Browser.alarms.create('drainEventQueues', {
+        delayInMinutes: 10 / 60,
+      });
+    }
   }
 
-  sendEvents(delay = 5000) {
+  async #drainAmplitudeEventQueue() {
+    const events = this.#amplitudeEventQueue.splice(0);
+
     if (!__AMPLITUDE_API_KEY__) {
       return;
     }
 
-    this.sended = this.sended
-      .then(() => new Promise(resolve => setTimeout(resolve, delay)))
-      .then(() => {
-        if (this.events.length === 0) {
-          return;
-        }
-
-        const events = this.events;
-        this.events = [];
-
-        return fetch('https://api2.amplitude.com/2/httpapi', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: '*/*',
-          },
-          body: JSON.stringify({
-            api_key: __AMPLITUDE_API_KEY__,
-            events,
-          }),
-        })
-          .then(response => {
-            if (response.ok) {
-              return;
-            }
-
-            if (response.status === 429) {
-              this.events.unshift(...events);
-              this.sendEvents(30000);
-            } else {
-              return response.text().then(responseText => {
-                if (/Blocked by AdGuard/i.test(responseText)) {
-                  return;
-                }
-
-                if (response.status !== 400) {
-                  return;
-                }
-
-                withScope(scope => {
-                  scope.setExtra('responseText', responseText);
-
-                  captureException(
-                    new Error(
-                      `Amplitude Error: ${response.status} ${response.statusText}`
-                    )
-                  );
-                });
-              });
-            }
-          })
-          .catch(err => {
-            if (
-              err instanceof TypeError &&
-              /Failed to fetch|NetworkError when attempting to fetch resource/i.test(
-                err.message
-              )
-            ) {
-              return;
-            }
-
-            captureException(err);
-          });
-      });
-  }
-
-  addEventOnce(eventType: string, ms?: number, storeKey?: string) {
-    ms = ms || 60 * 60 * 1000; // default 1 event per hour
-    storeKey =
-      storeKey ||
-      `last${eventType.charAt(0).toUpperCase()}${eventType.slice(1)}`;
-    const state = this.store.getState();
-    const dateNow = new Date().getTime();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const dateLast = (state as any)[storeKey]
-      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        new Date((state as any)[storeKey]).getTime()
-      : dateNow - ms;
-
-    if (dateNow - dateLast >= ms) {
-      const partial: Record<string, number> = {};
-      partial[storeKey] = dateNow.valueOf();
-      this.addEvent(eventType);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      this.store.updateState(partial as any);
-    }
-  }
-
-  sendMessageEvent(message: Message) {
-    if (message.type === 'transactionPackage') {
-      message.data.forEach((data, index) => {
-        this.sendMessageEvent({
-          ...message,
-          broadcast: false,
-          data,
-          input: {
-            account: message.account,
-            broadcast: false,
-            data: message.input.data[index],
-            type: 'transaction',
-          },
-          result: message.result?.[index],
-          type: 'transaction',
-        });
-      });
-    } else if ('data' in message && 'type' in message.data) {
-      this.addEvent('approve', {
-        type: message.data.type,
-        msgType: message.type,
-        origin: message.origin,
-        dApp:
-          message.data.type === TRANSACTION_TYPE.INVOKE_SCRIPT
-            ? message.data.dApp
-            : undefined,
-      });
-    } else {
-      this.addEvent('approve', {
-        origin: message.origin,
-        msgType: message.type,
-      });
-    }
-  }
-
-  sendInstallEvent() {
-    if (!this.store.getState().lastInstallKeeper) {
-      this.addEvent('installKeeper');
-      this.store.updateState({ lastInstallKeeper: new Date().valueOf() });
-    }
-  }
-
-  sendIdleEvent() {
-    // sends `idleKeeper` event once per hour until browser is running
-    this.addEventOnce('idleKeeper');
-
-    Browser.alarms.create('idleEvent', {
-      delayInMinutes: 1,
+    const response = await fetch('https://api2.amplitude.com/2/httpapi', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        api_key: __AMPLITUDE_API_KEY__,
+        events,
+      }),
     });
+
+    if (!response.ok) {
+      if (response.status === 429 || response.status >= 500) {
+        // Dealing with limits
+        // See https://www.docs.developers.amplitude.com/analytics/apis/batch-event-upload-api/#responses
+        this.#amplitudeEventQueue.unshift(...events);
+        this.#scheduleDrainEventQueues();
+      } else {
+        const text = await response.text();
+
+        throw new Error(
+          `Amplitude Error (${response.status} ${response.statusText}): ${text}`
+        );
+      }
+    }
   }
 
-  sendOpenEvent() {
-    this.addEventOnce('openKeeper');
+  async #drainMixPanelEventQueue() {
+    const events = this.#mixPanelEventQueue.splice(0);
+
+    const response = await fetch('https://api-js.mixpanel.com/track/?ip=1', {
+      method: 'POST',
+      body: new URLSearchParams({
+        data: JSON.stringify(events),
+      }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 429 || response.status >= 500) {
+        // Dealing with limits
+        // See https://developer.mixpanel.com/reference/track-event#limits
+        this.#mixPanelEventQueue.unshift(...events);
+        this.#scheduleDrainEventQueues();
+      } else {
+        const text = await response.text();
+
+        throw new Error(
+          `MixPanel Error (${response.status} ${response.statusText}): ${text}`
+        );
+      }
+    }
+  }
+
+  track({ eventType, ...eventProperties }: AnalyticsEvent) {
+    const state = this.#store.getState();
+    const chainId = this.#networkController.getNetworkCode().charCodeAt(0);
+    const network = this.#networkController.getNetwork();
+    const time = Date.now();
+
+    const track = () => {
+      this.#amplitudeEventQueue.push({
+        app_version: KEEPER_VERSION,
+        chainId,
+        event_properties: eventProperties,
+        event_type: eventType,
+        insert_id: nanoid(),
+        ip: '$remote',
+        language: navigator.language,
+        network,
+        platform: PLATFORM,
+        time,
+        user_id: state.userId,
+        user_properties: {
+          browser_name: BROWSER_NAME,
+          browser_version: BROWSER_VERSION,
+          browser_version_major: BROWSER_VERSION_MAJOR,
+        },
+      });
+
+      if (__MIXPANEL_TOKEN__) {
+        this.#mixPanelEventQueue.push({
+          event: eventType,
+          properties: {
+            $browser: BROWSER_NAME,
+            $browser_version: BROWSER_VERSION_MAJOR,
+            $insert_id: nanoid(),
+            $os: PLATFORM,
+            $user_id: state.userId,
+            chainId,
+            distinct_id: state.userId,
+            network,
+            time,
+            token: __MIXPANEL_TOKEN__,
+            version: KEEPER_VERSION,
+            ...eventProperties,
+          },
+        });
+      }
+
+      this.#scheduleDrainEventQueues();
+    };
+
+    if (eventType === 'idleKeeper' || eventType === 'openKeeper') {
+      const stateKey = (
+        {
+          idleKeeper: 'lastIdleKeeper',
+          openKeeper: 'lastOpenKeeper',
+        } as const
+      )[eventType];
+
+      const lastTrackedMs = state[stateKey];
+      const now = Date.now();
+
+      if (lastTrackedMs == null || now >= lastTrackedMs + 12 * 60 * 60 * 1000) {
+        track();
+        this.#store.updateState({ ...state, [stateKey]: now });
+      }
+    } else {
+      track();
+    }
   }
 }
