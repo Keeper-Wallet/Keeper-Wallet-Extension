@@ -7222,9 +7222,9 @@ react-transition-group@^4.4.2:
     prop-types "^15.6.2"
 
 react-virtualized-auto-sizer@^1.0.6:
-  version "1.0.12"
-  resolved "https://registry.yarnpkg.com/react-virtualized-auto-sizer/-/react-virtualized-auto-sizer-1.0.12.tgz#4ab4d622115a74c85f9ead86301fa3a3bfa917f6"
-  integrity sha512-ELTFQieCCGZ7zz8aEkFnAaMUsAlaOMk/thVcyVlEYtWnlloM49iRFLvirrDIPd8rKwuaWD0TaODHRizMsmkdsA==
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/react-virtualized-auto-sizer/-/react-virtualized-auto-sizer-1.0.13.tgz#5c91b5faa46eadf121108649b977eb8cca01b849"
+  integrity sha512-iazB2jnZz93jgjo66/rMlrshQ0M67Y7CRSGJRu/BkWH5H63OcC0YL6dBxJZ+etHDjZT6qnUm4PKRjOJx9yF51w==
 
 react-window@^1.8.6:
   version "1.8.8"
