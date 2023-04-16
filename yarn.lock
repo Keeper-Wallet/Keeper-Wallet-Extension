@@ -1527,9 +1527,9 @@
     "@jridgewell/sourcemap-codec" "1.4.14"
 
 "@keeper-wallet/swap-client@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@keeper-wallet/swap-client/-/swap-client-0.2.0.tgz#cf61ac4c16c8708bd72800e76c311f6f9442614e"
-  integrity sha512-79iRnPbFc0nb1UbMOn11qa5Utfz/dFtxDWRmFjxaqu0cNzb6vlTy5eVVWBlIpEXURyTJYcVVMwxd/RKD7RQbrg==
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@keeper-wallet/swap-client/-/swap-client-0.2.1.tgz#6fcad941224290e1dca133bc1099b965cb522c57"
+  integrity sha512-+v4wYihLuMuHfEPyELk1sMHdWOCtSC9bHo+Z5O1/tcZxBmye7OqS0ebETxD87Scybdk0sFLWdOltfstmTkz+iw==
   dependencies:
     "@types/long" "^4.0.2"
     "@waves/bignumber" "^1.1.1"
