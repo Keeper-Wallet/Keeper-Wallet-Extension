@@ -1105,10 +1105,10 @@
   dependencies:
     postcss-value-parser "^4.2.0"
 
-"@csstools/postcss-gradients-interpolation-method@^3.0.3":
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/@csstools/postcss-gradients-interpolation-method/-/postcss-gradients-interpolation-method-3.0.3.tgz#39771e0fc76246a07a5e5e262d133e0cf3920a49"
-  integrity sha512-0i6HQ8V3jcGEEhhGPAQdMemPjXTOct9qDYLIzjsgKHhrHVwhjwBVcUV70658vJJmrJJvVXgZx2qc4S6okKZJpg==
+"@csstools/postcss-gradients-interpolation-method@^3.0.4":
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/@csstools/postcss-gradients-interpolation-method/-/postcss-gradients-interpolation-method-3.0.4.tgz#c03402087c41feee0115f714cc87696e6424ba92"
+  integrity sha512-GgKoY7OlvL65UPigEdlrvMAUCR5kOQCjtue2/36TPrBNoRS6KM2KOqmjIVsxEwYYwK+L28pdnM8r10m03hhZxA==
   dependencies:
     "@csstools/css-color-parser" "^1.1.2"
     "@csstools/css-parser-algorithms" "^2.1.1"
@@ -3073,12 +3073,12 @@ caniuse-api@^3.0.0:
     lodash.memoize "^4.1.2"
     lodash.uniq "^4.5.0"
 
-caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001464:
+caniuse-lite@^1.0.0:
   version "1.0.30001477"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001477.tgz#a2ffb2276258233034bbb869d4558b02658a511e"
   integrity sha512-lZim4iUHhGcy5p+Ri/G7m84hJwncj+Kz7S5aD4hoQfslKZJgt0tHc/hafVbqHC5bbhHb+mrW2JOUHkI5KH7toQ==
 
-caniuse-lite@^1.0.30001449:
+caniuse-lite@^1.0.30001449, caniuse-lite@^1.0.30001464:
   version "1.0.30001480"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001480.tgz#9bbd35ee44c2480a1e3a3b9f4496f5066817164a"
   integrity sha512-q7cpoPPvZYgtyC4VaBSN0Bt+PJ4c4EYRf0DrduInOz2SkFpHD5p3LnvEpqBp7UnJn+8x1Ogl1s38saUxe+ihQQ==
@@ -3929,9 +3929,9 @@ edge-paths@^3.0.5:
     which "^2.0.2"
 
 electron-to-chromium@^1.4.284:
-  version "1.4.365"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.365.tgz#ccd9e352d4493aa288d87e6ea36f3edf350c045e"
-  integrity sha512-FRHZO+1tUNO4TOPXmlxetkoaIY8uwHzd1kKopK/Gx2SKn1L47wJXWD44wxP5CGRyyP98z/c8e1eBzJrgPeiBOg==
+  version "1.4.367"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.367.tgz#d9ddc529ba2315fc852b722c359e4a40e86aa742"
+  integrity sha512-mNuDxb+HpLhPGUKrg0hSxbTjHWw8EziwkwlJNkFUj3W60ypigLDRVz04vU+VRsJPi8Gub+FDhYUpuTm9xiEwRQ==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -6816,15 +6816,15 @@ postcss-place@^8.0.1:
     postcss-value-parser "^4.2.0"
 
 postcss-preset-env@^8.0.0:
-  version "8.3.1"
-  resolved "https://registry.yarnpkg.com/postcss-preset-env/-/postcss-preset-env-8.3.1.tgz#f7a5af0604df54da12eb0be9123c4c7fd5e01f81"
-  integrity sha512-k3Y8BXbVLBAufrla3CNmQJhMS1iRuT9LFlysYvzs1rU5E78+ShX2u0EUL6KpMi0pDJO3wZcuVYSR8cgukfoRtg==
+  version "8.3.2"
+  resolved "https://registry.yarnpkg.com/postcss-preset-env/-/postcss-preset-env-8.3.2.tgz#9ec368e0f0df9c693d52b69d525d366fe4b1833a"
+  integrity sha512-VSAOsfxTXzO/gX5QljC8x8hN3ABbD9iqqLgqHqohBdNI5FhJptwpl96kpu+kYvvzK7BWwaHYou0IeYrp+NqmcQ==
   dependencies:
     "@csstools/postcss-cascade-layers" "^3.0.1"
     "@csstools/postcss-color-function" "^2.2.1"
     "@csstools/postcss-color-mix-function" "^1.0.1"
     "@csstools/postcss-font-format-keywords" "^2.0.2"
-    "@csstools/postcss-gradients-interpolation-method" "^3.0.3"
+    "@csstools/postcss-gradients-interpolation-method" "^3.0.4"
     "@csstools/postcss-hwb-function" "^2.2.1"
     "@csstools/postcss-ic-unit" "^2.0.2"
     "@csstools/postcss-is-pseudo-class" "^3.2.0"
