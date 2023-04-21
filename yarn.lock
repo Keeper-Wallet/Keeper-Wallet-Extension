@@ -2252,9 +2252,9 @@
     eslint-visitor-keys "^3.3.0"
 
 "@waves-domains/client@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@waves-domains/client/-/client-0.3.0.tgz#e2e7d464917c514bae64fed6e6230c4f0f019181"
-  integrity sha512-fmfD3eWzT9KO0ya6iYP7QPBdp5YtXEVGceBkYRdUWWwgx3ZfhoY3vqGI4y+rPDE5Vj1IPGGnQbgp7AAOLgJBkw==
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@waves-domains/client/-/client-0.3.1.tgz#a2fc375f50ff0783ca771d5951fa0099cc12a6f3"
+  integrity sha512-zBMKf5F+rts5UbeTkr9b3xKJaPnqXXyR7XVMtSZ5pyWdcAlC+phcj5rINYEY6NpQEy7uk+wpyg+uUCI45imaFw==
 
 "@waves/bignumber@^1.0.0", "@waves/bignumber@^1.1.1":
   version "1.1.1"
