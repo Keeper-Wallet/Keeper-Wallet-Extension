@@ -114,7 +114,7 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
               rel="noopener noreferrer"
               className="link black"
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              href={getAssetDetailLink(networkCode!, asset.originTransactionId)}
+              href={getAssetDetailLink(networkCode!, asset.id)}
               target="_blank"
             >
               {t('assetInfo.viewDetailsInExplorer')}
