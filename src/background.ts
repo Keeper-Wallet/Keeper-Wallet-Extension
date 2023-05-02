@@ -845,17 +845,14 @@ class BackgroundService extends EventEmitter {
         takeUntil(fromWebExtensionEvent(port.onDisconnect)),
         switchMap(([, areaName]) =>
           areaName === 'local' &&
-          Boolean(
-            this.permissionsController.hasPermission(
-              origin,
-              PERMISSIONS.APPROVED
-            )
-          )
+          this.preferencesController.getSelectedAccount() != null &&
+          this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED)
             ? fromPromise(this.getPublicState(origin, connectionId))
             : empty
         ),
         onStart(async () => {
           if (
+            this.preferencesController.getSelectedAccount() != null &&
             this.permissionsController.hasPermission(
               origin,
               PERMISSIONS.APPROVED
