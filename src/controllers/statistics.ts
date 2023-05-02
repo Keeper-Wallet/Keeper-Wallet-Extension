@@ -153,6 +153,8 @@ export class StatisticsController {
   async #drainAmplitudeEventQueue() {
     const events = this.#amplitudeEventQueue.splice(0);
 
+    if (events.length === 0) return;
+
     if (!__AMPLITUDE_API_KEY__) {
       return;
     }
@@ -186,6 +188,8 @@ export class StatisticsController {
 
   async #drainMixPanelEventQueue() {
     const events = this.#mixPanelEventQueue.splice(0);
+
+    if (events.length === 0) return;
 
     const response = await fetch('https://api-js.mixpanel.com/track/?ip=1', {
       method: 'POST',
