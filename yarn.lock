@@ -1541,13 +1541,14 @@
     "@jridgewell/sourcemap-codec" "1.4.14"
 
 "@keeper-wallet/swap-client@^0.2.0":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@keeper-wallet/swap-client/-/swap-client-0.2.2.tgz#1efa0308ea7b3d2fc8771c12d5e5ffe33ff7b1fa"
-  integrity sha512-BSuuZ69PG/SenfhacjbEVw11xXhq3zkPvVJ8+/3wNpkPd6nFbXTGGR+SVv+YCzESsCEnjFq+g+i5H5nE4PsaeA==
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@keeper-wallet/swap-client/-/swap-client-0.2.3.tgz#8279f5cd5c95d2c92e44c875b4054bbfa6e1d822"
+  integrity sha512-+ZzwcW5gdjez+DWZVGZySE9gCi4G67qGbSYLb/bZnY6TLdmpcfdoMPmXffi/DgEQe8U/RrLaxFasWWNhhKpgRA==
   dependencies:
     "@types/long" "^4.0.2"
     "@waves/bignumber" "^1.1.1"
     long "^5.2.0"
+    nanoid "^4.0.2"
 
 "@keeper-wallet/waves-crypto@^3.0.0":
   version "3.0.4"
@@ -6014,7 +6015,7 @@ nanoid@^3.3.6:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.6.tgz#443380c856d6e9f9824267d960b4236ad583ea4c"
   integrity sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==
 
-nanoid@^4.0.0:
+nanoid@^4.0.0, nanoid@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-4.0.2.tgz#140b3c5003959adbebf521c170f282c5e7f9fb9e"
   integrity sha512-7ZtY5KTCNheRGfEFxnedV5zFiORN1+Y1N6zvPTnHQd8ENUvfaDBeuJDZb2bN/oXwXxu3qkTXDzy57W5vAmDTBw==
