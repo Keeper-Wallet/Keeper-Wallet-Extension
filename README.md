@@ -233,7 +233,7 @@ If a website is not trusted, events won't be displayed.
 
 #### auth
 
-This is a method for obtaining a signature of authorization data while verifying Waves' user. If the the signature is valid, be sure that the given blockchain account belongs to that user.
+This is a method for obtaining a signature of authorization data while verifying Waves' user. If the signature is valid, be sure that the given blockchain account belongs to that user.
 
 Example:
 
@@ -580,7 +580,7 @@ Possible errors:
 
 #### signTransactionPackage
 
-A package transaction signature. Sometimes several transactions need to be simultaneously signed, and for users' convenience, up to seven transactions at ones could be signed. See the description of supported transaction types in [Transactions](#transactions) section below.
+A package transaction signature. Sometimes several transactions need to be simultaneously signed, and for users' convenience, up to seven transactions at once could be signed. See the description of supported transaction types in [Transactions](#transactions) section below.
 
 Example:
 
