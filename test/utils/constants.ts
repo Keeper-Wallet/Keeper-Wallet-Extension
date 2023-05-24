@@ -1,7 +1,6 @@
 export const WHITELIST = [
   'swop.fi',
   'testnet.waves.exchange',
-  'vires.finance',
   'waves-dapp.com',
   'waves-ide.com',
   'waves.exchange',
