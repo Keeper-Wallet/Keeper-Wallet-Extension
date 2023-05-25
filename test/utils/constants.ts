@@ -6,6 +6,9 @@ export const WHITELIST = [
   'waves-ide.com',
   'waves.exchange',
   'wavesducks.com',
+  'web.keeper-wallet.app',
+  'swap.keeper-wallet.app',
+  'app.power.tech',
 ];
 
 export const CUSTOMLIST = ['docs.waves.tech', 'waves.tech'];

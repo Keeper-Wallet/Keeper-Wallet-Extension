@@ -54,6 +54,10 @@ export const DEFAULT_MAIN_CONFIG = {
     'waves-ide.com',
     'wavesducks.com',
     'vires.finance',
+    'v2.vires.finance',
+    'web.keeper-wallet.app',
+    'swap.keeper-wallet.app',
+    'app.power.tech',
   ],
   networks: ['mainnet', 'testnet', 'stagenet', 'custom'],
   messages_config: {
