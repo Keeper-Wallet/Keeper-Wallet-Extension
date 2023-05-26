@@ -3425,14 +3425,14 @@ css-has-pseudo@^5.0.2:
     postcss-value-parser "^4.2.0"
 
 css-loader@^6.7.1:
-  version "6.7.3"
-  resolved "https://registry.yarnpkg.com/css-loader/-/css-loader-6.7.3.tgz#1e8799f3ccc5874fdd55461af51137fcc5befbcd"
-  integrity sha512-qhOH1KlBMnZP8FzRO6YCH9UHXQhVMcEGLyNdb7Hv2cpcmJbW0YrddO+tG1ab5nT41KpHIYGsbeHqxB9xPu1pKQ==
+  version "6.7.4"
+  resolved "https://registry.yarnpkg.com/css-loader/-/css-loader-6.7.4.tgz#a5d8ec28a73f3e0823998cfee2a1f7e564b91f9b"
+  integrity sha512-0Y5uHtK5BswfaGJ+jrO+4pPg1msFBc0pwPIE1VqfpmVn6YbDfYfXMj8rfd7nt+4goAhJueO+H/I40VWJfcP1mQ==
   dependencies:
     icss-utils "^5.1.0"
-    postcss "^8.4.19"
+    postcss "^8.4.21"
     postcss-modules-extract-imports "^3.0.0"
-    postcss-modules-local-by-default "^4.0.0"
+    postcss-modules-local-by-default "^4.0.1"
     postcss-modules-scope "^3.0.0"
     postcss-modules-values "^4.0.0"
     postcss-value-parser "^4.2.0"
@@ -6660,10 +6660,10 @@ postcss-modules-extract-imports@^3.0.0:
   resolved "https://registry.yarnpkg.com/postcss-modules-extract-imports/-/postcss-modules-extract-imports-3.0.0.tgz#cda1f047c0ae80c97dbe28c3e76a43b88025741d"
   integrity sha512-bdHleFnP3kZ4NYDhuGlVK+CMrQ/pqUm8bx/oGL93K6gVwiclvX5x0n76fYMKuIGKzlABOy13zsvqjb0f92TEXw==
 
-postcss-modules-local-by-default@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/postcss-modules-local-by-default/-/postcss-modules-local-by-default-4.0.0.tgz#ebbb54fae1598eecfdf691a02b3ff3b390a5a51c"
-  integrity sha512-sT7ihtmGSF9yhm6ggikHdV0hlziDTX7oFoXtuVWeDd3hHObNkcHRo9V3yg7vCAY7cONyxJC/XXCmmiHHcvX7bQ==
+postcss-modules-local-by-default@^4.0.1:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/postcss-modules-local-by-default/-/postcss-modules-local-by-default-4.0.3.tgz#b08eb4f083050708998ba2c6061b50c2870ca524"
+  integrity sha512-2/u2zraspoACtrbFRnTijMiQtb4GW4BvatjaG/bCjYQo8kLTdevCUlwuBHx2sCnSyrI3x3qj4ZK1j5LQBgzmwA==
   dependencies:
     icss-utils "^5.0.0"
     postcss-selector-parser "^6.0.2"
@@ -6899,7 +6899,7 @@ postcss-selector-not@^7.0.1:
   dependencies:
     postcss-selector-parser "^6.0.10"
 
-postcss-selector-parser@^6.0.10, postcss-selector-parser@^6.0.2, postcss-selector-parser@^6.0.4, postcss-selector-parser@^6.0.5, postcss-selector-parser@^6.0.9:
+postcss-selector-parser@^6.0.10, postcss-selector-parser@^6.0.5, postcss-selector-parser@^6.0.9:
   version "6.0.11"
   resolved "https://registry.yarnpkg.com/postcss-selector-parser/-/postcss-selector-parser-6.0.11.tgz#2e41dc39b7ad74046e1615185185cd0b17d0c8dc"
   integrity sha512-zbARubNdogI9j7WY4nQJBiNqQf3sLS3wCP4WfOidu+p28LofJqDH1tcXypGrcmMHhDk2t9wGhCsYe/+szLTy1g==
@@ -6907,7 +6907,7 @@ postcss-selector-parser@^6.0.10, postcss-selector-parser@^6.0.2, postcss-selecto
     cssesc "^3.0.0"
     util-deprecate "^1.0.2"
 
-postcss-selector-parser@^6.0.12:
+postcss-selector-parser@^6.0.12, postcss-selector-parser@^6.0.2, postcss-selector-parser@^6.0.4:
   version "6.0.13"
   resolved "https://registry.yarnpkg.com/postcss-selector-parser/-/postcss-selector-parser-6.0.13.tgz#d05d8d76b1e8e173257ef9d60b706a8e5e99bf1b"
   integrity sha512-EaV1Gl4mUEV4ddhDnv/xtj7sxwrwxdetHdWUGnT4VJQf+4d05v6lHYZr8N573k5Z0BViss7BDhfWtKS3+sfAqQ==
