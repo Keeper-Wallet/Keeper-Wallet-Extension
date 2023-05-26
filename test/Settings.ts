@@ -183,7 +183,7 @@ describe('Settings', function () {
 
       it('Default whitelisted services appears', async function () {
         for (const origin of WHITELIST) {
-          await expect(
+          expect(
             (
               await PermissionControlSettingsScreen.getPermissionByOrigin(
                 origin
@@ -240,7 +240,7 @@ describe('Settings', function () {
           await TopMenu.settingsButton.click();
           await SettingsMenuScreen.permissionsSectionLink.click();
 
-          await expect(
+          expect(
             (
               await PermissionControlSettingsScreen.getPermissionByOrigin(
                 CUSTOMLIST[0]
@@ -418,7 +418,7 @@ describe('Settings', function () {
 
       it('Can be disabled', async function () {
         await SettingsMenuScreen.suspiciousAssetsProtectionButton.click();
-        await expect(
+        expect(
           await SettingsMenuScreen.suspiciousAssetsProtectionButton
         ).toHaveAttr('data-teston', 'false');
         await expect(
