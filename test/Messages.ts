@@ -68,8 +68,8 @@ describe('Messages', function () {
     await App.resetVault();
   });
 
-  it('Allowed messages from all resources from WhiteList', async function () {
-    for (const origin of WHITELIST) {
+  for (const origin of WHITELIST) {
+    it(`Allowed messages from ${origin}`, async function () {
       await browser.navigateTo(`https://${origin}`);
 
       const { waitForNewWindows } = await Windows.captureNewWindows();
@@ -86,8 +86,8 @@ describe('Messages', function () {
       await Windows.waitForWindowToClose(messageWindow);
       messageWindow = null;
       await browser.switchToWindow(tabOrigin);
-    }
-  });
+    });
+  }
 
   it('When a message is received from a new resource, permission is requested to access', async function () {
     await browser.navigateTo(`https://${CUSTOMLIST[0]}`);
