@@ -1,3 +1,5 @@
+import waitForExpect from 'wait-for-expect';
+
 import { ChooseAccountsForm } from './helpers/ChooseAccountsForm';
 import { ConfirmDeleteAccountsScreen } from './helpers/ConfirmDeleteAccountsScreen';
 import { ContentScript } from './helpers/ContentScript';
@@ -19,7 +21,6 @@ import { Windows } from './helpers/Windows';
 import { CUSTOMLIST, DEFAULT_PASSWORD, WHITELIST } from './utils/constants';
 
 const SPENDING_LIMIT = '1';
-const BROWSER_TIMEOUT_DELAY = 120 * 1000;
 
 describe('Settings', function () {
   let tabKeeper: string;
@@ -367,8 +368,9 @@ describe('Settings', function () {
         await browser.openKeeperPopup();
         await Settings.setSessionTimeout('Browser timeout');
 
-        await browser.pause(BROWSER_TIMEOUT_DELAY);
-        await expect(LoginScreen.root).toBeDisplayed();
+        await waitForExpect(async () => {
+          await expect(LoginScreen.root).toBeDisplayed();
+        }, 120 * 1000);
       });
     });
   });
