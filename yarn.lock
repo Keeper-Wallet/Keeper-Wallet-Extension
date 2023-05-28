@@ -8119,9 +8119,9 @@ stylelint@^15.0.0:
     write-file-atomic "^5.0.1"
 
 stylus-loader@^7.0.0:
-  version "7.1.1"
-  resolved "https://registry.yarnpkg.com/stylus-loader/-/stylus-loader-7.1.1.tgz#8148822a62c10c2fe000ddaf15a0f2ee64ad8492"
-  integrity sha512-Qw340bf0xABlvMV2+2bHbGgrR6pVbz870jtwYXXjBV7uFHq8lV2k6HmdhJ0dKim8SbyKCRBN1wdbDEnHV9MH5g==
+  version "7.1.2"
+  resolved "https://registry.yarnpkg.com/stylus-loader/-/stylus-loader-7.1.2.tgz#bf9556757344469f857e2edd79d1b9f69e364f69"
+  integrity sha512-terrqvQV0ie1q2XKHnStfLOztCyKj6CYO7NqFIP2ijIsGGgCX4cbyn49DjaTwpkc91QBnMMSYkK7JAIL5gvmIg==
   dependencies:
     fast-glob "^3.2.12"
     klona "^2.0.6"
