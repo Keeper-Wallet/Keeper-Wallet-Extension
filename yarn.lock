@@ -9016,9 +9016,9 @@ yocto-queue@^1.0.0:
   integrity sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==
 
 zip-a-folder@^1.1.5:
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/zip-a-folder/-/zip-a-folder-1.1.6.tgz#e40b92a042673eae38818bd35fa1a60d94592aff"
-  integrity sha512-dbfNx6CXf0nypW8yu0GU+QPHBZH1fXXONEvAJPmszsGuPxIk5ZbQ542AS33EkOFu7nyUx9jMYClKMq1wHYqhYw==
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/zip-a-folder/-/zip-a-folder-1.1.7.tgz#ae2a216c69097f1eac598867dc8f1d69e68ddb14"
+  integrity sha512-JqRZlUYJVogDvR1hl1j+30MNwrOWc886bpPePnfyXgMFQpOqfDcZAqICNp0Zt+Th7C2KcQYMI4fThrkEXa7DSQ==
   dependencies:
     archiver "^5.3.1"
 
