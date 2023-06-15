@@ -8975,12 +8975,13 @@ yocto-queue@^1.0.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-1.0.0.tgz#7f816433fb2cbc511ec8bf7d263c3b58a1a3c251"
   integrity sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==
 
-zip-a-folder@^1.1.5:
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/zip-a-folder/-/zip-a-folder-1.1.7.tgz#ae2a216c69097f1eac598867dc8f1d69e68ddb14"
-  integrity sha512-JqRZlUYJVogDvR1hl1j+30MNwrOWc886bpPePnfyXgMFQpOqfDcZAqICNp0Zt+Th7C2KcQYMI4fThrkEXa7DSQ==
+zip-a-folder@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/zip-a-folder/-/zip-a-folder-2.0.0.tgz#3a8c5c173cf431bca4511edec0a14436f4136760"
+  integrity sha512-D/TfWs3pFy96RE9AgXbC1ZzKcmoFHSkcUrQP7wDr+tHqBvGy7jj/BuGEWwOvjHjlC7mssCPZAzSS6Kuv7D881A==
   dependencies:
     archiver "^5.3.1"
+    is-glob "^4.0.3"
 
 zip-stream@^4.1.0:
   version "4.1.0"
