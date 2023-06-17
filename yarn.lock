@@ -7751,7 +7751,14 @@ semver@^6.0.0, semver@^6.1.1, semver@^6.1.2, semver@^6.3.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
-semver@^7.3.4, semver@^7.3.5, semver@^7.3.7, semver@^7.3.8:
+semver@^7.3.4:
+  version "7.5.2"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.5.2.tgz#5b851e66d1be07c1cdaf37dfc856f543325a2beb"
+  integrity sha512-SoftuTROv/cRjCze/scjGyiDtcUyxw1rgYQSZY7XTmtR5hX+dm76iDbTH8TkLPHCQmlbQVSSbNZCPM2hb0knnQ==
+  dependencies:
+    lru-cache "^6.0.0"
+
+semver@^7.3.5, semver@^7.3.7, semver@^7.3.8:
   version "7.5.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.5.1.tgz#c90c4d631cf74720e46b21c1d37ea07edfab91ec"
   integrity sha512-Wvss5ivl8TMRZXXESstBA4uR5iXgEN/VC5/sOcuXdVLzcdkz4HWetIoRfG5gb5X+ij/G9rw9YoGn3QoQ8OCSpw==
@@ -8074,9 +8081,9 @@ stylelint-order@^6.0.0:
     postcss-sorting "^8.0.2"
 
 stylelint@^15.0.0:
-  version "15.7.0"
-  resolved "https://registry.yarnpkg.com/stylelint/-/stylelint-15.7.0.tgz#945939a2ce9516998a198580e69b1ceef8a7c5f3"
-  integrity sha512-fQRwHwWuZsDn4ENyE9AsKkOkV9WlD2CmYiVDbdZPdS3iZh0ceypOn1EuwTNuZ8xTrHF+jVeIEzLtFFSlD/nJHg==
+  version "15.8.0"
+  resolved "https://registry.yarnpkg.com/stylelint/-/stylelint-15.8.0.tgz#c1e8a85d6f9e24670c4385ce0b79103e9b1b3e81"
+  integrity sha512-x9qBk84F3MEjMEUNCE7MtWmfj9G9y5XzJ0cpQeJdy2l/IoqjC8Ih0N0ytmOTnXE4Yv0J7I1cmVRQUVNSPCxTsA==
   dependencies:
     "@csstools/css-parser-algorithms" "^2.2.0"
     "@csstools/css-tokenizer" "^2.1.1"
@@ -8118,7 +8125,6 @@ stylelint@^15.0.0:
     supports-hyperlinks "^3.0.0"
     svg-tags "^1.0.0"
     table "^6.8.1"
-    v8-compile-cache "^2.3.0"
     write-file-atomic "^5.0.1"
 
 stylus-loader@^7.0.0:
@@ -8495,11 +8501,6 @@ uuid@^9.0.0:
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.0.tgz#592f550650024a38ceb0c562f2f6aa435761efb5"
   integrity sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==
-
-v8-compile-cache@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/v8-compile-cache/-/v8-compile-cache-2.3.0.tgz#2de19618c66dc247dcfb6f99338035d8245a2cee"
-  integrity sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==
 
 validate-npm-package-license@^3.0.1:
   version "3.0.4"
