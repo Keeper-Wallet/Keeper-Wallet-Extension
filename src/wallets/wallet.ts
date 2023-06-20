@@ -97,7 +97,7 @@ export abstract class Wallet<TData extends WalletPrivateData> {
 
     const decryptedMessage = await decryptMessage(
       sharedKey,
-      utf8Encode(message)
+      base58Decode(message)
     );
 
     return base58Encode(decryptedMessage);
