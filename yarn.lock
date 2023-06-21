@@ -2696,12 +2696,12 @@ acorn-walk@^8.0.0:
   resolved "https://registry.yarnpkg.com/acorn-walk/-/acorn-walk-8.2.0.tgz#741210f2e2426454508853a2f44d0ab83b7f69c1"
   integrity sha512-k+iyHEuPgSw6SbuDpGQM+06HQUa04DZ3o+F6CSzXMvvI5KMvnaEqXe+YVe555R9nn6GPt404fos4wcgpw12SDA==
 
-acorn@^8.0.4, acorn@^8.7.1, acorn@^8.8.2:
+acorn@^8.0.4:
   version "8.8.2"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.8.2.tgz#1b2f25db02af965399b9776b0c2c391276d37c4a"
   integrity sha512-xjIYgE8HBrkpd/sJqOGNspf8uHG+NOHGOw6a/Urj8taM2EXfdNAH2oFcPeIFfsv3+kz/mJrS5VuMqbNLjCa2vw==
 
-acorn@^8.8.0:
+acorn@^8.7.1, acorn@^8.8.0, acorn@^8.8.2:
   version "8.9.0"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.9.0.tgz#78a16e3b2bcc198c10822786fa6679e245db5b59"
   integrity sha512-jaVNAFBHNLXspO543WnNNPZFRtavh3skAkITqD0/2aeMkKZTN+254PyhwxFYrk3vQ1xfY+2wbesJMs/JC8/PwQ==
@@ -4015,9 +4015,9 @@ edge-paths@^3.0.5:
     which "^2.0.2"
 
 electron-to-chromium@^1.4.431:
-  version "1.4.435"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.435.tgz#761c34300603b9f1234f0b6155870d3002435db6"
-  integrity sha512-B0CBWVFhvoQCW/XtjRzgrmqcgVWg6RXOEM/dK59+wFV93BFGR6AeNKc4OyhM+T3IhJaOOG8o/V+33Y2mwJWtzw==
+  version "1.4.436"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.436.tgz#2aa6e1644693d25cb438a873fba72ec901e1be30"
+  integrity sha512-aktOxo8fnrMC8vOIBMVS3PXbT1nrPQ+SouUuN7Y0a+Rw3pOMrvIV92Ybnax7x4tugA+ZpYA5fOHTby7ama8OQQ==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -8266,9 +8266,9 @@ terser@^5.10.0:
     source-map-support "~0.5.20"
 
 terser@^5.16.8:
-  version "5.18.0"
-  resolved "https://registry.yarnpkg.com/terser/-/terser-5.18.0.tgz#dc811fb8e3481a875d545bda247c8730ee4dc76b"
-  integrity sha512-pdL757Ig5a0I+owA42l6tIuEycRuM7FPY4n62h44mRLRfnOxJkkOHd6i89dOpwZlpF6JXBwaAHF6yWzFrt+QyA==
+  version "5.18.1"
+  resolved "https://registry.yarnpkg.com/terser/-/terser-5.18.1.tgz#6d8642508ae9fb7b48768e48f16d675c89a78460"
+  integrity sha512-j1n0Ao919h/Ai5r43VAnfV/7azUYW43GPxK7qSATzrsERfW7+y2QW9Cp9ufnRF5CQUWbnLSo7UJokSWCqg4tsQ==
   dependencies:
     "@jridgewell/source-map" "^0.3.3"
     acorn "^8.8.2"
@@ -8695,9 +8695,9 @@ webpack-sources@^3.2.3:
   integrity sha512-/DyMEOrDgLKKIG0fmvtz+4dUX/3Ghozwgm6iPp8KRhvn+eQf9+Q7GWxVNMk3+uCPWfdXYC4ExGBckIXdFEfH1w==
 
 webpack@^5.73.0:
-  version "5.87.0"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.87.0.tgz#df8a9c094c6037f45e0d77598f9e59d33ca3a98c"
-  integrity sha512-GOu1tNbQ7p1bDEoFRs2YPcfyGs8xq52yyPBZ3m2VGnXGtV9MxjrkABHm4V9Ia280OefsSLzvbVoXcfLxjKY/Iw==
+  version "5.88.0"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.88.0.tgz#a07aa2f8e7a64a8f1cec0c6c2e180e3cb34440c8"
+  integrity sha512-O3jDhG5e44qIBSi/P6KpcCcH7HD+nYIHVBhdWFxcLOcIGN8zGo5nqF3BjyNCxIh4p1vFdNnreZv2h2KkoAw3lw==
   dependencies:
     "@types/eslint-scope" "^3.7.3"
     "@types/estree" "^1.0.0"
