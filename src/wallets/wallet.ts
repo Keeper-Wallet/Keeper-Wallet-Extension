@@ -4,6 +4,7 @@ import {
   createSharedKey,
   decryptMessage,
   encryptMessage,
+  utf8Decode,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
 import { type MessageTx } from 'messages/types';
@@ -100,6 +101,6 @@ export abstract class Wallet<TData extends WalletPrivateData> {
       base58Decode(message)
     );
 
-    return base58Encode(decryptedMessage);
+    return utf8Decode(decryptedMessage);
   }
 }
