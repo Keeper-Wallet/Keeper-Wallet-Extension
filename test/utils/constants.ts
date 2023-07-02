@@ -9,6 +9,7 @@ export const WHITELIST = [
   'web.keeper-wallet.app',
   'swap.keeper-wallet.app',
   'app.power.tech',
+  'wx.network',
 ];
 
 export const CUSTOMLIST = ['docs.waves.tech', 'waves.tech'];

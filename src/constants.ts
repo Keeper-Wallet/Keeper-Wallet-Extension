@@ -58,6 +58,7 @@ export const DEFAULT_MAIN_CONFIG = {
     'web.keeper-wallet.app',
     'swap.keeper-wallet.app',
     'app.power.tech',
+    'wx.network',
   ],
   networks: ['mainnet', 'testnet', 'stagenet', 'custom'],
   messages_config: {
