@@ -2228,9 +2228,9 @@
   integrity sha512-cSjhgrr8g4KbPnnijAr/KJDNKa/bBa+ixYkywFRvrhvi9n1WEl7yYbtRyzE6jqNQiSxxJxoAW3STaOQwJHndaw==
 
 "@types/webextension-polyfill@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@types/webextension-polyfill/-/webextension-polyfill-0.10.0.tgz#e87b5e2c101599779a584cdb043887ad73b37b0e"
-  integrity sha512-If4EcaHzYTqcbNMp/FdReVdRmLL/Te42ivnJII551bYjhX19bWem5m14FERCqdJA732OloGuxCRvLBvcMGsn4A==
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/@types/webextension-polyfill/-/webextension-polyfill-0.10.1.tgz#63698f0ef78a069d2d307be3caaee5e70c12e09d"
+  integrity sha512-Sdg+E2F5JUbhkE1qX15QUxpyhfMFKRGJqND9nb1C0gNN4NR7kCV31/1GvNbg6Xe+m/JElJ9/lG5kepMzjGPuQw==
 
 "@types/which@^1.3.2":
   version "1.3.2"
@@ -2243,9 +2243,9 @@
   integrity sha512-113D3mDkZDjo+EeUEHCFy0qniNc1ZpecGiAU7WSo7YDoSzolZIQKpYFHrPpjkB2nuyahcKfrmLXeQlh7gqJYdw==
 
 "@types/ws@^8.5.3":
-  version "8.5.4"
-  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.5.4.tgz#bb10e36116d6e570dd943735f86c933c1587b8a5"
-  integrity sha512-zdQDHKUgcX/zBc4GrwsE/7dVdAD8JR4EuiAXiiUhhfyIJXXb2+PrGshFyeXWQPMmmZ2XxgaqclgpIC7eTXc1mg==
+  version "8.5.5"
+  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.5.5.tgz#af587964aa06682702ee6dcbc7be41a80e4b28eb"
+  integrity sha512-lwhs8hktwxSjf9UaZ9tG5M03PGogvFaH8gUgLNbN9HKIg0dvv6q+gkSuJ8HN4/VbyxkuLzCjlN7GquQ0gUJfIg==
   dependencies:
     "@types/node" "*"
 
