@@ -1,80 +1,63 @@
-import ObservableStore from 'obs-store';
+import invariant from 'tiny-invariant';
 import Browser from 'webextension-polyfill';
 
-import { type ExtensionStorage } from '../storage/storage';
-
-const height = 622;
-const width = 357;
+const NOTIFICATION_WINDOW_URL = Browser.runtime.getURL('/notification.html');
 
 export class WindowManager {
-  #store;
+  #lastWindowPromise: Promise<Browser.Windows.Window | void> =
+    Promise.resolve();
 
-  constructor({ extensionStorage }: { extensionStorage: ExtensionStorage }) {
-    this.#store = new ObservableStore(
-      extensionStorage.getInitState({
-        notificationWindowId: undefined,
-        inShowMode: undefined,
-      })
+  async #getNotificationWindowId() {
+    const windows = await Browser.windows.getAll({
+      populate: true,
+      windowTypes: ['popup'],
+    });
+
+    const win = windows.find(w =>
+      w.tabs?.some(tab => tab.url?.startsWith(NOTIFICATION_WINDOW_URL))
     );
 
-    extensionStorage.subscribe(this.#store);
+    return win?.id;
   }
 
-  async showWindow() {
-    const { inShowMode } = this.#store.getState();
+  showWindow() {
+    this.#lastWindowPromise = this.#lastWindowPromise
+      .catch(() => undefined)
+      .then(async win => {
+        const notificationWindowId =
+          win?.id ?? (await this.#getNotificationWindowId());
 
-    if (inShowMode) {
-      return null;
-    }
-
-    this.#store.updateState({ inShowMode: true });
-
-    const notificationWindow = await this.#getNotificationWindow();
-
-    if (notificationWindow?.id) {
-      await Browser.windows.update(notificationWindow.id, { focused: true });
-    } else {
-      const { id: notificationWindowId } = await Browser.windows.create({
-        url: 'notification.html',
-        type: 'popup',
-        focused: true,
-        width,
-        height,
+        try {
+          invariant(notificationWindowId);
+          return await Browser.windows.update(notificationWindowId, {
+            focused: true,
+          });
+        } catch (e) {
+          return Browser.windows.create({
+            url: NOTIFICATION_WINDOW_URL,
+            type: 'popup',
+            focused: true,
+            width: 357,
+            height: 622,
+          });
+        }
       });
-
-      this.#store.updateState({ notificationWindowId });
-    }
-
-    this.#store.updateState({ inShowMode: false });
-  }
-
-  async #getNotificationWindow() {
-    const windows =
-      (await Browser.windows.getAll({ windowTypes: ['popup'] })) ?? [];
-
-    const { notificationWindowId } = this.#store.getState();
-
-    return windows.find(window => window.id === notificationWindowId);
   }
 
   async resizeWindow(newWidth: number, newHeight: number) {
-    const notificationWindow = await this.#getNotificationWindow();
+    const notificationWindowId = await this.#getNotificationWindowId();
+    if (notificationWindowId == null) return;
 
-    if (notificationWindow?.id) {
-      await Browser.windows.update(notificationWindow.id, {
-        width: newWidth,
-        height: newHeight,
-      });
-    }
+    await Browser.windows.update(notificationWindowId, {
+      width: newWidth,
+      height: newHeight,
+    });
   }
 
   async closeWindow() {
-    const notificationWindow = await this.#getNotificationWindow();
+    const notificationWindowId = await this.#getNotificationWindowId();
+    if (notificationWindowId == null) return;
 
-    if (notificationWindow?.id) {
-      await Browser.windows.remove(notificationWindow.id);
-    }
-
-    this.#store.updateState({ notificationWindowId: undefined });
+    await Browser.windows.remove(notificationWindowId);
   }
 }
