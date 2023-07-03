@@ -179,7 +179,7 @@ async function setupBackgroundService() {
   });
 
   // Notification window management
-  const windowManager = new WindowManager({ extensionStorage });
+  const windowManager = new WindowManager();
   backgroundService.on(
     'Show notification',
     windowManager.showWindow.bind(windowManager)
