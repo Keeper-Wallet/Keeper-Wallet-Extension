@@ -113,7 +113,7 @@
     "postcss": "^8.4.19",
     "postcss-loader": "^7.0.1",
     "postcss-normalize": "^10.0.1",
-    "postcss-preset-env": "^8.0.0",
+    "postcss-preset-env": "^9.0.0",
     "prettier": "^2.4.1",
     "react-refresh": "^0.14.0",
     "react-router-dom": "^6.4.0",
