@@ -172,7 +172,7 @@ class ChangePasswordComponent extends PureComponent<Props, State> {
 
           setTimeout(() => this.setState({ showChanged: false }), 1000);
         },
-        () => this.setState({ passwordError: true })
+        () => this.setState({ passwordError: true }),
       );
     }
   }
@@ -185,7 +185,7 @@ class ChangePasswordComponent extends PureComponent<Props, State> {
     const buttonDisabled = this._isDisabledButton(
       oldValue,
       firstValue,
-      secondValue
+      secondValue,
     );
     this.setState({ oldValue, firstValue, secondValue, buttonDisabled });
   }

@@ -43,7 +43,7 @@ export class DucksNftVendor implements NftVendor<DucksNftInfo> {
       (nft): DucksNftInfo => ({
         id: nft.assetId,
         vendor: NftVendorId.Ducks,
-      })
+      }),
     );
   }
 
@@ -64,7 +64,7 @@ export class DucksNftVendor implements NftVendor<DucksNftInfo> {
       displayCreator: displayCreatorByCreator[asset.issuer],
 
       displayName: `${capitalize(
-        DUCK_GENERATION_NAMES[generation[0]] ?? generation[0]
+        DUCK_GENERATION_NAMES[generation[0]] ?? generation[0],
       )} ${capitalize(
         duckNameEntry
           ? Array.isArray(duckNameEntry)
@@ -78,7 +78,7 @@ export class DucksNftVendor implements NftVendor<DucksNftInfo> {
                 return Array.isArray(genes) ? genes[index] : undefined;
               })
               .join('')
-              .toLowerCase()
+              .toLowerCase(),
       )}`,
 
       foreground:

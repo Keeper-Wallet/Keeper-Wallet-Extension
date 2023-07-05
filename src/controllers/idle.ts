@@ -37,7 +37,7 @@ export class IdleController {
     this.preferencesController = preferencesController;
     this.vaultController = vaultController;
     this.store = new ObservableStore(
-      extensionStorage.getInitState({ lastUpdateIdle: Date.now() })
+      extensionStorage.getInitState({ lastUpdateIdle: Date.now() }),
     );
     this.lastUpdateIdle = this.store.getState().lastUpdateIdle;
     extensionStorage.subscribe(this.store);

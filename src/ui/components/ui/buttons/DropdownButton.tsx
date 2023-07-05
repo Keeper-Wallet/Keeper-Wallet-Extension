@@ -92,7 +92,7 @@ export class DropdownButton extends PureComponent<Props, State> {
           <div
             className={clsx(
               styles.list,
-              placement === 'top' && styles.listPlacementTop
+              placement === 'top' && styles.listPlacementTop,
             )}
           >
             {otherItems.map((item, index) => (

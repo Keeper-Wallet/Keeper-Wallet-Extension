@@ -16,7 +16,7 @@ export const Windows = {
           },
           {
             timeoutMsg: 'waiting for new windows to appear',
-          }
+          },
         );
 
         return newHandles;
@@ -33,7 +33,7 @@ export const Windows = {
       },
       {
         timeoutMsg: 'waiting for window to close',
-      }
+      },
     );
   },
 };

@@ -18,7 +18,7 @@ const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
     ({
       id: `${key}`,
       creator: `${key}`,
-    } as Nft)
+    }) as Nft,
 );
 
 export function TabNfts() {
@@ -27,11 +27,11 @@ export function TabNfts() {
 
   const userAddress = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    state => state.selectedAccount?.address!
+    state => state.selectedAccount?.address!,
   );
 
   const networkCode = usePopupSelector(
-    state => state.selectedAccount?.networkCode
+    state => state.selectedAccount?.networkCode,
   );
 
   const myNfts = usePopupSelector(state => state.balances[userAddress]?.nfts);
@@ -55,12 +55,12 @@ export function TabNfts() {
                 config: nftConfig,
                 info: nfts?.[nft.id],
                 userAddress,
-              })
+              }),
             ),
-            { term }
+            { term },
           )
         : PLACEHOLDERS,
-    [myNfts, nftConfig, nfts, term, userAddress]
+    [myNfts, nftConfig, nfts, term, userAddress],
   );
 
   const [creatorNfts, creatorCounts] = useMemo(
@@ -82,9 +82,9 @@ export function TabNfts() {
 
           return [creatorNfts, creatorCounts];
         },
-        [[], {}]
+        [[], {}],
       ),
-    [sortedNfts]
+    [sortedNfts],
   );
 
   return (

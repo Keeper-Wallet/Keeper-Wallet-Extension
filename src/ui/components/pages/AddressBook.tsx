@@ -117,12 +117,12 @@ export function AddressBook() {
       Object.entries(addresses)
         .filter(
           ([address, name]) =>
-            icontains(address, search) || icontains(name, search)
+            icontains(address, search) || icontains(name, search),
         )
         .sort(([, firstName], [, secondName]) =>
-          firstName.localeCompare(secondName)
+          firstName.localeCompare(secondName),
         ),
-    [addresses, search]
+    [addresses, search],
   );
 
   const [showAddModal, setShowAddModal] = useState(false);

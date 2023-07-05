@@ -44,7 +44,7 @@ export const ExportButton = ({ className }: Props) => {
               accounts.filter(isExportable),
               addresses,
               password,
-              encrypted
+              encrypted,
             );
             setShowExportModal(false);
           }}

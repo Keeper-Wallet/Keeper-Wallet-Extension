@@ -23,7 +23,7 @@ export const MassTransferTransactionScreen = {
 
   async getTransferItems() {
     return (await this.root.findAllByTestId$('massTransferItem')).map(it =>
-      TransferItem(it)
+      TransferItem(it),
     );
   },
 };

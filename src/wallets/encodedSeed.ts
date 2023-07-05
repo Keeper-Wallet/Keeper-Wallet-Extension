@@ -31,7 +31,7 @@ export class EncodedSeedWallet extends Wallet<
 
     return new this({
       address: base58Encode(
-        createAddress(publicKey, networkCode.charCodeAt(0))
+        createAddress(publicKey, networkCode.charCodeAt(0)),
       ),
       encodedSeed: base58Encode(decodedSeed),
       name,

@@ -11,7 +11,7 @@ export function ExportAccounts() {
   const navigate = useNavigate();
 
   const allNetworksAccounts = usePopupSelector(
-    state => state.allNetworksAccounts
+    state => state.allNetworksAccounts,
   );
 
   const [accountsToExport, setAccountsToExport] = useState<

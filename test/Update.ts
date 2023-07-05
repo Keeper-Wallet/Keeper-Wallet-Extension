@@ -27,7 +27,7 @@ describe('Update extension', () => {
 
     await AccountsHome.importKeystoreFile(
       '/app/test/fixtures/keystore-keeper.json',
-      'xHZ7Zaxu2wuncWC'
+      'xHZ7Zaxu2wuncWC',
     );
     await browser.openKeeperPopup();
   });
@@ -37,7 +37,7 @@ describe('Update extension', () => {
     await HomeScreen.otherAccountsButton.click();
     const accounts = await OtherAccountsScreen.accounts;
     const otherAccountNames = await Promise.all(
-      accounts.map(it => it.name.getText())
+      accounts.map(it => it.name.getText()),
     );
     await TopMenu.backButton.click();
     return [activeAccountName, ...otherAccountNames];

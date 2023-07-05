@@ -13,7 +13,7 @@ export function BackUpSeed() {
   const [showCopy, setShowCopy] = useState<boolean>(false);
   const newAccount = useAccountsSelector(
     state =>
-      state.localState.newAccount as Extract<NewAccountState, { type: 'seed' }>
+      state.localState.newAccount as Extract<NewAccountState, { type: 'seed' }>,
   );
 
   return (

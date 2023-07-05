@@ -25,17 +25,17 @@ export function ActiveMessagePage() {
 
   const balance = usePopupSelector(
     state =>
-      state.selectedAccount && state.balances[state.selectedAccount.address]
+      state.selectedAccount && state.balances[state.selectedAccount.address],
   );
 
   const otherMessagesCount = usePopupSelector(
     state =>
       state.messages.filter(item => item.id !== state.activePopup?.msg?.id)
-        .length
+        .length,
   );
 
   const notificationsCount = usePopupSelector(
-    state => state.notifications.length
+    state => state.notifications.length,
   );
 
   const selectedAccount = usePopupSelector(state => state.selectedAccount);
@@ -135,7 +135,7 @@ export function ActiveMessagePage() {
                 href={`https://${explorerUrls.get(
                   explorerUrls.has(selectedAccount.networkCode)
                     ? selectedAccount.networkCode
-                    : 'custom'
+                    : 'custom',
                 )}/tx/${activeMessage.data.id}`}
                 rel="noopener noreferrer"
                 target="_blank"

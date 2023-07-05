@@ -26,7 +26,7 @@ export function AuthCard({
     message.data.data.icon &&
     new URL(
       message.data.data.icon,
-      message.data.referrer || `https://${message.origin}`
+      message.data.referrer || `https://${message.origin}`,
     ).toString();
 
   const name = message.data.data.name || message.origin;
@@ -40,7 +40,7 @@ export function AuthCard({
               <div
                 className={clsx(
                   transactionsStyles.txIcon,
-                  styles.authTxIconSmall
+                  styles.authTxIconSmall,
                 )}
               >
                 {!icon || iconFailedToLoad ? (
@@ -48,14 +48,14 @@ export function AuthCard({
                     className={clsx(
                       'signin-icon',
                       transactionsStyles.txIcon,
-                      styles.authTxIconSmall
+                      styles.authTxIconSmall,
                     )}
                   />
                 ) : (
                   <img
                     className={clsx(
                       transactionsStyles.txIcon,
-                      styles.authTxIconSmall
+                      styles.authTxIconSmall,
                     )}
                     src={icon}
                     onError={() => {
@@ -126,7 +126,7 @@ export function AuthScreen({
           className={clsx(
             transactionsStyles.txRow,
             transactionsStyles.borderedBottom,
-            'margin-main-big'
+            'margin-main-big',
           )}
         >
           <div className="tx-title body3 basic500">

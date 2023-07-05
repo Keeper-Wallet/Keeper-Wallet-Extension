@@ -14,11 +14,11 @@ export function Settings() {
   const { t } = useTranslation();
 
   const autoClickProtection = usePopupSelector(
-    state => state.uiState.autoClickProtection
+    state => state.uiState.autoClickProtection,
   );
 
   const showSuspiciousAssets = usePopupSelector(
-    state => state.uiState.showSuspiciousAssets
+    state => state.uiState.showSuspiciousAssets,
   );
 
   return (
@@ -121,7 +121,7 @@ export function Settings() {
               dispatch(
                 setUiState({
                   autoClickProtection: !autoClickProtection,
-                })
+                }),
               );
             }}
             enabled={autoClickProtection}
@@ -166,7 +166,7 @@ export function Settings() {
               dispatch(
                 setUiState({
                   showSuspiciousAssets: !showSuspiciousAssets,
-                })
+                }),
               )
             }
             enabled={!showSuspiciousAssets}

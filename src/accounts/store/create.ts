@@ -20,8 +20,8 @@ export function createAccountsStore() {
       ...Object.values(middleware),
       ...(process.env.NODE_ENV === 'development'
         ? [createLogger({ collapsed: true })]
-        : [])
-    )
+        : []),
+    ),
   );
 
   if (import.meta.webpackHot) {

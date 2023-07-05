@@ -16,7 +16,7 @@ const messagePortPromise = new Promise<MessagePort>(resolve =>
       'keeperMessagePort' in value &&
       value.keeperMessagePort instanceof MessagePort
         ? value.keeperMessagePort
-        : undefined
+        : undefined,
     ),
     filter(messagePort => messagePort != null),
     take(1),
@@ -24,8 +24,8 @@ const messagePortPromise = new Promise<MessagePort>(resolve =>
       if (messagePort) {
         resolve(messagePort);
       }
-    })
-  )
+    }),
+  ),
 );
 
 declare global {
@@ -52,12 +52,12 @@ const proxy = createIpcCallProxy<
         fromMessagePort(messagePort),
         subscribe(value => {
           observer.next(value);
-        })
+        }),
       );
     });
 
     return () => undefined;
-  })
+  }),
 );
 
 const publicStateUpdates = make<PublicState>(observer => {
@@ -82,7 +82,7 @@ const publicStateUpdates = make<PublicState>(observer => {
             }
             break;
         }
-      })
+      }),
     );
   });
 
@@ -112,7 +112,7 @@ globalThis.KeeperWallet = {
   get initialPromise() {
     // eslint-disable-next-line no-console
     console.warn(
-      "You don't need to use initialPromise anymore. If KeeperWallet variable is defined, you can call any api right away"
+      "You don't need to use initialPromise anymore. If KeeperWallet variable is defined, you can call any api right away",
     );
     return Promise.resolve(globalThis.KeeperWallet);
   },
@@ -125,7 +125,7 @@ globalThis.KeeperWallet = {
       publicStateUpdates,
       subscribe(value => {
         cb(value);
-      })
+      }),
     );
   },
 };
@@ -136,7 +136,7 @@ function defineDeprecatedName(name: string) {
     get() {
       // eslint-disable-next-line no-console
       console.warn(
-        `${name} global variable is deprecated and will be removed in future releases, please update to use KeeperWallet instead`
+        `${name} global variable is deprecated and will be removed in future releases, please update to use KeeperWallet instead`,
       );
       return KeeperWallet;
     },

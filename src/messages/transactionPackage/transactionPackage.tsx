@@ -32,7 +32,7 @@ function getBalanceChanges(tx: MessageTx, assets: AssetsRecord) {
             precision: tx.decimals,
             sender: '',
             timestamp: new Date(tx.timestamp),
-          })
+          }),
         ),
       ];
     case TRANSACTION_TYPE.TRANSFER: {
@@ -63,9 +63,9 @@ function getBalanceChanges(tx: MessageTx, assets: AssetsRecord) {
       return [
         new Money(
           new BigNumber(0).sub(
-            BigNumber.sum(...tx.transfers.map(t => t.amount))
+            BigNumber.sum(...tx.transfers.map(t => t.amount)),
           ),
-          new Asset(asset)
+          new Asset(asset),
         ),
       ];
     }
@@ -101,11 +101,11 @@ export function TransactionPackageCard({
       const assetInstance = new Asset(asset);
 
       acc[assetId] = (acc[assetId] ?? new Money(0, assetInstance)).add(
-        new Money(tx.fee, assetInstance)
+        new Money(tx.fee, assetInstance),
       );
 
       return acc;
-    }, {})
+    }, {}),
   );
 
   return (
@@ -113,7 +113,7 @@ export function TransactionPackageCard({
       className={clsx(
         className,
         transactionsStyles.transactionCard,
-        transactionsStyles.groupTx
+        transactionsStyles.groupTx,
       )}
     >
       <div className={transactionsStyles.groupBottom} />
@@ -156,7 +156,7 @@ export function TransactionPackageCard({
                       split
                     />
                   );
-                })
+                }),
             )}
           </div>
         </div>
@@ -304,7 +304,7 @@ export function TransactionPackageScreen({
             {t(
               isOpen
                 ? 'transactions.hideTransactions'
-                : 'transactions.showTransactions'
+                : 'transactions.showTransactions',
             )}
 
             <i className={isOpen ? styles.arrowUp : styles.arrowDown} />

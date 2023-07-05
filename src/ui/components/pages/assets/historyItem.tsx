@@ -26,11 +26,12 @@ export function HistoryItem({ tx, className }: Props) {
   const { t } = useTranslation();
   const address = usePopupSelector(state => state.selectedAccount?.address);
   const networkCode = usePopupSelector(
-    state => state.selectedAccount?.networkCode
+    state => state.selectedAccount?.networkCode,
   );
-  const chainId = usePopupSelector(state =>
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state.selectedAccount?.networkCode!.charCodeAt(0)
+  const chainId = usePopupSelector(
+    state =>
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      state.selectedAccount?.networkCode!.charCodeAt(0),
   );
   const assets = usePopupSelector(state => state.assets);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -142,7 +143,7 @@ export function HistoryItem({ tx, className }: Props) {
           addSign={addSign}
           balance={fromCoins(
             tx.amount,
-            tx.type === TRANSACTION_TYPE.TRANSFER ? tx.assetId : 'WAVES'
+            tx.type === TRANSACTION_TYPE.TRANSFER ? tx.assetId : 'WAVES',
           )}
         />
       );
@@ -177,7 +178,7 @@ export function HistoryItem({ tx, className }: Props) {
 
       const assetAmount = fromCoins(
         tx.amount,
-        tx.order1.assetPair.amountAsset || 'WAVES'
+        tx.order1.assetPair.amountAsset || 'WAVES',
       );
 
       let priceAmount: Money | undefined;
@@ -191,15 +192,15 @@ export function HistoryItem({ tx, className }: Props) {
               8 +
                 (tx.version < 3
                   ? priceAsset.precision - assetAmount.asset.precision
-                  : 0)
-            )
+                  : 0),
+            ),
           ),
-          priceAssetId
+          priceAssetId,
         )!;
 
         totalPriceAmount = assetAmount.convertTo(
           priceAmount.asset,
-          priceAmount.getTokens()
+          priceAmount.getTokens(),
         );
       }
 
@@ -306,11 +307,11 @@ export function HistoryItem({ tx, className }: Props) {
         tx.transfers.reduce(
           (result, transfer) =>
             result.add(
-              addressAlias.includes(transfer.recipient) ? transfer.amount : 0
+              addressAlias.includes(transfer.recipient) ? transfer.amount : 0,
             ),
-          new BigNumber(0)
+          new BigNumber(0),
         ),
-        tx.assetId
+        tx.assetId,
       );
       messageType = 'mass_transfer_receive';
 
@@ -392,7 +393,7 @@ export function HistoryItem({ tx, className }: Props) {
 
         const incomingTransfer = tx.stateChanges.transfers.find(
           // eslint-disable-next-line @typescript-eslint/no-shadow
-          t => t.address === tx.sender
+          t => t.address === tx.sender,
         );
 
         const toBalance =
@@ -485,7 +486,7 @@ export function HistoryItem({ tx, className }: Props) {
           <div
             className={clsx(
               styles.historyIconWrapper,
-              messageType === 'unknown' && 'skeleton-glow'
+              messageType === 'unknown' && 'skeleton-glow',
             )}
             {...props}
           >
@@ -510,7 +511,7 @@ export function HistoryItem({ tx, className }: Props) {
         <div
           className={clsx(
             info && typeof label === 'string' && 'basic500',
-            styles.historyLabel
+            styles.historyLabel,
           )}
           title={typeof label === 'string' ? label : ''}
         >
@@ -529,7 +530,7 @@ export function HistoryItem({ tx, className }: Props) {
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 getTxDetailLink(networkCode!, tx.id),
                 '_blank',
-                'noopener'
+                'noopener',
               );
             }}
             {...props}

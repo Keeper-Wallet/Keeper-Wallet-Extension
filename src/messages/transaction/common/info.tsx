@@ -26,7 +26,7 @@ export function TxInfo({ message }: Props) {
 
   const balance = usePopupSelector(
     state =>
-      state.selectedAccount && state.balances[state.selectedAccount.address]
+      state.selectedAccount && state.balances[state.selectedAccount.address],
   );
 
   const selectedAccount = usePopupSelector(state => state.selectedAccount);
@@ -50,7 +50,7 @@ export function TxInfo({ message }: Props) {
           balance,
           initialFee: new Money(
             message.data.initialFee,
-            new Asset(initailFeeAsset)
+            new Asset(initailFeeAsset),
           ),
           txType: message.data.type,
           usdPrices,
@@ -62,7 +62,7 @@ export function TxInfo({ message }: Props) {
               assets,
               messageTx: message.data,
             }),
-          })
+          }),
         )
       : [];
 
@@ -104,7 +104,7 @@ export function TxInfo({ message }: Props) {
                     text: `${option.money.toFormat()} ${
                       option.money.asset.displayName
                     }`,
-                  })
+                  }),
                 )}
                 selected={feeAsset.id}
                 onSelectItem={(id, tokens) => {

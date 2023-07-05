@@ -3,7 +3,7 @@ import { type DataTransactionEntry } from '@waves/ts-types';
 import { fetchInBatches } from '../_core/fetchInBatches';
 
 export function dataEntriesToRecord<T extends DataTransactionEntry>(
-  entries: T[]
+  entries: T[],
 ) {
   return entries.reduce<Record<string, T['value']>>((data, item) => {
     data[item.key] = item.value;
@@ -38,7 +38,7 @@ export function fetchDataEntries<T extends DataTransactionEntry>({
       (response): Promise<T[]> =>
         response.ok
           ? response.json()
-          : response.text().then(text => Promise.reject(new Error(text)))
-    )
+          : response.text().then(text => Promise.reject(new Error(text))),
+    ),
   );
 }

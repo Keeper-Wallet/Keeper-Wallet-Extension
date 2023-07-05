@@ -90,7 +90,7 @@ class Background {
 
   async setAutoSign(
     origin: string,
-    options: { interval: number; totalAmount: number }
+    options: { interval: number; totalAmount: number },
   ) {
     await this.initPromise;
     this._connect();
@@ -132,7 +132,7 @@ class Background {
   async addWallet(
     input: CreateWalletInput,
     network: NetworkName,
-    networkCode: string
+    networkCode: string,
   ) {
     await this.initPromise;
     this._connect();
@@ -143,7 +143,7 @@ class Background {
   async batchAddWallets(
     inputs: Array<
       CreateWalletInput & { network: NetworkName; networkCode: string }
-    >
+    >,
   ) {
     await this.initPromise;
     this._connect();
@@ -217,7 +217,7 @@ class Background {
   async getAccountSeed(
     address: string,
     network: NetworkName,
-    password: string
+    password: string,
   ) {
     await this.initPromise;
     this._connect();
@@ -228,7 +228,7 @@ class Background {
   async getAccountEncodedSeed(
     address: string,
     network: NetworkName,
-    password: string
+    password: string,
   ) {
     await this.initPromise;
     this._connect();
@@ -239,7 +239,7 @@ class Background {
   async getAccountPrivateKey(
     address: string,
     network: NetworkName,
-    password: string
+    password: string,
   ) {
     await this.initPromise;
     this._connect();
@@ -326,7 +326,7 @@ class Background {
 
   async updateAssets(
     assetIds: string[],
-    options: { ignoreCache?: boolean } = {}
+    options: { ignoreCache?: boolean } = {},
   ) {
     await this.initPromise;
     this._connect();
@@ -412,7 +412,7 @@ class Background {
   }
 
   async signAndPublishTransaction(
-    data: MessageInputOfType<'transaction'>['data']
+    data: MessageInputOfType<'transaction'>['data'],
   ) {
     await this.initPromise;
     this._connect();
@@ -487,12 +487,12 @@ class Background {
   async ledgerSignResponse(
     requestId: string,
     error: null,
-    signature: string
+    signature: string,
   ): Promise<void>;
   async ledgerSignResponse(
     requestId: string,
     error: unknown,
-    signature?: string
+    signature?: string,
   ) {
     await this.initPromise;
     this._connect();
@@ -501,7 +501,7 @@ class Background {
       requestId,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       error && (error as any).message ? (error as any).message : null,
-      signature
+      signature,
     );
   }
 

@@ -32,7 +32,7 @@ export class NotificationsController extends EventEmitter {
     this.#store = new ObservableStore(
       extensionStorage.getInitState({
         notifications: [],
-      })
+      }),
     );
 
     extensionStorage.subscribe(this.#store);
@@ -60,9 +60,9 @@ export class NotificationsController extends EventEmitter {
       notifications
         .filter(
           notification =>
-            Date.now() - notification.timestamp > message_expiration_ms
+            Date.now() - notification.timestamp > message_expiration_ms,
         )
-        .map(notification => notification.id)
+        .map(notification => notification.id),
     );
 
     Browser.alarms.create('deleteMessages', {
@@ -102,14 +102,14 @@ export class NotificationsController extends EventEmitter {
     if (title && title.length > notification_title_max) {
       throw ERRORS.NOTIFICATION_DATA_ERROR(
         undefined,
-        `title has more than ${notification_title_max} characters`
+        `title has more than ${notification_title_max} characters`,
       );
     }
 
     if (message && message.length > notification_message_max) {
       throw ERRORS.NOTIFICATION_DATA_ERROR(
         undefined,
-        `message has more than ${notification_message_max} characters`
+        `message has more than ${notification_message_max} characters`,
       );
     }
 
@@ -127,7 +127,7 @@ export class NotificationsController extends EventEmitter {
         timestamp: data.timestamp || Date.now(),
         title,
         type: data.type,
-      })
+      }),
     );
 
     this.#setNotificationPermissions(data.origin, true, Date.now());
@@ -139,7 +139,7 @@ export class NotificationsController extends EventEmitter {
     const { notifications } = this.#store.getState();
 
     this.#updateNotifications(
-      notifications.filter(({ id }) => !ids.includes(id))
+      notifications.filter(({ id }) => !ids.includes(id)),
     );
   }
 
@@ -147,7 +147,7 @@ export class NotificationsController extends EventEmitter {
     return this.#store
       .getState()
       .notifications.filter(
-        notification => notification.address === account.address
+        notification => notification.address === account.address,
       );
   }
 }

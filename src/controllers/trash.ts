@@ -14,7 +14,7 @@ export class TrashController {
 
   constructor({ extensionStorage }: { extensionStorage: ExtensionStorage }) {
     this.#store = new ObservableStore(
-      extensionStorage.getInitState({ data: [] })
+      extensionStorage.getInitState({ data: [] }),
     );
 
     extensionStorage.subscribe(this.#store);

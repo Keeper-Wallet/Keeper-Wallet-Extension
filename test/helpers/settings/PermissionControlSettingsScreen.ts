@@ -23,7 +23,7 @@ const Permission = (wrapped: WebdriverIO.Element) => ({
 });
 
 const PermissionDetailsModal = (
-  wrapped: ChainablePromiseElement<WebdriverIO.Element>
+  wrapped: ChainablePromiseElement<WebdriverIO.Element>,
 ) => ({
   get root() {
     return wrapped;

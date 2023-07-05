@@ -28,7 +28,7 @@ export class SeedWallet extends Wallet<WalletPrivateDataOfType<'seed'>> {
 
     return new this({
       address: base58Encode(
-        createAddress(publicKey, networkCode.charCodeAt(0))
+        createAddress(publicKey, networkCode.charCodeAt(0)),
       ),
       name,
       network,

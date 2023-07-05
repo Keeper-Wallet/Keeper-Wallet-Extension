@@ -34,7 +34,7 @@ export class NetworkController {
           stagenet: null,
           custom: null,
         },
-      })
+      }),
     );
 
     extensionStorage.subscribe(this.store);
@@ -133,7 +133,7 @@ export class NetworkController {
     params: {
       amountAsset: string;
       priceAsset: string;
-    }
+    },
   ) {
     const matcherUrl = this.getMatcher();
 
@@ -144,7 +144,7 @@ export class NetworkController {
     const response = await fetch(
       new URL(
         `matcher/orderbook/${params.amountAsset}/${params.priceAsset}/cancel`,
-        matcherUrl
+        matcherUrl,
       ),
       {
         method: 'POST',
@@ -153,7 +153,7 @@ export class NetworkController {
           'content-type': 'application/json; charset=utf-8',
         },
         body: JSONbn.stringify(cancelOrder),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -218,7 +218,7 @@ export class NetworkController {
           'content-type': 'application/json; charset=utf-8',
         },
         body: stringifyTransaction(tx),
-      }
+      },
     );
 
     if (!response.ok) {

@@ -149,17 +149,17 @@ export function SuggestModal(props: ModalProps) {
     () =>
       props.accounts.filter(
         account =>
-          icontains(account.address, search) || icontains(account.name, search)
+          icontains(account.address, search) || icontains(account.name, search),
       ),
-    [props.accounts, search]
+    [props.accounts, search],
   );
   const addresses = useMemo(
     () =>
       props.addresses.filter(
         ([address, name]) =>
-          icontains(address, search) || icontains(name, search)
+          icontains(address, search) || icontains(name, search),
       ),
-    [props.addresses, search]
+    [props.addresses, search],
   );
 
   return (
@@ -219,9 +219,10 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
   const { t } = useTranslation();
 
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
-  const chainId = usePopupSelector(state =>
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state.selectedAccount?.networkCode!.charCodeAt(0)
+  const chainId = usePopupSelector(
+    state =>
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      state.selectedAccount?.networkCode!.charCodeAt(0),
   );
   const accounts = usePopupSelector(state => state.accounts);
   const addresses = usePopupSelector<Record<string, string>>(state =>
@@ -233,7 +234,7 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
       return base58Decode(address)[1] === chainId
         ? { ...acc, [address]: name }
         : acc;
-    }, {})
+    }, {}),
   );
 
   const [value, setValue] = useState('');
@@ -245,10 +246,10 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
         ? accounts.filter(
             account =>
               icontains(account.address, value) ||
-              icontains(account.name, value)
+              icontains(account.name, value),
           )
         : [],
-    [accounts, value]
+    [accounts, value],
   );
   const foundAddresses = useMemo<Record<string, string>>(
     () =>
@@ -259,10 +260,10 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
               icontains(address, value) || icontains(name, value)
                 ? { ...acc, [address]: name }
                 : acc,
-            {}
+            {},
           )
         : {},
-    [addresses, value]
+    [addresses, value],
   );
 
   const [showSuggest, setShowSuggest] = useState(false);
@@ -288,7 +289,7 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
       setWdResolveResult(
         resolvedAddress
           ? { name: debouncedValue, address: resolvedAddress }
-          : null
+          : null,
       );
     });
   }, [currentNetwork, debouncedValue]);
@@ -344,7 +345,7 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
               __html: isAlias
                 ? value.replace(
                     ALIAS_RE,
-                    `<mark class=${styles.aliasMark}>$&</mark>`
+                    `<mark class=${styles.aliasMark}>$&</mark>`,
                   )
                 : freshWdResolveResult
                 ? `<mark class=${styles.wavesDomainsMark}>${freshWdResolveResult.name}</mark>`
@@ -367,7 +368,7 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
           accounts={accounts}
           addresses={Object.entries(addresses).sort(
             ([, firstName], [, secondName]) =>
-              firstName.localeCompare(secondName)
+              firstName.localeCompare(secondName),
           )}
           setValue={setValue}
           setAddress={setAddress}
@@ -384,7 +385,7 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
             accounts={foundAccounts}
             addresses={Object.entries(foundAddresses).sort(
               ([, firstName], [, secondName]) =>
-                firstName.localeCompare(secondName)
+                firstName.localeCompare(secondName),
             )}
             setValue={setValue}
             setAddress={setAddress}

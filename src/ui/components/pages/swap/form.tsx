@@ -121,12 +121,12 @@ export function SwapForm({
 
   const assets = usePopupSelector(state => state.assets);
   const swappableAssetIdsByVendor = usePopupSelector(
-    state => state.swappableAssetIdsByVendor
+    state => state.swappableAssetIdsByVendor,
   );
   const usdPrices = usePopupSelector(state => state.usdPrices);
   const accountBalance = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    state => state.balances[state.selectedAccount?.address!]
+    state => state.balances[state.selectedAccount?.address!],
   );
 
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
@@ -153,13 +153,13 @@ export function SwapForm({
   const fromAsset = useMemo(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     () => new Asset(assets[fromAssetId]!),
-    [assets, fromAssetId]
+    [assets, fromAssetId],
   );
 
   const toAsset = useMemo(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     () => new Asset(assets[toAssetId]!),
-    [assets, toAssetId]
+    [assets, toAssetId],
   );
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -188,7 +188,7 @@ export function SwapForm({
       const fromAmount = Money.fromTokens(fromAmountTokens, fromAsset);
 
       return new BigNumber(option.assetBalance.balance).gte(
-        fromAmount.getCoins().add(option.money.getCoins())
+        fromAmount.getCoins().add(option.money.getCoins()),
       );
     })
     .map(({ money }) => money);
@@ -201,7 +201,7 @@ export function SwapForm({
   const [swapVendorTouched, setSwapVendorTouched] = useState(false);
 
   const slippageToleranceIndex = usePopupSelector(
-    state => state.uiState.slippageToleranceIndex ?? 2
+    state => state.uiState.slippageToleranceIndex ?? 2,
   );
 
   function setSlippageToleranceIndex(index: number) {
@@ -225,15 +225,15 @@ export function SwapForm({
     : null;
 
   const accountAddress = usePopupSelector(
-    state => state.selectedAccount?.address
+    state => state.selectedAccount?.address,
   );
 
   const isValidAssetPairSelected = useMemo(
     () =>
       Object.values(swappableAssetIdsByVendor).some(
-        ids => ids.includes(fromAsset.id) && ids.includes(toAsset.id)
+        ids => ids.includes(fromAsset.id) && ids.includes(toAsset.id),
       ),
-    [swappableAssetIdsByVendor, fromAsset.id, toAsset.id]
+    [swappableAssetIdsByVendor, fromAsset.id, toAsset.id],
   );
 
   const swapParams = useMemo(() => {
@@ -321,16 +321,16 @@ export function SwapForm({
             type: 'data',
             minimumReceivedTokens: new Money(
               response.minimumReceivedCoins,
-              toAsset
+              toAsset,
             ).getTokens(),
             originalMinimumReceivedTokens: new Money(
               response.originalMinimumReceivedCoins,
-              toAsset
+              toAsset,
             ).getTokens(),
             priceImpact: response.priceImpact,
             toAmountTokens: new Money(
               response.amountCoins,
-              toAsset
+              toAsset,
             ).getTokens(),
             tx: response.tx,
           };
@@ -371,7 +371,7 @@ export function SwapForm({
       .div(fromAmountTokens.eq(0) ? 1 : fromAmountTokens)
       .toFixed(toAsset.precision, BigNumber.ROUND_MODE.ROUND_FLOOR) < 1;
   const [isPriceDirectionSwapped, setIsPriceDirectionSwapped] = useState(
-    defaultPriceDirectionSwapped
+    defaultPriceDirectionSwapped,
   );
   useEffect(() => {
     setIsPriceDirectionSwapped(defaultPriceDirectionSwapped);
@@ -383,7 +383,7 @@ export function SwapForm({
           fromAmountTokens.eq(0)
             ? new BigNumber(0)
             : swapVendorInfo.minimumReceivedTokens,
-          toAsset
+          toAsset,
         )
       : null;
 
@@ -419,7 +419,7 @@ export function SwapForm({
         (nextAmount || new BigNumber(0)).gt(maxAmount) ? next : profit,
       ];
     },
-    [null, SwapVendor.Keeper]
+    [null, SwapVendor.Keeper],
   );
 
   useEffect(() => {
@@ -432,7 +432,7 @@ export function SwapForm({
     const availableIds = new Set(
       Object.values(swappableAssetIdsByVendor)
         .filter(ids => ids.includes(toAsset.id))
-        .flat()
+        .flat(),
     );
 
     return swappableAssets
@@ -457,7 +457,7 @@ export function SwapForm({
     const availableIds = new Set(
       Object.values(swappableAssetIdsByVendor)
         .filter(ids => ids.includes(fromAsset.id))
-        .flat()
+        .flat(),
     );
 
     return swappableAssets
@@ -495,14 +495,14 @@ export function SwapForm({
               fromAssetId,
               fromCoins: Money.fromTokens(
                 fromAmountTokens,
-                fromAsset
+                fromAsset,
               ).getCoins(),
               minReceivedCoins: minReceived.getCoins(),
               slippageTolerance,
               toAssetId,
               toCoins: Money.fromTokens(
                 swapVendorInfo.toAmountTokens,
-                toAsset
+                toAsset,
               ).getCoins(),
               tx: swapVendorInfo.tx,
               vendor: swapVendor,
@@ -535,7 +535,7 @@ export function SwapForm({
                 const fee = convertFeeToAsset(
                   wavesFee,
                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  new Asset(assets[feeAssetId]!)
+                  new Asset(assets[feeAssetId]!),
                 );
 
                 max = max.gt(fee) ? max.minus(fee) : max.cloneWithCoins(0);
@@ -623,7 +623,7 @@ export function SwapForm({
                     : (fromAmountTokens.eq(0)
                         ? new BigNumber(0)
                         : info.toAmountTokens
-                      ).toFixed()
+                      ).toFixed(),
                 );
                 const minimumReceivedTokens = new BigNumber(
                   info.type !== 'data'
@@ -631,7 +631,7 @@ export function SwapForm({
                     : (fromAmountTokens.eq(0)
                         ? new BigNumber(0)
                         : info.minimumReceivedTokens
-                      ).toFixed()
+                      ).toFixed(),
                 );
                 const originalMinimumReceviedTokens = new BigNumber(
                   info.type !== 'data'
@@ -639,7 +639,7 @@ export function SwapForm({
                     : (fromAmountTokens.eq(0)
                         ? new BigNumber(0)
                         : info.originalMinimumReceivedTokens
-                      ).toFixed()
+                      ).toFixed(),
                 );
 
                 const formattedValue = amountTokens.toFormat(
@@ -654,7 +654,7 @@ export function SwapForm({
                     prefix: '',
                     secondaryGroupSize: 0,
                     suffix: '',
-                  }
+                  },
                 );
 
                 const nextInfo = swapInfo[nonProfitVendor as SwapVendor];
@@ -704,7 +704,7 @@ export function SwapForm({
                             {formattedValue}
                           </div>
                           {minimumReceivedTokens.lt(
-                            originalMinimumReceviedTokens
+                            originalMinimumReceviedTokens,
                           ) ? (
                             <Tooltip
                               className={styles.tooltipContent}
@@ -756,7 +756,7 @@ export function SwapForm({
                             <Tooltip
                               content={`${profitTokens.toFixed(
                                 toAsset.precision,
-                                BigNumber.ROUND_MODE.ROUND_FLOOR
+                                BigNumber.ROUND_MODE.ROUND_FLOOR,
                               )} ${toAsset.displayName}`}
                               placement="top"
                             >
@@ -830,7 +830,7 @@ export function SwapForm({
                         .getTokens()
                         .toFormat(
                           toAsset.precision,
-                          BigNumber.ROUND_MODE.ROUND_FLOOR
+                          BigNumber.ROUND_MODE.ROUND_FLOOR,
                         )}{' '}
                       {toAsset.displayName}
                     </span>
@@ -877,7 +877,7 @@ export function SwapForm({
                             ).div(swapVendorInfo.toAmountTokens)
                         ).toFixed(
                           fromAsset.precision,
-                          BigNumber.ROUND_MODE.ROUND_FLOOR
+                          BigNumber.ROUND_MODE.ROUND_FLOOR,
                         )}{' '}
                         {fromAsset.displayName}
                       </span>
@@ -888,7 +888,7 @@ export function SwapForm({
                           .div(fromAmountTokens.eq(0) ? 1 : fromAmountTokens)
                           .toFixed(
                             toAsset.precision,
-                            BigNumber.ROUND_MODE.ROUND_FLOOR
+                            BigNumber.ROUND_MODE.ROUND_FLOOR,
                           )}{' '}
                         {toAsset.displayName}
                       </span>
@@ -914,7 +914,7 @@ export function SwapForm({
                           >
                             {priceImpact.toFixed(
                               priceImpact.eq(100) ? 0 : 3,
-                              BigNumber.ROUND_MODE.ROUND_FLOOR
+                              BigNumber.ROUND_MODE.ROUND_FLOOR,
                             )}
                             %
                           </span>

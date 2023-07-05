@@ -31,7 +31,7 @@ export function createAccount(
         uuid: string;
       }
   ),
-  type: WalletTypes
+  type: WalletTypes,
 ): AccountsThunkAction<Promise<void>> {
   return async (dispatch, getState) => {
     const { currentNetwork, customCodes } = getState();
@@ -41,8 +41,8 @@ export function createAccount(
 
     dispatch(
       selectAccount(
-        await Background.addWallet(account, currentNetwork, networkCode)
-      )
+        await Background.addWallet(account, currentNetwork, networkCode),
+      ),
     );
 
     if (type !== WalletTypes.Debug) {
@@ -55,7 +55,7 @@ export function batchAddAccounts(
   accounts: Array<
     CreateWalletInput & { network: NetworkName; networkCode: string }
   >,
-  type: WalletTypes
+  type: WalletTypes,
 ): AccountsThunkAction<Promise<void>> {
   return async () => {
     await Background.batchAddWallets(accounts);

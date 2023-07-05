@@ -53,8 +53,8 @@ export function ImportKeystoreChooseFile({
         try {
           setShowPassword(
             !Object.values(JSON.parse(reader.result)).every(
-              text => !!JSON.parse(decodeURIComponent(atob(text as string)))
-            )
+              text => !!JSON.parse(decodeURIComponent(atob(text as string))),
+            ),
           );
         } catch {
           setShowPassword(true);

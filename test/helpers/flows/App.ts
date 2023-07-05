@@ -35,7 +35,7 @@ export const App = {
     await TopMenu.settingsButton.click();
     await SettingsMenuScreen.deleteAccountsButton.click();
     await ConfirmDeleteAccountsScreen.confirmPhraseInput.setValue(
-      'DELETE ALL ACCOUNTS'
+      'DELETE ALL ACCOUNTS',
     );
     await ConfirmDeleteAccountsScreen.deleteAllButton.click();
 

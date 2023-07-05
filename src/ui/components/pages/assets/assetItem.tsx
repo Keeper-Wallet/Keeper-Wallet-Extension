@@ -120,7 +120,7 @@ export function AssetItem({
             content={t(
               isFavorite
                 ? 'assetInfo.favRemoveTooltip'
-                : 'assetInfo.favAddTooltip'
+                : 'assetInfo.favAddTooltip',
             )}
           >
             {props => (

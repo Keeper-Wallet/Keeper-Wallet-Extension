@@ -65,7 +65,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
 
     async function updateStatus(prevTxStatus: TxStatus | null) {
       const [txStatus] = (await fetch(txStatusUrl.toString()).then(res =>
-        res.json()
+        res.json(),
       )) as TxStatus[];
 
       if (cancelled) {
@@ -76,14 +76,14 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
         if (txStatus.applicationStatus === 'succeeded') {
           const txInfoUrl = new URL(
             `/transactions/info/${transactionId}`,
-            nodeBaseUrl
+            nodeBaseUrl,
           );
 
           try {
             const txInfo = (await fetch(txInfoUrl.toString()).then(res =>
               res.ok
                 ? res.json()
-                : res.text().then(text => Promise.reject(new Error(text)))
+                : res.text().then(text => Promise.reject(new Error(text))),
             )) as {
               stateChanges: {
                 transfers: Array<{
@@ -97,15 +97,15 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const transfer = txInfo.stateChanges.transfers.find(
               // eslint-disable-next-line @typescript-eslint/no-shadow
-              t => t.address === selectedAccount?.address
+              t => t.address === selectedAccount?.address,
             )!;
 
             setReceivedMoney(
               new Money(
                 transfer.amount,
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                new Asset(assets[transfer.asset || 'WAVES']!)
-              )
+                new Asset(assets[transfer.asset || 'WAVES']!),
+              ),
             );
             setSwapStatus(SwapStatus.Succeeded);
           } catch (err) {
@@ -197,7 +197,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
               <div
                 className={clsx(
                   styles.cardIcon,
-                  'create-order-transaction-icon'
+                  'create-order-transaction-icon',
                 )}
               />
 
@@ -205,7 +205,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
                 <Balance addSign="-" split showAsset balance={fromMoney} />
 
                 {[SwapStatus.Pending, SwapStatus.Succeeded].includes(
-                  swapStatus
+                  swapStatus,
                 ) && (
                   <Balance
                     addSign="+"

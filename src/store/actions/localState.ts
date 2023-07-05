@@ -5,7 +5,7 @@ import { ACTION } from './constants';
 import { setActiveMessage, setActiveNotification } from './notifications';
 
 function createMVAction<TActionType extends AppAction['type']>(
-  type: TActionType
+  type: TActionType,
 ) {
   return (payload: AppActionPayload<TActionType>) => ({
     type,
@@ -20,7 +20,7 @@ export const selectAccount = createMVAction(ACTION.SELECT_ACCOUNT);
 const notificationDelete = createMVAction(ACTION.NOTIFICATION_DELETE);
 
 export function deleteAccount(
-  address: string
+  address: string,
 ): PopupThunkAction<Promise<void>> {
   return async (dispatch, getState) => {
     const { currentNetwork } = getState();
@@ -37,7 +37,7 @@ export const setLoading = createMVAction(ACTION.SET_LOADING);
 export const notificationSelect = createMVAction(ACTION.NOTIFICATION_SELECT);
 
 export const notificationChangeName = createMVAction(
-  ACTION.NOTIFICATION_NAME_CHANGED
+  ACTION.NOTIFICATION_NAME_CHANGED,
 );
 
 export function clearMessagesStatus(): PopupThunkAction<void> {

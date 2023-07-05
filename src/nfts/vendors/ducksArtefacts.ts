@@ -27,7 +27,7 @@ export class DucksArtefactsNftVendor
       (nft): DucksArtefactsNftInfo => ({
         id: nft.assetId,
         vendor: NftVendorId.DucksArtefact,
-      })
+      }),
     );
   }
 

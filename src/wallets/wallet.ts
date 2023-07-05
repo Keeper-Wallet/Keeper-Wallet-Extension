@@ -70,20 +70,20 @@ export abstract class Wallet<TData extends WalletPrivateData> {
     return createSharedKey(
       privateKey,
       base58Decode(publicKey),
-      utf8Encode(`${prefix || ''}waves`)
+      utf8Encode(`${prefix || ''}waves`),
     );
   }
 
   async encryptMessage(
     message: string,
     publicKey: string,
-    prefix = 'waveskeeper'
+    prefix = 'waveskeeper',
   ) {
     const sharedKey = await this.createSharedKey(publicKey, prefix);
 
     const encryptedMessage = await encryptMessage(
       sharedKey,
-      utf8Encode(message)
+      utf8Encode(message),
     );
 
     return base58Encode(encryptedMessage);
@@ -92,13 +92,13 @@ export abstract class Wallet<TData extends WalletPrivateData> {
   async decryptMessage(
     message: string,
     publicKey: string,
-    prefix = 'waveskeeper'
+    prefix = 'waveskeeper',
   ) {
     const sharedKey = await this.createSharedKey(publicKey, prefix);
 
     const decryptedMessage = await decryptMessage(
       sharedKey,
-      base58Decode(message)
+      base58Decode(message),
     );
 
     return utf8Decode(decryptedMessage);

@@ -60,7 +60,7 @@ export const selectAccount: AppMiddleware = store => next => action => {
       () => {
         store.dispatch(notificationSelect(true));
         setTimeout(() => store.dispatch(notificationSelect(false)), 1000);
-      }
+      },
     );
   }
 

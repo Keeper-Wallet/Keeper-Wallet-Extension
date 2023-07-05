@@ -5,7 +5,7 @@ import { chunk } from './chunk';
 export async function fetchInBatches<I, T>(
   allItems: I[],
   chunkSize: number,
-  fetchFn: (items: I[]) => Promise<T[]>
+  fetchFn: (items: I[]) => Promise<T[]>,
 ) {
   const result: T[] = [];
 

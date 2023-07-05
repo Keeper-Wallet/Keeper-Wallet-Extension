@@ -60,7 +60,7 @@ export class SignArtNftVendor implements NftVendor<SignArtNftInfo> {
           const [, artworkId, creator] = match;
 
           return { artworkId, creator };
-        })
+        }),
       )
       .then(artworks =>
         Promise.all([
@@ -86,7 +86,7 @@ export class SignArtNftVendor implements NftVendor<SignArtNftInfo> {
               return `user_name_${info.creator}`;
             }),
           }),
-        ])
+        ]),
       )
       .then(([artworksEntries, userNameEntries]) =>
         nftIds.map((id, index): SignArtNftInfo => {
@@ -109,7 +109,7 @@ export class SignArtNftVendor implements NftVendor<SignArtNftInfo> {
             artworkId,
             cid: artDisplayCid.value,
           };
-        }, [])
+        }, []),
       );
   }
 

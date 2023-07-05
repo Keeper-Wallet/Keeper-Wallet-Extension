@@ -23,7 +23,7 @@ export function Base58({ base58, className, ...otherProps }: Props) {
       className={clsx(
         className,
         styles.root,
-        isPrintable ? styles.root_plain : styles.root_base58
+        isPrintable ? styles.root_plain : styles.root_base58,
       )}
       {...otherProps}
     >

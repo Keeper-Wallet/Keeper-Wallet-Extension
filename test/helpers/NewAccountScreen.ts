@@ -13,13 +13,13 @@ export const NewAccountScreen = {
 
   get termsAndConditionsCheckbox() {
     return this.root.findByLabelText$(
-      'I have read and agree with the Terms and Conditions'
+      'I have read and agree with the Terms and Conditions',
     );
   },
 
   get privacyPolicyCheckbox() {
     return this.root.findByLabelText$(
-      'I have read and agree with the Privacy Policy'
+      'I have read and agree with the Privacy Policy',
     );
   },
 

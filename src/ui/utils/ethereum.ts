@@ -23,7 +23,7 @@ export function fromEthereumToWavesAddress(address: string, chainId = 87) {
   const chainBytes = new Uint8Array([0x01, chainId]);
   const checksum = keccak(blake2b(new Uint8Array([...chainBytes, ...bytes])));
   return base58Encode(
-    new Uint8Array([...chainBytes, ...bytes, ...checksum.slice(0, 4)])
+    new Uint8Array([...chainBytes, ...bytes, ...checksum.slice(0, 4)]),
   );
 }
 
@@ -33,7 +33,7 @@ export function isEthereumAddress(possibleAddress: string) {
 
 export function isValidEthereumAddress(
   possibleAddress: string,
-  { mixedCaseUseChecksum = false } = {}
+  { mixedCaseUseChecksum = false } = {},
 ) {
   if (!isEthereumAddress(possibleAddress)) {
     return false;

@@ -5,7 +5,7 @@ import { ACTION } from '../actions/constants';
 
 export function notifications(
   state: NotificationsStoreItem[][] = [],
-  action: AppAction
+  action: AppAction,
 ) {
   switch (action.type) {
     case ACTION.NOTIFICATIONS.SET:
@@ -22,7 +22,7 @@ interface ActivePopupState {
 
 export function activePopup(
   state: ActivePopupState | null = null,
-  action: AppAction
+  action: AppAction,
 ): ActivePopupState | null {
   switch (action.type) {
     case ACTION.MESSAGES.SET_ACTIVE_AUTO:
@@ -41,7 +41,7 @@ export function activePopup(
           return {
             notify:
               action.payload.notifications.find(
-                ([item]) => item.origin === notify[0].origin
+                ([item]) => item.origin === notify[0].origin,
               ) ?? action.payload.notifications[0],
           };
         }

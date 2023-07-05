@@ -21,8 +21,8 @@ export function OtherAccountsPage() {
   const accounts = usePopupSelector(state => state.accounts);
   const activeAccount = usePopupSelector(state =>
     state.accounts.find(
-      ({ address }) => address === state.selectedAccount?.address
-    )
+      ({ address }) => address === state.selectedAccount?.address,
+    ),
   );
   const assets = usePopupSelector(state => state.assets);
   const balances = usePopupSelector(state => state.balances);
@@ -38,7 +38,7 @@ export function OtherAccountsPage() {
           account.address === term ||
           account.publicKey === term ||
           (account.type === 'wx' &&
-            account.username.toLowerCase().indexOf(term.toLowerCase()) !== -1))
+            account.username.toLowerCase().indexOf(term.toLowerCase()) !== -1)),
     )
     .sort(compareAccountsByLastUsed);
 
@@ -50,7 +50,7 @@ export function OtherAccountsPage() {
       typeof balance?.regular !== 'undefined'
         ? new Money(balance.regular, wavesAsset)
         : undefined,
-    ])
+    ]),
   );
 
   const addAccount = () => {
@@ -60,7 +60,7 @@ export function OtherAccountsPage() {
 
   useEffect(
     () => startPolling(10000, () => background.updateOtherAccountsBalances()),
-    []
+    [],
   );
 
   return (
@@ -74,7 +74,7 @@ export function OtherAccountsPage() {
               {...props}
               className={clsx(
                 styles.addAccountButton,
-                styles.addAccountButton_small
+                styles.addAccountButton_small,
               )}
               type="button"
               onClick={addAccount}
@@ -99,7 +99,7 @@ export function OtherAccountsPage() {
             {t(
               !term
                 ? 'otherAccounts.noAccountsNote'
-                : 'otherAccounts.noAccountsFound'
+                : 'otherAccounts.noAccountsFound',
             )}
           </p>
         ) : (
@@ -123,7 +123,7 @@ export function OtherAccountsPage() {
           <button
             className={clsx(
               styles.addAccountButton,
-              styles.addAccountButton_full
+              styles.addAccountButton_full,
             )}
             data-testid="addAccountButton"
             type="button"

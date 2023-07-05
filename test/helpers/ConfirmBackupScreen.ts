@@ -1,11 +1,11 @@
 import { type ChainablePromiseElement } from 'webdriverio';
 
 const PillsContainer = (
-  wrapped: ChainablePromiseElement<WebdriverIO.Element>
+  wrapped: ChainablePromiseElement<WebdriverIO.Element>,
 ) => ({
   getPillByText: async (text: string) => {
     return wrapped.$(
-      `.//*[contains(@class, 'pill@pills') and not(contains(@class, 'hiddenPill@pills')) and contains(., '${text}')]`
+      `.//*[contains(@class, 'pill@pills') and not(contains(@class, 'hiddenPill@pills')) and contains(., '${text}')]`,
     );
   },
 

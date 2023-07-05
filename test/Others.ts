@@ -27,7 +27,7 @@ describe('Others', function () {
 
     await AccountsHome.importAccount(
       'rich',
-      'waves private node seed with waves tokens'
+      'waves private node seed with waves tokens',
     );
 
     const newTab = (await browser.createWindow('tab')).handle;
@@ -43,11 +43,11 @@ describe('Others', function () {
   });
 
   it(
-    'After signAndPublishTransaction() "View transaction" button leads to the correct Explorer'
+    'After signAndPublishTransaction() "View transaction" button leads to the correct Explorer',
   );
 
   it(
-    'Signature requests are automatically removed from pending requests after 30 minutes'
+    'Signature requests are automatically removed from pending requests after 30 minutes',
   );
 
   it('Switch account on confirmation screen');
@@ -72,12 +72,12 @@ describe('Others', function () {
 
     it('Send WAVES to an address', async function () {
       await SendAssetScreen.recipientInput.setValue(
-        '3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW'
+        '3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW',
       );
       await SendAssetScreen.amountInput.setValue('123123123.123');
 
       expect(await SendAssetScreen.amountInput.getValue()).toBe(
-        '123 123 123.123'
+        '123 123 123.123',
       );
 
       await SendAssetScreen.amountInput.clearValue();
@@ -88,13 +88,13 @@ describe('Others', function () {
       await SendAssetScreen.submitButton.click();
 
       await expect(TransferTransactionScreen.transferAmount).toHaveText(
-        '-0.12300000 WAVES'
+        '-0.12300000 WAVES',
       );
       await expect(TransferTransactionScreen.recipient).toHaveText(
-        'rich\n3MsX9C2M...yxZMg4cW'
+        'rich\n3MsX9C2M...yxZMg4cW',
       );
       await expect(TransferTransactionScreen.attachmentContent).toHaveText(
-        'This is an attachment'
+        'This is an attachment',
       );
     });
 
@@ -105,13 +105,13 @@ describe('Others', function () {
       await SendAssetScreen.submitButton.click();
 
       await expect(TransferTransactionScreen.transferAmount).toHaveText(
-        '-0.87654321 WAVES'
+        '-0.87654321 WAVES',
       );
       await expect(TransferTransactionScreen.recipient).toHaveText(
-        'alias:T:an_alias'
+        'alias:T:an_alias',
       );
       await expect(TransferTransactionScreen.attachmentContent).toHaveText(
-        'This is an attachment'
+        'This is an attachment',
       );
     });
   });

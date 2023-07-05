@@ -26,7 +26,7 @@ export class WavesDomainsNftVendor implements NftVendor<WavesDomainsNftInfo> {
       (nft): WavesDomainsNftInfo => ({
         id: nft.assetId,
         vendor: NftVendorId.WavesDomains,
-      })
+      }),
     );
   }
 
@@ -41,7 +41,7 @@ export class WavesDomainsNftVendor implements NftVendor<WavesDomainsNftInfo> {
       id: asset.id,
       marketplaceUrl: `https://app.waves.domains?q=${asset.description.replace(
         /\.waves$/,
-        ''
+        '',
       )}`,
       name: asset.description,
       vendor: NftVendorId.WavesDomains,

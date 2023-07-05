@@ -19,7 +19,7 @@ export function ActiveNotificationPage() {
   const dispatch = usePopupDispatch();
 
   const activeNotification = usePopupSelector(
-    state => state.activePopup?.notify
+    state => state.activePopup?.notify,
   );
   invariant(activeNotification);
 
@@ -27,11 +27,11 @@ export function ActiveNotificationPage() {
   const notifications = usePopupSelector(state => state.notifications);
 
   const otherOriginNotifications = notifications.filter(
-    ([item]) => item.origin !== activeNotification[0].origin
+    ([item]) => item.origin !== activeNotification[0].origin,
   );
 
   const permissions = usePopupSelector(
-    state => state.origins[activeNotification[0].origin]
+    state => state.origins[activeNotification[0].origin],
   );
 
   const selectedAccount = usePopupSelector(state => state.selectedAccount);
@@ -77,7 +77,7 @@ export function ActiveNotificationPage() {
                 item =>
                   typeof item === 'object' &&
                   item.type === 'useNotifications' &&
-                  item.canUse
+                  item.canUse,
               )
             }
             type="checkbox"
@@ -86,7 +86,7 @@ export function ActiveNotificationPage() {
                 setShowNotification({
                   origin: activeNotification[0].origin,
                   canUse: event.target.checked,
-                })
+                }),
               );
             }}
           />
@@ -103,7 +103,7 @@ export function ActiveNotificationPage() {
             type="button"
             onClick={() => {
               dispatch(
-                deleteNotifications(activeNotification.map(x => x.id))
+                deleteNotifications(activeNotification.map(x => x.id)),
               ).then(() => navigate('/messages-and-notifications'));
             }}
           >
@@ -117,7 +117,7 @@ export function ActiveNotificationPage() {
             type="button"
             onClick={() => {
               dispatch(
-                deleteNotifications(activeNotification.map(({ id }) => id))
+                deleteNotifications(activeNotification.map(({ id }) => id)),
               );
 
               Background.closeNotificationWindow();
@@ -134,9 +134,9 @@ export function ActiveNotificationPage() {
                 deleteNotifications(
                   activeNotification.map(({ id }) => id),
                   notifications.find(
-                    ([item]) => item.origin !== activeNotification[0].origin
-                  )
-                )
+                    ([item]) => item.origin !== activeNotification[0].origin,
+                  ),
+                ),
               );
             }}
           >

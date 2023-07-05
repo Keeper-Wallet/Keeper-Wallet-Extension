@@ -273,7 +273,7 @@ export function AuthOriginScreen({
                         .toFixed(8),
                       type: 'allowAutoSign',
                     },
-                  })
+                  }),
                 );
               }
 
@@ -282,7 +282,7 @@ export function AuthOriginScreen({
                   setShowNotification({
                     canUse: showNotify,
                     origin: message.origin,
-                  })
+                  }),
                 );
               }
 

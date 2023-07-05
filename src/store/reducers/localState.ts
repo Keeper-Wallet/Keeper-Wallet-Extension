@@ -22,7 +22,7 @@ function newAccount(
     type: 'seed',
     seed: '',
   },
-  action: AppAction
+  action: AppAction,
 ): NewAccountState {
   switch (action.type) {
     case ACTION.NEW_ACCOUNT_NAME: {
@@ -50,7 +50,7 @@ interface NotificationsState {
 
 function notifications(
   state: NotificationsState = {},
-  { type, payload }: AppAction
+  { type, payload }: AppAction,
 ): NotificationsState {
   switch (type) {
     case ACTION.NOTIFICATION_SELECT:

@@ -44,7 +44,7 @@ class ListComponent extends PureComponent<IProps> {
 
   getPermissionsText(
     t: TFunction<'translation', undefined>,
-    perms: Array<string | TAutoAuth>
+    perms: Array<string | TAutoAuth>,
   ) {
     let hasApproved = false;
     let hasAuto: string | boolean | TAutoAuth | undefined = false;
@@ -54,7 +54,7 @@ class ListComponent extends PureComponent<IProps> {
       hasAuto =
         hasApproved &&
         perms.find(item =>
-          typeof item !== 'object' ? false : item.type === 'allowAutoSign'
+          typeof item !== 'object' ? false : item.type === 'allowAutoSign',
         );
     }
 
@@ -63,7 +63,7 @@ class ListComponent extends PureComponent<IProps> {
         {t(
           hasApproved
             ? 'permissionsSettings.approvedOrigin'
-            : 'permissionsSettings.rejectedOrigin'
+            : 'permissionsSettings.rejectedOrigin',
         )}
         {hasAuto ? (
           <span>{t('permissionsSettings.automaticOrigin')}</span>
@@ -75,7 +75,7 @@ class ListComponent extends PureComponent<IProps> {
 
 const getFilteredOrigins = (
   origins: Record<string, Array<string | TAutoAuth>>,
-  attr: TTabTypes
+  attr: TTabTypes,
 ) => {
   return Object.keys(origins)
     .filter(name => {

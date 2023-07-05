@@ -7,7 +7,7 @@ import { ACTION } from './constants';
 
 export function deleteNotifications(
   ids: string[],
-  next?: NotificationsStoreItem[]
+  next?: NotificationsStoreItem[],
 ): PopupThunkAction<Promise<void>> {
   return async dispatch => {
     await Background.deleteNotifications(ids);
@@ -26,7 +26,7 @@ export function setShowNotification(options: {
 }
 
 export function setActiveNotification(
-  notify: NotificationsStoreItem[] | undefined
+  notify: NotificationsStoreItem[] | undefined,
 ) {
   return {
     type: ACTION.MESSAGES.SET_ACTIVE_NOTIFICATION,

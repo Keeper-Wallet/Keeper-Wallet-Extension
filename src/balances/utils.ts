@@ -1,7 +1,7 @@
 import { type BalancesItem } from './types';
 
 export function collectBalances(
-  obj: Record<string, unknown>
+  obj: Record<string, unknown>,
 ): Partial<Record<string, BalancesItem>> {
   return Object.fromEntries(
     Object.entries(obj)
@@ -16,6 +16,6 @@ export function collectBalances(
 
         return [address, value as BalancesItem] as const;
       })
-      .filter((entry): entry is NonNullable<typeof entry> => entry != null)
+      .filter((entry): entry is NonNullable<typeof entry> => entry != null),
   );
 }

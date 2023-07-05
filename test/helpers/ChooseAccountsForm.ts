@@ -58,8 +58,8 @@ export const ChooseAccountsForm = {
   async getAccountByAddress(address: string) {
     return Account(
       await this.root.$(
-        `[data-testid='accountCard'][title='${address}'], [class*='accountListItem@chooseItems'][title='${address}']`
-      )
+        `[data-testid='accountCard'][title='${address}'], [class*='accountListItem@chooseItems'][title='${address}']`,
+      ),
     );
   },
 

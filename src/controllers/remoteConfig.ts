@@ -37,7 +37,7 @@ const extendValues = (defaultValues: any, newValues: any) => {
       }
       return acc;
     },
-    { ...newValues }
+    { ...newValues },
   );
 };
 
@@ -60,7 +60,7 @@ export class RemoteConfigController extends EventEmitter {
         identityConfig: DEFAULT_IDENTITY_CONFIG,
         nftConfig: DEFAULT_MAIN_CONFIG.nfts,
         status: STATUS.PENDING,
-      })
+      }),
     );
 
     extensionStorage.subscribe(this.store);
@@ -152,7 +152,7 @@ export class RemoteConfigController extends EventEmitter {
   async #updateMainConfig() {
     try {
       const response = await fetch(
-        'https://raw.githubusercontent.com/Keeper-Wallet/configs/master/main.json'
+        'https://raw.githubusercontent.com/Keeper-Wallet/configs/master/main.json',
       );
 
       if (response.ok) {
@@ -180,42 +180,42 @@ export class RemoteConfigController extends EventEmitter {
       .then(resp =>
         resp.ok
           ? resp.json()
-          : resp.text().then(text => Promise.reject(new Error(text)))
+          : resp.text().then(text => Promise.reject(new Error(text))),
       )
       .then(
         (
           wavesNetworks: Array<{
             configService: { url: string; featuresConfigUrl: string };
             name: string;
-          }>
+          }>,
         ) =>
           Promise.all(
             networks.map(async network => {
               const envNetworkConfig = wavesNetworks.find(
-                c => c.name === network
+                c => c.name === network,
               );
               if (!envNetworkConfig) {
                 throw new Error(
-                  `No network configuration found for ${network}`
+                  `No network configuration found for ${network}`,
                 );
               }
 
               return fetch(
                 `${envNetworkConfig.configService.url}/` +
-                  `${envNetworkConfig.configService.featuresConfigUrl}`
+                  `${envNetworkConfig.configService.featuresConfigUrl}`,
               ).then(response =>
                 response.ok
                   ? response.json()
                   : response
                       .text()
-                      .then(text => Promise.reject(new Error(text)))
+                      .then(text => Promise.reject(new Error(text))),
               );
-            })
-          )
+            }),
+          ),
       )
       .then(networkConfigs => {
         const fetchedConfig = Object.fromEntries(
-          networks.map((network, i) => [network, networkConfigs[i].identity])
+          networks.map((network, i) => [network, networkConfigs[i].identity]),
         );
 
         if (!deepEqual(identityConfig, fetchedConfig)) {
@@ -227,7 +227,7 @@ export class RemoteConfigController extends EventEmitter {
       })
       .catch(() => undefined) // ignore
       .then(() =>
-        Browser.alarms.create('updateIdentityConfig', { delayInMinutes: 1 })
+        Browser.alarms.create('updateIdentityConfig', { delayInMinutes: 1 }),
       );
   }
 }

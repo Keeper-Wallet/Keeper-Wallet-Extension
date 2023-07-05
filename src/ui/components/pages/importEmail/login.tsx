@@ -57,7 +57,7 @@ export function Login({
 
       const { challengeName } = await background.identitySignIn(
         username,
-        password
+        password,
       );
 
       switch (challengeName) {
@@ -72,7 +72,7 @@ export function Login({
           handleSuccess();
       }
     },
-    [onSubmit, handleSuccess]
+    [onSubmit, handleSuccess],
   );
 
   const confirmSignIn = useCallback(
@@ -89,7 +89,7 @@ export function Login({
         }
       }
     },
-    [handleSuccess, signIn]
+    [handleSuccess, signIn],
   );
 
   useEffect(() => {

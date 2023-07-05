@@ -69,7 +69,7 @@ describe('Publish', function () {
     chainId = await getNetworkByte(nodeUrl);
 
     const issuerPrivateKeyBytes = await createPrivateKey(
-      utf8Encode(ISSUER_SEED)
+      utf8Encode(ISSUER_SEED),
     );
     const issuerPublicKeyBytes = await createPublicKey(issuerPrivateKeyBytes);
     issuer = {
@@ -78,7 +78,7 @@ describe('Publish', function () {
     };
 
     const user1PrivateKeyBytes = await createPrivateKey(
-      utf8Encode(USER_1_SEED)
+      utf8Encode(USER_1_SEED),
     );
     const user1PublicKeyBytes = await createPublicKey(user1PrivateKeyBytes);
     user1 = {
@@ -87,7 +87,7 @@ describe('Publish', function () {
     };
 
     const user2PrivateKeyBytes = await createPrivateKey(
-      utf8Encode(USER_2_SEED)
+      utf8Encode(USER_2_SEED),
     );
     const user2PublicKeyBytes = await createPublicKey(user2PrivateKeyBytes);
     user2 = {
@@ -151,7 +151,7 @@ describe('Publish', function () {
         },
         err => {
           window.result = JSON.stringify(['REJECTED', err]);
-        }
+        },
       );
     }, input);
     [messageWindow] = await waitForNewWindows(1);
@@ -166,7 +166,7 @@ describe('Publish', function () {
         const { result } = window;
         delete window.result;
         return result;
-      })
+      }),
     );
   }
 
@@ -180,7 +180,7 @@ describe('Publish', function () {
       const data = {
         name: '16 characters :)',
         description: `Lorem ipsum dolor sit amet, consectetuer adipiscing elit. ${'Aenean commodo ligula eget dolor. Aenean'.repeat(
-          10
+          10,
         )}`,
         quantity: '9223372036854775807',
         precision: 8 as const,
@@ -218,12 +218,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
       assetWithMaxValuesId = parsedApproveResult.assetId;
@@ -269,12 +269,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -320,13 +320,13 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
 
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
       smartAssetId = parsedApproveResult.assetId;
@@ -374,12 +374,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -421,12 +421,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -463,12 +463,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -505,12 +505,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -549,12 +549,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -593,12 +593,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -644,12 +644,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -693,12 +693,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -757,12 +757,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -771,10 +771,10 @@ describe('Publish', function () {
       const strValueMax =
         `Sed ut perspiciatis unde omnis iste natus error ` +
         `sit voluptatem accusantium doloremque laudantium, totam rem aperiam, ${'eaque ipsa quae ab illo inventore\n'.repeat(
-          217
+          217,
         )}`;
       const binValueMax = `base64:${Buffer.from(strValueMax).toString(
-        'base64'
+        'base64',
       )}`;
       const data = {
         data: [
@@ -827,12 +827,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -878,12 +878,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(user1.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -929,12 +929,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -978,12 +978,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -991,8 +991,8 @@ describe('Publish', function () {
     it('Invoke with long arguments and payments list', async function () {
       const binLong = `base64:${btoa(
         new Uint8Array(
-          Array(100).fill([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).flat()
-        ).toString()
+          Array(100).fill([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).flat(),
+        ).toString(),
       )}`;
 
       const data = {
@@ -1006,7 +1006,7 @@ describe('Publish', function () {
             {
               type: 'string' as const,
               value: `Lorem ipsum dolor sit amet, consectetuer adipiscing elit. ${'Aenean commodo ligula eget dolor. Aenean'.repeat(
-                3
+                3,
               )}`,
             },
             {
@@ -1018,7 +1018,7 @@ describe('Publish', function () {
                 {
                   type: 'string' as const,
                   value: `Lorem ipsum dolor sit amet, consectetuer adipiscing elit. ${'Aenean commodo ligula eget dolor. Aenean'.repeat(
-                    3
+                    3,
                   )}`,
                 },
               ],
@@ -1068,12 +1068,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -1106,12 +1106,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(user1.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -1154,12 +1154,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
       leaseId = parsedApproveResult.id;
@@ -1193,12 +1193,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });
@@ -1236,12 +1236,12 @@ describe('Publish', function () {
         await verifySignature(
           base58Decode(issuer.publicKey),
           bytes,
-          base58Decode(parsedApproveResult.proofs[0])
-        )
+          base58Decode(parsedApproveResult.proofs[0]),
+        ),
       ).toBe(true);
       await waitForExpect(async () => {
         expect(
-          await getTransactionStatus(parsedApproveResult.id, nodeUrl)
+          await getTransactionStatus(parsedApproveResult.id, nodeUrl),
         ).toBe('confirmed');
       }, 15000);
     });

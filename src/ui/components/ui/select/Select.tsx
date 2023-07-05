@@ -83,7 +83,7 @@ export function Select<T>({
       forwardRef && (forwardRef.current = element);
       rootRef.current = element;
     },
-    [forwardRef]
+    [forwardRef],
   );
 
   const selectedItem =
@@ -118,7 +118,7 @@ export function Select<T>({
             {
               bottom: styles.listPlacementBottom,
               top: styles.listPlacementTop,
-            }[listPlacement]
+            }[listPlacement],
           )}
         >
           {selectList

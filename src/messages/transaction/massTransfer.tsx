@@ -54,9 +54,9 @@ export function MassTransferCard({
               balance={
                 new Money(
                   BigNumber.sum(
-                    ...tx.transfers.map(transfer => transfer.amount)
+                    ...tx.transfers.map(transfer => transfer.amount),
                   ),
-                  new Asset(asset)
+                  new Asset(asset),
                 )
               }
               data-testid="massTransferAmount"
@@ -113,7 +113,7 @@ export function MassTransferCard({
             </details>
 
             {tx.transfers.some(({ recipient }) =>
-              isAlias(processAliasOrAddress(recipient, tx.chainId))
+              isAlias(processAliasOrAddress(recipient, tx.chainId)),
             ) && (
               <p className={styles.aliasWarning}>{t('address.warningAlias')}</p>
             )}

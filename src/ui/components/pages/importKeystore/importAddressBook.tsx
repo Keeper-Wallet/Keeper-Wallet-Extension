@@ -40,7 +40,7 @@ function parseAddressBook(json: string): EncryptedAddressBook | null {
         if (password) {
           const decrypted = await decryptSeed(
             base64Decode(atob(addresses)),
-            utf8Encode(password)
+            utf8Encode(password),
           );
 
           return JSON.parse(utf8Decode(decrypted));
@@ -58,12 +58,12 @@ const suffixRe = /\((\d+)\)$/;
 
 function getFormattedAddresses(
   addresses: Record<string, string>,
-  keystoreAddresses: Record<string, string>
+  keystoreAddresses: Record<string, string>,
 ) {
   return Object.fromEntries(
     Object.entries(keystoreAddresses).map(([keystoreAddress, keystoreName]) => {
       let sameName = Object.values(addresses || {}).find(
-        name => keystoreName === name
+        name => keystoreName === name,
       );
 
       while (sameName) {
@@ -72,14 +72,14 @@ function getFormattedAddresses(
         if (suffixMatch) {
           keystoreName = keystoreName.replace(
             suffixRe,
-            `(${Number(suffixMatch[1]) + 1})`
+            `(${Number(suffixMatch[1]) + 1})`,
           );
         } else {
           keystoreName += ' (1)';
         }
 
         sameName = Object.values<string>(keystoreAddresses).find(
-          name => keystoreName === name
+          name => keystoreName === name,
         );
       }
 
@@ -89,7 +89,7 @@ function getFormattedAddresses(
           : keystoreAddress,
         keystoreName,
       ];
-    })
+    }),
   );
 }
 
@@ -131,7 +131,7 @@ export function ImportAddressBook() {
           }
 
           dispatch(
-            setAddresses(getFormattedAddresses(addresses, keystoreAddresses))
+            setAddresses(getFormattedAddresses(addresses, keystoreAddresses)),
           );
           navigate('/import-address-book/success');
         } catch (err) {

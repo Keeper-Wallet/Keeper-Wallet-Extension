@@ -41,18 +41,18 @@ export function isExportable(item: PreferencesAccount | Contact) {
 }
 
 export function ExportKeystoreChooseItems<
-  T extends PreferencesAccount | Contact
+  T extends PreferencesAccount | Contact,
 >({ items, type, onSubmit }: Props<T>) {
   const { t } = useTranslation();
 
   const [selected, setSelected] = useState(
-    () => new Set(items.filter(isExportable).map(({ address }) => address))
+    () => new Set(items.filter(isExportable).map(({ address }) => address)),
   );
 
   function toggleSelected(
     // eslint-disable-next-line @typescript-eslint/no-shadow
     items: Array<PreferencesAccount | Contact>,
-    isSelected: boolean
+    isSelected: boolean,
   ) {
     setSelected(prevSelected => {
       const newSelected = new Set(prevSelected);
@@ -70,7 +70,7 @@ export function ExportKeystoreChooseItems<
   }
 
   const [showWarningModal, setShowWarningModal] = useState(
-    !items.every(isExportable)
+    !items.every(isExportable),
   );
 
   return (
@@ -85,7 +85,7 @@ export function ExportKeystoreChooseItems<
         {t(
           type === 'contacts'
             ? 'exportKeystore.chooseContactsTitle'
-            : 'exportKeystore.chooseAccountsTitle'
+            : 'exportKeystore.chooseAccountsTitle',
         )}
       </h1>
 
@@ -93,7 +93,7 @@ export function ExportKeystoreChooseItems<
         {t(
           type === 'contacts'
             ? 'exportKeystore.chooseContactsDesc'
-            : 'exportKeystore.chooseAccountsDesc'
+            : 'exportKeystore.chooseAccountsDesc',
         )}
       </p>
 

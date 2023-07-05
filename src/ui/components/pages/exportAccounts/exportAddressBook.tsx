@@ -21,7 +21,7 @@ export function ExportAddressBook() {
       <ExportKeystoreChooseItems
         items={Object.entries(addresses)
           .sort(([, firstName], [, secondName]) =>
-            firstName.localeCompare(secondName)
+            firstName.localeCompare(secondName),
           )
           .map(([address, name]) => ({
             name,
@@ -32,7 +32,7 @@ export function ExportAddressBook() {
         onSubmit={async contacts => {
           const addressesSelected = contacts.reduce<Record<string, string>>(
             (acc, contact) => ({ ...acc, [contact.address]: contact.name }),
-            {}
+            {},
           );
           setAddressesToExport(addressesSelected);
         }}
@@ -49,7 +49,7 @@ export function ExportAddressBook() {
               undefined,
               addressesToExport,
               password,
-              encrypted
+              encrypted,
             );
             navigate(-2);
           }}

@@ -6,7 +6,7 @@ export interface WithNavigate {
 }
 
 export function withNavigate<Props>(
-  component: React.ComponentType<Props & WithNavigate>
+  component: React.ComponentType<Props & WithNavigate>,
 ): React.ComponentType<Props> {
   return function WrappedWithNavigate(props) {
     return createElement(component, {

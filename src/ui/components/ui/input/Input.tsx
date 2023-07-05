@@ -55,7 +55,7 @@ export function Input({
       forwardRef && (forwardRef.current = element);
       rootRef.current = element;
     },
-    [forwardRef]
+    [forwardRef],
   );
 
   return (

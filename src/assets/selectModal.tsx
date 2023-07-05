@@ -103,12 +103,12 @@ export function AssetSelectModal({
             asset.id === query ||
             asset.name.toLowerCase().includes(query.toLowerCase()) ||
             (!!asset.ticker &&
-              asset.ticker.toLowerCase().includes(query.toLowerCase()))
+              asset.ticker.toLowerCase().includes(query.toLowerCase())),
         )
         .map(asset => {
           const balance = new Money(
             new BigNumber(assetBalances[asset.id]?.balance ?? 0),
-            new Asset(asset)
+            new Asset(asset),
           );
 
           return {
@@ -133,12 +133,12 @@ export function AssetSelectModal({
 
           return -1;
         }),
-    [assetBalances, assets, query]
+    [assetBalances, assets, query],
   );
 
   useEffect(() => {
     setSelectedIndex(
-      filteredAndSortedItems.findIndex(item => !item.asset.disabled)
+      filteredAndSortedItems.findIndex(item => !item.asset.disabled),
     );
   }, [filteredAndSortedItems]);
 
@@ -194,7 +194,7 @@ export function AssetSelectModal({
                     setSelectedIndex(prevState => {
                       if (
                         filteredAndSortedItems.every(
-                          item => item.asset.disabled
+                          item => item.asset.disabled,
                         )
                       ) {
                         return -1;
@@ -220,7 +220,7 @@ export function AssetSelectModal({
                     setSelectedIndex(prevState => {
                       if (
                         filteredAndSortedItems.every(
-                          item => item.asset.disabled
+                          item => item.asset.disabled,
                         )
                       ) {
                         return -1;

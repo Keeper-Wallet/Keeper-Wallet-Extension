@@ -2,7 +2,7 @@ import { type PreferencesAccount } from 'preferences/types';
 
 export function compareAccountsByLastUsed(
   accA: PreferencesAccount,
-  accB: PreferencesAccount
+  accB: PreferencesAccount,
 ) {
   const a = accA.lastUsed;
   const b = accB.lastUsed;

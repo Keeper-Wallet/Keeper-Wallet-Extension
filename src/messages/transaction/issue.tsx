@@ -60,7 +60,7 @@ export function IssueCard({
                     precision: tx.decimals,
                     sender: '',
                     timestamp: new Date(tx.timestamp),
-                  })
+                  }),
                 )
               }
               data-testid="issueAmount"
@@ -116,7 +116,7 @@ export function IssueCard({
               {t(
                 tx.reissuable
                   ? 'transactions.reissuable'
-                  : 'transactions.noReissuable'
+                  : 'transactions.noReissuable',
               )}
             </div>
           </div>

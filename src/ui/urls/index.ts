@@ -7,10 +7,10 @@ const explorerUrls = new Map([
 
 export function getAccountLink(
   networkCode: string,
-  address: string | null | undefined
+  address: string | null | undefined,
 ) {
   const explorer = explorerUrls.get(
-    explorerUrls.has(networkCode) ? networkCode : 'custom'
+    explorerUrls.has(networkCode) ? networkCode : 'custom',
   );
   return `https://${explorer}/address/${address}`;
 }
@@ -25,17 +25,17 @@ export function getNftsLink(networkCode: string, address: string): string {
 
 export function getTxDetailLink(networkCode: string, txId: string): string {
   const explorer = explorerUrls.get(
-    explorerUrls.has(networkCode) ? networkCode : 'custom'
+    explorerUrls.has(networkCode) ? networkCode : 'custom',
   );
   return `https://${explorer}/tx/${txId}`;
 }
 
 export function getAssetDetailLink(
   networkCode: string,
-  assetId: string
+  assetId: string,
 ): string {
   const explorer = explorerUrls.get(
-    explorerUrls.has(networkCode) ? networkCode : 'custom'
+    explorerUrls.has(networkCode) ? networkCode : 'custom',
   );
   return `https://${explorer}/assets/${assetId}`;
 }

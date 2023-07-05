@@ -44,7 +44,7 @@ async function makeConfig({
           dev && hmr && '@faergeek/tiny-browser-hmr-webpack-plugin/client',
           ...(Array.isArray(value) ? value : [value]),
         ].filter(Boolean),
-      ])
+      ]),
     ),
     cache: {
       type: 'filesystem',
@@ -154,7 +154,7 @@ async function makeConfig({
           openAnalyzer: false,
           reportFilename: path.resolve(
             __dirname,
-            `dist/webpack-bundle-analyzer/${name}.html`
+            `dist/webpack-bundle-analyzer/${name}.html`,
           ),
           statsFilename: path.resolve(__dirname, `dist/stats/${name}.json`),
         }),

@@ -50,7 +50,7 @@ describe('Tabs manipulation', function () {
       await GetStartedScreen.getStartedButton.click();
       await NewAccountScreen.passwordInput.setValue(DEFAULT_PASSWORD);
       await NewAccountScreen.passwordConfirmationInput.setValue(
-        DEFAULT_PASSWORD
+        DEFAULT_PASSWORD,
       );
       await NewAccountScreen.privacyPolicyCheckbox.click();
       await NewAccountScreen.termsAndConditionsCheckbox.click();
@@ -101,7 +101,7 @@ describe('Tabs manipulation', function () {
 
       await importAccountUntilSuccess(
         'rich',
-        'waves private node seed with waves tokens'
+        'waves private node seed with waves tokens',
       );
 
       await expect(ImportSuccessScreen.root).toBeDisplayed();
@@ -115,7 +115,7 @@ describe('Tabs manipulation', function () {
     it('"finish" button closes "accounts" tab', async function () {
       await importAccountUntilSuccess(
         'poor',
-        'waves private node seed without waves tokens'
+        'waves private node seed without waves tokens',
       );
 
       await ImportSuccessScreen.finishButton.click();

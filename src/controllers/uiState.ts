@@ -10,7 +10,7 @@ export class UiStateController {
     this.store = new ObservableStore(
       extensionStorage.getInitState({
         uiState: {},
-      })
+      }),
     );
     extensionStorage.subscribe(this.store);
   }

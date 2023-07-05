@@ -37,7 +37,7 @@ class ConfirmBackupComponent extends Component<Props, State> {
 
   static getDerivedStateFromProps(
     props: Readonly<Props>,
-    state: State
+    state: State,
   ): Partial<State> | null {
     const { seed } = props.account;
 
@@ -172,5 +172,5 @@ const mapStateToProps = (state: AccountsState): StateProps => {
 };
 
 export const ConfirmBackup = connect(mapStateToProps)(
-  withTranslation()(withNavigate(ConfirmBackupComponent))
+  withTranslation()(withNavigate(ConfirmBackupComponent)),
 );

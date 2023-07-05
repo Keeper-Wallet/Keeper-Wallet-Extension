@@ -59,7 +59,7 @@ export function VerifyCodeComponent({
     (value: string, index: number): void => {
       if (!value) {
         setValues(
-          values.map((v, currentIndex) => (currentIndex === index ? '' : v))
+          values.map((v, currentIndex) => (currentIndex === index ? '' : v)),
         );
 
         return;
@@ -82,7 +82,7 @@ export function VerifyCodeComponent({
 
       setValues(newValues);
     },
-    [refs, values, codeLength]
+    [refs, values, codeLength],
   );
 
   const onFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
@@ -96,7 +96,7 @@ export function VerifyCodeComponent({
 
       changeHandler(value, index);
     },
-    [changeHandler]
+    [changeHandler],
   );
 
   const onKeyDown = useCallback(
@@ -149,7 +149,7 @@ export function VerifyCodeComponent({
         }
       }
     },
-    [refs, changeHandler]
+    [refs, changeHandler],
   );
 
   return (

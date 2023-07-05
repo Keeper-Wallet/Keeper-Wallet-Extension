@@ -180,7 +180,7 @@ export class StatisticsController {
         const text = await response.text();
 
         throw new Error(
-          `Amplitude Error (${response.status} ${response.statusText}): ${text}`
+          `Amplitude Error (${response.status} ${response.statusText}): ${text}`,
         );
       }
     }
@@ -208,7 +208,7 @@ export class StatisticsController {
         const text = await response.text();
 
         throw new Error(
-          `MixPanel Error (${response.status} ${response.statusText}): ${text}`
+          `MixPanel Error (${response.status} ${response.statusText}): ${text}`,
         );
       }
     }

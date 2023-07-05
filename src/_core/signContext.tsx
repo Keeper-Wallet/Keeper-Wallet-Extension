@@ -21,7 +21,7 @@ import { Login } from '../ui/components/pages/importEmail/login';
 import * as styles from './signContext.module.css';
 
 type CreateSign = <P>(
-  onConfirm: (params: P) => void
+  onConfirm: (params: P) => void,
 ) => (params: P) => Promise<void>;
 
 export const SignContext = createContext<{ createSign: null | CreateSign }>({
@@ -67,7 +67,7 @@ function usePromiseDialogController(initiallyOpen = false) {
       close,
       isOpen,
     }),
-    [close, isOpen, onCancel, onOk, open]
+    [close, isOpen, onCancel, onOk, open],
   );
 }
 
@@ -108,7 +108,7 @@ export function SignProvider({ children }: { children: ReactNode }) {
           break;
       }
     },
-    [account, confirmDialog]
+    [account, confirmDialog],
   );
 
   const contextValue = useMemo(() => ({ createSign }), [createSign]);
@@ -163,7 +163,7 @@ export function SignProvider({ children }: { children: ReactNode }) {
 }
 
 export function useSign<OnConfirmParams>(
-  onConfirm: (params: OnConfirmParams) => void | Promise<void>
+  onConfirm: (params: OnConfirmParams) => void | Promise<void>,
 ) {
   const [isSignPending, setIsSignPending] = useState(false);
 
@@ -176,10 +176,10 @@ export function useSign<OnConfirmParams>(
       setIsSignPending(true);
 
       return createSign(onConfirm)(params).finally(() =>
-        setIsSignPending(false)
+        setIsSignPending(false),
       );
     },
-    [createSign, onConfirm]
+    [createSign, onConfirm],
   );
 
   return { sign, isSignPending };

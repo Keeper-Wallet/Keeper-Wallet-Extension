@@ -13,7 +13,7 @@ import { setUiState } from '../../../../../store/actions/uiState';
 import { type UiState } from '../../../../../store/reducers/updateState';
 
 export function useUiState<T extends keyof UiState>(
-  key: T
+  key: T,
 ): [UiState[T] | null, (newState: UiState[T] | null) => void] {
   const dispatch = usePopupDispatch();
   const initialValue = usePopupSelector(state => state.uiState[key]);
@@ -33,11 +33,11 @@ export function useUiState<T extends keyof UiState>(
 export function sortAssetEntries<T>(
   assetEntries: Array<[string, T]>,
   assets: AssetsRecord,
-  showSuspiciousAssets: boolean | undefined
+  showSuspiciousAssets: boolean | undefined,
 ): Array<[string, T]> {
   return assetEntries
     .filter(
-      ([assetId]) => showSuspiciousAssets || !assets[assetId]?.isSuspicious
+      ([assetId]) => showSuspiciousAssets || !assets[assetId]?.isSuspicious,
     )
     .sort(([aAssetId], [bAssetId]) => {
       const a = assets[aAssetId];
@@ -60,7 +60,7 @@ export function sortAndFilterNfts<T extends Nft>(
   filters: {
     term?: string;
     creator?: string | null;
-  }
+  },
 ) {
   const { creator, term } = filters;
 
@@ -76,7 +76,7 @@ export function sortAndFilterNfts<T extends Nft>(
         nft.creator!.toLowerCase() === term.toLowerCase() ||
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         nft.displayCreator!.toLowerCase().indexOf(term.toLowerCase()) !== -1 ||
-        nft.displayName.toLowerCase().indexOf(term.toLowerCase()) !== -1
+        nft.displayName.toLowerCase().indexOf(term.toLowerCase()) !== -1,
     );
   }
 

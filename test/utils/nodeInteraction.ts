@@ -23,7 +23,7 @@ export async function faucet({
   chainId: number;
 }) {
   const minerPrivateKeyBytes = await createPrivateKey(
-    utf8Encode(DEFAULT_MINER_SEED)
+    utf8Encode(DEFAULT_MINER_SEED),
   );
   const minerPublicKeyBytes = await createPublicKey(minerPrivateKeyBytes);
   const minerPublicKey = base58Encode(minerPublicKeyBytes);
@@ -68,7 +68,7 @@ export async function getNetworkByte(nodeUrl: string) {
 
 export async function getTransactionStatus(
   transactionId: string,
-  nodeUrl: string
+  nodeUrl: string,
 ) {
   const url = new URL('/transactions/status', nodeUrl);
   url.searchParams.set('id', transactionId);

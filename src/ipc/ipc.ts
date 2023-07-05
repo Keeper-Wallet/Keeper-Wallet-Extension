@@ -52,7 +52,7 @@ export function fromWebExtensionPort(port: Browser.Runtime.Port) {
   return pipe(
     fromWebExtensionEvent(port.onMessage),
     takeUntil(fromWebExtensionEvent(port.onDisconnect)),
-    map(([message]) => message)
+    map(([message]) => message),
   );
 }
 
@@ -83,8 +83,8 @@ interface MethodCallResponsePayload<T = unknown> {
 export function handleMethodCallRequests<K extends string>(
   api: ApiObject<K>,
   sendResponse: (
-    result: 'KEEPER_PONG' | MethodCallResponsePayload<unknown>
-  ) => void
+    result: 'KEEPER_PONG' | MethodCallResponsePayload<unknown>,
+  ) => void,
 ) {
   return tap(async data => {
     if (data === 'KEEPER_PING') {
@@ -138,9 +138,9 @@ export function handleMethodCallRequests<K extends string>(
 
 export function createIpcCallProxy<K extends string, T extends ApiObject<K>>(
   sendRequest: (
-    payload: 'KEEPER_PING' | MethodCallRequestPayload<string>
+    payload: 'KEEPER_PING' | MethodCallRequestPayload<string>,
   ) => void,
-  responseSource: Source<unknown>
+  responseSource: Source<unknown>,
 ) {
   function ensureConnection() {
     return new Promise<void>(resolve => {
@@ -158,7 +158,7 @@ export function createIpcCallProxy<K extends string, T extends ApiObject<K>>(
         subscribe(() => {
           clearTimeout(retryTimeout);
           resolve();
-        })
+        }),
       );
     });
   }
@@ -180,11 +180,11 @@ export function createIpcCallProxy<K extends string, T extends ApiObject<K>>(
             data != null &&
             'keeperMethodCallResponse' in data
               ? data.keeperMethodCallResponse
-              : undefined
+              : undefined,
           ),
           map(
             (
-              data
+              data,
             ):
               | { error?: unknown; id: string; isError: true }
               | { data?: unknown; id: string; isError?: never }
@@ -203,10 +203,10 @@ export function createIpcCallProxy<K extends string, T extends ApiObject<K>>(
                       data: 'data' in data ? data.data : undefined,
                       id: data.id,
                     }
-                : undefined
+                : undefined,
           ),
           filter(
-            response => response?.id === request.keeperMethodCallRequest.id
+            response => response?.id === request.keeperMethodCallRequest.id,
           ),
           take(1),
           subscribe(response => {
@@ -218,7 +218,7 @@ export function createIpcCallProxy<K extends string, T extends ApiObject<K>>(
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               resolve(response.data as any);
             }
-          })
+          }),
         );
       });
     };

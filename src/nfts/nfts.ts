@@ -32,8 +32,8 @@ export type NftInfo = (typeof vendors)[keyof typeof vendors] extends NftVendor<
 export async function fetchNftInfo(nodeUrl: string, nfts: NftAssetDetail[]) {
   const allNfts = await Promise.all(
     Object.values(vendors).map(vendor =>
-      vendor.fetchInfo({ nodeUrl, nfts: nfts.filter(vendor.is) })
-    )
+      vendor.fetchInfo({ nodeUrl, nfts: nfts.filter(vendor.is) }),
+    ),
   );
 
   return allNfts.flat();
@@ -68,6 +68,6 @@ export function createNft({
       id: asset.id,
       name: asset.name,
       vendor: NftVendorId.Unknown,
-    }
+    },
   );
 }

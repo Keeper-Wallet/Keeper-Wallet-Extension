@@ -32,7 +32,7 @@ class NewAccountComponent extends PureComponent<Props> {
   static _isDisabledButton(
     { firstValue, secondValue }: { firstValue: string; secondValue: string },
     termsAccepted: boolean,
-    conditionsAccepted: boolean
+    conditionsAccepted: boolean,
   ) {
     if (!termsAccepted || !conditionsAccepted) {
       return true;
@@ -45,7 +45,7 @@ class NewAccountComponent extends PureComponent<Props> {
     const isFirstError = NewAccountComponent._validateFirst(firstValue);
     const isSecondError = NewAccountComponent._validateSecond(
       firstValue,
-      secondValue
+      secondValue,
     );
 
     return isFirstError || isSecondError;
@@ -84,7 +84,7 @@ class NewAccountComponent extends PureComponent<Props> {
     this._onChangeInputs(this.state.firstValue, e.target.value);
 
   handleTermsAcceptedChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ): void => {
     this.setState({ termsAccepted: e.currentTarget.checked }, () => {
       this._onChangeInputs(this.state.firstValue, this.state.secondValue);
@@ -92,7 +92,7 @@ class NewAccountComponent extends PureComponent<Props> {
   };
 
   handleonditionsAcceptedChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ): void => {
     this.setState({ conditionsAccepted: e.currentTarget.checked }, () => {
       this._onChangeInputs(this.state.firstValue, this.state.secondValue);
@@ -246,7 +246,7 @@ class NewAccountComponent extends PureComponent<Props> {
     const firstError = NewAccountComponent._validateFirst(firstValue);
     const secondError = NewAccountComponent._validateSecond(
       firstValue,
-      secondValue
+      secondValue,
     );
     const passwordError = !!(firstError || secondError);
     const buttonDisabled = NewAccountComponent._isDisabledButton(
@@ -255,7 +255,7 @@ class NewAccountComponent extends PureComponent<Props> {
         secondValue,
       },
       termsAccepted,
-      conditionsAccepted
+      conditionsAccepted,
     );
 
     this.setState({ passwordError, firstError, secondError, buttonDisabled });
@@ -263,5 +263,5 @@ class NewAccountComponent extends PureComponent<Props> {
 }
 
 export const NewAccount = connect(mapStateToProps)(
-  withTranslation()(NewAccountComponent)
+  withTranslation()(NewAccountComponent),
 );

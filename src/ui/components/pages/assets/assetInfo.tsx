@@ -15,7 +15,7 @@ interface Props {
 export function AssetInfo({ asset, onCopy, onClose }: Props) {
   const { t } = useTranslation();
   const networkCode = usePopupSelector(
-    state => state.selectedAccount?.networkCode
+    state => state.selectedAccount?.networkCode,
   );
 
   return (
@@ -67,11 +67,11 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
             {t(
               asset.reissuable
                 ? 'assetInfo.reissuable'
-                : 'assetInfo.notReissuable'
+                : 'assetInfo.notReissuable',
             )}
             ,&nbsp;
             {t(
-              asset.hasScript ? 'assetInfo.scripted' : 'assetInfo.notScripted'
+              asset.hasScript ? 'assetInfo.scripted' : 'assetInfo.notScripted',
             )}
           </div>
         </div>

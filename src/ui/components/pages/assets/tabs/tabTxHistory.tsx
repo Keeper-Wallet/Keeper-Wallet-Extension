@@ -76,27 +76,27 @@ const PLACEHOLDERS = [...Array(4).keys()].map<TransactionFromNode>(
   key =>
     ({
       id: `${key}`,
-    } as TransactionFromNode)
+    }) as TransactionFromNode,
 );
 
 export function TabTxHistory() {
   const { t, i18n } = useTranslation();
   const networkCode = usePopupSelector(
-    state => state.selectedAccount?.networkCode
+    state => state.selectedAccount?.networkCode,
   );
   const assets = usePopupSelector(state => state.assets);
   const showSuspiciousAssets = usePopupSelector(
-    state => !!state.uiState?.showSuspiciousAssets
+    state => !!state.uiState?.showSuspiciousAssets,
   );
   const address = usePopupSelector(state => state.selectedAccount?.address);
   const aliases = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state => state.balances[address!]?.aliases || []
+    state => state.balances[address!]?.aliases || [],
   );
   const addressOrAlias = [address, ...aliases];
   const txHistory = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state => state.balances[address!]?.txHistory
+    state => state.balances[address!]?.txHistory,
   );
 
   const thisYear = new Date().getFullYear();
@@ -141,8 +141,8 @@ export function TabTxHistory() {
         (stateChanges?.invokes ?? []).reduce(
           (result: unknown[], el: { stateChanges: unknown[] }) =>
             result.concat(flat(el.stateChanges)),
-          []
-        )
+          [],
+        ),
       );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -151,7 +151,7 @@ export function TabTxHistory() {
       (hasItems, el) =>
         hasItems ||
         [el.asset, el.address, el.assetId, el.leaseId, el.dApp].includes(
-          term
+          term,
         ) ||
         [
           el.address,
@@ -159,14 +159,14 @@ export function TabTxHistory() {
           assets[el.assetId]?.displayName,
           el.call?.function || 'default',
         ].reduce((result, name) => result || icontains(name, term), false),
-      false
+      false,
     );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const hasInvokeTransfers = (stateChanges: any): boolean =>
     flat(stateChanges).reduce(
       (hasTransfers, el) => hasTransfers || addressOrAlias.includes(el.address),
-      false
+      false,
     );
 
   const historyWithGroups = txHistory
@@ -177,9 +177,9 @@ export function TabTxHistory() {
           const hasMassTransfers = (tx.transfers ?? []).reduce(
             (
               result: boolean,
-              transfer: { amount: number; recipient: string }
+              transfer: { amount: number; recipient: string },
             ) => result || addressOrAlias.includes(transfer.recipient),
-            false
+            false,
           );
           const hasInvokePayments = (tx.payment ?? []).length !== 0;
           const hasInvokePaymentsAsset = (tx.payment ?? []).reduce(
@@ -187,7 +187,7 @@ export function TabTxHistory() {
               hasPayments ||
               el.assetId === term ||
               icontains(assets[el.assetId]?.displayName ?? '', term),
-            false
+            false,
           );
 
           return (
@@ -241,14 +241,14 @@ export function TabTxHistory() {
 
               const txDate = new Intl.DateTimeFormat(
                 i18n.language,
-                options
+                options,
               ).format(d);
               result.push({ groupName: note ? `${txDate} ${note}` : txDate });
             }
             result.push(tx);
             return result;
           },
-          []
+          [],
         )
     : PLACEHOLDERS;
 
@@ -376,7 +376,7 @@ export function TabTxHistory() {
                         : CARD_FULL_HEIGHT *
                           (1 +
                             Number(
-                              index === historyWithGroups.length - 1 && hasMore
+                              index === historyWithGroups.length - 1 && hasMore,
                             ))
                     }
                     itemData={{

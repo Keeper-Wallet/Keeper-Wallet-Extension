@@ -35,5 +35,5 @@ export const ERRORS = Object.entries(ERRORS_DATA).reduce(
 
     return acc;
   },
-  {} as Record<ErrorName, (message?: string, data?: unknown) => KeeperError>
+  {} as Record<ErrorName, (message?: string, data?: unknown) => KeeperError>,
 );

@@ -56,7 +56,7 @@ class OriginSettingsComponent extends PureComponent<IProps, IState> {
 
   static getDerivedStateFromProps(
     props: Readonly<IProps>,
-    state: IState
+    state: IState,
   ): Partial<IState> {
     const { interval = null, totalAmount } =
       OriginSettingsComponent._getAutoSign(props.autoSign);
@@ -64,10 +64,10 @@ class OriginSettingsComponent extends PureComponent<IProps, IState> {
     const selected = CONFIG.list.find(({ value }) => value === interval)!.id;
     const notifications = props.permissions.find(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      item => item && (item as any).type === 'useNotifications'
+      item => item && (item as any).type === 'useNotifications',
     ) as TNotification;
     const inWhiteList = (props.origins[props.originName] || []).includes(
-      'whiteList'
+      'whiteList',
     );
     let canShowNotifications = state.canShowNotifications;
     const canUse = notifications && notifications.canUse;
@@ -110,7 +110,7 @@ class OriginSettingsComponent extends PureComponent<IProps, IState> {
     this.calculateCanSave(
       this.state.interval,
       this.state.totalAmount,
-      e.target.checked
+      e.target.checked,
     );
   };
 
@@ -121,17 +121,17 @@ class OriginSettingsComponent extends PureComponent<IProps, IState> {
     this.calculateCanSave(
       value,
       this.state.totalAmount,
-      this.state.canShowNotifications
+      this.state.canShowNotifications,
     );
   };
 
   calculateCanSave(
     newInterval: number | null,
     newTotalAmount: string | null,
-    newCanShowNotifications: boolean | null
+    newCanShowNotifications: boolean | null,
   ) {
     const sign = OriginSettingsComponent._getAutoSign(
-      this.props.originalAutoSign
+      this.props.originalAutoSign,
     );
     let canSave = false;
 
@@ -193,7 +193,7 @@ class OriginSettingsComponent extends PureComponent<IProps, IState> {
     this.calculateCanSave(
       this.state.interval,
       newValue,
-      this.state.canShowNotifications
+      this.state.canShowNotifications,
     );
   };
 
@@ -326,7 +326,7 @@ interface IProps extends WithTranslation {
   onSave: (
     params: Partial<TAutoAuth>,
     origin: string,
-    canShowNotifications: boolean | null
+    canShowNotifications: boolean | null,
   ) => void;
   onClose: () => void;
   onDelete: (origin: string) => void;

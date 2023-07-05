@@ -77,7 +77,7 @@ export function AddModal({ showModal, setShowModal, address }: Props) {
                 e.preventDefault();
 
                 const foundName = Object.values(addresses).find(
-                  addressName => addressName === name
+                  addressName => addressName === name,
                 );
                 if (foundName) {
                   setNameError(t('address.nameAlreadyExist'));

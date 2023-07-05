@@ -14,7 +14,7 @@ if (document.documentElement.tagName === 'HTML') {
         postMessage(
           { keeperMessagePort: messageChannel.port2 },
           location.origin,
-          [messageChannel.port2]
+          [messageChannel.port2],
         );
 
         const getWebExtensionPort = (() => {
@@ -34,7 +34,7 @@ if (document.documentElement.tagName === 'HTML') {
                 }),
                 subscribe(message => {
                   inpagePort.postMessage(message);
-                })
+                }),
               );
             }
 
@@ -46,9 +46,9 @@ if (document.documentElement.tagName === 'HTML') {
           fromMessagePort(inpagePort),
           subscribe(data => {
             getWebExtensionPort().postMessage(data);
-          })
+          }),
         );
       },
-    })
+    }),
   );
 }

@@ -47,7 +47,7 @@ export class CurrentAccountController {
     isLocked: VaultController['isLocked'];
   }) {
     const defaults: Partial<Record<string, BalancesItem>> = Object.fromEntries(
-      getAccounts().map(acc => [`balance_${acc.address}`, undefined])
+      getAccounts().map(acc => [`balance_${acc.address}`, undefined]),
     );
 
     const initState = extensionStorage.getInitState(defaults);
@@ -139,7 +139,7 @@ export class CurrentAccountController {
   async #fetchNfts(address: string) {
     const url = new URL(
       `assets/nft/${address}/limit/${MAX_NFT_ITEMS}`,
-      this.getNode()
+      this.getNode(),
     );
 
     const response = await fetch(url, {
@@ -178,7 +178,7 @@ export class CurrentAccountController {
   async #fetchTxHistory(address: string) {
     const url = new URL(
       `transactions/address/${address}/limit/${MAX_TX_HISTORY_ITEMS}`,
-      this.getNode()
+      this.getNode(),
     );
 
     const response = await fetch(url, {
@@ -207,7 +207,7 @@ export class CurrentAccountController {
   async updateCurrentAccountBalance() {
     const currentNetwork = this.getNetwork();
     const accounts = this.getAccounts().filter(
-      ({ network }) => network === currentNetwork
+      ({ network }) => network === currentNetwork,
     );
     const activeAccount = this.getSelectedAccount();
 
@@ -243,13 +243,13 @@ export class CurrentAccountController {
         info =>
           !assetExists(info.assetId) ||
           isSponsorshipUpdated(info) ||
-          isMaxAgeExceeded(info.assetId)
+          isMaxAgeExceeded(info.assetId),
       ) as Array<{ assetId: string }>
     )
       .concat(
         myNfts.filter(
-          info => !assetExists(info.assetId) || isMaxAgeExceeded(info.assetId)
-        )
+          info => !assetExists(info.assetId) || isMaxAgeExceeded(info.assetId),
+        ),
       )
       .map(info => info.assetId)
       .concat(
@@ -268,7 +268,9 @@ export class CurrentAccountController {
               : []),
           ])
           .filter(isNotNull)
-          .filter(assetId => !assetExists(assetId) && isMaxAgeExceeded(assetId))
+          .filter(
+            assetId => !assetExists(assetId) && isMaxAgeExceeded(assetId),
+          ),
       );
 
     await Promise.all([
@@ -364,7 +366,7 @@ export class CurrentAccountController {
           };
 
           return [balanceKey, balance];
-        })
+        }),
       );
 
       this.store.updateState(balances);

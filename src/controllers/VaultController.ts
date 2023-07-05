@@ -20,7 +20,7 @@ export class VaultController {
     identity: IdentityController;
   }) {
     this.store = new ObservableStore(
-      extensionStorage.getInitState({ locked: false, initialized: false })
+      extensionStorage.getInitState({ locked: false, initialized: false }),
     );
 
     extensionStorage.subscribe(this.store);
