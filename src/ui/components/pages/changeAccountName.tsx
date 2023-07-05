@@ -45,7 +45,7 @@ export function ChangeAccountName() {
   const accounts = usePopupSelector(state => state.accounts);
 
   const account = usePopupSelector(state =>
-    state.accounts.find(x => x.address === params.address)
+    state.accounts.find(x => x.address === params.address),
   );
 
   const [error, setError] = useState(false);
@@ -79,7 +79,7 @@ export function ChangeAccountName() {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             account!.address,
             newName,
-            currentNetwork
+            currentNetwork,
           );
 
           dispatch(notificationChangeName(true));

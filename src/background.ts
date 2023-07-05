@@ -92,7 +92,7 @@ initSentry({
       bg.remoteConfigController.shouldIgnoreError('beforeSend', message) ||
       bg.remoteConfigController.shouldIgnoreError(
         'beforeSendBackground',
-        message
+        message,
       )
     );
   },
@@ -100,7 +100,7 @@ initSentry({
 
 const storageChangesSource = pipe(
   fromWebExtensionEvent(Browser.storage.onChanged),
-  share
+  share,
 );
 
 Browser.runtime.onConnect.addListener(async remotePort => {
@@ -141,7 +141,7 @@ async function setupBackgroundService() {
   ]);
 
   const initLangCode = acceptLanguages.find(code =>
-    SUPPORTED_LANGUAGES.find(lang => lang.id === code.toLowerCase())
+    SUPPORTED_LANGUAGES.find(lang => lang.id === code.toLowerCase()),
   );
 
   const backgroundService = new BackgroundService({
@@ -155,7 +155,7 @@ async function setupBackgroundService() {
 
     const notificationsCount = selectedAccount
       ? backgroundService.notificationsController.getNotifications(
-          selectedAccount
+          selectedAccount,
         ).length
       : 0;
 
@@ -182,7 +182,7 @@ async function setupBackgroundService() {
   const windowManager = new WindowManager();
   backgroundService.on(
     'Show notification',
-    windowManager.showWindow.bind(windowManager)
+    windowManager.showWindow.bind(windowManager),
   );
   backgroundService.on('Close notification', () => {
     windowManager.closeWindow();
@@ -267,7 +267,7 @@ class BackgroundService extends EventEmitter {
       extensionStorage: this.extensionStorage,
       initLangCode,
       getNetwork: this.networkController.getNetwork.bind(
-        this.networkController
+        this.networkController,
       ),
     });
 
@@ -286,13 +286,13 @@ class BackgroundService extends EventEmitter {
     this.identityController = new IdentityController({
       extensionStorage: this.extensionStorage,
       getNetwork: this.networkController.getNetwork.bind(
-        this.networkController
+        this.networkController,
       ),
       getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
-        this.preferencesController
+        this.preferencesController,
       ),
       getIdentityConfig: this.remoteConfigController.getIdentityConfig.bind(
-        this.remoteConfigController
+        this.remoteConfigController,
       ),
     });
 
@@ -325,7 +325,7 @@ class BackgroundService extends EventEmitter {
       trash: this.trash,
       identity: {
         signBytes: this.identityController.signBytes.bind(
-          this.identityController
+          this.identityController,
         ),
       },
     });
@@ -363,14 +363,14 @@ class BackgroundService extends EventEmitter {
       });
 
     this.networkController.store.subscribe(() =>
-      this.currentAccountController.updateCurrentAccountBalance()
+      this.currentAccountController.updateCurrentAccountBalance(),
     );
 
     // AssetInfo. Provides information about assets
     this.assetInfoController = new AssetInfoController({
       extensionStorage: this.extensionStorage,
       getNetwork: this.networkController.getNetwork.bind(
-        this.networkController
+        this.networkController,
       ),
       getNode: this.networkController.getNode.bind(this.networkController),
       remoteConfig: this.remoteConfigController,
@@ -379,7 +379,7 @@ class BackgroundService extends EventEmitter {
     this.nftInfoController = new NftInfoController({
       extensionStorage: this.extensionStorage,
       getNetwork: this.networkController.getNetwork.bind(
-        this.networkController
+        this.networkController,
       ),
       getNode: this.networkController.getNode.bind(this.networkController),
     });
@@ -388,14 +388,14 @@ class BackgroundService extends EventEmitter {
     this.currentAccountController = new CurrentAccountController({
       extensionStorage: this.extensionStorage,
       getNetwork: this.networkController.getNetwork.bind(
-        this.networkController
+        this.networkController,
       ),
       getNode: this.networkController.getNode.bind(this.networkController),
       getAccounts: this.preferencesController.getAccounts.bind(
-        this.preferencesController
+        this.preferencesController,
       ),
       getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
-        this.preferencesController
+        this.preferencesController,
       ),
       isLocked: this.vaultController.isLocked.bind(this.vaultController),
       assetInfoController: this.assetInfoController,
@@ -414,10 +414,10 @@ class BackgroundService extends EventEmitter {
       networkController: this.networkController,
       assetInfoController: this.assetInfoController,
       setPermission: this.permissionsController.setPermission.bind(
-        this.permissionsController
+        this.permissionsController,
       ),
       getAccountBalance: this.currentAccountController.getAccountBalance.bind(
-        this.currentAccountController
+        this.currentAccountController,
       ),
       remoteConfigController: this.remoteConfigController,
       walletController: this.walletController,
@@ -433,7 +433,7 @@ class BackgroundService extends EventEmitter {
         this.permissionsController.setNotificationPermissions(
           origin,
           canUse,
-          time
+          time,
         ),
     });
 
@@ -473,7 +473,7 @@ class BackgroundService extends EventEmitter {
       editWalletName: async (
         address: string,
         name: string,
-        network: NetworkName
+        network: NetworkName,
       ) => this.preferencesController.addLabel(address, name, network),
 
       // ui state
@@ -483,11 +483,11 @@ class BackgroundService extends EventEmitter {
       // wallets
       addWallet: this.walletController.addWallet.bind(this.walletController),
       batchAddWallets: this.walletController.batchAddWallets.bind(
-        this.walletController
+        this.walletController,
       ),
 
       removeWallet: this.walletController.removeWallet.bind(
-        this.walletController
+        this.walletController,
       ),
 
       lock: async () => this.vaultController.lock(),
@@ -506,19 +506,19 @@ class BackgroundService extends EventEmitter {
       newPassword: this.vaultController.update.bind(this.vaultController),
 
       assertPasswordIsValid: this.walletController.assertPasswordIsValid.bind(
-        this.walletController
+        this.walletController,
       ),
 
       getAccountSeed: this.walletController.getAccountSeed.bind(
-        this.walletController
+        this.walletController,
       ),
 
       getAccountEncodedSeed: this.walletController.getAccountEncodedSeed.bind(
-        this.walletController
+        this.walletController,
       ),
 
       getAccountPrivateKey: this.walletController.getAccountPrivateKey.bind(
-        this.walletController
+        this.walletController,
       ),
 
       // messages
@@ -571,7 +571,7 @@ class BackgroundService extends EventEmitter {
       reject: async (messageId: string, forever?: boolean) =>
         this.messageController.reject(messageId, forever),
       updateTransactionFee: this.messageController.updateTransactionFee.bind(
-        this.messageController
+        this.messageController,
       ),
       // notifications
       deleteNotifications: async (ids: string[]) =>
@@ -592,17 +592,17 @@ class BackgroundService extends EventEmitter {
 
       // asset information
       assetInfo: this.assetInfoController.assetInfo.bind(
-        this.assetInfoController
+        this.assetInfoController,
       ),
       updateAssets: this.assetInfoController.updateAssets.bind(
-        this.assetInfoController
+        this.assetInfoController,
       ),
       updateUsdPricesByAssetIds:
         this.assetInfoController.updateUsdPricesByAssetIds.bind(
-          this.assetInfoController
+          this.assetInfoController,
         ),
       toggleAssetFavorite: this.assetInfoController.toggleAssetFavorite.bind(
-        this.assetInfoController
+        this.assetInfoController,
       ),
       // addresses
       setAddress: async (address: string, name: string) =>
@@ -632,7 +632,7 @@ class BackgroundService extends EventEmitter {
         this.messageController.rejectByOrigin(origin);
         this.permissionsController.deletePermission(
           origin,
-          PERMISSIONS.REJECTED
+          PERMISSIONS.REJECTED,
         );
         this.permissionsController.setPermission(origin, PERMISSIONS.APPROVED);
       },
@@ -641,7 +641,7 @@ class BackgroundService extends EventEmitter {
         this.statisticsController.track({ eventType: 'disableOrigin', origin });
         this.permissionsController.deletePermission(
           origin,
-          PERMISSIONS.APPROVED
+          PERMISSIONS.APPROVED,
         );
         this.permissionsController.setPermission(origin, PERMISSIONS.REJECTED);
       },
@@ -669,21 +669,21 @@ class BackgroundService extends EventEmitter {
         this.permissionsController.setNotificationPermissions(
           origin,
           canUse,
-          0
+          0,
         );
       },
       track: async (event: AnalyticsEvent) =>
         this.statisticsController.track(event),
       updateCurrentAccountBalance:
         this.currentAccountController.updateCurrentAccountBalance.bind(
-          this.currentAccountController
+          this.currentAccountController,
         ),
       updateOtherAccountsBalances:
         this.currentAccountController.updateOtherAccountsBalances.bind(
-          this.currentAccountController
+          this.currentAccountController,
         ),
       signAndPublishTransaction: async (
-        data: MessageInputOfType<'transaction'>['data']
+        data: MessageInputOfType<'transaction'>['data'],
       ) => {
         const { selectedAccount } =
           this.extensionStorage.getState('selectedAccount');
@@ -712,7 +712,7 @@ class BackgroundService extends EventEmitter {
 
       shouldIgnoreError: async (
         context: IgnoreErrorsContext,
-        message: string
+        message: string,
       ) => this.remoteConfigController.shouldIgnoreError(context, message),
 
       identitySignIn: async (username: string, password: string) =>
@@ -721,22 +721,22 @@ class BackgroundService extends EventEmitter {
         this.identityController.confirmSignIn(code),
       identityUser: async () => this.identityController.getIdentityUser(),
       identityRestore: this.identityController.restoreSession.bind(
-        this.identityController
+        this.identityController,
       ),
       identityUpdate: this.identityController.updateSession.bind(
-        this.identityController
+        this.identityController,
       ),
       identityClear: async () => this.identityController.clearSession(),
 
       ledgerSignResponse: async (
         requestId: string,
         err: string | null,
-        signature: string | undefined
+        signature: string | undefined,
       ) => {
         this.emit(
           `ledger:signResponse:${requestId}`,
           err ? new Error(err) : null,
-          signature
+          signature,
         );
       },
     };
@@ -754,7 +754,7 @@ class BackgroundService extends EventEmitter {
 
     const hasPermission = this.permissionsController.hasPermission(
       origin,
-      PERMISSIONS.APPROVED
+      PERMISSIONS.APPROVED,
     );
 
     if (hasPermission) {
@@ -815,7 +815,7 @@ class BackgroundService extends EventEmitter {
   getInpageApi(
     origin: string,
     connectionId: string,
-    port: Browser.Runtime.Port
+    port: Browser.Runtime.Port,
   ) {
     const showNotification = () => {
       this.emit('Show notification');
@@ -824,7 +824,7 @@ class BackgroundService extends EventEmitter {
     const canAutoSign = (
       message:
         | MessageOfType<'transaction'>
-        | MessageOfType<'transactionPackage'>
+        | MessageOfType<'transactionPackage'>,
     ) => {
       const { locked } = this.extensionStorage.getState(['locked']);
 
@@ -848,14 +848,14 @@ class BackgroundService extends EventEmitter {
           this.preferencesController.getSelectedAccount() != null &&
           this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED)
             ? fromPromise(this.getPublicState(origin, connectionId))
-            : empty
+            : empty,
         ),
         onStart(async () => {
           if (
             this.preferencesController.getSelectedAccount() != null &&
             this.permissionsController.hasPermission(
               origin,
-              PERMISSIONS.APPROVED
+              PERMISSIONS.APPROVED,
             )
           ) {
             lastPublicState = await this.getPublicState(origin, connectionId);
@@ -865,18 +865,18 @@ class BackgroundService extends EventEmitter {
         tap(publicState => {
           lastPublicState = publicState;
         }),
-        share
+        share,
       );
     })();
 
     return {
       signOrder: async (
         data: MessageInputOfType<'order'>['data'],
-        options?: MessageInputOfType<'order'>['options']
+        options?: MessageInputOfType<'order'>['options'],
       ) => {
         const { selectedAccount } = await this.validatePermission(
           origin,
-          connectionId
+          connectionId,
         );
 
         const message = await this.messageController.newMessage({
@@ -894,11 +894,11 @@ class BackgroundService extends EventEmitter {
       },
       signAndPublishOrder: async (
         data: MessageInputOfType<'order'>['data'],
-        options: MessageInputOfType<'order'>['options']
+        options: MessageInputOfType<'order'>['options'],
       ) => {
         const { selectedAccount } = await this.validatePermission(
           origin,
-          connectionId
+          connectionId,
         );
 
         const message = await this.messageController.newMessage({
@@ -916,11 +916,11 @@ class BackgroundService extends EventEmitter {
       },
       signCancelOrder: async (
         data: MessageInputOfType<'cancelOrder'>['data'],
-        options?: MessageInputOfType<'cancelOrder'>['options']
+        options?: MessageInputOfType<'cancelOrder'>['options'],
       ) => {
         const { selectedAccount } = await this.validatePermission(
           origin,
-          connectionId
+          connectionId,
         );
 
         const message = await this.messageController.newMessage({
@@ -938,11 +938,11 @@ class BackgroundService extends EventEmitter {
       },
       signAndPublishCancelOrder: async (
         data: MessageInputOfType<'cancelOrder'>['data'],
-        options: MessageInputOfType<'cancelOrder'>['options']
+        options: MessageInputOfType<'cancelOrder'>['options'],
       ) => {
         const { selectedAccount } = await this.validatePermission(
           origin,
-          connectionId
+          connectionId,
         );
 
         const message = await this.messageController.newMessage({
@@ -960,11 +960,11 @@ class BackgroundService extends EventEmitter {
       },
       signTransaction: async (
         data: MessageInputOfType<'transaction'>['data'],
-        options?: MessageInputOfType<'transaction'>['options']
+        options?: MessageInputOfType<'transaction'>['options'],
       ) => {
         const { selectedAccount } = await this.validatePermission(
           origin,
-          connectionId
+          connectionId,
         );
 
         const message = await this.messageController.newMessage({
@@ -987,11 +987,11 @@ class BackgroundService extends EventEmitter {
       signTransactionPackage: async (
         data: MessageInputOfType<'transactionPackage'>['data'],
         title: string | undefined,
-        options?: MessageInputOfType<'transactionPackage'>['options']
+        options?: MessageInputOfType<'transactionPackage'>['options'],
       ) => {
         const { selectedAccount } = await this.validatePermission(
           origin,
-          connectionId
+          connectionId,
         );
 
         const message = await this.messageController.newMessage({
@@ -1013,11 +1013,11 @@ class BackgroundService extends EventEmitter {
       },
       signAndPublishTransaction: async (
         data: MessageInputOfType<'transaction'>['data'],
-        options?: MessageInputOfType<'transaction'>['options']
+        options?: MessageInputOfType<'transaction'>['options'],
       ) => {
         const { selectedAccount } = await this.validatePermission(
           origin,
-          connectionId
+          connectionId,
         );
 
         const message = await this.messageController.newMessage({
@@ -1039,11 +1039,11 @@ class BackgroundService extends EventEmitter {
       },
       auth: async (
         data: MessageInputOfType<'auth'>['data'],
-        options?: MessageInputOfType<'auth'>['options']
+        options?: MessageInputOfType<'auth'>['options'],
       ) => {
         const { selectedAccount } = await this.validatePermission(
           origin,
-          connectionId
+          connectionId,
         );
 
         const message = await this.messageController.newMessage({
@@ -1063,11 +1063,11 @@ class BackgroundService extends EventEmitter {
           publicKey,
           timestamp = Date.now(),
         }: { publicKey?: string; timestamp?: number } = {},
-        options?: MessageInputOfType<'wavesAuth'>['options']
+        options?: MessageInputOfType<'wavesAuth'>['options'],
       ) => {
         const { selectedAccount } = await this.validatePermission(
           origin,
-          connectionId
+          connectionId,
         );
 
         const message = await this.messageController.newMessage({
@@ -1084,11 +1084,11 @@ class BackgroundService extends EventEmitter {
       },
       signRequest: async (
         data: MessageInputOfType<'request'>['data'],
-        options?: MessageInputOfType<'request'>['options']
+        options?: MessageInputOfType<'request'>['options'],
       ) => {
         const { selectedAccount } = await this.validatePermission(
           origin,
-          connectionId
+          connectionId,
         );
 
         const message = await this.messageController.newMessage({
@@ -1105,11 +1105,11 @@ class BackgroundService extends EventEmitter {
       },
       signCustomData: async (
         data: MessageInputOfType<'customData'>['data'],
-        options?: MessageInputOfType<'customData'>['options']
+        options?: MessageInputOfType<'customData'>['options'],
       ) => {
         const { selectedAccount } = await this.validatePermission(
           origin,
-          connectionId
+          connectionId,
         );
 
         const message = await this.messageController.newMessage({
@@ -1128,12 +1128,12 @@ class BackgroundService extends EventEmitter {
         verifySignature(
           base58Decode(data.publicKey),
           makeCustomDataBytes(data),
-          base58Decode(data.signature)
+          base58Decode(data.signature),
         ),
       notification: async (data?: { message?: string; title?: string }) => {
         const { selectedAccount } = await this.validatePermission(
           origin,
-          connectionId
+          connectionId,
         );
 
         const notificationId = this.notificationsController.newNotification({
@@ -1155,21 +1155,21 @@ class BackgroundService extends EventEmitter {
       resourceIsApproved: async () => {
         return this.permissionsController.hasPermission(
           origin,
-          PERMISSIONS.APPROVED
+          PERMISSIONS.APPROVED,
         );
       },
 
       resourceIsBlocked: async () => {
         return this.permissionsController.hasPermission(
           origin,
-          PERMISSIONS.REJECTED
+          PERMISSIONS.REJECTED,
         );
       },
 
       getKEK: async (publicKey: string, prefix: string) => {
         const { selectedAccount } = await this.validatePermission(
           origin,
-          connectionId
+          connectionId,
         );
 
         if (!prefix || typeof prefix !== 'string') {
@@ -1182,7 +1182,7 @@ class BackgroundService extends EventEmitter {
 
         const wallet = this.walletController.getWallet(
           selectedAccount.address,
-          selectedAccount.network
+          selectedAccount.network,
         );
 
         const sharedKey = await wallet.createSharedKey(publicKey, prefix);
@@ -1193,11 +1193,11 @@ class BackgroundService extends EventEmitter {
       encryptMessage: async (
         message: string,
         publicKey: string,
-        prefix: string
+        prefix: string,
       ) => {
         const { selectedAccount } = await this.validatePermission(
           origin,
-          connectionId
+          connectionId,
         );
 
         if (!message || typeof message !== 'string') {
@@ -1210,7 +1210,7 @@ class BackgroundService extends EventEmitter {
 
         const wallet = this.walletController.getWallet(
           selectedAccount.address,
-          selectedAccount.network
+          selectedAccount.network,
         );
 
         return wallet.encryptMessage(message, publicKey, prefix);
@@ -1219,11 +1219,11 @@ class BackgroundService extends EventEmitter {
       decryptMessage: async (
         message: string,
         publicKey: string,
-        prefix: string
+        prefix: string,
       ) => {
         const { selectedAccount } = await this.validatePermission(
           origin,
-          connectionId
+          connectionId,
         );
 
         if (!message || typeof message !== 'string') {
@@ -1236,7 +1236,7 @@ class BackgroundService extends EventEmitter {
 
         const wallet = this.walletController.getWallet(
           selectedAccount.address,
-          selectedAccount.network
+          selectedAccount.network,
         );
 
         return wallet.decryptMessage(message, publicKey, prefix);
@@ -1246,7 +1246,7 @@ class BackgroundService extends EventEmitter {
           publicStateUpdates,
           subscribe(publicState => {
             port.postMessage({ event: 'updatePublicState', publicState });
-          })
+          }),
         );
       },
     };
@@ -1264,12 +1264,12 @@ class BackgroundService extends EventEmitter {
         this.off('ledger:signRequest', ui.ledgerSignRequest);
         this.off('closePopupWindow', ui.closePopupWindow);
       }),
-      publish
+      publish,
     );
 
     const ui = createIpcCallProxy<keyof UiApi, UiApi>(
       request => port?.postMessage(request),
-      fromWebExtensionPort(port)
+      fromWebExtensionPort(port),
     );
 
     this.on('ledger:signRequest', ui.ledgerSignRequest);
@@ -1281,7 +1281,7 @@ class BackgroundService extends EventEmitter {
   async getPublicState(origin: string, connectionId: string) {
     const { selectedAccount } = await this.validatePermission(
       origin,
-      connectionId
+      connectionId,
     );
 
     const state = this.extensionStorage.getState();
@@ -1297,7 +1297,7 @@ class BackgroundService extends EventEmitter {
         .filter(
           message =>
             message.account.address === selectedAccount.address &&
-            message.origin === origin
+            message.origin === origin,
         )
         .map(message => ({
           id: message.id,
@@ -1347,7 +1347,7 @@ class BackgroundService extends EventEmitter {
           this.emit('Close notification');
         }
       }),
-      publish
+      publish,
     );
   }
 
@@ -1365,7 +1365,7 @@ class BackgroundService extends EventEmitter {
           }
 
           resolve(signature);
-        }
+        },
       );
     });
   }

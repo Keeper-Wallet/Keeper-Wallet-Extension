@@ -44,8 +44,8 @@ const flatState: Migration = {
           ...acc,
           ...(state[field] as Record<string, unknown>),
         }),
-        {}
-      )
+        {},
+      ),
     );
 
     await Browser.storage.local.remove(migrateFields);
@@ -103,11 +103,11 @@ const flatState: Migration = {
               ...controllerAcc,
               [field]: state[field],
             }),
-            {}
+            {},
           ),
         }),
-        {}
-      )
+        {},
+      ),
     );
   },
 };
@@ -135,8 +135,8 @@ const flattenBalances: Migration = {
       Object.fromEntries(
         Object.entries(balances).map(([address, balance]) => {
           return [`balance_${address}`, balance];
-        })
-      )
+        }),
+      ),
     );
   },
 
@@ -156,11 +156,11 @@ const flattenBalances: Migration = {
 
           return [address, value];
         })
-        .filter((entry): entry is NonNullable<typeof entry> => entry != null)
+        .filter((entry): entry is NonNullable<typeof entry> => entry != null),
     );
 
     await Browser.storage.local.remove(
-      Object.keys(state).filter(key => key.startsWith('balance_'))
+      Object.keys(state).filter(key => key.startsWith('balance_')),
     );
 
     await Browser.storage.local.set({ balances });

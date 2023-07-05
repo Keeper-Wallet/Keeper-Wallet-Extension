@@ -23,13 +23,13 @@ export function ImportEmail() {
       if (
         accounts.find(
           account =>
-            account.type === 'wx' && account.username === userData.username
+            account.type === 'wx' && account.username === userData.username,
         )
       ) {
         throw new Error(t('importEmail.alreadyExists'));
       }
     },
-    [accounts, t]
+    [accounts, t],
   );
 
   const handleConfirm = useCallback(
@@ -43,12 +43,12 @@ export function ImportEmail() {
           uuid: userData.uuid,
           username: userData.username,
           hasBackup: true,
-        })
+        }),
       );
 
       navigate('/account-name');
     },
-    [dispatch, navigate]
+    [dispatch, navigate],
   );
 
   return (

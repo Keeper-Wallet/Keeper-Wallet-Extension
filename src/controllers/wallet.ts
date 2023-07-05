@@ -37,7 +37,7 @@ async function decryptVault(vault: string, password: string) {
   try {
     const decryptedSeed = await decryptSeed(
       base64Decode(vault),
-      utf8Encode(password)
+      utf8Encode(password),
     );
 
     return JSON.parse(utf8Decode(decryptedSeed)) as WalletPrivateData[];
@@ -75,7 +75,7 @@ export class WalletController extends EventEmitter {
     this.store = new ObservableStore(
       extensionStorage.getInitState({
         WalletController: { vault: undefined },
-      })
+      }),
     );
 
     extensionStorage.subscribe(this.store);
@@ -96,7 +96,7 @@ export class WalletController extends EventEmitter {
   async #createWallet(
     input: CreateWalletInput,
     network: NetworkName,
-    networkCode: string
+    networkCode: string,
   ) {
     switch (input.type) {
       case 'debug':
@@ -124,7 +124,7 @@ export class WalletController extends EventEmitter {
             publicKey: input.publicKey,
           },
           this.#ledger,
-          this.#assetInfo
+          this.#assetInfo,
         );
       case 'privateKey':
         return PrivateKeyWallet.create({
@@ -151,7 +151,7 @@ export class WalletController extends EventEmitter {
             uuid: input.uuid,
             username: input.username,
           },
-          this.#identity
+          this.#identity,
         );
     }
   }
@@ -161,7 +161,7 @@ export class WalletController extends EventEmitter {
 
     const vault = await encryptVault(
       this.#wallets.map(wallet => wallet.data),
-      this.#password
+      this.#password,
     );
 
     this.store.updateState({ WalletController: { vault } });
@@ -179,8 +179,8 @@ export class WalletController extends EventEmitter {
 
     this.#wallets = await Promise.all(
       decryptedVault.map(user =>
-        this.#createWallet(user, user.network, user.networkCode)
-      )
+        this.#createWallet(user, user.network, user.networkCode),
+      ),
     );
 
     this.emit('updateWallets');
@@ -204,7 +204,7 @@ export class WalletController extends EventEmitter {
 
     const walletsData = await encryptSeed(
       utf8Encode(JSON.stringify(wallet.data)),
-      utf8Encode(this.#password)
+      utf8Encode(this.#password),
     );
 
     this.#trashController.addItem({
@@ -216,12 +216,12 @@ export class WalletController extends EventEmitter {
   async addWallet(
     input: CreateWalletInput,
     network: NetworkName,
-    networkCode: string
+    networkCode: string,
   ) {
     const wallet = await this.#createWallet(input, network, networkCode);
 
     const foundWallet = this.#getWalletsByNetwork(network).find(
-      w => w.data.address === wallet.data.address
+      w => w.data.address === wallet.data.address,
     );
 
     if (foundWallet) {
@@ -240,12 +240,12 @@ export class WalletController extends EventEmitter {
   async batchAddWallets(
     inputs: Array<
       CreateWalletInput & { network: NetworkName; networkCode: string }
-    >
+    >,
   ) {
     const newWallets = await Promise.all(
       inputs.map(input =>
-        this.#createWallet(input, input.network, input.networkCode)
-      )
+        this.#createWallet(input, input.network, input.networkCode),
+      ),
     );
 
     this.#wallets.push(...newWallets);
@@ -261,7 +261,7 @@ export class WalletController extends EventEmitter {
 
   async removeWallet(address: string, network: NetworkName) {
     const wallet = this.#getWalletsByNetwork(network).find(
-      w => w.data.address === address
+      w => w.data.address === address,
     );
 
     if (!wallet) return;
@@ -286,12 +286,12 @@ export class WalletController extends EventEmitter {
             wallet.data,
             wallet.data.network,
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            code!
+            code!,
           );
 
           changed = true;
         }
-      })
+      }),
     );
 
     if (changed) {
@@ -312,7 +312,7 @@ export class WalletController extends EventEmitter {
 
   async deleteVault() {
     await Promise.all(
-      this.#wallets.map(wallet => this.#putWalletIntoTrash(wallet))
+      this.#wallets.map(wallet => this.#putWalletIntoTrash(wallet)),
     );
 
     this.#wallets.forEach(wallet => {
@@ -346,7 +346,7 @@ export class WalletController extends EventEmitter {
 
     if (this.#wallets.some(wallet => !wallet.data.network)) {
       const networks = Object.fromEntries(
-        Object.values(NETWORK_CONFIG).map(net => [net.networkCode, net.name])
+        Object.values(NETWORK_CONFIG).map(net => [net.networkCode, net.name]),
       );
 
       this.#wallets = await Promise.all(
@@ -354,9 +354,9 @@ export class WalletController extends EventEmitter {
           this.#createWallet(
             wallet.data,
             networks[wallet.data.networkCode],
-            wallet.data.networkCode
-          )
-        )
+            wallet.data.networkCode,
+          ),
+        ),
       );
 
       await this.#saveWallets();
@@ -367,7 +367,7 @@ export class WalletController extends EventEmitter {
 
   getWallet(address: string, network: NetworkName) {
     const wallet = this.#getWalletsByNetwork(network).find(
-      w => w.data.address === address
+      w => w.data.address === address,
     );
 
     if (!wallet) throw new Error(`Wallet not found for address ${address}`);
@@ -378,7 +378,7 @@ export class WalletController extends EventEmitter {
   async getAccountSeed(
     address: string,
     network: NetworkName,
-    password: string
+    password: string,
   ) {
     await this.assertPasswordIsValid(password);
     return this.getWallet(address, network).getSeed();
@@ -387,7 +387,7 @@ export class WalletController extends EventEmitter {
   async getAccountEncodedSeed(
     address: string,
     network: NetworkName,
-    password: string
+    password: string,
   ) {
     await this.assertPasswordIsValid(password);
     return this.getWallet(address, network).getEncodedSeed();
@@ -396,7 +396,7 @@ export class WalletController extends EventEmitter {
   async getAccountPrivateKey(
     address: string,
     network: NetworkName,
-    password: string
+    password: string,
   ) {
     await this.assertPasswordIsValid(password);
     const privateKey = await this.getWallet(address, network).getPrivateKey();

@@ -12,11 +12,11 @@ export * from './remoteConfig';
 
 function createSimpleReducer<TActionType extends AppAction['type']>(
   initialState: AppActionPayload<TActionType>,
-  actionType: TActionType
+  actionType: TActionType,
 ) {
   return (
     state = initialState,
-    action: AppAction
+    action: AppAction,
   ): AppActionPayload<TActionType> =>
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (actionType === action.type ? action.payload : state) as any;
@@ -52,17 +52,17 @@ export const uiState = createSimpleReducer({}, ACTION.UPDATE_UI_STATE);
 
 export const accounts = createSimpleReducer(
   [],
-  ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS
+  ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
 );
 
 export const allNetworksAccounts = createSimpleReducer(
   [],
-  ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS
+  ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
 );
 
 export function selectedAccount(
   state: PreferencesAccount | undefined = {} as unknown as undefined,
-  action: AppAction
+  action: AppAction,
 ): PreferencesAccount | undefined {
   switch (action.type) {
     case ACTION.SELECT_ACCOUNT:
@@ -75,7 +75,7 @@ export function selectedAccount(
 
 export const currentNetwork = createSimpleReducer(
   NetworkName.Mainnet,
-  ACTION.UPDATE_CURRENT_NETWORK
+  ACTION.UPDATE_CURRENT_NETWORK,
 );
 
 export const balances = createSimpleReducer({}, ACTION.UPDATE_BALANCES);
@@ -88,7 +88,7 @@ export const origins = createSimpleReducer({}, ACTION.UPDATE_ORIGINS);
 
 export const idleOptions = createSimpleReducer(
   {},
-  ACTION.REMOTE_CONFIG.UPDATE_IDLE
+  ACTION.REMOTE_CONFIG.UPDATE_IDLE,
 );
 
 export const messages = (state: Message[] = [], action: AppAction) => {
@@ -102,11 +102,11 @@ export const messages = (state: Message[] = [], action: AppAction) => {
 
 export const assets = createSimpleReducer(
   {} as AssetsRecord,
-  ACTION.SET_ASSETS
+  ACTION.SET_ASSETS,
 );
 export const swappableAssetIdsByVendor = createSimpleReducer(
   {},
-  ACTION.UPDATE_SWAPPABLE_ASSETS
+  ACTION.UPDATE_SWAPPABLE_ASSETS,
 );
 export const usdPrices = createSimpleReducer({}, ACTION.SET_USD_PRICES);
 export const assetLogos = createSimpleReducer({}, ACTION.SET_ASSET_LOGOS);

@@ -53,7 +53,7 @@ export function ImportSuccess({
       <p className={clsx(styles.title, 'headline2')}>
         {t(
           isKeystoreImport ? 'import.readyToUseKeystore' : 'import.readyToUse',
-          { name: account?.name }
+          { name: account?.name },
         )}
       </p>
 

@@ -17,7 +17,7 @@ export function Tab({ className, children, isActive, onActivate }: TabProps) {
       className={clsx(
         styles.tabListItem,
         { [styles.tabListActive]: isActive },
-        className
+        className,
       )}
       onClick={onActivate}
     >
@@ -62,7 +62,7 @@ export function TabList({
           cloneElement(child, {
             isActive: index === activeIndex,
             onActivate: () => onActiveTab?.(index),
-          })
+          }),
       )}
     </ol>
   );

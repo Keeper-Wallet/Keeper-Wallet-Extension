@@ -24,7 +24,7 @@ export class Avatar extends Component<Props, State> {
 
   static getDerivedStateFromProps(
     nextProps: Props,
-    prevState: State
+    prevState: State,
   ): State | null {
     const { address, size = SIZE } = nextProps;
 

@@ -11,7 +11,7 @@ export function i18nextInit() {
         import(`./locales/${lng}/${ns}.${lng}.json`)
           .then(resources => clb(null, resources))
           .catch(err => clb(err, null));
-      })
+      }),
     )
     .use(initReactI18next)
     .init({

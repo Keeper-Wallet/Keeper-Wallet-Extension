@@ -18,7 +18,7 @@ export function MessageFooter({ message }: Props) {
   const { t } = useTranslation();
 
   const autoClickProtection = usePopupSelector(
-    state => state.uiState.autoClickProtection
+    state => state.uiState.autoClickProtection,
   );
 
   const [isApprovePending, setIsApprovePending] = useState(false);
@@ -41,7 +41,7 @@ export function MessageFooter({ message }: Props) {
         message.origin &&
         (await Background.shouldIgnoreError(
           'contentScriptApprove',
-          errorMessage
+          errorMessage,
         ))
       )
         return;
@@ -97,7 +97,7 @@ export function MessageFooter({ message }: Props) {
             ? 'sign.auth'
             : 'broadcast' in message && message.broadcast
             ? 'sign.confirmButton'
-            : 'sign.signButton'
+            : 'sign.signButton',
         )}
       </ApproveBtn>
     </div>

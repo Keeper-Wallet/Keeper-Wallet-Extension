@@ -26,7 +26,7 @@ export function Welcome({ isPopup }: Props) {
           if (isPopup) {
             return background.showTab(
               `${window.location.origin}/accounts.html#/init-vault`,
-              'accounts'
+              'accounts',
             );
           }
           navigate('/init-vault');

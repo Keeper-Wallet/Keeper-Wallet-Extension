@@ -58,16 +58,16 @@ export default class PlatformPlugin {
                     JSON.stringify(
                       adaptManifestToPlatform(content, platformName),
                       null,
-                      2
+                      2,
                     ),
-                    'utf-8'
+                    'utf-8',
                   );
                 } else {
                   await writeFile(platformFile, content);
                 }
-              })
-            )
-          )
+              }),
+            ),
+          ),
     );
   }
 }

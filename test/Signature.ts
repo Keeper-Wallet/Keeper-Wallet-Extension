@@ -105,7 +105,7 @@ describe('Signature', function () {
 
     await AccountsHome.importAccount(
       'rich',
-      'waves private node seed with waves tokens'
+      'waves private node seed with waves tokens',
     );
 
     tabOrigin = tabAccounts;
@@ -121,7 +121,7 @@ describe('Signature', function () {
   const validateCommonFields = async (
     address: string,
     accountName: string,
-    network: string
+    network: string,
   ) => {
     await expect(CommonTransaction.originAddress).toHaveText(address);
     await expect(CommonTransaction.accountName).toHaveText(accountName);
@@ -162,7 +162,7 @@ describe('Signature', function () {
         const { result } = window;
         delete window.result;
         return result;
-      })
+      }),
     );
   }
 
@@ -179,7 +179,7 @@ describe('Signature', function () {
   describe('Stale messages removal', function () {
     async function triggerMessageWindow(
       func: () => void,
-      options = { waitForNewWindow: true }
+      options = { waitForNewWindow: true },
     ) {
       if (options.waitForNewWindow) {
         const { waitForNewWindows } = await Windows.captureNewWindows();
@@ -255,7 +255,7 @@ describe('Signature', function () {
           },
           err => {
             window.result = JSON.stringify(['REJECTED', err]);
-          }
+          },
         );
       });
       [messageWindow] = await waitForNewWindows(1);
@@ -341,7 +341,7 @@ describe('Signature', function () {
           },
           err => {
             window.result = JSON.stringify(['REJECTED', err]);
-          }
+          },
         );
       });
       [messageWindow] = await waitForNewWindows(1);
@@ -386,8 +386,8 @@ describe('Signature', function () {
         await verifySignature(
           senderPublicKeyBytes,
           bytes,
-          base58Decode(result.signature)
-        )
+          base58Decode(result.signature),
+        ),
       ).toBe(true);
     });
   });
@@ -412,11 +412,11 @@ describe('Signature', function () {
             },
             err => {
               window.result = JSON.stringify(['REJECTED', err]);
-            }
+            },
           );
         },
         senderPublicKey,
-        timestamp
+        timestamp,
       );
       [messageWindow] = await waitForNewWindows(1);
       await browser.switchToWindow(messageWindow);
@@ -442,10 +442,14 @@ describe('Signature', function () {
       expect(status).toBe('RESOLVED');
       const bytes = Uint8Array.of(
         ...senderPublicKeyBytes,
-        ...new Uint8Array(Long.fromNumber(timestamp).toBytesBE())
+        ...new Uint8Array(Long.fromNumber(timestamp).toBytesBE()),
       );
       expect(
-        await verifySignature(senderPublicKeyBytes, bytes, base58Decode(result))
+        await verifySignature(
+          senderPublicKeyBytes,
+          bytes,
+          base58Decode(result),
+        ),
       ).toBe(true);
     });
   });
@@ -461,7 +465,7 @@ describe('Signature', function () {
           },
           err => {
             window.result = JSON.stringify(['REJECTED', err]);
-          }
+          },
         );
       }, input);
       [messageWindow] = await waitForNewWindows(1);
@@ -481,25 +485,25 @@ describe('Signature', function () {
         await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(IssueTransactionScreen.issueType).toHaveText(
-          'Issue Smart Token'
+          'Issue Smart Token',
         );
         await expect(IssueTransactionScreen.issueAmount).toHaveText(
-          '92233720368.54775807 ShortToken'
+          '92233720368.54775807 ShortToken',
         );
         await expect(IssueTransactionScreen.issueDescription).toHaveText(
-          ISSUE.data.description
+          ISSUE.data.description,
         );
         await expect(IssueTransactionScreen.issueDecimals).toHaveText(
-          `${ISSUE.data.precision}`
+          `${ISSUE.data.precision}`,
         );
         await expect(IssueTransactionScreen.issueReissuable).toHaveText(
-          'Reissuable'
+          'Reissuable',
         );
         await expect(IssueTransactionScreen.contentScript).toHaveText(
-          'base64:BQbtKNoM'
+          'base64:BQbtKNoM',
         );
         await expect(CommonTransaction.transactionFee).toHaveText(
-          '1.004 WAVES'
+          '1.004 WAVES',
         );
 
         await rejectTransaction();
@@ -539,8 +543,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
-            base58Decode(parsedApproveResult.proofs[0])
-          )
+            base58Decode(parsedApproveResult.proofs[0]),
+          ),
         ).toBe(true);
       });
 
@@ -554,22 +558,22 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(IssueTransactionScreen.issueType).toHaveText(
-            'Issue Token'
+            'Issue Token',
           );
           await expect(IssueTransactionScreen.issueAmount).toHaveText(
-            '92233720368.54775807 ShortToken'
+            '92233720368.54775807 ShortToken',
           );
           await expect(IssueTransactionScreen.issueDescription).toHaveText(
-            ISSUE.data.description
+            ISSUE.data.description,
           );
           await expect(IssueTransactionScreen.issueDecimals).toHaveText(
-            `${ISSUE.data.precision}`
+            `${ISSUE.data.precision}`,
           );
           await expect(IssueTransactionScreen.issueReissuable).toHaveText(
-            'Reissuable'
+            'Reissuable',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '1.004 WAVES'
+            '1.004 WAVES',
           );
 
           await rejectTransaction();
@@ -610,8 +614,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -624,25 +628,25 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(IssueTransactionScreen.issueType).toHaveText(
-            'Issue Smart Token'
+            'Issue Smart Token',
           );
           await expect(IssueTransactionScreen.issueAmount).toHaveText(
-            '92233720368.54775807 ShortToken'
+            '92233720368.54775807 ShortToken',
           );
           await expect(IssueTransactionScreen.issueDescription).toHaveText(
-            ISSUE.data.description
+            ISSUE.data.description,
           );
           await expect(IssueTransactionScreen.issueDecimals).toHaveText(
-            `${ISSUE.data.precision}`
+            `${ISSUE.data.precision}`,
           );
           await expect(IssueTransactionScreen.issueReissuable).toHaveText(
-            'Reissuable'
+            'Reissuable',
           );
           await expect(IssueTransactionScreen.contentScript).toHaveText(
-            'base64:BQbtKNoM'
+            'base64:BQbtKNoM',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '1.004 WAVES'
+            '1.004 WAVES',
           );
 
           await rejectTransaction();
@@ -680,8 +684,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -695,16 +699,16 @@ describe('Signature', function () {
         await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(TransferTransactionScreen.transferAmount).toHaveText(
-          '-123456790 NonScriptToken'
+          '-123456790 NonScriptToken',
         );
         await expect(TransferTransactionScreen.recipient).toHaveText(
-          '3N5HNJz5otiU...BVv5HhYLdhiD'
+          '3N5HNJz5otiU...BVv5HhYLdhiD',
         );
         await expect(TransferTransactionScreen.attachmentContent).toHaveText(
-          'base64:BQbtKNoM'
+          'base64:BQbtKNoM',
         );
         await expect(CommonTransaction.transactionFee).toHaveText(
-          '0.005 WAVES'
+          '0.005 WAVES',
         );
         await rejectTransaction();
       });
@@ -740,8 +744,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
-            base58Decode(parsedApproveResult.proofs[0])
-          )
+            base58Decode(parsedApproveResult.proofs[0]),
+          ),
         ).toBe(true);
       });
 
@@ -760,13 +764,13 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(TransferTransactionScreen.transferAmount).toHaveText(
-            '-1.23456790 WAVES'
+            '-1.23456790 WAVES',
           );
           await expect(TransferTransactionScreen.recipient).toHaveText(
-            'alias:T:alice'
+            'alias:T:alice',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -802,8 +806,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -816,16 +820,16 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(TransferTransactionScreen.transferAmount).toHaveText(
-            '-123456790 NonScriptToken'
+            '-123456790 NonScriptToken',
           );
           await expect(TransferTransactionScreen.recipient).toHaveText(
-            '3N5HNJz5otiU...BVv5HhYLdhiD'
+            '3N5HNJz5otiU...BVv5HhYLdhiD',
           );
           await expect(TransferTransactionScreen.attachmentContent).toHaveText(
-            'base64:BQbtKNoM'
+            'base64:BQbtKNoM',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -862,8 +866,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -877,13 +881,13 @@ describe('Signature', function () {
         await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(ReissueTransactionScreen.reissueAmount).toHaveText(
-          '+123456790 NonScriptToken'
+          '+123456790 NonScriptToken',
         );
         await expect(ReissueTransactionScreen.reissuableType).toHaveText(
-          'Reissuable'
+          'Reissuable',
         );
         await expect(CommonTransaction.transactionFee).toHaveText(
-          '0.005 WAVES'
+          '0.005 WAVES',
         );
 
         await rejectTransaction();
@@ -918,8 +922,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
-            base58Decode(parsedApproveResult.proofs[0])
-          )
+            base58Decode(parsedApproveResult.proofs[0]),
+          ),
         ).toBe(true);
       });
 
@@ -931,13 +935,13 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(ReissueTransactionScreen.reissueAmount).toHaveText(
-            '+123456790 NonScriptToken'
+            '+123456790 NonScriptToken',
           );
           await expect(ReissueTransactionScreen.reissuableType).toHaveText(
-            'Reissuable'
+            'Reissuable',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -972,8 +976,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -986,13 +990,13 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(ReissueTransactionScreen.reissueAmount).toHaveText(
-            '+123456790 NonScriptToken'
+            '+123456790 NonScriptToken',
           );
           await expect(ReissueTransactionScreen.reissuableType).toHaveText(
-            'Reissuable'
+            'Reissuable',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -1027,8 +1031,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -1042,10 +1046,10 @@ describe('Signature', function () {
         await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(BurnTransactionScreen.burnAmount).toHaveText(
-          '-123456790 NonScriptToken'
+          '-123456790 NonScriptToken',
         );
         await expect(CommonTransaction.transactionFee).toHaveText(
-          '0.005 WAVES'
+          '0.005 WAVES',
         );
 
         await rejectTransaction();
@@ -1079,8 +1083,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
-            base58Decode(parsedApproveResult.proofs[0])
-          )
+            base58Decode(parsedApproveResult.proofs[0]),
+          ),
         ).toBe(true);
       });
 
@@ -1092,10 +1096,10 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(BurnTransactionScreen.burnAmount).toHaveText(
-            '-123456790 NonScriptToken'
+            '-123456790 NonScriptToken',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -1129,8 +1133,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -1143,15 +1147,15 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(CommonTransaction.originAddress).toHaveText(
-            WHITELIST[3]
+            WHITELIST[3],
           );
           await expect(CommonTransaction.accountName).toHaveText('rich');
           await expect(CommonTransaction.originNetwork).toHaveText('Testnet');
           await expect(BurnTransactionScreen.burnAmount).toHaveText(
-            '-123456790 NonScriptToken'
+            '-123456790 NonScriptToken',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -1185,8 +1189,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -1200,13 +1204,13 @@ describe('Signature', function () {
         await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(LeaseTransactionScreen.leaseAmount).toHaveText(
-          '1.23456790 WAVES'
+          '1.23456790 WAVES',
         );
         await expect(LeaseTransactionScreen.leaseRecipient).toHaveText(
-          '3N5HNJz5otiU...BVv5HhYLdhiD'
+          '3N5HNJz5otiU...BVv5HhYLdhiD',
         );
         await expect(CommonTransaction.transactionFee).toHaveText(
-          '0.005 WAVES'
+          '0.005 WAVES',
         );
 
         await rejectTransaction();
@@ -1240,8 +1244,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
-            base58Decode(parsedApproveResult.proofs[0])
-          )
+            base58Decode(parsedApproveResult.proofs[0]),
+          ),
         ).toBe(true);
       });
 
@@ -1253,13 +1257,13 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(LeaseTransactionScreen.leaseAmount).toHaveText(
-            '1.23456790 WAVES'
+            '1.23456790 WAVES',
           );
           await expect(LeaseTransactionScreen.leaseRecipient).toHaveText(
-            'alias:T:bobby'
+            'alias:T:bobby',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -1293,8 +1297,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -1307,13 +1311,13 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(LeaseTransactionScreen.leaseAmount).toHaveText(
-            '1.23456790 WAVES'
+            '1.23456790 WAVES',
           );
           await expect(LeaseTransactionScreen.leaseRecipient).toHaveText(
-            '3N5HNJz5otiU...BVv5HhYLdhiD'
+            '3N5HNJz5otiU...BVv5HhYLdhiD',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -1347,8 +1351,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -1361,13 +1365,13 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(LeaseTransactionScreen.leaseAmount).toHaveText(
-            '1.23456790 WAVES'
+            '1.23456790 WAVES',
           );
           await expect(LeaseTransactionScreen.leaseRecipient).toHaveText(
-            '3N5HNJz5otiU...BVv5HhYLdhiD'
+            '3N5HNJz5otiU...BVv5HhYLdhiD',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -1401,8 +1405,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -1416,13 +1420,13 @@ describe('Signature', function () {
         await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(LeaseCancelTransactionScreen.cancelLeaseAmount).toHaveText(
-          '0.00000001 WAVES'
+          '0.00000001 WAVES',
         );
         await expect(
-          LeaseCancelTransactionScreen.cancelLeaseRecipient
+          LeaseCancelTransactionScreen.cancelLeaseRecipient,
         ).toHaveText('alias:T:merry');
         await expect(CommonTransaction.transactionFee).toHaveText(
-          '0.005 WAVES'
+          '0.005 WAVES',
         );
 
         await rejectTransaction();
@@ -1455,8 +1459,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
-            base58Decode(parsedApproveResult.proofs[0])
-          )
+            base58Decode(parsedApproveResult.proofs[0]),
+          ),
         ).toBe(true);
       });
 
@@ -1468,13 +1472,13 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(
-            LeaseCancelTransactionScreen.cancelLeaseAmount
+            LeaseCancelTransactionScreen.cancelLeaseAmount,
           ).toHaveText('0.00000001 WAVES');
           await expect(
-            LeaseCancelTransactionScreen.cancelLeaseRecipient
+            LeaseCancelTransactionScreen.cancelLeaseRecipient,
           ).toHaveText('alias:T:merry');
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -1507,8 +1511,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -1522,10 +1526,10 @@ describe('Signature', function () {
         await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(CreateAliasTransactionScreen.aliasValue).toHaveText(
-          'test_alias'
+          'test_alias',
         );
         await expect(CommonTransaction.transactionFee).toHaveText(
-          '0.005 WAVES'
+          '0.005 WAVES',
         );
 
         await rejectTransaction();
@@ -1558,8 +1562,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
-            base58Decode(parsedApproveResult.proofs[0])
-          )
+            base58Decode(parsedApproveResult.proofs[0]),
+          ),
         ).toBe(true);
       });
 
@@ -1575,10 +1579,10 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(CreateAliasTransactionScreen.aliasValue).toHaveText(
-            'test_alias'
+            'test_alias',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -1608,15 +1612,15 @@ describe('Signature', function () {
           expect(parsedApproveResult).toMatchObject(expectedApproveResult);
           expect(parsedApproveResult.id).toBe(
             base58Encode(
-              blake2b(Uint8Array.of(bytes[0], ...bytes.subarray(36, -16)))
-            )
+              blake2b(Uint8Array.of(bytes[0], ...bytes.subarray(36, -16))),
+            ),
           );
           expect(
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -1624,7 +1628,7 @@ describe('Signature', function () {
 
     describe('MassTransfer', function () {
       async function checkMassTransferItems(
-        items: Array<{ recipient: string; amount: string }>
+        items: Array<{ recipient: string; amount: string }>,
       ) {
         const transferItems =
           await MassTransferTransactionScreen.getTransferItems();
@@ -1635,7 +1639,7 @@ describe('Signature', function () {
               transferItem.amount.getText(),
             ]);
             return { recipient, amount };
-          })
+          }),
         );
         expect(actualItems).toStrictEqual(items);
       }
@@ -1647,7 +1651,7 @@ describe('Signature', function () {
         await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(
-          MassTransferTransactionScreen.massTransferAmount
+          MassTransferTransactionScreen.massTransferAmount,
         ).toHaveText('-2 NonScriptToken');
         await checkMassTransferItems([
           {
@@ -1660,10 +1664,10 @@ describe('Signature', function () {
           },
         ]);
         await expect(
-          MassTransferTransactionScreen.massTransferAttachment
+          MassTransferTransactionScreen.massTransferAttachment,
         ).toHaveText('base64:BQbtKNoM');
         await expect(CommonTransaction.transactionFee).toHaveText(
-          '0.006 WAVES'
+          '0.006 WAVES',
         );
 
         await rejectTransaction();
@@ -1701,8 +1705,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
-            base58Decode(parsedApproveResult.proofs[0])
-          )
+            base58Decode(parsedApproveResult.proofs[0]),
+          ),
         ).toBe(true);
       });
 
@@ -1714,7 +1718,7 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(
-            MassTransferTransactionScreen.massTransferAmount
+            MassTransferTransactionScreen.massTransferAmount,
           ).toHaveText('-0.00000123 WAVES');
           await checkMassTransferItems([
             {
@@ -1727,7 +1731,7 @@ describe('Signature', function () {
             },
           ]);
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.006 WAVES'
+            '0.006 WAVES',
           );
 
           await rejectTransaction();
@@ -1764,8 +1768,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -1778,7 +1782,7 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(
-            MassTransferTransactionScreen.massTransferAmount
+            MassTransferTransactionScreen.massTransferAmount,
           ).toHaveText('-2 NonScriptToken');
           await checkMassTransferItems([
             {
@@ -1791,10 +1795,10 @@ describe('Signature', function () {
             },
           ]);
           await expect(
-            MassTransferTransactionScreen.massTransferAttachment
+            MassTransferTransactionScreen.massTransferAttachment,
           ).toHaveText('base64:BQbtKNoM');
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.006 WAVES'
+            '0.006 WAVES',
           );
 
           await rejectTransaction();
@@ -1832,8 +1836,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -1841,7 +1845,7 @@ describe('Signature', function () {
 
     describe('Data', function () {
       async function checkDataEntries(
-        entries: Array<{ key: string; type: string; value: string }>
+        entries: Array<{ key: string; type: string; value: string }>,
       ) {
         const dataRows = await DataTransactionScreen.getDataRows();
         const actualItems = await Promise.all(
@@ -1852,7 +1856,7 @@ describe('Signature', function () {
               it.value.getText(),
             ]);
             return { key, type, value };
-          })
+          }),
         );
         expect(actualItems).toStrictEqual(entries);
       }
@@ -1886,7 +1890,7 @@ describe('Signature', function () {
           },
         ]);
         await expect(CommonTransaction.transactionFee).toHaveText(
-          '0.005 WAVES'
+          '0.005 WAVES',
         );
 
         await rejectTransaction();
@@ -1937,8 +1941,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
-            base58Decode(parsedApproveResult.proofs[0])
-          )
+            base58Decode(parsedApproveResult.proofs[0]),
+          ),
         ).toBe(true);
       });
 
@@ -1972,7 +1976,7 @@ describe('Signature', function () {
             },
           ]);
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -2023,8 +2027,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -2038,13 +2042,13 @@ describe('Signature', function () {
         await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(SetScriptTransactionScreen.scriptTitle).toHaveText(
-          'Set Script'
+          'Set Script',
         );
         await expect(SetScriptTransactionScreen.contentScript).toHaveText(
-          'base64:BQbtKNoM'
+          'base64:BQbtKNoM',
         );
         await expect(CommonTransaction.transactionFee).toHaveText(
-          '0.005 WAVES'
+          '0.005 WAVES',
         );
 
         await rejectTransaction();
@@ -2077,8 +2081,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
-            base58Decode(parsedApproveResult.proofs[0])
-          )
+            base58Decode(parsedApproveResult.proofs[0]),
+          ),
         ).toBe(true);
       });
 
@@ -2094,10 +2098,10 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(SetScriptTransactionScreen.scriptTitle).toHaveText(
-            'Remove Account Script'
+            'Remove Account Script',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -2131,8 +2135,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -2145,13 +2149,13 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(SetScriptTransactionScreen.scriptTitle).toHaveText(
-            'Set Script'
+            'Set Script',
           );
           await expect(SetScriptTransactionScreen.contentScript).toHaveText(
-            'base64:BQbtKNoM'
+            'base64:BQbtKNoM',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -2184,8 +2188,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -2199,13 +2203,13 @@ describe('Signature', function () {
         await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(SponsorshipTransactionScreen.title).toHaveText(
-          'Set Sponsorship'
+          'Set Sponsorship',
         );
         await expect(SponsorshipTransactionScreen.amount).toHaveText(
-          '123456790 NonScriptToken'
+          '123456790 NonScriptToken',
         );
         await expect(CommonTransaction.transactionFee).toHaveText(
-          '0.005 WAVES'
+          '0.005 WAVES',
         );
 
         await rejectTransaction();
@@ -2239,8 +2243,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
-            base58Decode(parsedApproveResult.proofs[0])
-          )
+            base58Decode(parsedApproveResult.proofs[0]),
+          ),
         ).toBe(true);
       });
 
@@ -2252,13 +2256,13 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(SponsorshipTransactionScreen.title).toHaveText(
-            'Disable Sponsorship'
+            'Disable Sponsorship',
           );
           await expect(SponsorshipTransactionScreen.asset).toHaveText(
-            'NonScriptToken'
+            'NonScriptToken',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -2292,8 +2296,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -2306,13 +2310,13 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(SponsorshipTransactionScreen.title).toHaveText(
-            'Set Sponsorship'
+            'Set Sponsorship',
           );
           await expect(SponsorshipTransactionScreen.amount).toHaveText(
-            '123456790 NonScriptToken'
+            '123456790 NonScriptToken',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -2346,8 +2350,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -2361,13 +2365,13 @@ describe('Signature', function () {
         await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(AssetScriptTransactionScreen.asset).toHaveText(
-          'NonScriptToken'
+          'NonScriptToken',
         );
         await expect(AssetScriptTransactionScreen.script).toHaveText(
-          'base64:BQbtKNoM'
+          'base64:BQbtKNoM',
         );
         await expect(CommonTransaction.transactionFee).toHaveText(
-          '1.004 WAVES'
+          '1.004 WAVES',
         );
 
         await rejectTransaction();
@@ -2401,8 +2405,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
-            base58Decode(parsedApproveResult.proofs[0])
-          )
+            base58Decode(parsedApproveResult.proofs[0]),
+          ),
         ).toBe(true);
       });
 
@@ -2416,13 +2420,13 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(AssetScriptTransactionScreen.asset).toHaveText(
-            'NonScriptToken'
+            'NonScriptToken',
           );
           await expect(AssetScriptTransactionScreen.script).toHaveText(
-            'base64:BQbtKNoM'
+            'base64:BQbtKNoM',
           );
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '1.004 WAVES'
+            '1.004 WAVES',
           );
 
           await rejectTransaction();
@@ -2456,8 +2460,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -2477,7 +2481,7 @@ describe('Signature', function () {
               type,
               value,
             };
-          })
+          }),
         );
         expect(actualArgs).toStrictEqual(args);
       }
@@ -2487,7 +2491,7 @@ describe('Signature', function () {
           await InvokeScriptTransactionScreen.getPayments();
 
         const actualPayments = await Promise.all(
-          invokePayments.map(it => it.getText())
+          invokePayments.map(it => it.getText()),
         );
 
         expect(actualPayments).toStrictEqual(payments);
@@ -2500,13 +2504,13 @@ describe('Signature', function () {
         await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(InvokeScriptTransactionScreen.paymentsTitle).toHaveText(
-          '2 Payments'
+          '2 Payments',
         );
         await expect(InvokeScriptTransactionScreen.dApp).toHaveText(
-          '3My2kBJaGfeM...3y8rAgfV2EAx'
+          '3My2kBJaGfeM...3y8rAgfV2EAx',
         );
         await expect(InvokeScriptTransactionScreen.function).toHaveText(
-          INVOKE_SCRIPT.data.call.function
+          INVOKE_SCRIPT.data.call.function,
         );
         await checkArgs([
           {
@@ -2524,7 +2528,7 @@ describe('Signature', function () {
         ]);
         await checkPayments(['0.00000001 WAVES', '1 NonScriptToken']);
         await expect(CommonTransaction.transactionFee).toHaveText(
-          '0.005 WAVES'
+          '0.005 WAVES',
         );
 
         await rejectTransaction();
@@ -2560,8 +2564,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
-            base58Decode(parsedApproveResult.proofs[0])
-          )
+            base58Decode(parsedApproveResult.proofs[0]),
+          ),
         ).toBe(true);
       });
 
@@ -2585,18 +2589,18 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(InvokeScriptTransactionScreen.paymentsTitle).toHaveText(
-            'No Payments'
+            'No Payments',
           );
           await expect(InvokeScriptTransactionScreen.dApp).toHaveText(
-            `alias:T:${INVOKE_SCRIPT_WITHOUT_CALL.data.dApp}`
+            `alias:T:${INVOKE_SCRIPT_WITHOUT_CALL.data.dApp}`,
           );
           await expect(InvokeScriptTransactionScreen.function).toHaveText(
-            'default'
+            'default',
           );
           await checkArgs([]);
           await checkPayments([]);
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -2632,8 +2636,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -2646,13 +2650,13 @@ describe('Signature', function () {
           await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
           await expect(InvokeScriptTransactionScreen.paymentsTitle).toHaveText(
-            '2 Payments'
+            '2 Payments',
           );
           await expect(InvokeScriptTransactionScreen.dApp).toHaveText(
-            '3My2kBJaGfeM...3y8rAgfV2EAx'
+            '3My2kBJaGfeM...3y8rAgfV2EAx',
           );
           await expect(InvokeScriptTransactionScreen.function).toHaveText(
-            INVOKE_SCRIPT.data.call.function
+            INVOKE_SCRIPT.data.call.function,
           );
           await checkArgs([
             {
@@ -2670,7 +2674,7 @@ describe('Signature', function () {
           ]);
           await checkPayments(['0.00000001 WAVES', '1 NonScriptToken']);
           await expect(CommonTransaction.transactionFee).toHaveText(
-            '0.005 WAVES'
+            '0.005 WAVES',
           );
 
           await rejectTransaction();
@@ -2706,8 +2710,8 @@ describe('Signature', function () {
             await verifySignature(
               senderPublicKeyBytes,
               bytes,
-              base58Decode(parsedApproveResult.proofs[0])
-            )
+              base58Decode(parsedApproveResult.proofs[0]),
+            ),
           ).toBe(true);
         });
       });
@@ -2721,16 +2725,16 @@ describe('Signature', function () {
         await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(UpdateAssetInfoTransactionScreen.assetId).toHaveText(
-          UPDATE_ASSET_INFO.data.assetId
+          UPDATE_ASSET_INFO.data.assetId,
         );
         await expect(UpdateAssetInfoTransactionScreen.assetName).toHaveText(
-          UPDATE_ASSET_INFO.data.name
+          UPDATE_ASSET_INFO.data.name,
         );
         await expect(
-          UpdateAssetInfoTransactionScreen.assetDescription
+          UpdateAssetInfoTransactionScreen.assetDescription,
         ).toHaveText(UPDATE_ASSET_INFO.data.description);
         await expect(UpdateAssetInfoTransactionScreen.fee).toHaveText(
-          '0.001 WAVES'
+          '0.001 WAVES',
         );
 
         await rejectTransaction();
@@ -2765,8 +2769,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
-            base58Decode(parsedApproveResult.proofs[0])
-          )
+            base58Decode(parsedApproveResult.proofs[0]),
+          ),
         ).toBe(true);
       });
     });
@@ -2780,7 +2784,7 @@ describe('Signature', function () {
         },
         () => {
           window.result = null;
-        }
+        },
       );
     }
 
@@ -2791,13 +2795,13 @@ describe('Signature', function () {
         },
         () => {
           window.result = null;
-        }
+        },
       );
     }
 
     async function performSignOrder(
       script: (tx: MessageInputOrder) => void,
-      tx: MessageInputOrder
+      tx: MessageInputOrder,
     ) {
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
@@ -2809,7 +2813,7 @@ describe('Signature', function () {
 
     async function performSignCancelOrder(
       script: (tx: MessageInputCancelOrder) => void,
-      tx: MessageInputCancelOrder
+      tx: MessageInputCancelOrder,
     ) {
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
@@ -2849,22 +2853,22 @@ describe('Signature', function () {
             await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
             await expect(CreateOrderMessage.orderTitle).toHaveText(
-              'Sell: WAVES/NonScriptToken'
+              'Sell: WAVES/NonScriptToken',
             );
             await expect(CreateOrderMessage.orderAmount).toHaveText(
-              '-100.00000000 WAVES'
+              '-100.00000000 WAVES',
             );
             await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
-              '+0 NonScriptToken'
+              '+0 NonScriptToken',
             );
             await expect(CreateOrderMessage.orderPrice).toHaveText(
-              '0 NonScriptToken'
+              '0 NonScriptToken',
             );
             await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
-              INPUT.data.matcherPublicKey
+              INPUT.data.matcherPublicKey,
             );
             await expect(CreateOrderMessage.createOrderFee).toHaveText(
-              '0.03 WAVES'
+              '0.03 WAVES',
             );
 
             await rejectTransaction();
@@ -2902,8 +2906,8 @@ describe('Signature', function () {
               await verifySignature(
                 senderPublicKeyBytes,
                 bytes,
-                base58Decode(parsedApproveResult.proofs[0])
-              )
+                base58Decode(parsedApproveResult.proofs[0]),
+              ),
             ).toBe(true);
           });
         });
@@ -2936,22 +2940,22 @@ describe('Signature', function () {
             await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
             await expect(CreateOrderMessage.orderTitle).toHaveText(
-              'Buy: Tether USD/USD-Nea272c'
+              'Buy: Tether USD/USD-Nea272c',
             );
             await expect(CreateOrderMessage.orderAmount).toHaveText(
-              '+1.000000 Tether USD'
+              '+1.000000 Tether USD',
             );
             await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
-              '-1.014002 USD-Nea272c'
+              '-1.014002 USD-Nea272c',
             );
             await expect(CreateOrderMessage.orderPrice).toHaveText(
-              '1.014002 USD-Nea272c'
+              '1.014002 USD-Nea272c',
             );
             await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
-              INPUT.data.matcherPublicKey
+              INPUT.data.matcherPublicKey,
             );
             await expect(CreateOrderMessage.createOrderFee).toHaveText(
-              '0.04077612 TXW-DEVa4f6df'
+              '0.04077612 TXW-DEVa4f6df',
             );
 
             await rejectTransaction();
@@ -2989,8 +2993,8 @@ describe('Signature', function () {
               await verifySignature(
                 senderPublicKeyBytes,
                 bytes,
-                base58Decode(parsedApproveResult.proofs[0])
-              )
+                base58Decode(parsedApproveResult.proofs[0]),
+              ),
             ).toBe(true);
           });
         });
@@ -3023,22 +3027,22 @@ describe('Signature', function () {
             await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
             await expect(CreateOrderMessage.orderTitle).toHaveText(
-              'Buy: Tether USD/WAVES'
+              'Buy: Tether USD/WAVES',
             );
             await expect(CreateOrderMessage.orderAmount).toHaveText(
-              '+15.637504 Tether USD'
+              '+15.637504 Tether USD',
             );
             await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
-              '-18.94335225 WAVES'
+              '-18.94335225 WAVES',
             );
             await expect(CreateOrderMessage.orderPrice).toHaveText(
-              '1.21140511 WAVES'
+              '1.21140511 WAVES',
             );
             await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
-              INPUT.data.matcherPublicKey
+              INPUT.data.matcherPublicKey,
             );
             await expect(CreateOrderMessage.createOrderFee).toHaveText(
-              '0.04077612 TXW-DEVa4f6df'
+              '0.04077612 TXW-DEVa4f6df',
             );
 
             await rejectTransaction();
@@ -3076,8 +3080,8 @@ describe('Signature', function () {
               await verifySignature(
                 senderPublicKeyBytes,
                 bytes,
-                base58Decode(parsedApproveResult.proofs[0])
-              )
+                base58Decode(parsedApproveResult.proofs[0]),
+              ),
             ).toBe(true);
           });
         });
@@ -3114,22 +3118,22 @@ describe('Signature', function () {
             await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
             await expect(CreateOrderMessage.orderTitle).toHaveText(
-              'Buy: Tether USD/USD-Nea272c'
+              'Buy: Tether USD/USD-Nea272c',
             );
             await expect(CreateOrderMessage.orderAmount).toHaveText(
-              '+1.000000 Tether USD'
+              '+1.000000 Tether USD',
             );
             await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
-              '-1.014002 USD-Nea272c'
+              '-1.014002 USD-Nea272c',
             );
             await expect(CreateOrderMessage.orderPrice).toHaveText(
-              '1.014002 USD-Nea272c'
+              '1.014002 USD-Nea272c',
             );
             await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
-              INPUT.data.matcherPublicKey
+              INPUT.data.matcherPublicKey,
             );
             await expect(CreateOrderMessage.createOrderFee).toHaveText(
-              '0.04077612 TXW-DEVa4f6df'
+              '0.04077612 TXW-DEVa4f6df',
             );
 
             await rejectTransaction();
@@ -3169,8 +3173,8 @@ describe('Signature', function () {
               await verifySignature(
                 senderPublicKeyBytes,
                 bytes,
-                base58Decode(parsedApproveResult.proofs[0])
-              )
+                base58Decode(parsedApproveResult.proofs[0]),
+              ),
             ).toBe(true);
           });
         });
@@ -3205,22 +3209,22 @@ describe('Signature', function () {
             await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
             await expect(CreateOrderMessage.orderTitle).toHaveText(
-              'Buy: Tether USD/USD-Nea272c'
+              'Buy: Tether USD/USD-Nea272c',
             );
             await expect(CreateOrderMessage.orderAmount).toHaveText(
-              '+1.000000 Tether USD'
+              '+1.000000 Tether USD',
             );
             await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
-              '-1.014002 USD-Nea272c'
+              '-1.014002 USD-Nea272c',
             );
             await expect(CreateOrderMessage.orderPrice).toHaveText(
-              '1.014002 USD-Nea272c'
+              '1.014002 USD-Nea272c',
             );
             await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
-              INPUT.data.matcherPublicKey
+              INPUT.data.matcherPublicKey,
             );
             await expect(CreateOrderMessage.createOrderFee).toHaveText(
-              '0.04077612 TXW-DEVa4f6df'
+              '0.04077612 TXW-DEVa4f6df',
             );
 
             await rejectTransaction();
@@ -3260,8 +3264,8 @@ describe('Signature', function () {
               await verifySignature(
                 senderPublicKeyBytes,
                 bytes,
-                base58Decode(parsedApproveResult.proofs[0])
-              )
+                base58Decode(parsedApproveResult.proofs[0]),
+              ),
             ).toBe(true);
           });
         });
@@ -3295,22 +3299,22 @@ describe('Signature', function () {
             await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
             await expect(CreateOrderMessage.orderTitle).toHaveText(
-              'Buy: Tether USD/USD-Nea272c'
+              'Buy: Tether USD/USD-Nea272c',
             );
             await expect(CreateOrderMessage.orderAmount).toHaveText(
-              '+1.000000 Tether USD'
+              '+1.000000 Tether USD',
             );
             await expect(CreateOrderMessage.orderPriceTitle).toHaveText(
-              '-1.014002 USD-Nea272c'
+              '-1.014002 USD-Nea272c',
             );
             await expect(CreateOrderMessage.orderPrice).toHaveText(
-              '1.014002 USD-Nea272c'
+              '1.014002 USD-Nea272c',
             );
             await expect(CreateOrderMessage.orderMatcherPublicKey).toHaveText(
-              INPUT.data.matcherPublicKey
+              INPUT.data.matcherPublicKey,
             );
             await expect(CreateOrderMessage.createOrderFee).toHaveText(
-              '0.04077612 TXW-DEVa4f6df'
+              '0.04077612 TXW-DEVa4f6df',
             );
 
             await rejectTransaction();
@@ -3350,8 +3354,8 @@ describe('Signature', function () {
               await verifySignature(
                 senderPublicKeyBytes,
                 bytes,
-                base58Decode(parsedApproveResult.proofs[0])
-              )
+                base58Decode(parsedApproveResult.proofs[0]),
+              ),
             ).toBe(true);
           });
         });
@@ -3372,7 +3376,7 @@ describe('Signature', function () {
         await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(CancelOrderTransactionScreen.orderId).toHaveText(
-          INPUT.data.id
+          INPUT.data.id,
         );
 
         await rejectTransaction();
@@ -3395,8 +3399,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             bytes,
-            base58Decode(parsedApproveResult.signature)
-          )
+            base58Decode(parsedApproveResult.signature),
+          ),
         ).toBe(true);
       });
     });
@@ -3405,7 +3409,7 @@ describe('Signature', function () {
   describe('Multiple transactions package', function () {
     async function performSignTransactionPackage(
       tx: MessageInputTx[],
-      name: string
+      name: string,
     ) {
       const { waitForNewWindows } = await Windows.captureNewWindows();
       await ContentScript.waitForKeeperWallet();
@@ -3414,7 +3418,7 @@ describe('Signature', function () {
           // eslint-disable-next-line @typescript-eslint/no-shadow
           tx: MessageInputTx[],
           // eslint-disable-next-line @typescript-eslint/no-shadow
-          name: string
+          name: string,
         ) => {
           KeeperWallet.signTransactionPackage(tx, name).then(
             result => {
@@ -3422,11 +3426,11 @@ describe('Signature', function () {
             },
             () => {
               window.result = null;
-            }
+            },
           );
         },
         tx,
-        name
+        name,
       );
       [messageWindow] = await waitForNewWindows(1);
       await browser.switchToWindow(messageWindow);
@@ -3436,8 +3440,8 @@ describe('Signature', function () {
     async function checkPackageAmounts(amounts: string[]) {
       const actualAmounts = await Promise.all(
         await PackageTransactionScreen.packageAmounts.map(
-          async it => await it.getText()
-        )
+          async it => await it.getText(),
+        ),
       );
       expect(actualAmounts).toStrictEqual(amounts);
     }
@@ -3445,8 +3449,8 @@ describe('Signature', function () {
     async function checkPackageFees(fees: string[]) {
       const actualFees = await Promise.all(
         await PackageTransactionScreen.packageFees.map(
-          async it => await it.getText()
-        )
+          async it => await it.getText(),
+        ),
       );
       expect(actualFees).toStrictEqual(fees);
     }
@@ -3458,7 +3462,7 @@ describe('Signature', function () {
       await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
       await expect(PackageTransactionScreen.packageCountTitle).toHaveText(
-        '7 Transactions'
+        '7 Transactions',
       );
       await checkPackageAmounts([
         '+92233720368.54775807 ShortToken',
@@ -3480,7 +3484,7 @@ describe('Signature', function () {
       await expect(issue.type).toHaveText('Issue Smart Token');
       await expect(issue.amount).toHaveText('92233720368.54775807 ShortToken');
       await expect(issue.description).toHaveText(
-        'Full description of ShortToken'
+        'Full description of ShortToken',
       );
       await expect(issue.decimals).toHaveText('8');
       await expect(issue.reissuable).toHaveText('Reissuable');
@@ -3488,16 +3492,16 @@ describe('Signature', function () {
       await expect(issue.fee).toHaveText('1.004 WAVES');
 
       await expect(transfer.transferAmount).toHaveText(
-        '-123456790 NonScriptToken'
+        '-123456790 NonScriptToken',
       );
       await expect(transfer.recipient).toHaveText(
-        '3N5HNJz5otiU...BVv5HhYLdhiD'
+        '3N5HNJz5otiU...BVv5HhYLdhiD',
       );
       await expect(transfer.attachmentContent).toHaveText('base64:BQbtKNoM');
       await expect(transfer.fee).toHaveText('0.005 WAVES');
 
       await expect(reissue.reissueAmount).toHaveText(
-        '+123456790 NonScriptToken'
+        '+123456790 NonScriptToken',
       );
       await expect(reissue.fee).toHaveText('0.005 WAVES');
 
@@ -3506,26 +3510,26 @@ describe('Signature', function () {
 
       await expect(lease.leaseAmount).toHaveText('1.23456790 WAVES');
       await expect(lease.leaseRecipient).toHaveText(
-        '3N5HNJz5otiU...BVv5HhYLdhiD'
+        '3N5HNJz5otiU...BVv5HhYLdhiD',
       );
       await expect(lease.fee).toHaveText('0.005 WAVES');
 
       await expect(cancelLease.cancelLeaseAmount).toHaveText(
-        '0.00000001 WAVES'
+        '0.00000001 WAVES',
       );
       await expect(cancelLease.cancelLeaseRecipient).toHaveText(
-        'alias:T:merry'
+        'alias:T:merry',
       );
       await expect(cancelLease.fee).toHaveText('0.005 WAVES');
 
       await expect(invokeScript.invokeScriptPaymentsTitle).toHaveText(
-        '2 Payments'
+        '2 Payments',
       );
       await expect(invokeScript.invokeScriptDApp).toHaveText(
-        '3My2kBJaGfeM...3y8rAgfV2EAx'
+        '3My2kBJaGfeM...3y8rAgfV2EAx',
       );
       await expect(invokeScript.invokeScriptFunction).toHaveText(
-        INVOKE_SCRIPT.data.call.function
+        INVOKE_SCRIPT.data.call.function,
       );
 
       const invokeArguments = await invokeScript.getInvokeArguments();
@@ -3536,7 +3540,7 @@ describe('Signature', function () {
             it.value.getText(),
           ]);
           return { type, value };
-        })
+        }),
       );
       expect(actualArgs).toStrictEqual([
         {
@@ -3555,8 +3559,8 @@ describe('Signature', function () {
 
       const actualPayments = await Promise.all(
         await invokeScript.invokeScriptPaymentItems.map(async it =>
-          it.getText()
-        )
+          it.getText(),
+        ),
       );
       expect(actualPayments).toStrictEqual([
         '0.00000001 WAVES',
@@ -3576,7 +3580,7 @@ describe('Signature', function () {
 
       await browser.switchToWindow(tabOrigin);
       const approvedResult = await browser.execute<string[], []>(
-        () => window.result
+        () => window.result,
       );
       expect(approvedResult).toHaveLength(7);
 
@@ -3609,8 +3613,8 @@ describe('Signature', function () {
         await verifySignature(
           senderPublicKeyBytes,
           bytes0,
-          base58Decode(parsedApproveResult[0].proofs[0])
-        )
+          base58Decode(parsedApproveResult[0].proofs[0]),
+        ),
       ).toBe(true);
 
       const expectedApproveResult1 = {
@@ -3635,8 +3639,8 @@ describe('Signature', function () {
         await verifySignature(
           senderPublicKeyBytes,
           bytes1,
-          base58Decode(parsedApproveResult[1].proofs[0])
-        )
+          base58Decode(parsedApproveResult[1].proofs[0]),
+        ),
       ).toBe(true);
 
       const expectedApproveResult2 = {
@@ -3659,8 +3663,8 @@ describe('Signature', function () {
         await verifySignature(
           senderPublicKeyBytes,
           bytes2,
-          base58Decode(parsedApproveResult[2].proofs[0])
-        )
+          base58Decode(parsedApproveResult[2].proofs[0]),
+        ),
       ).toBe(true);
 
       const expectedApproveResult3 = {
@@ -3682,8 +3686,8 @@ describe('Signature', function () {
         await verifySignature(
           senderPublicKeyBytes,
           bytes3,
-          base58Decode(parsedApproveResult[3].proofs[0])
-        )
+          base58Decode(parsedApproveResult[3].proofs[0]),
+        ),
       ).toBe(true);
 
       const expectedApproveResult4 = {
@@ -3705,8 +3709,8 @@ describe('Signature', function () {
         await verifySignature(
           senderPublicKeyBytes,
           bytes4,
-          base58Decode(parsedApproveResult[4].proofs[0])
-        )
+          base58Decode(parsedApproveResult[4].proofs[0]),
+        ),
       ).toBe(true);
 
       const expectedApproveResult5 = {
@@ -3727,8 +3731,8 @@ describe('Signature', function () {
         await verifySignature(
           senderPublicKeyBytes,
           bytes5,
-          base58Decode(parsedApproveResult[5].proofs[0])
-        )
+          base58Decode(parsedApproveResult[5].proofs[0]),
+        ),
       ).toBe(true);
 
       const expectedApproveResult6 = {
@@ -3752,8 +3756,8 @@ describe('Signature', function () {
         await verifySignature(
           senderPublicKeyBytes,
           bytes6,
-          base58Decode(parsedApproveResult[6].proofs[0])
-        )
+          base58Decode(parsedApproveResult[6].proofs[0]),
+        ),
       ).toBe(true);
     });
   });
@@ -3770,7 +3774,7 @@ describe('Signature', function () {
           },
           () => {
             window.result = null;
-          }
+          },
         );
       }, data);
       [messageWindow] = await waitForNewWindows(1);
@@ -3786,7 +3790,7 @@ describe('Signature', function () {
         await validateCommonFields(WHITELIST[3], 'rich', 'Testnet');
 
         await expect(DataTransactionScreen.contentScript).toHaveText(
-          'base64:AADDEE=='
+          'base64:AADDEE==',
         );
 
         await rejectTransaction();
@@ -3810,20 +3814,18 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             makeCustomDataBytes(expectedApproveResult),
-            base58Decode(parsedApproveResult.signature)
-          )
+            base58Decode(parsedApproveResult.signature),
+          ),
         ).toBe(true);
       });
     });
 
     describe('Version 2', function () {
       async function checkDataEntries(
-        entries: Array<{ key: string; type: string; value: string }>
+        entries: Array<{ key: string; type: string; value: string }>,
       ) {
         const actualItems = await Promise.all(
-          (
-            await DataTransactionScreen.getDataRows()
-          ).map(async it => {
+          (await DataTransactionScreen.getDataRows()).map(async it => {
             const [key, type, value] = await Promise.all([
               it.key.getText(),
               it.type.getText(),
@@ -3834,7 +3836,7 @@ describe('Signature', function () {
               type,
               value,
             };
-          })
+          }),
         );
 
         expect(actualItems).toStrictEqual(entries);
@@ -3890,8 +3892,8 @@ describe('Signature', function () {
           await verifySignature(
             senderPublicKeyBytes,
             makeCustomDataBytes(expectedApproveResult),
-            base58Decode(parsedApproveResult.signature)
-          )
+            base58Decode(parsedApproveResult.signature),
+          ),
         ).toBe(true);
       });
     });

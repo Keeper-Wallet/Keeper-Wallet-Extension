@@ -11,7 +11,7 @@ import { type KeystoreAccount, type KeystoreProfiles } from './types';
 
 async function encryptProfiles(
   accountsToExport: PreferencesAccount[],
-  password: string
+  password: string,
 ) {
   const accounts = await Promise.all(
     accountsToExport.map(
@@ -31,7 +31,7 @@ async function encryptProfiles(
               seed: await background.getAccountSeed(
                 acc.address,
                 acc.network,
-                password
+                password,
               ),
             };
           case 'encodedSeed':
@@ -41,7 +41,7 @@ async function encryptProfiles(
               encodedSeed: await background.getAccountEncodedSeed(
                 acc.address,
                 acc.network,
-                password
+                password,
               ),
             };
           case 'privateKey':
@@ -51,7 +51,7 @@ async function encryptProfiles(
               privateKey: await background.getAccountPrivateKey(
                 acc.address,
                 acc.network,
-                password
+                password,
               ),
             };
           case 'debug':
@@ -61,11 +61,11 @@ async function encryptProfiles(
             };
           default:
             throw new Error(
-              `Trying to export unsupported account type: ${acc.type}`
+              `Trying to export unsupported account type: ${acc.type}`,
             );
         }
-      }
-    )
+      },
+    ),
   );
 
   const profiles: KeystoreProfiles = {
@@ -81,7 +81,7 @@ async function encryptProfiles(
 
   const encrypted = await encryptSeed(
     utf8Encode(JSON.stringify(profiles)),
-    utf8Encode(password)
+    utf8Encode(password),
   );
 
   return btoa(base64Encode(encrypted));
@@ -90,12 +90,12 @@ async function encryptProfiles(
 async function encryptAddresses(
   addresses: Record<string, string>,
   password: string,
-  shouldEncrypt: boolean
+  shouldEncrypt: boolean,
 ) {
   if (shouldEncrypt) {
     const encrypted = await encryptSeed(
       utf8Encode(JSON.stringify(addresses)),
-      utf8Encode(password)
+      utf8Encode(password),
     );
 
     return btoa(base64Encode(encrypted));
@@ -108,7 +108,7 @@ function download(json: string, filename: string) {
   const anchorEl = document.createElement('a');
   anchorEl.download = filename;
   anchorEl.href = URL.createObjectURL(
-    new Blob([json], { type: 'application/json' })
+    new Blob([json], { type: 'application/json' }),
   );
   anchorEl.click();
 }
@@ -117,7 +117,7 @@ export async function downloadKeystore(
   accounts: PreferencesAccount[] | undefined,
   addresses: Record<string, string> | undefined,
   password: string,
-  encrypted = false
+  encrypted = false,
 ) {
   await background.assertPasswordIsValid(password);
 
@@ -128,16 +128,16 @@ export async function downloadKeystore(
 
   const nowStr = `${pad(2, now.getFullYear() % 100)}${pad(
     2,
-    now.getMonth() + 1
+    now.getMonth() + 1,
   )}${pad(2, now.getDate())}${pad(2, now.getHours())}${pad(
     2,
-    now.getMinutes()
+    now.getMinutes(),
   )}`;
 
   if (accounts) {
     download(
       JSON.stringify({ profiles: await encryptProfiles(accounts, password) }),
-      `keystore-accounts-keeper-${nowStr}.json`
+      `keystore-accounts-keeper-${nowStr}.json`,
     );
   }
 
@@ -146,7 +146,7 @@ export async function downloadKeystore(
       JSON.stringify({
         addresses: await encryptAddresses(addresses, password, encrypted),
       }),
-      `keystore-address-book-keeper-${nowStr}.json`
+      `keystore-address-book-keeper-${nowStr}.json`,
     );
   }
 }

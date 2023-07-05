@@ -79,7 +79,7 @@ class LedgerService {
 
       if (
         /access denied|no device selected|device was disconnected|user gesture to show a permission request|unable to release interface/i.test(
-          msg
+          msg,
         )
       ) {
         this.disconnect();
@@ -93,7 +93,7 @@ class LedgerService {
         captureException(
           new Error(`ledger probeDevice failed: ${err}`, {
             cause: err instanceof Error ? err : undefined,
-          })
+          }),
         );
       }
     }
@@ -101,12 +101,12 @@ class LedgerService {
 
   private async sendSignRequest(
     selectedAccount: PreferencesAccount,
-    request: LedgerSignRequest
+    request: LedgerSignRequest,
   ) {
     try {
       invariant(
         selectedAccount.type === 'ledger',
-        'Active account is not a ledger account'
+        'Active account is not a ledger account',
       );
 
       if (!ledgerService.ledger) {
@@ -114,12 +114,12 @@ class LedgerService {
       }
 
       const userData = await ledgerService.ledger.getUserDataById(
-        selectedAccount.id
+        selectedAccount.id,
       );
 
       if (userData.address !== selectedAccount.address) {
         throw new Error(
-          'Account saved in keeper does not match the one in ledger'
+          'Account saved in keeper does not match the one in ledger',
         );
       }
 
@@ -138,7 +138,7 @@ class LedgerService {
             {
               ...request.data,
               dataBuffer: new Uint8Array(request.data.dataBuffer),
-            }
+            },
           );
           break;
         case 'someData':
@@ -147,7 +147,7 @@ class LedgerService {
             {
               ...request.data,
               dataBuffer: new Uint8Array(request.data.dataBuffer),
-            }
+            },
           );
           break;
         case 'transaction':
@@ -156,7 +156,7 @@ class LedgerService {
             {
               ...request.data,
               dataBuffer: new Uint8Array(request.data.dataBuffer),
-            }
+            },
           );
           break;
       }
@@ -172,7 +172,7 @@ class LedgerService {
         ) {
           await Background.ledgerSignResponse(
             request.id,
-            new Error('Request is rejected on ledger')
+            new Error('Request is rejected on ledger'),
           );
           return;
         }
@@ -184,7 +184,7 @@ class LedgerService {
 
   async queueSignRequest(
     selectedAccount: PreferencesAccount,
-    request: LedgerSignRequest
+    request: LedgerSignRequest,
   ) {
     try {
       await this._signRequestPromise;

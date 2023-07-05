@@ -15,7 +15,7 @@ export function useFeeOptions({
 
   const balance = usePopupSelector(
     state =>
-      state.selectedAccount && state.balances[state.selectedAccount.address]
+      state.selectedAccount && state.balances[state.selectedAccount.address],
   );
 
   const usdPrices = usePopupSelector(state => state.usdPrices);

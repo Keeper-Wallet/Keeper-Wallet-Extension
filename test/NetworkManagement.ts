@@ -50,7 +50,7 @@ describe('Network management', function () {
 
         await AccountsHome.importAccount(
           'rich',
-          'waves private node seed with waves tokens'
+          'waves private node seed with waves tokens',
         );
         await browser.switchToWindow(tabKeeper);
 
@@ -90,7 +90,7 @@ describe('Network management', function () {
         it('Node address is required field', async function () {
           await CustomNetworkModal.saveButton.click();
           await expect(CustomNetworkModal.addressError).toHaveText(
-            'URL is required'
+            'URL is required',
           );
         });
 
@@ -100,7 +100,7 @@ describe('Network management', function () {
 
           await waitForExpect(async () => {
             await expect(CustomNetworkModal.addressError).toHaveText(
-              'Incorrect node address'
+              'Incorrect node address',
             );
           });
         });

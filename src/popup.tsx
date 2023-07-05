@@ -64,7 +64,7 @@ Promise.all([
           </UsdPricesProvider>
         </RootWrapper>
       </Provider>
-    </StrictMode>
+    </StrictMode>,
   );
 
   const updateState = createUpdateState(store);
@@ -75,7 +75,7 @@ Promise.all([
     }
 
     const stateChanges = Object.fromEntries(
-      Object.entries(changes).map(([key, v]) => [key, v.newValue])
+      Object.entries(changes).map(([key, v]) => [key, v.newValue]),
     );
 
     // we need to update assets when network changes
@@ -116,12 +116,12 @@ Promise.all([
           Background.init(connect());
         });
       }),
-      publish
+      publish,
     );
 
     return createIpcCallProxy<keyof BackgroundUiApi, BackgroundUiApi>(
       request => port?.postMessage(request),
-      fromWebExtensionPort(port)
+      fromWebExtensionPort(port),
     );
   }
 
@@ -133,7 +133,7 @@ Promise.all([
   ) {
     background.resizeNotificationWindow(
       357 + window.outerWidth - window.innerWidth,
-      600 + window.outerHeight - window.innerHeight
+      600 + window.outerHeight - window.innerHeight,
     );
   }
 

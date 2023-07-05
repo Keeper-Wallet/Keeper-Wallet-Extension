@@ -24,15 +24,15 @@ export function PopupHome() {
 
   const activeAccount = usePopupSelector(state =>
     state.accounts.find(
-      ({ address }) => address === state.selectedAccount?.address
-    )
+      ({ address }) => address === state.selectedAccount?.address,
+    ),
   );
   const assets = usePopupSelector(state => state.assets);
   const usdPrices = usePopupSelector(state => state.usdPrices);
   const balances = usePopupSelector(state => state.balances);
 
   const notifications = usePopupSelector(
-    state => state.localState.notifications
+    state => state.localState.notifications,
   );
 
   const [activeTab, setActiveTab] = useUiState('assetsTab');
@@ -70,7 +70,7 @@ export function PopupHome() {
 
           return acc;
         },
-        new BigNumber(0)
+        new BigNumber(0),
       )
     : null;
 
@@ -83,7 +83,7 @@ export function PopupHome() {
             assets.WAVES &&
             new Money(
               balances[activeAccount.address]?.available || 0,
-              new Asset(assets.WAVES)
+              new Asset(assets.WAVES),
             )
           }
           amountInUsd={amountInUsd}
@@ -124,7 +124,7 @@ export function PopupHome() {
             }}
             onSwapClick={assetId => {
               navigate(
-                `/swap?${new URLSearchParams({ fromAssetId: assetId })}`
+                `/swap?${new URLSearchParams({ fromAssetId: assetId })}`,
               );
             }}
           />

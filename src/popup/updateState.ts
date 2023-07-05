@@ -151,7 +151,7 @@ export function createUpdateState(store: PopupStore) {
       stateChanges.notifications
         .filter(
           notification =>
-            notification.address === currentOrNewSelectedAccount.address
+            notification.address === currentOrNewSelectedAccount.address,
         )
         .reverse()
         .reduce<{
@@ -168,7 +168,7 @@ export function createUpdateState(store: PopupStore) {
 
             return acc;
           },
-          { items: [], hash: {} }
+          { items: [], hash: {} },
         ).items;
 
     if (
@@ -196,7 +196,7 @@ export function createUpdateState(store: PopupStore) {
 
     const newSelectedAccount = getParam(
       stateChanges.selectedAccount,
-      {} as unknown as undefined
+      {} as unknown as undefined,
     );
     if (
       newSelectedAccount &&
@@ -282,13 +282,13 @@ export function createUpdateState(store: PopupStore) {
 
     const swappableAssetIdsByVendor = getParam(
       stateChanges.swappableAssetIdsByVendor,
-      {}
+      {},
     );
     if (
       swappableAssetIdsByVendor &&
       !deepEqual(
         currentState.swappableAssetIdsByVendor,
-        swappableAssetIdsByVendor
+        swappableAssetIdsByVendor,
       )
     ) {
       store.dispatch({

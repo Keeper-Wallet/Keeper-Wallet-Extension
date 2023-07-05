@@ -93,7 +93,7 @@ const messageConfigs = {
 };
 
 export function getMessageConfig<T extends Message['type']>(
-  input: MessageOfType<T>
+  input: MessageOfType<T>,
 ) {
   return messageConfigs[input.type] as unknown as MessageConfig<T>;
 }

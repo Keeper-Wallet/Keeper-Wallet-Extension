@@ -28,8 +28,8 @@ export const OtherAccountsScreen = {
   async getAccountByName(accountName: string) {
     return Account(
       await this.root.$(
-        `.//*[@data-testid='accountCard' and contains(., '${accountName}')]`
-      )
+        `.//*[@data-testid='accountCard' and contains(., '${accountName}')]`,
+      ),
     );
   },
 

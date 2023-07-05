@@ -58,7 +58,7 @@ export class Modal extends PureComponent<Props> {
       >
         {this.props.children}
       </ModalWrapper>,
-      this.el
+      this.el,
     );
   }
 }

@@ -49,7 +49,7 @@ export function Tooltip({
           },
         },
       ],
-    }
+    },
   );
   const [showPopper, setShowPopper] = useState(false);
 
@@ -93,7 +93,7 @@ export function Tooltip({
               {content}
             </div>
           ),
-          el
+          el,
         )}
     </>
   );

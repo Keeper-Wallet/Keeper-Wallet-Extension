@@ -11,7 +11,7 @@ export class AddressBookController {
 
   constructor({ extensionStorage }: { extensionStorage: ExtensionStorage }) {
     this.store = new ObservableStore(
-      extensionStorage.getInitState({ addresses: {} })
+      extensionStorage.getInitState({ addresses: {} }),
     );
     extensionStorage.subscribe(this.store);
   }
@@ -42,7 +42,7 @@ export class AddressBookController {
             ? fromEthereumToWavesAddress(address)
             : address]: name,
         }),
-        {}
+        {},
       ),
     });
   }

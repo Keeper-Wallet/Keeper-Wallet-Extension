@@ -24,7 +24,7 @@ import invariant from 'tiny-invariant';
 
 export async function getExtraFee(address: string, node: string) {
   const response = await fetch(
-    new URL(`/addresses/scriptInfo/${address}`, node)
+    new URL(`/addresses/scriptInfo/${address}`, node),
   );
 
   if (!response.ok) {
@@ -49,7 +49,7 @@ export function convertFeeToAsset(fee: Money, asset: Asset) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       .div(minSponsoredFee(fee.asset)!)
       .roundTo(0, BigNumber.ROUND_MODE.ROUND_UP),
-    asset
+    asset,
   );
 }
 
@@ -87,19 +87,19 @@ export function getFeeOptions({
     }))
     .filter(
       (item): item is { asset: AssetDetail; assetBalance: AssetBalance } =>
-        item.asset != null
+        item.asset != null,
     )
     .map(
       ({ asset, assetBalance }): FeeOption => ({
         assetBalance,
         money: convertFeeToAsset(initialFee, new Asset(asset)),
-      })
+      }),
     )
     .filter(
       ({ assetBalance, money }) =>
         assetBalance.minSponsoredAssetFee != null &&
         new BigNumber(assetBalance.sponsorBalance).gte(feeInWaves.getCoins()) &&
-        new BigNumber(assetBalance.balance).gte(money.getCoins())
+        new BigNumber(assetBalance.balance).gte(money.getCoins()),
     )
     .sort((a, b) => {
       const aUsdSum = a.money

@@ -15,15 +15,15 @@ export function Root() {
   const haveAccounts = usePopupSelector(state => state.accounts.length !== 0);
 
   const haveActiveMessage = usePopupSelector(
-    state => state.activePopup?.msg != null
+    state => state.activePopup?.msg != null,
   );
 
   const haveActiveNotification = usePopupSelector(
-    state => state.activePopup?.notify != null
+    state => state.activePopup?.notify != null,
   );
 
   const haveMessagesOrNotifications = usePopupSelector(
-    state => state.messages.length !== 0 || state.notifications.length !== 0
+    state => state.messages.length !== 0 || state.notifications.length !== 0,
   );
 
   const currentNetwork = usePopupSelector(state => state.currentNetwork);

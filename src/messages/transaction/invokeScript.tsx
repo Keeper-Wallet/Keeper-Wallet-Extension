@@ -45,7 +45,7 @@ export function InvokeScriptCard({
               tx.payment.length !== 0
                 ? 'transactions.paymentsCount'
                 : 'transactions.paymentsNone',
-              { count: tx.payment.length ?? 0 }
+              { count: tx.payment.length ?? 0 },
             )}
           </h1>
         </div>

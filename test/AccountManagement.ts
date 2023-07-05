@@ -25,12 +25,12 @@ describe('Account management', function () {
 
     await AccountsHome.importAccount(
       'poor',
-      'waves private node seed without waves tokens'
+      'waves private node seed without waves tokens',
     );
 
     await AccountsHome.importAccount(
       'rich',
-      'waves private node seed with waves tokens'
+      'waves private node seed with waves tokens',
     );
 
     await browser.switchToWindow(tabKeeper);
@@ -83,7 +83,7 @@ describe('Account management', function () {
         await OtherAccountsScreen.searchInput.setValue('WRONG TERM');
         expect(await OtherAccountsScreen.accounts).toHaveLength(0);
         await expect(OtherAccountsScreen.accountsNote).toHaveText(
-          'No other accounts were found for the specified filters'
+          'No other accounts were found for the specified filters',
         );
       });
 
@@ -96,25 +96,25 @@ describe('Account management', function () {
       it('By existing account name', async () => {
         await OtherAccountsScreen.searchInput.setValue('ic');
         await expect((await OtherAccountsScreen.accounts)[0].name).toHaveText(
-          'rich'
+          'rich',
         );
       });
 
       it('By existing account address', async () => {
         await OtherAccountsScreen.searchInput.setValue(
-          '3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1'
+          '3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1',
         );
         await expect((await OtherAccountsScreen.accounts)[0].name).toHaveText(
-          'rich'
+          'rich',
         );
       });
 
       it('By existing account public key', async () => {
         await OtherAccountsScreen.searchInput.setValue(
-          'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV'
+          'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
         );
         await expect((await OtherAccountsScreen.accounts)[0].name).toHaveText(
-          'rich'
+          'rich',
         );
       });
 
@@ -162,7 +162,7 @@ describe('Account management', function () {
     describe('Backup phrase', () => {
       it('Is hidden', async () => {
         expect(await AccountInfoScreen.backupPhrase.getText()).not.toMatch(
-          /\w+/i
+          /\w+/i,
         );
       });
 
@@ -195,7 +195,7 @@ describe('Account management', function () {
         await ChangeAccountNameScreen.newNameInput.setValue(currentAccountName);
         await browser.keys('Tab');
         await expect(ChangeAccountNameScreen.error).toHaveText(
-          'Name already exist'
+          'Name already exist',
         );
         await expect(ChangeAccountNameScreen.saveButton).toBeDisabled();
         await ChangeAccountNameScreen.newNameInput.clearValue();
@@ -213,7 +213,7 @@ describe('Account management', function () {
         await ChangeAccountNameScreen.saveButton.click();
 
         await expect(AccountInfoScreen.notification).toHaveText(
-          'Account name changed'
+          'Account name changed',
         );
         await expect(AccountInfoScreen.name).toHaveText(newAccountName);
       });
@@ -233,7 +233,7 @@ describe('Account management', function () {
         await DeleteAccountScreen.deleteAccountButton.click();
         expect(
           (await HomeScreen.isDisplayed()) ||
-            (await EmptyHomeScreen.isDisplayed())
+            (await EmptyHomeScreen.isDisplayed()),
         ).toBe(true);
       });
     });
@@ -266,24 +266,24 @@ describe('Account management', function () {
 
       await AccountsHome.importAccount(
         'second',
-        'second account for testing selected account preservation'
+        'second account for testing selected account preservation',
       );
 
       await AccountsHome.importAccount(
         'first',
-        'first account for testing selected account preservation'
+        'first account for testing selected account preservation',
       );
 
       await Network.switchToAndCheck('Testnet');
 
       await AccountsHome.importAccount(
         'fourth',
-        'fourth account for testing selected account preservation'
+        'fourth account for testing selected account preservation',
       );
 
       await AccountsHome.importAccount(
         'third',
-        'third account for testing selected account preservation'
+        'third account for testing selected account preservation',
       );
 
       await Network.switchToAndCheck('Mainnet');

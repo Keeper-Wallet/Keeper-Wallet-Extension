@@ -8,7 +8,7 @@ export class TabsManager {
 
   constructor({ extensionStorage }: { extensionStorage: ExtensionStorage }) {
     this.#store = new ObservableStore(
-      extensionStorage.getInitState({ tabs: {} })
+      extensionStorage.getInitState({ tabs: {} }),
     );
 
     extensionStorage.subscribe(this.#store);

@@ -15,7 +15,7 @@ export function SettingsGeneral() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const idle = usePopupSelector<Record<string, any>>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    state => (state.config as any)?.idle || {}
+    state => (state.config as any)?.idle || {},
   );
 
   const idleOptions = usePopupSelector(state => state.idleOptions);

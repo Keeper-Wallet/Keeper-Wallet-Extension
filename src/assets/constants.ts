@@ -299,7 +299,7 @@ export const assetLogosByNetwork: Partial<{
   Object.entries(assetIds).map(([network, nameToIdMap]) => [
     network,
     Object.fromEntries(
-      Object.entries(nameToIdMap).map(([name, id]) => [id, logosByName[name]])
+      Object.entries(nameToIdMap).map(([name, id]) => [id, logosByName[name]]),
     ),
-  ])
+  ]),
 );

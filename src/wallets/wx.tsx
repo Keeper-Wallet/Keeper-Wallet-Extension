@@ -26,7 +26,7 @@ export class WxWallet extends Wallet<WalletPrivateDataOfType<'wx'>> {
       username: string;
       uuid: string;
     },
-    identity: IdentityApi
+    identity: IdentityApi,
   ) {
     super({
       address,

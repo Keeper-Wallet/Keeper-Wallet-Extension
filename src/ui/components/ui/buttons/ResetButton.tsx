@@ -68,8 +68,8 @@ export const ResetButton = ({ className }: Props) => {
                     Object.keys(state).reduce<string[]>(
                       (acc, key) =>
                         SAFE_FIELDS.has(key) ? acc : [...acc, key],
-                      []
-                    )
+                      [],
+                    ),
                   );
 
                   Browser.runtime.reload();

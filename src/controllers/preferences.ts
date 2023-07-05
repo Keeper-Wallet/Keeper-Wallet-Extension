@@ -30,7 +30,7 @@ export class PreferencesController extends EventEmitter {
         idleOptions: { type: '1h', interval: 60 * 60 * 1000 },
         accounts: [],
         selectedAccount: undefined,
-      })
+      }),
     );
 
     extensionStorage.subscribe(this.store);
@@ -65,8 +65,8 @@ export class PreferencesController extends EventEmitter {
         oldAccounts.find(
           oldAcc =>
             oldAcc.address === account.address &&
-            oldAcc.network === account.network
-        )
+            oldAcc.network === account.network,
+        ),
       );
     });
     this.store.updateState({ accounts });
@@ -78,7 +78,7 @@ export class PreferencesController extends EventEmitter {
     const network = this.getNetwork();
     const { accounts, selectedAccount } = this.store.getState();
     const currentNetworkAccounts = accounts.filter(
-      account => account.network === network
+      account => account.network === network,
     );
 
     if (
@@ -86,14 +86,14 @@ export class PreferencesController extends EventEmitter {
       !currentNetworkAccounts.some(
         account =>
           account.address === selectedAccount.address &&
-          account.network === selectedAccount.network
+          account.network === selectedAccount.network,
       )
     ) {
       let addressToSelect: string | undefined;
 
       if (currentNetworkAccounts.length > 0) {
         const sortedAccounts = currentNetworkAccounts.sort(
-          compareAccountsByLastUsed
+          compareAccountsByLastUsed,
         );
 
         addressToSelect = sortedAccounts[0].address;
@@ -107,12 +107,12 @@ export class PreferencesController extends EventEmitter {
     const { accounts, selectedAccount } = this.store.getState();
 
     const account = accounts.find(
-      current => current.address === address && current.network === network
+      current => current.address === address && current.network === network,
     );
 
     if (!account) {
       throw new Error(
-        `Account with address "${address}" in ${network} not found`
+        `Account with address "${address}" in ${network} not found`,
       );
     }
 
@@ -156,7 +156,7 @@ export class PreferencesController extends EventEmitter {
       this.store.updateState({
         accounts,
         selectedAccount: accounts.find(
-          account => account.address === address && account.network === network
+          account => account.address === address && account.network === network,
         ),
       });
 

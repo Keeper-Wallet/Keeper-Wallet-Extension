@@ -40,8 +40,8 @@ export function ImportKeystoreChooseAccounts({
         Object.values(profiles)
           .flatMap(profile => profile.accounts)
           .filter(({ address }) => !existingAccounts.has(address))
-          .map(({ address }) => address)
-      )
+          .map(({ address }) => address),
+      ),
   );
 
   function toggleSelected(accounts: KeystoreAccount[], isSelected: boolean) {
@@ -70,7 +70,7 @@ export function ImportKeystoreChooseAccounts({
         onSubmit(
           Object.values(profiles)
             .flatMap(profile => profile.accounts)
-            .filter(({ address }) => selected.has(address))
+            .filter(({ address }) => selected.has(address)),
         );
       }}
     >
@@ -88,7 +88,7 @@ export function ImportKeystoreChooseAccounts({
           .filter(([, accounts]) => accounts.length !== 0)
           .map(([network, accounts]) => {
             const newAccounts = accounts.filter(
-              acc => !existingAccounts.has(acc.address)
+              acc => !existingAccounts.has(acc.address),
             );
 
             return (
@@ -112,15 +112,15 @@ export function ImportKeystoreChooseAccounts({
                   {newAccounts.length !== 0 && (
                     <input
                       checked={newAccounts.every(acc =>
-                        selected.has(acc.address)
+                        selected.has(acc.address),
                       )}
                       type="checkbox"
                       onChange={event => {
                         toggleSelected(
                           accounts.filter(
-                            acc => !existingAccounts.has(acc.address)
+                            acc => !existingAccounts.has(acc.address),
                           ),
-                          event.currentTarget.checked
+                          event.currentTarget.checked,
                         );
                       }}
                     />
@@ -130,7 +130,7 @@ export function ImportKeystoreChooseAccounts({
                 <ul className={styles.accountList}>
                   {accounts.map(account => {
                     const existingAccount = allNetworksAccounts.find(
-                      acc => acc.address === account.address
+                      acc => acc.address === account.address,
                     );
 
                     return (
@@ -160,12 +160,12 @@ export function ImportKeystoreChooseAccounts({
                                 className={clsx(
                                   styles.accountName,
                                   'body3',
-                                  'disabled500'
+                                  'disabled500',
                                 )}
                               >
                                 {t(
                                   'importKeystore.chooseAccountsExistingAccountNote',
-                                  { existingName: existingAccount.name }
+                                  { existingName: existingAccount.name },
                                 )}
                               </div>
                             )}
@@ -181,7 +181,7 @@ export function ImportKeystoreChooseAccounts({
                             onChange={event => {
                               toggleSelected(
                                 [account],
-                                event.currentTarget.checked
+                                event.currentTarget.checked,
                               );
                             }}
                           />

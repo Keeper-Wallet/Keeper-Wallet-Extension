@@ -343,5 +343,5 @@ export type AppActionPayload<T extends AppAction['type']> =
   AppActionOfType<T>['payload'];
 
 export type AppMiddleware = (
-  api: MiddlewareAPI<Dispatch, PopupState>
+  api: MiddlewareAPI<Dispatch, PopupState>,
 ) => (next: Dispatch<AppAction>) => (action: AppAction) => void;

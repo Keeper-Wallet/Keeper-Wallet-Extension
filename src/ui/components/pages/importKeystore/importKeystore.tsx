@@ -57,7 +57,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
           try {
             const decrypted = await decryptSeed(
               base64Decode(atob(profiles)),
-              utf8Encode(password)
+              utf8Encode(password),
             );
 
             return JSON.parse(utf8Decode(decrypted));
@@ -88,11 +88,11 @@ function parseKeystore(json: string): EncryptedKeystore | null {
               const decrypted = await decryptSeed(
                 base64Decode(saveUsers),
                 utf8Encode(password),
-                encryptionRounds
+                encryptionRounds,
               );
 
               const accounts: ExchangeKeystoreAccount[] = JSON.parse(
-                utf8Decode(decrypted)
+                utf8Decode(decrypted),
               );
 
               const profiles: KeystoreProfiles = {
@@ -105,11 +105,11 @@ function parseKeystore(json: string): EncryptedKeystore | null {
               accounts
                 .filter(
                   (
-                    acc
+                    acc,
                   ): acc is Extract<
                     ExchangeKeystoreAccount,
                     { userType: 'seed' }
-                  > => acc.userType === 'seed'
+                  > => acc.userType === 'seed',
                 )
                 .forEach(acc => {
                   const networkCode = String.fromCharCode(acc.networkByte);
@@ -145,7 +145,7 @@ export function ImportKeystore() {
   const navigate = useNavigate();
   const dispatch = usePopupDispatch();
   const allNetworksAccounts = usePopupSelector(
-    state => state.allNetworksAccounts
+    state => state.allNetworksAccounts,
   );
   const { t } = useTranslation();
   const [error, setError] = useState<string | null>(null);
@@ -185,17 +185,17 @@ export function ImportKeystore() {
 
             Object.entries(newProfiles).forEach(([network, profile]) => {
               const currentNetworkAccounts = allNetworksAccounts.filter(
-                acc => acc.network === network
+                acc => acc.network === network,
               );
 
               profile.accounts.forEach(profileAccount => {
                 const accounts = currentNetworkAccounts.filter(
-                  acc => acc.address !== profileAccount.address
+                  acc => acc.address !== profileAccount.address,
                 );
 
                 let sameNameAccount = accounts.find(
                   existingAccount =>
-                    existingAccount.name === profileAccount.name
+                    existingAccount.name === profileAccount.name,
                 );
 
                 while (sameNameAccount) {
@@ -204,7 +204,7 @@ export function ImportKeystore() {
                   if (suffixMatch) {
                     profileAccount.name = profileAccount.name.replace(
                       suffixRe,
-                      `(${Number(suffixMatch[1]) + 1})`
+                      `(${Number(suffixMatch[1]) + 1})`,
                     );
                   } else {
                     profileAccount.name += ' (1)';
@@ -212,7 +212,7 @@ export function ImportKeystore() {
 
                   sameNameAccount = accounts.find(
                     existingAccount =>
-                      existingAccount.name === profileAccount.name
+                      existingAccount.name === profileAccount.name,
                   );
                 }
               });
@@ -246,8 +246,8 @@ export function ImportKeystore() {
               ...acc,
               network: getNetworkByNetworkCode(acc.networkCode),
             })),
-            walletType
-          )
+            walletType,
+          ),
         );
 
         navigate('/import-keystore/success');

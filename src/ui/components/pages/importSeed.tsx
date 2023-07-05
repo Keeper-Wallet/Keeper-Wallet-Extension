@@ -68,7 +68,7 @@ export function ImportSeed() {
   const findExistingAccount = useCallback(
     (addr: string | undefined) =>
       addr && accounts.find(acc => acc.address === addr),
-    [accounts]
+    [accounts],
   );
 
   const [isAddressInProgress, setIsAddressInProgress] = useState(false);
@@ -100,7 +100,7 @@ export function ImportSeed() {
         setValidationError(
           t('importSeed.accountExistsError', {
             name: existingAccount.name,
-          })
+          }),
         );
       } else {
         setValidationError(undefined);
@@ -116,7 +116,7 @@ export function ImportSeed() {
         setValidationError(
           t('importSeed.seedLengthError', {
             minLength: SEED_MIN_LENGTH,
-          })
+          }),
         );
       } else if (
         trimmedSeedValue.startsWith('base58:') &&
@@ -127,7 +127,7 @@ export function ImportSeed() {
             i18nKey="importSeed.base58PrefixError"
             t={t}
             components={{ switchTab: base58PrefixErrorSwitchTabButton }}
-          />
+          />,
         );
       } else if (isAddressString(trimmedSeedValue)) {
         setValidationError(t('importSeed.seedIsAddressError'));
@@ -153,7 +153,7 @@ export function ImportSeed() {
                 />
               ),
             }}
-          />
+          />,
         );
       } else {
         setIsAddressInProgress(true);
@@ -162,7 +162,7 @@ export function ImportSeed() {
           .then(createPublicKey)
           .then(publicKey => {
             const newAddress = base58Encode(
-              createAddress(publicKey, networkCode.charCodeAt(0))
+              createAddress(publicKey, networkCode.charCodeAt(0)),
             );
 
             validateAddress(newAddress);
@@ -184,7 +184,7 @@ export function ImportSeed() {
           setValidationError(
             t('importSeed.encodedSeedLengthError', {
               minLength: ENCODED_SEED_MIN_LENGTH,
-            })
+            }),
           );
         } else {
           setIsAddressInProgress(true);
@@ -193,7 +193,7 @@ export function ImportSeed() {
             .then(createPublicKey)
             .then(publicKey => {
               const newAddress = base58Encode(
-                createAddress(publicKey, networkCode.charCodeAt(0))
+                createAddress(publicKey, networkCode.charCodeAt(0)),
               );
 
               validateAddress(newAddress);
@@ -216,7 +216,7 @@ export function ImportSeed() {
             i18nKey="importSeed.base58PrefixError"
             t={t}
             components={{ switchTab: base58PrefixErrorSwitchTabButton }}
-          />
+          />,
         );
       } else if (!isBase58(privateKeyValue)) {
         setValidationError(t('importSeed.base58DecodeError'));
@@ -225,7 +225,7 @@ export function ImportSeed() {
 
         if (privateKey.length !== 32) {
           setValidationError(
-            t('importSeed.invalidPrivateKeyLengthError', { length: 32 })
+            t('importSeed.invalidPrivateKeyLengthError', { length: 32 }),
           );
         } else {
           setIsAddressInProgress(true);
@@ -233,7 +233,7 @@ export function ImportSeed() {
           createPublicKey(privateKey)
             .then(publicKey => {
               const newAddress = base58Encode(
-                createAddress(publicKey, networkCode.charCodeAt(0))
+                createAddress(publicKey, networkCode.charCodeAt(0)),
               );
 
               validateAddress(newAddress);
@@ -293,7 +293,7 @@ export function ImportSeed() {
                 address,
                 name: '',
                 hasBackup: true,
-              })
+              }),
             );
           } else if (activeTab === ENCODED_SEED_TAB_INDEX) {
             dispatch(
@@ -303,7 +303,7 @@ export function ImportSeed() {
                 address,
                 name: '',
                 hasBackup: true,
-              })
+              }),
             );
           } else {
             dispatch(
@@ -313,7 +313,7 @@ export function ImportSeed() {
                 address,
                 name: '',
                 hasBackup: true,
-              })
+              }),
             );
           }
 
@@ -406,7 +406,7 @@ export function ImportSeed() {
           {t(
             existingAccount && showValidationError
               ? 'importSeed.switchAccount'
-              : 'importSeed.importAccount'
+              : 'importSeed.importAccount',
           )}
         </Button>
       </form>

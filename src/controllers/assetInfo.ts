@@ -226,8 +226,8 @@ export class AssetInfoController {
             .text()
             .then(text =>
               JSON.parse(
-                text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm, '$1"$2"')
-              )
+                text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm, '$1"$2"'),
+              ),
             )) as AssetInfoResponseItem;
 
           assets[network] = assets[network] || {};
@@ -242,7 +242,7 @@ export class AssetInfoController {
         case 400: {
           const error = await resp.json();
           throw new Error(
-            `Could not find info for asset with id: ${assetId}. ${error.message}`
+            `Could not find info for asset with id: ${assetId}. ${error.message}`,
           );
         }
         default:
@@ -312,7 +312,7 @@ export class AssetInfoController {
 
   async updateAssets(
     assetIds: Array<string | null | undefined>,
-    { ignoreCache }: { ignoreCache?: boolean } = {}
+    { ignoreCache }: { ignoreCache?: boolean } = {},
   ) {
     const { assets } = this.store.getState();
     const network = this.getNetwork();
@@ -328,8 +328,8 @@ export class AssetInfoController {
             return (
               ignoreCache || !asset || this.isMaxAgeExceeded(asset.lastUpdated)
             );
-          })
-      )
+          }),
+      ),
     );
 
     if (assetIdsToFetch.length === 0) {
@@ -341,7 +341,7 @@ export class AssetInfoController {
     for (let i = 0; i < assetIdsToFetch.length; i += maxAssetsPerRequest) {
       const assetInfos = await this.#fetchAssetsBatch(
         this.getNode(),
-        assetIdsToFetch.slice(i, i + maxAssetsPerRequest)
+        assetIdsToFetch.slice(i, i + maxAssetsPerRequest),
       );
 
       assetInfos.forEach(assetInfo => {
@@ -372,7 +372,7 @@ export class AssetInfoController {
             assetId =>
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               (assets[NetworkName.Mainnet][assetId]!.isSuspicious =
-                binarySearch(suspiciousAssets, assetId) > -1)
+                binarySearch(suspiciousAssets, assetId) > -1),
           );
         }
 
@@ -398,7 +398,7 @@ export class AssetInfoController {
     if (!response.ok) {
       const error = await response.text();
       throw new Error(
-        `Could not fetch rates [${response.status} ${response.statusText}]: ${error}`
+        `Could not fetch rates [${response.status} ${response.statusText}]: ${error}`,
       );
     }
 
@@ -437,8 +437,8 @@ export class AssetInfoController {
             {} as {
               assetLogos: StorageLocalState['assetLogos'];
               assetTickers: StorageLocalState['assetTickers'];
-            }
-          )
+            },
+          ),
         );
       }
     }

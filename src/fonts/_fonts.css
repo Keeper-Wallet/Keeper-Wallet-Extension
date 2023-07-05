@@ -1,107 +1,139 @@
 @font-face {
   font-family: 'Roboto';
   font-weight: 300;
-  src: local('Roboto Light'), local('Roboto-Light'),
+  src:
+    local('Roboto Light'),
+    local('Roboto-Light'),
     url('./roboto-light.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Noto-Sans-Th';
   font-weight: 300;
-  src: local('Noto-Sans-Th Light'), local('Noto-Sans-Th-Light'),
+  src:
+    local('Noto-Sans-Th Light'),
+    local('Noto-Sans-Th-Light'),
     url('./noto-sans-th-light.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Noto-Sans-Ja';
   font-weight: 300;
-  src: local('Noto-Sans-Ja Light'), local('Noto-Sans-Ja-Light'),
+  src:
+    local('Noto-Sans-Ja Light'),
+    local('Noto-Sans-Ja-Light'),
     url('./noto-sans-ja-light.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Noto-Sans-Zh';
   font-weight: 300;
-  src: local('Noto-Sans-Zh Light'), local('Noto-Sans-Zh-Light'),
+  src:
+    local('Noto-Sans-Zh Light'),
+    local('Noto-Sans-Zh-Light'),
     url('./noto-sans-zh-light.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Roboto';
-  src: local('Roboto Regular'), local('Roboto-Regular'),
+  src:
+    local('Roboto Regular'),
+    local('Roboto-Regular'),
     url('./roboto-regular.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Noto-Sans-Th';
-  src: local('Noto-Sans-Th Regular'), local('Noto-Sans-Th-Regular'),
+  src:
+    local('Noto-Sans-Th Regular'),
+    local('Noto-Sans-Th-Regular'),
     url('./noto-sans-th-regular.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Noto-Sans-Ja';
-  src: local('Noto-Sans-Ja Regular'), local('Noto-Sans-Ja-Regular'),
+  src:
+    local('Noto-Sans-Ja Regular'),
+    local('Noto-Sans-Ja-Regular'),
     url('./noto-sans-ja-regular.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Noto-Sans-Zh';
-  src: local('Noto-Sans-Zh Regular'), local('Noto-Sans-Zh-Regular'),
+  src:
+    local('Noto-Sans-Zh Regular'),
+    local('Noto-Sans-Zh-Regular'),
     url('./noto-sans-zh-regular.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Roboto';
   font-weight: 500;
-  src: local('Roboto Medium'), local('Roboto-Medium'),
+  src:
+    local('Roboto Medium'),
+    local('Roboto-Medium'),
     url('./roboto-medium.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Noto-Sans-Th';
   font-weight: 500;
-  src: local('Noto-Sans-Th Medium'), local('Noto-Sans-Th-Medium'),
+  src:
+    local('Noto-Sans-Th Medium'),
+    local('Noto-Sans-Th-Medium'),
     url('./noto-sans-th-medium.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Noto-Sans-Ja';
   font-weight: 500;
-  src: local('Noto-Sans-Ja Medium'), local('Noto-Sans-Ja-Medium'),
+  src:
+    local('Noto-Sans-Ja Medium'),
+    local('Noto-Sans-Ja-Medium'),
     url('./noto-sans-ja-medium.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Noto-Sans-Zh';
   font-weight: 500;
-  src: local('Noto-Sans-Zh Medium'), local('Noto-Sans-Zh-Medium'),
+  src:
+    local('Noto-Sans-Zh Medium'),
+    local('Noto-Sans-Zh-Medium'),
     url('./noto-sans-zh-medium.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Roboto';
   font-weight: bold;
-  src: local('Roboto Bold'), local('Roboto-Bold'),
+  src:
+    local('Roboto Bold'),
+    local('Roboto-Bold'),
     url('./roboto-bold.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Noto-Sans-Th';
   font-weight: bold;
-  src: local('Noto-Sans-Th Bold'), local('Noto-Sans-Th-Bold'),
+  src:
+    local('Noto-Sans-Th Bold'),
+    local('Noto-Sans-Th-Bold'),
     url('./noto-sans-th-bold.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Noto-Sans-Ja';
   font-weight: bold;
-  src: local('Noto-Sans-Ja Bold'), local('Noto-Sans-Ja-Bold'),
+  src:
+    local('Noto-Sans-Ja Bold'),
+    local('Noto-Sans-Ja-Bold'),
     url('./noto-sans-ja-bold.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Noto-Sans-Zh';
   font-weight: bold;
-  src: local('Noto-Sans-Zh Bold'), local('Noto-Sans-Zh-Bold'),
+  src:
+    local('Noto-Sans-Zh Bold'),
+    local('Noto-Sans-Zh-Bold'),
     url('./noto-sans-zh-bold.woff2') format('woff2');
 }

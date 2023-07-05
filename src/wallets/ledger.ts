@@ -40,7 +40,7 @@ export class LedgerWallet extends Wallet<WalletPrivateDataOfType<'ledger'>> {
       publicKey: string;
     },
     ledger: LedgerApi,
-    getAssetInfo: AssetInfoController['assetInfo']
+    getAssetInfo: AssetInfoController['assetInfo'],
   ) {
     super({
       address,

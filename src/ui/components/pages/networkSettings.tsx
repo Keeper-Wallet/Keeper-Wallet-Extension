@@ -22,11 +22,11 @@ export function NetworkSettings() {
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
 
   const customMatcher = usePopupSelector(
-    state => state.customMatcher[state.currentNetwork]
+    state => state.customMatcher[state.currentNetwork],
   );
 
   const customNode = usePopupSelector(
-    state => state.customNodes[state.currentNetwork]
+    state => state.customNodes[state.currentNetwork],
   );
 
   const defaultNetworkConfig = NETWORK_CONFIG[currentNetwork];
@@ -93,7 +93,7 @@ export function NetworkSettings() {
             networkCode => {
               if (currentNetwork === NetworkName.Custom) {
                 dispatch(
-                  setCustomCode({ code: networkCode, network: currentNetwork })
+                  setCustomCode({ code: networkCode, network: currentNetwork }),
                 );
               } else if (networkCode !== defaultNetworkConfig.networkCode) {
                 return false;
@@ -106,12 +106,12 @@ export function NetworkSettings() {
                     nodeValue === defaultNetworkConfig.nodeBaseUrl
                       ? null
                       : nodeValue,
-                })
+                }),
               );
 
               return true;
             },
-            () => false
+            () => false,
           ),
 
           getMatcherPublicKey(matcherValue).then(
@@ -123,12 +123,12 @@ export function NetworkSettings() {
                       ? null
                       : matcherValue,
                   network: currentNetwork,
-                })
+                }),
               );
 
               return true;
             },
-            () => false
+            () => false,
           ),
         ]);
 
@@ -232,7 +232,7 @@ export function NetworkSettings() {
             dispatch(setCustomNode({ network: currentNetwork, node: null }));
 
             dispatch(
-              setCustomMatcher({ matcher: null, network: currentNetwork })
+              setCustomMatcher({ matcher: null, network: currentNetwork }),
             );
 
             setNodeValue(defaultNetworkConfig.nodeBaseUrl);

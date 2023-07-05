@@ -2,7 +2,7 @@ import { type AppActionOfType } from '../types';
 import { ACTION } from './constants';
 
 export const allowOrigin = (
-  origin: string
+  origin: string,
 ): AppActionOfType<typeof ACTION.PERMISSIONS.ALLOW> => ({
   type: ACTION.PERMISSIONS.ALLOW,
   payload: origin,
@@ -22,56 +22,56 @@ export const setAutoOrigin = (origin: {
 });
 
 export const disableOrigin = (
-  origin: string
+  origin: string,
 ): AppActionOfType<typeof ACTION.PERMISSIONS.DISALLOW> => ({
   type: ACTION.PERMISSIONS.DISALLOW,
   payload: origin,
 });
 
 export const deleteOrigin = (
-  origin: string
+  origin: string,
 ): AppActionOfType<typeof ACTION.PERMISSIONS.DELETE> => ({
   type: ACTION.PERMISSIONS.DELETE,
   payload: origin,
 });
 
 export const pendingOrigin = (
-  state: boolean
+  state: boolean,
 ): AppActionOfType<typeof ACTION.PERMISSIONS.PENDING> => ({
   type: ACTION.PERMISSIONS.PENDING,
   payload: state,
 });
 
 export const allowOriginDone = (
-  state: unknown
+  state: unknown,
 ): AppActionOfType<typeof ACTION.PERMISSIONS.CONFIRMED_ALLOW> => ({
   type: ACTION.PERMISSIONS.CONFIRMED_ALLOW,
   payload: state,
 });
 
 export const autoOriginDone = (
-  state: unknown
+  state: unknown,
 ): AppActionOfType<typeof ACTION.PERMISSIONS.CONFIRMED_AUTO> => ({
   type: ACTION.PERMISSIONS.CONFIRMED_AUTO,
   payload: state,
 });
 
 export const disallowOriginDone = (
-  state: unknown
+  state: unknown,
 ): AppActionOfType<typeof ACTION.PERMISSIONS.CONFIRMED_ALLOW> => ({
   type: ACTION.PERMISSIONS.CONFIRMED_ALLOW,
   payload: state,
 });
 
 export const deleteOriginDone = (
-  state: unknown
+  state: unknown,
 ): AppActionOfType<typeof ACTION.PERMISSIONS.CONFIRMED_ALLOW> => ({
   type: ACTION.PERMISSIONS.CONFIRMED_ALLOW,
   payload: state,
 });
 
 export const setOriginAutoSignDone = (
-  state: unknown
+  state: unknown,
 ): AppActionOfType<typeof ACTION.PERMISSIONS.CONFIRMED_ALLOW> => ({
   type: ACTION.PERMISSIONS.CONFIRMED_ALLOW,
   payload: state,

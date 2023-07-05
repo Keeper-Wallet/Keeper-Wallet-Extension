@@ -104,23 +104,23 @@ export const mochaHooks = () => ({
         await this.elementSendKeys(this.elementId, '\uE009a'); // Ctrl+a
         await this.elementSendKeys(this.elementId, '\uE003'); // Backspace
       },
-      true
+      true,
     );
 
     browser.addCommand(
       'openKeeperPopup',
       async function (this: WebdriverIO.Browser) {
         await this.navigateTo(
-          `chrome-extension://${keeperExtensionId}/popup.html`
+          `chrome-extension://${keeperExtensionId}/popup.html`,
         );
-      }
+      },
     );
 
     browser.addCommand(
       'openKeeperExtensionPage',
       async function (this: WebdriverIO.Browser) {
         await this.navigateTo(`chrome://extensions/?id=${keeperExtensionId}`);
-      }
+      },
     );
   },
 

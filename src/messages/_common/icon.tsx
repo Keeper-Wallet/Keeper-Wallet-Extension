@@ -11,7 +11,7 @@ export function MessageIcon({ className, small, type }: Props) {
     <div
       className={clsx(
         className,
-        `${type}-transaction-icon${small ? '-small' : ''}`
+        `${type}-transaction-icon${small ? '-small' : ''}`,
       )}
     />
   );

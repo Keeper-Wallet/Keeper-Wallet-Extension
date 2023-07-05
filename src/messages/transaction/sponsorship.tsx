@@ -50,7 +50,7 @@ export function SponsorshipCard({
               {t(
                 tx.minSponsoredAssetFee == null
                   ? 'transactions.clearSponsored'
-                  : 'transactions.setSponsored'
+                  : 'transactions.setSponsored',
               )}
             </div>
 

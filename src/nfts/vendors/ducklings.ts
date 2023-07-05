@@ -48,7 +48,7 @@ export class DucklingsNftVendor implements NftVendor<DucklingsNftInfo> {
           // eslint-disable-next-line radix
           const level = parseInt(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (dataEntries[ducklingLevelKey(id)] as any) ?? 0
+            (dataEntries[ducklingLevelKey(id)] as any) ?? 0,
           );
 
           return {
@@ -56,14 +56,14 @@ export class DucklingsNftVendor implements NftVendor<DucklingsNftInfo> {
             id,
             vendor: NftVendorId.Ducklings,
           };
-        })
+        }),
       );
   }
 
   create({ asset, info }: CreateParams<DucklingsNftInfo>) {
     const nameIndex = [10, 4, 2, 0, 2, 1].reduce(
       (acc, index) => acc + asset.id.charCodeAt(index),
-      0
+      0,
     );
 
     const ducklingNames = Object.keys(DUCKLING_DESCRIPTIONS);
@@ -71,7 +71,7 @@ export class DucklingsNftVendor implements NftVendor<DucklingsNftInfo> {
 
     const adjectiveIndex = [16, 10, 1, 9, 9, 7].reduce(
       (acc, index) => acc + asset.id.charCodeAt(index),
-      0
+      0,
     );
 
     return {
@@ -81,13 +81,13 @@ export class DucklingsNftVendor implements NftVendor<DucklingsNftInfo> {
       displayCreator: 'Ducklings',
 
       displayName: `${capitalize(
-        DUCKLING_ADJECTIVES[adjectiveIndex % DUCKLING_ADJECTIVES.length]
+        DUCKLING_ADJECTIVES[adjectiveIndex % DUCKLING_ADJECTIVES.length],
       )} ${capitalize(name)}`,
 
       foreground: info
         ? `https://wavesducks.com/ducks/ducklings/duckling-${Math.min(
             Math.trunc(info.growthLevel / 25),
-            3
+            3,
           )}.svg`
         : undefined,
 

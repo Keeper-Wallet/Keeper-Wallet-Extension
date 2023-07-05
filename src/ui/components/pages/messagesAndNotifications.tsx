@@ -50,8 +50,8 @@ export function MessagesAndNotificationsPage() {
                 onClick={() => {
                   dispatch(
                     deleteNotifications(
-                      notifications.flatMap(item => item.map(x => x.id))
-                    )
+                      notifications.flatMap(item => item.map(x => x.id)),
+                    ),
                   );
                 }}
               >
@@ -69,7 +69,7 @@ export function MessagesAndNotificationsPage() {
                       className={clsx(
                         styles.notificationCard,
                         transactionsStyles.transactionCard,
-                        { [transactionsStyles.groupTx]: group.length > 1 }
+                        { [transactionsStyles.groupTx]: group.length > 1 },
                       )}
                     >
                       {group.length > 1 && (
@@ -89,7 +89,7 @@ export function MessagesAndNotificationsPage() {
                             <div
                               className={clsx(
                                 styles.notificationEllipsis,
-                                'basic500 body3 margin-min'
+                                'basic500 body3 margin-min',
                               )}
                             >
                               {group[0].origin}
@@ -98,7 +98,7 @@ export function MessagesAndNotificationsPage() {
                             <h2
                               className={clsx(
                                 styles.notificationEllipsis,
-                                'headline'
+                                'headline',
                               )}
                             >
                               {group.length > 1 ? (
@@ -117,7 +117,7 @@ export function MessagesAndNotificationsPage() {
                             view="transparent"
                             onClick={() => {
                               dispatch(
-                                deleteNotifications(group.map(x => x.id))
+                                deleteNotifications(group.map(x => x.id)),
                               );
                             }}
                           />

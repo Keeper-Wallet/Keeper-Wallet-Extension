@@ -42,7 +42,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
         emailRequired: null,
       }));
     },
-    []
+    [],
   );
 
   const handleEmailBlur = useCallback(() => {
@@ -64,7 +64,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
         passwordRequired: null,
       }));
     },
-    []
+    [],
   );
 
   const handlePasswordBlur = useCallback(() => {
@@ -109,7 +109,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
         setPending(false);
       }
     },
-    [email, password, signIn, t]
+    [email, password, signIn, t],
   );
 
   return (

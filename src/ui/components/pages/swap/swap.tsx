@@ -70,7 +70,7 @@ export function Swap() {
 
   const assets = usePopupSelector(state => state.assets);
   const swappableAssetIdsByVendor = usePopupSelector(
-    state => state.swappableAssetIdsByVendor
+    state => state.swappableAssetIdsByVendor,
   );
 
   const swappableAssetEntries = useMemo(
@@ -79,9 +79,9 @@ export function Swap() {
         (assetId): [string, AssetDetail | undefined] => [
           assetId,
           assets[assetId],
-        ]
+        ],
       ),
-    [assets, swappableAssetIdsByVendor]
+    [assets, swappableAssetIdsByVendor],
   );
 
   useEffect(() => {
@@ -89,7 +89,7 @@ export function Swap() {
   }, [swappableAssetEntries, dispatch]);
 
   const accountBalance = usePopupSelector(
-    state => state.balances[selectedAccount.address]
+    state => state.balances[selectedAccount.address],
   );
 
   const [performedSwapData, setPerformedSwapData] = useState<{
@@ -169,14 +169,16 @@ export function Swap() {
         });
       } catch (err) {
         const errMessage = String(
-          err && typeof err === 'object' && 'message' in err ? err.message : err
+          err && typeof err === 'object' && 'message' in err
+            ? err.message
+            : err,
         );
 
         let capture = true;
 
         // errors from nested invokes
         let match = errMessage.match(
-          /Error while executing dApp: \w+\(code\s*=\s*(?:.+),\s*error\s*=\s*([\s\S]+)\s*,\s*log\s*=/im
+          /Error while executing dApp: \w+\(code\s*=\s*(?:.+),\s*error\s*=\s*([\s\S]+)\s*,\s*log\s*=/im,
         );
 
         if (match) {
@@ -184,14 +186,14 @@ export function Swap() {
 
           if (
             /something\s+went\s+wrong\s+while\s+working\s+with\s+amountToSend/i.test(
-              msg
+              msg,
             )
           ) {
             msg = t('swap.amountToSendError');
             capture = false;
           } else if (
             /only\s+swap\s+of\s+[\d.]+\s+or\s+more\s+tokens\s+is\s+allowed/i.test(
-              msg
+              msg,
             )
           ) {
             capture = false;
@@ -242,7 +244,7 @@ export function Swap() {
           }
 
           match = msg.match(
-            /amount to receive is lower than expected one (\d+)/i
+            /amount to receive is lower than expected one (\d+)/i,
           );
 
           if (match) {
@@ -283,7 +285,7 @@ export function Swap() {
         }
       }
     },
-    [assets, selectedAccount, t, wavesFeeCoins]
+    [assets, selectedAccount, t, wavesFeeCoins],
   );
 
   const { sign, isSignPending } = useSign(onConfirm);

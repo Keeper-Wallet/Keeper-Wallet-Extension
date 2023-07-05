@@ -48,7 +48,7 @@ export class PermissionsController {
         origins: {},
         whitelist: [],
         inPending: {},
-      })
+      }),
     );
 
     extensionStorage.subscribe(this.store);
@@ -141,7 +141,7 @@ export class PermissionsController {
       typeof permission === 'string' ? permission : permission.type;
     const findPermission = findPermissionFabric(permissionType);
     const permissions = this.getPermissions(origin).filter(
-      item => !findPermission(item)
+      item => !findPermission(item),
     );
     this.setPermissions(origin, permissions);
   }
@@ -159,7 +159,7 @@ export class PermissionsController {
     {
       interval,
       totalAmount,
-    }: Pick<PermissionObject, 'interval' | 'totalAmount'>
+    }: Pick<PermissionObject, 'interval' | 'totalAmount'>,
   ) {
     if (!interval || !totalAmount) {
       this.deletePermission(origin, PERMISSIONS.AUTO_SIGN);
@@ -304,7 +304,7 @@ export class PermissionsController {
 
   updatePermission(origin: string, permission: PermissionValue) {
     const findPermission = findPermissionFabric(
-      (permission as PermissionObject).type || permission
+      (permission as PermissionObject).type || permission,
     );
     const permissions = [
       ...this.getPermissions(origin).filter(item => !findPermission(item)),
@@ -344,7 +344,7 @@ export class PermissionsController {
   _updatePermissionByList(
     list: string[],
     permission: PermissionType,
-    type: 'whiteList'
+    type: 'whiteList',
   ) {
     const { origins } = this.store.getState();
     const newOrigins = list.reduce(
@@ -361,7 +361,7 @@ export class PermissionsController {
         acc[origin] = permissions;
         return acc;
       },
-      { ...origins }
+      { ...origins },
     );
 
     this.updateState({ origins: newOrigins });

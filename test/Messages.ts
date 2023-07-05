@@ -50,7 +50,7 @@ describe('Messages', function () {
 
     await AccountsHome.importAccount(
       'rich',
-      'waves private node seed with waves tokens'
+      'waves private node seed with waves tokens',
     );
 
     tabOrigin = (await browser.createWindow('tab')).handle;
@@ -130,7 +130,7 @@ describe('Messages', function () {
     await AuthMessageScreen.authButton.click();
 
     await expect(FinalTransactionScreen.transactionContent).toHaveText(
-      'Request has been signed!'
+      'Request has been signed!',
     );
 
     await FinalTransactionScreen.closeButton.click();
@@ -215,7 +215,7 @@ describe('Messages', function () {
 
   // TODO looks like these units need to be checked in unittests
   it(
-    'You cannot send messages from one resource more often than once every 30 seconds'
+    'You cannot send messages from one resource more often than once every 30 seconds',
   );
   it('The message title cannot be longer than 20 characters');
   it('The message text cannot be longer than 250 characters');

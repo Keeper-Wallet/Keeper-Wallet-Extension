@@ -70,7 +70,7 @@ export function ImportLedger() {
   >({});
 
   const [selectAccountError, setSelectAccountError] = useState<string | null>(
-    null
+    null,
   );
   const [selectedUserId, setSelectedUserId] = useState(0);
 
@@ -80,7 +80,7 @@ export function ImportLedger() {
     ];
 
   const [userIdInputValue, setUserIdInputValue] = useState(
-    String(selectedUserId)
+    String(selectedUserId),
   );
 
   useEffect(() => {
@@ -104,7 +104,7 @@ export function ImportLedger() {
 
     if (userIdFromInput > MAX_USER_ID) {
       setUserIdInputError(
-        t('importLedger.userIdInputMaxValueError', { maxUserId: MAX_USER_ID })
+        t('importLedger.userIdInputMaxValueError', { maxUserId: MAX_USER_ID }),
       );
       return;
     }
@@ -134,7 +134,7 @@ export function ImportLedger() {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const users = await ledgerService.ledger!.getPaginationUsersData(
           0,
-          USERS_PER_PAGE - 1
+          USERS_PER_PAGE - 1,
         );
 
         setLedgerUsersPages({ 0: users });
@@ -184,7 +184,7 @@ export function ImportLedger() {
       ledgerService
         .ledger!.getPaginationUsersData(
           page * USERS_PER_PAGE,
-          USERS_PER_PAGE - 1
+          USERS_PER_PAGE - 1,
         )
         .then(
           users => {
@@ -204,11 +204,11 @@ export function ImportLedger() {
                     />
                   ),
                 }}
-              />
+              />,
             );
             setIsReady(false);
-          }
-        )
+          },
+        ),
     );
   }, [connectToLedger, isCurPageLoaded, isReady, page, t]);
 
@@ -250,7 +250,7 @@ export function ImportLedger() {
                 <button
                   className={clsx(
                     styles.avatarListArrow,
-                    styles.avatarListArrowLeft
+                    styles.avatarListArrowLeft,
                   )}
                   disabled={!isCurPageLoaded}
                   type="button"
@@ -266,7 +266,7 @@ export function ImportLedger() {
                 <button
                   className={clsx(
                     styles.avatarListArrow,
-                    styles.avatarListArrowRight
+                    styles.avatarListArrowRight,
                   )}
                   disabled={!isCurPageLoaded}
                   type="button"
@@ -328,7 +328,7 @@ export function ImportLedger() {
                     publicKey: selectedUser.publicKey,
                     name: '',
                     hasBackup: true,
-                  })
+                  }),
                 );
 
                 navigate('/account-name');

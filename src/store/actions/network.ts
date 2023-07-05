@@ -4,7 +4,7 @@ import Background from '../../ui/services/Background';
 import { ACTION } from './constants';
 
 export function setNetwork(
-  network: NetworkName
+  network: NetworkName,
 ): PopupThunkAction<Promise<void>> {
   return async () => {
     await Background.setNetwork(network);

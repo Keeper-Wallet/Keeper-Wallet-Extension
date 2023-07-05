@@ -77,7 +77,7 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
         matcherBaseUrl: customMatcher[network.name] || network.matcherBaseUrl,
         nodeBaseUrl: customNodes[network.name] || network.nodeBaseUrl,
       },
-    ])
+    ]),
   );
 
   const getNetworkTranslationKey = (network: NetworkName) =>
@@ -157,7 +157,7 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                         <i
                           className={clsx(
                             styles.networkIconActive,
-                            'networkIconActive'
+                            'networkIconActive',
                           )}
                         />
 
@@ -189,14 +189,14 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                     setCustomCode({
                       code: networkCode,
                       network: NetworkName.Custom,
-                    })
+                    }),
                   );
 
                   dispatch(
                     setCustomNode({
                       network: NetworkName.Custom,
                       node,
-                    })
+                    }),
                   );
 
                   if (matcher) {
@@ -204,7 +204,7 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                       setCustomMatcher({
                         matcher,
                         network: NetworkName.Custom,
-                      })
+                      }),
                     );
                   }
 

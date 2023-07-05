@@ -64,7 +64,7 @@ export function ReissueCard({
             {t(
               tx.reissuable
                 ? 'transactions.reissuable'
-                : 'transactions.noReissuable'
+                : 'transactions.noReissuable',
             )}
           </div>
         </div>

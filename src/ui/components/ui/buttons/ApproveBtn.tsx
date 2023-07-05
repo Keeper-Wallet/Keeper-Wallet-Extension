@@ -18,7 +18,7 @@ export class ApproveBtn extends PureComponent<Props, State> {
 
   static getDerivedStateFromProps(
     { autoClickProtection }: Props,
-    { timerEnd }: State
+    { timerEnd }: State,
   ): State {
     return {
       pending: autoClickProtection && (!timerEnd || timerEnd > Date.now()),

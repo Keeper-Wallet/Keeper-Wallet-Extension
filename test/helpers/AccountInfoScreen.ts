@@ -1,7 +1,7 @@
 import { type ChainablePromiseElement } from 'webdriverio';
 
 const PasswordModal = (
-  wrapped: ChainablePromiseElement<WebdriverIO.Element>
+  wrapped: ChainablePromiseElement<WebdriverIO.Element>,
 ) => ({
   get passwordInput() {
     return wrapped.$("[class*='password@Input']");
@@ -27,19 +27,19 @@ export const AccountInfoScreen = {
 
   get publicKey() {
     return this.root.$(
-      "#accountInfoPublicKey [class*='copyTextOverflow@copy']"
+      "#accountInfoPublicKey [class*='copyTextOverflow@copy']",
     );
   },
 
   get privateKey() {
     return this.root.$(
-      "#accountInfoPublicKey [class*='copyTextOverflow@copy']"
+      "#accountInfoPublicKey [class*='copyTextOverflow@copy']",
     );
   },
 
   get backupPhrase() {
     return this.root.$(
-      "#accountInfoBackupPhrase [class*='copyTextOverflow@copy']"
+      "#accountInfoBackupPhrase [class*='copyTextOverflow@copy']",
     );
   },
 

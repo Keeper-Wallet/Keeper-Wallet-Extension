@@ -1,7 +1,7 @@
 export const MessagesScreen = {
   get root() {
     return $(
-      "[class*='messageList@'], [class*='root@messagesAndNotifications']"
+      "[class*='messageList@'], [class*='root@messagesAndNotifications']",
     );
   },
 

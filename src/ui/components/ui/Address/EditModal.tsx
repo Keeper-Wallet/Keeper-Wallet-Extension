@@ -36,7 +36,7 @@ export function EditModal({
 
   const nameError = useMemo(() => {
     const isNameExists = Object.values(addresses).find(
-      addressName => addressName === nameValue
+      addressName => addressName === nameValue,
     );
     const isNameChanged = name !== nameValue;
 
@@ -116,7 +116,7 @@ export function EditModal({
                   dispatch(removeAddress({ address }));
                 }
                 dispatch(
-                  setAddress({ address: addressValue, name: nameValue })
+                  setAddress({ address: addressValue, name: nameValue }),
                 );
                 setLoading(true);
               }}

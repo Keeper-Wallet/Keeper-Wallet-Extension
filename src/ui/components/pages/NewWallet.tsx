@@ -29,7 +29,7 @@ interface StateProps {
 
 interface DispatchProps {
   newAccountSelect: (
-    newAccount: NewWalletItem & { name: string; hasBackup: boolean }
+    newAccount: NewWalletItem & { name: string; hasBackup: boolean },
   ) => void;
 }
 
@@ -72,7 +72,7 @@ class NewWalletComponent extends Component<Props, State> {
 
     const selected =
       generatedWalletItems.find(
-        item => account && item.address === account.address
+        item => account && item.address === account.address,
       ) || generatedWalletItems[0];
 
     this._onSelect(selected);
@@ -151,5 +151,5 @@ function mapStateToProps(store: PopupState): StateProps {
 
 export const NewWallet = connect(
   mapStateToProps,
-  actions
+  actions,
 )(withTranslation()(withNavigate(NewWalletComponent)));

@@ -30,7 +30,7 @@ export function AccountInfo() {
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
 
   const showChangeNameNotification = usePopupSelector(
-    state => state.localState.notifications.changeName
+    state => state.localState.notifications.changeName,
   );
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export function AccountInfo() {
   }, [dispatch, showChangeNameNotification]);
 
   const account = usePopupSelector(state =>
-    state.accounts.find(x => x.address === params.address)
+    state.accounts.find(x => x.address === params.address),
   );
 
   const copiedTimerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -146,7 +146,7 @@ export function AccountInfo() {
         Background.getAccountEncodedSeed(
           account.address,
           currentNetwork,
-          password
+          password,
         ).then(encodedSeed => `base58:${encodedSeed}`),
       retry: () => getEncodedSeed(copyCallback),
     });
@@ -160,7 +160,7 @@ export function AccountInfo() {
         Background.getAccountPrivateKey(
           account.address,
           currentNetwork,
-          password
+          password,
         ),
       retry: () => getPrivateKey(copyCallback),
     });

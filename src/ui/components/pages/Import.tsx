@@ -39,7 +39,7 @@ export function ImportPopup() {
         onClick={() =>
           background.showTab(
             `${window.location.origin}/accounts.html`,
-            'accounts'
+            'accounts',
           )
         }
       >

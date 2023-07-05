@@ -24,7 +24,7 @@ export function UsdPricesProvider({ children }: { children: React.ReactNode }) {
 
   const assetIdsToFetch = useMemo(
     () => Array.from(new Set(observedAssetIds.flat())),
-    [observedAssetIds]
+    [observedAssetIds],
   );
 
   const usdPrices = usePopupSelector(state => state.usdPrices);
@@ -82,7 +82,7 @@ export function UsdPricesProvider({ children }: { children: React.ReactNode }) {
 
 export function useUsdPrices(assetIds: string[]) {
   const isMainnet = usePopupSelector(
-    state => state.currentNetwork === NetworkName.Mainnet
+    state => state.currentNetwork === NetworkName.Mainnet,
   );
 
   const observe = useContext(UsdPricesContext);
@@ -102,7 +102,7 @@ export function useUsdPrices(assetIds: string[]) {
     const assetIdsSet = new Set(assetIds);
 
     return Object.fromEntries(
-      Object.entries(usdPrices).filter(([id]) => assetIdsSet.has(id))
+      Object.entries(usdPrices).filter(([id]) => assetIdsSet.has(id)),
     );
   }, [assetIds, usdPrices]);
 }

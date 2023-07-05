@@ -68,7 +68,7 @@ const PLACEHOLDERS = [...Array(4).keys()].map<[string, BalanceAssets[string]]>(
       sponsorBalance: '0',
       minSponsoredAssetFee: '0',
     },
-  ]
+  ],
 );
 
 interface Props {
@@ -81,17 +81,17 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
   const { t } = useTranslation();
   const assets = usePopupSelector(state => state.assets);
   const showSuspiciousAssets = usePopupSelector(
-    state => state.uiState?.showSuspiciousAssets
+    state => state.uiState?.showSuspiciousAssets,
   );
   const address = usePopupSelector(state => state.selectedAccount?.address);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const myAssets = usePopupSelector(state => state.balances[address!]?.assets);
   const swappableAssetIdsByVendor = usePopupSelector(
-    state => state.swappableAssetIdsByVendor
+    state => state.swappableAssetIdsByVendor,
   );
   const swappableAssetIdsSet = useMemo(
     () => new Set(Object.values(swappableAssetIdsByVendor).flat()),
-    [swappableAssetIdsByVendor]
+    [swappableAssetIdsByVendor],
   );
 
   const [filters, setFilters] = useUiState('assetFilters');
@@ -116,10 +116,10 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
             (!onlyMy || assets[assetId]?.issuer === address) &&
             (!term ||
               assetId === term ||
-              icontains(assets[assetId]?.displayName, term))
+              icontains(assets[assetId]?.displayName, term)),
         ),
         assets,
-        showSuspiciousAssets
+        showSuspiciousAssets,
       )
     : PLACEHOLDERS;
 
@@ -222,9 +222,9 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
                     onSwapClick,
                   }}
                   itemKey={(index, itemData) =>
-                    `${itemData.assetEntries[index][0]}:${
-                      assets[itemData.assetEntries[index][0]]?.isFavorite
-                    }`
+                    `${itemData.assetEntries[index][0]}:${assets[
+                      itemData.assetEntries[index][0]
+                    ]?.isFavorite}`
                   }
                 >
                   {Row}

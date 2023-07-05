@@ -155,7 +155,7 @@ describe('Account creation', function () {
 
             await waitForExpect(async () => {
               expect(await ConfirmBackupScreen.errorMessage.getText()).toBe(
-                'Wrong order, try again'
+                'Wrong order, try again',
               );
             });
 
@@ -166,7 +166,7 @@ describe('Account creation', function () {
           it('The "Clear" button resets a completely filled phrase', async () => {
             await ConfirmBackupScreen.clearLink.click();
             expect(await ConfirmBackupScreen.errorMessage.isDisplayed()).toBe(
-              false
+              false,
             );
 
             const suggestedPills = ConfirmBackupScreen.suggestedPillsContainer;
@@ -175,7 +175,7 @@ describe('Account creation', function () {
             await waitForExpect(async () => {
               expect(await selectedPills.getAllPills()).toHaveLength(0);
               expect(await suggestedPills.getAllPills()).toHaveLength(
-                PILLS_COUNT
+                PILLS_COUNT,
               );
             });
           });
@@ -200,14 +200,14 @@ describe('Account creation', function () {
 
               await waitForExpect(async () => {
                 expect(await selectedPillsContainer.getAllPills()).toHaveLength(
-                  prevPillsCount - 1
+                  prevPillsCount - 1,
                 );
               });
             }
 
             expect(await selectedPillsContainer.getAllPills()).toHaveLength(0);
             expect(await suggestedPillsContainer.getAllPills()).toHaveLength(
-              PILLS_COUNT
+              PILLS_COUNT,
             );
           });
 
@@ -230,10 +230,10 @@ describe('Account creation', function () {
             await browser.keys('Tab');
 
             expect(await NewWalletNameScreen.error.getText()).toBe(
-              'Name already exist'
+              'Name already exist',
             );
             expect(await NewWalletNameScreen.continueButton.isEnabled()).toBe(
-              false
+              false,
             );
           });
 
@@ -245,7 +245,7 @@ describe('Account creation', function () {
 
             expect(await NewWalletNameScreen.error.getText()).toBe('');
             expect(await NewWalletNameScreen.continueButton.isEnabled()).toBe(
-              true
+              true,
             );
           });
 
@@ -310,7 +310,7 @@ describe('Account creation', function () {
             await ImportViaSeedScreen.importAccountButton.click();
 
             await expect(ImportViaSeedScreen.errorMessage).toHaveText(
-              'Seed cannot be shorter than 24 characters'
+              'Seed cannot be shorter than 24 characters',
             );
           });
 
@@ -318,17 +318,17 @@ describe('Account creation', function () {
             await ImportViaSeedScreen.seedInput.setValue(ACCOUNTS.FIRST.SEED);
             await waitForExpect(async () => {
               await expect(
-                ImportViaSeedScreen.switchAccountButton
+                ImportViaSeedScreen.switchAccountButton,
               ).toBeDisplayed();
             });
             await expect(ImportViaSeedScreen.errorMessage).toHaveTextContaining(
-              'Account already known as'
+              'Account already known as',
             );
           });
 
           it('Any change in the seed changes the address', async () => {
             await ImportViaSeedScreen.seedInput.setValue(
-              ACCOUNTS.MORE_24_CHARS.SEED
+              ACCOUNTS.MORE_24_CHARS.SEED,
             );
 
             let prevAddress = await ImportViaSeedScreen.address.getText();
@@ -336,14 +336,14 @@ describe('Account creation', function () {
             // insert char
             await ImportViaSeedScreen.seedInput.addValue('W');
             await expect(ImportViaSeedScreen.address).not.toHaveText(
-              prevAddress
+              prevAddress,
             );
             prevAddress = await ImportViaSeedScreen.address.getText();
 
             // delete inserted char
             await browser.keys('Backspace');
             await expect(ImportViaSeedScreen.address).not.toHaveText(
-              prevAddress
+              prevAddress,
             );
           });
 
@@ -351,7 +351,7 @@ describe('Account creation', function () {
 
           it('Correct seed entered', async () => {
             await ImportViaSeedScreen.seedInput.setValue(
-              ACCOUNTS.MORE_24_CHARS.SEED
+              ACCOUNTS.MORE_24_CHARS.SEED,
             );
             await ImportViaSeedScreen.importAccountButton.click();
           });
@@ -363,14 +363,14 @@ describe('Account creation', function () {
             await browser.keys('Tab');
 
             await expect(NewWalletNameScreen.error).toHaveText(
-              'Name already exist'
+              'Name already exist',
             );
             await expect(NewWalletNameScreen.continueButton).toBeDisabled();
           });
 
           it('Additional account successfully imported while entered correct account name', async () => {
             await NewWalletNameScreen.nameInput.setValue(
-              ACCOUNTS.MORE_24_CHARS.NAME
+              ACCOUNTS.MORE_24_CHARS.NAME,
             );
             await browser.keys('Tab');
 
@@ -385,7 +385,7 @@ describe('Account creation', function () {
             await browser.openKeeperPopup();
 
             await expect(HomeScreen.activeAccountName).toHaveText(
-              ACCOUNTS.MORE_24_CHARS.NAME
+              ACCOUNTS.MORE_24_CHARS.NAME,
             );
             7;
           });
@@ -400,7 +400,7 @@ describe('Account creation', function () {
   describe('Import via keystore file', () => {
     describe('validation', () => {
       it(
-        'keeps "Continue" button disabled until both keystore file is selected and password is entered'
+        'keeps "Continue" button disabled until both keystore file is selected and password is entered',
       );
     });
 
@@ -424,19 +424,19 @@ describe('Account creation', function () {
                 accountCards.map(async account => ({
                   name: await account.name.getText(),
                   address: await account.getAddress(),
-                }))
+                })),
               ),
             };
-          })
+          }),
         );
       }
 
       it('can decrypt the correct keeper keystore file', async () => {
         await ImportKeystoreFileScreen.fileInput.addValue(
-          '/app/test/fixtures/keystore-keeper.json'
+          '/app/test/fixtures/keystore-keeper.json',
         );
         await ImportKeystoreFileScreen.passwordInput.setValue(
-          'xHZ7Zaxu2wuncWC'
+          'xHZ7Zaxu2wuncWC',
         );
         await ImportKeystoreFileScreen.continueButton.click();
 
@@ -465,10 +465,10 @@ describe('Account creation', function () {
 
       it('can decrypt the correct exchange keystore file', async () => {
         await ImportKeystoreFileScreen.fileInput.addValue(
-          '/app/test/fixtures/keystore-exchange.json'
+          '/app/test/fixtures/keystore-exchange.json',
         );
         await ImportKeystoreFileScreen.passwordInput.setValue(
-          'N72r78ByXBfNBnN#'
+          'N72r78ByXBfNBnN#',
         );
         await ImportKeystoreFileScreen.continueButton.click();
 
@@ -495,7 +495,7 @@ describe('Account creation', function () {
             name: await account.name.getText(),
             address: await account.getAddress(),
             selected: await account.isSelected(),
-          }))
+          })),
         );
       }
 
@@ -503,7 +503,7 @@ describe('Account creation', function () {
         const activeAccountName = await HomeScreen.activeAccountName.getText();
         await HomeScreen.otherAccountsButton.click();
         const otherAccountNames = await Promise.all(
-          (await OtherAccountsScreen.accounts).map(it => it.name.getText())
+          (await OtherAccountsScreen.accounts).map(it => it.name.getText()),
         );
         await TopMenu.backButton.click();
         return [activeAccountName, ...otherAccountNames];
@@ -513,10 +513,10 @@ describe('Account creation', function () {
         it('allows to select and import all accounts', async () => {
           await ImportFormScreen.importByKeystoreFileButton.click();
           await ImportKeystoreFileScreen.fileInput.addValue(
-            '/app/test/fixtures/keystore-keeper.json'
+            '/app/test/fixtures/keystore-keeper.json',
           );
           await ImportKeystoreFileScreen.passwordInput.setValue(
-            'xHZ7Zaxu2wuncWC'
+            'xHZ7Zaxu2wuncWC',
           );
           await ImportKeystoreFileScreen.continueButton.click();
 
@@ -545,12 +545,12 @@ describe('Account creation', function () {
 
           (
             await ChooseAccountsForm.getAccountByAddress(
-              '3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi'
+              '3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi',
             )
           ).checkbox.click();
           (
             await ChooseAccountsForm.getAccountByAddress(
-              '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r'
+              '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
             )
           ).checkbox.click();
 
@@ -598,10 +598,10 @@ describe('Account creation', function () {
           await browser.switchToWindow(tabAccounts);
           await ImportFormScreen.importByKeystoreFileButton.click();
           await ImportKeystoreFileScreen.fileInput.addValue(
-            '/app/test/fixtures/keystore-keeper.json'
+            '/app/test/fixtures/keystore-keeper.json',
           );
           await ImportKeystoreFileScreen.passwordInput.setValue(
-            'xHZ7Zaxu2wuncWC'
+            'xHZ7Zaxu2wuncWC',
           );
           await ImportKeystoreFileScreen.continueButton.click();
 
@@ -657,10 +657,10 @@ describe('Account creation', function () {
           await browser.switchToWindow(tabAccounts);
           await ImportFormScreen.importByKeystoreFileButton.click();
           await ImportKeystoreFileScreen.fileInput.addValue(
-            '/app/test/fixtures/keystore-keeper.json'
+            '/app/test/fixtures/keystore-keeper.json',
           );
           await ImportKeystoreFileScreen.passwordInput.setValue(
-            'xHZ7Zaxu2wuncWC'
+            'xHZ7Zaxu2wuncWC',
           );
           await ImportKeystoreFileScreen.continueButton.click();
 
@@ -702,15 +702,15 @@ describe('Account creation', function () {
         it('adds suffix to the name', async () => {
           await AccountsHome.importAccount(
             'test2',
-            'this is the seed for the test account'
+            'this is the seed for the test account',
           );
 
           await ImportFormScreen.importByKeystoreFileButton.click();
           await ImportKeystoreFileScreen.fileInput.addValue(
-            '/app/test/fixtures/keystore-keeper.json'
+            '/app/test/fixtures/keystore-keeper.json',
           );
           await ImportKeystoreFileScreen.passwordInput.setValue(
-            'xHZ7Zaxu2wuncWC'
+            'xHZ7Zaxu2wuncWC',
           );
           await ImportKeystoreFileScreen.continueButton.click();
 
@@ -735,20 +735,20 @@ describe('Account creation', function () {
         it('increments the number in suffix if it already exists', async () => {
           await AccountsHome.importAccount(
             'test2',
-            'this is a seed for the test account'
+            'this is a seed for the test account',
           );
 
           await AccountsHome.importAccount(
             'test2 (1)',
-            'this is an another seed for the test account'
+            'this is an another seed for the test account',
           );
 
           await ImportFormScreen.importByKeystoreFileButton.click();
           await ImportKeystoreFileScreen.fileInput.addValue(
-            '/app/test/fixtures/keystore-keeper.json'
+            '/app/test/fixtures/keystore-keeper.json',
           );
           await ImportKeystoreFileScreen.passwordInput.setValue(
-            'xHZ7Zaxu2wuncWC'
+            'xHZ7Zaxu2wuncWC',
           );
           await ImportKeystoreFileScreen.continueButton.click();
 

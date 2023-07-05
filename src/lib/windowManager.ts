@@ -13,8 +13,8 @@ export class WindowManager {
       windowTypes: ['popup'],
     });
 
-    const win = windows.find(w =>
-      w.tabs?.some(tab => tab.url?.startsWith(NOTIFICATION_WINDOW_URL))
+    const win = windows.find(
+      w => w.tabs?.some(tab => tab.url?.startsWith(NOTIFICATION_WINDOW_URL)),
     );
 
     return win?.id;

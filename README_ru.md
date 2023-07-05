@@ -151,7 +151,7 @@ KeeperWallet.encryptMessage(`текст для шифрования`, `публ�
 KeeperWallet.encryptMessage(
   'My message',
   '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc',
-  'для меня'
+  'для меня',
 ).then(encryptedMessage => {
   console.log(encryptedMessage);
 });
@@ -172,7 +172,7 @@ KeeperWallet.encryptMessage(
 KeeperWallet.decryptMessage(
   `зашифрованный текст`,
   `публичный ключ в кодировке base58`,
-  `префикс: строка, уникальная для каждого приложения`
+  `префикс: строка, уникальная для каждого приложения`,
 );
 ```
 
@@ -181,7 +181,7 @@ KeeperWallet.decryptMessage(
 ```js
 KeeperWallet.decryptMessage(
   '**encrypted msg**',
-  '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc'
+  '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc',
 ).then(message => {
   console.log(message);
 });
@@ -340,7 +340,7 @@ const authValidate = (
   data: { host: string; data: string },
   signature: string,
   publicKey: string,
-  chainId: string | number
+  chainId: string | number,
 ): boolean => {
   const chain =
     typeof chainId === 'string' ? chainId : String.fromCharCode(chainId);

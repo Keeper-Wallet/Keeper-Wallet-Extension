@@ -73,7 +73,7 @@ class PermissionsSettingsComponent extends PureComponent<Props, State> {
   showSettingsHandler = (origin: string) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const [, permissions] = Object.entries(this.props.origins!).find(
-      ([name]) => name === origin
+      ([name]) => name === origin,
     )!;
     const autoSign =
       (permissions || []).find(({ type }) => type === 'allowAutoSign') ||
@@ -104,7 +104,7 @@ class PermissionsSettingsComponent extends PureComponent<Props, State> {
   saveSettingsHandler = (
     params: Partial<TAutoAuth>,
     origin: string,
-    canShowNotifications: boolean | null
+    canShowNotifications: boolean | null,
   ) => {
     this.props.setAutoOrigin({ origin, params });
     this.props.setShowNotification({ origin, canUse: canShowNotifications });
@@ -205,7 +205,7 @@ const actions = {
 
 export const PermissionsSettings = connect(
   mapStateToProps,
-  actions
+  actions,
 )(withTranslation()(PermissionsSettingsComponent));
 
 export type TTabTypes = 'customList' | 'whiteList';

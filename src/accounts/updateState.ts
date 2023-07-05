@@ -70,7 +70,7 @@ export function createUpdateState(store: AccountsStore) {
 
     const selectedAccount = getParam(
       stateChanges.selectedAccount,
-      {} as unknown as undefined
+      {} as unknown as undefined,
     );
     if (
       selectedAccount &&

@@ -29,7 +29,7 @@ export function CodeConfirmation({
         return false;
       }
     },
-    [confirmCode]
+    [confirmCode],
   );
 
   const destination = codeDelivery?.destination;

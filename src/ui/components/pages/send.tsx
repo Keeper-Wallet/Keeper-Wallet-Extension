@@ -22,13 +22,14 @@ export function Send() {
 
   const { t } = useTranslation();
   const dispatch = usePopupDispatch();
-  const chainId = usePopupSelector(state =>
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state.selectedAccount?.networkCode!.charCodeAt(0)
+  const chainId = usePopupSelector(
+    state =>
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      state.selectedAccount?.networkCode!.charCodeAt(0),
   );
   const accountBalance = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    state => state.balances[state.selectedAccount?.address!]
+    state => state.balances[state.selectedAccount?.address!],
   );
   const assetBalances = accountBalance?.assets;
   const assets = usePopupSelector(state => state.assets);
@@ -44,7 +45,7 @@ export function Send() {
 
   const userAddress = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    state => state.selectedAccount?.address!
+    state => state.selectedAccount?.address!,
   );
 
   const nftInfo = usePopupSelector(state => asset && state.nfts?.[asset.id]);
@@ -78,7 +79,7 @@ export function Send() {
     ? Money.fromCoins(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         !isNft ? assetBalances![asset.id]?.balance ?? 0 : 1,
-        new Asset(asset)
+        new Asset(asset),
       )
     : null;
 
@@ -184,7 +185,7 @@ export function Send() {
                   const balance = new Money(
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     new BigNumber(assetBalances![asset.id]?.balance ?? 0),
-                    new Asset(asset)
+                    new Asset(asset),
                   );
 
                   return (
@@ -196,11 +197,11 @@ export function Send() {
                           .filter(
                             // eslint-disable-next-line @typescript-eslint/no-shadow
                             (asset): asset is NonNullable<typeof asset> =>
-                              asset != null
+                              asset != null,
                           )
                           .filter(
                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-shadow
-                            asset => assetBalances![asset.id] != null
+                            asset => assetBalances![asset.id] != null,
                           )}
                         balance={balance}
                         label={t('send.amountInputLabel')}

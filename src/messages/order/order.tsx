@@ -26,13 +26,13 @@ export function OrderCard({
   const { t } = useTranslation();
 
   const amountAsset = usePopupSelector(
-    state => state.assets[message.data.assetPair.amountAsset ?? 'WAVES']
+    state => state.assets[message.data.assetPair.amountAsset ?? 'WAVES'],
   );
   invariant(amountAsset);
   const amount = new Money(message.data.amount, new Asset(amountAsset));
 
   const priceAsset = usePopupSelector(
-    state => state.assets[message.data.assetPair.priceAsset ?? 'WAVES']
+    state => state.assets[message.data.assetPair.priceAsset ?? 'WAVES'],
   );
   invariant(priceAsset);
 
@@ -45,10 +45,10 @@ export function OrderCard({
         new BigNumber(10).pow(
           message.data.version < 4 || message.data.priceMode === 'assetDecimals'
             ? amount.asset.precision - priceInput.asset.precision - 8
-            : -8
-        )
+            : -8,
+        ),
       ),
-    priceInput.asset
+    priceInput.asset,
   );
 
   return (
@@ -66,7 +66,7 @@ export function OrderCard({
             {t(
               message.data.orderType === 'sell'
                 ? 'transactions.orderSell'
-                : 'transactions.orderBuy'
+                : 'transactions.orderBuy',
             )}
             <span>
               : <span>{amountAsset.displayName}</span>/
@@ -152,7 +152,7 @@ export function OrderScreen({
   const { t } = useTranslation();
 
   const matcherFeeAsset = usePopupSelector(
-    state => state.assets[message.data.matcherFeeAssetId ?? 'WAVES']
+    state => state.assets[message.data.matcherFeeAssetId ?? 'WAVES'],
   );
   invariant(matcherFeeAsset);
 
@@ -189,7 +189,7 @@ export function OrderScreen({
                   balance={
                     new Money(
                       message.data.matcherFee,
-                      new Asset(matcherFeeAsset)
+                      new Asset(matcherFeeAsset),
                     )
                   }
                   data-testid="createOrderFee"

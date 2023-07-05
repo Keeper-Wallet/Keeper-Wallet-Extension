@@ -71,14 +71,14 @@ export function processAliasOrAddress(recipient: string, chainId: number) {
 export function makeAuthBytes(data: { host: string; data: string }) {
   return Uint8Array.of(
     ...serializePrimitives.LEN(serializePrimitives.SHORT)(
-      serializePrimitives.STRING
+      serializePrimitives.STRING,
     )('WavesWalletAuthentication'),
     ...serializePrimitives.LEN(serializePrimitives.SHORT)(
-      serializePrimitives.STRING
+      serializePrimitives.STRING,
     )(data.host || ''),
     ...serializePrimitives.LEN(serializePrimitives.SHORT)(
-      serializePrimitives.STRING
-    )(data.data || '')
+      serializePrimitives.STRING,
+    )(data.data || ''),
   );
 }
 
@@ -88,7 +88,7 @@ export function makeCancelOrderBytes(data: {
 }) {
   return Uint8Array.of(
     ...base58Decode(data.sender),
-    ...base58Decode(data.orderId)
+    ...base58Decode(data.orderId),
   );
 }
 
@@ -99,7 +99,7 @@ export function makeCustomDataBytes(data: MessageInputCustomData) {
       0xff,
       0xff,
       data.version,
-      ...base64Decode(data.binary.replace(/^base64:/, ''))
+      ...base64Decode(data.binary.replace(/^base64:/, '')),
     );
   } else if (data.version === 2) {
     return Uint8Array.of(
@@ -107,7 +107,7 @@ export function makeCustomDataBytes(data: MessageInputCustomData) {
       0xff,
       0xff,
       data.version,
-      ...binary.serializerFromSchema(schemas.txFields.data[1])(data.data)
+      ...binary.serializerFromSchema(schemas.txFields.data[1])(data.data),
     );
   } else {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -117,7 +117,7 @@ export function makeCustomDataBytes(data: MessageInputCustomData) {
 
 function amountToProto(
   amount: string | number,
-  assetId?: string | null
+  assetId?: string | null,
 ): waves.IAmount {
   return {
     amount: amount === 0 ? null : Long.fromValue(amount),
@@ -136,7 +136,7 @@ function recipientToProto(recipient: string): waves.IRecipient {
 
 export function makeOrderBytes(
   order: Omit<MessageOrder, 'id' | 'proofs'> &
-    Partial<Pick<MessageOrder, 'id' | 'proofs'>>
+    Partial<Pick<MessageOrder, 'id' | 'proofs'>>,
 ) {
   return order.version < 4
     ? binary.serializeOrder(order)
@@ -181,7 +181,7 @@ export function makeRequestBytes(request: {
 }) {
   return Uint8Array.of(
     ...serializePrimitives.BASE58_STRING(request.senderPublicKey),
-    ...serializePrimitives.LONG(request.timestamp)
+    ...serializePrimitives.LONG(request.timestamp),
   );
 }
 
@@ -191,7 +191,7 @@ export function makeWavesAuthBytes(data: {
 }) {
   return Uint8Array.of(
     ...base58Decode(data.publicKey),
-    ...serializePrimitives.LONG(data.timestamp)
+    ...serializePrimitives.LONG(data.timestamp),
   );
 }
 
@@ -216,7 +216,7 @@ export function makeTxBytes(
         MessageTxInvokeScript,
         'id' | 'initialFee' | 'initialFeeAssetId' | 'proofs'
       >
-    | Omit<MessageTxUpdateAssetInfo, 'id' | 'initialFee' | 'proofs'>
+    | Omit<MessageTxUpdateAssetInfo, 'id' | 'initialFee' | 'proofs'>,
 ) {
   const protobufCommon = {
     chainId: tx.chainId,
@@ -393,10 +393,10 @@ export function makeTxBytes(
             invokeScript: {
               dApp: recipientToProto(tx.dApp),
               functionCall: binary.serializerFromSchema(
-                schemas.txFields.functionCall[1]
+                schemas.txFields.functionCall[1],
               )(tx.call),
               payments: tx.payment.map(({ amount, assetId }) =>
-                amountToProto(amount, assetId)
+                amountToProto(amount, assetId),
               ),
             },
           }).finish();
@@ -421,13 +421,13 @@ export function computeTxHash(bytes: Uint8Array) {
   return computeHash(
     bytes[0] === TRANSACTION_TYPE.ALIAS
       ? Uint8Array.of(bytes[0], ...bytes.slice(36, -16))
-      : bytes
+      : bytes,
   );
 }
 
 export function stringifyOrder(
   order: MessageOrder,
-  { pretty }: { pretty?: boolean } = {}
+  { pretty }: { pretty?: boolean } = {},
 ) {
   const { amount, matcherFee, price, ...otherProps } = order;
 
@@ -437,18 +437,18 @@ export function stringifyOrder(
       price: new BigNumber(price),
       matcherFee: new BigNumber(matcherFee),
       sender: base58Encode(
-        createAddress(base58Decode(order.senderPublicKey), order.chainId)
+        createAddress(base58Decode(order.senderPublicKey), order.chainId),
       ),
       ...otherProps,
     },
     undefined,
-    pretty ? 2 : undefined
+    pretty ? 2 : undefined,
   );
 }
 
 function prepareTransactionForJson(tx: MessageTx) {
   const sender = base58Encode(
-    createAddress(base58Decode(tx.senderPublicKey), tx.chainId)
+    createAddress(base58Decode(tx.senderPublicKey), tx.chainId),
   );
 
   switch (tx.type) {
@@ -531,7 +531,7 @@ function prepareTransactionForJson(tx: MessageTx) {
         data: data.map(entry =>
           entry.type === 'integer'
             ? { ...entry, value: new BigNumber(entry.value) }
-            : entry
+            : entry,
         ),
         fee: new BigNumber(fee),
         ...otherProps,
@@ -558,21 +558,23 @@ function prepareTransactionForJson(tx: MessageTx) {
         payment: payment.map(p => ({ ...p, amount: new BigNumber(p.amount) })),
         call: call && {
           ...call,
-          args: call.args.map(function convertArgToBigNumber(
-            arg
-          ): InvokeScriptCallArgument<BigNumber> {
-            return arg.type === 'integer'
-              ? { type: arg.type, value: new BigNumber(arg.value) }
-              : arg.type === 'list'
-              ? {
-                  type: arg.type,
-                  value: arg.value.map(
-                    convertArgToBigNumber
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  ) as unknown as any,
-                }
-              : arg;
-          }),
+          args: call.args.map(
+            function convertArgToBigNumber(
+              arg,
+            ): InvokeScriptCallArgument<BigNumber> {
+              return arg.type === 'integer'
+                ? { type: arg.type, value: new BigNumber(arg.value) }
+                : arg.type === 'list'
+                ? {
+                    type: arg.type,
+                    value: arg.value.map(
+                      convertArgToBigNumber,
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    ) as unknown as any,
+                  }
+                : arg;
+            },
+          ),
         },
         fee: new BigNumber(fee),
         ...otherProps,
@@ -596,11 +598,11 @@ function prepareTransactionForJson(tx: MessageTx) {
 
 export function stringifyTransaction(
   tx: MessageTx,
-  { pretty }: { pretty?: boolean } = {}
+  { pretty }: { pretty?: boolean } = {},
 ) {
   return JSONbn.stringify(
     prepareTransactionForJson(tx),
     undefined,
-    pretty ? 2 : undefined
+    pretty ? 2 : undefined,
   );
 }

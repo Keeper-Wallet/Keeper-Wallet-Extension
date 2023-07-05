@@ -58,7 +58,7 @@ Promise.all([
           <AccountsRoot />
         </RootWrapper>
       </Provider>
-    </StrictMode>
+    </StrictMode>,
   );
 
   const updateState = createUpdateState(store);
@@ -70,8 +70,8 @@ Promise.all([
 
     updateState(
       Object.fromEntries(
-        Object.entries(changes).map(([key, v]) => [key, v.newValue])
-      )
+        Object.entries(changes).map(([key, v]) => [key, v.newValue]),
+      ),
     );
   });
 
@@ -104,12 +104,12 @@ Promise.all([
           Background.init(connect());
         });
       }),
-      publish
+      publish,
     );
 
     return createIpcCallProxy<keyof BackgroundUiApi, BackgroundUiApi>(
       request => port?.postMessage(request),
-      fromWebExtensionPort(port)
+      fromWebExtensionPort(port),
     );
   }
 

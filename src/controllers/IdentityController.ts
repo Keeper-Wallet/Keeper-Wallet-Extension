@@ -100,7 +100,7 @@ class IdentityStorage
   constructor(
     initState: IdentityState,
     initSession: StorageSessionState,
-    setSession: (session: Record<string, unknown>) => void
+    setSession: (session: Record<string, unknown>) => void,
   ) {
     super(initState);
 
@@ -176,7 +176,7 @@ class IdentityStorage
 
     const encrypted = await encryptSeed(
       utf8Encode(JSON.stringify(object)),
-      utf8Encode(this.password)
+      utf8Encode(this.password),
     );
 
     return base64Encode(encrypted);
@@ -193,7 +193,7 @@ class IdentityStorage
       const decryptedJson = await decryptSeed(
         base64Decode(encryptedText),
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        utf8Encode(this.password!)
+        utf8Encode(this.password!),
       );
 
       return JSON.parse(utf8Decode(decryptedJson)) as CognitoSessions;
@@ -237,7 +237,7 @@ export class IdentityController implements IdentityApi {
     this.store = new IdentityStorage(
       extensionStorage.getInitState({ cognitoSessions: undefined }),
       extensionStorage.getInitSession(),
-      extensionStorage.setSession.bind(extensionStorage)
+      extensionStorage.setSession.bind(extensionStorage),
     );
     extensionStorage.subscribe(this.store);
 
@@ -362,14 +362,14 @@ export class IdentityController implements IdentityApi {
           selectMFAType(challengeName) {
             resolve({ challengeName });
           },
-        }
+        },
       );
     });
   }
 
   async confirmSignIn(
     code: string,
-    mfaType: MFAType = 'SOFTWARE_TOKEN_MFA'
+    mfaType: MFAType = 'SOFTWARE_TOKEN_MFA',
   ): Promise<void> {
     const { publicKey } = await this.getKeyPair();
 
@@ -407,7 +407,7 @@ export class IdentityController implements IdentityApi {
         mfaType,
         {
           'custom:encryptionKey': base58Encode(publicKey),
-        }
+        },
       );
     });
   }
@@ -532,10 +532,10 @@ export class IdentityController implements IdentityApi {
 
               resolve(data);
             },
-            meta
+            meta,
           );
         },
-        meta
+        meta,
       );
     });
   }

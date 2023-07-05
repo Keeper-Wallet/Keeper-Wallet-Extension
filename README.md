@@ -174,7 +174,7 @@ Example:
 KeeperWallet.encryptMessage(
   'My message',
   '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc',
-  'my app'
+  'my app',
 ).then(encryptedMessage => {
   console.log(encryptedMessage);
 });
@@ -200,7 +200,7 @@ Example:
 KeeperWallet.decryptMessage(
   '**encrypted msg**',
   '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc',
-  'my app'
+  'my app',
 ).then(message => {
   console.log(message);
 });
@@ -329,7 +329,7 @@ const authValidate = (
   data: { host: string; data: string },
   signature: string,
   publicKey: string,
-  chainId: string | number
+  chainId: string | number,
 ): boolean => {
   const chain =
     typeof chainId === 'string' ? chainId : String.fromCharCode(chainId);

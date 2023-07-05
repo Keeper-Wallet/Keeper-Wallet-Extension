@@ -15,7 +15,7 @@ const _permissionMW =
   (
     type: AppAction['type'],
     method: keyof typeof background,
-    actionCb: (payload: unknown) => AppAction
+    actionCb: (payload: unknown) => AppAction,
   ): AppMiddleware =>
   store =>
   next =>
@@ -40,23 +40,23 @@ const _permissionMW =
 export const allowOrigin = _permissionMW(
   ACTION.PERMISSIONS.ALLOW,
   'allowOrigin',
-  allowOriginDone
+  allowOriginDone,
 );
 
 export const setAutoOrigin = _permissionMW(
   ACTION.PERMISSIONS.SET_AUTO,
   'setAutoSign',
-  autoOriginDone
+  autoOriginDone,
 );
 
 export const disAllowOrigin = _permissionMW(
   ACTION.PERMISSIONS.DISALLOW,
   'disableOrigin',
-  disallowOriginDone
+  disallowOriginDone,
 );
 
 export const deleteOrigin = _permissionMW(
   ACTION.PERMISSIONS.DELETE,
   'deleteOrigin',
-  deleteOriginDone
+  deleteOriginDone,
 );

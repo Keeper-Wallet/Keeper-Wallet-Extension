@@ -57,7 +57,12 @@ body {
   height: 600px;
   overflow: auto;
   background: var(--color-white);
-  font: 300 12px Roboto, Noto-Sans-Th, Noto-Sans-Zh, Noto-Sans-Ja, system-ui,
+  font:
+    300 12px Roboto,
+    Noto-Sans-Th,
+    Noto-Sans-Zh,
+    Noto-Sans-Ja,
+    system-ui,
     sans-serif;
 }
 

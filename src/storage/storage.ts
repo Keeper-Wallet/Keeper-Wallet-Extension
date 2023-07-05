@@ -115,7 +115,7 @@ export class ExtensionStorage {
   }
 
   getInitState<K extends keyof StorageLocalState>(
-    defaults: Pick<StorageLocalState, K> | StorageLocalState
+    defaults: Pick<StorageLocalState, K> | StorageLocalState,
   ): Pick<StorageLocalState, K>;
   getInitState<T extends Record<string, unknown>>(defaults: T, forced?: T): T;
   getInitState(defaults: Record<string, unknown>) {
@@ -124,7 +124,7 @@ export class ExtensionStorage {
         Object.prototype.hasOwnProperty.call(this.#localState, key)
           ? { ...acc, [key]: this.#localState[key as keyof StorageLocalState] }
           : acc,
-      {}
+      {},
     );
 
     const initState = { ...defaults, ...defaultsInitState };
@@ -141,7 +141,7 @@ export class ExtensionStorage {
       Object.keys(this.#localState) as Array<keyof StorageLocalState>
     ).reduce<string[]>(
       (acc, key) => (this.#state[key] ? acc : [...acc, key]),
-      []
+      [],
     );
 
     this.removeState(keysToRemove);
@@ -159,16 +159,16 @@ export class ExtensionStorage {
       }),
       subscribe(async updatedState => {
         const currentState = await Browser.storage.local.get(
-          Object.keys(updatedState)
+          Object.keys(updatedState),
         );
 
         const changedState = Object.fromEntries(
           Object.entries(updatedState)
             .map(
               ([key, value]) =>
-                [key, value === undefined ? null : value] as const
+                [key, value === undefined ? null : value] as const,
             )
-            .filter(([key, value]) => !deepEqual(currentState[key], value))
+            .filter(([key, value]) => !deepEqual(currentState[key], value)),
         );
 
         const changedKeys = Object.keys(changedState);
@@ -179,12 +179,12 @@ export class ExtensionStorage {
 
         this.#state = { ...this.#state, ...changedState };
         Browser.storage.local.set(changedState);
-      })
+      }),
     );
   }
 
   getState<K extends keyof StorageLocalState>(
-    keys?: K | K[]
+    keys?: K | K[],
   ): Pick<StorageLocalState, K> {
     if (!keys) {
       return this.#state as Pick<StorageLocalState, K>;
@@ -197,7 +197,7 @@ export class ExtensionStorage {
     return keys.reduce(
       (acc, key) =>
         this.#state[key] ? { ...acc, [key]: this.#state[key] } : acc,
-      {} as Pick<StorageLocalState, K>
+      {} as Pick<StorageLocalState, K>,
     );
   }
 
@@ -227,7 +227,7 @@ export class ExtensionStorage {
 export async function createExtensionStorage() {
   try {
     const { migrationVersion } = await Browser.storage.local.get(
-      'migrationVersion'
+      'migrationVersion',
     );
 
     const version = (migrationVersion as number) || 0;

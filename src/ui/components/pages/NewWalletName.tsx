@@ -22,7 +22,7 @@ export function NewWalletName() {
   const [error, setError] = useState<string | null>('');
 
   const existingAccount = accounts.find(
-    ({ address }) => address === account.address
+    ({ address }) => address === account.address,
   );
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export function NewWalletName() {
       setError(
         t('newAccountName.errorAlreadyExists', {
           name: existingAccount.name,
-        })
+        }),
       );
     }
   }, [accountName, accounts, existingAccount, dispatch, t]);
@@ -76,7 +76,7 @@ export function NewWalletName() {
           };
 
           await dispatch(
-            createAccount(account, accountTypeToWalletType[account.type])
+            createAccount(account, accountTypeToWalletType[account.type]),
           );
 
           navigate('/import-success');

@@ -16,7 +16,7 @@ export function ExportAndImport() {
 
   const addresses = usePopupSelector(state => state.addresses);
   const allNetworksAccounts = usePopupSelector(
-    state => state.allNetworksAccounts
+    state => state.allNetworksAccounts,
   );
 
   const [showExportModal, setShowExportModal] = useState(false);
@@ -45,7 +45,7 @@ export function ExportAndImport() {
         onClick={() => {
           background.showTab(
             `${window.location.origin}/accounts.html#/import-keystore`,
-            'import-keystore'
+            'import-keystore',
           );
           navigate('/', { replace: true });
         }}
@@ -70,7 +70,7 @@ export function ExportAndImport() {
         onClick={() => {
           background.showTab(
             `${window.location.origin}/accounts.html#/import-address-book`,
-            'import-address-book'
+            'import-address-book',
           );
           navigate('/', { replace: true });
         }}
@@ -101,7 +101,7 @@ export function ExportAndImport() {
                 allNetworksAccounts.filter(isExportable),
                 addresses,
                 password,
-                encrypted
+                encrypted,
               );
               navigate('/settings', { replace: true });
             }}

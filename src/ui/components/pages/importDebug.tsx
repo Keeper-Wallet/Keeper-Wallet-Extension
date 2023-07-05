@@ -77,8 +77,8 @@ export function ImportDebug() {
                 address,
                 name,
               },
-              WalletTypes.Debug
-            )
+              WalletTypes.Debug,
+            ),
           );
 
           navigate('/import-success');
