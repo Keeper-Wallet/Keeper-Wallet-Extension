@@ -4,6 +4,7 @@
   border-radius: 2px;
   background: #f8f9fb;
   font-family: monospace;
+  overflow-wrap: anywhere;
 }
 
 .root_base58::before,
