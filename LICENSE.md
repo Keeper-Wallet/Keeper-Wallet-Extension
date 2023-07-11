@@ -4,7 +4,7 @@ Copyright DLTech Ltd., a Seychellois company with registration number 216295, 20
 
 This License agreement (‘License’) is covering the access and use of the source code of Keeper Wallet and is entered on and shall be stand effective on the moment of publication.
 
-Keeper Wallet browser extension (‘Software application’) is a software application extending the functionality of web browsers in order to enable users to make easy interactions with third party websites and applications accepting the Waves blockchain compatible crypto-payments with User wallets, and websites and applications to interact with the Waves blockchain through the Keeper Wallet API without entering private SEED on third-parties web resources and applications.
+Keeper Wallet browser extension (‘Software application’) is a software application extending the functionality of web browsers in order to enable users to make easy interactions with third party websites and applications accepting the Waves blockchain compatible crypto-payments with User accounts, and websites and applications to interact with the Waves blockchain through the Keeper Wallet API without entering a secret phrase (SEED) or private key on third-parties web resources and applications.
 
 Software application shall mean the work of authorship, whether in source code, including but not limited to source code, documentation source, and configuration files or object code, including but not limited to compiled object code, generated documentation, and conversions to other media types, made available under the License, as indicated by a copyright notice that is included in or attached to the work.
 

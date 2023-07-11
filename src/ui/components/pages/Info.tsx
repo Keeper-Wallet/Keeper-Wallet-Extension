@@ -18,74 +18,66 @@ class InfoComponent extends Component<WithTranslation> {
           rel="noopener noreferrer"
           className="link black"
           target="_blank"
-          href="https://forum.waves.tech"
+          href="https://keeper-wallet.app/"
         >
           forum.waves.tech
         </a>
 
         <div className={`${styles.social} margin-main`}>
-          <div className="margin-main basic500">{t('info.joinUs')}</div>
+          <div className="margin-main basic500">{t('info.news')}</div>
           <ul>
             <li className={styles.github}>
               <a
                 rel="noopener noreferrer"
                 target="_blank"
-                href="https://github.com/wavesplatform"
+                href="https://github.com/Keeper-Wallet"
               ></a>
             </li>
             <li className={styles.telegram}>
               <a
                 rel="noopener noreferrer"
                 target="_blank"
-                href="https://t.me/wavesnews"
-              ></a>
-            </li>
-            <li className={styles.discord}>
-              <a
-                rel="noopener noreferrer"
-                target="_blank"
-                href="https://discordapp.com/invite/cnFmDyA"
+                href="https://t.me/KeeperWallet"
               ></a>
             </li>
             <li className={styles.twitter}>
               <a
                 rel="noopener noreferrer"
                 target="_blank"
-                href="https://twitter.com/wavesprotocol"
-              ></a>
-            </li>
-            <li className={styles.reddit}>
-              <a
-                rel="noopener noreferrer"
-                target="_blank"
-                href="https://www.reddit.com/r/Wavesplatform"
+                href="https://twitter.com/keeperwallet"
               ></a>
             </li>
             <li className={styles.medium}>
               <a
                 rel="noopener noreferrer"
                 target="_blank"
-                href="https://medium.com/wavesprotocol"
-              ></a>
-            </li>
-            <li className={styles.youtube}>
-              <a
-                rel="noopener noreferrer"
-                target="_blank"
-                href="https://www.youtube.com/channel/UCYDQN4Fo4rGnOZ22L5plNIw/featured"
+                href="https://medium.com/keeper-wallet"
               ></a>
             </li>
             <li className={styles.vk}>
               <a
                 rel="noopener noreferrer"
                 target="_blank"
-                href="https://vk.com/wavesprotocol"
+                href="https://vk.com/keeperwallet"
               ></a>
             </li>
           </ul>
         </div>
 
-        <div className="basic500">&copy; Waves</div>
+        <div className={`${styles.social} margin-main`}>
+          <div className="margin-main basic500">{t('info.support')}</div>
+          <ul>
+            <li className={styles.telegram}>
+              <a
+                rel="noopener noreferrer"
+                target="_blank"
+                href="https://t.me/KeeperCommunity"
+              ></a>
+            </li>
+          </ul>
+        </div>
+
+        <div className="basic500">&copy; Keeper Wallet</div>
       </div>
     );
   }
