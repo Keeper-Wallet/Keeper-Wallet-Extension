@@ -30,7 +30,6 @@ declare global {
 }
 
 declare module 'webdriverio' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface ChainablePromiseElement<T extends WebdriverIO.Element | undefined>
     extends WebdriverIOQueriesChainable<T> {}
 }
