@@ -12,9 +12,9 @@ en | [ru](./README_ru.md)
 
 Keeper Wallet is a browser extension that enables secure interaction with Waves-enabled web services.
 
-Seed phrases and private keys are encrypted and stored within the extension and cannot be accessed by online dApps and services, making sure that users' funds are always protected from hackers and malicious websites. Completion of a transaction doesn't require entering any sensitive information.
+Secret phrases and private keys are encrypted and stored within the extension and cannot be accessed by online dApps and services, making sure that users' funds are always protected from hackers and malicious websites. Completion of a transaction doesn't require entering any sensitive information.
 
-Keeper Wallet is designed for convenience, so users can sign transactions with just one click. Users can create multiple wallets and switch between them easily. And if a user ever forgets the password to the account, it can be recovered from the seed phrase.
+Keeper Wallet is designed for convenience, so users can sign transactions with just one click. Users can create multiple accounts and switch between them easily. And if a user ever forgets their password, the accounts can be recovered from secret phrases or the backup.
 
 [Waves protocol documentation](https://docs.waves.tech/en/)
 
