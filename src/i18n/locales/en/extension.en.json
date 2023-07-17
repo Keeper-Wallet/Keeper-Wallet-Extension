@@ -377,8 +377,9 @@
     "title": "Import using secret"
   },
   "info": {
-    "joinUs": "Stay updated",
-    "keepUp": "Keeper Wallet is the safest way to interact with third-party web resources with Waves-integrated functionality or DApps. Using Keeper Wallet, you can sign transactions and remain safe from malicious sites."
+    "keepUp": "Keeper Wallet is the safest way to interact with third-party web resources with Waves-integrated functionality or DApps. Using Keeper Wallet, you can sign transactions and remain safe from malicious sites.",
+    "news": "News",
+    "support": "Support"
   },
   "langsSettings": {
     "confirm": "Confirm",

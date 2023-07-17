@@ -24,7 +24,7 @@ class InfoComponent extends Component<WithTranslation> {
         </a>
 
         <div className={`${styles.social} margin-main`}>
-          <div className="margin-main basic500">{t('info.joinUs')}</div>
+          <div className="margin-main basic500">{t('info.news')}</div>
           <ul>
             <li className={styles.github}>
               <a
@@ -59,6 +59,19 @@ class InfoComponent extends Component<WithTranslation> {
                 rel="noopener noreferrer"
                 target="_blank"
                 href="https://vk.com/keeperwallet"
+              ></a>
+            </li>
+          </ul>
+        </div>
+
+        <div className={`${styles.social} margin-main`}>
+          <div className="margin-main basic500">{t('info.support')}</div>
+          <ul>
+            <li className={styles.telegram}>
+              <a
+                rel="noopener noreferrer"
+                target="_blank"
+                href="https://t.me/KeeperCommunity"
               ></a>
             </li>
           </ul>
