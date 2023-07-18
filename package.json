@@ -38,7 +38,7 @@
     "@waves/ts-types": "^1.0.12",
     "amazon-cognito-identity-js": "^6.0.0",
     "buffer": "^4.9.2",
-    "clsx": "^1.2.1",
+    "clsx": "^2.0.0",
     "color-hash": "^2.0.1",
     "copy-to-clipboard": "^3.3.1",
     "debounce": "^1.2.1",
