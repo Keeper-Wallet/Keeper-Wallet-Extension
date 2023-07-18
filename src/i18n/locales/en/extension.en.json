@@ -432,7 +432,7 @@
     "create": "Continue",
     "createPassword": "Create a password",
     "notMatch": "Passwords do not match",
-    "passinfo": "The password you entered will be stored locally. If you change device or lose your password, you will have to repeat the process of adding accounts to Keeper Wallet. Waves does not store your passwords.",
+    "passinfo": "The password you entered will be stored locally. If you change device or lose your password, you will have to repeat the process of adding accounts to Keeper Wallet. Blockchain does not store your passwords.",
     "privacyPolicy": "Privacy Policy",
     "protect": "Protect your account",
     "smallPass": "Password is too short",
