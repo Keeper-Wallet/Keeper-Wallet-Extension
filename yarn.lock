@@ -1492,9 +1492,9 @@
     ethereum-cryptography "^1.1.2"
 
 "@faergeek/eslint-config@^5.0.142":
-  version "5.1.34"
-  resolved "https://registry.yarnpkg.com/@faergeek/eslint-config/-/eslint-config-5.1.34.tgz#a230ab3a58cef9d58e34af4a8ef1b32dfc766d56"
-  integrity sha512-RK97CRnHeqUGqjWFKODw2RlXsdfGIgi73U06K4WwSVEvyoqKMI1slDqh8Q23pucLAnP9IcPUmY+VEW6MJLnzag==
+  version "5.1.35"
+  resolved "https://registry.yarnpkg.com/@faergeek/eslint-config/-/eslint-config-5.1.35.tgz#bb6fbc34085a180ac09a8e9553fe9df0be11baf3"
+  integrity sha512-H6IhDSQ8g0eU/1Y1aD7iOyehnhOOpDguZnKas8vw8wUF4N3ECqyecUHJj/GTbHs9gKKyLmI2fT89EeVHxrP97Q==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^6.0.0"
     "@typescript-eslint/parser" "^6.0.0"
@@ -4317,9 +4317,9 @@ escape-string-regexp@^2.0.0:
   integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
 
 eslint-config-prettier@^8.3.0:
-  version "8.9.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.9.0.tgz#094b6254b2804b0544f7cee535f802b6d29ee10b"
-  integrity sha512-+sbni7NfVXnOpnRadUA8S28AUlsZt9GjgFvABIRL9Hkn8KqNzOp+7Lw4QWtrwn20KzU3wqu1QoOj2m+7rKRqkA==
+  version "8.10.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.10.0.tgz#3a06a662130807e2502fc3ff8b4143d8a0658e11"
+  integrity sha512-SM8AMJdeQqRYT9O9zguiruQZaN7+z+E4eAP9oiLNGKMtomwaB1E9dcgUD6ZAn/eQAb52USbvezbiljfZUhbJcg==
 
 eslint-plugin-jest@^27.0.0:
   version "27.2.3"
