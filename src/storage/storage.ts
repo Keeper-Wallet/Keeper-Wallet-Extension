@@ -226,9 +226,8 @@ export class ExtensionStorage {
 
 export async function createExtensionStorage() {
   try {
-    const { migrationVersion } = await Browser.storage.local.get(
-      'migrationVersion',
-    );
+    const { migrationVersion } =
+      await Browser.storage.local.get('migrationVersion');
 
     const version = (migrationVersion as number) || 0;
 
