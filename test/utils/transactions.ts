@@ -120,7 +120,10 @@ export const MASS_TRANSFER = {
     },
     transfers: [
       { amount: 1, recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD' },
-      { amount: 1, recipient: 'merry' },
+      {
+        amount: { assetId: 'WAVES', tokens: '0.00000001' },
+        recipient: 'merry',
+      },
     ],
     attachment: 'base64:BQbtKNoM',
   },
