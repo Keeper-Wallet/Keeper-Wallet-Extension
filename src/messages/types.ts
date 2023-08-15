@@ -155,7 +155,10 @@ export interface MessageInputTxMassTransfer {
   data: MessageInputTxCommon & {
     attachment?: string | number[];
     totalAmount: { assetId: string | null };
-    transfers: Array<{ amount: string | number; recipient: string }>;
+    transfers: Array<{
+      amount: string | number | MoneyLike;
+      recipient: string;
+    }>;
     version?: 1 | 2;
   };
 }
