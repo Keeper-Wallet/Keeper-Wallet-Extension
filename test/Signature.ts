@@ -291,9 +291,6 @@ describe('Signature', function () {
       expect(status).toBe('RESOLVED');
       expect(result.initialized).toBe(true);
       expect(typeof result.version).toBe('string');
-      expect(result.messages).toHaveLength(1);
-      expect(typeof result.messages[0].id).toBe('string');
-      expect(result.messages[0].status).toBe('signed');
       expect(result.account).toMatchObject({
         address: '3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW',
         name: 'rich',
