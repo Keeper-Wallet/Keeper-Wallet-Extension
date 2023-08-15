@@ -1224,9 +1224,13 @@ export class MessageController extends EventEmitter {
         }
 
         messageInputTx.data.transfers.forEach(({ amount }) => {
-          if (!this.#isNumberLikePositive(amount)) {
-            throw ERRORS.REQUEST_ERROR('amount is not valid', messageInputTx);
+          if (typeof amount === 'object') {
+            if (this.#isMoneyLikeValuePositive(amount)) return;
+          } else {
+            if (this.#isNumberLikePositive(amount)) return;
           }
+
+          throw ERRORS.REQUEST_ERROR('amount is not valid', messageInputTx);
         });
 
         await this.assetInfoController.updateAssets([
@@ -1253,7 +1257,10 @@ export class MessageController extends EventEmitter {
           senderPublicKey,
           timestamp,
           transfers: messageInputTx.data.transfers.map(transfer => ({
-            amount: transfer.amount,
+            amount:
+              typeof transfer.amount === 'object'
+                ? moneyLikeToMoney(transfer.amount, assets).toCoins()
+                : transfer.amount,
             recipient: processAliasOrAddress(transfer.recipient, chainId),
           })),
           type: messageInputTx.type,
