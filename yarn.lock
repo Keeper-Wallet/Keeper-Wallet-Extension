@@ -39,10 +39,11 @@
     tslib "^1.11.1"
 
 "@aws-sdk/types@^3.1.0":
-  version "3.357.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/types/-/types-3.357.0.tgz#8491da71a4291cc2661c26a75089e86532b6a3b5"
-  integrity sha512-/riCRaXg3p71BeWnShrai0y0QTdXcouPSM0Cn1olZbzTf7s71aLEewrc96qFrL70XhY4XvnxMpqQh+r43XIL3g==
+  version "3.391.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/types/-/types-3.391.0.tgz#d49b0130943f0c60fd9bc99b2a47ec9720e2dd07"
+  integrity sha512-QpYVFKMOnzHz/JMj/b8wb18qxiT92U/5r5MmtRz2R3LOH6ooTO96k4ozXCrYr0qNed1PAnOj73rPrrH2wnCJKQ==
   dependencies:
+    "@smithy/types" "^2.2.0"
     tslib "^2.5.0"
 
 "@aws-sdk/util-utf8-browser@^3.0.0":
@@ -1977,6 +1978,13 @@
   dependencies:
     semver "7.5.3"
 
+"@smithy/types@^2.2.0":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@smithy/types/-/types-2.2.2.tgz#bd8691eb92dd07ac33b83e0e1c45f283502b1bf7"
+  integrity sha512-4PS0y1VxDnELGHGgBWlDksB2LJK8TG8lcvlWxIsgR+8vROI7Ms8h1P4FQUx+ftAX2QZv5g1CJCdhdRmQKyonyw==
+  dependencies:
+    tslib "^2.5.0"
+
 "@szmarczak/http-timer@^4.0.5":
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/@szmarczak/http-timer/-/http-timer-4.0.6.tgz#b4a914bb62e7c272d4e5989fe4440f812ab1d807"
@@ -2830,9 +2838,9 @@ ajv@^8.0.0, ajv@^8.0.1, ajv@^8.9.0:
     uri-js "^4.2.2"
 
 amazon-cognito-identity-js@^6.0.0:
-  version "6.3.1"
-  resolved "https://registry.yarnpkg.com/amazon-cognito-identity-js/-/amazon-cognito-identity-js-6.3.1.tgz#d9a4c1a92f4b059330df8ea075f65106d2605409"
-  integrity sha512-PxBdufgS8uZShrcIFAsRjmqNXsh/4fXOWUGQOUhKLHWWK1pcp/y+VeFF48avXIWefM8XwsT3JlN6m9J2eHt4LA==
+  version "6.3.4"
+  resolved "https://registry.yarnpkg.com/amazon-cognito-identity-js/-/amazon-cognito-identity-js-6.3.4.tgz#fd533b8b93d933fe887a4c4f6b4aa7f75303b468"
+  integrity sha512-U4ET7gwpwWZGHrOw9c7kvIE5p6y5niltigFLo/a19TFTet4JneM0y19Co/8V1iGJQVp4lU0mKzhAG7nZmBZHlg==
   dependencies:
     "@aws-crypto/sha256-js" "1.2.2"
     buffer "4.9.2"
@@ -6350,9 +6358,9 @@ node-fetch@2.6.7:
     whatwg-url "^5.0.0"
 
 node-fetch@^2.6.1:
-  version "2.6.11"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.11.tgz#cde7fc71deef3131ef80a738919f999e6edfff25"
-  integrity sha512-4I6pdBY1EthSqDmJkiNk3JIT8cswwR9nfeW/cPdUagJYEQG7R95WRH74wpz7ma8Gh/9dI9FP+OU+0E4FvtA55w==
+  version "2.6.13"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.13.tgz#a20acbbec73c2e09f9007de5cda17104122e0010"
+  integrity sha512-StxNAxh15zr77QvvkmveSQ8uCQ4+v5FkvNTj0OESmiHu+VRi/gXArXtkWMElOsOUNLtUEvI4yS+rdtOHZTwlQA==
   dependencies:
     whatwg-url "^5.0.0"
 
@@ -8490,10 +8498,15 @@ tslib@^1.11.1, tslib@^1.8.1, tslib@^1.9.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.0.3, tslib@^2.3.1, tslib@^2.5.0:
+tslib@^2.0.3:
   version "2.5.3"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.5.3.tgz#24944ba2d990940e6e982c4bea147aba80209913"
   integrity sha512-mSxlJJwl3BMEQCUNnxXBU9jP4JBktcEGhURcPR6VQVlnP0FdDEsIaz0C35dXNGLyRfrATNofF0F5p2KPxQgB+w==
+
+tslib@^2.3.1, tslib@^2.5.0:
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.2.tgz#703ac29425e7b37cd6fd456e92404d46d1f3e4ae"
+  integrity sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==
 
 "tslib@^2.4.1 || ^1.9.3":
   version "2.6.1"
