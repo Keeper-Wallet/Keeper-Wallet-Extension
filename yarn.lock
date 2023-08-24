@@ -39,11 +39,11 @@
     tslib "^1.11.1"
 
 "@aws-sdk/types@^3.1.0":
-  version "3.391.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/types/-/types-3.391.0.tgz#d49b0130943f0c60fd9bc99b2a47ec9720e2dd07"
-  integrity sha512-QpYVFKMOnzHz/JMj/b8wb18qxiT92U/5r5MmtRz2R3LOH6ooTO96k4ozXCrYr0qNed1PAnOj73rPrrH2wnCJKQ==
+  version "3.398.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/types/-/types-3.398.0.tgz#8ce02559536670f9188cddfce32e9dd12b4fe965"
+  integrity sha512-r44fkS+vsEgKCuEuTV+TIk0t0m5ZlXHNjSDYEUvzLStbbfUFiNus/YG4UCa0wOk9R7VuQI67badsvvPeVPCGDQ==
   dependencies:
-    "@smithy/types" "^2.2.0"
+    "@smithy/types" "^2.2.2"
     tslib "^2.5.0"
 
 "@aws-sdk/util-utf8-browser@^3.0.0":
@@ -1978,7 +1978,7 @@
   dependencies:
     semver "7.5.3"
 
-"@smithy/types@^2.2.0":
+"@smithy/types@^2.2.2":
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/@smithy/types/-/types-2.2.2.tgz#bd8691eb92dd07ac33b83e0e1c45f283502b1bf7"
   integrity sha512-4PS0y1VxDnELGHGgBWlDksB2LJK8TG8lcvlWxIsgR+8vROI7Ms8h1P4FQUx+ftAX2QZv5g1CJCdhdRmQKyonyw==
@@ -2838,9 +2838,9 @@ ajv@^8.0.0, ajv@^8.0.1, ajv@^8.9.0:
     uri-js "^4.2.2"
 
 amazon-cognito-identity-js@^6.0.0:
-  version "6.3.4"
-  resolved "https://registry.yarnpkg.com/amazon-cognito-identity-js/-/amazon-cognito-identity-js-6.3.4.tgz#fd533b8b93d933fe887a4c4f6b4aa7f75303b468"
-  integrity sha512-U4ET7gwpwWZGHrOw9c7kvIE5p6y5niltigFLo/a19TFTet4JneM0y19Co/8V1iGJQVp4lU0mKzhAG7nZmBZHlg==
+  version "6.3.5"
+  resolved "https://registry.yarnpkg.com/amazon-cognito-identity-js/-/amazon-cognito-identity-js-6.3.5.tgz#57c8234198976c0196d0ba3887bb99b6dd6d6637"
+  integrity sha512-bRAiw6uQuttufRD0TFcrWvA5hxAgPIwNzM0crmWniPdkmCxRoa68yxRaViZUbwAcGu9YPLCLqM87b1060BRddw==
   dependencies:
     "@aws-crypto/sha256-js" "1.2.2"
     buffer "4.9.2"
@@ -6358,9 +6358,9 @@ node-fetch@2.6.7:
     whatwg-url "^5.0.0"
 
 node-fetch@^2.6.1:
-  version "2.6.13"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.13.tgz#a20acbbec73c2e09f9007de5cda17104122e0010"
-  integrity sha512-StxNAxh15zr77QvvkmveSQ8uCQ4+v5FkvNTj0OESmiHu+VRi/gXArXtkWMElOsOUNLtUEvI4yS+rdtOHZTwlQA==
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.7.0.tgz#d0f0fa6e3e2dc1d27efcd8ad99d550bda94d187d"
+  integrity sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==
   dependencies:
     whatwg-url "^5.0.0"
 
