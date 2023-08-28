@@ -1,4 +1,4 @@
-import 'dotenv-flow/config.js';
+import 'dotenv-flow/config';
 
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
