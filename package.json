@@ -120,7 +120,7 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.4.1",
     "rimraf": "^5.0.0",
-    "size-limit": "^8.1.0",
+    "size-limit": "^9.0.0",
     "source-map-loader": "^4.0.1",
     "stylelint": "^15.0.0",
     "stylelint-order": "^6.0.0",
