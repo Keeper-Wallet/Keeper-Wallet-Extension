@@ -292,6 +292,8 @@ export class AssetInfoController {
   }
 
   async #fetchAssetsBatch(nodeUrl: string, assetIds: string[]) {
+    if (assetIds.length === 0) return [];
+
     const response = await fetch(new URL('assets/details', nodeUrl), {
       method: 'POST',
       headers: {
