@@ -80,12 +80,13 @@ export const mochaHooks = () => ({
 
     let keeperExtensionId: string | undefined;
 
-    const extensionsValue = await $('#div-extensions-value').getText();
-    for (const ext of extensionsValue.split('\n')) {
-      const [id, name] = ext.split(' : ');
-
+    const extensions = await browser
+      .url('chrome://extensions/')
+      .then(() => browser.$$('extensions-item'));
+    for (const ext of extensions) {
+      const name = await ext.$('#name').getText();
       if (name.toLowerCase() === 'keeper wallet') {
-        keeperExtensionId = id;
+        keeperExtensionId = await ext.getAttribute('id');
         break;
       }
     }
