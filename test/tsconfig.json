@@ -2,6 +2,8 @@
   "extends": "../tsconfig.base",
   "include": [".", "../src/inpage.ts", "../types"],
   "compilerOptions": {
-    "types": ["long", "webdriverio/async", "webpack/module"]
+    "types": ["long", "webdriverio/async", "webpack/module"],
+    "lib": ["esnext", "dom"],
+    "skipLibCheck": true
   }
 }

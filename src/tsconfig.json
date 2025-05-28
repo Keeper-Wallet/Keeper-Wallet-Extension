@@ -2,6 +2,8 @@
   "extends": "../tsconfig.base",
   "include": [".", "../types"],
   "compilerOptions": {
-    "types": ["long", "webpack/module"]
+    "types": ["long", "webpack/module"],
+    "lib": ["esnext", "dom"],
+    "skipLibCheck": true
   }
 }
