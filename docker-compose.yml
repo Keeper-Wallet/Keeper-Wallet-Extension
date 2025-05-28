@@ -17,7 +17,7 @@ services:
       interval: 3s
       retries: 10
   chrome:
-    image: selenium/node-chrome
+    image: selenium/node-chrome:112.0
     shm_size: 2gb
     depends_on:
       - hub

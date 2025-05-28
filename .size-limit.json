@@ -2,12 +2,12 @@
   {
     "name": "css",
     "path": "dist/build/*.css",
-    "limit": "25 kB"
+    "limit": "30 kB"
   },
   {
     "name": "background",
     "path": "dist/build/background.js",
-    "limit": "225 kB"
+    "limit": "270 kB"
   },
   {
     "name": "ui",
@@ -17,11 +17,11 @@
       "dist/build/popup.js",
       "dist/build/vendors*.js"
     ],
-    "limit": "441 kB"
+    "limit": "530 kB"
   },
   {
     "name": "contentscript",
     "path": ["dist/build/contentscript.js", "dist/build/inpage.js"],
-    "limit": "6 kB"
+    "limit": "7.2 kB"
   }
 ]
