@@ -2,15 +2,15 @@ import { nanoid } from 'nanoid';
 import invariant from 'tiny-invariant';
 import type Browser from 'webextension-polyfill';
 import {
-    filter,
-    make,
-    map,
-    pipe,
-    type Source,
-    subscribe,
-    take,
-    takeUntil,
-    tap,
+  filter,
+  make,
+  map,
+  pipe,
+  type Source,
+  subscribe,
+  take,
+  takeUntil,
+  tap,
 } from 'wonka';
 
 import { fromWebExtensionEvent } from '../_core/wonka';
@@ -215,7 +215,11 @@ export function createIpcCallProxy<K extends string, T extends ApiObject<K>>(
             if (response.isError) {
               if (response.error instanceof Error) {
                 reject(response.error);
-              } else if (response.error && typeof response.error === 'object' && 'message' in response.error) {
+              } else if (
+                response.error &&
+                typeof response.error === 'object' &&
+                'message' in response.error
+              ) {
                 reject(new Error(String(response.error.message)));
               } else {
                 reject(new Error(String(response.error)));
