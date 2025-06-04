@@ -29,6 +29,7 @@
     "@keeper-wallet/waves-crypto": "^3.0.0",
     "@popperjs/core": "^2.11.0",
     "@sentry/browser": "^7.26.0",
+    "@sentry/react": "^9.23.0",
     "@waves-domains/client": "^0.3.0",
     "@waves/bignumber": "^1.0.0",
     "@waves/data-entities": "^2.0.4",
