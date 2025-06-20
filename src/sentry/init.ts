@@ -1,11 +1,13 @@
-import { Breadcrumbs, init } from '@sentry/browser';
+import { Breadcrumbs, init, replayIntegration } from '@sentry/browser';
 
 export function initSentry({
   shouldIgnoreError,
   source,
+  withReplay = false,
 }: {
   shouldIgnoreError: (message: string) => Promise<boolean>;
   source: 'background' | 'popup' | 'accounts';
+  withReplay?: boolean;
 }) {
   return init({
     dsn: __SENTRY_DSN__,
@@ -16,7 +18,23 @@ export function initSentry({
         source,
       },
     },
-    integrations: [new Breadcrumbs({ dom: false })],
+    integrations: [
+      new Breadcrumbs({ dom: false }),
+      ...(withReplay
+        ? [
+            replayIntegration({
+              maskAllText: true,
+              blockAllMedia: true,
+            }),
+          ]
+        : []),
+    ],
+    // Setting this option to true will send default PII data to Sentry.
+    // For example, automatic IP address collection on events
+    sendDefaultPii: false,
+    replaysSessionSampleRate: withReplay ? 0.01 : 0,
+    replaysOnErrorSampleRate: withReplay ? 1.0 : 0,
+    tracesSampleRate: 0.1,
     beforeSend: async (event, hint) => {
       const message =
         hint &&
@@ -30,6 +48,10 @@ export function initSentry({
 
       if (await shouldIgnoreError(message)) {
         return null;
+      }
+      // remove request data from event
+      if (event.request) {
+        event.request = {};
       }
 
       return event;
