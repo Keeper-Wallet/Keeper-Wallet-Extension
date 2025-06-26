@@ -1,12 +1,12 @@
-import { JSONbn } from '_core/jsonBn';
 import { addBreadcrumb, setTag } from '@sentry/browser';
 import { type TransactionFromNode } from '@waves/ts-types';
+import { JSONbn } from '_core/jsonBn';
 import { type MessageOrder, type MessageTx } from 'messages/types';
 import { stringifyOrder, stringifyTransaction } from 'messages/utils';
-import { NetworkName } from 'networks/types';
+import { NetworkName, NetworkProfile } from 'networks/types';
 import ObservableStore from 'obs-store';
 
-import { NETWORK_CONFIG } from '../constants';
+import { NETWORK_CONFIGS, NETWORKS } from '../networks/config';
 import { type ExtensionStorage } from '../storage/storage';
 
 export class NetworkController {
@@ -16,23 +16,24 @@ export class NetworkController {
     this.store = new ObservableStore(
       extensionStorage.getInitState({
         currentNetwork: NetworkName.Mainnet,
+        currentProfile: NetworkProfile.Mainnet,
         customNodes: {
-          mainnet: null,
-          stagenet: null,
-          testnet: null,
-          custom: null,
+          [NetworkName.Mainnet]: null,
+          [NetworkName.Stagenet]: null,
+          [NetworkName.Testnet]: null,
+          [NetworkName.Custom]: null,
         },
         customMatchers: {
-          mainnet: null,
-          testnet: null,
-          stagenet: null,
-          custom: null,
+          [NetworkName.Mainnet]: null,
+          [NetworkName.Testnet]: null,
+          [NetworkName.Stagenet]: null,
+          [NetworkName.Custom]: null,
         },
         customCodes: {
-          mainnet: null,
-          testnet: null,
-          stagenet: null,
-          custom: null,
+          [NetworkName.Mainnet]: null,
+          [NetworkName.Testnet]: null,
+          [NetworkName.Stagenet]: null,
+          [NetworkName.Custom]: null,
         },
       }),
     );
@@ -42,7 +43,7 @@ export class NetworkController {
     setTag('network', this.store.getState().currentNetwork);
   }
 
-  setNetwork(network: NetworkName) {
+  setNetwork(network: NetworkProfile) {
     setTag('network', network);
 
     addBreadcrumb({
@@ -55,11 +56,64 @@ export class NetworkController {
     this.store.updateState({ currentNetwork: network });
   }
 
-  getNetwork() {
-    return this.store.getState().currentNetwork;
+  setProfile(profile: NetworkProfile) {
+    this.store.updateState({ currentProfile: profile });
   }
 
-  setCustomNode(url: string | null, network = NetworkName.Mainnet) {
+  setNetworkById(networkId: string) {
+    this.store.updateState({ currentNetwork: networkId });
+  }
+
+  getNetwork(): NetworkName {
+    const currentNetworkId = this.store.getState().currentNetwork;
+
+    if (currentNetworkId === 'mainnet' || currentNetworkId === 'testnet') {
+      return currentNetworkId as NetworkName;
+    }
+
+    const networkConfig = Object.values(NETWORK_CONFIGS).find(
+      config =>
+        config &&
+        typeof config === 'object' &&
+        'id' in config &&
+        config.id === currentNetworkId,
+    );
+
+    if (networkConfig && 'networkName' in networkConfig) {
+      return networkConfig.networkName as NetworkName;
+    }
+
+    return NetworkName.Mainnet;
+  }
+
+  getCurrentNetworkProfile(): NetworkProfile {
+    const currentNetworkId = this.store.getState().currentNetwork;
+
+    // Определяем профиль на основе networkId
+    if (
+      currentNetworkId === 'custom' ||
+      currentNetworkId?.includes('testnet') ||
+      currentNetworkId?.includes('stagenet') ||
+      currentNetworkId === 'all-testnet'
+    ) {
+      return NetworkProfile.Testnet;
+    }
+
+    return NetworkProfile.Mainnet;
+  }
+
+  getProfile() {
+    return this.store.getState().currentProfile || NetworkProfile.Mainnet;
+  }
+
+  getCurrentNetworkId(): string {
+    return this.store.getState().currentNetwork as string;
+  }
+
+  setCustomNode(
+    url: string | null,
+    network: NetworkName = NetworkName.Mainnet,
+  ) {
     const { customNodes } = this.store.getState();
     customNodes[network] = url;
     this.store.updateState({ customNodes });
@@ -82,11 +136,12 @@ export class NetworkController {
   }
 
   getNetworkCode(network?: NetworkName) {
-    network = network || this.getNetwork();
-
-    return (
-      this.getCustomCodes()[network] || NETWORK_CONFIG[network].networkCode
-    );
+    const profile = network || this.getNetwork();
+    const networkConfig = NETWORKS.find(n => n.network === 'waves');
+    if (!networkConfig) return '';
+    const profileConfig = networkConfig.params[profile as NetworkName];
+    if (!profileConfig) return '';
+    return profileConfig.chainId;
   }
 
   getCustomNodes() {
@@ -95,10 +150,9 @@ export class NetworkController {
 
   getNode(network?: NetworkName) {
     network = network || this.getNetwork();
-
-    return (
-      this.getCustomNodes()[network] || NETWORK_CONFIG[network].nodeBaseUrl
-    );
+    const networkConfig = NETWORKS.find(n => n.network === 'waves');
+    const profileConfig = networkConfig?.params[network as NetworkName];
+    return this.getCustomNodes()[network] || profileConfig?.rpcUrl || '';
   }
 
   getCustomMatchers() {
@@ -106,10 +160,12 @@ export class NetworkController {
   }
 
   getMatcher() {
-    return (
-      this.getCustomMatchers()[this.getNetwork()] ||
-      NETWORK_CONFIG[this.getNetwork()].matcherBaseUrl
-    );
+    const network = this.getNetwork();
+    const customMatcher = this.getCustomMatchers()[network];
+    if (customMatcher) return customMatcher;
+    const networkConfig = NETWORKS.find(n => n.network === 'waves');
+    const profileConfig = networkConfig?.params[network as NetworkName];
+    return profileConfig?.matcherUrl || '';
   }
 
   async getMatcherPublicKey() {

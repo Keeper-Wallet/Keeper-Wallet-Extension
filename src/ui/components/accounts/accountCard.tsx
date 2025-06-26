@@ -1,7 +1,12 @@
 import { type Money } from '@waves/data-entities';
-import { type PreferencesAccount } from 'preferences/types';
+import { usePopupSelector } from 'popup/store/react';
+import {
+    isMultichainAccount,
+    type PreferencesAccount,
+} from 'preferences/types';
 import { useTranslation } from 'react-i18next';
 
+import { getAccountAvatarAddress } from '../../utils/getActiveAccount';
 import { Avatar } from '../ui/avatar/Avatar';
 import { Balance } from '../ui/balance/Balance';
 import { Tooltip } from '../ui/tooltip';
@@ -16,23 +21,40 @@ interface Props {
 
 export function AccountCard({ account, balance, onClick, onInfoClick }: Props) {
   const { t } = useTranslation();
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  
+  const avatarAddress = getAccountAvatarAddress(account);
+  
   return (
     <div className={styles.root} data-testid="accountCard">
       <div className={styles.accountInfo}>
-        <Avatar size={40} address={account.address} type={account.type} />
+        <Avatar
+          size={40}
+          address={avatarAddress || null}
+          type={account.accountType === 'waves' ? account.type : undefined}
+        />
 
         <div className={styles.accountInfoText}>
           <div className={styles.accountName} data-testid="accountName">
             {account.name}
           </div>
-
-          <Balance
-            balance={balance}
-            isShortFormat={false}
-            showAsset
-            showUsdAmount
-            split
-          />
+          {isMultichainAccount(account) ? (
+            <Balance
+              balance={balance}
+              isShortFormat={false}
+              showAsset
+              showUsdAmount
+              split
+            />
+          ) : (
+            <Balance
+              balance={balance}
+              isShortFormat={false}
+              showAsset
+              showUsdAmount
+              split
+            />
+          )}
         </div>
       </div>
 

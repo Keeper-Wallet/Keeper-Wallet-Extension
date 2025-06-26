@@ -1,15 +1,26 @@
 import type { __BackgroundUiApiDirect } from 'background';
 import type { IdentityUser } from 'controllers/IdentityController';
 import type { AnalyticsEvent } from 'controllers/statistics';
-import type { MessageInputOfType, MessageTx } from 'messages/types';
-import type { MoneyLike } from 'messages/types';
-import type { NetworkName } from 'networks/types';
+import type { MessageInputOfType, MessageTx, MoneyLike } from 'messages/types';
+import type { Network, NetworkProfile } from 'networks/types';
 import type { PreferencesAccount } from 'preferences/types';
 import type { UiState } from 'store/reducers/updateState';
 import type { CreateWalletInput } from 'wallets/types';
 
 import type { IgnoreErrorsContext } from '../../constants';
 import type { StorageLocalState } from '../../storage/storage';
+
+export type BatchAddWavesWalletInput = CreateWalletInput & {
+  network: NetworkProfile;
+  networkCode: string;
+};
+export type BatchAddMultichainWalletInput = Extract<
+  CreateWalletInput,
+  { accountType: 'multichain' }
+>;
+export type BatchAddWalletInput =
+  | BatchAddWavesWalletInput
+  | BatchAddMultichainWalletInput;
 
 export type BackgroundUiApi = __BackgroundUiApiDirect;
 
@@ -90,12 +101,18 @@ class Background {
 
   async setAutoSign(
     origin: string,
-    options: { interval: number; totalAmount: number },
+    options: { interval: number | null; totalAmount: number | null },
   ) {
     await this.initPromise;
     this._connect();
+    const params: { interval?: number; totalAmount?: number } = {};
+    if (options.interval != null) params.interval = options.interval;
+    if (options.totalAmount != null) params.totalAmount = options.totalAmount;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-    return (this.background!.setAutoSign as any)(origin, options);
+    return (this.background!.setAutoSign as any)({
+      origin,
+      params,
+    });
   }
 
   async setNotificationPermissions(options: {
@@ -122,36 +139,46 @@ class Background {
     return this.background!.setUiState(newUiState);
   }
 
-  async selectAccount(address: string, network: NetworkName): Promise<void> {
+  async selectAccount(address: string, network: NetworkProfile): Promise<void> {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.selectAccount(address, network);
   }
 
-  async addWallet(
-    input: CreateWalletInput,
-    network: NetworkName,
-    networkCode: string,
-  ) {
+  async selectAccountById(id: string, accountType: string): Promise<void> {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.background!.addWallet(input, network, networkCode);
+    return this.background!.selectAccountById(id, accountType);
   }
 
-  async batchAddWallets(
-    inputs: Array<
-      CreateWalletInput & { network: NetworkName; networkCode: string }
-    >,
+  async addWallet(
+    input: CreateWalletInput,
+    network?: NetworkProfile,
+    networkCode?: string,
   ) {
+    await this.initPromise;
+    this._connect();
+    if ('accountType' in input && input.accountType === 'multichain') {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return this.background!.addWallet(input);
+    }
+    if (network && networkCode) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return this.background!.addWallet(input, network, networkCode);
+    }
+    throw new Error('network and networkCode are required for waves account');
+  }
+
+  async batchAddWallets(inputs: BatchAddWalletInput[]) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.batchAddWallets(inputs);
   }
 
-  async removeWallet(address: string, network: NetworkName): Promise<void> {
+  async removeWallet(address: string, network?: NetworkProfile): Promise<void> {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -216,38 +243,51 @@ class Background {
 
   async getAccountSeed(
     address: string,
-    network: NetworkName,
+    network: NetworkProfile,
     password: string,
+    chain?: Network,
   ) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.background!.getAccountSeed(address, network, password);
+    return this.background!.getAccountSeed(address, network, password, chain);
   }
 
   async getAccountEncodedSeed(
     address: string,
-    network: NetworkName,
+    network: NetworkProfile,
     password: string,
+    chain?: Network,
   ) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.background!.getAccountEncodedSeed(address, network, password);
+    return this.background!.getAccountEncodedSeed(
+      address,
+      network,
+      password,
+      chain,
+    );
   }
 
   async getAccountPrivateKey(
     address: string,
-    network: NetworkName,
+    network: NetworkProfile,
     password: string,
+    chain?: Network,
   ) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.background!.getAccountPrivateKey(address, network, password);
+    return this.background!.getAccountPrivateKey(
+      address,
+      network,
+      password,
+      chain,
+    );
   }
 
-  async editWalletName(address: string, name: string, network: NetworkName) {
+  async editWalletName(address: string, name: string, network: NetworkProfile) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -289,28 +329,49 @@ class Background {
     return this.background!.updateTransactionFee(messageId, fee);
   }
 
-  async setNetwork(network: NetworkName): Promise<void> {
+  async setNetwork(network: NetworkProfile): Promise<void> {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.setNetwork(network);
   }
 
-  async setCustomNode(url: string | null, network: NetworkName) {
+  async setProfile(profile: NetworkProfile): Promise<void> {
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.setProfile(profile);
+  }
+
+  async setNetworkById(networkId: string): Promise<void> {
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.setNetworkById(networkId);
+  }
+
+  async getCurrentNetworkId(): Promise<string> {
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.getCurrentNetworkId();
+  }
+
+  async setCustomNode(url: string | null, network: NetworkProfile) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.setCustomNode(url, network);
   }
 
-  async setCustomCode(code: string | null, network: NetworkName) {
+  async setCustomCode(code: string | null, network: NetworkProfile) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.setCustomCode(code, network);
   }
 
-  async setCustomMatcher(url: string | null, network: NetworkName) {
+  async setCustomMatcher(url: string | null, network: NetworkProfile) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -413,14 +474,18 @@ class Background {
 
   async signAndPublishTransaction(
     data: MessageInputOfType<'transaction'>['data'],
+    account?: import('preferences/types').PreferencesAccount,
   ) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    if (account) {
+      return this.background!.signAndPublishTransaction(data, account);
+    }
     return this.background!.signAndPublishTransaction(data);
   }
 
-  async getExtraFee(address: string, network: NetworkName) {
+  async getExtraFee(address: string, network: NetworkProfile) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -441,11 +506,10 @@ class Background {
     return this.background!.shouldIgnoreError(context, message);
   }
 
-  async identityRestore(userId: string): Promise<void> {
+  async identityRestore(userId: string): Promise<unknown> {
     await this.initPromise;
     this._connect();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-    return (await this.background!.identityRestore(userId)) as any;
+    return this.background!.identityRestore(userId);
   }
 
   async identityUpdate(): Promise<void> {
@@ -479,8 +543,7 @@ class Background {
   async identityUser(): Promise<IdentityUser> {
     await this.initPromise;
     this._connect();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-    return (await this.background!.identityUser()) as any;
+    return this.background!.identityUser();
   }
 
   async ledgerSignResponse(requestId: string, error: unknown): Promise<void>;

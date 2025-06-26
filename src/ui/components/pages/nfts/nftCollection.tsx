@@ -6,8 +6,8 @@ import { usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-  sortAndFilterNfts,
-  useUiState,
+    sortAndFilterNfts,
+    useUiState,
 } from 'ui/components/pages/assets/tabs/helpers';
 import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
 import { Tooltip } from 'ui/components/ui/tooltip';
@@ -28,12 +28,11 @@ export function NftCollection() {
   const { t } = useTranslation();
 
   const userAddress = usePopupSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    state => state.selectedAccount?.address!,
+    state => state.selectedAccount?.address || '',
   );
 
   const networkCode = usePopupSelector(
-    state => state.selectedAccount?.networkCode,
+    state => state.selectedAccount?.accountType === 'waves' ? state.selectedAccount.networkCode : undefined,
   );
 
   const myNfts = usePopupSelector(state => state.balances[userAddress]?.nfts);

@@ -1,9 +1,9 @@
-import { useDebouncedValue } from '_core/useDebouncedValue';
 import { base58Decode } from '@keeper-wallet/waves-crypto';
 import { WavesDomainsClient } from '@waves-domains/client';
+import { useDebouncedValue } from '_core/useDebouncedValue';
 import clsx from 'clsx';
 import { isAddressString } from 'messages/utils';
-import { NetworkName } from 'networks/types';
+import { NETWORKS } from 'networks/config';
 import { usePopupSelector } from 'popup/store/react';
 import { type PreferencesAccount } from 'preferences/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -215,15 +215,35 @@ export type Props = Extract<InputProps, { multiLine?: false }> & {
   onSuggest: (value: string) => void;
 };
 
+function isWavesAccount(
+  acc: PreferencesAccount,
+): acc is Extract<PreferencesAccount, { accountType: 'waves' }> {
+  return acc.accountType === 'waves';
+}
+
 export function AddressSuggestInput({ onSuggest, ...props }: Props) {
   const { t } = useTranslation();
 
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
-  const chainId = usePopupSelector(
-    state =>
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      state.selectedAccount?.networkCode!.charCodeAt(0),
-  );
+  const chainId = usePopupSelector(state => {
+    const acc = state.selectedAccount;
+    if (acc && isWavesAccount(acc)) {
+      return acc.networkCode.charCodeAt(0);
+    }
+    if (acc && acc.accountType === 'multichain') {
+      const networkConfig = NETWORKS.find(n => n.network === acc.chain);
+      const profileConfig = networkConfig?.params[acc.network];
+      if (profileConfig) {
+        if (typeof profileConfig.chainId === 'string') {
+          return profileConfig.chainId.charCodeAt(0);
+        }
+        if (typeof profileConfig.chainId === 'number') {
+          return profileConfig.chainId;
+        }
+      }
+    }
+    return 87;
+  });
   const accounts = usePopupSelector(state => state.accounts);
   const addresses = usePopupSelector<Record<string, string>>(state =>
     Object.entries(state.addresses).reduce((acc, [address, name]) => {
@@ -273,16 +293,13 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
   const [wdResolveResult, setWdResolveResult] =
     useState<WavesDomainsResolveResult | null>(null);
   useEffect(() => {
-    if (
-      ![NetworkName.Mainnet, NetworkName.Testnet].includes(currentNetwork) ||
-      !debouncedValue
-    ) {
+    if (!['mainnet', 'testnet'].includes(currentNetwork) || !debouncedValue) {
       setWdResolveResult(null);
       return;
     }
 
     const wdClient = new WavesDomainsClient({
-      network: currentNetwork === NetworkName.Mainnet ? 'mainnet' : 'testnet',
+      network: currentNetwork === 'mainnet' ? 'mainnet' : 'testnet',
     });
 
     wdClient.resolve(debouncedValue).then(resolvedAddress => {

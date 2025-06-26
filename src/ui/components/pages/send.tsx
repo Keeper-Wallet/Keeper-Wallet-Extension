@@ -3,12 +3,15 @@ import { Asset, Money } from '@waves/data-entities';
 import { isAddressString, isAlias } from 'messages/utils';
 import { createNft } from 'nfts/nfts';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
+import { isMultichainAccount } from 'preferences/types';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getBalances } from 'store/actions/balances';
 import Background from 'ui/services/Background';
 
+import { NetworkProfile } from 'networks/types';
+import { type PreferencesAccount } from 'preferences/types';
 import { AssetAmountInput } from '../../../assets/amountInput';
 import { ErrorMessage, Loader } from '../ui';
 import { AddressSuggestInput } from '../ui/Address/SuggestInput';
@@ -22,17 +25,29 @@ export function Send() {
 
   const { t } = useTranslation();
   const dispatch = usePopupDispatch();
-  const chainId = usePopupSelector(
-    state =>
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      state.selectedAccount?.networkCode!.charCodeAt(0),
-  );
+  const selectedAccount = usePopupSelector(state => state.selectedAccount);
+  const assets = usePopupSelector(state => state.assets);
+
+  let wavesAddress = '';
+  let wavesNetworkCode: string | undefined = undefined;
+  let chain: 'waves' = 'waves';
+  if (selectedAccount) {
+    if (isMultichainAccount(selectedAccount)) {
+      wavesAddress = selectedAccount.accounts.waves?.address || '';
+      wavesNetworkCode = 'W';
+      chain = 'waves';
+    } else {
+      wavesAddress = selectedAccount.address;
+      wavesNetworkCode = selectedAccount.networkCode;
+      chain = 'waves';
+    }
+  }
+
+  const chainId = wavesNetworkCode ? wavesNetworkCode.charCodeAt(0) : undefined;
   const accountBalance = usePopupSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    state => state.balances[state.selectedAccount?.address!],
+    state => wavesAddress ? state.balances[wavesAddress] : undefined,
   );
   const assetBalances = accountBalance?.assets;
-  const assets = usePopupSelector(state => state.assets);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const asset = usePopupSelector(state => state.assets[params.assetId!]);
@@ -43,10 +58,7 @@ export function Send() {
     new BigNumber(asset.quantity).eq(1) &&
     !asset.reissuable;
 
-  const userAddress = usePopupSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    state => state.selectedAccount?.address!,
-  );
+  const userAddress = wavesAddress;
 
   const nftInfo = usePopupSelector(state => asset && state.nfts?.[asset.id]);
   const nftConfig = usePopupSelector(state => state.nftConfig);
@@ -78,7 +90,7 @@ export function Send() {
   const currentBalance = asset
     ? Money.fromCoins(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        !isNft ? assetBalances![asset.id]?.balance ?? 0 : 1,
+        !isNft ? (assetBalances && assetBalances[asset.id]?.balance) ?? 0 : 1,
         new Asset(asset),
       )
     : null;
@@ -125,11 +137,44 @@ export function Send() {
 
         setIsSubmitting(true);
 
+        let accountForTx = selectedAccount;
+        let restoreAccount: PreferencesAccount | undefined;
+        if (
+          selectedAccount &&
+          isMultichainAccount(selectedAccount) &&
+          asset?.id === 'WAVES'
+        ) {
+          const accountForTx: any = {
+            ...selectedAccount,
+            chain: 'waves',
+            address: selectedAccount.accounts.waves?.address || '',
+            publicKey: selectedAccount.accounts.waves?.publicKey || '',
+            network: NetworkProfile.Mainnet,
+            networkCode: 'W',
+            type: 'seed',
+          };
+          Background.signAndPublishTransaction({
+            type: 4,
+            data: {
+              amount: {
+                assetId: asset!.id,
+                tokens: amountValue,
+              },
+              recipient: recipientValue,
+              attachment: attachmentValue,
+            },
+          }, accountForTx).catch(err => {
+            if (err instanceof Error && /user denied/i.test(err.message)) {
+              return;
+            }
+            throw err;
+          });
+          return;
+        }
         Background.signAndPublishTransaction({
           type: 4,
           data: {
             amount: {
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               assetId: asset!.id,
               tokens: amountValue,
             },
@@ -140,7 +185,6 @@ export function Send() {
           if (err instanceof Error && /user denied/i.test(err.message)) {
             return;
           }
-
           throw err;
         });
       }}

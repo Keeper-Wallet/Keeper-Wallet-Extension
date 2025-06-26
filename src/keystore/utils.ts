@@ -3,7 +3,7 @@ import {
   encryptSeed,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
-import { type NetworkName } from 'networks/types';
+import { type NetworkProfile } from 'networks/types';
 import { type PreferencesAccount } from 'preferences/types';
 
 import background from '../ui/services/Background';
@@ -13,60 +13,81 @@ async function encryptProfiles(
   accountsToExport: PreferencesAccount[],
   password: string,
 ) {
-  const accounts = await Promise.all(
-    accountsToExport.map(
-      async (acc): Promise<KeystoreAccount & { network: NetworkName }> => {
-        const commonData = {
-          address: acc.address,
-          name: acc.name,
-          network: acc.network,
-          networkCode: acc.networkCode,
-        };
+  const filteredAccounts = accountsToExport.filter(
+    isExportableKeystoreAccount,
+  ) as Array<
+    Extract<
+      PreferencesAccount,
+      {
+        accountType: 'waves';
+        type: 'seed' | 'encodedSeed' | 'privateKey' | 'debug';
+      }
+    >
+  >;
 
-        switch (acc.type) {
-          case 'seed':
-            return {
-              ...commonData,
-              type: acc.type,
-              seed: await background.getAccountSeed(
-                acc.address,
-                acc.network,
-                password,
-              ),
-            };
-          case 'encodedSeed':
-            return {
-              ...commonData,
-              type: acc.type,
-              encodedSeed: await background.getAccountEncodedSeed(
-                acc.address,
-                acc.network,
-                password,
-              ),
-            };
-          case 'privateKey':
-            return {
-              ...commonData,
-              type: acc.type,
-              privateKey: await background.getAccountPrivateKey(
-                acc.address,
-                acc.network,
-                password,
-              ),
-            };
-          case 'debug':
-            return {
-              ...commonData,
-              type: acc.type,
-            };
-          default:
-            throw new Error(
-              `Trying to export unsupported account type: ${acc.type}`,
-            );
-        }
-      },
-    ),
-  );
+  const accounts: Array<KeystoreAccount & { network: NetworkProfile }> = [];
+  for (const acc of filteredAccounts) {
+    const typedAcc: Extract<
+      PreferencesAccount,
+      {
+        accountType: 'waves';
+        type: 'seed' | 'encodedSeed' | 'privateKey' | 'debug';
+      }
+    > = acc;
+    const { address, name, network, networkCode, chain, type } = typedAcc;
+    const commonData = {
+      address,
+      name,
+      network,
+      networkCode,
+    };
+    switch (type) {
+      case 'seed':
+        accounts.push({
+          ...commonData,
+          type,
+          seed: await background.getAccountSeed(
+            address,
+            network,
+            password,
+            chain,
+          ),
+        });
+        break;
+      case 'encodedSeed':
+        accounts.push({
+          ...commonData,
+          type,
+          encodedSeed: await background.getAccountEncodedSeed(
+            address,
+            network,
+            password,
+            chain,
+          ),
+        });
+        break;
+      case 'privateKey':
+        accounts.push({
+          ...commonData,
+          type,
+          privateKey: await background.getAccountPrivateKey(
+            address,
+            network,
+            password,
+            chain,
+          ),
+        });
+        break;
+      case 'debug':
+        accounts.push({
+          ...commonData,
+          type,
+        });
+        break;
+      default:
+        throw new Error(`Trying to export unsupported account type: ${type}`);
+    }
+  }
 
   const profiles: KeystoreProfiles = {
     custom: { accounts: [] },
@@ -149,4 +170,27 @@ export async function downloadKeystore(
       `keystore-address-book-keeper-${nowStr}.json`,
     );
   }
+}
+
+function isExportableKeystoreAccount(acc: PreferencesAccount): acc is Extract<
+  PreferencesAccount,
+  {
+    accountType: 'waves';
+    type: 'seed' | 'encodedSeed' | 'privateKey' | 'debug';
+  }
+> {
+  return (
+    acc &&
+    acc.accountType === 'waves' &&
+    typeof acc.type === 'string' &&
+    (acc.type === 'seed' ||
+      acc.type === 'encodedSeed' ||
+      acc.type === 'privateKey' ||
+      acc.type === 'debug') &&
+    'address' in acc &&
+    'name' in acc &&
+    'network' in acc &&
+    'networkCode' in acc &&
+    'chain' in acc
+  );
 }

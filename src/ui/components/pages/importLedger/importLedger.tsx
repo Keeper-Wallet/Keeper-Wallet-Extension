@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { ledgerService, LedgerServiceStatus } from 'ledger/service';
+import { type NetworkProfile } from 'networks/types';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -9,7 +10,7 @@ import { Button } from 'ui/components/ui/buttons/Button';
 import { ErrorMessage } from 'ui/components/ui/error';
 import { Input } from 'ui/components/ui/input';
 
-import { NETWORK_CONFIG } from '../../../../constants';
+import { NETWORKS } from '../../../../networks/config';
 import { LedgerAvatarList } from './avatarList';
 import * as styles from './importLedger.module.css';
 
@@ -120,8 +121,18 @@ export function ImportLedger() {
     };
   }, [userIdInputValue, t]);
 
+  const networkConfig = NETWORKS.find(n => n.network === 'waves');
+  const profileConfig = networkConfig?.params[currentNetwork as NetworkProfile];
   const networkCode =
-    customCodes[currentNetwork] || NETWORK_CONFIG[currentNetwork].networkCode;
+    customCodes[currentNetwork] || String(profileConfig?.chainId ?? '');
+
+  const getAccountAddress = (account: (typeof accounts)[number]) => {
+    if (!account) return undefined;
+    if (account.accountType === 'multichain') {
+      return account.accounts.waves?.address;
+    }
+    return account.address;
+  };
 
   const connectToLedger = useCallback(async () => {
     setConnectionError(null);
@@ -314,7 +325,9 @@ export function ImportLedger() {
               view="submit"
               onClick={() => {
                 if (
-                  accounts.some(acc => acc.address === selectedUser.address)
+                  accounts.some(
+                    acc => getAccountAddress(acc) === selectedUser.address,
+                  )
                 ) {
                   setSelectAccountError(t('importLedger.accountExistsError'));
                   return;

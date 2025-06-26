@@ -1,3 +1,5 @@
+import { BigNumber } from '@waves/bignumber';
+import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { type AssetsRecord } from 'assets/types';
 import { deepEqual } from 'fast-equals';
@@ -53,6 +55,56 @@ export function sortAssetEntries<T>(
           : 0)
       );
     });
+}
+
+export function sortMultichainAssetsByUsdValue<T extends { balance?: string }>(
+  assetEntries: Array<[string, T | undefined]>,
+  assets: AssetsRecord,
+  usdPrices: Partial<Record<string, string>>,
+): Array<[string, T | undefined]> {
+  return assetEntries.sort(([aAssetId, aBalance], [bAssetId, bBalance]) => {
+    const aAsset = assets[aAssetId];
+    const bAsset = assets[bAssetId];
+
+    if (!aAsset || !bAsset) return 0;
+
+    if (aAsset.isFavorite && !bAsset.isFavorite) return -1;
+    if (!aAsset.isFavorite && bAsset.isFavorite) return 1;
+
+    const aUsdPrice = usdPrices[aAssetId] || '0';
+    const bUsdPrice = usdPrices[bAssetId] || '0';
+
+    const aBalanceAmount = aBalance?.balance || '0';
+    const bBalanceAmount = bBalance?.balance || '0';
+
+    let aUsdValue = new BigNumber(0);
+    let bUsdValue = new BigNumber(0);
+
+    try {
+      if (aAsset && aBalanceAmount && aUsdPrice) {
+        const aTokens = new Money(
+          aBalanceAmount,
+          new Asset(aAsset),
+        ).getTokens();
+        aUsdValue = aTokens.mul(aUsdPrice);
+      }
+
+      if (bAsset && bBalanceAmount && bUsdPrice) {
+        const bTokens = new Money(
+          bBalanceAmount,
+          new Asset(bAsset),
+        ).getTokens();
+        bUsdValue = bTokens.mul(bUsdPrice);
+      }
+    } catch (error) {
+      console.warn('Error calculating USD values for sorting:', error);
+    }
+
+    if (aUsdValue.gt(bUsdValue)) return -1;
+    if (aUsdValue.lt(bUsdValue)) return 1;
+
+    return (aAsset.displayName ?? '').localeCompare(bAsset.displayName ?? '');
+  });
 }
 
 export function sortAndFilterNfts<T extends Nft>(

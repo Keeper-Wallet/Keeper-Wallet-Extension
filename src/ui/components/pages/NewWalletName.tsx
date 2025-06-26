@@ -1,12 +1,16 @@
 import { useAccountsDispatch, useAccountsSelector } from 'accounts/store/react';
+import { isAddressString } from 'messages/utils';
+import { nanoid } from 'nanoid';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { newAccountName, selectAccount } from 'store/actions/localState';
 import { createAccount } from 'store/actions/user';
+import type { NewAccountState } from 'store/reducers/localState';
 import { CONFIG } from 'ui/appConfig';
 import { Button, ErrorMessage, Input } from 'ui/components/ui';
 import { WalletTypes } from 'ui/services/Background';
+import { type CreateMultichainWalletInput } from 'wallets/types';
 
 import * as styles from './newWalletName.module.css';
 
@@ -15,14 +19,16 @@ export function NewWalletName() {
   const { t } = useTranslation();
   const dispatch = useAccountsDispatch();
 
-  const account = useAccountsSelector(state => state.localState.newAccount);
+  const account = useAccountsSelector(
+    state => state.localState.newAccount,
+  ) as NewAccountState;
   const accounts = useAccountsSelector(state => state.accounts);
   const [accountName, setAccountName] = useState('');
   const [pending, setPending] = useState<boolean>(false);
   const [error, setError] = useState<string | null>('');
 
   const existingAccount = accounts.find(
-    ({ address }) => address === account.address,
+    acc => 'address' in acc && acc.address === account.address,
   );
 
   useEffect(() => {
@@ -38,6 +44,20 @@ export function NewWalletName() {
       setError(t('newAccountName.errorInUse'));
     }
 
+    if (
+      accounts.find(acc => 'address' in acc && acc.address === account.address)
+    ) {
+      setError(
+        t('newAccountName.errorAlreadyExists', {
+          name: accountName,
+        }),
+      );
+    }
+
+    if (!isAddressString(account.address)) {
+      setError(t('newAccountName.errorInvalidAddress'));
+    }
+
     if (existingAccount) {
       setError(
         t('newAccountName.errorAlreadyExists', {
@@ -45,7 +65,7 @@ export function NewWalletName() {
         }),
       );
     }
-  }, [accountName, accounts, existingAccount, dispatch, t]);
+  }, [accountName, accounts, existingAccount, account.address, dispatch, t]);
 
   return (
     <div data-testid="newWalletNameForm" className={styles.content}>
@@ -55,6 +75,11 @@ export function NewWalletName() {
         onSubmit={async e => {
           e.preventDefault();
 
+          if (error) {
+            setPending(false);
+            return;
+          }
+
           setPending(true);
 
           if (existingAccount) {
@@ -63,23 +88,34 @@ export function NewWalletName() {
             return;
           }
 
-          if (error) {
+          if (account.type === 'multichain') {
+            const input: CreateMultichainWalletInput = {
+              accountType: 'multichain',
+              type: 'seed',
+              seed: account.seed,
+              name: accountName,
+              id: nanoid(),
+            };
+            await dispatch(createAccount(input, WalletTypes.Seed));
+          } else if (account.type === 'seed') {
+            await dispatch(createAccount(account, WalletTypes.Seed));
+          } else if (account.type === 'encodedSeed') {
+            await dispatch(createAccount(account, WalletTypes.EncodedSeed));
+          } else if (account.type === 'privateKey') {
+            await dispatch(createAccount(account, WalletTypes.PrivateKey));
+          } else if (account.type === 'wx') {
+            await dispatch(createAccount(account, WalletTypes.Wx));
+          } else if (account.type === 'ledger') {
+            await dispatch(createAccount(account, WalletTypes.Ledger));
+          } else {
+            setError('Unknown account type');
+            setPending(false);
             return;
           }
 
-          const accountTypeToWalletType = {
-            seed: WalletTypes.Seed,
-            encodedSeed: WalletTypes.EncodedSeed,
-            privateKey: WalletTypes.PrivateKey,
-            wx: WalletTypes.Wx,
-            ledger: WalletTypes.Ledger,
-          };
-
-          await dispatch(
-            createAccount(account, accountTypeToWalletType[account.type]),
-          );
-
-          navigate('/import-success');
+          navigate('/import-success', {
+            state: { account: { ...account, name: accountName } },
+          });
         }}
       >
         <div className="margin1">
@@ -145,3 +181,4 @@ export function NewWalletName() {
     </div>
   );
 }
+

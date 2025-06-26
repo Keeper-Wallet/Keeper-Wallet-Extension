@@ -1,4 +1,5 @@
 import { deepEqual } from 'fast-equals';
+import { NetworkName, NetworkProfile } from 'networks/types';
 import type { StorageLocalState } from 'storage/storage';
 import { ACTION } from 'store/actions/constants';
 import type { AppAction } from 'store/types';
@@ -104,7 +105,25 @@ export function createUpdateState(store: AccountsStore) {
 
       actions.push({
         type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
-        payload: accounts.filter(account => account.network === network),
+        payload: accounts.filter(account => {
+          if (account.accountType === 'multichain') {
+              return true;
+            }
+
+          if (account.accountType === 'waves') {
+            if (network === NetworkName.Mainnet) {
+              return account.network === NetworkProfile.Mainnet || account.network === 'mainnet';
+            } else {
+              return (
+                account.network === NetworkProfile.Testnet || account.network === 'testnet' ||
+                account.network === 'stagenet' ||
+                account.network === 'custom'
+              );
+            }
+          }
+
+          return false;
+        }),
       });
     }
 

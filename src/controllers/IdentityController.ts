@@ -20,7 +20,7 @@ import {
   CognitoUserPool,
   type ICognitoStorage,
 } from 'amazon-cognito-identity-js';
-import { type NetworkName } from 'networks/types';
+import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import invariant from 'tiny-invariant';
 
@@ -48,8 +48,14 @@ const fetch = globalThis.fetch;
 globalThis.fetch = (endpoint: RequestInfo | URL, options?: RequestInit) => {
   if (
     typeof endpoint === 'string' &&
-    (startsWith(endpoint, DEFAULT_IDENTITY_CONFIG.mainnet.cognito.endpoint) ||
-      startsWith(endpoint, DEFAULT_IDENTITY_CONFIG.testnet.cognito.endpoint))
+    (startsWith(
+      endpoint,
+      DEFAULT_IDENTITY_CONFIG[NetworkName.Mainnet].cognito.endpoint,
+    ) ||
+      startsWith(
+        endpoint,
+        DEFAULT_IDENTITY_CONFIG[NetworkName.Testnet].cognito.endpoint,
+      ))
   ) {
     return fetch(endpoint, {
       ...options,
@@ -276,7 +282,7 @@ export class IdentityController implements IdentityApi {
   }
 
   configure() {
-    const currentNetwork = this.getNetwork();
+    const currentNetwork = this.getNetwork() as NetworkName;
     this.store.clear();
 
     if (this.network !== currentNetwork) {
@@ -435,12 +441,18 @@ export class IdentityController implements IdentityApi {
 
   async updateSession() {
     const selectedAccount = this.getSelectedAccount();
-
-    if (selectedAccount?.type !== 'wx') {
+    if (
+      !selectedAccount ||
+      selectedAccount.accountType !== 'waves' ||
+      (selectedAccount as { type?: string }).type !== 'wx'
+    ) {
       throw new Error('selectedAccount is not a wx account');
     }
-
-    await this.persistSession(selectedAccount.uuid);
+    const wxAccount = selectedAccount as Extract<
+      typeof selectedAccount,
+      { accountType: 'waves'; type: 'wx'; uuid: string }
+    >;
+    await this.persistSession(wxAccount.uuid);
     this.clearSession();
   }
 
@@ -554,27 +566,28 @@ export class IdentityController implements IdentityApi {
 
   async signBytes(bytes: Uint8Array): Promise<string> {
     const selectedAccount = this.getSelectedAccount();
-
-    if (selectedAccount?.type !== 'wx') {
+    if (
+      !selectedAccount ||
+      selectedAccount.accountType !== 'waves' ||
+      (selectedAccount as { type?: string }).type !== 'wx'
+    ) {
       throw new Error('selectedAccount is not a wx account');
     }
-
-    const userId = selectedAccount.uuid;
-
+    const wxAccount = selectedAccount as Extract<
+      typeof selectedAccount,
+      { accountType: 'waves'; type: 'wx'; uuid: string }
+    >;
+    const userId = wxAccount.uuid;
     const [{ privateKey }] = await Promise.all([
       this.getKeyPair(),
       this.restoreSession(userId),
     ]);
-
     const signature = await signBytes(privateKey, bytes);
-
     const response = await this.signByIdentity({
       payload: base64Encode(bytes),
       signature: base64Encode(signature),
     });
-
     this.clearSession();
-
     return base58Encode(base64Decode(response.signature));
   }
 

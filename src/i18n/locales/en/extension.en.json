@@ -113,6 +113,7 @@
   },
   "backupSeed": {
     "backupCarefully": "Please carefully write down these 15 words or copy them",
+    "backupCarefullyMultichain": "Please carefully write down these 12 words or copy them",
     "cancel": "Cancel creation",
     "confirmBackupInfo": "You will confirm this phrase on the next screen",
     "continue": "Continue",
@@ -278,6 +279,8 @@
     "addAnotherAccount": "Add another account",
     "finish": "Finish",
     "createNew": "Create a new account",
+    "createNewMultichain": "Create a new multichain account",
+    "createNewWaves": "Create a new Waves account",
     "importVia": "Or import via",
     "notSupportedByBrowser": "Not supported by your browser",
     "additionSuccess": "Your account '{{ name }}' has been successfully added!",
@@ -366,7 +369,7 @@
     "importAccount": "Import Account",
     "invalidPrivateKeyLengthError": "Private key must consist of {{length}} bytes",
     "plainText": "Seed phrase",
-    "plainTextPlaceholder": "Your seed is the 15 words you saved when creating your account",
+    "plainTextPlaceholder": "Enter your seed phrase to proceed. Usually it consists of 15 words",
     "privateKey": "Private key",
     "requiredError": "Cannot be blank",
     "seedIsAddressError": "It's an account address, not a seed phrase. Seed phrase usually consists of 15 words",
@@ -405,6 +408,11 @@
     "messages": "Messages",
     "notifications": "Notifications",
     "pendingConfirm": "Pending confirmation"
+  },
+  "networks": {
+    "allNetworks": "All Networks",
+    "waves": "Waves",
+    "unit0": "Unit0"
   },
   "networkSettings": {
     "cancel": "Cancel",

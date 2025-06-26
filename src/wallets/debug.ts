@@ -1,7 +1,7 @@
-import { type NetworkName } from 'networks/types';
+import { type NetworkProfile } from 'networks/types';
 import { Wallet } from 'wallets/wallet';
 
-import { type WalletPrivateDataOfType } from './types';
+import { type WalletAccount, type WalletPrivateDataOfType } from './types';
 
 export class DebugWallet extends Wallet<WalletPrivateDataOfType<'debug'>> {
   constructor({
@@ -9,13 +9,17 @@ export class DebugWallet extends Wallet<WalletPrivateDataOfType<'debug'>> {
     name,
     network,
     networkCode,
+    id,
   }: {
     address: string;
     name: string;
-    network: NetworkName;
+    network: NetworkProfile;
     networkCode: string;
+    id?: string;
   }) {
     super({
+      accountType: 'waves',
+      id: id || address,
       address,
       name,
       network,
@@ -25,14 +29,17 @@ export class DebugWallet extends Wallet<WalletPrivateDataOfType<'debug'>> {
     });
   }
 
-  getAccount() {
+  getAccount(): WalletAccount {
     return {
+      accountType: 'waves',
+      id: this.data.id,
       address: this.data.address,
       name: this.data.name,
       network: this.data.network,
       networkCode: this.data.networkCode,
       publicKey: this.data.publicKey,
-      type: this.data.type,
+      type: 'debug',
+      chain: 'waves',
     };
   }
 

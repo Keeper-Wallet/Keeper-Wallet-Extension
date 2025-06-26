@@ -1,0 +1,10 @@
+.networkSwitcher {
+  display: flex;
+  align-items: center;
+  z-index: 1;
+}
+
+.select {
+  min-width: 100px;
+  font-size: 12px;
+} 

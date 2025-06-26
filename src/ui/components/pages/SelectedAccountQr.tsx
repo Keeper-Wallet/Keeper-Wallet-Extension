@@ -2,6 +2,7 @@ import { usePopupSelector } from 'popup/store/react';
 import QrCode from 'qrcode';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getAccountAddress } from 'ui/utils/getActiveAccount';
 
 import { Button } from '../ui/buttons/Button';
 import { Loader } from '../ui/loader/Loader';
@@ -11,15 +12,16 @@ export function SelectedAccountQr() {
   const { t } = useTranslation();
   const selectedAccount = usePopupSelector(state => state.selectedAccount);
 
-  const address = selectedAccount?.address;
+  const address = selectedAccount ? getAccountAddress(selectedAccount) : '';
   const name = selectedAccount?.name;
 
   const [qrSrc, setQrSrc] = useState<string>();
   const qrSize = 200;
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    QrCode.toDataURL(address!, {
+    if (!address) return;
+    
+    QrCode.toDataURL(address, {
       errorCorrectionLevel: 'H',
       margin: 1,
       rendererOpts: { quality: 1 },
@@ -54,7 +56,7 @@ export function SelectedAccountQr() {
 
           const link = document.createElement('a');
           link.setAttribute('href', qrSrc);
-          link.setAttribute('download', `${selectedAccount?.address}.png`);
+          link.setAttribute('download', `${address || 'account'}.png`);
           link.click();
         }}
       >

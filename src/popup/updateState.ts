@@ -5,7 +5,7 @@ import type { StorageLocalState } from 'storage/storage';
 import { type AssetsRecord } from '../assets/types';
 import { collectBalances } from '../balances/utils';
 import { type Message, MessageStatus } from '../messages/types';
-import { type NetworkName } from '../networks/types';
+import { type NetworkProfile } from '../networks/types';
 import { ACTION } from '../store/actions/constants';
 import { type PopupStore } from './store/types';
 
@@ -264,7 +264,7 @@ export function createUpdateState(store: PopupStore) {
 
     const assets = getParam<
       StorageLocalState['assets'] | undefined,
-      Partial<Record<NetworkName, AssetsRecord>>
+      Partial<Record<NetworkProfile, AssetsRecord>>
     >(stateChanges.assets, {});
 
     const network = stateChanges.currentNetwork || currentState.currentNetwork;

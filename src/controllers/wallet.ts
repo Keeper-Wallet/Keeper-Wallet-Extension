@@ -8,20 +8,23 @@ import {
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
 import { EventEmitter } from 'events';
-import { type NetworkName } from 'networks/types';
+import { nanoid } from 'nanoid';
+import { type Network, type NetworkProfile } from 'networks/types';
 import ObservableStore from 'obs-store';
 import invariant from 'tiny-invariant';
 import { DebugWallet } from 'wallets/debug';
 import { EncodedSeedWallet } from 'wallets/encodedSeed';
 import { type LedgerApi, LedgerWallet } from 'wallets/ledger';
+import { MultichainWallet } from 'wallets/multichain';
 import { PrivateKeyWallet } from 'wallets/privateKey';
 import { SeedWallet } from 'wallets/seed';
 import { type CreateWalletInput, type WalletPrivateData } from 'wallets/types';
 import { type Wallet } from 'wallets/wallet';
 import { WxWallet } from 'wallets/wx';
 
-import { NETWORK_CONFIG } from '../constants';
+import { NETWORKS } from '../networks/config';
 import { type ExtensionStorage } from '../storage/storage';
+import { getEthereumData, getWavesData } from '../units/ed25519';
 import { type AssetInfoController } from './assetInfo';
 import { type IdentityApi } from './IdentityController';
 import { type TrashController } from './trash';
@@ -44,6 +47,19 @@ async function decryptVault(vault: string, password: string) {
   } catch {
     throw new Error('Invalid password');
   }
+}
+
+function findProfileByChainId(
+  chainId: string,
+): { profile: NetworkProfile; network: Network } | undefined {
+  for (const net of NETWORKS) {
+    for (const profile of Object.keys(net.params)) {
+      if (net.params[profile as keyof typeof net.params]?.chainId === chainId) {
+        return { profile: profile as NetworkProfile, network: net.network };
+      }
+    }
+  }
+  return undefined;
 }
 
 export class WalletController extends EventEmitter {
@@ -95,9 +111,27 @@ export class WalletController extends EventEmitter {
 
   async #createWallet(
     input: CreateWalletInput,
-    network: NetworkName,
-    networkCode: string,
+    network?: NetworkProfile,
+    networkCode?: string,
   ) {
+    if ('accountType' in input && input.accountType === 'multichain') {
+      const { seed, name, id } = input;
+      const waves = await getWavesData(seed);
+      const ethereum = getEthereumData(seed);
+      return new MultichainWallet({
+        accountType: 'multichain',
+        id: id || nanoid(),
+        name,
+        seed,
+        accounts: {
+          waves,
+          ethereum,
+        },
+        type: 'seed',
+      });
+    }
+    if (!network || !networkCode)
+      throw new Error('network and networkCode are required for waves account');
     switch (input.type) {
       case 'debug':
         return new DebugWallet({
@@ -178,16 +212,29 @@ export class WalletController extends EventEmitter {
     const decryptedVault = await decryptVault(vault, password);
 
     this.#wallets = await Promise.all(
-      decryptedVault.map(user =>
-        this.#createWallet(user, user.network, user.networkCode),
-      ),
+      decryptedVault.map(user => {
+        if (user.accountType === 'multichain') {
+          return this.#createWallet({
+            accountType: 'multichain',
+            type: 'seed',
+            seed: user.seed,
+            name: user.name,
+            id: user.id,
+          });
+        }
+        return this.#createWallet(user, user.network, user.networkCode);
+      }),
     );
-
     this.emit('updateWallets');
   }
 
-  #getWalletsByNetwork(network: NetworkName) {
-    return this.#wallets.filter(wallet => wallet.data.network === network);
+  #getWalletsByNetwork(network: NetworkProfile) {
+    return this.#wallets.filter(
+      wallet =>
+        wallet.data.accountType === 'waves' &&
+        'network' in wallet.data &&
+        wallet.data.network === network,
+    );
   }
 
   #setPassword(password: string | null) {
@@ -201,71 +248,102 @@ export class WalletController extends EventEmitter {
 
   async #putWalletIntoTrash(wallet: Wallet<WalletPrivateData>) {
     invariant(this.#password);
-
+    let address = '';
+    if (wallet.data.accountType === 'waves') {
+      address = wallet.data.address;
+    } else if (wallet.data.accountType === 'multichain') {
+      address = wallet.data.id;
+    }
     const walletsData = await encryptSeed(
       utf8Encode(JSON.stringify(wallet.data)),
       utf8Encode(this.#password),
     );
-
     this.#trashController.addItem({
-      address: wallet.data.address,
+      address,
       walletsData: base64Encode(walletsData),
     });
   }
 
   async addWallet(
     input: CreateWalletInput,
-    network: NetworkName,
-    networkCode: string,
+    network?: NetworkProfile,
+    networkCode?: string,
   ) {
+    if ('accountType' in input && input.accountType === 'multichain') {
+      const wallet = await this.#createWallet(input);
+      const foundWallet = this.#wallets.find(
+        w =>
+          w.data.accountType === 'multichain' &&
+          'id' in w.data &&
+          'id' in wallet.data &&
+          w.data.id === wallet.data.id,
+      );
+      if (foundWallet) {
+        return foundWallet.getAccount();
+      }
+      this.#wallets.push(wallet);
+      await this.#saveWallets();
+      this.emit('addWallet', wallet);
+      this.emit('updateWallets');
+      return wallet.getAccount();
+    }
+    if (!network || !networkCode)
+      throw new Error('network and networkCode are required for waves account');
     const wallet = await this.#createWallet(input, network, networkCode);
-
     const foundWallet = this.#getWalletsByNetwork(network).find(
-      w => w.data.address === wallet.data.address,
+      w =>
+        w.data.accountType === 'waves' &&
+        'address' in w.data &&
+        'address' in wallet.data &&
+        w.data.address === wallet.data.address,
     );
-
     if (foundWallet) {
       return foundWallet.getAccount();
     }
-
     this.#wallets.push(wallet);
     await this.#saveWallets();
-
     this.emit('addWallet', wallet);
     this.emit('updateWallets');
-
     return wallet.getAccount();
   }
 
   async batchAddWallets(
     inputs: Array<
-      CreateWalletInput & { network: NetworkName; networkCode: string }
+      | (CreateWalletInput & {
+          network: NetworkProfile;
+          networkCode: string;
+        })
+      | Extract<CreateWalletInput, { accountType: 'multichain' }>
     >,
   ) {
     const newWallets = await Promise.all(
-      inputs.map(input =>
-        this.#createWallet(input, input.network, input.networkCode),
-      ),
+      inputs.map(input => {
+        if ('accountType' in input && input.accountType === 'multichain') {
+          return this.#createWallet(input);
+        }
+        return this.#createWallet(input, input.network, input.networkCode);
+      }),
     );
-
     this.#wallets.push(...newWallets);
-
     await this.#saveWallets();
-
     newWallets.forEach(wallet => {
       this.emit('addWallet', wallet);
     });
-
     this.emit('updateWallets');
   }
 
-  async removeWallet(address: string, network: NetworkName) {
-    const wallet = this.#getWalletsByNetwork(network).find(
-      w => w.data.address === address,
-    );
-
+  async removeWallet(addressOrId: string, network?: NetworkProfile) {
+    let wallet;
+    if (network) {
+      wallet = this.#getWalletsByNetwork(network).find(
+        w => w.data.accountType === 'waves' && w.data.address === addressOrId,
+      );
+    } else {
+      wallet = this.#wallets.find(
+        w => w.data.accountType === 'multichain' && w.data.id === addressOrId,
+      );
+    }
     if (!wallet) return;
-
     await this.#putWalletIntoTrash(wallet);
     this.#wallets = this.#wallets.filter(w => w !== wallet);
     await this.#saveWallets();
@@ -273,23 +351,24 @@ export class WalletController extends EventEmitter {
     this.emit('updateWallets');
   }
 
-  async updateNetworkCode(network: NetworkName, code: string | null) {
+  async updateNetworkCode(network: NetworkProfile, code: string | null) {
     let changed = false;
 
     await Promise.all(
       this.#wallets.map(async (wallet, index) => {
-        if (
-          wallet.data.network === network &&
-          wallet.data.networkCode !== code
-        ) {
-          this.#wallets[index] = await this.#createWallet(
-            wallet.data,
-            wallet.data.network,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            code!,
-          );
-
-          changed = true;
+        if (wallet.data.accountType === 'waves') {
+          if (
+            wallet.data.network === network &&
+            wallet.data.networkCode !== code
+          ) {
+            this.#wallets[index] = await this.#createWallet(
+              wallet.data,
+              wallet.data.network,
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              code!,
+            );
+            changed = true;
+          }
         }
       }),
     );
@@ -344,62 +423,100 @@ export class WalletController extends EventEmitter {
     await this.#restoreWallets(password);
     this.#setPassword(password);
 
-    if (this.#wallets.some(wallet => !wallet.data.network)) {
-      const networks = Object.fromEntries(
-        Object.values(NETWORK_CONFIG).map(net => [net.networkCode, net.name]),
-      );
-
+    if (
+      this.#wallets.some(
+        wallet => wallet.data.accountType === 'waves' && !wallet.data.network,
+      )
+    ) {
       this.#wallets = await Promise.all(
-        this.#wallets.map(wallet =>
-          this.#createWallet(
+        this.#wallets.map(wallet => {
+          if (wallet.data.accountType === 'multichain') {
+            return this.#createWallet({
+              accountType: 'multichain',
+              type: 'seed',
+              seed: wallet.data.seed,
+              name: wallet.data.name,
+              id: wallet.data.id,
+            });
+          }
+          const found = findProfileByChainId(wallet.data.networkCode);
+          const network = (found?.profile as NetworkProfile) || 'mainnet';
+          return this.#createWallet(
             wallet.data,
-            networks[wallet.data.networkCode],
+            network,
             wallet.data.networkCode,
-          ),
-        ),
+          );
+        }),
       );
-
       await this.#saveWallets();
     }
 
     this.emit('updateWallets');
   }
 
-  getWallet(address: string, network: NetworkName) {
-    const wallet = this.#getWalletsByNetwork(network).find(
-      w => w.data.address === address,
+  getWallet(
+    addressOrId: string,
+    networkProfile: NetworkProfile,
+    chain?: Network,
+  ) {
+    if (chain === 'waves' || (!chain && networkProfile)) {
+      const wallet = this.#getWalletsByNetwork(networkProfile).find(
+        w => w.data.accountType === 'waves' && w.data.address === addressOrId,
+      );
+      if (wallet) return wallet;
+    }
+
+    if (chain) {
+      const wallet = this.#wallets.find(
+        w =>
+          w.data.accountType === 'multichain' &&
+          w.data.accounts[chain]?.address === addressOrId,
+      );
+      if (wallet) return wallet;
+    }
+
+    const multi = this.#wallets.find(
+      w => w.data.accountType === 'multichain' && w.data.id === addressOrId,
     );
+    if (multi) return multi;
 
-    if (!wallet) throw new Error(`Wallet not found for address ${address}`);
-
-    return wallet;
+    throw new Error(
+      `Wallet not found for address/id ${addressOrId} (profile: ${networkProfile}, chain: ${chain})`,
+    );
   }
 
   async getAccountSeed(
     address: string,
-    network: NetworkName,
+    network: NetworkProfile,
     password: string,
+    chain?: Network,
   ) {
     await this.assertPasswordIsValid(password);
-    return this.getWallet(address, network).getSeed();
+    return this.getWallet(address, network, chain).getSeed();
   }
 
   async getAccountEncodedSeed(
     address: string,
-    network: NetworkName,
+    network: NetworkProfile,
     password: string,
+    chain?: Network,
   ) {
     await this.assertPasswordIsValid(password);
-    return this.getWallet(address, network).getEncodedSeed();
+    return this.getWallet(address, network, chain).getEncodedSeed();
   }
 
   async getAccountPrivateKey(
     address: string,
-    network: NetworkName,
+    network: NetworkProfile,
     password: string,
+    chain?: Network,
   ) {
     await this.assertPasswordIsValid(password);
-    const privateKey = await this.getWallet(address, network).getPrivateKey();
+    const privateKey = await this.getWallet(
+      address,
+      network,
+      chain,
+    ).getPrivateKey();
     return base58Encode(privateKey);
   }
 }

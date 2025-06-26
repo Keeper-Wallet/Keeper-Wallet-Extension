@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import * as styles from 'ui/components/pages/styles/assets.styl';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import { getNftsLink } from 'ui/urls';
+import { getActiveAccount } from 'ui/utils/getActiveAccount';
+import { getAccountAddressByNetworkFilter } from 'ui/utils/networkAccountUtils';
 
 import { MAX_NFT_ITEMS } from '../../../../../constants';
 import { sortAndFilterNfts, useUiState } from './helpers';
@@ -25,13 +27,15 @@ export function TabNfts() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const userAddress = usePopupSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    state => state.selectedAccount?.address!,
-  );
+  const activeAccount = usePopupSelector(state => getActiveAccount(state.accounts, state.selectedAccount));
+  const selectedNetworkFilter = usePopupSelector(state => state.selectedNetworkFilter);
+  
+  const userAddress = useMemo(() => {
+    return getAccountAddressByNetworkFilter(activeAccount, selectedNetworkFilter) || '';
+  }, [activeAccount, selectedNetworkFilter]);
 
   const networkCode = usePopupSelector(
-    state => state.selectedAccount?.networkCode,
+    state => state.selectedAccount?.accountType === 'waves' ? state.selectedAccount.networkCode : undefined,
   );
 
   const myNfts = usePopupSelector(state => state.balances[userAddress]?.nfts);

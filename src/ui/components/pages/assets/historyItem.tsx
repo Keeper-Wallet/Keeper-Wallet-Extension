@@ -1,9 +1,9 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import {
-  type Long,
-  TRANSACTION_TYPE,
-  type TransactionFromNode,
+    type Long,
+    TRANSACTION_TYPE,
+    type TransactionFromNode,
 } from '@waves/ts-types';
 import clsx from 'clsx';
 import { MessageIcon } from 'messages/_common/icon';
@@ -24,19 +24,25 @@ interface Props {
 
 export function HistoryItem({ tx, className }: Props) {
   const { t } = useTranslation();
-  const address = usePopupSelector(state => state.selectedAccount?.address);
-  const networkCode = usePopupSelector(
-    state => state.selectedAccount?.networkCode,
-  );
-  const chainId = usePopupSelector(
-    state =>
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      state.selectedAccount?.networkCode!.charCodeAt(0),
-  );
+  const selectedAccount = usePopupSelector(state => state.selectedAccount);
+  
+  const address = selectedAccount?.accountType === 'waves' 
+    ? selectedAccount.address 
+    : selectedAccount?.accountType === 'multichain' 
+    ? selectedAccount.accounts.waves?.address 
+    : undefined;
+    
+  const networkCode = selectedAccount?.accountType === 'waves' 
+    ? selectedAccount.networkCode 
+    : selectedAccount?.accountType === 'multichain' 
+    ? 'W' 
+    : undefined;
+    
+  const chainId = networkCode?.charCodeAt(0) ?? 87;
+  
   const assets = usePopupSelector(state => state.assets);
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const aliases = usePopupSelector(state => state.balances[address!]?.aliases);
-  const addressAlias = [address, ...(aliases || [])];
+  const aliases = usePopupSelector(state => state.balances[address || '']?.aliases);
+  const addressAlias = [address, ...(aliases || [])].filter(Boolean);
 
   let tooltip, label, info, messageType: string, addSign;
   const isTxFailed =
@@ -92,8 +98,7 @@ export function HistoryItem({ tx, className }: Props) {
         <AddressRecipient
           className={styles.recipient}
           recipient={tx.recipient}
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          chainId={chainId!}
+          chainId={chainId}
           showAliasWarning={false}
         />
       );
@@ -109,8 +114,7 @@ export function HistoryItem({ tx, className }: Props) {
           <AddressRecipient
             className={styles.recipient}
             recipient={tx.sender}
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            chainId={chainId!}
+            chainId={chainId}
             showAliasWarning={false}
           />
         );
@@ -127,8 +131,7 @@ export function HistoryItem({ tx, className }: Props) {
           <AddressRecipient
             className={styles.recipient}
             recipient={tx.sender}
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            chainId={chainId!}
+            chainId={chainId}
             showAliasWarning={false}
           />
         );
@@ -185,7 +188,6 @@ export function HistoryItem({ tx, className }: Props) {
       let totalPriceAmount: Money | undefined;
 
       if (assetAmount && priceAsset) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         priceAmount = fromTokens(
           new BigNumber(tx.price).div(
             new BigNumber(10).pow(
@@ -196,12 +198,14 @@ export function HistoryItem({ tx, className }: Props) {
             ),
           ),
           priceAssetId,
-        )!;
-
-        totalPriceAmount = assetAmount.convertTo(
-          priceAmount.asset,
-          priceAmount.getTokens(),
         );
+
+        if (priceAmount) {
+          totalPriceAmount = assetAmount.convertTo(
+            priceAmount.asset,
+            priceAmount.getTokens(),
+          );
+        }
       }
 
       tooltip = t('historyCard.exchange');
@@ -218,8 +222,7 @@ export function HistoryItem({ tx, className }: Props) {
         <AddressRecipient
           className={styles.recipient}
           recipient={tx.recipient}
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          chainId={chainId!}
+          chainId={chainId}
           showAliasWarning={false}
         />
       );
@@ -231,8 +234,7 @@ export function HistoryItem({ tx, className }: Props) {
           <AddressRecipient
             className={styles.recipient}
             recipient={tx.sender}
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            chainId={chainId!}
+            chainId={chainId}
             showAliasWarning={false}
           />
         );
@@ -255,8 +257,7 @@ export function HistoryItem({ tx, className }: Props) {
         <AddressRecipient
           className={styles.recipient}
           recipient={tx.lease.recipient}
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          chainId={chainId!}
+          chainId={chainId}
           showAliasWarning={false}
         />
       );
@@ -267,8 +268,7 @@ export function HistoryItem({ tx, className }: Props) {
           <AddressRecipient
             className={styles.recipient}
             recipient={tx.lease.sender}
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            chainId={chainId!}
+            chainId={chainId}
             showAliasWarning={false}
           />
         );
@@ -296,8 +296,7 @@ export function HistoryItem({ tx, className }: Props) {
         <AddressRecipient
           className={styles.recipient}
           recipient={tx.sender}
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          chainId={chainId!}
+          chainId={chainId}
           showAliasWarning={false}
         />
       );
@@ -350,7 +349,6 @@ export function HistoryItem({ tx, className }: Props) {
         <Balance
           split
           showAsset
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           balance={fromCoins(tx.minSponsoredAssetFee!, tx.assetId)}
         />
       );
@@ -386,13 +384,11 @@ export function HistoryItem({ tx, className }: Props) {
       ) {
         tooltip = t('historyCard.swap');
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const payment = tx.payment![0];
         const fromBalance =
           payment && fromCoins(payment.amount, payment.assetId);
 
         const incomingTransfer = tx.stateChanges.transfers.find(
-          // eslint-disable-next-line @typescript-eslint/no-shadow
           t => t.address === tx.sender,
         );
 
@@ -409,8 +405,7 @@ export function HistoryItem({ tx, className }: Props) {
           <AddressRecipient
             className={styles.recipient}
             recipient={tx.dApp}
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            chainId={chainId!}
+            chainId={chainId}
             showAliasWarning={false}
           />
         );
@@ -433,8 +428,7 @@ export function HistoryItem({ tx, className }: Props) {
             <AddressRecipient
               className={styles.recipient}
               recipient={tx.sender}
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              chainId={chainId!}
+              chainId={chainId}
               showAliasWarning={false}
               showMirrorAddress
             />
@@ -456,8 +450,7 @@ export function HistoryItem({ tx, className }: Props) {
             <AddressRecipient
               className={styles.recipient}
               recipient={payload.dApp}
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              chainId={chainId!}
+              chainId={chainId}
               showAliasWarning={false}
             />
           );
@@ -526,12 +519,12 @@ export function HistoryItem({ tx, className }: Props) {
             className={styles.infoButton}
             type="button"
             onClick={() => {
-              window.open(
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                getTxDetailLink(networkCode!, tx.id),
-                '_blank',
-                'noopener',
-              );
+              if (networkCode) {
+                window.open(
+                  getTxDetailLink(networkCode, tx.id),
+                  '_blank',
+                );
+              }
             }}
             {...props}
           >

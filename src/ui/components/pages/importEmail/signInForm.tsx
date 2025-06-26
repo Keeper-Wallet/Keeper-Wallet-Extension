@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { NetworkName } from 'networks/types';
+import { NetworkName, type NetworkProfile } from 'networks/types';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +7,7 @@ import { usePopupSelector } from '../../../../popup/store/react';
 import { Button, ErrorMessage, Input } from '../../ui';
 import * as styles from './importEmail.module.css';
 
-const baseByNetwork: Partial<Record<NetworkName, string>> = {
+const baseByNetwork: Partial<Record<NetworkProfile, string>> = {
   [NetworkName.Mainnet]: 'https://waves.exchange',
   [NetworkName.Testnet]: 'https://testnet.waves.exchange',
 };

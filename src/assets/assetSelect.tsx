@@ -1,7 +1,7 @@
 import { type BalanceAssets } from 'balances/types';
 import clsx from 'clsx';
 import ColorHash from 'color-hash';
-import { type NetworkName } from 'networks/types';
+import { type NetworkProfile } from 'networks/types';
 import { useState } from 'react';
 import { Modal } from 'ui/components/ui/modal/Modal';
 
@@ -13,7 +13,7 @@ export type AssetSelectOption = AssetSelectModalOption;
 
 interface Props {
   assetBalances: BalanceAssets;
-  network: NetworkName;
+  network: NetworkProfile;
   options: AssetSelectOption[];
   value: string;
   onChange: (newValue: string) => void;

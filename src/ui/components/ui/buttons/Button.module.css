@@ -58,6 +58,10 @@
   border: 1px solid #000000;
 }
 
+.submit {
+  font-weight: 600;
+}
+
 .submit,
 .submitTiny {
   background-color: #1f5af6;
@@ -125,4 +129,15 @@
   left: 50%;
   margin-top: -8px;
   margin-left: -8px;
+}
+
+.simple {
+  background-color: #fff;
+  color: #000000;
+  border: 1px solid #dae1e9;
+  font-weight: 300;
+}
+
+.warning:not(:disabled):hover {
+  background-color: #e5494dcc;
 }

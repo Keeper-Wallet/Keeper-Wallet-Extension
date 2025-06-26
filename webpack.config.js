@@ -222,6 +222,7 @@ export default async (_, { mode }) => [
     entry: {
       accounts: './src/accounts',
       popup: './src/popup',
+      units: './src/units',
     },
     plugins: [
       new HtmlWebpackPlugin({
@@ -237,6 +238,11 @@ export default async (_, { mode }) => [
       new HtmlWebpackPlugin({
         filename: 'accounts.html',
         chunks: ['vendors', 'accounts'],
+        hash: true,
+      }),
+      new HtmlWebpackPlugin({
+        filename: 'units.html',
+        chunks: ['vendors', 'units'],
         hash: true,
       }),
     ],

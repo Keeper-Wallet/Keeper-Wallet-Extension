@@ -4,6 +4,7 @@ import { type AssetsRecord } from 'assets/types';
 import { type BalanceAssets } from 'balances/types';
 import clsx from 'clsx';
 import { usePopupSelector } from 'popup/store/react';
+import { isMultichainAccount } from 'preferences/types';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -14,8 +15,14 @@ import { icontains } from 'ui/components/pages/assets/helpers';
 import * as styles from 'ui/components/pages/styles/assets.styl';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import { Tooltip } from 'ui/components/ui/tooltip';
+import { getActiveAccount } from 'ui/utils/getActiveAccount';
 
-import { CARD_FULL_HEIGHT, sortAssetEntries, useUiState } from './helpers';
+import {
+  CARD_FULL_HEIGHT,
+  sortAssetEntries,
+  sortMultichainAssetsByUsdValue,
+  useUiState,
+} from './helpers';
 
 const Row = ({
   data,
@@ -80,12 +87,110 @@ interface Props {
 export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
   const { t } = useTranslation();
   const assets = usePopupSelector(state => state.assets);
+  const usdPrices = usePopupSelector(state => state.usdPrices);
   const showSuspiciousAssets = usePopupSelector(
     state => state.uiState?.showSuspiciousAssets,
   );
-  const address = usePopupSelector(state => state.selectedAccount?.address);
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const myAssets = usePopupSelector(state => state.balances[address!]?.assets);
+  const activeAccount = usePopupSelector(state =>
+    getActiveAccount(state.accounts, state.selectedAccount),
+  );
+  const selectedNetworkFilter = usePopupSelector(
+    state => state.selectedNetworkFilter,
+  );
+  const balances = usePopupSelector(state => state.balances);
+
+  const myAssets = useMemo(() => {
+    if (!activeAccount) return undefined;
+
+    if (selectedNetworkFilter === 'all' && isMultichainAccount(activeAccount)) {
+      const combinedAssets: BalanceAssets = {};
+
+      if (activeAccount.accounts.waves?.address) {
+        const wavesBalance = balances[activeAccount.accounts.waves.address];
+        if (wavesBalance?.assets) {
+          Object.entries(wavesBalance.assets).forEach(
+            ([assetId, assetData]) => {
+              if (assetData) {
+                combinedAssets[assetId] = {
+                  balance: combinedAssets[assetId]?.balance || '0',
+                  sponsorBalance: assetData.sponsorBalance || '0',
+                  minSponsoredAssetFee: assetData.minSponsoredAssetFee || '0',
+                };
+
+                const currentBalance = new BigNumber(
+                  combinedAssets[assetId]?.balance || '0',
+                );
+                const addBalance = new BigNumber(assetData.balance || '0');
+                combinedAssets[assetId].balance = currentBalance
+                  .add(addBalance)
+                  .toString();
+              }
+            },
+          );
+        }
+      }
+
+      const ethAddress =
+        activeAccount.accounts.ethereum?.address ||
+        activeAccount.accounts.unit0?.address;
+      if (ethAddress) {
+        const ethBalance = balances[ethAddress];
+        if (ethBalance?.assets) {
+          Object.entries(ethBalance.assets).forEach(([assetId, assetData]) => {
+            if (assetData) {
+              if (!combinedAssets[assetId]) {
+                combinedAssets[assetId] = {
+                  balance: '0',
+                  sponsorBalance: assetData.sponsorBalance || '0',
+                  minSponsoredAssetFee: assetData.minSponsoredAssetFee || '0',
+                };
+              }
+
+              const currentBalance = new BigNumber(
+                combinedAssets[assetId]?.balance || '0',
+              );
+              const addBalance = new BigNumber(assetData.balance || '0');
+              combinedAssets[assetId].balance = currentBalance
+                .add(addBalance)
+                .toString();
+            }
+          });
+        }
+      }
+
+      return combinedAssets;
+    }
+
+    if (
+      selectedNetworkFilter === 'waves' ||
+      selectedNetworkFilter === 'waves-testnet' ||
+      selectedNetworkFilter === 'waves-stagenet' ||
+      selectedNetworkFilter === 'custom'
+    ) {
+      if (isMultichainAccount(activeAccount)) {
+        const wavesAddress = activeAccount.accounts.waves?.address;
+        return wavesAddress ? balances[wavesAddress]?.assets : undefined;
+      } else {
+        const address = activeAccount.address;
+        return address ? balances[address]?.assets : undefined;
+      }
+    }
+
+    if (
+      selectedNetworkFilter === 'unit0' ||
+      selectedNetworkFilter === 'unit0-testnet'
+    ) {
+      if (isMultichainAccount(activeAccount)) {
+        const ethAddress =
+          activeAccount.accounts.ethereum?.address ||
+          activeAccount.accounts.unit0?.address;
+        return ethAddress ? balances[ethAddress]?.assets : undefined;
+      }
+    }
+
+    return undefined;
+  }, [activeAccount, selectedNetworkFilter, balances]);
+
   const swappableAssetIdsByVendor = usePopupSelector(
     state => state.swappableAssetIdsByVendor,
   );
@@ -108,12 +213,53 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
     (value: boolean) => setFilters({ ...filters, onlyFavorites: value }),
   ];
 
-  const assetEntries = myAssets
+  const issuerAddress = useMemo(() => {
+    if (!activeAccount) return null;
+
+    if (
+      selectedNetworkFilter === 'waves' ||
+      selectedNetworkFilter === 'waves-testnet' ||
+      selectedNetworkFilter === 'waves-stagenet' ||
+      selectedNetworkFilter === 'custom'
+    ) {
+      if (isMultichainAccount(activeAccount)) {
+        return activeAccount.accounts.waves?.address || null;
+      } else {
+        return activeAccount.address || null;
+      }
+    }
+
+    if (
+      selectedNetworkFilter === 'unit0' ||
+      selectedNetworkFilter === 'unit0-testnet'
+    ) {
+      if (isMultichainAccount(activeAccount)) {
+        return (
+          activeAccount.accounts.ethereum?.address ||
+          activeAccount.accounts.unit0?.address ||
+          null
+        );
+      }
+    }
+
+    if (selectedNetworkFilter === 'all' && isMultichainAccount(activeAccount)) {
+      return (
+        activeAccount.accounts.waves?.address ||
+        activeAccount.accounts.ethereum?.address ||
+        activeAccount.accounts.unit0?.address ||
+        null
+      );
+    }
+
+    return null;
+  }, [activeAccount, selectedNetworkFilter]);
+
+  let assetEntries = myAssets
     ? sortAssetEntries(
         Object.entries(myAssets).filter(
           ([assetId]) =>
             (!onlyFav || assets[assetId]?.isFavorite === onlyFav) &&
-            (!onlyMy || assets[assetId]?.issuer === address) &&
+            (!onlyMy || assets[assetId]?.issuer === issuerAddress) &&
             (!term ||
               assetId === term ||
               icontains(assets[assetId]?.displayName, term)),
@@ -122,6 +268,27 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
         showSuspiciousAssets,
       )
     : PLACEHOLDERS;
+
+  if (activeAccount?.accountType === 'multichain' && myAssets) {
+    const filteredEntries = Object.entries(myAssets).filter(
+      ([assetId]) =>
+        (!onlyFav || assets[assetId]?.isFavorite === onlyFav) &&
+        (!onlyMy || assets[assetId]?.issuer === issuerAddress) &&
+        (!term ||
+          assetId === term ||
+          icontains(assets[assetId]?.displayName, term)),
+    );
+
+    const baseFilteredEntries = filteredEntries.filter(
+      ([assetId]) => showSuspiciousAssets || !assets[assetId]?.isSuspicious,
+    );
+
+    assetEntries = sortMultichainAssetsByUsdValue(
+      baseFilteredEntries,
+      assets,
+      usdPrices,
+    );
+  }
 
   return (
     <TabPanel className={styles.assetsPanel}>

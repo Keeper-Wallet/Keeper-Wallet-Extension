@@ -1,6 +1,7 @@
+import { NetworkProfile } from 'networks/types';
+
 import { type AssetsRecord } from '../../assets/types';
 import { type Message } from '../../messages/types';
-import { NetworkName } from '../../networks/types';
 import { type PreferencesAccount } from '../../preferences/types';
 import { ACTION } from '../actions/constants';
 import { type AppAction, type AppActionPayload } from '../types';
@@ -74,8 +75,18 @@ export function selectedAccount(
 }
 
 export const currentNetwork = createSimpleReducer(
-  NetworkName.Mainnet,
+  'waves-mainnet',
   ACTION.UPDATE_CURRENT_NETWORK,
+);
+
+export const currentProfile = createSimpleReducer(
+  NetworkProfile.Mainnet,
+  ACTION.UPDATE_CURRENT_PROFILE,
+);
+
+export const selectedNetworkFilter = createSimpleReducer(
+  'all' as const,
+  ACTION.UPDATE_SELECTED_NETWORK_FILTER,
 );
 
 export const balances = createSimpleReducer({}, ACTION.UPDATE_BALANCES);
@@ -114,3 +125,18 @@ export const assetTickers = createSimpleReducer({}, ACTION.SET_ASSET_TICKERS);
 export const addresses = createSimpleReducer({}, ACTION.UPDATE_ADDRESSES);
 export const nfts = createSimpleReducer(null, ACTION.UPDATE_NFTS);
 export const state = createSimpleReducer(null, ACTION.UPDATE_APP_STATE);
+
+export interface NewAccountState {
+  type: string;
+  account?: PreferencesAccount;
+}
+
+export const newAccountState = createSimpleReducer(
+  { type: '' },
+  ACTION.NEW_ACCOUNT_SELECT,
+);
+
+export const newAccountName = createSimpleReducer(
+  '',
+  ACTION.NEW_ACCOUNT_NAME,
+);

@@ -1,13 +1,13 @@
 import { isNotNull } from '_core/isNotNull';
-import { type AssetDetail } from 'assets/types';
+import { type AssetDetail, type AssetsRecord } from 'assets/types';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
 import { defaultAssetTickers } from '../assets/constants';
 import {
-  type ExtensionStorage,
-  type StorageLocalState,
+    type ExtensionStorage,
+    type StorageLocalState,
 } from '../storage/storage';
 import { type NetworkController } from './network';
 import { type RemoteConfigController } from './remoteConfig';
@@ -28,6 +28,22 @@ const WAVES: AssetDetail = {
   displayName: 'WAVES',
 };
 
+const UNIT0: AssetDetail = {
+  quantity: '10000000000000000',
+  ticker: 'UNIT0',
+  id: 'unit0',
+  name: 'Unit0',
+  precision: 8,
+  description: 'Unit0 native token',
+  height: 0,
+  issuer: '',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  timestamp: '2024-01-01T00:00:00.000Z' as any,
+  sender: '',
+  reissuable: false,
+  displayName: 'UNIT0',
+};
+
 const SUSPICIOUS_LIST_URL =
   'https://raw.githubusercontent.com/wavesplatform/waves-community/master/Scam%20tokens%20according%20to%20the%20opinion%20of%20Waves%20Community.csv';
 const SUSPICIOUS_PERIOD_IN_MINUTES = 60;
@@ -38,6 +54,10 @@ const SWAP_SERVICE_URL = 'https://swap-api.keeper-wallet.app';
 
 const INFO_PERIOD_IN_MINUTES = 60;
 const SWAPPABLE_ASSETS_UPDATE_PERIOD_IN_MINUTES = 240;
+
+type AssetsByNetwork = {
+  [network in NetworkName]: AssetsRecord;
+};
 
 function binarySearch<T>(sortedArray: T[], key: T) {
   let start = 0;
@@ -92,19 +112,11 @@ export class AssetInfoController {
   }) {
     const initState = extensionStorage.getInitState({
       assets: {
-        [NetworkName.Mainnet]: {
-          WAVES,
-        },
-        [NetworkName.Stagenet]: {
-          WAVES,
-        },
-        [NetworkName.Testnet]: {
-          WAVES,
-        },
-        [NetworkName.Custom]: {
-          WAVES,
-        },
-      },
+        [NetworkName.Mainnet]: { WAVES, unit0: UNIT0 },
+        [NetworkName.Stagenet]: { WAVES },
+        [NetworkName.Testnet]: { WAVES },
+        [NetworkName.Custom]: { WAVES },
+      } as AssetsByNetwork,
       swappableAssetIdsByVendor: {},
       suspiciousAssets: [],
       usdPrices: {},
@@ -156,7 +168,7 @@ export class AssetInfoController {
     const { assets, assetTickers } = this.store.getState();
 
     const assetIdsToUpdate = Object.keys(assetTickers).filter(assetId => {
-      const asset = assets.mainnet[assetId];
+      const asset = assets[NetworkName.Mainnet][assetId];
       const ticker = assetTickers[assetId];
 
       return asset && (asset.displayName !== ticker || asset.ticker !== ticker);
@@ -165,7 +177,7 @@ export class AssetInfoController {
     if (assetIdsToUpdate.length !== 0) {
       assetIdsToUpdate.forEach(assetId => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const asset = assets.mainnet[assetId]!;
+        const asset = assets[NetworkName.Mainnet][assetId]!;
         const ticker = assetTickers[assetId];
 
         asset.displayName = asset.ticker = ticker;
@@ -179,8 +191,12 @@ export class AssetInfoController {
     return WAVES;
   }
 
+  getUnit0Asset() {
+    return UNIT0;
+  }
+
   getAssets() {
-    return this.store.getState().assets[this.getNetwork()];
+    return this.store.getState().assets[this.getNetwork() as NetworkName];
   }
 
   getUsdPrices() {
@@ -195,7 +211,7 @@ export class AssetInfoController {
 
   isSuspiciousAsset(assetId: string) {
     const { assets, suspiciousAssets } = this.store.getState();
-    const network = this.getNetwork();
+    const network = this.getNetwork() as NetworkName;
 
     return network === NetworkName.Mainnet && suspiciousAssets
       ? binarySearch(suspiciousAssets, assetId) > -1
@@ -204,7 +220,7 @@ export class AssetInfoController {
 
   async assetInfo(assetId: string | null) {
     const { assets } = this.store.getState();
-    const network = this.getNetwork();
+    const network = this.getNetwork() as NetworkName;
 
     if (
       assetId === '' ||
@@ -234,8 +250,7 @@ export class AssetInfoController {
           assets[network][assetId] = {
             ...assets[network][assetId],
             ...this.toAssetDetails(assetInfo),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          } as any;
+          };
           this.store.updateState({ assets });
           break;
         }
@@ -263,14 +278,14 @@ export class AssetInfoController {
       precision: info.decimals,
       description: info.description,
       height: info.issueHeight,
-      timestamp: new Date(parseInt(info.issueTimestamp, 10)).toJSON(),
+      timestamp: new Date(parseInt(info.issueTimestamp, 10)),
       sender: info.issuer,
       quantity: info.quantity,
       reissuable: info.reissuable,
       hasScript: info.scripted,
       ticker: assetTickers[info.assetId],
       displayName: assetTickers[info.assetId] || info.name,
-      minSponsoredFee: info.minSponsoredAssetFee,
+      minSponsoredFee: info.minSponsoredAssetFee || undefined,
       originTransactionId: info.originTransactionId,
       issuer: info.issuer,
       isSuspicious: this.isSuspiciousAsset(info.assetId),
@@ -280,7 +295,7 @@ export class AssetInfoController {
 
   async toggleAssetFavorite(assetId: string) {
     const { assets } = this.store.getState();
-    const network = this.getNetwork();
+    const network = this.getNetwork() as NetworkName;
     const asset = assets[network][assetId];
 
     if (!asset) {
@@ -315,7 +330,7 @@ export class AssetInfoController {
     { ignoreCache }: { ignoreCache?: boolean } = {},
   ) {
     const { assets } = this.store.getState();
-    const network = this.getNetwork();
+    const network = this.getNetwork() as NetworkName;
 
     const assetIdsToFetch = Array.from(
       new Set(
@@ -348,8 +363,7 @@ export class AssetInfoController {
         assets[network][assetInfo.assetId] = {
           ...assets[network][assetInfo.assetId],
           ...this.toAssetDetails(assetInfo),
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any;
+        };
       });
 
       this.store.updateState({ assets });
@@ -358,7 +372,7 @@ export class AssetInfoController {
 
   async updateSuspiciousAssets() {
     const { assets, suspiciousAssets } = this.store.getState();
-    const network = this.getNetwork();
+    const network = this.getNetwork() as NetworkName;
 
     if (!suspiciousAssets || network === NetworkName.Mainnet) {
       const resp = await fetch(new URL(SUSPICIOUS_LIST_URL));
@@ -382,7 +396,7 @@ export class AssetInfoController {
   }
 
   async updateUsdPricesByAssetIds(assetIds: string[]) {
-    const network = this.getNetwork();
+    const network = this.getNetwork() as NetworkName;
 
     if (assetIds.length === 0 || network !== NetworkName.Mainnet) {
       return;
@@ -413,7 +427,7 @@ export class AssetInfoController {
   }
 
   async updateInfo() {
-    const network = this.getNetwork();
+    const network = this.getNetwork() as NetworkName;
 
     if (network === NetworkName.Mainnet) {
       const resp = await fetch(new URL('/api/v1/assets', DATA_SERVICE_URL));

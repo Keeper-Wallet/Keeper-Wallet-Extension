@@ -19,14 +19,15 @@ export const selectAccount = createMVAction(ACTION.SELECT_ACCOUNT);
 
 const notificationDelete = createMVAction(ACTION.NOTIFICATION_DELETE);
 
-export function deleteAccount(
-  address: string,
-): PopupThunkAction<Promise<void>> {
+export function deleteAccount(key: string): PopupThunkAction<Promise<void>> {
   return async (dispatch, getState) => {
-    const { currentNetwork } = getState();
-
-    await Background.removeWallet(address, currentNetwork);
-
+    const { currentNetwork, allNetworksAccounts } = getState();
+    const acc = allNetworksAccounts.find(a => a.id === key);
+    if (acc && acc.accountType === 'multichain') {
+      await Background.removeWallet(key);
+    } else {
+      await Background.removeWallet(key, currentNetwork);
+    }
     dispatch(notificationDelete(true));
     await new Promise(resolve => setTimeout(resolve, 1000));
     dispatch(notificationDelete(false));

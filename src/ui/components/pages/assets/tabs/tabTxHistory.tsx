@@ -81,8 +81,10 @@ const PLACEHOLDERS = [...Array(4).keys()].map<TransactionFromNode>(
 
 export function TabTxHistory() {
   const { t, i18n } = useTranslation();
-  const networkCode = usePopupSelector(
-    state => state.selectedAccount?.networkCode,
+  const networkCode = usePopupSelector(state =>
+    state.selectedAccount?.accountType === 'waves'
+      ? state.selectedAccount.networkCode
+      : undefined,
   );
   const assets = usePopupSelector(state => state.assets);
   const showSuspiciousAssets = usePopupSelector(

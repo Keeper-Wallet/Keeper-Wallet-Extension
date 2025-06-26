@@ -1,5 +1,3 @@
-import { NetworkName } from 'networks/types';
-
 export const MAX_TX_HISTORY_ITEMS = 101;
 export const MAX_NFT_ITEMS = 1000;
 
@@ -8,41 +6,6 @@ export const STATUS = {
   OK: 1,
   PENDING: 0,
   UPDATED: 2,
-};
-
-export const NETWORK_CONFIG: Record<
-  NetworkName,
-  {
-    matcherBaseUrl: string;
-    name: NetworkName;
-    networkCode: string;
-    nodeBaseUrl: string;
-  }
-> = {
-  [NetworkName.Testnet]: {
-    matcherBaseUrl: 'https://matcher-testnet.waves.exchange/',
-    name: NetworkName.Testnet,
-    networkCode: 'T',
-    nodeBaseUrl: 'https://nodes-testnet.wavesnodes.com/',
-  },
-  [NetworkName.Mainnet]: {
-    matcherBaseUrl: 'https://matcher.waves.exchange/',
-    name: NetworkName.Mainnet,
-    networkCode: 'W',
-    nodeBaseUrl: 'https://nodes-keeper.wavesnodes.com/',
-  },
-  [NetworkName.Stagenet]: {
-    matcherBaseUrl: 'https://matcher-stagenet.waves.exchange/',
-    name: NetworkName.Stagenet,
-    networkCode: 'S',
-    nodeBaseUrl: 'https://nodes-stagenet.wavesnodes.com/',
-  },
-  [NetworkName.Custom]: {
-    matcherBaseUrl: '',
-    name: NetworkName.Custom,
-    networkCode: '',
-    nodeBaseUrl: '',
-  },
 };
 
 export const DEFAULT_MAIN_CONFIG = {

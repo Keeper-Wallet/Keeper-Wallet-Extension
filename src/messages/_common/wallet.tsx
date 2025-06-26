@@ -1,10 +1,11 @@
 import { type PreferencesAccount } from 'preferences/types';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getAccountAddress, getAccountAvatarAddress } from 'ui/utils/getActiveAccount';
 
 import { Avatar } from '../../ui/components/ui/avatar/Avatar';
 import { Copy } from '../../ui/components/ui/copy/Copy';
-import { Ellipsis } from '../../ui/components/ui/ellipsis/Ellipsis';
+import { Ellipsis } from '../../ui/components/ui/ellipsis';
 import { Modal } from '../../ui/components/ui/modal/Modal';
 import { Tooltip } from '../../ui/components/ui/tooltip';
 import * as styles from './wallet.module.css';
@@ -29,19 +30,22 @@ export function MessageWallet({ account }: Props) {
     };
   }, [showCopiedNotification]);
 
+  const address = getAccountAddress(account);
+  const avatarAddress = getAccountAvatarAddress(account);
+
   return (
     <div className={styles.root}>
       <Avatar
-        address={account.address}
+        address={avatarAddress || null}
         className={styles.avatar}
         size={28}
-        type={account.type}
+        type={account.accountType === 'waves' ? account.type : undefined}
       />
 
       <Tooltip
         content={
           <>
-            <Ellipsis text={account.address} />
+            <Ellipsis text={address} />
             <div>{t('accountInfo.copyToClipboard')}</div>
           </>
         }
@@ -49,7 +53,7 @@ export function MessageWallet({ account }: Props) {
       >
         {props => (
           <Copy
-            text={account.address}
+            text={address}
             onCopy={() => {
               setShowCopiedNotification(true);
             }}

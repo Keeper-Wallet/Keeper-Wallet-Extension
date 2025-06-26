@@ -5,9 +5,9 @@ import {
   createPublicKey,
   signBytes,
 } from '@keeper-wallet/waves-crypto';
-import { type NetworkName } from 'networks/types';
+import { type NetworkProfile } from 'networks/types';
 
-import { type WalletPrivateDataOfType } from './types';
+import { type WalletAccount, type WalletPrivateDataOfType } from './types';
 import { Wallet } from './wallet';
 
 export class PrivateKeyWallet extends Wallet<
@@ -18,15 +18,20 @@ export class PrivateKeyWallet extends Wallet<
     network,
     networkCode,
     privateKey,
+    id,
   }: {
     name: string;
-    network: NetworkName;
+    network: NetworkProfile;
     networkCode: string;
     privateKey: string;
+    id?: string;
   }) {
     const publicKey = await createPublicKey(base58Decode(privateKey));
 
     return new this({
+      accountType: 'waves',
+      id:
+        id || base58Encode(createAddress(publicKey, networkCode.charCodeAt(0))),
       address: base58Encode(
         createAddress(publicKey, networkCode.charCodeAt(0)),
       ),
@@ -35,43 +40,55 @@ export class PrivateKeyWallet extends Wallet<
       networkCode,
       privateKey,
       publicKey: base58Encode(publicKey),
+      type: 'privateKey',
     });
   }
 
   constructor({
+    accountType,
+    id,
     address,
     name,
     network,
     networkCode,
     privateKey,
     publicKey,
+    type,
   }: {
+    accountType: 'waves';
+    id: string;
     address: string;
     name: string;
-    network: NetworkName;
+    network: NetworkProfile;
     networkCode: string;
     privateKey: string;
     publicKey: string;
+    type: 'privateKey';
   }) {
     super({
+      accountType,
+      id,
       address,
       name,
       network,
       networkCode,
       privateKey,
       publicKey,
-      type: 'privateKey',
+      type,
     });
   }
 
-  getAccount() {
+  getAccount(): WalletAccount {
     return {
+      accountType: 'waves',
+      id: this.data.id || this.data.address,
       address: this.data.address,
       name: this.data.name,
       network: this.data.network,
       networkCode: this.data.networkCode,
       publicKey: this.data.publicKey,
-      type: this.data.type,
+      type: 'privateKey',
+      chain: 'waves',
     };
   }
 

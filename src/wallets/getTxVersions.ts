@@ -50,11 +50,9 @@ const LEDGER_TX_VERSIONS: TxVersions = {
   '1003': [1, 0],
 };
 
-export function getTxVersions(accountType: PreferencesAccount['type']) {
-  switch (accountType) {
-    case 'ledger':
-      return LEDGER_TX_VERSIONS;
-    default:
-      return DEFAULT_TX_VERSIONS;
+export function getTxVersions(account: PreferencesAccount) {
+  if (account.accountType === 'waves' && account.type === 'ledger') {
+    return LEDGER_TX_VERSIONS;
   }
+  return DEFAULT_TX_VERSIONS;
 }

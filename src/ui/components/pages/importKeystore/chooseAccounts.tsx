@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { type KeystoreAccount, type KeystoreProfiles } from 'keystore/types';
-import { NetworkName } from 'networks/types';
+import { NetworkName, type NetworkProfile } from 'networks/types';
 import { type PreferencesAccount } from 'preferences/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,9 +9,9 @@ import { Avatar } from 'ui/components/ui/avatar/Avatar';
 
 import * as styles from './chooseAccounts.styl';
 
-const allNetworks: NetworkName[] = Object.values(NetworkName);
+const allNetworks: NetworkProfile[] = Object.values(NetworkName);
 
-const networkLabels: Record<NetworkName, string> = {
+const networkLabels: Record<NetworkProfile, string> = {
   custom: 'Custom',
   mainnet: 'Mainnet',
   testnet: 'Testnet',

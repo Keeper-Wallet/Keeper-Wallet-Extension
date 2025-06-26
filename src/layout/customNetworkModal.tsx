@@ -18,6 +18,48 @@ interface Props {
   }) => void;
 }
 
+async function validateUnit0Node(nodeUrl: string): Promise<boolean> {
+  try {
+    const url = new URL('/api/v1', nodeUrl);
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      signal: AbortSignal.timeout(5000),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function validateWavesNode(nodeUrl: string): Promise<boolean> {
+  try {
+    const url = new URL('/blocks/height', nodeUrl);
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      signal: AbortSignal.timeout(5000),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function detectNodeType(nodeUrl: string): Promise<'waves' | 'unit0' | 'unknown'> {
+  try {
+    const [unit0Check, wavesCheck] = await Promise.allSettled([
+      validateUnit0Node(nodeUrl),
+      validateWavesNode(nodeUrl)
+    ]);
+    
+    if (unit0Check.status === 'fulfilled' && unit0Check.value) return 'unit0';
+    if (wavesCheck.status === 'fulfilled' && wavesCheck.value) return 'waves';
+    
+    return 'unknown';
+  } catch {
+    return 'unknown';
+  }
+}
+
 export function CustomNetworkModal({
   initialMatcher,
   initialNode,
@@ -46,26 +88,53 @@ export function CustomNetworkModal({
           setNodeError(false);
           setIsSubmitting(true);
 
-          const [networkCodeResult, matcherPublicKeyResult] =
-            await Promise.allSettled([
-              getNetworkCode(node),
-              matcher ? getMatcherPublicKey(matcher) : undefined,
-            ]);
+          try {
+            const nodeType = await detectNodeType(node);
+            
+            let networkCode: string;
+            let matcherValidationResult: { status: 'fulfilled' | 'rejected' } = { status: 'fulfilled' };
 
-          setNodeError(networkCodeResult.status === 'rejected');
-          setMatcherError(matcherPublicKeyResult.status === 'rejected');
+            if (nodeType === 'waves') {
+              try {
+                networkCode = await getNetworkCode(node);
+              } catch {
+                setNodeError(true);
+                setIsSubmitting(false);
+                return;
+              }
 
-          if (
-            networkCodeResult.status === 'fulfilled' &&
-            matcherPublicKeyResult.status === 'fulfilled'
-          ) {
-            const networkCode = networkCodeResult.value;
+              if (matcher) {
+                try {
+                  await getMatcherPublicKey(matcher);
+                } catch {
+                  matcherValidationResult = { status: 'rejected' };
+                }
+              }
+            } else if (nodeType === 'unit0') {
+              networkCode = '0';
+              if (matcher) {
+                try {
+                  await getMatcherPublicKey(matcher);
+                } catch {
+                  matcherValidationResult = { status: 'rejected' };
+                }
+              }
+            } else {
+              networkCode = 'C';
+            }
 
+            setMatcherError(matcherValidationResult.status === 'rejected');
+
+            if (matcherValidationResult.status === 'fulfilled') {
             onSave({
-              matcher,
+                matcher: matcher || '',
               networkCode,
               node,
             });
+            }
+          } catch (error) {
+            console.error('Network validation error:', error);
+            setNodeError(true);
           }
 
           setIsSubmitting(false);
@@ -105,7 +174,8 @@ export function CustomNetworkModal({
             className="input-title basic500 tag1"
             htmlFor="matcher_address"
           >
-            {t('networksSettings.matcher')}
+            {t('networksSettings.matcher')}{' '}
+            {t('networkSettings.optional', '(Optional)')}
           </label>
 
           <Input

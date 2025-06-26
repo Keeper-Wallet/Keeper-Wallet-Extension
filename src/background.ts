@@ -1,7 +1,7 @@
 import {
-  base58Decode,
-  base58Encode,
-  verifySignature,
+    base58Decode,
+    base58Encode,
+    verifySignature,
 } from '@keeper-wallet/waves-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { collectBalances } from 'balances/utils';
@@ -10,24 +10,24 @@ import { deepEqual } from 'fast-equals';
 import { getExtraFee } from 'fee/utils';
 import { SUPPORTED_LANGUAGES } from 'i18n/constants';
 import {
-  createIpcCallProxy,
-  fromWebExtensionPort,
-  handleMethodCallRequests,
+    createIpcCallProxy,
+    fromWebExtensionPort,
+    handleMethodCallRequests,
 } from 'ipc/ipc';
 import { type LedgerSignRequest } from 'ledger/types';
 import { ERRORS, KeeperError } from 'lib/keeperError';
 import { TabsManager } from 'lib/tabsManager';
 import {
-  type Message,
-  type MessageCustomDataSigned,
-  type MessageInputOfType,
-  type MessageOfType,
-  MessageStatus,
-  type MessageTx,
+    type Message,
+    type MessageCustomDataSigned,
+    type MessageInputOfType,
+    type MessageOfType,
+    MessageStatus,
+    type MessageTx,
 } from 'messages/types';
 import { makeCustomDataBytes, makeTxBytes } from 'messages/utils';
 import { nanoid } from 'nanoid';
-import { type NetworkName } from 'networks/types';
+import { type NetworkProfile } from 'networks/types';
 import { PERMISSIONS } from 'permissions/constants';
 import { type PermissionObject } from 'permissions/types';
 import { type IdleOptions, type PreferencesAccount } from 'preferences/types';
@@ -36,18 +36,18 @@ import { type UiState } from 'store/reducers/updateState';
 import invariant from 'tiny-invariant';
 import Browser from 'webextension-polyfill';
 import {
-  empty,
-  filter,
-  fromPromise,
-  onEnd,
-  onStart,
-  pipe,
-  publish,
-  share,
-  subscribe,
-  switchMap,
-  takeUntil,
-  tap,
+    empty,
+    filter,
+    fromPromise,
+    onEnd,
+    onStart,
+    pipe,
+    publish,
+    share,
+    subscribe,
+    switchMap,
+    takeUntil,
+    tap,
 } from 'wonka';
 
 import { fromWebExtensionEvent } from './_core/wonka';
@@ -65,8 +65,8 @@ import { PermissionsController } from './controllers/permissions';
 import { PreferencesController } from './controllers/preferences';
 import { RemoteConfigController } from './controllers/remoteConfig';
 import {
-  type AnalyticsEvent,
-  StatisticsController,
+    type AnalyticsEvent,
+    StatisticsController,
 } from './controllers/statistics';
 import { TrashController } from './controllers/trash';
 import { UiStateController } from './controllers/uiState';
@@ -74,10 +74,10 @@ import { VaultController } from './controllers/VaultController';
 import { WalletController } from './controllers/wallet';
 import { WindowManager } from './lib/windowManager';
 import {
-  backupStorage,
-  createExtensionStorage,
-  type ExtensionStorage,
-  type StorageLocalState,
+    backupStorage,
+    createExtensionStorage,
+    type ExtensionStorage,
+    type StorageLocalState,
 } from './storage/storage';
 import { getTxVersions } from './wallets/getTxVersions';
 
@@ -269,6 +269,7 @@ class BackgroundService extends EventEmitter {
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController,
       ),
+      networkController: this.networkController,
     });
 
     // On network change
@@ -351,14 +352,16 @@ class BackgroundService extends EventEmitter {
 
     this.walletController
       .on('addWallet', wallet => {
-        if (wallet.getAccount().type === 'wx') {
+        const acc = wallet.getAccount();
+        if (isWavesAccount(acc) && acc.type === 'wx' && 'uuid' in acc) {
           // persist current session to storage
-          this.identityController.persistSession(wallet.getAccount().uuid);
+          this.identityController.persistSession(acc.uuid);
         }
       })
       .on('removeWallet', wallet => {
-        if (wallet.getAccount().type === 'wx') {
-          this.identityController.removeSession(wallet.getAccount().uuid);
+        const acc = wallet.getAccount();
+        if (isWavesAccount(acc) && acc.type === 'wx' && 'uuid' in acc) {
+          this.identityController.removeSession(acc.uuid);
         }
       });
 
@@ -400,6 +403,7 @@ class BackgroundService extends EventEmitter {
       isLocked: this.vaultController.isLocked.bind(this.vaultController),
       assetInfoController: this.assetInfoController,
       nftInfoController: this.nftInfoController,
+      networkController: this.networkController,
     });
 
     this.addressBookController = new AddressBookController({
@@ -468,12 +472,14 @@ class BackgroundService extends EventEmitter {
       // preferences
       setCurrentLocale: async (key: string) =>
         this.preferencesController.setCurrentLocale(key),
-      selectAccount: async (address: string, network: NetworkName) =>
+      selectAccount: async (address: string, network: NetworkProfile) =>
         this.preferencesController.selectAccount(address, network),
+      selectAccountById: async (id: string, accountType: string) =>
+        this.preferencesController.selectAccountByIdAndType(id, accountType),
       editWalletName: async (
         address: string,
         name: string,
-        network: NetworkName,
+        network: NetworkProfile,
       ) => this.preferencesController.addLabel(address, name, network),
 
       // ui state
@@ -525,8 +531,8 @@ class BackgroundService extends EventEmitter {
       getMessageById: async (id: string) =>
         this.messageController.getMessageById(id),
       clearMessages: async () => this.messageController.clearMessages(),
-      approve: async (messageId: string) => {
-        const message = await this.messageController.approve(messageId);
+      approve: async (messageId: string | null) => {
+        const message = await this.messageController.approve(messageId || '');
 
         const trackMessageEvent = (msg: Message) => {
           if (msg.type === 'transactionPackage') {
@@ -578,16 +584,22 @@ class BackgroundService extends EventEmitter {
         this.notificationsController.deleteNotifications(ids),
 
       // network
-      setNetwork: async (network: NetworkName) =>
+      setNetwork: async (network: NetworkProfile) =>
         this.networkController.setNetwork(network),
-      setCustomNode: async (url: string | null, network: NetworkName) =>
+      setProfile: async (profile: NetworkProfile) =>
+        this.networkController.setProfile(profile),
+      setNetworkById: async (networkId: string) =>
+        this.networkController.setNetworkById(networkId),
+      getCurrentNetworkId: async () =>
+        this.networkController.getCurrentNetworkId(),
+      setCustomNode: async (url: string | null, network: NetworkProfile) =>
         this.networkController.setCustomNode(url, network),
-      setCustomCode: async (code: string | null, network: NetworkName) => {
+      setCustomCode: async (code: string | null, network: NetworkProfile) => {
         await this.walletController.updateNetworkCode(network, code);
         this.networkController.setCustomCode(code, network);
         this.currentAccountController.restartPolling();
       },
-      setCustomMatcher: async (url: string | null, network: NetworkName) =>
+      setCustomMatcher: async (url: string | null, network: NetworkProfile) =>
         this.networkController.setCustomMatcher(url, network),
 
       // asset information
@@ -684,30 +696,30 @@ class BackgroundService extends EventEmitter {
         ),
       signAndPublishTransaction: async (
         data: MessageInputOfType<'transaction'>['data'],
+        account?: PreferencesAccount,
       ) => {
-        const { selectedAccount } =
-          this.extensionStorage.getState('selectedAccount');
-        invariant(selectedAccount);
+        const selected = account || this.extensionStorage.getState('selectedAccount').selectedAccount;
+        invariant(selected);
 
         const message = await this.messageController.newMessage({
-          account: selectedAccount,
+          account: selected,
           broadcast: true,
           data,
           type: 'transaction',
         });
 
-        await this.messageController.getMessageResult(message.id);
+        await this.messageController.getMessageResult(message.id || '');
       },
       signTransaction: async (account: PreferencesAccount, tx: MessageTx) => {
         const signature = await this.walletController
-          .getWallet(account.address, account.network)
+          .getWallet(account.address, account.network, account.chain)
           .signTx(makeTxBytes(tx), tx);
 
         return base58Encode(signature);
       },
       broadcastTransaction: (tx: MessageTx) =>
         this.networkController.broadcastTransaction(tx),
-      getExtraFee: (address: string, network: NetworkName) =>
+      getExtraFee: (address: string, network: NetworkProfile) =>
         getExtraFee(address, this.networkController.getNode(network)),
 
       shouldIgnoreError: async (
@@ -795,7 +807,7 @@ class BackgroundService extends EventEmitter {
     this.emit('Show notification');
 
     try {
-      await this.messageController.getMessageResult(messageId);
+      await this.messageController.getMessageResult(messageId || '');
       this.messageController.setPermission(origin, PERMISSIONS.APPROVED);
     } catch (err) {
       if (err instanceof KeeperError) {
@@ -828,9 +840,12 @@ class BackgroundService extends EventEmitter {
     ) => {
       const { locked } = this.extensionStorage.getState(['locked']);
 
+      const accountType = isWavesAccount(message.account)
+        ? message.account.type
+        : undefined;
       return (
         !locked &&
-        message.account.type !== 'ledger' &&
+        accountType !== 'ledger' &&
         this.permissionsController.canAutoSign(origin, message.data)
       );
     };
@@ -890,7 +905,7 @@ class BackgroundService extends EventEmitter {
 
         showNotification();
 
-        return this.messageController.getMessageResult(message.id);
+        return this.messageController.getMessageResult(message.id || '');
       },
       signAndPublishOrder: async (
         data: MessageInputOfType<'order'>['data'],
@@ -912,7 +927,7 @@ class BackgroundService extends EventEmitter {
 
         showNotification();
 
-        return this.messageController.getMessageResult(message.id);
+        return this.messageController.getMessageResult(message.id || '');
       },
       signCancelOrder: async (
         data: MessageInputOfType<'cancelOrder'>['data'],
@@ -934,7 +949,7 @@ class BackgroundService extends EventEmitter {
 
         showNotification();
 
-        return this.messageController.getMessageResult(message.id);
+        return this.messageController.getMessageResult(message.id || '');
       },
       signAndPublishCancelOrder: async (
         data: MessageInputOfType<'cancelOrder'>['data'],
@@ -956,7 +971,7 @@ class BackgroundService extends EventEmitter {
 
         showNotification();
 
-        return this.messageController.getMessageResult(message.id);
+        return this.messageController.getMessageResult(message.id || '');
       },
       signTransaction: async (
         data: MessageInputOfType<'transaction'>['data'],
@@ -977,12 +992,12 @@ class BackgroundService extends EventEmitter {
         });
 
         if (canAutoSign(message)) {
-          this.messageController.approve(message.id);
+          this.messageController.approve(message.id || '');
         } else {
           showNotification();
         }
 
-        return this.messageController.getMessageResult(message.id);
+        return this.messageController.getMessageResult(message.id || '');
       },
       signTransactionPackage: async (
         data: MessageInputOfType<'transactionPackage'>['data'],
@@ -1004,38 +1019,28 @@ class BackgroundService extends EventEmitter {
         });
 
         if (canAutoSign(message)) {
-          this.messageController.approve(message.id);
+          this.messageController.approve(message.id || '');
         } else {
           showNotification();
         }
 
-        return this.messageController.getMessageResult(message.id);
+        return this.messageController.getMessageResult(message.id || '');
       },
       signAndPublishTransaction: async (
         data: MessageInputOfType<'transaction'>['data'],
-        options?: MessageInputOfType<'transaction'>['options'],
+        account?: PreferencesAccount,
       ) => {
-        const { selectedAccount } = await this.validatePermission(
-          origin,
-          connectionId,
-        );
+        const selected = account || this.extensionStorage.getState('selectedAccount').selectedAccount;
+        invariant(selected);
 
         const message = await this.messageController.newMessage({
-          ...commonMessageInput,
-          account: selectedAccount,
+          account: selected,
           broadcast: true,
           data,
-          options,
           type: 'transaction',
         });
 
-        if (canAutoSign(message)) {
-          this.messageController.approve(message.id);
-        } else {
-          showNotification();
-        }
-
-        return this.messageController.getMessageResult(message.id);
+        await this.messageController.getMessageResult(message.id || '');
       },
       auth: async (
         data: MessageInputOfType<'auth'>['data'],
@@ -1056,7 +1061,7 @@ class BackgroundService extends EventEmitter {
 
         showNotification();
 
-        return this.messageController.getMessageResult(message.id);
+        return this.messageController.getMessageResult(message.id || '');
       },
       wavesAuth: async (
         {
@@ -1080,7 +1085,7 @@ class BackgroundService extends EventEmitter {
 
         showNotification();
 
-        return this.messageController.getMessageResult(message.id);
+        return this.messageController.getMessageResult(message.id || '');
       },
       signRequest: async (
         data: MessageInputOfType<'request'>['data'],
@@ -1101,7 +1106,7 @@ class BackgroundService extends EventEmitter {
 
         showNotification();
 
-        return this.messageController.getMessageResult(message.id);
+        return this.messageController.getMessageResult(message.id || '');
       },
       signCustomData: async (
         data: MessageInputOfType<'customData'>['data'],
@@ -1122,7 +1127,7 @@ class BackgroundService extends EventEmitter {
 
         showNotification();
 
-        return this.messageController.getMessageResult(message.id);
+        return this.messageController.getMessageResult(message.id || '');
       },
       verifyCustomData: (data: MessageCustomDataSigned) =>
         verifySignature(
@@ -1183,6 +1188,7 @@ class BackgroundService extends EventEmitter {
         const wallet = this.walletController.getWallet(
           selectedAccount.address,
           selectedAccount.network,
+          selectedAccount.chain,
         );
 
         const sharedKey = await wallet.createSharedKey(publicKey, prefix);
@@ -1211,6 +1217,7 @@ class BackgroundService extends EventEmitter {
         const wallet = this.walletController.getWallet(
           selectedAccount.address,
           selectedAccount.network,
+          selectedAccount.chain,
         );
 
         return wallet.encryptMessage(message, publicKey, prefix);
@@ -1237,6 +1244,7 @@ class BackgroundService extends EventEmitter {
         const wallet = this.walletController.getWallet(
           selectedAccount.address,
           selectedAccount.network,
+          selectedAccount.chain,
         );
 
         return wallet.decryptMessage(message, publicKey, prefix);
@@ -1309,7 +1317,7 @@ class BackgroundService extends EventEmitter {
         matcher: this.networkController.getMatcher(),
         server: this.networkController.getNode(),
       },
-      txVersion: getTxVersions(selectedAccount ? selectedAccount.type : 'seed'),
+      txVersion: getTxVersions(selectedAccount),
       version: Browser.runtime.getManifest().version,
     };
   }
@@ -1385,3 +1393,9 @@ export type __BackgroundPageApiDirect = ReturnType<
 export type PublicState = Awaited<
   ReturnType<__BackgroundPageApiDirect['publicState']>
 >;
+
+function isWavesAccount(
+  acc: PreferencesAccount,
+): acc is Extract<PreferencesAccount, { accountType: 'waves' }> {
+  return acc.accountType === 'waves';
+}

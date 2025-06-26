@@ -1,4 +1,5 @@
 import { isAddressString } from 'messages/utils';
+import { type NetworkProfile } from 'networks/types';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +9,7 @@ import * as styles from 'ui/components/pages/importDebug.module.css';
 import { Button, ErrorMessage, Input } from 'ui/components/ui';
 import { WalletTypes } from 'ui/services/Background';
 
-import { NETWORK_CONFIG } from '../../../constants';
+import { NETWORKS } from '../../../networks/config';
 
 export function ImportDebug() {
   const navigate = useNavigate();
@@ -18,8 +19,10 @@ export function ImportDebug() {
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const customCodes = usePopupSelector(state => state.customCodes);
 
+  const networkConfig = NETWORKS.find(n => n.network === 'waves');
+  const profileConfig = networkConfig?.params[currentNetwork as NetworkProfile];
   const networkCode =
-    customCodes[currentNetwork] || NETWORK_CONFIG[currentNetwork].networkCode;
+    customCodes[currentNetwork] || String(profileConfig?.chainId ?? '');
 
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
@@ -47,7 +50,15 @@ export function ImportDebug() {
       });
     }
 
-    if (accounts.some(account => account.address === address)) {
+    const getAccountAddress = (account: (typeof accounts)[number]) => {
+      if (!account) return undefined;
+      if (account.accountType === 'multichain') {
+        return account.accounts.waves?.address;
+      }
+      return account.address;
+    };
+
+    if (accounts.some(account => getAccountAddress(account) === address)) {
       return t('importDebug.alreadyExists');
     }
 

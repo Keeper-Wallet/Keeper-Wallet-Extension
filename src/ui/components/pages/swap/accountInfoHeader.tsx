@@ -1,5 +1,6 @@
 import { type PreferencesAccount } from 'preferences/types';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
+import { getAccountAvatarAddress } from 'ui/utils/getActiveAccount';
 
 import * as styles from './accountInfoHeader.module.css';
 
@@ -11,9 +12,8 @@ export function SwapAccountInfoHeader({ account }: Props) {
   return (
     <div className={styles.root}>
       <Avatar
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-        address={account?.address!}
-        type={account?.type}
+        address={getAccountAvatarAddress(account ?? {} as import('preferences/types').PreferencesAccount) || ''}
+        type={account?.accountType === 'waves' ? account.type : undefined}
         size={28}
       />
 

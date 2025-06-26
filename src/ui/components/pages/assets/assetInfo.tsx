@@ -15,7 +15,7 @@ interface Props {
 export function AssetInfo({ asset, onCopy, onClose }: Props) {
   const { t } = useTranslation();
   const networkCode = usePopupSelector(
-    state => state.selectedAccount?.networkCode,
+    state => state.selectedAccount?.accountType === 'waves' ? state.selectedAccount.networkCode : undefined,
   );
 
   return (

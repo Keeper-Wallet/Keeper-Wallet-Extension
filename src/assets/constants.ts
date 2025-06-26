@@ -1,8 +1,9 @@
-import { type NetworkName } from 'networks/types';
+import { NetworkName } from 'networks/types';
 
 export const assetIds: Record<NetworkName, Record<string, string>> = {
-  mainnet: {
+  [NetworkName.Mainnet]: {
     WAVES: 'WAVES',
+    unit0: 'unit0',
     BAG: 'Euz5HtYcj3nVTZxppA7wdabwTe5BzHFiu4QG1EJtzeUx',
     BCH: 'zMFqXuoyrn5w17PFurTqxB7GsS71fp9dfk6XFwxbPCy',
     BNB: '5UYBPpq4WoU5n4MwpFkgJnW3Fq4B1u3ukpK33ik4QerR',
@@ -74,7 +75,7 @@ export const assetIds: Record<NetworkName, Record<string, string>> = {
     YFI: 'BLRxWVJWaVuR2CsCoTvTw2bDZ3sQLeTbCofcJv7dP5J4',
     ZEC: 'BrjUWjndUanm5VsJkbUip8VRYy6LWJePtxya3FNv4TQa',
   },
-  testnet: {
+  [NetworkName.Testnet]: {
     WAVES: 'WAVES',
     BTC: 'iHTVbu8ArLhtdtJ8BQhyaomgVogSfXT45RtwNFiK4We',
     DASH: '13mWHq1h58WRTiRNBqDRD63gsV8Hq4joxYQzH3iRdHiR',
@@ -90,10 +91,10 @@ export const assetIds: Record<NetworkName, Record<string, string>> = {
     XMR: 'Eox8Cb2cfkFrsYMJSN8TmyfqzbqwjQp4sdJDE6PA9hph',
     ZEC: 'DeiUipcLutVxVVuHxpU8QUZos6KZpnrxakku5YpZSBaT',
   },
-  stagenet: {
+  [NetworkName.Stagenet]: {
     WAVES: 'WAVES',
   },
-  custom: {
+  [NetworkName.Custom]: {
     WAVES: 'WAVES',
   },
 };
@@ -289,6 +290,7 @@ const logosByName: Record<string, string> = {
   XMR: new URL('./logos/XMR.svg', import.meta.url).toString(),
   YFI: new URL('./logos/YFI.svg', import.meta.url).toString(),
   ZEC: new URL('./logos/ZEC.svg', import.meta.url).toString(),
+  unit0: new URL('./logos/unit0.svg', import.meta.url).toString(),
 };
 
 export const assetLogosByNetwork: Partial<{

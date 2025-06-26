@@ -16,12 +16,11 @@ export function NftInfo() {
   const { t } = useTranslation();
 
   const networkCode = usePopupSelector(
-    state => state.selectedAccount?.networkCode,
+    state => state.selectedAccount?.accountType === 'waves' ? state.selectedAccount.networkCode : undefined,
   );
 
   const userAddress = usePopupSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    state => state.selectedAccount?.address!,
+    state => state.selectedAccount?.address || '',
   );
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

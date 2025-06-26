@@ -5,7 +5,7 @@ import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
 import type { Message, MessageTx } from '../messages/types';
-import type { NetworkName } from '../networks/types';
+import type { NetworkProfile } from '../networks/types';
 import type { ExtensionStorage } from '../storage/storage';
 import type { SwapVendor } from '../swap/constants';
 import type { WalletTypes } from '../ui/services/Background';
@@ -67,7 +67,7 @@ interface AmplitudeEvent {
   insert_id: string;
   ip: string;
   language: string;
-  network: NetworkName;
+  network: NetworkProfile;
   platform: string | null | undefined;
   time: number;
   user_id: string;
@@ -88,7 +88,7 @@ interface MixPanelEvent {
     $user_id: string;
     chainId: number;
     distinct_id: string;
-    network: NetworkName;
+    network: NetworkProfile;
     time: number;
     token: string;
     version: string;
@@ -216,7 +216,15 @@ export class StatisticsController {
 
   track({ eventType, ...eventProperties }: AnalyticsEvent) {
     const state = this.#store.getState();
-    const chainId = this.#networkController.getNetworkCode().charCodeAt(0);
+    const networkCode = this.#networkController.getNetworkCode();
+    let chainId: number;
+    if (typeof networkCode === 'string' && networkCode.length > 0) {
+      chainId = networkCode.charCodeAt(0);
+    } else if (typeof networkCode === 'number') {
+      chainId = networkCode;
+    } else {
+      chainId = 0;
+    }
     const network = this.#networkController.getNetwork();
     const time = Date.now();
 

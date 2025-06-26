@@ -1,6 +1,10 @@
-import { usePopupDispatch } from 'popup/store/react';
+import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
+import {
+    isMultichainAccount,
+    type PreferencesAccount,
+} from 'preferences/types';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { deleteAccount } from '../../../store/actions/localState';
 import { Button } from '../ui';
@@ -11,8 +15,23 @@ export function DeleteAccount() {
 
   const navigate = useNavigate();
   const params = useParams<{ address: string }>();
-
   const dispatch = usePopupDispatch();
+  const location = useLocation();
+  const allNetworksAccounts = usePopupSelector(
+    state => state.allNetworksAccounts,
+  );
+
+  const isMultichain = location.search.includes('type=multichain');
+  let deleteKey: string | undefined = params.address;
+  if (isMultichain) {
+    const acc = allNetworksAccounts.find(
+      (x: PreferencesAccount) =>
+        x.id === params.address && isMultichainAccount(x),
+    );
+    if (acc && isMultichainAccount(acc)) {
+      deleteKey = acc.id;
+    }
+  }
 
   return (
     <div className={styles.content}>
@@ -22,8 +41,9 @@ export function DeleteAccount() {
         <Button
           id="deleteAccount"
           onClick={async () => {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            await dispatch(deleteAccount(params.address!));
+            if (deleteKey) {
+              await dispatch(deleteAccount(deleteKey));
+            }
             navigate('/', { replace: true });
           }}
           type="button"

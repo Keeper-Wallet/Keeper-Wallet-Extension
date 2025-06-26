@@ -5,7 +5,7 @@ import type { AssetsRecord } from '../assets/types';
 import type { BalancesItem } from '../balances/types';
 import type { NftConfig } from '../constants';
 import type { Message } from '../messages/types';
-import type { NetworkName } from '../networks/types';
+import type { NetworkFilter, NetworkProfile } from '../networks/types';
 import type { NftInfo } from '../nfts/nfts';
 import type { NotificationsStoreItem } from '../notifications/types';
 import type { PermissionValue } from '../permissions/types';
@@ -32,17 +32,17 @@ export type AppAction =
     }
   | {
       type: typeof ACTION.UPDATE_NODES;
-      payload: Partial<Record<NetworkName, string | null>>;
+      payload: Partial<Record<string, string | null>>;
       meta?: never;
     }
   | {
       type: typeof ACTION.UPDATE_CODES;
-      payload: Partial<Record<NetworkName, string | null>>;
+      payload: Partial<Record<string, string | null>>;
       meta?: never;
     }
   | {
       type: typeof ACTION.UPDATE_MATCHER;
-      payload: Partial<Record<NetworkName, string | null>>;
+      payload: Partial<Record<string, string | null>>;
       meta?: never;
     }
   | {
@@ -57,7 +57,17 @@ export type AppAction =
     }
   | {
       type: typeof ACTION.UPDATE_CURRENT_NETWORK;
-      payload: NetworkName;
+      payload: string;
+      meta?: never;
+    }
+  | {
+      type: typeof ACTION.UPDATE_CURRENT_PROFILE;
+      payload: NetworkProfile;
+      meta?: never;
+    }
+  | {
+      type: typeof ACTION.UPDATE_SELECTED_NETWORK_FILTER;
+      payload: NetworkFilter;
       meta?: never;
     }
   | {
@@ -320,17 +330,17 @@ export type AppAction =
     }
   | {
       type: typeof ACTION.CHANGE_NODE;
-      payload: { node: string | null; network: NetworkName };
+      payload: { node: string | null; network: string };
       meta?: never;
     }
   | {
       type: typeof ACTION.CHANGE_NETWORK_CODE;
-      payload: { code: string | null; network: NetworkName };
+      payload: { code: string | null; network: string };
       meta?: never;
     }
   | {
       type: typeof ACTION.CHANGE_MATCHER;
-      payload: { matcher: string | null; network: NetworkName };
+      payload: { matcher: string | null; network: string };
       meta?: never;
     };
 

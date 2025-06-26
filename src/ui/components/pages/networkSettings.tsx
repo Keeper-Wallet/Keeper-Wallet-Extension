@@ -2,13 +2,13 @@ import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { NETWORK_CONFIG } from '../../../constants';
-import { NetworkName } from '../../../networks/types';
+import { NETWORKS } from '../../../networks/config';
+import { type NetworkProfile } from '../../../networks/types';
 import { usePopupDispatch, usePopupSelector } from '../../../popup/store/react';
 import {
-  setCustomCode,
-  setCustomMatcher,
-  setCustomNode,
+    setCustomCode,
+    setCustomMatcher,
+    setCustomNode,
 } from '../../../store/actions/network';
 import { getMatcherPublicKey, getNetworkCode } from '../../utils/waves';
 import { Button, Copy, ErrorMessage, Input, Modal } from '../ui';
@@ -29,14 +29,19 @@ export function NetworkSettings() {
     state => state.customNodes[state.currentNetwork],
   );
 
-  const defaultNetworkConfig = NETWORK_CONFIG[currentNetwork];
+  const networkConfig = NETWORKS.find(n => n.network === 'waves');
+  const profileConfig = networkConfig?.params[currentNetwork as NetworkProfile];
+  const defaultNetworkConfig = profileConfig || {
+    rpcUrl: '',
+    chainId: '',
+    explorerUrl: '',
+  };
 
-  const initialNodeValue = customNode || defaultNetworkConfig.nodeBaseUrl;
+  const initialNodeValue = customNode || defaultNetworkConfig.rpcUrl;
   const [nodeValue, setNodeValue] = useState(initialNodeValue);
   const [nodeError, setNodeError] = useState(false);
 
-  const initialMatcherValue =
-    customMatcher || defaultNetworkConfig.matcherBaseUrl;
+  const initialMatcherValue = customMatcher || defaultNetworkConfig.rpcUrl;
   const [matcherValue, setMatcherValue] = useState(initialMatcherValue);
   const [matcherError, setMatcherError] = useState(false);
 
@@ -91,11 +96,11 @@ export function NetworkSettings() {
         const [nodeIsValid, matcherIsValid] = await Promise.all([
           getNetworkCode(nodeValue).then(
             networkCode => {
-              if (currentNetwork === NetworkName.Custom) {
+              if (currentNetwork === 'custom') {
                 dispatch(
                   setCustomCode({ code: networkCode, network: currentNetwork }),
                 );
-              } else if (networkCode !== defaultNetworkConfig.networkCode) {
+              } else if (networkCode !== defaultNetworkConfig.chainId) {
                 return false;
               }
 
@@ -103,7 +108,7 @@ export function NetworkSettings() {
                 setCustomNode({
                   network: currentNetwork,
                   node:
-                    nodeValue === defaultNetworkConfig.nodeBaseUrl
+                    nodeValue === defaultNetworkConfig.rpcUrl
                       ? null
                       : nodeValue,
                 }),
@@ -119,7 +124,7 @@ export function NetworkSettings() {
               dispatch(
                 setCustomMatcher({
                   matcher:
-                    matcherValue === defaultNetworkConfig.matcherBaseUrl
+                    matcherValue === defaultNetworkConfig.rpcUrl
                       ? null
                       : matcherValue,
                   network: currentNetwork,
@@ -220,12 +225,12 @@ export function NetworkSettings() {
         {t('networksSettings.save')}
       </Button>
 
-      {currentNetwork !== NetworkName.Custom && (
+      {currentNetwork !== 'custom' && (
         <Button
           disabled={
             isSubmitting ||
-            (nodeValue === defaultNetworkConfig.nodeBaseUrl &&
-              matcherValue === defaultNetworkConfig.matcherBaseUrl)
+            (nodeValue === defaultNetworkConfig.rpcUrl &&
+              matcherValue === defaultNetworkConfig.rpcUrl)
           }
           id="setDefault"
           onClick={() => {
@@ -235,10 +240,10 @@ export function NetworkSettings() {
               setCustomMatcher({ matcher: null, network: currentNetwork }),
             );
 
-            setNodeValue(defaultNetworkConfig.nodeBaseUrl);
+            setNodeValue(defaultNetworkConfig.rpcUrl);
             setNodeError(false);
 
-            setMatcherValue(defaultNetworkConfig.matcherBaseUrl);
+            setMatcherValue(defaultNetworkConfig.rpcUrl);
             setMatcherError(false);
 
             setShowSetDefault(true);

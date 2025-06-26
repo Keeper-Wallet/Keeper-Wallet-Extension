@@ -68,8 +68,7 @@ interface MethodCallRequestPayload<K> {
 
 type ApiObject<K extends string> = Record<
   K,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (...args: any[]) => Promise<unknown>
+  (...args: unknown[]) => Promise<unknown>
 >;
 
 type MethodCallResponse<T> =
@@ -215,8 +214,7 @@ export function createIpcCallProxy<K extends string, T extends ApiObject<K>>(
             if (response.isError) {
               reject(response.error);
             } else {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              resolve(response.data as any);
+              resolve(response.data as Awaited<ReturnType<T[Method]>>);
             }
           }),
         );

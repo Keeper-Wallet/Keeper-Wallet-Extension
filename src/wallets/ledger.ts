@@ -7,9 +7,9 @@ import {
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { type AssetInfoController } from 'controllers/assetInfo';
 import { type MessageTx } from 'messages/types';
-import { type NetworkName } from 'networks/types';
+import { type NetworkProfile } from 'networks/types';
 
-import { type WalletPrivateDataOfType } from './types';
+import { type WalletAccount, type WalletPrivateDataOfType } from './types';
 import { Wallet } from './wallet';
 
 export interface LedgerApi {
@@ -33,9 +33,9 @@ export class LedgerWallet extends Wallet<WalletPrivateDataOfType<'ledger'>> {
       publicKey,
     }: {
       address: string;
-      id: number;
+      id: string;
       name: string;
-      network: NetworkName;
+      network: NetworkProfile;
       networkCode: string;
       publicKey: string;
     },
@@ -43,6 +43,7 @@ export class LedgerWallet extends Wallet<WalletPrivateDataOfType<'ledger'>> {
     getAssetInfo: AssetInfoController['assetInfo'],
   ) {
     super({
+      accountType: 'waves',
       address,
       id,
       name,
@@ -56,15 +57,17 @@ export class LedgerWallet extends Wallet<WalletPrivateDataOfType<'ledger'>> {
     this.#ledger = ledger;
   }
 
-  getAccount() {
+  getAccount(): WalletAccount {
     return {
-      address: this.data.address,
+      accountType: 'waves',
       id: this.data.id,
+      address: this.data.address,
       name: this.data.name,
       network: this.data.network,
       networkCode: this.data.networkCode,
       publicKey: this.data.publicKey,
-      type: this.data.type,
+      type: 'ledger',
+      chain: 'waves',
     };
   }
 

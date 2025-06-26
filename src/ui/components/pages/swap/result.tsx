@@ -1,14 +1,14 @@
 import { captureException, withScope } from '@sentry/browser';
 import { Asset, Money } from '@waves/data-entities';
 import clsx from 'clsx';
-import { NetworkName } from 'networks/types';
+import { type NetworkProfile } from 'networks/types';
 import { usePopupSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Balance } from 'ui/components/ui/balance/Balance';
 import { Button } from 'ui/components/ui/buttons/Button';
 
-import { NETWORK_CONFIG } from '../../../../constants';
+import { NETWORKS } from '../../../../networks/config';
 import { SwapLayout } from './layout';
 import * as styles from './result.module.css';
 
@@ -36,11 +36,11 @@ type TxStatus =
       id: string;
     };
 
-const explorerBaseUrlsByNetwork = {
-  [NetworkName.Mainnet]: 'wavesexplorer.com',
-  [NetworkName.Testnet]: 'testnet.wavesexplorer.com',
-  [NetworkName.Stagenet]: 'stagenet.wavesexplorer.com',
-  [NetworkName.Custom]: undefined,
+const explorerBaseUrlsByNetwork: Record<NetworkProfile, string | undefined> = {
+  mainnet: 'wavesexplorer.com',
+  testnet: 'testnet.wavesexplorer.com',
+  stagenet: 'stagenet.wavesexplorer.com',
+  custom: undefined,
 };
 
 export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
@@ -49,7 +49,17 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const selectedAccount = usePopupSelector(state => state.selectedAccount);
 
-  const { nodeBaseUrl } = NETWORK_CONFIG[currentNetwork];
+  const networkConfig = NETWORKS.find(n => n.network === 'waves');
+  const profileConfig = networkConfig?.params[currentNetwork as NetworkProfile];
+  const nodeBaseUrl = profileConfig?.rpcUrl || '';
+
+  const getAccountAddress = (account: typeof selectedAccount) => {
+    if (!account) return undefined;
+    if (account.accountType === 'multichain') {
+      return account.accounts.waves?.address;
+    }
+    return account.address;
+  };
 
   const [swapStatus, setSwapStatus] = useState(SwapStatus.Pending);
   const [receivedMoney, setReceivedMoney] = useState<Money | null>(null);
@@ -96,8 +106,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
 
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const transfer = txInfo.stateChanges.transfers.find(
-              // eslint-disable-next-line @typescript-eslint/no-shadow
-              t => t.address === selectedAccount?.address,
+              tr => tr.address === getAccountAddress(selectedAccount),
             )!;
 
             setReceivedMoney(
@@ -156,7 +165,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAccount?.address, nodeBaseUrl, transactionId]);
+  }, [getAccountAddress(selectedAccount), nodeBaseUrl, transactionId]);
 
   const explorerBaseUrl = explorerBaseUrlsByNetwork[currentNetwork];
 

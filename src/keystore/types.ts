@@ -1,4 +1,4 @@
-import { type NetworkName } from 'networks/types';
+import { type NetworkProfile } from 'networks/types';
 
 export type KeystoreAccount = {
   address: string;
@@ -12,6 +12,6 @@ export type KeystoreAccount = {
 );
 
 export type KeystoreProfiles = Record<
-  NetworkName,
+  NetworkProfile,
   { accounts: KeystoreAccount[] }
 >;

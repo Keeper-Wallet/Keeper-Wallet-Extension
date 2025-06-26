@@ -185,7 +185,7 @@ export function ImportKeystore() {
 
             Object.entries(newProfiles).forEach(([network, profile]) => {
               const currentNetworkAccounts = allNetworksAccounts.filter(
-                acc => acc.network === network,
+                acc => acc.accountType === 'waves' && acc.network === network,
               );
 
               profile.accounts.forEach(profileAccount => {
@@ -241,11 +241,52 @@ export function ImportKeystore() {
 
         await dispatch(
           batchAddAccounts(
-            selectedAccounts.map(acc => ({
-              type: 'seed',
-              ...acc,
-              network: getNetworkByNetworkCode(acc.networkCode),
-            })),
+            selectedAccounts.map(acc => {
+              if ('seed' in acc) {
+                return {
+                  accountType: 'waves',
+                  name: acc.name,
+                  type: 'seed',
+                  seed: acc.seed,
+                  network: getNetworkByNetworkCode(acc.networkCode),
+                  networkCode: acc.networkCode,
+                  address: acc.address,
+                };
+              }
+              if ('encodedSeed' in acc) {
+                return {
+                  accountType: 'waves',
+                  name: acc.name,
+                  type: 'encodedSeed',
+                  encodedSeed: acc.encodedSeed,
+                  network: getNetworkByNetworkCode(acc.networkCode),
+                  networkCode: acc.networkCode,
+                  address: acc.address,
+                };
+              }
+              if ('privateKey' in acc) {
+                return {
+                  accountType: 'waves',
+                  name: acc.name,
+                  type: 'privateKey',
+                  privateKey: acc.privateKey,
+                  network: getNetworkByNetworkCode(acc.networkCode),
+                  networkCode: acc.networkCode,
+                  address: acc.address,
+                };
+              }
+              if (acc.type === 'debug') {
+                return {
+                  accountType: 'waves',
+                  name: acc.name,
+                  type: 'debug',
+                  address: acc.address,
+                  network: getNetworkByNetworkCode(acc.networkCode),
+                  networkCode: acc.networkCode,
+                };
+              }
+              throw new Error('Unknown account type');
+            }),
             walletType,
           ),
         );

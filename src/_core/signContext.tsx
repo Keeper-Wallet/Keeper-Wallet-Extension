@@ -2,14 +2,15 @@ import clsx from 'clsx';
 import { LedgerConnectModal } from 'ledger/connectModal';
 import { ledgerService, LedgerServiceStatus } from 'ledger/service';
 import { usePopupSelector } from 'popup/store/react';
+import type { PreferencesAccount } from 'preferences/types';
 import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
+    createContext,
+    type ReactNode,
+    useCallback,
+    useContext,
+    useMemo,
+    useRef,
+    useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
@@ -21,20 +22,24 @@ import { Login } from '../ui/components/pages/importEmail/login';
 import * as styles from './signContext.module.css';
 
 type CreateSign = <P>(
-  onConfirm: (params: P) => void,
+  onConfirm: (params: P) => void | Promise<void>,
 ) => (params: P) => Promise<void>;
 
-export const SignContext = createContext<{ createSign: null | CreateSign }>({
+interface SignContextType {
+  createSign: CreateSign | null;
+}
+export const SignContext = createContext<SignContextType>({
   createSign: null,
 });
 
 function usePromiseDialogController(initiallyOpen = false) {
   const [isOpen, setIsOpen] = useState(initiallyOpen);
 
-  const modalPromiseRef = useRef<null | {
+  type ModalPromise = {
     resolve: (value: unknown) => void;
-    reject: (reason: unknown) => void;
-  }>(null);
+    reject: (reason?: unknown) => void;
+  };
+  const modalPromiseRef = useRef<ModalPromise | null>(null);
 
   const open = useCallback(() => {
     setIsOpen(true);
@@ -74,38 +79,40 @@ function usePromiseDialogController(initiallyOpen = false) {
 export function SignProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
 
-  const account = usePopupSelector(state => state.selectedAccount);
+  const account: PreferencesAccount | undefined = usePopupSelector(state => state.selectedAccount);
 
   const confirmDialog = usePromiseDialogController();
 
   const createSign: CreateSign = useCallback(
     onConfirm => async params => {
-      switch (account?.type) {
-        case 'wx':
-          try {
-            await Background.identityRestore(account.uuid);
-            onConfirm(params);
-          } catch (e) {
-            await confirmDialog.open();
-            await Background.identityUpdate();
-            onConfirm(params);
-            confirmDialog.close();
-          }
-          break;
-        case 'ledger':
-          await ledgerService.updateStatus(account.networkCode);
-
-          if (ledgerService.status === LedgerServiceStatus.Ready) {
-            onConfirm(params);
-          } else {
-            await confirmDialog.open();
-            onConfirm(params);
-            confirmDialog.close();
-          }
-          break;
-        default:
+      if (!account) {
+        onConfirm(params);
+        return;
+      }
+      if (isWxAccount(account)) {
+        try {
+          await Background.identityRestore(account.uuid);
           onConfirm(params);
-          break;
+        } catch (e) {
+          await confirmDialog.open();
+          await Background.identityUpdate();
+          onConfirm(params);
+          confirmDialog.close();
+        }
+      } else if (isLedgerAccount(account)) {
+        const ledgerAccount = account;
+        if (ledgerAccount.networkCode) {
+          await ledgerService.updateStatus(ledgerAccount.networkCode);
+        }
+        if (ledgerService.status === LedgerServiceStatus.Ready) {
+          onConfirm(params);
+        } else {
+          await confirmDialog.open();
+          onConfirm(params);
+          confirmDialog.close();
+        }
+      } else {
+        onConfirm(params);
       }
     },
     [account, confirmDialog],
@@ -119,7 +126,7 @@ export function SignProvider({ children }: { children: ReactNode }) {
         {children}
       </SignContext.Provider>
 
-      {account?.type === 'wx' && (
+      {isWxAccount(account) && (
         <Modal
           showModal={confirmDialog.isOpen}
           animation={Modal.ANIMATION.FLASH}
@@ -146,18 +153,21 @@ export function SignProvider({ children }: { children: ReactNode }) {
         </Modal>
       )}
 
-      {account?.type === 'ledger' && (
-        <Modal
-          animation={Modal.ANIMATION.FLASH}
-          showModal={confirmDialog.isOpen}
-        >
-          <LedgerConnectModal
-            networkCode={account.networkCode}
-            onClose={confirmDialog.onCancel}
-            onReady={confirmDialog.onOk}
-          />
-        </Modal>
-      )}
+      {isLedgerAccount(account) && (() => {
+        const ledgerAccount = account;
+        return (
+          <Modal
+            animation={Modal.ANIMATION.FLASH}
+            showModal={confirmDialog.isOpen}
+          >
+            <LedgerConnectModal
+              networkCode={ledgerAccount.networkCode}
+              onClose={confirmDialog.onCancel}
+              onReady={confirmDialog.onOk}
+            />
+          </Modal>
+        );
+      })()}
     </>
   );
 }
@@ -183,4 +193,12 @@ export function useSign<OnConfirmParams>(
   );
 
   return { sign, isSignPending };
+}
+
+function isWxAccount(account: PreferencesAccount | undefined): account is Extract<PreferencesAccount, { type: 'wx' }> {
+  return !!account && account.accountType === 'waves' && account.type === 'wx';
+}
+
+function isLedgerAccount(account: PreferencesAccount | undefined): account is PreferencesAccount & { networkCode: string; type: 'ledger' } {
+  return !!account && account.accountType === 'waves' && account.type === 'ledger' && 'networkCode' in account && typeof account.networkCode === 'string';
 }

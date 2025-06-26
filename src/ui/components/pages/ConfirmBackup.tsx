@@ -11,7 +11,7 @@ import * as styles from './styles/confirmBackup.styl';
 const SHUFFLE_COUNT = 500;
 
 interface StateProps {
-  account: Extract<NewAccountState, { type: 'seed' }>;
+  account: Extract<NewAccountState, { type: 'seed' } | { type: 'multichain' }>;
 }
 
 type Props = WithTranslation & StateProps & WithNavigate;
@@ -166,7 +166,7 @@ const mapStateToProps = (state: AccountsState): StateProps => {
   return {
     account: state.localState.newAccount as Extract<
       NewAccountState,
-      { type: 'seed' }
+      { type: 'seed' } | { type: 'multichain' }
     >,
   };
 };

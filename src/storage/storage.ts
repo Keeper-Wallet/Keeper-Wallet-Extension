@@ -3,11 +3,12 @@ import { type AssetsRecord } from 'assets/types';
 import { type TrashItem } from 'controllers/trash';
 import { deepEqual } from 'fast-equals';
 import { type Message } from 'messages/types';
-import { type NetworkName } from 'networks/types';
+import { type NetworkProfile } from 'networks/types';
 import { type NftInfo } from 'nfts/nfts';
 import { type NotificationsStoreItem } from 'notifications/types';
 import type ObservableStore from 'obs-store';
 import { type PermissionValue } from 'permissions/types';
+import { normalizeAccounts } from 'preferences/normalize';
 import { type IdleOptions, type PreferencesAccount } from 'preferences/types';
 import { type UiState } from 'store/reducers/updateState';
 import Browser from 'webextension-polyfill';
@@ -20,9 +21,9 @@ import {
   type IgnoreErrorsConfig,
   type NftConfig,
 } from '../constants';
-import { MIGRATIONS } from './migrations';
+import { migrations } from './migrations';
 
-const CURRENT_MIGRATION_VERSION = 3;
+const CURRENT_MIGRATION_VERSION = migrations.length;
 
 export async function backupStorage() {
   const { backup, WalletController } = await Browser.storage.local.get([
@@ -47,7 +48,7 @@ export interface StorageLocalState {
   accounts: PreferencesAccount[];
   addresses: Record<string, string>;
   assetLogos: Record<string, string>;
-  assets: Record<NetworkName, AssetsRecord>;
+  assets: Record<string, AssetsRecord>;
   swappableAssetIdsByVendor: Record<string, string[]>;
   assetsConfig: AssetsConfig;
   assetTickers: Record<string, string>;
@@ -59,10 +60,11 @@ export interface StorageLocalState {
   };
   cognitoSessions: string | undefined;
   currentLocale: string;
-  currentNetwork: NetworkName;
-  customCodes: Record<NetworkName, string | null>;
-  customMatchers: Record<NetworkName, string | null>;
-  customNodes: Record<NetworkName, string | null>;
+  currentNetwork: string;
+  currentProfile: NetworkProfile;
+  customCodes: Record<string, string | null>;
+  customMatchers: Record<string, string | null>;
+  customNodes: Record<string, string | null>;
   data: TrashItem[];
   identityConfig: typeof DEFAULT_IDENTITY_CONFIG;
   idleOptions: IdleOptions;
@@ -126,6 +128,15 @@ export class ExtensionStorage {
           : acc,
       {},
     );
+
+    if (
+      'accounts' in defaultsInitState &&
+      Array.isArray(defaultsInitState.accounts)
+    ) {
+      defaultsInitState.accounts = normalizeAccounts(
+        defaultsInitState.accounts,
+      );
+    }
 
     const initState = { ...defaults, ...defaultsInitState };
     this.#state = { ...this.#state, ...initState };
@@ -233,20 +244,20 @@ export async function createExtensionStorage() {
 
     if (version < CURRENT_MIGRATION_VERSION) {
       for (let i = version; i < CURRENT_MIGRATION_VERSION; i++) {
-        await MIGRATIONS[i].migrate();
+        await migrations[i].migrate();
       }
     } else if (version > CURRENT_MIGRATION_VERSION) {
       for (let i = version; i > CURRENT_MIGRATION_VERSION; i--) {
-        await MIGRATIONS[i - 1].rollback();
+        await migrations[i - 1].rollback();
       }
     }
 
     await Browser.storage.local.set({
       migrationVersion: CURRENT_MIGRATION_VERSION,
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any) {
-    if (!err.message.includes('FILE_ERROR_NO_SPACE')) {
+  } catch (err: unknown) {
+    const error = err as Error;
+    if (!error.message.includes('FILE_ERROR_NO_SPACE')) {
       captureException(err);
     }
   }

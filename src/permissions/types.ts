@@ -14,8 +14,8 @@ export interface PermissionObject {
   approved?: ApprovedItem[];
   time?: number;
   canUse?: boolean | null;
-  totalAmount?: undefined;
-  interval?: undefined;
+  totalAmount?: number;
+  interval?: number;
 }
 
 export type PermissionValue = PermissionType | PermissionObject;

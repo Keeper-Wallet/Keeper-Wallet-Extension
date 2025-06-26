@@ -3,7 +3,7 @@ import { Asset, Money } from '@waves/data-entities';
 import { type BalanceAssets } from 'balances/types';
 import clsx from 'clsx';
 import ColorHash from 'color-hash';
-import { type NetworkName } from 'networks/types';
+import { type NetworkProfile } from 'networks/types';
 import { cloneElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui/components/ui/buttons/Button';
@@ -22,7 +22,7 @@ export interface AssetSelectModalOption extends AssetDetail {
 interface ItemProps {
   className?: string;
   asset: AssetSelectModalOption;
-  network: NetworkName;
+  network: NetworkProfile;
   balance: Money;
   onSelect: (assetId: string) => void;
 }
@@ -79,7 +79,7 @@ function AssetSelectItem({
 interface Props {
   assetBalances: BalanceAssets;
   assets: AssetSelectModalOption[];
-  network: NetworkName;
+  network: NetworkProfile;
   onClose: () => void;
   onSelect: (assetId: string) => void;
 }

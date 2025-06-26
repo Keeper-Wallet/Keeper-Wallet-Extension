@@ -1,10 +1,10 @@
-import { isNotNull } from '_core/isNotNull';
-import { useSign } from '_core/signContext';
 import { base58Encode } from '@keeper-wallet/waves-crypto';
 import { captureException } from '@sentry/browser';
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { isNotNull } from '_core/isNotNull';
+import { useSign } from '_core/signContext';
 import { type AssetDetail } from 'assets/types';
 import { useAssetIdByTicker } from 'assets/utils';
 import { convertFeeToAsset } from 'fee/utils';
@@ -14,9 +14,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import invariant from 'tiny-invariant';
-import background from 'ui/services/Background';
-import Background from 'ui/services/Background';
+import {
+    default as Background,
+    default as background,
+} from 'ui/services/Background';
 
+import { NetworkName, NetworkProfile } from 'networks/types';
+import { isMultichainAccount } from 'preferences/types';
 import { type OnSwapParams, SwapForm } from './form';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
@@ -33,7 +37,7 @@ export function Swap() {
 
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
 
-  const usdnAssetId = useAssetIdByTicker(currentNetwork, 'USDN');
+  const usdnAssetId = useAssetIdByTicker(currentNetwork as NetworkName, 'USDN');
 
   const initialFromAssetId = searchParams.get('fromAssetId') || usdnAssetId;
 
@@ -51,8 +55,18 @@ export function Swap() {
     let cancelled = false;
     let timeout: number;
 
+    const getAddress = () => {
+      if (isMultichainAccount(selectedAccount)) {
+        return selectedAccount.accounts.waves?.address || '';
+      }
+      return selectedAccount.address;
+    };
+
+    let profile: NetworkProfile = NetworkProfile.Mainnet;
+    if (currentNetwork === NetworkName.Testnet) profile = NetworkProfile.Testnet;
+
     background
-      .getExtraFee(selectedAccount.address, currentNetwork)
+      .getExtraFee(getAddress(), profile)
       .then(feeExtra => {
         if (!cancelled) {
           setWavesFeeCoins(minimumFee + feeExtra);
@@ -66,7 +80,24 @@ export function Swap() {
         window.clearTimeout(timeout);
       }
     };
-  }, [currentNetwork, minimumFee, selectedAccount?.address]);
+  }, [currentNetwork, minimumFee, selectedAccount]);
+
+  const getWavesAccountData = () => {
+    if (isMultichainAccount(selectedAccount)) {
+      return {
+        address: selectedAccount.accounts.waves?.address || '',
+        publicKey: selectedAccount.accounts.waves?.publicKey || '',
+        networkCode: 'W',
+      };
+    }
+    return {
+      address: selectedAccount.address,
+      publicKey: selectedAccount.publicKey,
+      networkCode: selectedAccount.networkCode,
+    };
+  };
+
+  const { address: swapAddress } = getWavesAccountData();
 
   const assets = usePopupSelector(state => state.assets);
   const swappableAssetIdsByVendor = usePopupSelector(
@@ -89,7 +120,7 @@ export function Swap() {
   }, [swappableAssetEntries, dispatch]);
 
   const accountBalance = usePopupSelector(
-    state => state.balances[selectedAccount.address],
+    state => state.balances[swapAddress],
   );
 
   const [performedSwapData, setPerformedSwapData] = useState<{
@@ -121,16 +152,18 @@ export function Swap() {
       try {
         const fee = convertFeeToAsset(wavesFee, new Asset(feeAsset)).toCoins();
 
+        const { publicKey, networkCode } = getWavesAccountData();
+
         const fullSwapTx = {
           ...tx,
           type: TRANSACTION_TYPE.INVOKE_SCRIPT,
-          chainId: selectedAccount.networkCode.charCodeAt(0),
+          chainId: networkCode.charCodeAt(0),
           fee,
           feeAssetId: feeAssetId === 'WAVES' ? null : feeAssetId,
           initialFee: fee,
           initialFeeAssetId: feeAssetId === 'WAVES' ? null : feeAssetId,
           proofs: [],
-          senderPublicKey: selectedAccount.publicKey,
+          senderPublicKey: publicKey,
           timestamp: Date.now(),
           version: 2 as const,
         };
@@ -315,6 +348,7 @@ export function Swap() {
       swappableAssets={swappableAssets.filter(isNotNull)}
       wavesFeeCoins={wavesFeeCoins}
       onSwap={sign}
+      accountBalance={accountBalance}
     />
   );
 }

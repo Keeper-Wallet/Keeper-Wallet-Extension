@@ -12,6 +12,7 @@ export type NewAccountState = {
   | { type: 'ledger'; id: number; publicKey: string }
   | { type: 'privateKey'; privateKey: string }
   | { type: 'seed'; seed: string }
+  | { type: 'multichain'; seed: string; ethereumAddress?: string; addressEvm?: string; accountType?: 'multichain' }
   | { type: 'wx'; publicKey: string; uuid: string; username: string }
 );
 
@@ -30,10 +31,10 @@ function newAccount(
       return { ...state, name };
     }
     case ACTION.NEW_ACCOUNT_SELECT:
-      return { ...state, ...action.payload };
+      return { ...state, ...action.payload } as NewAccountState;
+    default:
+      return state;
   }
-
-  return state;
 }
 
 function loading(state = true, { type, payload }: AppAction) {

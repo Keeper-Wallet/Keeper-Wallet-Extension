@@ -1,8 +1,8 @@
 import { base58Decode } from '@keeper-wallet/waves-crypto';
 import type { IdentityApi } from 'controllers/IdentityController';
-import { type NetworkName } from 'networks/types';
+import { type NetworkProfile } from 'networks/types';
 
-import { type WalletPrivateDataOfType } from './types';
+import { type WalletAccount, type WalletPrivateDataOfType } from './types';
 import { Wallet } from './wallet';
 
 export class WxWallet extends Wallet<WalletPrivateDataOfType<'wx'>> {
@@ -17,18 +17,22 @@ export class WxWallet extends Wallet<WalletPrivateDataOfType<'wx'>> {
       publicKey,
       username,
       uuid,
+      id,
     }: {
       address: string;
       name: string;
-      network: NetworkName;
+      network: NetworkProfile;
       networkCode: string;
       publicKey: string;
       username: string;
       uuid: string;
+      id?: string;
     },
     identity: IdentityApi,
   ) {
     super({
+      accountType: 'waves',
+      id: id || address,
       address,
       name,
       network,
@@ -42,16 +46,19 @@ export class WxWallet extends Wallet<WalletPrivateDataOfType<'wx'>> {
     this.#identity = identity;
   }
 
-  getAccount() {
+  getAccount(): WalletAccount {
     return {
+      accountType: 'waves',
+      id: this.data.id,
       address: this.data.address,
       name: this.data.name,
       network: this.data.network,
       networkCode: this.data.networkCode,
       publicKey: this.data.publicKey,
-      type: this.data.type,
-      username: this.data.username,
+      type: 'wx',
       uuid: this.data.uuid,
+      username: this.data.username,
+      chain: 'waves',
     };
   }
 

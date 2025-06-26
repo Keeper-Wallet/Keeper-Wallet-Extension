@@ -13,10 +13,10 @@ import { ImportEmail } from '../ui/components/pages/importEmail/importEmail';
 import { ImportAddressBook } from '../ui/components/pages/importKeystore/importAddressBook';
 import { ImportKeystore } from '../ui/components/pages/importKeystore/importKeystore';
 import { ImportLedger } from '../ui/components/pages/importLedger/importLedger';
-import { ImportSeed } from '../ui/components/pages/importSeed';
+import { ImportChooseAccountType, ImportSeedMultichain, ImportSeedWaves } from '../ui/components/pages/importSeed';
 import {
-  ImportSuccess,
-  ImportSuccessAddressBook,
+    ImportSuccess,
+    ImportSuccessAddressBook,
 } from '../ui/components/pages/importSuccess';
 import { NewAccount } from '../ui/components/pages/NewAccount';
 import { NewWallet } from '../ui/components/pages/NewWallet';
@@ -82,7 +82,27 @@ export const routes: RouteObject[] = [
         element: (
           <>
             <Menu hasBack hasLogo />
-            <ImportSeed />
+            <ImportChooseAccountType />
+            <BottomPanel />
+          </>
+        ),
+      },
+      {
+        path: '/import-seed/waves',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <ImportSeedWaves />
+            <BottomPanel />
+          </>
+        ),
+      },
+      {
+        path: '/import-seed/multichain',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <ImportSeedMultichain />
             <BottomPanel />
           </>
         ),

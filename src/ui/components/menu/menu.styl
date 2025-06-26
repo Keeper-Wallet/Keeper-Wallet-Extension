@@ -1,7 +1,13 @@
 @import '../../styles/colors.styl';
 
+.networkSwitcher
+  position: absolute;
+  left: 8px;
+  top: 13px;
+  z-index: 1;
+
 .settingsIcon,
-.navigationIcon,
+.networkSwitcherIcon,
 .arrowBackIcon,
 .closeIcon
   display: block;
@@ -19,10 +25,9 @@
   z-index: 1;
   background: url(../../assets/img/setting-18-black.svg) center no-repeat;
 
-.navigationIcon
+.networkSwitcherIcon
   left: 8px;
-  z-index: 1;
-  background: url(../../assets/img/menu-18-black.svg) center no-repeat;
+  z-index: 10;
 
 .arrowBackIcon
   left: 8px;

@@ -23,7 +23,10 @@ export function ImportEmail() {
       if (
         accounts.find(
           account =>
-            account.type === 'wx' && account.username === userData.username,
+            account.accountType === 'waves' &&
+            account.type === 'wx' &&
+            'username' in account &&
+            account.username === userData.username,
         )
       ) {
         throw new Error(t('importEmail.alreadyExists'));

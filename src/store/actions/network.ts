@@ -1,10 +1,10 @@
-import { type NetworkName } from '../../networks/types';
+import { type NetworkProfile } from '../../networks/types';
 import { type PopupThunkAction } from '../../popup/store/types';
 import Background from '../../ui/services/Background';
 import { ACTION } from './constants';
 
 export function setNetwork(
-  network: NetworkName,
+  network: NetworkProfile,
 ): PopupThunkAction<Promise<void>> {
   return async () => {
     await Background.setNetwork(network);
@@ -12,7 +12,7 @@ export function setNetwork(
 }
 
 export const setCustomNode = (payload: {
-  network: NetworkName;
+  network: string;
   node: string | null;
 }) => {
   return {
@@ -22,7 +22,7 @@ export const setCustomNode = (payload: {
 };
 
 export const setCustomCode = (payload: {
-  network: NetworkName;
+  network: string;
   code: string | null;
 }) => {
   return {
@@ -32,7 +32,7 @@ export const setCustomCode = (payload: {
 };
 
 export const setCustomMatcher = (payload: {
-  network: NetworkName;
+  network: string;
   matcher: string | null;
 }) => {
   return {

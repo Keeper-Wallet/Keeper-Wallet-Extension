@@ -2,8 +2,12 @@ import i18next from 'i18next';
 
 import { type AppMiddleware } from '../../store/types';
 import Background from '../../ui/services/Background';
-import { ACTION } from '../actions/constants';
+import { ACTION, createAction } from '../actions/constants';
 import { notificationSelect } from '../actions/localState';
+
+const setSelectedNetworkFilter = createAction(
+  ACTION.UPDATE_SELECTED_NETWORK_FILTER,
+);
 
 export const changeLang: AppMiddleware = store => next => action => {
   if (
@@ -51,19 +55,46 @@ export const updateCurrentAccountBalance: AppMiddleware =
   };
 
 export const selectAccount: AppMiddleware = store => next => action => {
-  if (
-    action.type === ACTION.SELECT_ACCOUNT &&
-    store.getState().selectedAccount?.address !== action.payload.address
-  ) {
-    const { currentNetwork } = store.getState();
-    Background.selectAccount(action.payload.address, currentNetwork).then(
-      () => {
+  if (action.type === ACTION.SELECT_ACCOUNT) {
+    const selected = store.getState().selectedAccount;
+    const state = store.getState();
+
+    if (action.payload.accountType === 'multichain') {
+      if (selected?.accountType === 'waves') {
+        store.dispatch(setSelectedNetworkFilter('all'));
+      }
+
+      Background.selectAccountById(
+        action.payload.id,
+        action.payload.accountType,
+      ).then(() => {
+        Background.updateCurrentAccountBalance();
         store.dispatch(notificationSelect(true));
         setTimeout(() => store.dispatch(notificationSelect(false)), 1000);
-      },
-    );
-  }
+      });
+      return next(action);
+    }
 
+    if (
+      action.payload.accountType === 'waves' &&
+      (!selected ||
+        selected.accountType !== 'waves' ||
+        selected.address !== action.payload.address ||
+        selected.network !== action.payload.network)
+    ) {
+      if (state.selectedNetworkFilter !== 'waves') {
+        store.dispatch(setSelectedNetworkFilter('waves'));
+      }
+
+      Background.selectAccount(
+        action.payload.address,
+        action.payload.network,
+      ).then(() => {
+        store.dispatch(notificationSelect(true));
+        setTimeout(() => store.dispatch(notificationSelect(false)), 1000);
+      });
+    }
+  }
   return next(action);
 };
 

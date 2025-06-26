@@ -1,26 +1,45 @@
 import { addBreadcrumb } from '@sentry/browser';
 import EventEmitter from 'events';
-import { type NetworkName } from 'networks/types';
+import { NetworkProfile } from 'networks/types';
 import ObservableStore from 'obs-store';
+import {
+  normalizeOldWavesAccount,
+  type OldWavesAccount,
+} from 'preferences/normalize';
+import type { PreferencesAccount } from 'preferences/types';
 import { type IdleOptions } from 'preferences/types';
-import { compareAccountsByLastUsed } from 'preferences/utils';
 import { type WalletAccount } from 'wallets/types';
 
 import { type ExtensionStorage } from '../storage/storage';
 import { type NetworkController } from './network';
 
+function isOldWavesAccount(account: unknown): account is OldWavesAccount {
+  return (
+    typeof account === 'object' &&
+    account !== null &&
+    !('accountType' in account) &&
+    typeof (account as OldWavesAccount).address === 'string' &&
+    typeof (account as OldWavesAccount).publicKey === 'string' &&
+    typeof (account as OldWavesAccount).network === 'string' &&
+    typeof (account as OldWavesAccount).name === 'string'
+  );
+}
+
 export class PreferencesController extends EventEmitter {
   store;
   private getNetwork;
+  private networkController;
 
   constructor({
     extensionStorage,
     initLangCode,
     getNetwork,
+    networkController,
   }: {
     extensionStorage: ExtensionStorage;
     initLangCode: string | null | undefined;
     getNetwork: NetworkController['getNetwork'];
+    networkController: NetworkController;
   }) {
     super();
 
@@ -36,6 +55,7 @@ export class PreferencesController extends EventEmitter {
     extensionStorage.subscribe(this.store);
 
     this.getNetwork = getNetwork;
+    this.networkController = networkController;
   }
 
   getAccounts() {
@@ -57,110 +77,192 @@ export class PreferencesController extends EventEmitter {
   }
 
   syncAccounts(fromKeyrings: WalletAccount[]) {
-    const oldAccounts = this.store.getState().accounts;
-    const accounts = fromKeyrings.map((account, i) => {
-      return Object.assign(
-        { name: `Account ${i + 1}` },
-        account,
-        oldAccounts.find(
-          oldAcc =>
-            oldAcc.address === account.address &&
-            oldAcc.network === account.network,
-        ),
-      );
+    const oldAccounts: PreferencesAccount[] = this.store.getState().accounts;
+    const currentNetwork = this.getNetwork();
+    const accounts: PreferencesAccount[] = [];
+    fromKeyrings.forEach((account, i) => {
+      if (isOldWavesAccount(account)) {
+        const normalized = normalizeOldWavesAccount(account);
+        if (normalized) {
+          accounts.push(normalized);
+          return;
+        }
+      }
+      if (account.accountType === 'multichain') {
+        const multichainPreferences: PreferencesAccount = {
+          ...(account as Extract<WalletAccount, { accountType: 'multichain' }>),
+          chain: 'all',
+          network: NetworkProfile.Mainnet,
+          type: 'seed',
+          lastUsed: oldAccounts.find(
+            oldAcc =>
+              oldAcc.accountType === 'multichain' && oldAcc.id === account.id,
+          )?.lastUsed,
+        };
+        accounts.push(multichainPreferences);
+      } else if (account.type === 'wx') {
+        accounts.push({
+          ...account,
+          ...(typeof (account as { uuid?: string }).uuid === 'string'
+            ? { uuid: (account as { uuid: string }).uuid }
+            : {}),
+          ...(typeof (account as { username?: string }).username === 'string'
+            ? { username: (account as { username: string }).username }
+            : {}),
+          lastUsed: oldAccounts.find(
+            oldAcc =>
+              oldAcc.accountType === 'waves' &&
+              oldAcc.address === account.address &&
+              oldAcc.network === account.network,
+          )?.lastUsed,
+        } as PreferencesAccount);
+      } else {
+        accounts.push({
+          ...account,
+          lastUsed: oldAccounts.find(
+            oldAcc =>
+              oldAcc.accountType === 'waves' &&
+              oldAcc.address === account.address &&
+              oldAcc.network === account.network,
+          )?.lastUsed,
+        } as PreferencesAccount);
+      }
     });
     this.store.updateState({ accounts });
-
     this.ensureSelectedAccountInCurrentNetwork();
   }
 
   ensureSelectedAccountInCurrentNetwork() {
-    const network = this.getNetwork();
+    const currentProfile =
+      this.networkController?.getProfile() || NetworkProfile.Mainnet;
+    const currentNetworkId =
+      this.networkController?.getCurrentNetworkId() || 'waves-mainnet';
     const { accounts, selectedAccount } = this.store.getState();
-    const currentNetworkAccounts = accounts.filter(
-      account => account.network === network,
-    );
 
-    if (
-      !selectedAccount ||
-      !currentNetworkAccounts.some(
-        account =>
-          account.address === selectedAccount.address &&
-          account.network === selectedAccount.network,
-      )
-    ) {
-      let addressToSelect: string | undefined;
-
-      if (currentNetworkAccounts.length > 0) {
-        const sortedAccounts = currentNetworkAccounts.sort(
-          compareAccountsByLastUsed,
-        );
-
-        addressToSelect = sortedAccounts[0].address;
+    const currentProfileAccounts = accounts.filter(account => {
+      if (account.accountType === 'multichain') {
+        return true;
       }
 
-      this.selectAccount(addressToSelect, network);
-    }
-  }
+      if (account.accountType === 'waves') {
+        if (currentProfile === NetworkProfile.Mainnet) {
+          return (
+            account.network === NetworkProfile.Mainnet ||
+            account.network === 'mainnet'
+          );
+        } else {
+          return (
+            account.network === NetworkProfile.Testnet ||
+            account.network === 'testnet' ||
+            account.network === 'stagenet' ||
+            account.network === 'custom'
+          );
+        }
+      }
 
-  addLabel(address: string, label: string, network: NetworkName) {
-    const { accounts, selectedAccount } = this.store.getState();
+      return false;
+    });
 
-    const account = accounts.find(
-      current => current.address === address && current.network === network,
-    );
+    const selectedId = selectedAccount?.id;
+    const selectedType = selectedAccount?.accountType;
 
-    if (!account) {
-      throw new Error(
-        `Account with address "${address}" in ${network} not found`,
+    const isSelectedAccountValid =
+      selectedAccount &&
+      currentProfileAccounts.some(
+        account =>
+          account.id === selectedId && account.accountType === selectedType,
+      );
+
+    if (!isSelectedAccountValid && currentProfileAccounts.length > 0) {
+      this.selectAccountByIdAndType(
+        currentProfileAccounts[0].id,
+        currentProfileAccounts[0].accountType,
       );
     }
-
-    account.name = label;
-
-    this.store.updateState({
-      accounts,
-
-      // selectedAccount can point to a separate object, not an accounts array
-      // item, so we need to update it explicitly
-      selectedAccount:
-        selectedAccount && address === selectedAccount.address
-          ? account
-          : selectedAccount,
-    });
   }
 
-  selectAccount(address: string | undefined, network: string) {
+  selectAccountByIdAndType(
+    id: string | undefined,
+    accountType: string | undefined,
+  ) {
     const { accounts, selectedAccount } = this.store.getState();
-
-    if (
-      !selectedAccount ||
-      selectedAccount.address !== address ||
-      selectedAccount.network !== network
-    ) {
+    const selectedId = selectedAccount?.id;
+    const selectedType = selectedAccount?.accountType;
+    if (!selectedAccount || selectedId !== id || selectedType !== accountType) {
       addBreadcrumb({
         type: 'user',
         category: 'account-change',
         level: 'info',
         message: 'Change active account',
       });
-
       if (selectedAccount) {
         accounts.forEach(acc => {
-          if (acc.address === selectedAccount.address) {
+          if (acc.id === selectedId && acc.accountType === selectedType) {
             acc.lastUsed = Date.now();
           }
         });
       }
-
       this.store.updateState({
         accounts,
         selectedAccount: accounts.find(
-          account => account.address === address && account.network === network,
+          account => account.id === id && account.accountType === accountType,
         ),
       });
-
       this.emit('accountChange');
     }
+  }
+
+  selectAccount(addressOrId: string | undefined, networkOrType: string) {
+    const { accounts, selectedAccount } = this.store.getState();
+    let account: PreferencesAccount | undefined;
+    if (networkOrType === 'multichain') {
+      account = accounts.find(
+        acc => acc.accountType === 'multichain' && acc.id === addressOrId,
+      );
+    } else {
+      account = accounts.find(
+        acc =>
+          acc.accountType === 'waves' &&
+          acc.address === addressOrId &&
+          acc.network === networkOrType,
+      );
+    }
+    if (!account) return;
+    this.store.updateState({
+      accounts,
+      selectedAccount: account,
+    });
+    this.emit('accountChange');
+  }
+
+  addLabel(address: string, label: string, network: string) {
+    const { accounts, selectedAccount } = this.store.getState();
+    const account = accounts.find(
+      current =>
+        current.accountType === 'waves' &&
+        current.address === address &&
+        current.network === network,
+    );
+    if (!account) {
+      throw new Error(
+        `Account with address "${address}" in ${network} not found`,
+      );
+    }
+    account.name = label;
+    const selectedAddress =
+      selectedAccount?.accountType === 'waves'
+        ? selectedAccount.address
+        : undefined;
+    this.store.updateState({
+      accounts,
+      // selectedAccount can point to a separate object, not an accounts array
+      // item, so we need to update it explicitly
+      selectedAccount:
+        selectedAccount &&
+        selectedAccount.accountType === 'waves' &&
+        address === selectedAddress
+          ? account
+          : selectedAccount,
+    });
   }
 }

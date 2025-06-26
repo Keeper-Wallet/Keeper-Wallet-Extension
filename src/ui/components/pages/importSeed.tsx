@@ -1,30 +1,33 @@
 import {
-  base58Decode,
-  base58Encode,
-  createAddress,
-  createPrivateKey,
-  createPublicKey,
-  utf8Encode,
+    base58Decode,
+    base58Encode,
+    createAddress,
+    createPrivateKey,
+    createPublicKey,
+    utf8Encode,
 } from '@keeper-wallet/waves-crypto';
 import clsx from 'clsx';
 import { isAddressString, isBase58 } from 'messages/utils';
+import { type NetworkProfile } from 'networks/types';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
-import { useCallback, useEffect, useState } from 'react';
+import { type PreferencesAccount } from 'preferences/types';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { newAccountSelect, selectAccount } from 'store/actions/localState';
 import invariant from 'tiny-invariant';
+import { getEthereumData, getWavesData } from 'units/ed25519';
 
-import { NETWORK_CONFIG } from '../../../constants';
+import { NETWORKS } from '../../../networks/config';
 import {
-  Button,
-  ErrorMessage,
-  Input,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
+    Button,
+    ErrorMessage,
+    Input,
+    Tab,
+    TabList,
+    TabPanel,
+    TabPanels,
+    Tabs,
 } from '../ui';
 import { InlineButton } from '../ui/buttons/inlineButton';
 import * as styles from './importSeed.module.css';
@@ -40,7 +43,7 @@ function stripBase58Prefix(str: string) {
   return str.replace(/^base58:/, '');
 }
 
-export function ImportSeed() {
+export function ImportSeedWaves() {
   const navigate = useNavigate();
   const dispatch = usePopupDispatch();
   const { t } = useTranslation();
@@ -56,8 +59,10 @@ export function ImportSeed() {
   const [encodedSeedValue, setEncodedSeedValue] = useState<string>('');
   const [privateKeyValue, setPrivateKeyValue] = useState<string>('');
 
+  const networkConfig = NETWORKS.find(n => n.network === 'waves');
+  const profileConfig = networkConfig?.params[currentNetwork as NetworkProfile];
   const networkCode =
-    customCodes[currentNetwork] || NETWORK_CONFIG[currentNetwork].networkCode;
+    customCodes[currentNetwork] || String(profileConfig?.chainId ?? '');
 
   const [address, setAddress] = useState<string>();
 
@@ -65,9 +70,18 @@ export function ImportSeed() {
     React.ReactElement | string
   >();
 
+  const getAccountAddress = (account: (typeof accounts)[number]) => {
+    if (!account) return undefined;
+    if (account.accountType === 'multichain') {
+      return account.accounts.waves?.address;
+    }
+    return account.address;
+  };
+
   const findExistingAccount = useCallback(
     (addr: string | undefined) =>
-      addr && accounts.find(acc => acc.address === addr),
+      addr && accounts.find(acc => getAccountAddress(acc) === addr),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [accounts],
   );
 
@@ -259,7 +273,7 @@ export function ImportSeed() {
 
   return (
     <div className={styles.content}>
-      <div>
+      <div className={styles.titleBlock}>
         <h2 className="title1 margin3 left">{t('importSeed.title')}</h2>
       </div>
 
@@ -335,13 +349,15 @@ export function ImportSeed() {
 
           <TabPanels>
             <TabPanel>
+              <div className={styles.inputLabel}>
+                {t('importSeed.plainTextPlaceholder')}
+              </div>
               <Input
                 autoFocus
-                className="margin-main-top"
+                className={clsx('margin-main-top', styles.inputFullWidth)}
                 data-testid="seedInput"
                 error={validationError != null && showValidationError}
                 multiLine
-                placeholder={t('importSeed.plainTextPlaceholder')}
                 rows={3}
                 spellCheck={false}
                 value={seedValue}
@@ -354,7 +370,7 @@ export function ImportSeed() {
             <TabPanel>
               <Input
                 autoFocus
-                className="margin-main-top"
+                className={clsx('margin-main-top', styles.inputFullWidth)}
                 error={validationError != null && showValidationError}
                 multiLine
                 rows={3}
@@ -369,7 +385,7 @@ export function ImportSeed() {
             <TabPanel>
               <Input
                 autoFocus
-                className="margin-main-top"
+                className={clsx('margin-main-top', styles.inputFullWidth)}
                 error={validationError != null && showValidationError}
                 multiLine
                 rows={3}
@@ -395,11 +411,20 @@ export function ImportSeed() {
           {t('importSeed.address')}
         </div>
 
-        <div
-          className={clsx(styles.greyLine, 'grey-line')}
-          data-testid="address"
-        >
-          {address}
+        <div className={styles.addressWrapper}>
+          <div
+            className={clsx(styles.greyLine, 'grey-line')}
+            data-testid="address"
+          >
+            {address && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ color: '#0055FF', fontSize: 12 }}>◆</span>
+                <span style={{ fontFamily: 'monospace', fontSize: 10 }}>
+                  {address}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         <Button data-testid="continueBtn" type="submit" view="submit">
@@ -408,6 +433,244 @@ export function ImportSeed() {
               ? 'importSeed.switchAccount'
               : 'importSeed.importAccount',
           )}
+        </Button>
+      </form>
+    </div>
+  );
+}
+
+export { ImportSeedWaves as ImportSeed };
+
+export function ImportChooseAccountType() {
+  const navigate = useNavigate();
+  return (
+    <div className={styles.content}>
+      <div className={styles.chooseTypeTitle}>Choose account type</div>
+      <div className={styles.separatorBtns}>
+        <Button
+          view="submit"
+          onClick={() => navigate('/import-seed/multichain')}
+        >
+          Import multichain account
+        </Button>
+        <Button view="simple" onClick={() => navigate('/import-seed/waves')}>
+          Import Waves account
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export function ImportSeedMultichain() {
+  const navigate = useNavigate();
+  const dispatch = usePopupDispatch();
+  const accounts = usePopupSelector(state => state.accounts);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const customCodes = usePopupSelector(state => state.customCodes);
+
+  const [seed, setSeed] = useState('');
+  const [addressWaves, setAddressWaves] = useState('');
+  const [addressEvm, setAddressEvm] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [showValidationError, setShowValidationError] = useState(false);
+  const [existingAccount, setExistingAccount] =
+    useState<PreferencesAccount | null>(null);
+
+  const networkConfig = NETWORKS.find(n => n.network === 'waves');
+  const profileConfig = networkConfig?.params[currentNetwork as NetworkProfile];
+  const networkCode =
+    customCodes[currentNetwork] || String(profileConfig?.chainId ?? '');
+
+  const nameRef = useRef('');
+  const addressWavesRef = useRef('');
+  const addressEvmRef = useRef('');
+
+  useEffect(() => {
+    if (!addressWaves) {
+      setExistingAccount(null);
+      return;
+    }
+    const found = accounts.find(acc => {
+      if (acc.accountType === 'multichain') {
+        return acc.accounts?.waves?.address === addressWaves;
+      }
+      return acc.address === addressWaves;
+    });
+    setExistingAccount(found || null);
+    if (found) {
+      setError(
+        `Account with this Waves address already exists${
+          found.name ? `: ${found.name}` : ''
+        }`,
+      );
+    } else {
+      setError(null);
+    }
+  }, [addressWaves, accounts]);
+
+  async function handleSeedChange(value: string) {
+    const normalizedSeed = value.trim().replace(/\s+/g, ' ');
+    setSeed(normalizedSeed);
+    setError(null);
+    setAddressWaves('');
+    setAddressEvm('');
+    setExistingAccount(null);
+    nameRef.current = '';
+    addressWavesRef.current = '';
+    addressEvmRef.current = '';
+    if (!normalizedSeed) return;
+    if (normalizedSeed.length < 12) {
+      setError('Seed phrase too short');
+      return;
+    }
+    try {
+      const waves = await getWavesData(
+        normalizedSeed,
+        networkCode.charCodeAt(0),
+      );
+      const ethereum = getEthereumData(normalizedSeed);
+      if (!ethereum.address) {
+        setError('Invalid seed');
+      }
+      setAddressWaves(waves.address);
+      setAddressEvm(ethereum.address);
+      addressWavesRef.current = waves.address;
+      addressEvmRef.current = ethereum.address;
+    } catch (e) {
+      setError('Invalid seed');
+    }
+  }
+
+  function handleImport(e: React.FormEvent) {
+    e.preventDefault();
+    setShowValidationError(true);
+    if (!addressWaves || !addressEvm || error) {
+      setError(error || 'Enter valid seed');
+      return;
+    }
+    if (existingAccount) {
+      setError(
+        `Account with this Waves address already exists${
+          existingAccount.name ? `: ${existingAccount.name}` : ''
+        }`,
+      );
+      return;
+    }
+    nameRef.current = '';
+
+    dispatch(
+      newAccountSelect({
+        type: 'seed',
+        accountType: 'multichain',
+        seed,
+        address: addressWavesRef.current || addressWaves,
+        addressEvm: addressEvmRef.current || addressEvm,
+        name: nameRef.current,
+        hasBackup: true,
+      }),
+    );
+    navigate('/account-name');
+  }
+
+  return (
+    <div className={styles.content}>
+      <form className={styles.multichainForm} onSubmit={handleImport}>
+        <div className={styles.titleBlock}>
+          <h2 className="title1 margin3 left">Welcome Back</h2>
+        </div>
+        <div className={styles.inputLabel}>
+          Enter your seed phrase to proceed. Usually it consists of either 12,
+          18 or 24 words
+        </div>
+        <Input
+          autoFocus
+          className={clsx('margin-main-top', styles.inputFullWidth)}
+          data-testid="seedInput"
+          error={!!error && showValidationError}
+          multiLine
+          rows={3}
+          spellCheck={false}
+          value={seed}
+          onChange={event => {
+            handleSeedChange(event.target.value);
+          }}
+        />
+        <ErrorMessage
+          className={styles.error}
+          data-testid="validationError"
+          show={showValidationError && !!error}
+        >
+          {error}
+        </ErrorMessage>
+        <div className="tag1 basic500 input-title" style={{ marginTop: 8 }}>
+          Account address:
+        </div>
+
+        <div className={styles.addressWrapper}>
+          <div className={styles.greyLine} data-testid="address">
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 4,
+                width: '90%',
+                paddingLeft: '2.7rem',
+              }}
+            >
+              {addressWaves && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ color: '#27ae60', fontSize: 12 }}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="12"
+                      height="12"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                    >
+                      <rect width="12" height="12" rx="6" fill="white" />
+                      <rect
+                        x="1.05078"
+                        y="6"
+                        width="7"
+                        height="7"
+                        transform="rotate(-45 1.05078 6)"
+                        fill="#1F5AF6"
+                      />
+                    </svg>
+                  </span>
+                  <span style={{ fontFamily: 'monospace', fontSize: 10 }}>
+                    {addressWaves}
+                  </span>
+                </div>
+              )}
+              {addressEvm && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ color: '#27ae60', fontSize: 12 }}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="12"
+                      height="12"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                    >
+                      <circle cx="6" cy="6" r="6" fill="black" />
+                      <path
+                        d="M4.93359 6.00195H7.4668V8.53516H2.40039V3.46875H4.93359V6.00195ZM10 6.00195H7.4668V3.46875H10V6.00195Z"
+                        fill="#9FE0C1"
+                      />
+                    </svg>
+                  </span>
+                  <span style={{ fontFamily: 'monospace', fontSize: 10 }}>
+                    {addressEvm}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <Button data-testid="continueBtn" type="submit" view="submit">
+          Import Account
         </Button>
       </form>
     </div>

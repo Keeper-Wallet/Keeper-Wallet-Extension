@@ -38,7 +38,7 @@ export class Avatar extends Component<Props, State> {
   }
 
   render() {
-    const { className, size = SIZE, type = 'seed' } = this.props;
+    const { className, size = SIZE, type } = this.props;
     const { src } = this.state;
 
     const style = {
@@ -50,7 +50,7 @@ export class Avatar extends Component<Props, State> {
       <div className={clsx(styles.avatar, className)} style={style}>
         <img src={src} width={size} height={size} style={style} />
 
-        {['ledger', 'wx', 'debug'].includes(type) && (
+        {type && ['ledger', 'wx', 'debug'].includes(type) && (
           <div className={styles.typeIconContainer}>
             <div className={styles.typeIcon}>
               {type === 'wx' ? (

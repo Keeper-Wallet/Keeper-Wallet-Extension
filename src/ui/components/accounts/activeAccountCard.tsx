@@ -2,13 +2,15 @@ import type BigNumber from '@waves/bignumber';
 import { type Money } from '@waves/data-entities';
 import clsx from 'clsx';
 import { usePopupSelector } from 'popup/store/react';
-import { type PreferencesAccount } from 'preferences/types';
+import {
+    type PreferencesAccount
+} from 'preferences/types';
 import { useTranslation } from 'react-i18next';
 
+import { getAccountAddress, getAccountAvatarAddress } from '../../utils/getActiveAccount';
 import { Avatar } from '../ui/avatar/Avatar';
 import { Balance } from '../ui/balance/Balance';
 import { Copy } from '../ui/copy/Copy';
-import { Loader } from '../ui/loader';
 import { Tooltip } from '../ui/tooltip';
 import * as styles from './activeAccountCard.module.css';
 
@@ -16,7 +18,7 @@ const UsdAmount = ({ amount }: { amount: BigNumber | null }) =>
   amount !== null ? (
     <p className={styles.accountAmount}>{`$${amount.toFixed(2)}`}</p>
   ) : (
-    <Loader />
+    <p className={styles.accountAmount}>$0.00</p>
   );
 
 interface Props {
@@ -44,10 +46,17 @@ export function ActiveAccountCard({
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const isMainnet = currentNetwork === 'mainnet';
 
+  const displayAddress = getAccountAddress(account);
+  const avatarAddress = getAccountAvatarAddress(account);
+
   return (
     <div className={styles.root} data-testid="activeAccountCard">
       <div className={styles.accountInfo}>
-        <Avatar size={40} address={account.address} type={account.type} />
+        <Avatar
+          size={40}
+          address={avatarAddress || null}
+          type={account.accountType === 'waves' ? account.type : undefined}
+        />
 
         <div className={styles.accountInfoText}>
           <div className={styles.accountName} data-testid="accountName">
@@ -101,7 +110,7 @@ export function ActiveAccountCard({
 
         <Tooltip content={t('copyAddress')}>
           {props => (
-            <Copy text={account.address} onCopy={onCopy}>
+            <Copy text={displayAddress} onCopy={onCopy}>
               <button
                 className={clsx(styles.iconButton, 'copyIconBlack')}
                 {...props}

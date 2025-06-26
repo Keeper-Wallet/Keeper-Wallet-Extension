@@ -4,12 +4,29 @@
   padding: 0 60px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.titleBlock {
+  margin-top: 48px;
 }
 
 .greyLine {
-  margin: 0 -64px 40px;
-  font-size: 12px;
+  position: relative;
+  left: -60px;
+  width: calc(100% + 120px);
+  margin: 0 0 40px 0;
+  padding: 12px 16px;
+  background: #f7f8fa;
+  font-size: 15px;
+  color: #222;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  word-break: break-all;
+  border: 1px solid #e5e8ef;
+  box-sizing: border-box;
 }
 
 .error {
@@ -23,4 +40,66 @@
 
 .errorButton:hover {
   color: var(--color-submit300);
+}
+
+.chooseTypeTitle {
+  margin-bottom: 32px;
+  font-size: 24px;
+  font-weight: 500;
+  text-align: left;
+  margin-top: 48px;
+}
+
+.chooseTypeBtn {
+  width: 100%;
+  margin-bottom: 16px;
+  font-size: 16px;
+  padding: 14px 0;
+  border-radius: 8px;
+  border: 1px solid var(--color-basic200);
+  background: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.chooseTypeBtn.active,
+.chooseTypeBtn:active,
+.chooseTypeBtn.selected {
+  background: var(--color-submit400);
+  color: #fff;
+  border: none;
+}
+
+.separatorBtns {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.separatorBtns button:not(:last-child) {
+  margin-bottom: 12px;
+}
+
+.multichainForm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.inputLabel {
+  color: #aeb8c4;
+  font-size: 12px;
+  margin-bottom: 8px;
+  margin-top: 16px;
+  font-weight: 400;
+}
+
+.inputFullWidth {
+  width: 100%;
+}
+
+.addressWrapper {
+  width: 100%;
+  min-width: 0;
 }

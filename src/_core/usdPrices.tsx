@@ -1,3 +1,4 @@
+import { NetworkName } from 'networks/types';
 import {
   createContext,
   useCallback,
@@ -9,7 +10,6 @@ import {
 } from 'react';
 import invariant from 'tiny-invariant';
 
-import { NetworkName } from '../networks/types';
 import { usePopupSelector } from '../popup/store/react';
 import Background from '../ui/services/Background';
 

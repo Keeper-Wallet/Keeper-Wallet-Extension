@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { NetworkName } from 'networks/types';
+import { NetworkName, type NetworkProfile } from 'networks/types';
 import { type PreferencesAccount } from 'preferences/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,9 +10,9 @@ import { Modal } from 'ui/components/ui/modal/Modal';
 
 import * as styles from './chooseItems.styl';
 
-const allNetworks: NetworkName[] = Object.values(NetworkName);
+const allNetworks: NetworkProfile[] = Object.values(NetworkName);
 
-const networkLabels: Record<NetworkName, string> = {
+const networkLabels: Record<NetworkProfile, string> = {
   custom: 'Custom',
   mainnet: 'Mainnet',
   testnet: 'Testnet',
@@ -22,7 +22,7 @@ const networkLabels: Record<NetworkName, string> = {
 interface Contact {
   name: string;
   address: string;
-  network: NetworkName;
+  network: NetworkProfile;
 }
 
 type Type = 'accounts' | 'contacts' | 'all';
@@ -99,10 +99,9 @@ export function ExportKeystoreChooseItems<
 
       <div className={styles.accounts}>
         {allNetworks
-          .map<[NetworkName, Array<PreferencesAccount | Contact>]>(network => [
-            network,
-            items.filter(acc => acc.network === network),
-          ])
+          .map<[NetworkProfile, Array<PreferencesAccount | Contact>]>(
+            network => [network, items.filter(acc => acc.network === network)],
+          )
           // eslint-disable-next-line @typescript-eslint/no-shadow
           .filter(([, items]) => items.length !== 0)
           // eslint-disable-next-line @typescript-eslint/no-shadow

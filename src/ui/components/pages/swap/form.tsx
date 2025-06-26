@@ -1,12 +1,12 @@
-import { useDebouncedValue } from '_core/useDebouncedValue';
 import {
-  SwapClient,
-  SwapClientErrorCode,
-  type SwapClientInvokeTransaction,
+    SwapClient,
+    SwapClientErrorCode,
+    type SwapClientInvokeTransaction,
 } from '@keeper-wallet/swap-client';
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { useDebouncedValue } from '_core/useDebouncedValue';
 import { AssetAmountInput } from 'assets/amountInput';
 import { AssetSelect, type AssetSelectOption } from 'assets/assetSelect';
 import { type AssetDetail } from 'assets/types';
@@ -27,13 +27,15 @@ import { Select } from 'ui/components/ui/select/Select';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { UsdAmount } from 'ui/components/ui/UsdAmount';
 
+import { getAccountAvatarAddress } from 'ui/utils/getActiveAccount';
 import { InfoIcon } from '../../../../icons/info';
 import * as styles from './form.module.css';
 import { SwapLayout } from './layout';
 
 const SLIPPAGE_TOLERANCE_OPTIONS = [0.1, 0.5, 1, 3];
 
-function getAssetBalance(asset: Asset, accountBalance: BalancesItem) {
+function getAssetBalance(asset: Asset, accountBalance?: BalancesItem) {
+  if (!accountBalance) return new Money('0', asset);
   return asset.id === 'WAVES'
     ? new Money(accountBalance.available || '0', asset)
     : new Money(accountBalance.assets?.[asset.id]?.balance || '0', asset);
@@ -59,6 +61,7 @@ interface Props {
   swappableAssets: AssetDetail[];
   wavesFeeCoins: number;
   onSwap: (params: OnSwapParams) => void;
+  accountBalance?: BalancesItem;
 }
 
 type SwapInfoVendorState =
@@ -115,18 +118,19 @@ export function SwapForm({
   swappableAssets,
   wavesFeeCoins,
   onSwap,
+  accountBalance: propAccountBalance,
 }: Props) {
   const dispatch = usePopupDispatch();
   const { t } = useTranslation();
-
+  const selectedAccount = usePopupSelector(state => state.selectedAccount);
   const assets = usePopupSelector(state => state.assets);
   const swappableAssetIdsByVendor = usePopupSelector(
     state => state.swappableAssetIdsByVendor,
   );
   const usdPrices = usePopupSelector(state => state.usdPrices);
-  const accountBalance = usePopupSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    state => state.balances[state.selectedAccount?.address!],
+  const wavesAddress = getAccountAvatarAddress(selectedAccount ?? {} as import('preferences/types').PreferencesAccount);
+  const accountBalance = propAccountBalance ?? usePopupSelector(
+    state => state.balances[wavesAddress],
   );
 
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
@@ -224,10 +228,6 @@ export function SwapForm({
       })
     : null;
 
-  const accountAddress = usePopupSelector(
-    state => state.selectedAccount?.address,
-  );
-
   const isValidAssetPairSelected = useMemo(
     () =>
       Object.values(swappableAssetIdsByVendor).some(
@@ -240,35 +240,22 @@ export function SwapForm({
     if (!isValidAssetPairSelected) {
       return null;
     }
-
-    // eslint-disable-next-line @typescript-eslint/no-shadow
     let fromAmountTokens = new BigNumber(fromAmountValue || '0');
-
     if (fromAmountTokens.eq(0)) {
       fromAmountTokens = new BigNumber(1);
     }
-
     const fromAmount = Money.fromTokens(fromAmountTokens, fromAsset);
-
     if (fromAmount.getCoins().gt(BigNumber.MAX_VALUE)) {
       return null;
     }
-
     return {
-      address: accountAddress,
+      address: wavesAddress,
       amountCoins: fromAmount.toCoins(),
       fromAssetId: fromAsset.id,
       slippageTolerance,
       toAssetId: toAsset.id,
     };
-  }, [
-    accountAddress,
-    fromAmountValue,
-    fromAsset,
-    slippageTolerance,
-    toAsset.id,
-    isValidAssetPairSelected,
-  ]);
+  }, [wavesAddress, fromAmountValue, fromAsset, slippageTolerance, toAsset.id, isValidAssetPairSelected]);
 
   useEffect(() => {
     setSwapVendorTouched(false);

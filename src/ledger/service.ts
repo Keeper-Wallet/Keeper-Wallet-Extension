@@ -105,7 +105,8 @@ class LedgerService {
   ) {
     try {
       invariant(
-        selectedAccount.type === 'ledger',
+        selectedAccount.accountType !== 'waves' ||
+          selectedAccount.type !== 'ledger',
         'Active account is not a ledger account',
       );
 
@@ -114,7 +115,7 @@ class LedgerService {
       }
 
       const userData = await ledgerService.ledger.getUserDataById(
-        selectedAccount.id,
+        Number(selectedAccount.id),
       );
 
       if (userData.address !== selectedAccount.address) {
@@ -127,14 +128,17 @@ class LedgerService {
 
       switch (request.type) {
         case 'order':
-          signature = await ledgerService.ledger.signOrder(selectedAccount.id, {
-            ...request.data,
-            dataBuffer: new Uint8Array(request.data.dataBuffer),
-          });
+          signature = await ledgerService.ledger.signOrder(
+            Number(selectedAccount.id),
+            {
+              ...request.data,
+              dataBuffer: new Uint8Array(request.data.dataBuffer),
+            },
+          );
           break;
         case 'request':
           signature = await ledgerService.ledger.signRequest(
-            selectedAccount.id,
+            Number(selectedAccount.id),
             {
               ...request.data,
               dataBuffer: new Uint8Array(request.data.dataBuffer),
@@ -143,7 +147,7 @@ class LedgerService {
           break;
         case 'someData':
           signature = await ledgerService.ledger.signSomeData(
-            selectedAccount.id,
+            Number(selectedAccount.id),
             {
               ...request.data,
               dataBuffer: new Uint8Array(request.data.dataBuffer),
@@ -152,7 +156,7 @@ class LedgerService {
           break;
         case 'transaction':
           signature = await ledgerService.ledger.signTransaction(
-            selectedAccount.id,
+            Number(selectedAccount.id),
             {
               ...request.data,
               dataBuffer: new Uint8Array(request.data.dataBuffer),
