@@ -389,7 +389,8 @@
     "nodeError": "Yanlış node adresi",
     "nodeUrlEmpty": "URL gerekli",
     "saveAndApply": "Kaydet ve uygula",
-    "title": "Ağ"
+    "title": "Ağ",
+    "confirm": "Onayla"
   },
   "networksSettings": {
     "copied": "Kopyalandı!",

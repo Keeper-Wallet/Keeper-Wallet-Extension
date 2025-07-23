@@ -408,7 +408,8 @@
     "save": "Guardar",
     "savedModal": "¡Guardado!",
     "setDefault": "Establecer predeterminado",
-    "setDefaultModal": "¡Guardar por defecto!"
+    "setDefaultModal": "¡Guardar por defecto!",
+    "confirm": "Confirmar"
   },
   "newAccount": {
     "acceptTerms": "He leído y estoy de acuerdo con el",

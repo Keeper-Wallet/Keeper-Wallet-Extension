@@ -1,5 +1,7 @@
 {
-  "accountCard": { "infoTooltip": "Thông tin tài khoản" },
+  "accountCard": {
+    "infoTooltip": "Thông tin tài khoản"
+  },
   "accountInfo": {
     "address": "Địa chỉ của bạn",
     "backUp": "Cụm từ sao lưu",
@@ -17,7 +19,9 @@
     "pubKey": "Public key",
     "viewInExplorer": "Xem trên trình duyệt "
   },
-  "activeAccountCard": { "swapButton": "Swap" },
+  "activeAccountCard": {
+    "swapButton": "Swap"
+  },
   "address": {
     "add": "Người dùng mới",
     "addButton": "Thêm mới",
@@ -151,7 +155,9 @@
     "wrongSeed": "Sai thứ tự thử lại"
   },
   "copyAddress": "Sao chép địa chỉ",
-  "date": { "today": "Hôm nay" },
+  "date": {
+    "today": "Hôm nay"
+  },
   "deleteAccount": {
     "attention": "Chú ý!",
     "delete": "Xóa tài khoản",
@@ -359,7 +365,10 @@
     "joinUs": "Tham gia cộng đồng Waves",
     "keepUp": "Ví Keeper là cách an toàn nhất để tương tác với các tài nguyên Web của bên thứ 3 có chức năng tích hợp Waves hoặc DApps. Sử dụng ví Keeper, bạn có thể ký các giao dịch và vẫn an toàn trước các trang web độc hại"
   },
-  "langsSettings": { "confirm": "Xác nhận", "title": "Thay đổi ngôn ngữ" },
+  "langsSettings": {
+    "confirm": "Xác nhận",
+    "title": "Thay đổi ngôn ngữ"
+  },
   "ledgerErrors": {
     "unknown": "Không thể kết nối với Ledger. Hãy thử lại",
     "usedBySomeOtherApp": "Có vẻ như ledger đã được sử dụng bởi một ứng dụng khác. Đóng tất cả ứng dụng mà bạn có thể sử dụng Ledger và thử lại"
@@ -389,7 +398,8 @@
     "nodeError": "Địa chỉ node không chính xác",
     "nodeUrlEmpty": "URL là bắt buộc",
     "saveAndApply": "Lưu và áp dụng",
-    "title": "Mạng"
+    "title": "Mạng",
+    "confirm": "Xác nhận"
   },
   "networksSettings": {
     "copied": "Đã sao chép!",
@@ -482,7 +492,9 @@
       "disallowed": "Đã ngừng cho phép!"
     }
   },
-  "qrCode": { "download": "Tải xuống mã QR" },
+  "qrCode": {
+    "download": "Tải xuống mã QR"
+  },
   "send": {
     "amountInputLabel": "Số lượng",
     "amountRequiredError": "Số tiền được yêu cầu",
@@ -639,7 +651,9 @@
     "paymentsCount": "{{count}} Thanh toán",
     "paymentsCount_plural": "{{count}} Thanh toán",
     "paymentsNone": "Không thanh toán",
-    "permission": { "details": "Chi tiết quyền" },
+    "permission": {
+      "details": "Chi tiết quyền"
+    },
     "price": "Giá",
     "publicKey": "Public key",
     "recipient": "Người nhận",
@@ -681,7 +695,9 @@
     "time": "Thời gian",
     "messages": "Tin nhắn "
   },
-  "wallet": { "lease": "Đã cho thuê" },
+  "wallet": {
+    "lease": "Đã cho thuê"
+  },
   "welcome": {
     "getStarted": "Bắt đầu",
     "info": "Keeper Wallet là cách an toàn nhất để tương tác với các tài nguyên web của bên thứ ba có chức năng tích hợp Waves hoặc DApps.",

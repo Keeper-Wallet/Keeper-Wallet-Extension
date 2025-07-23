@@ -421,8 +421,10 @@
     "nodeError": "Incorrect node address",
     "nodeUrlEmpty": "URL is required",
     "saveAndApply": "Save and apply",
-    "title": "Network"
+    "title": "Network",
+    "confirm": "Confirm"
   },
+
   "networksSettings": {
     "copied": "Copied!",
     "matcher": "Matcher address",

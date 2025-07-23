@@ -1,5 +1,7 @@
 {
-  "accountCard": { "infoTooltip": "账户信息" },
+  "accountCard": {
+    "infoTooltip": "账户信息"
+  },
   "accountInfo": {
     "address": "地址",
     "backUp": "备份助记词",
@@ -17,8 +19,12 @@
     "pubKey": "公钥",
     "viewInExplorer": "在浏览器中查看"
   },
-  "activeAccountCard": { "swapButton": "兑换" },
-  "assetAmountInput": { "balanceLabel": "余额" },
+  "activeAccountCard": {
+    "swapButton": "兑换"
+  },
+  "assetAmountInput": {
+    "balanceLabel": "余额"
+  },
   "address": {
     "add": "新地址",
     "addButton": "添加新地址",
@@ -149,7 +155,9 @@
     "wrongSeed": "顺序错误，请重试"
   },
   "copyAddress": "复制地址",
-  "date": { "today": "今天" },
+  "date": {
+    "today": "今天"
+  },
   "deleteAccount": {
     "attention": "请注意！",
     "delete": "删除账户",
@@ -357,7 +365,10 @@
     "joinUs": "加入Waves社区",
     "keepUp": "Keeper钱包是您与集成Waves功能的三方网站资源或Dapp交互最安全的方式。使用Keeper钱包，您可以签名交易并在危险的网站中保持安全"
   },
-  "langsSettings": { "confirm": "确认", "title": "变更语言" },
+  "langsSettings": {
+    "confirm": "确认",
+    "title": "变更语言"
+  },
   "ledgerErrors": {
     "unknown": "无法连接Ledger，请重试",
     "usedBySomeOtherApp": "看起来Ledger已经被其他应用使用，关闭所有可能使用Ledger的应用，并重试。"
@@ -387,7 +398,8 @@
     "nodeError": "节点地址不正确",
     "nodeUrlEmpty": "URL为必填项",
     "saveAndApply": "保存并应用",
-    "title": "网络"
+    "title": "网络",
+    "confirm": "确认"
   },
   "networksSettings": {
     "copied": "已复制！",
@@ -449,7 +461,10 @@
     "noAccountsFound": "没找到其他符合当前过滤条件的账户",
     "title": "其他账户"
   },
-  "permission": { "customList": "自定义名单", "whiteList": "白名单" },
+  "permission": {
+    "customList": "自定义名单",
+    "whiteList": "白名单"
+  },
   "permissionSettings": {
     "modal": {
       "amount": "花费限额",
@@ -477,7 +492,9 @@
       "disallowed": "已不允许！"
     }
   },
-  "qrCode": { "download": "下载二维码" },
+  "qrCode": {
+    "download": "下载二维码"
+  },
   "send": {
     "amountInputLabel": "数量",
     "amountRequiredError": "数量为必填项",
@@ -634,7 +651,9 @@
     "paymentsCount": "{{count}} 支付",
     "paymentsCount_plural": "{{count}} 支付",
     "paymentsNone": "无支付",
-    "permission": { "details": "权限详情" },
+    "permission": {
+      "details": "权限详情"
+    },
     "price": "价格",
     "publicKey": "公钥",
     "recipient": "接收人",
@@ -665,7 +684,9 @@
     "unknown": "未知",
     "wavesAuthTimeStamp": "时间戳"
   },
-  "ui": { "logoTitle": "在线安全保存您的Waves密钥" },
+  "ui": {
+    "logoTitle": "在线安全保存您的Waves密钥"
+  },
   "notifications": {
     "allowSending": "允许发送信息",
     "toListBtn": "通知",
@@ -674,7 +695,9 @@
     "time": "时间",
     "messages": "信息"
   },
-  "wallet": { "lease": "已租赁" },
+  "wallet": {
+    "lease": "已租赁"
+  },
   "welcome": {
     "getStarted": "开始",
     "info": "Keeper钱包是您与集成Waves功能的三方网站资源或Dapp交互最安全的方式。",

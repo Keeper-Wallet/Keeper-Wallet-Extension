@@ -1,5 +1,7 @@
 {
-  "accountCard": { "infoTooltip": "アカウント情報" },
+  "accountCard": {
+    "infoTooltip": "アカウント情報"
+  },
   "accountInfo": {
     "address": "アドレス",
     "backUp": "バックアップフレーズ",
@@ -17,7 +19,9 @@
     "pubKey": "公開鍵",
     "viewInExplorer": "エクスプローラーで確認"
   },
-  "activeAccountCard": { "swapButton": "スワップ" },
+  "activeAccountCard": {
+    "swapButton": "スワップ"
+  },
   "address": {
     "add": "新しいアドレス",
     "addButton": "新規追加",
@@ -151,7 +155,9 @@
     "wrongSeed": "順番が間違っています。再試行してください。"
   },
   "copyAddress": "アドレスをコピー",
-  "date": { "today": "本日" },
+  "date": {
+    "today": "本日"
+  },
   "deleteAccount": {
     "attention": "注意",
     "delete": "アカウント削除",
@@ -359,7 +365,10 @@
     "joinUs": "Wavesコミュニティへ参加",
     "keepUp": "Keeper WalletはWavesに統合された機能またはサードパーティdAppsとやり取りするための最も安全な方法です。Keeper Walletを使用してトランザクションに署名することができ、悪意のあるサイトから身を守ることができます。"
   },
-  "langsSettings": { "confirm": "確認", "title": "言語切替" },
+  "langsSettings": {
+    "confirm": "確認",
+    "title": "言語切替"
+  },
   "ledgerErrors": {
     "unknown": "Ledgerに接続できませんでした。再度お試しください。",
     "usedBySomeOtherApp": "Ledgerはすでに他のアプリケーションで使用されているようです。Ledgerを使用する可能性のあるアプリケーションをすべて終了してから、再度試してください。"
@@ -389,7 +398,8 @@
     "nodeError": "ノードアドレスが間違っています。",
     "nodeUrlEmpty": "URLが必要です。",
     "saveAndApply": "保存して適用",
-    "title": "ネットワーク"
+    "title": "ネットワーク",
+    "confirm": "確認"
   },
   "networksSettings": {
     "copied": "コピーしました",
@@ -482,7 +492,9 @@
       "disallowed": "禁止されました。"
     }
   },
-  "qrCode": { "download": "QRコードをダウンロード" },
+  "qrCode": {
+    "download": "QRコードをダウンロード"
+  },
   "send": {
     "amountInputLabel": "数量",
     "amountRequiredError": "数量は必須です。",
@@ -639,7 +651,9 @@
     "paymentsCount": "{{count}} 支払い",
     "paymentsCount_plural": "{{count}} 支払い",
     "paymentsNone": "支払いなし",
-    "permission": { "details": "許可内容" },
+    "permission": {
+      "details": "許可内容"
+    },
     "price": "価格",
     "publicKey": "公開鍵",
     "recipient": "受取人",
@@ -670,7 +684,9 @@
     "unknown": "不明",
     "wavesAuthTimeStamp": "タイムスタンプ"
   },
-  "ui": { "logoTitle": "Wavesキーをオンラインで安全に管理" },
+  "ui": {
+    "logoTitle": "Wavesキーをオンラインで安全に管理"
+  },
   "notifications": {
     "allowSending": "メッセージの送信を許可",
     "toListBtn": "通知",
@@ -679,7 +695,9 @@
     "time": "時間",
     "messages": "メッセージ"
   },
-  "wallet": { "lease": "リース中" },
+  "wallet": {
+    "lease": "リース中"
+  },
   "welcome": {
     "getStarted": "開始",
     "info": "Keeper WalletはWavesに統合された機能またはサードパーティdAppsとやり取りするための最も安全な方法です。",

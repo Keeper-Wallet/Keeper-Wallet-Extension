@@ -1,5 +1,7 @@
 {
-  "accountCard": { "infoTooltip": "Информация об аккаунте" },
+  "accountCard": {
+    "infoTooltip": "Информация об аккаунте"
+  },
   "accountInfo": {
     "address": "Ваш адрес",
     "backUp": "Фраза восстановления",
@@ -17,7 +19,9 @@
     "pubKey": "Открытый ключ",
     "viewInExplorer": "Открыть в Explorer"
   },
-  "activeAccountCard": { "swapButton": "Обменять" },
+  "activeAccountCard": {
+    "swapButton": "Обменять"
+  },
   "address": {
     "add": "Новый адрес",
     "addButton": "Добавить новый",
@@ -151,7 +155,9 @@
     "wrongSeed": "Неверный порядок слов, попробуйте еще"
   },
   "copyAddress": "Скопировать адрес",
-  "date": { "today": "Сегодня" },
+  "date": {
+    "today": "Сегодня"
+  },
   "deleteAccount": {
     "attention": "Внимание!",
     "delete": "Удалить аккаунт",
@@ -363,7 +369,10 @@
     "joinUs": "Присоединиться к сообществу Waves",
     "keepUp": "Keeper Wallet - это самый безопасный способ взаимодействия со сторонними веб-ресурсами с интегрированной в Waves функциональностью или DApps. Используя Keeper Wallet, вы можете подписывать транзакции и оставаться в безопасности от вредоносных сайтов."
   },
-  "langsSettings": { "confirm": "Подтвердить", "title": "Сменить язык" },
+  "langsSettings": {
+    "confirm": "Подтвердить",
+    "title": "Сменить язык"
+  },
   "ledgerErrors": {
     "unknown": "Не удалось подключиться к Ledger. Пожалуйста, попробуйте еще раз",
     "usedBySomeOtherApp": "Похоже, что Ledger уже используется другим приложением. Закройте все приложения, которые могут использовать Ledger, и повторите попытку."
@@ -393,7 +402,8 @@
     "nodeError": "Неверный адрес ноды",
     "nodeUrlEmpty": "Требуется URL",
     "saveAndApply": "Сохранить и применить",
-    "title": "Сеть"
+    "title": "Сеть",
+    "confirm": "Подтвердить"
   },
   "networksSettings": {
     "copied": "Скопировано!",
@@ -486,7 +496,9 @@
       "disallowed": "Запрещено!"
     }
   },
-  "qrCode": { "download": "Загрузить QR-код" },
+  "qrCode": {
+    "download": "Загрузить QR-код"
+  },
   "send": {
     "amountInputLabel": "Сумма",
     "amountRequiredError": "Нужно ввести сумму",
@@ -646,7 +658,9 @@
     "paymentsCount_1": "{{ count }} платежа",
     "paymentsCount_2": "{{ count }} платежей",
     "paymentsNone": "Нет платежей",
-    "permission": { "details": "Сведения о разрешении" },
+    "permission": {
+      "details": "Сведения о разрешении"
+    },
     "price": "Цена",
     "publicKey": "Открытый ключ",
     "recipient": "Получатель",
@@ -688,7 +702,9 @@
     "time": "Время",
     "messages": "Сообщения"
   },
-  "wallet": { "lease": "В лизинге" },
+  "wallet": {
+    "lease": "В лизинге"
+  },
   "welcome": {
     "getStarted": "Начать",
     "info": "Keeper Wallet - это самый безопасный способ взаимодействия со сторонними веб-ресурсами с интегрированной в Waves функциональностью или DApps. ",

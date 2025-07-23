@@ -398,7 +398,8 @@
     "nodeError": "Endereço do node incorreto",
     "nodeUrlEmpty": "URL é obrigatório",
     "saveAndApply": "Salvar e aplicar",
-    "title": "Rede"
+    "title": "Rede",
+    "confirm": "Confirmar"
   },
   "networksSettings": {
     "copied": "Copiado!",

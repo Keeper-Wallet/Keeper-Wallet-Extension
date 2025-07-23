@@ -399,7 +399,8 @@
     "nodeError": "Alamat node salah",
     "nodeUrlEmpty": "URL diperlukan",
     "saveAndApply": "Simpan dan terapkan",
-    "title": "Network"
+    "title": "Network",
+    "confirm": "OK"
   },
   "networksSettings": {
     "copied": "Disalin!",

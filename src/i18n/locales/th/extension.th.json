@@ -1,5 +1,7 @@
 {
-  "accountCard": { "infoTooltip": "ข้อมูลบัญชี" },
+  "accountCard": {
+    "infoTooltip": "ข้อมูลบัญชี"
+  },
   "accountInfo": {
     "address": "ที่อยู่ของคุณ",
     "backUp": "Backup phrase",
@@ -17,7 +19,9 @@
     "pubKey": "Public key",
     "viewInExplorer": "ดูใน Explorer"
   },
-  "activeAccountCard": { "swapButton": "swap" },
+  "activeAccountCard": {
+    "swapButton": "swap"
+  },
   "address": {
     "add": "ที่อยู่ใหม่",
     "addButton": "เพิ่มใหม่",
@@ -151,7 +155,9 @@
     "wrongSeed": "ลำดับผิด, ลองอีกครั้ง"
   },
   "copyAddress": "คัดลอกที่อยู่",
-  "date": { "today": "วันนี้" },
+  "date": {
+    "today": "วันนี้"
+  },
   "deleteAccount": {
     "attention": "โปรดทราบ!",
     "delete": "ลบบัญชี",
@@ -359,7 +365,10 @@
     "joinUs": "เข้าร่วมชุมชน Waves ",
     "keepUp": "Keeper Wallet เป็นวิธีที่ปลอดภัยที่สุดในการโต้ตอบกับแหล่งข้อมูลเว็บของ third-party ด้วย Waves-integrated functionality หรือ DApps การใช้ Wallet Keeper คุณสามารถลงนามในการทำธุรกรรมและยังคงปลอดภัยจากเว็บไซต์ที่เป็นอันตราย"
   },
-  "langsSettings": { "confirm": "ยืนยัน", "title": "เปลี่ยนภาษา" },
+  "langsSettings": {
+    "confirm": "ยืนยัน",
+    "title": "เปลี่ยนภาษา"
+  },
   "ledgerErrors": {
     "unknown": "ไม่สามารถเชื่อมต่อกับ ledger กรุณาลองอีกครั้ง",
     "usedBySomeOtherApp": "ดูเหมือนว่า ledger ถูกใช้โดยแอปพลิเคชันอื่นแล้ว กรุณาปิดแอปพลิเคชันทั้งหมดที่อาจใช้ ledger แล้วลองอีกครั้ง"
@@ -389,7 +398,8 @@
     "nodeError": "ที่อยู่ node ไม่ถูกต้อง",
     "nodeUrlEmpty": "ต้องการ URL",
     "saveAndApply": "บันทึกและใช้งาน",
-    "title": "เครือข่าย"
+    "title": "เครือข่าย",
+    "confirm": "ยืนยัน"
   },
   "networksSettings": {
     "copied": "คัดลอกแล้ว!",
@@ -482,7 +492,9 @@
       "disallowed": "ไม่อนุญาต!"
     }
   },
-  "qrCode": { "download": "ดาวน์โหลดรหัส QR" },
+  "qrCode": {
+    "download": "ดาวน์โหลดรหัส QR"
+  },
   "send": {
     "amountInputLabel": "จำนวน",
     "amountRequiredError": "ต้องระบุจำนวน",
@@ -639,7 +651,9 @@
     "paymentsCount": "{{count}} การชำระเงิน",
     "paymentsCount_plural": "{{count}} การชำระเงิน",
     "paymentsNone": "ไม่มีการชำระเงิน",
-    "permission": { "details": "รายละเอียดการอนุญาต" },
+    "permission": {
+      "details": "รายละเอียดการอนุญาต"
+    },
     "price": "ราคา",
     "publicKey": "Public Key",
     "recipient": "ผู้รับ",
@@ -670,7 +684,9 @@
     "unknown": "ไม่ทราบ",
     "wavesAuthTimeStamp": "เวลาที่เกิดธุรกรรม"
   },
-  "ui": { "logoTitle": "เก็บ  Waves key ของคุณให้ปลอดภัยทางออนไลน์" },
+  "ui": {
+    "logoTitle": "เก็บ  Waves key ของคุณให้ปลอดภัยทางออนไลน์"
+  },
   "notifications": {
     "allowSending": "อนุญาตให้ส่งข้อความ",
     "toListBtn": "การแจ้งเตือน",
@@ -679,7 +695,9 @@
     "time": "เวลา",
     "messages": "ข้อความ"
   },
-  "wallet": { "lease": "Leased" },
+  "wallet": {
+    "lease": "Leased"
+  },
   "welcome": {
     "getStarted": "เริ่ม",
     "info": "Keeper Wallet เป็นวิธีที่ปลอดภัยที่สุดในการทำงานร่วมกับเว็บของ third-party ด้วย Waves-integrated functionality หรือ DApps",

@@ -1,7 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { HeadLogo } from '../head';
-import { NetworkSwitcher } from '../ui/NetworkSwitcher/NetworkSwitcher';
 import * as styles from './menu.styl';
 
 interface Props {
@@ -27,10 +26,6 @@ export function Menu({ hasClose, hasBack, hasLogo, hasSettings }: Props) {
               navigate('/settings');
             }}
           />
-
-          <div className={styles.networkSwitcherIcon}>
-            <NetworkSwitcher />
-          </div>
         </>
       )}
 

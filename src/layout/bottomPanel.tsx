@@ -1,14 +1,18 @@
 import clsx from 'clsx';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Browser from 'webextension-polyfill';
 
-import { NETWORK_CONFIGS, PROFILES } from '../networks/config';
-import { NetworkName, NetworkProfile } from '../networks/types';
+import { NETWORK_CONFIGS } from '../networks/config';
+import {
+  type NetworkFilter,
+  type NetworkFilterOption,
+  NetworkProfile,
+} from '../networks/types';
 import { capitalize } from '../nfts/utils';
 import { usePopupDispatch, usePopupSelector } from '../popup/store/react';
+import { isMultichainAccount } from '../preferences/types';
 import { ACTION, createAction } from '../store/actions/constants';
-import { setLoading } from '../store/actions/localState';
 import {
   setCustomCode,
   setCustomMatcher,
@@ -20,30 +24,42 @@ import Background from '../ui/services/Background';
 import * as styles from './bottomPanel.module.css';
 import { CustomNetworkModal } from './customNetworkModal';
 
-const setCurrentProfile = createAction(ACTION.UPDATE_CURRENT_PROFILE);
-const setCurrentNetwork = createAction(ACTION.UPDATE_CURRENT_NETWORK);
-
 interface Props {
   allowChangingNetwork?: boolean;
 }
 
+type Profile = {
+  text: string;
+  id: string;
+  value: NetworkFilter;
+};
+
+const setSelectedNetworkFilter = createAction(
+  ACTION.UPDATE_SELECTED_NETWORK_FILTER,
+);
+
 export function BottomPanel({ allowChangingNetwork }: Props) {
   const { t } = useTranslation();
   const dispatch = usePopupDispatch();
-
-  const currentProfile = usePopupSelector(
-    state => state.currentProfile as NetworkProfile,
-  );
-  const currentNetworkId = usePopupSelector(
-    state => state.currentNetwork as string,
-  );
   const selectedAccount = usePopupSelector(state => state.selectedAccount);
+  const currentNetworkId = usePopupSelector(state => state.currentNetwork);
+
+  const profileDropdownRef = useRef<HTMLDivElement | null>(null);
+
+  const selectedNetworkFilter = usePopupSelector(
+    state => state.selectedNetworkFilter,
+  );
   const customMatcher = usePopupSelector(
     state => state.customMatcher as Partial<Record<string, string | null>>,
   );
   const customNodes = usePopupSelector(
     state => state.customNodes as Partial<Record<string, string | null>>,
   );
+  const [isCustomNetworkModalShown, setIsCustomNetworkModalShown] =
+    useState(false);
+  const [isProfileDropdownShown, setIsProfileDropdownShown] = useState(false);
+
+  const customNetworkConfig = NETWORK_CONFIGS.custom;
 
   const getProfileFromNetworkId = (networkId: string): NetworkProfile => {
     if (
@@ -57,155 +73,269 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
     return NetworkProfile.Mainnet;
   };
 
-  const actualCurrentProfile = getProfileFromNetworkId(currentNetworkId);
+  const actualCurrentProfile = getProfileFromNetworkId(
+    currentNetworkId as string,
+  );
 
-  const setNewProfile = async (profile: NetworkProfile | 'Custom') => {
-    dispatch(setLoading(true));
+  const networkOptions = useMemo((): NetworkFilterOption[] => {
+    if (!selectedAccount) return [];
 
-    try {
-      if (profile === 'Custom') {
-        dispatch(setCurrentProfile(NetworkProfile.Testnet));
-        dispatch(setCurrentNetwork('custom'));
-
-        await Background.setProfile(NetworkProfile.Testnet);
-        await Background.setNetworkById('custom');
-        await Background.setNetwork(NetworkProfile.Testnet);
+    if (selectedAccount.accountType === 'waves') {
+      if (actualCurrentProfile === NetworkProfile.Mainnet) {
+        return [
+          {
+            value: 'waves',
+            label: 'Waves',
+          },
+        ];
       } else {
-        dispatch(setCurrentProfile(profile));
+        return [
+          {
+            value: 'waves-testnet',
+            label: 'Waves Testnet',
+          },
+          {
+            value: 'waves-stagenet',
+            label: 'Waves Stagenet',
+          },
+          {
+            value: 'custom',
+            label: 'Custom',
+          },
+        ];
+      }
+    }
 
-        const profileConfig = PROFILES.find(p => p.profile === profile);
-        if (profileConfig && profileConfig.networks.length > 0) {
-          let defaultNetwork;
+    if (isMultichainAccount(selectedAccount)) {
+      if (actualCurrentProfile === NetworkProfile.Mainnet) {
+        const options: NetworkFilterOption[] = [
+          {
+            value: 'all',
+            label: t('networks.allNetworks', 'All Networks'),
+          },
+        ];
 
-          if (profile === NetworkProfile.Mainnet) {
-            if (selectedAccount?.accountType === 'multichain') {
-              defaultNetwork =
-                profileConfig.networks.find(n => n.id === 'all-mainnet') ||
-                profileConfig.networks.find(n => n.id === 'waves-mainnet') ||
-                profileConfig.networks[0];
-            } else {
-              defaultNetwork =
-                profileConfig.networks.find(n => n.id === 'waves-mainnet') ||
-                profileConfig.networks[0];
-            }
-          } else {
-            if (selectedAccount?.accountType === 'multichain') {
-              const hasWavesAccount = !!selectedAccount.accounts?.waves;
-              const hasUnit0Account = !!(
-                selectedAccount.accounts?.ethereum ||
-                selectedAccount.accounts?.unit0
-              );
-
-              if (hasWavesAccount) {
-                defaultNetwork = profileConfig.networks.find(
-                  n => n.id === 'waves-testnet',
-                );
-              } else if (hasUnit0Account) {
-                defaultNetwork = profileConfig.networks.find(
-                  n => n.id === 'unit0-testnet',
-                );
-              } else {
-                defaultNetwork = profileConfig.networks.find(
-                  n => n.id === 'custom',
-                );
-              }
-
-              if (!defaultNetwork) {
-                defaultNetwork = profileConfig.networks[0];
-              }
-            } else {
-              defaultNetwork =
-                profileConfig.networks.find(n => n.id === 'waves-testnet') ||
-                profileConfig.networks[0];
-            }
-          }
-
-          if (defaultNetwork) {
-            dispatch(setCurrentNetwork(defaultNetwork.id));
-
-            await Background.setProfile(profile);
-            await Background.setNetworkById(defaultNetwork.id);
-
-            if (defaultNetwork.networkName === NetworkName.Mainnet) {
-              await Background.setNetwork(NetworkProfile.Mainnet);
-            } else {
-              await Background.setNetwork(NetworkProfile.Testnet);
-            }
-          }
+        if (selectedAccount.accounts.waves) {
+          options.push({
+            value: 'waves',
+            label: 'Waves',
+          });
         }
-      }
 
-      try {
-        await Background.updateCurrentAccountBalance();
-      } catch (balanceError) {
-        console.warn(
-          'Failed to update balance after profile switch:',
-          balanceError,
-        );
+        if (
+          selectedAccount.accounts.ethereum ||
+          selectedAccount.accounts.unit0
+        ) {
+          options.push({
+            value: 'unit0',
+            label: 'Unit0',
+          });
+        }
+
+        return options;
+      } else {
+        const options: NetworkFilterOption[] = [];
+
+        if (selectedAccount.accounts.waves) {
+          options.push({
+            value: 'waves-testnet',
+            label: 'Waves Testnet',
+          });
+          options.push({
+            value: 'waves-stagenet',
+            label: 'Waves Stagenet',
+          });
+        }
+
+        if (
+          selectedAccount.accounts.ethereum ||
+          selectedAccount.accounts.unit0
+        ) {
+          options.push({
+            value: 'unit0-testnet',
+            label: 'Unit0 Testnet',
+          });
+        }
+
+        options.push({
+          value: 'custom',
+          label: 'Custom',
+        });
+
+        return options;
       }
+    }
+
+    return [];
+  }, [selectedAccount, actualCurrentProfile, t]);
+
+  const availableProfiles = useMemo((): Profile[] => {
+    return networkOptions.map(option => ({
+      id: option.value,
+      text: option.label,
+      value: option.value,
+    }));
+  }, [networkOptions]);
+
+  const getProfileDisplayName = (profile: Profile) => {
+    return capitalize(profile.text);
+  };
+
+  const switchToNetwork = async (networkId: string) => {
+    try {
+      await Background.setNetworkById(networkId);
     } catch (error) {
-      console.error('Failed to set profile:', error);
-
-      dispatch(setCurrentProfile(actualCurrentProfile));
-      dispatch(setCurrentNetwork(currentNetworkId));
-    } finally {
-      setTimeout(() => {
-        dispatch(setLoading(false));
-      }, 500);
+      console.error('Failed to switch network:', error);
     }
   };
 
-  const [isProfileDropdownShown, setIsProfileDropdownShown] = useState(false);
+  const handleNetworkChange = async (
+    id: string | number,
+    value: NetworkFilter,
+  ) => {
+    setIsProfileDropdownShown(false);
+    dispatch(setSelectedNetworkFilter(value));
 
-  const profileDropdownRef = useRef<HTMLDivElement | null>(null);
+    if (actualCurrentProfile === NetworkProfile.Testnet) {
+      let targetNetworkId = '';
+
+      switch (value) {
+        case 'waves-testnet':
+          targetNetworkId = 'waves-testnet';
+          break;
+        case 'waves-stagenet':
+          targetNetworkId = 'waves-stagenet';
+          break;
+        case 'unit0-testnet':
+          targetNetworkId = 'unit0-testnet';
+          break;
+        case 'custom':
+          targetNetworkId = 'custom';
+          break;
+        default:
+          targetNetworkId = 'waves-testnet';
+      }
+
+      if (targetNetworkId && targetNetworkId !== currentNetworkId) {
+        await switchToNetwork(targetNetworkId);
+      }
+    }
+  };
+
+  const currentProfile = availableProfiles.find(
+    profile => profile.id === selectedNetworkFilter,
+  );
 
   useEffect(() => {
-    const profileDropdownEl = profileDropdownRef.current;
+    if (!selectedAccount) return;
 
-    const handleWindowClick = (event: MouseEvent) => {
+    const handleNetworkSync = async () => {
       if (
-        !(event.target instanceof Node) ||
-        (profileDropdownEl && profileDropdownEl.contains(event.target))
+        selectedAccount.accountType === 'waves' &&
+        actualCurrentProfile === NetworkProfile.Mainnet
       ) {
+        if (selectedNetworkFilter !== 'waves') {
+          dispatch(setSelectedNetworkFilter('waves'));
+        }
         return;
       }
 
-      setIsProfileDropdownShown(false);
+      if (
+        selectedAccount.accountType === 'waves' &&
+        actualCurrentProfile === NetworkProfile.Testnet
+      ) {
+        let targetFilter: NetworkFilter = 'waves-testnet';
+
+        if (currentNetworkId === 'waves-stagenet') {
+          targetFilter = 'waves-stagenet';
+        } else if (currentNetworkId === 'custom') {
+          targetFilter = 'custom';
+        }
+
+        if (selectedNetworkFilter !== targetFilter) {
+          dispatch(setSelectedNetworkFilter(targetFilter));
+        }
+        return;
+      }
+
+      if (isMultichainAccount(selectedAccount)) {
+        if (actualCurrentProfile === NetworkProfile.Mainnet) {
+          const validMainnetFilters: NetworkFilter[] = [
+            'all',
+            'waves',
+            'unit0',
+          ];
+
+          if (!validMainnetFilters.includes(selectedNetworkFilter)) {
+            dispatch(setSelectedNetworkFilter('all'));
+            return;
+          }
+
+          if (
+            selectedNetworkFilter === 'waves' &&
+            !selectedAccount.accounts.waves
+          ) {
+            dispatch(setSelectedNetworkFilter('all'));
+          }
+        } else {
+          let expectedFilter: NetworkFilter = 'waves-testnet';
+
+          if (currentNetworkId === 'waves-testnet') {
+            expectedFilter = 'waves-testnet';
+          } else if (currentNetworkId === 'waves-stagenet') {
+            expectedFilter = 'waves-stagenet';
+          } else if (currentNetworkId === 'unit0-testnet') {
+            expectedFilter = 'unit0-testnet';
+          } else if (currentNetworkId === 'custom') {
+            expectedFilter = 'custom';
+          } else if (currentNetworkId === 'all-testnet') {
+            expectedFilter = 'waves-testnet';
+          }
+
+          const hasWavesAccount = !!selectedAccount.accounts.waves;
+          const hasUnit0Account = !!(
+            selectedAccount.accounts.ethereum || selectedAccount.accounts.unit0
+          );
+
+          if (
+            (expectedFilter === 'waves-testnet' ||
+              expectedFilter === 'waves-stagenet') &&
+            !hasWavesAccount
+          ) {
+            if (hasUnit0Account) {
+              expectedFilter = 'unit0-testnet';
+              await switchToNetwork('unit0-testnet');
+            } else {
+              expectedFilter = 'custom';
+              await switchToNetwork('custom');
+            }
+          } else if (expectedFilter === 'unit0-testnet' && !hasUnit0Account) {
+            if (hasWavesAccount) {
+              expectedFilter = 'waves-testnet';
+              await switchToNetwork('waves-testnet');
+            } else {
+              expectedFilter = 'custom';
+              await switchToNetwork('custom');
+            }
+          }
+
+          if (selectedNetworkFilter !== expectedFilter) {
+            dispatch(setSelectedNetworkFilter(expectedFilter));
+          }
+        }
+      }
     };
 
-    if (isProfileDropdownShown) {
-      addEventListener('click', handleWindowClick, {
-        capture: true,
-      });
-
-      return () => {
-        removeEventListener('click', handleWindowClick, {
-          capture: true,
-        });
-      };
-    }
-  }, [isProfileDropdownShown]);
-
-  const [isCustomNetworkModalShown, setIsCustomNetworkModalShown] =
-    useState(false);
-
-  const availableProfiles: Array<NetworkProfile | 'Custom'> =
-    currentNetworkId === 'custom'
-      ? [NetworkProfile.Mainnet, NetworkProfile.Testnet, 'Custom']
-      : [NetworkProfile.Mainnet, NetworkProfile.Testnet];
-
-  const customNetworkConfig = NETWORK_CONFIGS.custom;
-
-  const getCurrentProfileDisplay = () => {
-    if (currentNetworkId === 'custom') return 'Custom';
-    return capitalize(actualCurrentProfile);
-  };
-
-  const getProfileDisplayName = (profile: NetworkProfile | 'Custom') => {
-    if (profile === 'Custom') return 'Custom';
-    return capitalize(profile);
-  };
-
+    handleNetworkSync().catch(console.error);
+  }, [
+    selectedAccount,
+    selectedNetworkFilter,
+    actualCurrentProfile,
+    currentNetworkId,
+    dispatch,
+    switchToNetwork,
+  ]);
+  console.log(currentNetworkId, 'currentNetworkId');
   return (
     <div className={styles.root}>
       <Tooltip
@@ -225,30 +355,29 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
               }}
             >
               <i className={clsx(styles.networkIcon, 'networkIcon')} />
-              <span className={styles.dropdownButtonText}>
-                {getCurrentProfileDisplay()}
-              </span>
+              {!!currentProfile && (
+                <span className={styles.dropdownButtonText}>
+                  {capitalize(currentProfile.text)}
+                </span>
+              )}
             </button>
 
             {isProfileDropdownShown && (
               <div ref={profileDropdownRef} className={styles.dropdown}>
-                {availableProfiles.map((profile: NetworkProfile | 'Custom') => {
+                {availableProfiles.map(profile => {
+                  const profileId = profile.id || profile;
                   const isSelected =
-                    profile === actualCurrentProfile ||
-                    (profile === 'Custom' && currentNetworkId === 'custom');
+                    profileId === currentNetworkId ||
+                    profileId === actualCurrentProfile ||
+                    (profileId === 'custom' && currentNetworkId === 'custom');
                   return (
                     <button
-                      key={profile}
+                      key={profileId as string}
                       className={clsx(styles.dropdownItem, {
                         [styles.dropdownItem_selected]: isSelected,
                       })}
-                      onClick={
-                        isSelected
-                          ? () => setIsProfileDropdownShown(false)
-                          : () => {
-                              setIsProfileDropdownShown(false);
-                              setNewProfile(profile);
-                            }
+                      onClick={() =>
+                        handleNetworkChange(profile.id, profile.value)
                       }
                     >
                       <i className={clsx(styles.networkIcon, 'networkIcon')} />
@@ -312,7 +441,9 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                   }
                   setIsCustomNetworkModalShown(false);
                   if (currentNetworkId !== 'custom') {
-                    setNewProfile('Custom');
+                    // setNewProfile('Custom');
+                    // Sync network filter with the correct value
+                    dispatch(setSelectedNetworkFilter('custom'));
                   }
                 }}
               />
