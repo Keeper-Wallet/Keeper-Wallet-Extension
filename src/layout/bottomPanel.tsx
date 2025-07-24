@@ -42,13 +42,13 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
   const { t } = useTranslation();
   const dispatch = usePopupDispatch();
   const selectedAccount = usePopupSelector(state => state.selectedAccount);
-  const currentNetworkId = usePopupSelector(state => state.currentNetwork);
 
+  const currentNetworkId = usePopupSelector(
+    state => state.currentNetwork,
+  );
   const profileDropdownRef = useRef<HTMLDivElement | null>(null);
 
-  const selectedNetworkFilter = usePopupSelector(
-    state => state.selectedNetworkFilter,
-  );
+  const selectedNetworkFilter = usePopupSelector(state => state.selectedNetworkFilter);
   const customMatcher = usePopupSelector(
     state => state.customMatcher as Partial<Record<string, string | null>>,
   );
@@ -100,7 +100,7 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
           },
           {
             value: 'custom',
-            label: 'Custom',
+            label: 'Waves Custom',
           },
         ];
       }
@@ -159,7 +159,7 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
 
         options.push({
           value: 'custom',
-          label: 'Custom',
+          label: 'Waves Custom',
         });
 
         return options;
@@ -195,7 +195,6 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
   ) => {
     setIsProfileDropdownShown(false);
     dispatch(setSelectedNetworkFilter(value));
-
     if (actualCurrentProfile === NetworkProfile.Testnet) {
       let targetNetworkId = '';
 
@@ -228,7 +227,6 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
 
   useEffect(() => {
     if (!selectedAccount) return;
-
     const handleNetworkSync = async () => {
       if (
         selectedAccount.accountType === 'waves' &&
@@ -260,11 +258,7 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
 
       if (isMultichainAccount(selectedAccount)) {
         if (actualCurrentProfile === NetworkProfile.Mainnet) {
-          const validMainnetFilters: NetworkFilter[] = [
-            'all',
-            'waves',
-            'unit0',
-          ];
+          const validMainnetFilters: string[] = ['all', 'waves', 'unit0'];
 
           if (!validMainnetFilters.includes(selectedNetworkFilter)) {
             dispatch(setSelectedNetworkFilter('all'));
@@ -335,7 +329,7 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
     dispatch,
     switchToNetwork,
   ]);
-  console.log(currentNetworkId, 'currentNetworkId');
+
   return (
     <div className={styles.root}>
       <Tooltip
@@ -431,14 +425,12 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                       node,
                     }),
                   );
-                  if (matcher) {
-                    dispatch(
-                      setCustomMatcher({
-                        matcher,
-                        network: 'custom',
-                      }),
-                    );
-                  }
+                  dispatch(
+                    setCustomMatcher({
+                      matcher: matcher ?? '',
+                      network: 'custom',
+                    }),
+                  );
                   setIsCustomNetworkModalShown(false);
                   if (currentNetworkId !== 'custom') {
                     // setNewProfile('Custom');
