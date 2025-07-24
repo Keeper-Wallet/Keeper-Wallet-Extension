@@ -127,11 +127,15 @@ export class CurrentAccountController {
     const currentNetwork = this.getNetwork();
     const currentNetworkProfile =
       this.networkController.getCurrentNetworkProfile();
+
     const activeAccount = this.getSelectedAccount();
 
     if (this.isLocked() || !activeAccount) return;
 
-    if (activeAccount.accountType === 'multichain') {
+    if (
+      activeAccount.accountType === 'multichain' &&
+      activeAccount.network === currentNetworkProfile
+    ) {
       const promises = [];
 
       const ethereumAccount =
