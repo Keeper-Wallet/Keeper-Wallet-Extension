@@ -139,6 +139,7 @@ export class WalletController extends EventEmitter {
           network,
           networkCode,
           seed: input.seed,
+          ethereumAddress: input.ethereumAddress,
         });
       case 'wx':
         return new WxWallet(

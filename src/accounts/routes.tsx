@@ -4,8 +4,10 @@ import { RootAccounts } from 'ui/components/RootAccounts';
 
 import { BottomPanel } from '../layout/bottomPanel';
 import { Menu } from '../ui/components/menu/Menu';
+import { AccountOnboarding } from '../ui/components/pages/AccountOnboarding';
 import { BackUpSeed } from '../ui/components/pages/BackupSeed';
 import { ConfirmBackup } from '../ui/components/pages/ConfirmBackup';
+import { CreateMultichainAccount } from '../ui/components/pages/CreateMultichainAccount';
 import { DeleteAllAccounts } from '../ui/components/pages/deleteAllAccounts/deleteAllAccounts';
 import { AccountsHome } from '../ui/components/pages/Import';
 import { ImportDebug } from '../ui/components/pages/importDebug';
@@ -38,7 +40,27 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/create-account',
+        path: '/account-onboarding',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <AccountOnboarding />
+            <BottomPanel />
+          </>
+        ),
+      },
+      {
+        path: '/create-multichain-account',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <CreateMultichainAccount />
+            <BottomPanel />
+          </>
+        ),
+      },
+      {
+        path: '/create-waves-account',
         element: (
           <>
             <Menu hasBack hasLogo />

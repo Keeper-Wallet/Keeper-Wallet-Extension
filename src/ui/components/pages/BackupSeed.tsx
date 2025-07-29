@@ -2,7 +2,6 @@ import { useAccountsSelector } from 'accounts/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { type NewAccountState } from 'store/reducers/localState';
 
 import { Button, Copy, Modal } from '../ui';
 import * as styles from './styles/backupSeed.styl';
@@ -11,17 +10,22 @@ export function BackUpSeed() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [showCopy, setShowCopy] = useState<boolean>(false);
-  const newAccount = useAccountsSelector(
-    state =>
-      state.localState.newAccount as Extract<NewAccountState, { type: 'seed' }>,
-  );
+  const newAccount = useAccountsSelector(state => state.localState.newAccount);
+
+  if (newAccount.type !== 'seed' && newAccount.type !== 'multichain') {
+    return null;
+  }
 
   return (
     <div className={styles.content}>
       <h2 className="title1 margin2">{t('backupSeed.saveBackup')}</h2>
 
       <div className="flex margin-main">
-        <div className="basic500 tag1">{t('backupSeed.backupCarefully')}</div>
+        <div className="basic500 tag1">
+          {newAccount.type === 'multichain'
+            ? t('backupSeed.backupCarefullyMultichain')
+            : t('backupSeed.backupCarefully')}
+        </div>
         <Copy
           text={newAccount.seed}
           onCopy={() => {

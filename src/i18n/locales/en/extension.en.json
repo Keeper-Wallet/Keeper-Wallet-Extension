@@ -113,6 +113,7 @@
   },
   "backupSeed": {
     "backupCarefully": "Please carefully write down these 15 words or copy them",
+    "backupCarefullyMultichain": "Please carefully write down these 12 words or copy them",
     "cancel": "Cancel creation",
     "confirmBackupInfo": "You will confirm this phrase on the next screen",
     "continue": "Continue",
@@ -716,5 +717,12 @@
     "getStarted": "Get Started",
     "info": "Keeper Wallet — is the safest way to interact with third-party web resources with Waves-integrated functionality or DApps.",
     "info2": "Using Keeper Wallet, you can sign transactions and remain safe from malicious sites."
+  },
+  "onboarding": {
+    "multichainAccounts": "Multichain accounts",
+    "multichainDescription": "Now you have the ability to work not only in the Waves network, but also in the Unit0 network with Ethereum token support",
+    "createMultichainAccount": "Create a new multichain account",
+    "wavesOnlyDescription": "Or continue working in the native Waves network with an account that supports only Waves network and products",
+    "createWavesAccount": "Create a new Waves account"
   }
 }
