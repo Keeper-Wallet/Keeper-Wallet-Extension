@@ -1,6 +1,5 @@
 import type { __BackgroundUiApiDirect } from 'background';
 import type { IdentityUser } from 'controllers/IdentityController';
-import type { AnalyticsEvent } from 'controllers/statistics';
 import type { MessageInputOfType, MessageTx } from 'messages/types';
 import type { MoneyLike } from 'messages/types';
 import type { NetworkName } from 'networks/types';
@@ -10,6 +9,8 @@ import type { CreateWalletInput } from 'wallets/types';
 
 import type { IgnoreErrorsContext } from '../../constants';
 import type { StorageLocalState } from '../../storage/storage';
+import { MultiWallet } from '../../services/types';
+import { AnalyticsEvent } from '../../controllers/statistics';
 
 export type BackgroundUiApi = __BackgroundUiApiDirect;
 
@@ -150,12 +151,34 @@ class Background {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.batchAddWallets(inputs);
   }
-
+  
   async removeWallet(address: string, network: NetworkName): Promise<void> {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.removeWallet(address, network);
+  }
+  
+  // Multi-Wallet methods
+  async addMultiWallet(multiWallet: MultiWallet) {
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.addMultiWallet(multiWallet);
+  }
+  
+  async getMultiWallets(): Promise<MultiWallet[]> {
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.getMultiWallets();
+  }
+  
+  async findMultiWalletByAccount(address: string, network: NetworkName): Promise<MultiWallet | undefined> {
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.findMultiWalletByAccount(address, network);
   }
 
   async deleteVault() {

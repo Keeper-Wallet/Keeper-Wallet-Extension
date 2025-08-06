@@ -50,6 +50,8 @@ import {
   tap,
 } from 'wonka';
 
+import { MultiWalletController } from './controllers/MultiWalletController';
+
 import { fromWebExtensionEvent } from './_core/wonka';
 import { type IgnoreErrorsContext } from './constants';
 import { AddressBookController } from './controllers/AddressBookController';
@@ -80,6 +82,7 @@ import {
   type StorageLocalState,
 } from './storage/storage';
 import { getTxVersions } from './wallets/getTxVersions';
+import { MultiWallet } from './services/types';
 
 const bgPromise = setupBackgroundService();
 
@@ -215,6 +218,7 @@ class BackgroundService extends EventEmitter {
   identityController;
   idleController;
   messageController;
+  multiWalletController;
   networkController;
   nftInfoController;
   notificationsController;
@@ -259,6 +263,11 @@ class BackgroundService extends EventEmitter {
 
     // Network. Works with blockchain
     this.networkController = new NetworkController({
+      extensionStorage: this.extensionStorage,
+    });
+    
+    // MultiWallet. Manages wallet groups across networks
+    this.multiWalletController = new MultiWalletController({
       extensionStorage: this.extensionStorage,
     });
 
@@ -347,6 +356,12 @@ class BackgroundService extends EventEmitter {
       const accounts = this.walletController.getAccounts();
       this.preferencesController.syncAccounts(accounts);
       this.currentAccountController.updateCurrentAccountBalance();
+    });
+    
+    // Listen for MultiWallet changes
+    this.multiWalletController.on('multiWalletsChanged', (multiWallets) => {
+      // Update preferences with processed accounts
+      this.preferencesController.syncAccounts(multiWallets);
     });
 
     this.walletController
@@ -489,6 +504,17 @@ class BackgroundService extends EventEmitter {
       removeWallet: this.walletController.removeWallet.bind(
         this.walletController,
       ),
+
+      // TODO: need to use for future multi-wallet actions
+      addMultiWallet: async (multiWallet: MultiWallet) => {
+        return Promise.resolve(this.multiWalletController.addMultiWallet(multiWallet));
+      },
+      getMultiWallets: async () => {
+        return Promise.resolve(this.multiWalletController.getMultiWallets());
+      },
+      findMultiWalletByAccount: async (address: string, network: NetworkName) => {
+        return Promise.resolve(this.multiWalletController.findMultiWalletByAccount(address, network));
+      },
 
       lock: async () => this.vaultController.lock(),
       unlock: this.vaultController.unlock.bind(this.vaultController),

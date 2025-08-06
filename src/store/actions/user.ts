@@ -2,11 +2,12 @@ import { type CreateWalletInput } from 'wallets/types';
 
 import { type AccountsThunkAction } from '../../accounts/store/types';
 import { NETWORK_CONFIG } from '../../constants';
-import { type NetworkName } from '../../networks/types';
+import { NetworkName } from '../../networks/types';
 import Background, { WalletTypes } from '../../ui/services/Background';
 import { ACTION } from './constants';
 import { selectAccount } from './localState';
 import { updateActiveState } from './notifications';
+import { MultiWallet } from '../../services/types';
 
 export function deleteAllAccounts(): AccountsThunkAction<Promise<void>> {
   return async dispatch => {
@@ -75,3 +76,52 @@ export const changePassword = (oldPassword: string, newPassword: string) => ({
   type: ACTION.CHANGE_PASSWORD,
   payload: { oldPassword, newPassword },
 });
+
+/**
+ * Creates a Waves-only MultiWallet with addresses for all networks (mainnet, testnet, stagenet)
+ * using the AccountService directly rather than the legacy account creation flow
+ */
+export function createWavesOnlyMultiWallet({
+  name,
+  seed,
+  mainnetAddress,
+  publicKey,
+  testnetAddress,
+  stagenetAddress,
+  type,
+}: {
+  name: string;
+  seed: string;
+  mainnetAddress: string;
+  publicKey: string;
+  testnetAddress: string;
+  stagenetAddress: string;
+  type: string;
+}): AccountsThunkAction<Promise<void>> {
+  return async () => {
+    try {
+      const multiWallet: MultiWallet = {
+        id: Date.now().toString(), // Generate unique ID
+        name,
+        type,
+        coins: {
+          waves: {
+            [NetworkName.Mainnet]: mainnetAddress,
+            [NetworkName.Testnet]: testnetAddress,
+            [NetworkName.Stagenet]: stagenetAddress,
+          },
+        },
+        seed,
+        publicKey: publicKey, // Use mainnet public key as primary
+        timestamp: Date.now(),
+      };
+
+      await Background.addMultiWallet(multiWallet);
+
+      console.log('Created Waves-only MultiWallet with name:', name);
+    } catch (error) {
+      console.error('Failed to create Waves-only MultiWallet:', error);
+      throw error;
+    }
+  };
+}

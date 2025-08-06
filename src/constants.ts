@@ -45,6 +45,12 @@ export const NETWORK_CONFIG: Record<
   },
 };
 
+export const CHAIN_IDS = {
+  [NetworkName.Mainnet]: 87,
+  [NetworkName.Testnet]: 84,
+  [NetworkName.Stagenet]: 83,
+};
+
 export const DEFAULT_MAIN_CONFIG = {
   whitelist: [
     'swop.fi',
