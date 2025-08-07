@@ -47,9 +47,9 @@ export class VaultController {
   }
 
   async unlock(password: string) {
+    await this.#wallet.unlock(password);
     this.#identity.unlock(password);
     this.store.updateState({ locked: false });
-    await this.#wallet.unlock(password);
   }
 
   async update(oldPassword: string, newPassword: string) {

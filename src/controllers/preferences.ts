@@ -57,22 +57,33 @@ export class PreferencesController extends EventEmitter {
     this.store.updateState({ idleOptions: options });
   }
 
-  syncAccounts(multiWallets: (WalletAccount | MultiWallet)[]) {
-    // TODO: need to check logic of implementation
-    // const oldAccounts = this.store.getState().accounts;
-    // const accounts = fromKeyrings.map((account, i) => {
-    //   return Object.assign(
-    //     { name: `Account ${i + 1}` },
-    //     account,
-    //     oldAccounts.find(
-    //       oldAcc =>
-    //         oldAcc.address === account.address &&
-    //         oldAcc.network === account.network,
-    //     ),
-    //   );
-    // });
-    this.store.updateState({ accounts: multiWallets as PreferencesAccount[] });
+  syncAccounts(multiWallets: MultiWallet[]) {
+    const oldAccounts = this.store.getState()
+      .accounts as unknown as MultiWallet[];
 
+    // Create a map of existing accounts by ID for quick lookup
+    const accountsById = new Map();
+
+    // Add old accounts to the map first (keeping existing accounts as priority)
+    oldAccounts.forEach(account => {
+      if (account.id) {
+        accountsById.set(account.id, account);
+      }
+    });
+
+    // Add new accounts or update existing ones
+    multiWallets.forEach(wallet => {
+      if (wallet.id) {
+        // If this ID doesn't exist in our map, or we want to update it
+        // You could add logic here to decide whether to update or keep old account
+        accountsById.set(wallet.id, wallet);
+      }
+    });
+
+    // Convert map back to array
+    const accounts = Array.from(accountsById.values());
+
+    this.store.updateState({ accounts });
     this.ensureSelectedAccountInCurrentNetwork();
   }
 
