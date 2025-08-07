@@ -104,16 +104,28 @@ export function createWavesOnlyMultiWallet({
         id: Date.now().toString(), // Generate unique ID
         name,
         type,
+        createdAt: Date.now(),
+        seed,
+
         coins: {
           waves: {
-            [NetworkName.Mainnet]: mainnetAddress,
-            [NetworkName.Testnet]: testnetAddress,
-            [NetworkName.Stagenet]: stagenetAddress,
+            publicKey: publicKey,
+            networks: {
+              mainnet: {
+                address: mainnetAddress,
+                networkCode: NETWORK_CONFIG[NetworkName.Mainnet].networkCode,
+              },
+              testnet: {
+                address: testnetAddress,
+                networkCode: NETWORK_CONFIG[NetworkName.Testnet].networkCode,
+              },
+              stagenet: {
+                address: stagenetAddress,
+                networkCode: NETWORK_CONFIG[NetworkName.Stagenet].networkCode,
+              },
+            },
           },
         },
-        seed,
-        publicKey: publicKey, // Use mainnet public key as primary
-        timestamp: Date.now(),
       };
 
       await Background.addMultiWallet(multiWallet);
@@ -121,6 +133,87 @@ export function createWavesOnlyMultiWallet({
       console.log('Created Waves-only MultiWallet with name:', name);
     } catch (error) {
       console.error('Failed to create Waves-only MultiWallet:', error);
+      throw error;
+    }
+  };
+}
+
+/**
+ * Creates a Full MultiWallet with addresses for both Waves networks (mainnet, testnet, stagenet)
+ * and Unit0 networks (mainnet, testnet) using simplified arguments
+ */
+export function createFullMultiWallet({
+  name,
+  seed,
+  mainnetAddress,
+  publicKey,
+  testnetAddress,
+  stagenetAddress,
+  unit0Address,
+  unit0PublicKey,
+  type,
+}: {
+  name: string;
+  seed: string;
+  mainnetAddress: string;
+  publicKey: string;
+  testnetAddress: string;
+  stagenetAddress: string;
+  unit0Address: string;
+  unit0PublicKey: string;
+  type: string;
+}): AccountsThunkAction<Promise<void>> {
+  return async () => {
+    try {
+      const multiWallet: MultiWallet = {
+        id: Date.now().toString(), // Generate unique ID
+        name,
+        type,
+        createdAt: Date.now(),
+        seed,
+
+        coins: {
+          waves: {
+            publicKey: publicKey,
+            networks: {
+              mainnet: {
+                address: mainnetAddress,
+                networkCode: NETWORK_CONFIG[NetworkName.Mainnet].networkCode,
+              },
+              testnet: {
+                address: testnetAddress,
+                networkCode: NETWORK_CONFIG[NetworkName.Testnet].networkCode,
+              },
+              stagenet: {
+                address: stagenetAddress,
+                networkCode: NETWORK_CONFIG[NetworkName.Stagenet].networkCode,
+              },
+            },
+          },
+          unit0: {
+            publicKey: unit0PublicKey,
+            networks: {
+              mainnet: {
+                address: unit0Address,
+                networkCode:
+                  NETWORK_CONFIG[NetworkName.unit0MainNet].networkCode,
+              },
+              testnet: {
+                address: unit0Address,
+                networkCode:
+                  NETWORK_CONFIG[NetworkName.unit0Testnet].networkCode,
+              },
+            },
+          },
+        },
+      };
+
+      console.log(multiWallet, '$$$$$$$$$');
+      await Background.addMultiWallet(multiWallet);
+
+      console.log('Created Full MultiWallet with name:', name);
+    } catch (error) {
+      console.error('Failed to create Full MultiWallet:', error);
       throw error;
     }
   };

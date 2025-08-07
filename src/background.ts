@@ -341,14 +341,15 @@ class BackgroundService extends EventEmitter {
 
     this.vaultController = new VaultController({
       extensionStorage: this.extensionStorage,
-      wallet: this.walletController,
+      wallet: this.multiWalletController,
       identity: this.identityController,
     });
 
+// In background.ts
     this.vaultController.store.subscribe(state => {
       if (!state.locked || !state.initialized) {
-        const accounts = this.walletController.getAccounts();
-        this.preferencesController.syncAccounts(accounts);
+        const multiWallets = this.multiWalletController.getMultiWallets();
+        this.preferencesController.syncAccounts(multiWallets);
       }
     });
 
@@ -360,6 +361,7 @@ class BackgroundService extends EventEmitter {
     
     // Listen for MultiWallet changes
     this.multiWalletController.on('multiWalletsChanged', (multiWallets) => {
+      console.log(multiWallets, 'multiWallets');
       // Update preferences with processed accounts
       this.preferencesController.syncAccounts(multiWallets);
     });

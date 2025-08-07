@@ -140,7 +140,7 @@ export function getEthereumData(seed: string): EthereumAccountData {
   }
 }
 
-export async function getUnit0Data(seed: string, chainId: number): Promise<Unit0AccountData> {
+export async function getUnit0Data(seed: string): Promise<Unit0AccountData> {
   try {
     const wallet = Mnemonic.isValidMnemonic(seed)
       ? Wallet.fromPhrase(seed)
@@ -173,8 +173,8 @@ export async function createMultichainAccountData(
 ): Promise<MultichainAccountData> {
   const waves = await getWavesData(seed, wavesChainId);
   const ethereum = getEthereumData(seed);
-  const unit0Mainnet = await getUnit0Data(seed, 88811);
-  const unit0Testnet = await getUnit0Data(seed, 88817);
+  const unit0Mainnet = await getUnit0Data(seed);
+  const unit0Testnet = await getUnit0Data(seed);
 
   return {
     waves,

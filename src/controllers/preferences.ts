@@ -2,12 +2,13 @@ import { addBreadcrumb } from '@sentry/browser';
 import EventEmitter from 'events';
 import { type NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
-import { type IdleOptions } from 'preferences/types';
+import { type IdleOptions, PreferencesAccount } from 'preferences/types';
 import { compareAccountsByLastUsed } from 'preferences/utils';
 import { type WalletAccount } from 'wallets/types';
 
 import { type ExtensionStorage } from '../storage/storage';
 import { type NetworkController } from './network';
+import { MultiWallet } from '../services/types';
 
 export class PreferencesController extends EventEmitter {
   store;
@@ -56,20 +57,21 @@ export class PreferencesController extends EventEmitter {
     this.store.updateState({ idleOptions: options });
   }
 
-  syncAccounts(fromKeyrings: WalletAccount[]) {
-    const oldAccounts = this.store.getState().accounts;
-    const accounts = fromKeyrings.map((account, i) => {
-      return Object.assign(
-        { name: `Account ${i + 1}` },
-        account,
-        oldAccounts.find(
-          oldAcc =>
-            oldAcc.address === account.address &&
-            oldAcc.network === account.network,
-        ),
-      );
-    });
-    this.store.updateState({ accounts });
+  syncAccounts(multiWallets: (WalletAccount | MultiWallet)[]) {
+    // TODO: need to check logic of implementation
+    // const oldAccounts = this.store.getState().accounts;
+    // const accounts = fromKeyrings.map((account, i) => {
+    //   return Object.assign(
+    //     { name: `Account ${i + 1}` },
+    //     account,
+    //     oldAccounts.find(
+    //       oldAcc =>
+    //         oldAcc.address === account.address &&
+    //         oldAcc.network === account.network,
+    //     ),
+    //   );
+    // });
+    this.store.updateState({ accounts: multiWallets as PreferencesAccount[] });
 
     this.ensureSelectedAccountInCurrentNetwork();
   }

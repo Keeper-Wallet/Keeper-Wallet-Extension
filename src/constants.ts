@@ -43,6 +43,18 @@ export const NETWORK_CONFIG: Record<
     networkCode: '',
     nodeBaseUrl: '',
   },
+  [NetworkName.unit0MainNet]: {
+    matcherBaseUrl: '',
+    name: NetworkName.unit0MainNet,
+    networkCode: '88811',
+    nodeBaseUrl: 'https://rpc.unit0.dev/',
+  },
+  [NetworkName.unit0Testnet]: {
+    matcherBaseUrl: '',
+    name: NetworkName.unit0Testnet,
+    networkCode: '88817',
+    nodeBaseUrl: 'https://rpc-testnet.unit0.dev/',
+  },
 };
 
 export const CHAIN_IDS = {
