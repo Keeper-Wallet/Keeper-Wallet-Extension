@@ -80,10 +80,8 @@ export class MultiWalletController extends EventEmitter {
 
     this.#saveMultiWallets(updatedWallets);
 
-    console.log(updatedWallets, 'updatedWallets');
     // Emit change event
     this.emit('multiWalletsChanged', updatedWallets);
-    console.log('MultiWallet added:', multiWallet.name);
   }
 
   /**
@@ -193,6 +191,11 @@ export class MultiWalletController extends EventEmitter {
         vault,
       },
     });
+
+    multiWallets.forEach(wallet => {
+      delete wallet.seed;
+    });
+
     this.emit('multiWalletsChanged', multiWallets);
   }
 
@@ -215,7 +218,19 @@ export class MultiWalletController extends EventEmitter {
       });
 
       console.trace(decryptedWallets, '***********');
-      this.emit('multiWalletsChanged', decryptedWallets);
+
+      // Create deep copy of wallets and remove sensitive data before emitting
+      const sanitizedWallets = JSON.parse(
+        JSON.stringify(decryptedWallets),
+      ) as MultiWallet[];
+
+      // Remove seed from each wallet in the sanitized copy
+      sanitizedWallets.forEach(wallet => {
+        delete wallet.seed;
+        delete wallet.privateKey;
+      });
+
+      this.emit('multiWalletsChanged', sanitizedWallets);
     } catch (error) {
       console.error('Failed to restore multi-wallets:', error);
       throw error;

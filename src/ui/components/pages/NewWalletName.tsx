@@ -32,7 +32,6 @@ export function NewWalletName() {
   );
 
   // Check if we're creating a Waves-only account or multichain account
-  console.log(account, '@@@')
   const isWavesOnlyCreation = account.type === 'seed';
   const isMultichainCreation = account.type === 'multichain';
 
@@ -98,7 +97,6 @@ export function NewWalletName() {
               CHAIN_IDS[NetworkName.Stagenet],
             );
 
-            console.log(isMultichainCreation, 'isMultichainCreation');
             if (isMultichainCreation) {
               try {
                 // Generate Unit0 account data for both mainnet and testnet
@@ -134,8 +132,6 @@ export function NewWalletName() {
               }
             } else if (isWavesOnlyCreation) {
               try {
-                console.log(account, 'account');
-
                 console.log('Generated Waves network addresses:', {
                   mainnet: mainnetData,
                   testnet: testnetData.address,
@@ -172,8 +168,6 @@ export function NewWalletName() {
               }
             }
           }
-
-          console.log(account, 'account');
           // If this is a multichain account creation, create accounts for all networks
 
           navigate('/import-success');
@@ -206,23 +200,6 @@ export function NewWalletName() {
         </div>
 
         <div className={styles.footer}>
-          <div className="tag1 basic500 input-title">
-            {t('newAccountName.accountAddress')}
-          </div>
-
-          <div className={`${styles.greyLine} grey-line`}>
-            {account.address}
-          </div>
-
-          {isMultichainCreation && account.ethereumAddress && (
-            <>
-              <div className="tag1 basic500 input-title">Ethereum/Unit0</div>
-              <div className={`${styles.greyLine} grey-line`}>
-                {account.ethereumAddress}
-              </div>
-            </>
-          )}
-
           {existingAccount ? (
             <>
               <Button className="margin2" type="submit">

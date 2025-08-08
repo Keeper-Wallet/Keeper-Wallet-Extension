@@ -207,8 +207,6 @@ export function createFullMultiWallet({
           },
         },
       };
-
-      console.log(multiWallet, '$$$$$$$$$');
       await Background.addMultiWallet(multiWallet);
 
       console.log('Created Full MultiWallet with name:', name);

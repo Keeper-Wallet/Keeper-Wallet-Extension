@@ -361,7 +361,6 @@ class BackgroundService extends EventEmitter {
     
     // Listen for MultiWallet changes
     this.multiWalletController.on('multiWalletsChanged', (multiWallets) => {
-      console.log(multiWallets, 'multiWallets');
       // Update preferences with processed accounts
       this.preferencesController.syncAccounts(multiWallets);
     });

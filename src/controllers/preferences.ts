@@ -1,4 +1,3 @@
-import { addBreadcrumb } from '@sentry/browser';
 import EventEmitter from 'events';
 import { type NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
@@ -57,7 +56,8 @@ export class PreferencesController extends EventEmitter {
     this.store.updateState({ idleOptions: options });
   }
 
-  syncAccounts(multiWallets: MultiWallet[]) {
+  syncAccounts(wallets: (WalletAccount | MultiWallet)[]) {
+    const multiWallets = wallets as MultiWallet[];
     const oldAccounts = this.store.getState()
       .accounts as unknown as MultiWallet[];
 
@@ -88,31 +88,57 @@ export class PreferencesController extends EventEmitter {
   }
 
   ensureSelectedAccountInCurrentNetwork() {
-    const network = this.getNetwork();
-    const { accounts, selectedAccount } = this.store.getState();
-    const currentNetworkAccounts = accounts.filter(
-      account => account.network === network,
-    );
+    const currentNetwork = this.getNetwork();
+    const accounts = this.store.getState().accounts as unknown as MultiWallet[];
+    const selectedAccount = this.store.getState().selectedAccount;
+    // Extract wallet addresses for current network from MultiWallet structure
 
-    if (
-      !selectedAccount ||
-      !currentNetworkAccounts.some(
-        account =>
-          account.address === selectedAccount.address &&
-          account.network === selectedAccount.network,
-      )
-    ) {
-      let addressToSelect: string | undefined;
+    const currentNetworkWallets = accounts.flatMap(wallet => {
+      // For MultiWallet structure
+      if (wallet.coins) {
+        // Handle both wallet types (waves-only and multichain)
+        const relevantCoin = wallet.coins.waves || wallet.coins.unit0;
+        if (relevantCoin?.networks) {
+          const coinNetwork =
+            relevantCoin?.networks?.[
+              currentNetwork as keyof typeof relevantCoin.networks
+            ];
+          if (coinNetwork) {
+            return [
+              {
+                address: coinNetwork.address,
+                network: currentNetwork,
+                walletId: wallet.id,
+                lastUsed: wallet.createdAt,
+              },
+            ];
+          }
+        }
+        return [];
+      }
+      return [];
+    }) as PreferencesAccount[];
 
-      if (currentNetworkAccounts.length > 0) {
-        const sortedAccounts = currentNetworkAccounts.sort(
+    const isSelectedAccountValid =
+      selectedAccount &&
+      currentNetworkWallets.some(
+        wallet =>
+          wallet.address === selectedAccount.address &&
+          wallet.network === currentNetwork,
+      );
+
+    // If no valid selection, select the most recently used account
+    if (!isSelectedAccountValid) {
+      if (currentNetworkWallets.length > 0) {
+        const sortedWallets = currentNetworkWallets.sort(
           compareAccountsByLastUsed,
         );
-
-        addressToSelect = sortedAccounts[0].address;
+        this.emit('updateSelectedAccount', sortedWallets[0]);
+        this.selectAccount(sortedWallets[0].address, currentNetwork);
+      } else {
+        // No accounts for this network
+        this.selectAccount(undefined, currentNetwork);
       }
-
-      this.selectAccount(addressToSelect, network);
     }
   }
 
@@ -144,36 +170,79 @@ export class PreferencesController extends EventEmitter {
   }
 
   selectAccount(address: string | undefined, network: string) {
-    const { accounts, selectedAccount } = this.store.getState();
+    const { accounts } = this.store.getState();
+    let selectedAccount = null;
 
-    if (
-      !selectedAccount ||
-      selectedAccount.address !== address ||
-      selectedAccount.network !== network
-    ) {
-      addBreadcrumb({
-        type: 'user',
-        category: 'account-change',
-        level: 'info',
-        message: 'Change active account',
-      });
+    if (address && network) {
+      // First check MultiWallet structure
+      for (const wallet of accounts as unknown as MultiWallet[]) {
+        if (wallet.coins) {
+          const relevantNetwork = wallet.coins.waves?.networks;
+          if (relevantNetwork) {
+            // Check waves accounts
+            if (
+              relevantNetwork[network as keyof typeof relevantNetwork]
+                ?.address === address
+            ) {
+              selectedAccount = {
+                address,
+                network,
+                name: wallet.name,
+                type: wallet.type,
+                walletId: wallet.id,
+                publicKey: wallet.coins.waves.publicKey,
+                coinType: 'waves',
+              };
+              break;
+            }
 
-      if (selectedAccount) {
-        accounts.forEach(acc => {
-          if (acc.address === selectedAccount.address) {
-            acc.lastUsed = Date.now();
+            // Check unit0 accounts
+            if (
+              relevantNetwork[network as keyof typeof relevantNetwork]
+                ?.address === address
+            ) {
+              selectedAccount = {
+                address,
+                network,
+                name: wallet.name,
+                type: wallet.type,
+                walletId: wallet.id,
+                publicKey: wallet.coins.unit0?.publicKey,
+                coinType: 'unit0',
+              };
+              break;
+            }
           }
-        });
+        }
+        // Legacy account format
+        else if (
+          (wallet as unknown as WalletAccount).address === address &&
+          (wallet as unknown as WalletAccount).network === network
+        ) {
+          selectedAccount = wallet;
+          break;
+        }
       }
-
-      this.store.updateState({
-        accounts,
-        selectedAccount: accounts.find(
-          account => account.address === address && account.network === network,
-        ),
-      });
-
-      this.emit('accountChange');
     }
+
+    // Update last used time for previous account
+    const { selectedAccount: previousAccount } = this.store.getState();
+    if (previousAccount) {
+      accounts.forEach(acc => {
+        if (
+          !(acc as unknown as MultiWallet).coins &&
+          acc.address === previousAccount.address
+        ) {
+          acc.lastUsed = Date.now();
+        }
+      });
+    }
+
+    // Replace the problematic line with our selected account object
+    const typedSelectedAccount = selectedAccount as PreferencesAccount;
+    this.store.updateState({
+      accounts,
+      selectedAccount: typedSelectedAccount, // This now contains either a legacy account or a reference to a MultiWallet account
+    });
   }
 }
