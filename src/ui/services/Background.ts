@@ -319,6 +319,13 @@ class Background {
     return this.background!.setNetwork(network);
   }
 
+  async setCurrentBlockchainType(blockchainType: string): Promise<void> {
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.setCurrentBlockchainType(blockchainType);
+  }
+
   async setCustomNode(url: string | null, network: NetworkName) {
     await this.initPromise;
     this._connect();

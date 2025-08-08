@@ -607,6 +607,10 @@ class BackgroundService extends EventEmitter {
       // network
       setNetwork: async (network: NetworkName) =>
         this.networkController.setNetwork(network),
+
+      setCurrentBlockchainType: async (blockchainType: string) =>
+        this.networkController.setCurrentBlockchainType(blockchainType),
+
       setCustomNode: async (url: string | null, network: NetworkName) =>
         this.networkController.setCustomNode(url, network),
       setCustomCode: async (code: string | null, network: NetworkName) => {

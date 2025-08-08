@@ -1,14 +1,45 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
-// import { NetworkId } from 'networks/types';
-// import { NETWORK_IDS } from 'networks/constants';
 import background from 'ui/services/Background';
-
 import { Button } from '../ui';
 import * as styles from './networkSettings.module.css';
 import { useTranslation } from 'react-i18next';
 import { usePopupSelector } from '../../../popup/store/react';
+import { useDispatch } from 'react-redux';
+import {
+  BLOCKCHAIN_TYPES,
+  NETWORK_OPTIONS,
+  NETWORK_TYPES,
+} from 'assets/constants';
+import { ACTION } from '../../../store/actions/constants';
+
+// Helper function to check if network is a test network
+const isTestNetwork = (networkType: string): boolean => {
+  return (
+    networkType === NETWORK_TYPES.TESTNET ||
+    networkType === NETWORK_TYPES.STAGENET
+  );
+};
+
+// Helper function to get display name for network
+const getNetworkDisplayName = (
+  blockchain?: string,
+  network?: string,
+): string => {
+  if (network === NETWORK_TYPES.CUSTOM) {
+    return 'Custom Network';
+  }
+
+  if (!blockchain || !network) {
+    return '';
+  }
+
+  const blockchainName =
+    blockchain.charAt(0).toUpperCase() + blockchain.slice(1);
+  const networkName = network.charAt(0).toUpperCase() + network.slice(1);
+  return `${blockchainName} ${networkName}`;
+};
 
 const RightArrowIcon = () => (
   <svg
@@ -27,6 +58,38 @@ const RightArrowIcon = () => (
     />
   </svg>
 );
+
+// Toggle Switch component
+const ToggleSwitch = ({
+  label,
+  description,
+  checked,
+  onChange,
+}: {
+  label: string;
+  description?: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) => {
+  return (
+    <div className={styles.toggleContainer}>
+      <div className={styles.toggleLabelContainer}>
+        <div className={styles.toggleLabel}>{label}</div>
+        {description && (
+          <div className={styles.toggleDescription}>{description}</div>
+        )}
+      </div>
+      <label className={styles.toggleSwitch}>
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={e => onChange(e.target.checked)}
+        />
+        <span className={styles.toggleSlider}></span>
+      </label>
+    </div>
+  );
+};
 
 // Network option component
 const NetworkOption = ({
@@ -60,32 +123,112 @@ const NetworkOption = ({
     </div>
   );
 };
-const NETWORK_IDS = {};
-
-interface NetworkId {}
 
 export function NetworkSettings() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  // State for the selected network
-  const currentNetwork = usePopupSelector(state => {
-    return state.currentNetwork;
+  // Get current blockchain type and network from Redux
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+  );
+
+  console.log(currentNetwork, 'currentNetwork');
+  
+  // Initialize selectedNetwork properly based on currentNetwork format
+  const [selectedNetwork, setSelectedNetwork] = useState(() => {
+    // If currentNetwork is empty, use waves-mainnet
+    if (!currentNetwork) {
+      return 'waves-mainnet';
+    }
+    
+    // If currentNetwork already has a blockchain prefix (contains a dash)
+    if (currentNetwork.includes('-')) {
+      return currentNetwork;
+    }
+    
+    // If currentNetwork is just the network type (e.g., "mainnet")
+    // Use the currentBlockchainType to create the combined format
+    return `${currentBlockchainType}-${currentNetwork}`;
   });
 
-  console.log(currentNetwork, '####');
-  const [selectedNetwork, setSelectedNetwork] = useState<NetworkId>();
+  const [showTestAccounts, setShowTestAccounts] = useState(true);
+
   useEffect(() => {
-    setSelectedNetwork(currentNetwork);
+    // Load the hideTestAccounts preference when component mounts
+    (async () => {
+      try {
+        const hideTestAccountsPref = await background.getHideTestAccounts();
+        setShowTestAccounts(!hideTestAccountsPref);
+
+        // If test networks are hidden, ensure we're using mainnet
+        if (hideTestAccountsPref) {
+          if (selectedNetwork.includes('testnet') || selectedNetwork.includes('stagenet')) {
+            // Extract the blockchain type from the current selection
+            const blockchain = selectedNetwork.split('-')[0];
+            setSelectedNetwork(`${blockchain}-mainnet`);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load hide test accounts preference:', error);
+      }
+    })();
   }, []);
 
-  const handleConfirm = () => {
-    // Update the network in the controller
-    if (selectedNetwork) {
-      background.setNetwork(selectedNetwork);
+  // Handle hide test accounts toggle change
+  const handleHideTestAccountsChange = async (checked: boolean) => {
+    try {
+      setShowTestAccounts(checked);
+
+      // If turning off test networks, switch to mainnet if a test network is selected
+      if (!checked && (selectedNetwork.includes('testnet') || selectedNetwork.includes('stagenet'))) {
+        // Extract the blockchain type from the current selection
+        const blockchain = selectedNetwork.split('-')[0];
+        setSelectedNetwork(`${blockchain}-mainnet`);
+      }
+    } catch (error) {
+      console.error('Failed to update hide test accounts preference:', error);
     }
-    // Go back to the previous screen
+  };
+
+  // Function to handle network selection
+  const handleNetworkSelect = (blockchainType: string, networkType: string) => {
+    setSelectedNetwork(`${blockchainType}-${networkType}`);
+  };
+
+  // When confirming, update both Redux values
+  const handleConfirm = async () => {
+    // Parse the selected network into blockchain and network type
+    const [blockchain, networkType] = selectedNetwork.split('-');
+
+    // Update network in Redux - just the network type
+    dispatch({
+      type: ACTION.UPDATE_CURRENT_NETWORK,
+      payload: networkType,
+    });
+
+    // Update blockchain type in Redux
+    dispatch({
+      type: ACTION.UPDATE_CURRENT_BLOCKCHAIN_TYPE,
+      payload: blockchain,
+    });
+
+    // Update background settings - separately set blockchain and network type
+    await background.setNetwork(networkType);
+    await background.setCurrentBlockchainType(blockchain);
+    await background.setHideTestAccounts(!showTestAccounts);
+
     navigate(-1);
+  };
+
+  // Check if a network option is currently selected
+  const isNetworkSelected = (blockchain: string, network: string): boolean => {
+    if (!blockchain && network === NETWORK_TYPES.CUSTOM) {
+      return selectedNetwork === 'custom';
+    }
+    return selectedNetwork === `${blockchain}-${network}`;
   };
 
   return (
@@ -94,56 +237,53 @@ export function NetworkSettings() {
         {t('networksSettings.network')}
       </h2>
 
+      {/* Display Options Section */}
+      <div className={styles.displayOptionsSection}>
+        <ToggleSwitch
+          label="Test Network Accounts"
+          checked={showTestAccounts}
+          onChange={handleHideTestAccountsChange}
+        />
+      </div>
+
+      {/* Divider */}
+      <div className={styles.divider} />
+
       <div className="margin-main-big">
-        {/* Mainnet section */}
-        <NetworkOption
-          name="Waves Mainnet"
-          isSelected={selectedNetwork === NETWORK_IDS.WAVES_MAINNET}
-          onClick={() => setSelectedNetwork(NETWORK_IDS.WAVES_MAINNET)}
-        />
-        <NetworkOption
-          name="Unit0 Mainnet"
-          isSelected={selectedNetwork === NETWORK_IDS.UNIT0_MAINNET}
-          onClick={() => setSelectedNetwork(NETWORK_IDS.UNIT0_MAINNET)}
-        />
+        {/* Network options */}
+        {NETWORK_OPTIONS.map((option, index) => {
+          // Skip test networks if hidden
+          if (option.isTestnet && !showTestAccounts) {
+            return null;
+          }
 
-        {/* Divider */}
-        <div className={styles.divider} />
+          // Add divider before first testnet option
+          const showDivider =
+            index > 0 &&
+            option.isTestnet &&
+            !NETWORK_OPTIONS[index - 1].isTestnet;
 
-        {/* Testnet section */}
-        <NetworkOption
-          name="Waves Testnet"
-          isSelected={selectedNetwork === NETWORK_IDS.WAVES_TESTNET}
-          onClick={() => setSelectedNetwork(NETWORK_IDS.WAVES_TESTNET)}
-        />
-        <NetworkOption
-          name="Unit0 Testnet"
-          isSelected={selectedNetwork === NETWORK_IDS.UNIT0_TESTNET}
-          onClick={() => setSelectedNetwork(NETWORK_IDS.UNIT0_TESTNET)}
-        />
-
-        {/* Divider */}
-        <div className={styles.divider} />
-
-        {/* Stagenet section */}
-        <NetworkOption
-          name="Waves Stagenet"
-          isSelected={selectedNetwork === NETWORK_IDS.WAVES_STAGENET}
-          onClick={() => setSelectedNetwork(NETWORK_IDS.WAVES_STAGENET)}
-        />
-
-        {/* Divider */}
-        <div className={styles.divider} />
-
-        {/* Custom network */}
-        <NetworkOption
-          name="Custom network"
-          hasRightArrow={true}
-          onClick={() => {
-            setSelectedNetwork(NETWORK_IDS.CUSTOM);
-            navigate('/custom-network');
-          }}
-        />
+          return (
+            <div key={`${option.blockchain || ''}-${option.network}`}>
+              {showDivider && <div className={styles.divider} />}
+              <NetworkOption
+                name={getNetworkDisplayName(option.blockchain, option.network)}
+                isSelected={isNetworkSelected(
+                  option.blockchain,
+                  option.network,
+                )}
+                hasRightArrow={option.isCustom}
+                onClick={() => {
+                  if (option.isCustom) {
+                    navigate('/custom-network');
+                  } else if (option.blockchain) {
+                    handleNetworkSelect(option.blockchain, option.network);
+                  }
+                }}
+              />
+            </div>
+          );
+        })}
       </div>
 
       <Button
@@ -152,7 +292,7 @@ export function NetworkSettings() {
         type="submit"
         view="submit"
       >
-        Confirm
+        {t('common.confirm')}
       </Button>
     </div>
   );

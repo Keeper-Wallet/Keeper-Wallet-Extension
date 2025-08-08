@@ -16,6 +16,7 @@ export class NetworkController {
     this.store = new ObservableStore(
       extensionStorage.getInitState({
         currentNetwork: NetworkName.Mainnet,
+        currentBlockchainType: 'waves',
         customNodes: {
           mainnet: null,
           stagenet: null,
@@ -53,6 +54,22 @@ export class NetworkController {
     });
 
     this.store.updateState({ currentNetwork: network });
+  }
+
+  setCurrentBlockchainType(blockchainType: string) {
+    console.log(blockchainType, '!!!!!!!');
+    addBreadcrumb({
+      type: 'user',
+      category: 'blockchain-type-change',
+      level: 'info',
+      message: `Change blockchain type to ${blockchainType}`,
+    });
+
+    this.store.updateState({ currentBlockchainType: blockchainType });
+  }
+
+  getCurrentBlockchainType() {
+    return this.store.getState().currentBlockchainType || 'waves';
   }
 
   getNetwork() {

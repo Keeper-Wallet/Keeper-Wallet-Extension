@@ -1,5 +1,49 @@
 import { type NetworkName } from 'networks/types';
 
+
+// Define blockchain and network type constants to match MultiWallet structure
+export const BLOCKCHAIN_TYPES = {
+  WAVES: 'waves',
+  UNIT0: 'unit0',
+};
+
+export const NETWORK_TYPES = {
+  MAINNET: 'mainnet',
+  TESTNET: 'testnet',
+  STAGENET: 'stagenet',
+  CUSTOM: 'custom',
+};
+
+// For UI convenience - Network options that will be displayed
+export const NETWORK_OPTIONS = [
+  {
+    blockchain: BLOCKCHAIN_TYPES.WAVES,
+    network: NETWORK_TYPES.MAINNET,
+    isTestnet: false,
+  },
+  {
+    blockchain: BLOCKCHAIN_TYPES.UNIT0,
+    network: NETWORK_TYPES.MAINNET,
+    isTestnet: false,
+  },
+  {
+    blockchain: BLOCKCHAIN_TYPES.WAVES,
+    network: NETWORK_TYPES.TESTNET,
+    isTestnet: true,
+  },
+  {
+    blockchain: BLOCKCHAIN_TYPES.UNIT0,
+    network: NETWORK_TYPES.TESTNET,
+    isTestnet: true,
+  },
+  {
+    blockchain: BLOCKCHAIN_TYPES.WAVES,
+    network: NETWORK_TYPES.STAGENET,
+    isTestnet: true,
+  },
+  { network: NETWORK_TYPES.CUSTOM, isTestnet: true, isCustom: true },
+];
+
 export const assetIds: Record<NetworkName, Record<string, string>> = {
   mainnet: {
     WAVES: 'WAVES',
