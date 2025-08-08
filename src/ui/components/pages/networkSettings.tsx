@@ -1,268 +1,159 @@
-import clsx from 'clsx';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import clsx from 'clsx';
+// import { NetworkId } from 'networks/types';
+// import { NETWORK_IDS } from 'networks/constants';
+import background from 'ui/services/Background';
 
-import { NETWORK_CONFIG } from '../../../constants';
-import { NetworkName } from '../../../networks/types';
-import { usePopupDispatch, usePopupSelector } from '../../../popup/store/react';
-import {
-  setCustomCode,
-  setCustomMatcher,
-  setCustomNode,
-} from '../../../store/actions/network';
-import { getMatcherPublicKey, getNetworkCode } from '../../utils/waves';
-import { Button, Copy, ErrorMessage, Input, Modal } from '../ui';
-import * as styles from './styles/settings.styl';
+import { Button } from '../ui';
+import * as styles from './networkSettings.module.css';
+import { useTranslation } from 'react-i18next';
+import { usePopupSelector } from '../../../popup/store/react';
+
+const RightArrowIcon = () => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M9 6L15 12L9 18"
+      stroke="#9E9E9E"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// Network option component
+const NetworkOption = ({
+  name,
+  isSelected,
+  hasRightArrow = false,
+  onClick,
+}: {
+  name: string;
+  isSelected?: boolean;
+  hasRightArrow?: boolean;
+  onClick: () => void;
+}) => {
+  const optionClassName = clsx(styles.networkOption, {
+    [styles.selected]: isSelected,
+  });
+
+  const iconClassName = clsx(styles.selectionIndicator, {
+    'selected-network': isSelected,
+  });
+
+  return (
+    <div className={optionClassName} onClick={onClick}>
+      <div className={styles.networkName}>{name}</div>
+      <div className={iconClassName} />
+      {hasRightArrow && (
+        <div className={styles.rightArrow}>
+          <RightArrowIcon />
+        </div>
+      )}
+    </div>
+  );
+};
+const NETWORK_IDS = {};
+
+interface NetworkId {}
 
 export function NetworkSettings() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
-  const dispatch = usePopupDispatch();
+  // State for the selected network
+  const currentNetwork = usePopupSelector(state => {
+    return state.currentNetwork;
+  });
 
-  const currentNetwork = usePopupSelector(state => state.currentNetwork);
-
-  const customMatcher = usePopupSelector(
-    state => state.customMatcher[state.currentNetwork],
-  );
-
-  const customNode = usePopupSelector(
-    state => state.customNodes[state.currentNetwork],
-  );
-
-  const defaultNetworkConfig = NETWORK_CONFIG[currentNetwork];
-
-  const initialNodeValue = customNode || defaultNetworkConfig.nodeBaseUrl;
-  const [nodeValue, setNodeValue] = useState(initialNodeValue);
-  const [nodeError, setNodeError] = useState(false);
-
-  const initialMatcherValue =
-    customMatcher || defaultNetworkConfig.matcherBaseUrl;
-  const [matcherValue, setMatcherValue] = useState(initialMatcherValue);
-  const [matcherError, setMatcherError] = useState(false);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [showCopied, setShowCopied] = useState(false);
+  console.log(currentNetwork, '####');
+  const [selectedNetwork, setSelectedNetwork] = useState<NetworkId>();
   useEffect(() => {
-    if (!showCopied) return;
+    setSelectedNetwork(currentNetwork);
+  }, []);
 
-    const timeout = setTimeout(() => {
-      setShowCopied(false);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [showCopied]);
-
-  const [showSaved, setShowSaved] = useState(false);
-  useEffect(() => {
-    if (!showSaved) return;
-
-    const timeout = setTimeout(() => {
-      setShowSaved(false);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [showSaved]);
-
-  const [showSetDefault, setShowSetDefault] = useState(false);
-  useEffect(() => {
-    if (!showSetDefault) return;
-
-    const timeout = setTimeout(() => {
-      setShowSetDefault(false);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [showSetDefault]);
+  const handleConfirm = () => {
+    // Update the network in the controller
+    if (selectedNetwork) {
+      background.setNetwork(selectedNetwork);
+    }
+    // Go back to the previous screen
+    navigate(-1);
+  };
 
   return (
-    <form
-      className={styles.networkTab}
-      onSubmit={async event => {
-        event.preventDefault();
-        setIsSubmitting(true);
-
-        const [nodeIsValid, matcherIsValid] = await Promise.all([
-          getNetworkCode(nodeValue).then(
-            networkCode => {
-              if (currentNetwork === NetworkName.Custom) {
-                dispatch(
-                  setCustomCode({ code: networkCode, network: currentNetwork }),
-                );
-              } else if (networkCode !== defaultNetworkConfig.networkCode) {
-                return false;
-              }
-
-              dispatch(
-                setCustomNode({
-                  network: currentNetwork,
-                  node:
-                    nodeValue === defaultNetworkConfig.nodeBaseUrl
-                      ? null
-                      : nodeValue,
-                }),
-              );
-
-              return true;
-            },
-            () => false,
-          ),
-
-          getMatcherPublicKey(matcherValue).then(
-            () => {
-              dispatch(
-                setCustomMatcher({
-                  matcher:
-                    matcherValue === defaultNetworkConfig.matcherBaseUrl
-                      ? null
-                      : matcherValue,
-                  network: currentNetwork,
-                }),
-              );
-
-              return true;
-            },
-            () => false,
-          ),
-        ]);
-
-        setNodeError(!nodeIsValid);
-        setMatcherError(!matcherIsValid);
-
-        if (nodeIsValid && matcherIsValid) {
-          setShowSaved(true);
-        }
-
-        setIsSubmitting(false);
-      }}
-    >
+    <div className={styles.networkTab}>
       <h2 className="title1 margin-main-big">
         {t('networksSettings.network')}
       </h2>
 
-      <div className="margin-main-big relative">
-        <label className="input-title basic500 tag1" htmlFor="node_address">
-          <Copy
-            text={nodeValue}
-            onCopy={() => {
-              setShowCopied(true);
-            }}
-          >
-            <i className={clsx(styles.copyIcon, 'copy-icon')}> </i>
-          </Copy>
-
-          {t('networksSettings.node')}
-        </label>
-
-        <Input
-          disabled={isSubmitting}
-          id="node_address"
-          type="url"
-          value={nodeValue}
-          onChange={event => {
-            setNodeValue(event.currentTarget.value);
-            setNodeError(false);
-          }}
+      <div className="margin-main-big">
+        {/* Mainnet section */}
+        <NetworkOption
+          name="Waves Mainnet"
+          isSelected={selectedNetwork === NETWORK_IDS.WAVES_MAINNET}
+          onClick={() => setSelectedNetwork(NETWORK_IDS.WAVES_MAINNET)}
+        />
+        <NetworkOption
+          name="Unit0 Mainnet"
+          isSelected={selectedNetwork === NETWORK_IDS.UNIT0_MAINNET}
+          onClick={() => setSelectedNetwork(NETWORK_IDS.UNIT0_MAINNET)}
         />
 
-        <ErrorMessage show={nodeError} data-testid="nodeAddressError">
-          {t('networkSettings.nodeError')}
-        </ErrorMessage>
-      </div>
+        {/* Divider */}
+        <div className={styles.divider} />
 
-      <div className="margin-main-big relative">
-        <label className="input-title basic500 tag1" htmlFor="matcher_address">
-          <Copy
-            text={matcherValue}
-            onCopy={() => {
-              setShowCopied(true);
-            }}
-          >
-            <i className={clsx(styles.copyIcon, 'copy-icon')}> </i>
-          </Copy>
-
-          {t('networksSettings.matcher')}
-        </label>
-
-        <Input
-          disabled={isSubmitting}
-          id="matcher_address"
-          type="url"
-          value={matcherValue}
-          onChange={event => {
-            setMatcherValue(event.currentTarget.value);
-            setMatcherError(false);
-          }}
+        {/* Testnet section */}
+        <NetworkOption
+          name="Waves Testnet"
+          isSelected={selectedNetwork === NETWORK_IDS.WAVES_TESTNET}
+          onClick={() => setSelectedNetwork(NETWORK_IDS.WAVES_TESTNET)}
+        />
+        <NetworkOption
+          name="Unit0 Testnet"
+          isSelected={selectedNetwork === NETWORK_IDS.UNIT0_TESTNET}
+          onClick={() => setSelectedNetwork(NETWORK_IDS.UNIT0_TESTNET)}
         />
 
-        <ErrorMessage show={matcherError}>
-          {t('networkSettings.matcherError')}
-        </ErrorMessage>
+        {/* Divider */}
+        <div className={styles.divider} />
+
+        {/* Stagenet section */}
+        <NetworkOption
+          name="Waves Stagenet"
+          isSelected={selectedNetwork === NETWORK_IDS.WAVES_STAGENET}
+          onClick={() => setSelectedNetwork(NETWORK_IDS.WAVES_STAGENET)}
+        />
+
+        {/* Divider */}
+        <div className={styles.divider} />
+
+        {/* Custom network */}
+        <NetworkOption
+          name="Custom network"
+          hasRightArrow={true}
+          onClick={() => {
+            setSelectedNetwork(NETWORK_IDS.CUSTOM);
+            navigate('/custom-network');
+          }}
+        />
       </div>
 
       <Button
-        className="margin-main-big"
-        disabled={
-          isSubmitting ||
-          (nodeValue === initialNodeValue &&
-            matcherValue === initialMatcherValue)
-        }
-        loading={isSubmitting}
+        className={styles.confirmButton}
+        onClick={handleConfirm}
         type="submit"
         view="submit"
       >
-        {t('networksSettings.save')}
+        Confirm
       </Button>
-
-      {currentNetwork !== NetworkName.Custom && (
-        <Button
-          disabled={
-            isSubmitting ||
-            (nodeValue === defaultNetworkConfig.nodeBaseUrl &&
-              matcherValue === defaultNetworkConfig.matcherBaseUrl)
-          }
-          id="setDefault"
-          onClick={() => {
-            dispatch(setCustomNode({ network: currentNetwork, node: null }));
-
-            dispatch(
-              setCustomMatcher({ matcher: null, network: currentNetwork }),
-            );
-
-            setNodeValue(defaultNetworkConfig.nodeBaseUrl);
-            setNodeError(false);
-
-            setMatcherValue(defaultNetworkConfig.matcherBaseUrl);
-            setMatcherError(false);
-
-            setShowSetDefault(true);
-          }}
-        >
-          {t('networksSettings.setDefault')}
-        </Button>
-      )}
-
-      <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showCopied}>
-        <div className="modal notification">{t('networksSettings.copied')}</div>
-      </Modal>
-
-      <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showSaved}>
-        <div className="modal notification">
-          {t('networksSettings.savedModal')}
-        </div>
-      </Modal>
-
-      <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showSetDefault}>
-        <div className="modal notification">
-          {t('networksSettings.setDefaultModal')}
-        </div>
-      </Modal>
-    </form>
+    </div>
   );
 }
