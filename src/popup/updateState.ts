@@ -8,6 +8,7 @@ import { type Message, MessageStatus } from '../messages/types';
 import { type NetworkName } from '../networks/types';
 import { ACTION } from '../store/actions/constants';
 import { type PopupStore } from './store/types';
+import Background from '../ui/services/Background';
 
 function getParam<S, D>(param: S, defaultParam: D) {
   if (param) {
@@ -220,17 +221,33 @@ export function createUpdateState(store: PopupStore) {
       (stateChanges.accounts != null &&
         !deepEqual(stateChanges.accounts, currentState.allNetworksAccounts)) ||
       (stateChanges.currentNetwork != null &&
-        stateChanges.currentNetwork !== currentState.currentNetwork)
+        stateChanges.currentNetwork !== currentState.currentNetwork) ||
+      (stateChanges.currentBlockchainType != null &&
+        stateChanges.currentBlockchainType !==
+          currentState.currentBlockchainType)
     ) {
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      const accounts =
-        stateChanges.accounts || currentState.allNetworksAccounts;
-      const network =
-        stateChanges.currentNetwork || currentState.currentNetwork;
+      // Get legacy format accounts from background
+      // This gets accounts in the old format that components expect
+      Background.getLegacyFormatAccounts(
+        stateChanges.currentNetwork,
+        stateChanges.currentBlockchainType,
+      ).then(legacyAccounts => {
+        console.log(legacyAccounts, 'legacyAccounts');
+        // Filter by current network
+        const network =
+          stateChanges.currentNetwork || currentState.currentNetwork;
 
-      store.dispatch({
-        type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
-        payload: accounts.filter(account => account.network === network),
+        store.dispatch({
+          type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
+          payload: legacyAccounts,
+        });
+
+        store.dispatch({
+          type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
+          payload: legacyAccounts.filter(
+            account => account.network === network,
+          ),
+        });
       });
     }
 

@@ -13,6 +13,7 @@ import {
   NETWORK_TYPES,
 } from 'assets/constants';
 import { ACTION } from '../../../store/actions/constants';
+import type { NetworkName } from '../../../networks/types';
 
 // Helper function to check if network is a test network
 const isTestNetwork = (networkType: string): boolean => {
@@ -159,10 +160,8 @@ export function NetworkSettings() {
   useEffect(() => {
     // Load the hideTestAccounts preference when component mounts
     (async () => {
-      try {
         const hideTestAccountsPref = await background.getHideTestAccounts();
         setShowTestAccounts(!hideTestAccountsPref);
-
         // If test networks are hidden, ensure we're using mainnet
         if (hideTestAccountsPref) {
           if (selectedNetwork.includes('testnet') || selectedNetwork.includes('stagenet')) {
@@ -171,9 +170,6 @@ export function NetworkSettings() {
             setSelectedNetwork(`${blockchain}-mainnet`);
           }
         }
-      } catch (error) {
-        console.error('Failed to load hide test accounts preference:', error);
-      }
     })();
   }, []);
 
@@ -216,7 +212,7 @@ export function NetworkSettings() {
     });
 
     // Update background settings - separately set blockchain and network type
-    await background.setNetwork(networkType);
+    await background.setNetwork(networkType as NetworkName);
     await background.setCurrentBlockchainType(blockchain);
     await background.setHideTestAccounts(!showTestAccounts);
 
@@ -269,7 +265,7 @@ export function NetworkSettings() {
               <NetworkOption
                 name={getNetworkDisplayName(option.blockchain, option.network)}
                 isSelected={isNetworkSelected(
-                  option.blockchain,
+                  option.blockchain!,
                   option.network,
                 )}
                 hasRightArrow={option.isCustom}
@@ -292,7 +288,7 @@ export function NetworkSettings() {
         type="submit"
         view="submit"
       >
-        {t('common.confirm')}
+        {t('networkSettings.confirm')}
       </Button>
     </div>
   );

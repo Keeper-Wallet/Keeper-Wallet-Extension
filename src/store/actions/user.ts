@@ -196,12 +196,12 @@ export function createFullMultiWallet({
               mainnet: {
                 address: unit0Address,
                 networkCode:
-                  NETWORK_CONFIG[NetworkName.unit0MainNet].networkCode,
+                  NETWORK_CONFIG[NetworkName.Mainnet].networkCode,
               },
               testnet: {
                 address: unit0Address,
                 networkCode:
-                  NETWORK_CONFIG[NetworkName.unit0Testnet].networkCode,
+                  NETWORK_CONFIG[NetworkName.Testnet].networkCode,
               },
             },
           },

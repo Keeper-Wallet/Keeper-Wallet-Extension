@@ -43,15 +43,16 @@ export const NETWORK_CONFIG: Record<
     networkCode: '',
     nodeBaseUrl: '',
   },
+  // TODO: we will think about this later
   [NetworkName.unit0MainNet]: {
     matcherBaseUrl: '',
-    name: NetworkName.unit0MainNet,
+    name: NetworkName.Mainnet,
     networkCode: '88811',
     nodeBaseUrl: 'https://rpc.unit0.dev/',
   },
   [NetworkName.unit0Testnet]: {
     matcherBaseUrl: '',
-    name: NetworkName.unit0Testnet,
+    name: NetworkName.Testnet,
     networkCode: '88817',
     nodeBaseUrl: 'https://rpc-testnet.unit0.dev/',
   },

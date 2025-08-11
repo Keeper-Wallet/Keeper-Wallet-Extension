@@ -41,8 +41,7 @@ export async function createMultichainAccount(): Promise<{
 
   const waves = await getWavesData(phrase);
   const ethereum = getEthereumData(phrase);
-  const unit0Mainnet = await getUnit0Data(phrase, 88811); // Unit0 mainnet chain ID
-  const unit0Testnet = await getUnit0Data(phrase, 88817); // Unit0 testnet chain ID
+  const unit0Address = await getUnit0Data(phrase); // Unit0 mainnet chain ID
 
   return {
     account: {
@@ -53,8 +52,8 @@ export async function createMultichainAccount(): Promise<{
         waves,
         ethereum,
         unit0: {
-          mainnet: unit0Mainnet,
-          testnet: unit0Testnet,
+          mainnet: unit0Address,
+          testnet: unit0Address,
         },
       },
     },

@@ -245,4 +245,60 @@ export class PreferencesController extends EventEmitter {
       selectedAccount: typedSelectedAccount, // This now contains either a legacy account or a reference to a MultiWallet account
     });
   }
+
+  /**
+   * Get legacy format accounts filtered by current network and blockchain type
+   * @param currentNetwork - Current active network name (mainnet, testnet, etc.)
+   * @param currentBlockchainType - Current blockchain type (waves, unit0, etc.)
+   * @returns Array of legacy format accounts for the current network and blockchain
+   */
+  getLegacyFormatAccounts(
+    currentNetwork: NetworkName,
+    currentBlockchainType: string,
+  ): Array<{
+    address: string;
+    name: string;
+    network: string;
+    publicKey: string;
+    type: string;
+    id: string;
+  }> {
+    const multiWallets = this.getAccounts();
+    const legacyAccounts: Array<{
+      address: string;
+      name: string;
+      network: string;
+      publicKey: string;
+      type: string;
+      id: string;
+    }> = [];
+
+
+    // Convert each MultiWallet to legacy accounts for current network and blockchain
+    multiWallets.forEach(wallet => {
+      console.log(wallet.coins, '####');
+      console.log(currentBlockchainType, 'currentBlockchainType');
+      // Check if the wallet has the current blockchain type
+      if (wallet.coins?.[currentBlockchainType]) {
+        const blockchainData = wallet.coins[currentBlockchainType];
+        const { publicKey, networks } = blockchainData;
+
+        // Check if the wallet has the current network
+        if (networks?.[currentNetwork] && networks[currentNetwork].address) {
+          const networkData = networks[currentNetwork];
+
+          legacyAccounts.push({
+            address: networkData.address,
+            name: wallet.name,
+            network: currentNetwork,
+            publicKey,
+            type: wallet.type,
+            id: wallet.id,
+          });
+        }
+      }
+    });
+
+    return legacyAccounts;
+  }
 }

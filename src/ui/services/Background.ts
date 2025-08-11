@@ -318,6 +318,17 @@ class Background {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.setNetwork(network);
   }
+  async setHideTestAccounts(statusOfShow: boolean): Promise<void> {
+    await this.initPromise;
+    this._connect();
+    return this.background!.setHideTestAccounts(statusOfShow);
+  }
+  async getHideTestAccounts(): Promise<boolean> {
+    await this.initPromise;
+    this._connect();
+    return this.background!.getHideTestAccounts();
+  }
+
 
   async setCurrentBlockchainType(blockchainType: string): Promise<void> {
     await this.initPromise;
@@ -554,6 +565,14 @@ class Background {
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.updateIdle();
+  }
+
+  async getLegacyFormatAccounts(network: NetworkName, bockChainType: string) {
+    await this.initPromise;
+    if (this.background) {
+      return this.background.getLegacyFormatAccounts(network, bockChainType);
+    }
+    return [];
   }
 }
 

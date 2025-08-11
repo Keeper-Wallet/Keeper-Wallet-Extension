@@ -409,6 +409,7 @@
   },
   "networkSettings": {
     "cancel": "Cancel",
+    "confirm": "Confirm",
     "customNetwork": "network",
     "matcherError": "Incorrect matcher address",
     "nodeError": "Incorrect node address",

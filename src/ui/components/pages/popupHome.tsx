@@ -22,17 +22,18 @@ export function PopupHome() {
   const { t } = useTranslation();
   const dispatch = usePopupDispatch();
 
-  const activeAccount = usePopupSelector(state =>
-    state.accounts.find(
-      ({ address }) => address === state.selectedAccount?.address,
-    ),
-  );
+  const activeAccount = usePopupSelector(state => {
+    console.log('activeAccount', state);
+    return state.accounts.find(
+      ({ address }) => address === state.selectedAccount?.address
+    )
+  });
   const assets = usePopupSelector(state => state.assets);
   const usdPrices = usePopupSelector(state => state.usdPrices);
   const balances = usePopupSelector(state => state.balances);
 
   const notifications = usePopupSelector(
-    state => state.localState.notifications,
+    state => state.localState.notifications
   );
 
   const [activeTab, setActiveTab] = useUiState('assetsTab');
@@ -56,22 +57,22 @@ export function PopupHome() {
 
   const amountInUsd = balances[activeAccount.address]?.assets
     ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      Object.entries(balances[activeAccount.address]!.assets!).reduce(
-        (acc, [id, { balance = 0 } = {}]) => {
-          // eslint-disable-next-line @typescript-eslint/no-shadow
-          const asset = assets[id];
+    Object.entries(balances[activeAccount.address]!.assets!).reduce(
+      (acc, [id, { balance = 0 } = {}]) => {
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        const asset = assets[id];
 
-          const usdPrice = usdPrices[id];
+        const usdPrice = usdPrices[id];
 
-          if (asset && usdPrice) {
-            const tokens = new Money(balance, new Asset(asset)).getTokens();
-            acc = acc.add(new BigNumber(usdPrice).mul(tokens));
-          }
+        if (asset && usdPrice) {
+          const tokens = new Money(balance, new Asset(asset)).getTokens();
+          acc = acc.add(new BigNumber(usdPrice).mul(tokens));
+        }
 
-          return acc;
-        },
-        new BigNumber(0),
-      )
+        return acc;
+      },
+      new BigNumber(0)
+    )
     : null;
 
   return (
@@ -83,7 +84,7 @@ export function PopupHome() {
             assets.WAVES &&
             new Money(
               balances[activeAccount.address]?.available || 0,
-              new Asset(assets.WAVES),
+              new Asset(assets.WAVES)
             )
           }
           amountInUsd={amountInUsd}
@@ -124,7 +125,7 @@ export function PopupHome() {
             }}
             onSwapClick={assetId => {
               navigate(
-                `/swap?${new URLSearchParams({ fromAssetId: assetId })}`,
+                `/swap?${new URLSearchParams({ fromAssetId: assetId })}`
               );
             }}
           />
