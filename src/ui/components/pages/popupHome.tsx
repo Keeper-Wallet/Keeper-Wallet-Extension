@@ -23,7 +23,6 @@ export function PopupHome() {
   const dispatch = usePopupDispatch();
 
   const activeAccount = usePopupSelector(state => {
-    console.log('activeAccount', state);
     return state.accounts.find(
       ({ address }) => address === state.selectedAccount?.address
     )

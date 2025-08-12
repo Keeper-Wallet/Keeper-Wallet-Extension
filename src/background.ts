@@ -278,6 +278,10 @@ class BackgroundService extends EventEmitter {
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController,
       ),
+      getCurrentBlockchainType:
+        this.networkController.getCurrentBlockchainType.bind(
+          this.networkController,
+        ),
     });
 
     // On network change
@@ -410,6 +414,10 @@ class BackgroundService extends EventEmitter {
       getAccounts: this.preferencesController.getAccounts.bind(
         this.preferencesController,
       ),
+      getLegacyFormatAccounts:
+        this.preferencesController.getLegacyFormatAccounts.bind(
+          this.preferencesController,
+        ),
       getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
         this.preferencesController,
       ),

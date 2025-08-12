@@ -232,7 +232,6 @@ export function createUpdateState(store: PopupStore) {
         stateChanges.currentNetwork,
         stateChanges.currentBlockchainType,
       ).then(legacyAccounts => {
-        console.log(legacyAccounts, 'legacyAccounts');
         // Filter by current network
         const network =
           stateChanges.currentNetwork || currentState.currentNetwork;

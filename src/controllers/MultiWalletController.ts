@@ -216,9 +216,6 @@ export class MultiWalletController extends EventEmitter {
           multiWallets: decryptedWallets,
         },
       });
-
-      console.trace(decryptedWallets, '***********');
-
       // Create deep copy of wallets and remove sensitive data before emitting
       const sanitizedWallets = JSON.parse(
         JSON.stringify(decryptedWallets),

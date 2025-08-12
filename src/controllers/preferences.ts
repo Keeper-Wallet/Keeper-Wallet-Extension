@@ -12,15 +12,18 @@ import { MultiWallet } from '../services/types';
 export class PreferencesController extends EventEmitter {
   store;
   private getNetwork;
+  private getCurrentBlockchainType;
 
   constructor({
     extensionStorage,
     initLangCode,
     getNetwork,
+    getCurrentBlockchainType,
   }: {
     extensionStorage: ExtensionStorage;
     initLangCode: string | null | undefined;
     getNetwork: NetworkController['getNetwork'];
+    getCurrentBlockchainType: NetworkController['getCurrentBlockchainType'];
   }) {
     super();
 
@@ -36,6 +39,7 @@ export class PreferencesController extends EventEmitter {
     extensionStorage.subscribe(this.store);
 
     this.getNetwork = getNetwork;
+    this.getCurrentBlockchainType = getCurrentBlockchainType;
   }
 
   getAccounts() {
@@ -252,10 +256,7 @@ export class PreferencesController extends EventEmitter {
    * @param currentBlockchainType - Current blockchain type (waves, unit0, etc.)
    * @returns Array of legacy format accounts for the current network and blockchain
    */
-  getLegacyFormatAccounts(
-    currentNetwork: NetworkName,
-    currentBlockchainType: string,
-  ): Array<{
+  getLegacyFormatAccounts(): Array<{
     address: string;
     name: string;
     network: string;
@@ -263,7 +264,9 @@ export class PreferencesController extends EventEmitter {
     type: string;
     id: string;
   }> {
-    const multiWallets = this.getAccounts();
+    const currentNetwork = this.getNetwork();
+    const currentBlockchainType = this.getCurrentBlockchainType();
+    const multiWallets = this.getAccounts() as unknown as MultiWallet[];
     const legacyAccounts: Array<{
       address: string;
       name: string;
@@ -273,11 +276,8 @@ export class PreferencesController extends EventEmitter {
       id: string;
     }> = [];
 
-
     // Convert each MultiWallet to legacy accounts for current network and blockchain
     multiWallets.forEach(wallet => {
-      console.log(wallet.coins, '####');
-      console.log(currentBlockchainType, 'currentBlockchainType');
       // Check if the wallet has the current blockchain type
       if (wallet.coins?.[currentBlockchainType]) {
         const blockchainData = wallet.coins[currentBlockchainType];
