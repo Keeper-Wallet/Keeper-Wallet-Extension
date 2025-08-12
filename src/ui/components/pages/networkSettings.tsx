@@ -9,39 +9,18 @@ import { usePopupSelector } from '../../../popup/store/react';
 import { useDispatch } from 'react-redux';
 import {
   BLOCKCHAIN_TYPES,
-  NETWORK_OPTIONS,
   NETWORK_TYPES,
 } from 'assets/constants';
 import { ACTION } from '../../../store/actions/constants';
 import type { NetworkName } from '../../../networks/types';
+import {
+  getAvailableNetworkOptions,
+  getNetworkDisplayName,
+  isNetworkSelected,
+  NetworkOption,
+} from '../../../networks/networkOptions';
 
-// Helper function to check if network is a test network
-const isTestNetwork = (networkType: string): boolean => {
-  return (
-    networkType === NETWORK_TYPES.TESTNET ||
-    networkType === NETWORK_TYPES.STAGENET
-  );
-};
-
-// Helper function to get display name for network
-const getNetworkDisplayName = (
-  blockchain?: string,
-  network?: string,
-): string => {
-  if (network === NETWORK_TYPES.CUSTOM) {
-    return 'Custom Network';
-  }
-
-  if (!blockchain || !network) {
-    return '';
-  }
-
-  const blockchainName =
-    blockchain.charAt(0).toUpperCase() + blockchain.slice(1);
-  const networkName = network.charAt(0).toUpperCase() + network.slice(1);
-  return `${blockchainName} ${networkName}`;
-};
-
+// Right arrow icon for the UI
 const RightArrowIcon = () => (
   <svg
     width="24"
@@ -93,7 +72,7 @@ const ToggleSwitch = ({
 };
 
 // Network option component
-const NetworkOption = ({
+const NetworkOptionItem = ({
   name,
   isSelected,
   hasRightArrow = false,
@@ -194,10 +173,24 @@ export function NetworkSettings() {
     setSelectedNetwork(`${blockchainType}-${networkType}`);
   };
 
+  // Get all available network options using the shared utility
+  const networkOptions = getAvailableNetworkOptions(
+    currentBlockchainType,
+    currentNetwork,
+    showTestAccounts,
+    t
+  );
+
+  // Parse the selected network value
+  const parseSelectedNetwork = () => {
+    const [blockchain, networkType] = selectedNetwork.split('-');
+    return { blockchain, networkType };
+  };
+
   // When confirming, update both Redux values
   const handleConfirm = async () => {
     // Parse the selected network into blockchain and network type
-    const [blockchain, networkType] = selectedNetwork.split('-');
+    const { blockchain, networkType } = parseSelectedNetwork();
 
     // Update network in Redux - just the network type
     dispatch({
@@ -217,14 +210,6 @@ export function NetworkSettings() {
     await background.setHideTestAccounts(!showTestAccounts);
 
     navigate(-1);
-  };
-
-  // Check if a network option is currently selected
-  const isNetworkSelected = (blockchain: string, network: string): boolean => {
-    if (!blockchain && network === NETWORK_TYPES.CUSTOM) {
-      return selectedNetwork === 'custom';
-    }
-    return selectedNetwork === `${blockchain}-${network}`;
   };
 
   return (
@@ -247,7 +232,7 @@ export function NetworkSettings() {
 
       <div className="margin-main-big">
         {/* Network options */}
-        {NETWORK_OPTIONS.map((option, index) => {
+        {networkOptions.map((option, index) => {
           // Skip test networks if hidden
           if (option.isTestnet && !showTestAccounts) {
             return null;
@@ -257,17 +242,22 @@ export function NetworkSettings() {
           const showDivider =
             index > 0 &&
             option.isTestnet &&
-            !NETWORK_OPTIONS[index - 1].isTestnet;
+            !networkOptions[index - 1].isTestnet;
+          
+          // Parse the currently selected network
+          const { blockchain: selectedBlockchain, networkType: selectedNetwork } = parseSelectedNetwork();
+          
+          // Check if this option is selected
+          const isOptionSelected = 
+            option.blockchain === selectedBlockchain && 
+            option.network === selectedNetwork;
 
           return (
-            <div key={`${option.blockchain || ''}-${option.network}`}>
+            <div key={option.value}>
               {showDivider && <div className={styles.divider} />}
-              <NetworkOption
-                name={getNetworkDisplayName(option.blockchain, option.network)}
-                isSelected={isNetworkSelected(
-                  option.blockchain!,
-                  option.network,
-                )}
+              <NetworkOptionItem
+                name={option.displayName}
+                isSelected={isOptionSelected}
                 hasRightArrow={option.isCustom}
                 onClick={() => {
                   if (option.isCustom) {

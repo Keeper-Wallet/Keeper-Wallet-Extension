@@ -17,6 +17,12 @@ import { Modal } from '../ui/components/ui';
 import { Tooltip } from '../ui/components/ui/tooltip';
 import * as styles from './bottomPanel.module.css';
 import { CustomNetworkModal } from './customNetworkModal';
+import { BLOCKCHAIN_TYPES, NETWORK_TYPES } from '../assets/constants';
+import { 
+  getAvailableNetworkOptions, 
+  getNetworkDisplayName, 
+  isNetworkSelected 
+} from '../networks/networkOptions';
 
 interface Props {
   allowChangingNetwork?: boolean;
@@ -29,6 +35,10 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const customMatcher = usePopupSelector(state => state.customMatcher);
   const customNodes = usePopupSelector(state => state.customNodes);
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+  );
+  const hideTestAccounts = usePopupSelector(state => state.hideTestAccounts);
 
   const setNewNetwork = async (network: NetworkName) => {
     dispatch(setLoading(true));
@@ -69,6 +79,21 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
   const [isCustomNetworkModalShown, setIsCustomNetworkModalShown] =
     useState(false);
 
+  // Get available network options using the shared utility
+  const networkOptions = getAvailableNetworkOptions(
+    currentBlockchainType,
+    currentNetwork,
+    !hideTestAccounts,
+    t
+  );
+
+  // Get the currently selected network for display
+  const currentNetworkDisplayName = getNetworkDisplayName(
+    currentBlockchainType,
+    currentNetwork,
+    t
+  );
+
   const networkHash = Object.fromEntries(
     Object.entries(NETWORK_CONFIG).map(([key, network]) => [
       key,
@@ -80,8 +105,22 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
     ]),
   );
 
-  const getNetworkTranslationKey = (network: NetworkName) =>
-    `bottom.${network}`;
+  // Special formatting for bottom panel translations
+  const getBottomPanelDisplayName = (option: NetworkOption): string => {
+    // For backward compatibility, still use the translation keys if available
+    if (option.network) {
+      const translationKey = `bottom.${option.network}`;
+      const translated = t(translationKey);
+      
+      // If translation key exists and is not the same as the key itself, use it
+      if (translated !== translationKey) {
+        return translated;
+      }
+    }
+    
+    // Otherwise fall back to the standard display name
+    return option.displayName;
+  };
 
   return (
     <div className={styles.root}>
@@ -104,7 +143,8 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
               <i className={clsx(styles.networkIcon, 'networkIcon')} />
 
               <span className={styles.dropdownButtonText}>
-                {t(getNetworkTranslationKey(currentNetwork))}
+                {/* Use the full display name for the current selection */}
+                {currentNetworkDisplayName}
               </span>
             </button>
 
@@ -122,15 +162,41 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
 
             {isDropdownShown && (
               <div ref={dropdownRef} className={styles.dropdown}>
-                {(Object.keys(NETWORK_CONFIG) as NetworkName[])
-                  .filter(network => network !== currentNetwork)
-                  .concat(currentNetwork)
-                  .map(network => {
-                    const isSelected = currentNetwork === network;
+                {networkOptions
+                  .filter(option => {
+                    // Filter out current selection to place at the end
+                    return !isNetworkSelected(
+                      option,
+                      currentBlockchainType,
+                      currentNetwork
+                    );
+                  })
+                  // Add current selection at the end
+                  .concat(
+                    networkOptions.find(
+                      option => isNetworkSelected(
+                        option,
+                        currentBlockchainType,
+                        currentNetwork
+                      )
+                    ) || {
+                      blockchain: currentBlockchainType,
+                      network: currentNetwork,
+                      isTestnet: currentNetwork !== NetworkName.Mainnet,
+                      displayName: currentNetworkDisplayName,
+                      value: `${currentBlockchainType}-${currentNetwork}`
+                    }
+                  )
+                  .map(option => {
+                    const isSelected = isNetworkSelected(
+                      option,
+                      currentBlockchainType,
+                      currentNetwork
+                    );
 
                     return (
                       <button
-                        key={network}
+                        key={option.value}
                         className={clsx(styles.dropdownItem, {
                           [styles.dropdownItem_selected]: isSelected,
                         })}
@@ -140,12 +206,11 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                             : () => {
                                 setIsDropdownShown(false);
 
-                                const newNet = networkHash[network];
-
-                                if (newNet.nodeBaseUrl) {
-                                  setNewNetwork(network);
-                                } else {
+                                if (option.network === NETWORK_TYPES.CUSTOM) {
                                   setIsCustomNetworkModalShown(true);
+                                } else {
+                                  // Update network using existing mechanism
+                                  setNewNetwork(option.network as NetworkName);
                                 }
                               }
                         }
@@ -161,7 +226,10 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                           )}
                         />
 
-                        {t(getNetworkTranslationKey(network))}
+                        {/* Use "Custom Network" for custom networks, otherwise use display name */}
+                        {option.network === NETWORK_TYPES.CUSTOM 
+                          ? 'Custom Network' 
+                          : option.displayName}
                       </button>
                     );
                   })}

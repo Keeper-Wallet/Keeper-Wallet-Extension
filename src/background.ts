@@ -790,15 +790,9 @@ class BackgroundService extends EventEmitter {
           signature,
         );
       },
-      getLegacyFormatAccounts: async (
-        network: NetworkName,
-        blockChainType: string,
-      ) => {
+      getLegacyFormatAccounts: async () => {
         // First get accounts from the MultiWalletController
-        return this.preferencesController.getLegacyFormatAccounts(
-          network,
-          blockChainType,
-        );
+        return this.preferencesController.getLegacyFormatAccounts();
       },
     };
   }

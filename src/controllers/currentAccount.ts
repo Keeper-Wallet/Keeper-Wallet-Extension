@@ -21,7 +21,6 @@ export class CurrentAccountController {
   private store;
   private assetInfoController;
   private nftInfoController;
-  private getAccounts;
   private getLegacyFormatAccounts;
   private getNetwork;
   private getNode;
@@ -74,7 +73,6 @@ export class CurrentAccountController {
 
     this.assetInfoController = assetInfoController;
     this.nftInfoController = nftInfoController;
-    this.getAccounts = getAccounts;
     this.getLegacyFormatAccounts = getLegacyFormatAccounts;
     this.getNetwork = getNetwork;
     this.getNode = getNode;

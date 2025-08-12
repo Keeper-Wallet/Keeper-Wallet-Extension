@@ -9,6 +9,7 @@ import { type NetworkName } from '../networks/types';
 import { ACTION } from '../store/actions/constants';
 import { type PopupStore } from './store/types';
 import Background from '../ui/services/Background';
+import { PreferencesAccount } from '../preferences/types';
 
 function getParam<S, D>(param: S, defaultParam: D) {
   if (param) {
@@ -101,6 +102,20 @@ export function createUpdateState(store: PopupStore) {
         type: ACTION.UPDATE_CURRENT_NETWORK,
         payload: currentNetwork,
       });
+    }
+    const currentBlockchainType = getParam(
+      stateChanges.currentBlockchainType,
+      '',
+    );
+    if (
+      currentBlockchainType &&
+      currentBlockchainType !== currentState.currentBlockchainType
+    ) {
+      store.dispatch({
+        type: ACTION.UPDATE_CURRENT_BLOCKCHAIN_TYPE,
+        payload: currentBlockchainType,
+      });
+      console.log('Updated blockchain type:', currentBlockchainType);
     }
 
     const origins = getParam(stateChanges.origins, {});
@@ -218,34 +233,31 @@ export function createUpdateState(store: PopupStore) {
     }
 
     if (
-      (stateChanges.accounts != null &&
+      (stateChanges.accounts !== null &&
         !deepEqual(stateChanges.accounts, currentState.allNetworksAccounts)) ||
-      (stateChanges.currentNetwork != null &&
+      (stateChanges.currentNetwork !== null &&
         stateChanges.currentNetwork !== currentState.currentNetwork) ||
-      (stateChanges.currentBlockchainType != null &&
+      (stateChanges.currentBlockchainType !== null &&
         stateChanges.currentBlockchainType !==
           currentState.currentBlockchainType)
     ) {
       // Get legacy format accounts from background
       // This gets accounts in the old format that components expect
-      Background.getLegacyFormatAccounts(
-        stateChanges.currentNetwork,
-        stateChanges.currentBlockchainType,
-      ).then(legacyAccounts => {
+      Background.getLegacyFormatAccounts().then(legacyAccounts => {
         // Filter by current network
         const network =
           stateChanges.currentNetwork || currentState.currentNetwork;
 
         store.dispatch({
           type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
-          payload: legacyAccounts,
+          payload: legacyAccounts as unknown as PreferencesAccount[],
         });
 
         store.dispatch({
           type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
           payload: legacyAccounts.filter(
             account => account.network === network,
-          ),
+          ) as unknown as PreferencesAccount[],
         });
       });
     }

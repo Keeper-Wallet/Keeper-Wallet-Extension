@@ -60,6 +60,7 @@ export interface StorageLocalState {
   cognitoSessions: string | undefined;
   currentLocale: string;
   currentNetwork: NetworkName;
+  currentBlockchainType: string;
   customCodes: Record<NetworkName, string | null>;
   customMatchers: Record<NetworkName, string | null>;
   customNodes: Record<NetworkName, string | null>;

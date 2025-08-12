@@ -164,7 +164,7 @@ export function ImportSeed() {
             const newAddress = base58Encode(
               createAddress(publicKey, networkCode.charCodeAt(0)),
             );
-
+            console.log(newAddress, 'newAddress');
             validateAddress(newAddress);
             setAddress(newAddress);
           })

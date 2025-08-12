@@ -567,10 +567,10 @@ class Background {
     return this.background!.updateIdle();
   }
 
-  async getLegacyFormatAccounts(network: NetworkName, bockChainType: string) {
+  async getLegacyFormatAccounts() {
     await this.initPromise;
     if (this.background) {
-      return this.background.getLegacyFormatAccounts(network, bockChainType);
+      return this.background.getLegacyFormatAccounts();
     }
     return [];
   }
