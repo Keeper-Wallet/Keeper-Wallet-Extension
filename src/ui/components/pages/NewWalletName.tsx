@@ -9,9 +9,10 @@ import {
 } from 'store/actions/user';
 import { CONFIG } from 'ui/appConfig';
 import { Button, ErrorMessage, Input } from 'ui/components/ui';
-import { getUnit0Data, getWavesData } from 'units/ed25519';
+import { getUnit0Data } from 'units/ed25519';
+import { SeedWallet } from '../../../wallets/seed';
 
-import { CHAIN_IDS } from '../../../constants';
+import { CHAIN_IDS, NETWORK_CONFIG } from '../../../constants';
 import { NetworkName } from '../../../networks/types';
 import * as styles from './newWalletName.module.css';
 
@@ -84,18 +85,44 @@ export function NewWalletName() {
           // };
 
           if (isWavesOnlyCreation || isMultichainCreation) {
-            const mainnetData = await getWavesData(
-              account.seed,
-              CHAIN_IDS[NetworkName.Mainnet],
-            );
-            const testnetData = await getWavesData(
-              account.seed,
-              CHAIN_IDS[NetworkName.Testnet],
-            );
-            const stagenetData = await getWavesData(
-              account.seed,
-              CHAIN_IDS[NetworkName.Stagenet],
-            );
+            // Create Waves accounts using SeedWallet.create instead of getWavesData
+            const mainnetWallet = await SeedWallet.create({
+              name: accountName,
+              network: NetworkName.Mainnet,
+              networkCode: NETWORK_CONFIG[NetworkName.Mainnet].networkCode,
+              seed: account.seed,
+            });
+            
+            const testnetWallet = await SeedWallet.create({
+              name: accountName,
+              network: NetworkName.Testnet,
+              networkCode: NETWORK_CONFIG[NetworkName.Testnet].networkCode,
+              seed: account.seed,
+            });
+            
+            const stagenetWallet = await SeedWallet.create({
+              name: accountName,
+              network: NetworkName.Stagenet,
+              networkCode: NETWORK_CONFIG[NetworkName.Stagenet].networkCode,
+              seed: account.seed,
+            });
+
+            // Extract the data we need from the wallet instances
+            const mainnetData = {
+              address: mainnetWallet.data.address,
+              publicKey: mainnetWallet.data.publicKey,
+            };
+            
+            const testnetData = {
+              address: testnetWallet.data.address,
+              publicKey: testnetWallet.data.publicKey,
+            };
+            
+            const stagenetData = {
+              address: stagenetWallet.data.address,
+              publicKey: stagenetWallet.data.publicKey,
+            };
+
 
             if (isMultichainCreation) {
               try {
