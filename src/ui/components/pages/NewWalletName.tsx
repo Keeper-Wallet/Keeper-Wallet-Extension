@@ -9,7 +9,7 @@ import {
 } from 'store/actions/user';
 import { CONFIG } from 'ui/appConfig';
 import { Button, ErrorMessage, Input } from 'ui/components/ui';
-import { getUnit0Data } from 'units/ed25519';
+import { getUnit0Data, getWavesData } from 'units/ed25519';
 import { SeedWallet } from '../../../wallets/seed';
 
 import { CHAIN_IDS, NETWORK_CONFIG } from '../../../constants';
@@ -84,7 +84,8 @@ export function NewWalletName() {
           //   ledger: WalletTypes.Ledger,
           // };
 
-          if (isWavesOnlyCreation || isMultichainCreation) {
+
+          if (isWavesOnlyCreation) {
             // Create Waves accounts using SeedWallet.create instead of getWavesData
             const mainnetWallet = await SeedWallet.create({
               name: accountName,
@@ -92,14 +93,14 @@ export function NewWalletName() {
               networkCode: NETWORK_CONFIG[NetworkName.Mainnet].networkCode,
               seed: account.seed,
             });
-            
+
             const testnetWallet = await SeedWallet.create({
               name: accountName,
               network: NetworkName.Testnet,
               networkCode: NETWORK_CONFIG[NetworkName.Testnet].networkCode,
               seed: account.seed,
             });
-            
+
             const stagenetWallet = await SeedWallet.create({
               name: accountName,
               network: NetworkName.Stagenet,
@@ -112,90 +113,101 @@ export function NewWalletName() {
               address: mainnetWallet.data.address,
               publicKey: mainnetWallet.data.publicKey,
             };
-            
+
             const testnetData = {
               address: testnetWallet.data.address,
               publicKey: testnetWallet.data.publicKey,
             };
-            
+
             const stagenetData = {
               address: stagenetWallet.data.address,
               publicKey: stagenetWallet.data.publicKey,
             };
 
+            try {
+              console.log('Generated Waves network addresses:', {
+                mainnet: mainnetData,
+                testnet: testnetData.address,
+                stagenet: stagenetData.address,
+                account: account,
+              });
 
-            if (isMultichainCreation) {
-              try {
-                // Generate Unit0 account data for both mainnet and testnet
-                const unit0Address = await getUnit0Data(account.seed);
+              // Use the new MultiWallet approach for Waves-only creation
+              // This creates a nested structure with all three Waves networks
+              await dispatch(
+                createWavesOnlyMultiWallet({
+                  name: accountName,
+                  seed: account.seed,
+                  mainnetAddress: mainnetData.address,
+                  publicKey: mainnetData.publicKey,
+                  testnetAddress: testnetData.address,
+                  stagenetAddress: stagenetData.address,
+                  type: account.type,
+                }),
+              );
 
-                // Use the new createFullMultiWallet with simplified parameters
-                await dispatch(
-                  createFullMultiWallet({
-                    name: accountName,
-                    seed: account.seed,
-                    mainnetAddress: mainnetData.address,
-                    publicKey: mainnetData.publicKey,
-                    testnetAddress: testnetData.address,
-                    stagenetAddress: stagenetData.address,
-                    unit0Address: unit0Address.address,
-                    unit0PublicKey: unit0Address.publicKey,
-                    type: account.type,
-                  }),
-                );
+              console.log(
+                'Created Waves-only MultiWallet with name:',
+                accountName,
+              );
+            } catch (error) {
+              console.trace(
+                'Failed to create Waves-only MultiWallet:',
+                error,
+              );
+              setError('Failed to create wallet. Please try again.');
+              setPending(false);
+              return;
+            }
+          } else if (isMultichainCreation) {
+            try {
+              const mainnetData = await getWavesData(
+                account.seed,
+                CHAIN_IDS[NetworkName.Mainnet],
+              );
+              const testnetData = await getWavesData(
+                account.seed,
+                CHAIN_IDS[NetworkName.Testnet],
+              );
+              const stagenetData = await getWavesData(
+                account.seed,
+                CHAIN_IDS[NetworkName.Stagenet],
+              );
 
-                console.log(
-                  'Created Full MultiWallet with name:',
-                  accountName,
-                );
-              } catch (error) {
-                console.trace(
-                  'Failed to create Full MultiWallet:',
-                  error,
-                );
-                setError('Failed to create wallet. Please try again.');
-                setPending(false);
-                return;
-              }
-            } else if (isWavesOnlyCreation) {
-              try {
-                console.log('Generated Waves network addresses:', {
-                  mainnet: mainnetData,
-                  testnet: testnetData.address,
-                  stagenet: stagenetData.address,
-                  account: account,
-                });
+              console.log(mainnetData, 'mainnetData')
+              // return ;
+              // Generate Unit0 account data for both mainnet and testnet
+              const unit0Address = await getUnit0Data(account.seed);
 
-                // Use the new MultiWallet approach for Waves-only creation
-                // This creates a nested structure with all three Waves networks
-                await dispatch(
-                  createWavesOnlyMultiWallet({
-                    name: accountName,
-                    seed: account.seed,
-                    mainnetAddress: mainnetData.address,
-                    publicKey: mainnetData.publicKey,
-                    testnetAddress: testnetData.address,
-                    stagenetAddress: stagenetData.address,
-                    type: account.type,
-                  }),
-                );
+              // Use the new createFullMultiWallet with simplified parameters
+              await dispatch(
+                createFullMultiWallet({
+                  name: accountName,
+                  seed: account.seed,
+                  mainnetAddress: mainnetData.address,
+                  publicKey: mainnetData.publicKey,
+                  testnetAddress: testnetData.address,
+                  stagenetAddress: stagenetData.address,
+                  unit0Address: unit0Address.address,
+                  unit0PublicKey: unit0Address.publicKey,
+                  type: account.type,
+                }),
+              );
 
-                console.log(
-                  'Created Waves-only MultiWallet with name:',
-                  accountName,
-                );
-              } catch (error) {
-                console.trace(
-                  'Failed to create Waves-only MultiWallet:',
-                  error,
-                );
-                setError('Failed to create wallet. Please try again.');
-                setPending(false);
-                return;
-              }
+              console.log(
+                'Created Full MultiWallet with name:',
+                accountName,
+              );
+            } catch (error) {
+              console.trace(
+                'Failed to create Full MultiWallet:',
+                error,
+              );
+              setError('Failed to create wallet. Please try again.');
+              setPending(false);
+              return;
             }
           }
-          // If this is a multichain account creation, create accounts for all networks
 
           navigate('/import-success');
         }}

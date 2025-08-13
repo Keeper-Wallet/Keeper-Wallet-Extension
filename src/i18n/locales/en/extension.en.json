@@ -291,7 +291,10 @@
     "viaLedger": "Ledger",
     "viaSeed": "Seed Phrase or Private Key",
     "viaDebug": "Debug",
-    "viaEmail": "Email Account"
+    "viaEmail": "Email Account",
+    "chooseAccount": "Choose account type",
+    "importMultiChain": "Import multichain account",
+    "importWaves": "Import Waves account"
   },
   "importDebug": {
     "title": "Import Debug Account",

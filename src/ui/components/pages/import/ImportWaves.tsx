@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import background from 'ui/services/Background';
-import { usePopupSelector } from '../../../popup/store/react';
-import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
-import { Button } from '../ui';
-import * as styles from './styles/import.styl';
+import { usePopupSelector } from '../../../../popup/store/react';
+import keeperWalletLock from '../../../assets/img/keeper-wallet-lock.svg';
+import { Button } from '../../ui';
+import * as styles from '../styles/import.styl';
 
 export function ImportPopup() {
   const { t } = useTranslation();
@@ -121,7 +121,7 @@ export function AccountsHome() {
             data-testid="importSeed"
             view="transparent"
             onClick={() => {
-              navigate('/import-seed');
+              navigate('/import-choose');
             }}
           >
             <svg

@@ -14,7 +14,7 @@ import { AssetInfo } from './assets/assetInfo';
 import { TabAssets } from './assets/tabs/tabAssets';
 import { TabNfts } from './assets/tabs/tabNfts';
 import { TabTxHistory } from './assets/tabs/tabTxHistory';
-import { ImportPopup } from './Import';
+import { ImportPopup } from './import/ImportWaves';
 import * as styles from './styles/assets.styl';
 
 export function PopupHome() {

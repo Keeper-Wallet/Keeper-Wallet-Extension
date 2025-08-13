@@ -9,7 +9,7 @@ import { BackUpSeed } from '../ui/components/pages/BackupSeed';
 import { ConfirmBackup } from '../ui/components/pages/ConfirmBackup';
 import { CreateMultichainAccount } from '../ui/components/pages/CreateMultichainAccount';
 import { DeleteAllAccounts } from '../ui/components/pages/deleteAllAccounts/deleteAllAccounts';
-import { AccountsHome } from '../ui/components/pages/Import';
+import { AccountsHome } from '../ui/components/pages/import/ImportWaves';
 import { ImportDebug } from '../ui/components/pages/importDebug';
 import { ImportEmail } from '../ui/components/pages/importEmail/importEmail';
 import { ImportAddressBook } from '../ui/components/pages/importKeystore/importAddressBook';
@@ -23,6 +23,8 @@ import {
 import { NewAccount } from '../ui/components/pages/NewAccount';
 import { NewWallet } from '../ui/components/pages/NewWallet';
 import { NewWalletName } from '../ui/components/pages/NewWalletName';
+import { ImportChoose } from '../ui/components/pages/import/importChoose';
+import { ImportSeedMultichain } from '../ui/components/pages/import/ImportSeedMultichain';
 
 export const routes: RouteObject[] = [
   {
@@ -100,11 +102,31 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/import-seed',
+        path: '/import-choose',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <ImportChoose />
+            <BottomPanel />
+          </>
+        ),
+      },
+      {
+        path: '/import-wave-seed',
         element: (
           <>
             <Menu hasBack hasLogo />
             <ImportSeed />
+            <BottomPanel />
+          </>
+        ),
+      },
+      {
+        path: '/import-multi-seed',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <ImportSeedMultichain />
             <BottomPanel />
           </>
         ),
