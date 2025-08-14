@@ -5,20 +5,16 @@ import background from 'ui/services/Background';
 import { Button } from '../ui';
 import * as styles from './networkSettings.module.css';
 import { useTranslation } from 'react-i18next';
-import { usePopupSelector } from '../../../popup/store/react';
+import { usePopupSelector } from 'popup/store/react';
 import { useDispatch } from 'react-redux';
 import {
   BLOCKCHAIN_TYPES,
-  NETWORK_TYPES,
 } from 'assets/constants';
-import { ACTION } from '../../../store/actions/constants';
-import type { NetworkName } from '../../../networks/types';
+import { ACTION } from 'store/actions/constants';
+import type { NetworkName } from 'networks/types';
 import {
   getAvailableNetworkOptions,
-  getNetworkDisplayName,
-  isNetworkSelected,
-  NetworkOption,
-} from '../../../networks/networkOptions';
+} from 'networks/networkOptions';
 
 // Right arrow icon for the UI
 const RightArrowIcon = () => (
@@ -115,8 +111,7 @@ export function NetworkSettings() {
     state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
   );
 
-  console.log(currentNetwork, 'currentNetwork');
-  
+
   // Initialize selectedNetwork properly based on currentNetwork format
   const [selectedNetwork, setSelectedNetwork] = useState(() => {
     // If currentNetwork is empty, use waves-mainnet

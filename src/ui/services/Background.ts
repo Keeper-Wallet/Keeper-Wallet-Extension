@@ -263,10 +263,13 @@ class Background {
     address: string,
     network: NetworkName,
     password: string,
-  ) {
+  ): Promise<string> {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    console.log(address, 'address');
+    console.log(network, 'network');
+    console.log(password, 'password');
     return this.background!.getAccountPrivateKey(address, network, password);
   }
 
@@ -569,6 +572,7 @@ class Background {
 
   async getLegacyFormatAccounts() {
     await this.initPromise;
+    this._connect();
     if (this.background) {
       return this.background.getLegacyFormatAccounts();
     }

@@ -94,33 +94,6 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
     t
   );
 
-  const networkHash = Object.fromEntries(
-    Object.entries(NETWORK_CONFIG).map(([key, network]) => [
-      key,
-      {
-        ...network,
-        matcherBaseUrl: customMatcher[network.name] || network.matcherBaseUrl,
-        nodeBaseUrl: customNodes[network.name] || network.nodeBaseUrl,
-      },
-    ]),
-  );
-
-  // Special formatting for bottom panel translations
-  const getBottomPanelDisplayName = (option: NetworkOption): string => {
-    // For backward compatibility, still use the translation keys if available
-    if (option.network) {
-      const translationKey = `bottom.${option.network}`;
-      const translated = t(translationKey);
-      
-      // If translation key exists and is not the same as the key itself, use it
-      if (translated !== translationKey) {
-        return translated;
-      }
-    }
-    
-    // Otherwise fall back to the standard display name
-    return option.displayName;
-  };
 
   return (
     <div className={styles.root}>

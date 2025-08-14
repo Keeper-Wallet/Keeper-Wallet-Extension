@@ -59,7 +59,7 @@ export const getAvailableNetworkOptions = (
       ...option,
       displayName: getNetworkDisplayName(option.blockchain, option.network, t),
       value: `${option.blockchain || ''}-${option.network}`,
-    }));
+    })) as NetworkOption[];
 };
 
 /**

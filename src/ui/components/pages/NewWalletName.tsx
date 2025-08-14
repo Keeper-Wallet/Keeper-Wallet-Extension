@@ -32,6 +32,9 @@ export function NewWalletName() {
     ({ address }) => address === account.address,
   );
 
+  console.log(accounts, 'accounts');
+  console.log(account, 'account');
+
   // Check if we're creating a Waves-only account or multichain account
   const isWavesOnlyCreation = account.type === 'seed';
   const isMultichainCreation = account.type === 'multichain';
@@ -174,8 +177,6 @@ export function NewWalletName() {
                 CHAIN_IDS[NetworkName.Stagenet],
               );
 
-              console.log(mainnetData, 'mainnetData')
-              // return ;
               // Generate Unit0 account data for both mainnet and testnet
               const unit0Address = await getUnit0Data(account.seed);
 

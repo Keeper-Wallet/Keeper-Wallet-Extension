@@ -17,11 +17,12 @@ export function AccountOnboarding() {
 
   const handleMultichainAccount = async () => {
     const { account, phrase } = await createMultichainAccount();
+    console.log(account.accounts.waves.networks
+      , '######');
     dispatch(
       newAccountSelect({
         type: 'multichain',
-        address: account.accounts.waves.address,
-        ethereumAddress: account.accounts.ethereum.address,
+        address: account.accounts.waves.networks.mainnet.address,
         name: '',
         accountType: 'multichain',
         seed: phrase,

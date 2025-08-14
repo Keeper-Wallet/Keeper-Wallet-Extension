@@ -9,13 +9,13 @@ import { BackUpSeed } from '../ui/components/pages/BackupSeed';
 import { ConfirmBackup } from '../ui/components/pages/ConfirmBackup';
 import { CreateMultichainAccount } from '../ui/components/pages/CreateMultichainAccount';
 import { DeleteAllAccounts } from '../ui/components/pages/deleteAllAccounts/deleteAllAccounts';
-import { AccountsHome } from '../ui/components/pages/import/ImportWaves';
+import { AccountsHome } from '../ui/components/pages/accountHome';
 import { ImportDebug } from '../ui/components/pages/importDebug';
 import { ImportEmail } from '../ui/components/pages/importEmail/importEmail';
 import { ImportAddressBook } from '../ui/components/pages/importKeystore/importAddressBook';
 import { ImportKeystore } from '../ui/components/pages/importKeystore/importKeystore';
 import { ImportLedger } from '../ui/components/pages/importLedger/importLedger';
-import { ImportSeed } from '../ui/components/pages/importSeed';
+import { ImportSeed } from '../ui/components/pages/import/importSeed';
 import {
   ImportSuccess,
   ImportSuccessAddressBook,

@@ -1,18 +1,21 @@
 import { EventEmitter } from 'events';
 import ObservableStore from 'obs-store';
 import {
+  base58Encode,
   base64Decode,
   base64Encode,
   decryptSeed,
   encryptSeed,
   utf8Decode,
-  utf8Encode,
+  utf8Encode
 } from '@keeper-wallet/waves-crypto';
 import invariant from 'tiny-invariant';
 
 import { NetworkName } from '../networks/types';
 import { type ExtensionStorage } from '../storage/storage';
 import { MultiWallet } from '../services/types';
+import { PreferencesAccount } from '../preferences/types';
+import type { PreferencesController } from './preferences';
 
 export interface MultiWalletAccount {
   network: NetworkName;
@@ -48,10 +51,12 @@ export class MultiWalletController extends EventEmitter {
   }>;
   #password: string | null | undefined;
   #setSession;
+  getLegacyFormatAccounts;
 
-  constructor({ extensionStorage }: { extensionStorage: ExtensionStorage }) {
+  constructor({ extensionStorage, getLegacyFormatAccounts }: { extensionStorage: ExtensionStorage, getLegacyFormatAccounts: PreferencesController['getLegacyFormatAccounts']; }) {
     super();
 
+    this.getLegacyFormatAccounts = getLegacyFormatAccounts;
     // Initialize store with extension storage
     this.store = new ObservableStore(
       extensionStorage.getInitState({
@@ -276,5 +281,28 @@ export class MultiWalletController extends EventEmitter {
   // This method is needed for VaultController.migrate()
   async assertPasswordIsValid(password: string) {
     await this.#restoreMultiWallets(password);
+  }
+
+
+  async getAccountPrivateKey(
+    address: string,
+    network: NetworkName,
+    password: string,
+  ): Promise<string> {
+      // Validate password
+      await this.assertPasswordIsValid(password);
+      
+      // Get accounts from PreferencesController
+      const accounts = this.getLegacyFormatAccounts();
+      console.log(`Found ${accounts.length} accounts`, accounts);
+      
+      // Find the account with matching address
+      const matchingAccount = accounts.find(acc => acc.address === address);
+      
+      console.log(`Found matching account for ${address} on network ${network}`, matchingAccount);
+
+      
+      return base58Encode(privateKey);
+
   }
 }

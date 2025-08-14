@@ -35,3 +35,7 @@
     word-wrap: break-word;
     overflow: hidden;
 }
+
+.error {
+    margin-bottom: 16px;
+}

@@ -7,7 +7,7 @@ import { newAccountSelect } from 'store/actions/localState';
 import { getEthereumData, getWavesData, getUnit0Data } from 'units/ed25519';
 
 import { CHAIN_IDS } from '../../../../constants';
-import { NetworkName } from '../../../../networks/types';
+import { NetworkName } from 'networks/types';
 import {
   Button,
   ErrorMessage,
@@ -19,9 +19,6 @@ export function ImportSeedMultichain() {
   const navigate = useNavigate();
   const dispatch = usePopupDispatch();
   const accounts = usePopupSelector(state => state.accounts);
-  const currentNetwork = usePopupSelector(state => state.currentNetwork);
-  const customCodes = usePopupSelector(state => state.customCodes);
-
   const [seed, setSeed] = useState('');
   const [addressWaves, setAddressWaves] = useState('');
   const [addressEvm, setAddressEvm] = useState('');
@@ -30,10 +27,6 @@ export function ImportSeedMultichain() {
   const [existingAccount, setExistingAccount] =
     useState<PreferencesAccount | null>(null);
 
-  const networkConfig = 'waves';
-  const profileConfig = 'todo';
-  const networkCode =
-    customCodes[currentNetwork] || String(profileConfig?.chainId ?? '');
 
   const nameRef = useRef('');
   const addressWavesRef = useRef('');
@@ -44,7 +37,10 @@ export function ImportSeedMultichain() {
       setExistingAccount(null);
       return;
     }
-    const found = accounts[0];
+    
+    // Find account by matching Waves address instead of taking accounts[0]
+    const found = accounts.find(acc => acc.address === addressWaves);
+    
     setExistingAccount(found || null);
     if (found) {
       setError(
@@ -77,14 +73,6 @@ export function ImportSeedMultichain() {
         normalizedSeed,
         CHAIN_IDS[NetworkName.Mainnet],
       );
-      const testnetData = await getWavesData(
-        normalizedSeed,
-        CHAIN_IDS[NetworkName.Testnet],
-      );
-      const stagenetData = await getWavesData(
-        normalizedSeed,
-        CHAIN_IDS[NetworkName.Stagenet],
-      );
       
       const unit0Address = await getUnit0Data(normalizedSeed);
       const ethereum = getEthereumData(normalizedSeed);
@@ -106,12 +94,14 @@ export function ImportSeedMultichain() {
 
   function handleImport(e: React.FormEvent) {
     e.preventDefault();
-    setShowValidationError(true);
+    console.log(error, 'error');
     if (!addressWaves || !addressEvm || error) {
+      setShowValidationError(true);
       setError(error || 'Enter valid seed');
       return;
     }
     if (existingAccount) {
+      setShowValidationError(true);
       setError(
         `Account with this Waves address already exists${
           existingAccount.name ? `: ${existingAccount.name}` : ''
@@ -134,17 +124,17 @@ export function ImportSeedMultichain() {
 
   return (
     <div className={styles.root}>
-      <form className={styles.multichainForm} onSubmit={handleImport}>
-        <div className={styles.titleBlock}>
+      <form  onSubmit={handleImport}>
+        <div>
           <h2 className="title1 margin3 left">Welcome Back</h2>
         </div>
-        <div className={styles.inputLabel}>
+        <div>
           Enter your seed phrase to proceed. Usually it consists of either 12,
           18 or 24 words
         </div>
         <Input
           autoFocus
-          className={clsx('margin-main-top', styles.inputFullWidth)}
+          className={clsx('margin-main-top')}
           data-testid="seedInput"
           error={!!error && showValidationError}
           multiLine
@@ -162,70 +152,6 @@ export function ImportSeedMultichain() {
         >
           {error}
         </ErrorMessage>
-        <div className="tag1 basic500 input-title" style={{ marginTop: 8 }}>
-          Account address:
-        </div>
-
-        <div className={styles.addressWrapper}>
-          <div className={styles.greyLine} data-testid="address">
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 4,
-              }}
-            >
-              {addressWaves && (
-                <div className={styles.addressContainer}>
-                  <span style={{ color: '#27ae60', fontSize: 12 }}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="12"
-                      height="12"
-                      viewBox="0 0 12 12"
-                      fill="none"
-                    >
-                      <rect width="12" height="12" rx="6" fill="white" />
-                      <rect
-                        x="1.05078"
-                        y="6"
-                        width="7"
-                        height="7"
-                        transform="rotate(-45 1.05078 6)"
-                        fill="#1F5AF6"
-                      />
-                    </svg>
-                  </span>
-                  <span>
-                    {addressWaves}
-                  </span>
-                </div>
-              )}
-              {addressEvm && (
-                <div className={styles.addressContainer}>
-                  <span style={{ color: '#27ae60', fontSize: 12 }}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="12"
-                      height="12"
-                      viewBox="0 0 12 12"
-                      fill="none"
-                    >
-                      <circle cx="6" cy="6" r="6" fill="black" />
-                      <path
-                        d="M4.93359 6.00195H7.4668V8.53516H2.40039V3.46875H4.93359V6.00195ZM10 6.00195H7.4668V3.46875H10V6.00195Z"
-                        fill="#9FE0C1"
-                      />
-                    </svg>
-                  </span>
-                  <span style={{ fontFamily: 'monospace', fontSize: 10 }}>
-                    {addressEvm}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
 
         <Button data-testid="continueBtn" type="submit" view="submit">
           Import Account

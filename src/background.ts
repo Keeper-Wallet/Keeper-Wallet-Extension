@@ -266,10 +266,7 @@ class BackgroundService extends EventEmitter {
       extensionStorage: this.extensionStorage,
     });
 
-    // MultiWallet. Manages wallet groups across networks
-    this.multiWalletController = new MultiWalletController({
-      extensionStorage: this.extensionStorage,
-    });
+
 
     // Preferences. Contains accounts, available accounts, selected language etc.
     this.preferencesController = new PreferencesController({
@@ -282,6 +279,14 @@ class BackgroundService extends EventEmitter {
         this.networkController.getCurrentBlockchainType.bind(
           this.networkController,
         ),
+    });
+
+    // MultiWallet. Manages wallet groups across networks
+    this.multiWalletController = new MultiWalletController({
+      extensionStorage: this.extensionStorage,
+      getLegacyFormatAccounts: this.preferencesController.getLegacyFormatAccounts.bind(
+        this.preferencesController,
+      ),
     });
 
     // On network change
@@ -559,8 +564,8 @@ class BackgroundService extends EventEmitter {
         this.walletController,
       ),
 
-      getAccountPrivateKey: this.walletController.getAccountPrivateKey.bind(
-        this.walletController,
+      getAccountPrivateKey: this.multiWalletController.getAccountPrivateKey.bind(
+        this.multiWalletController,
       ),
 
       // messages
