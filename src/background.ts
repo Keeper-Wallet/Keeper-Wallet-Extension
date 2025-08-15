@@ -556,8 +556,8 @@ class BackgroundService extends EventEmitter {
         this.walletController,
       ),
 
-      getAccountSeed: this.walletController.getAccountSeed.bind(
-        this.walletController,
+      getAccountSeed: this.multiWalletController.getAccountSeed.bind(
+        this.multiWalletController,
       ),
 
       getAccountEncodedSeed: this.walletController.getAccountEncodedSeed.bind(

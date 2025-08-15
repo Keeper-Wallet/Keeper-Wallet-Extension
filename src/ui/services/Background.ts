@@ -239,13 +239,13 @@ class Background {
 
   async getAccountSeed(
     address: string,
-    network: NetworkName,
+    blockChainType: string,
     password: string,
   ) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.background!.getAccountSeed(address, network, password);
+    return this.background!.getAccountSeed(address, blockChainType, password);
   }
 
   async getAccountEncodedSeed(

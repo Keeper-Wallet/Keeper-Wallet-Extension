@@ -289,21 +289,21 @@ export class MultiWalletController extends EventEmitter {
     await this.#restoreMultiWallets(password);
   }
 
-  async getAccountPrivateKey(
+  /**
+   * Find a wallet that contains an account with the given address for a specific blockchain type
+   */
+  async #findMatchedWallet(
     address: string,
-    network: NetworkName,
     blockChainType: string,
     password: string,
-  ): Promise<string | undefined> {
-    // Validate password
-    await this.assertPasswordIsValid(password);
-    // Find the account with matching address
-
+  ): Promise<MultiWallet | undefined> {
     const state = this.store.getState();
     const { vault } = state.MultiWalletController;
-    if (!vault) return;
+    if (!vault) return undefined;
+
     const decryptedWallets = await decryptVault(vault, password);
-    const matchedWallet = decryptedWallets.find(wallet => {
+
+    return decryptedWallets.find(wallet => {
       const networks =
         wallet.coins[blockChainType as keyof typeof wallet.coins]?.networks;
       // Check if the address matches any of the network addresses
@@ -313,8 +313,40 @@ export class MultiWalletController extends EventEmitter {
         networks?.stagenet.address === address
       );
     });
+  }
+
+  async getAccountPrivateKey(
+    address: string,
+    network: NetworkName,
+    blockChainType: string,
+    password: string,
+  ): Promise<string | undefined> {
+    // Validate password
+    await this.assertPasswordIsValid(password);
+
+    // Find the wallet with matching address
+    const matchedWallet = await this.#findMatchedWallet(
+      address,
+      blockChainType,
+      password,
+    );
+
     if (!matchedWallet?.seed) return;
     const privateKey = await createPrivateKey(utf8Encode(matchedWallet.seed!));
     return base58Encode(privateKey);
+  }
+
+  async getAccountSeed(
+    address: string,
+    blockChainType: string,
+    password: string,
+  ) {
+    await this.assertPasswordIsValid(password);
+    const matchedWallet = await this.#findMatchedWallet(
+      address,
+      blockChainType,
+      password,
+    );
+    return matchedWallet?.seed ?? '';
   }
 }

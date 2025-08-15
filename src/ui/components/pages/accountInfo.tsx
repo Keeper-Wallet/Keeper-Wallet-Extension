@@ -133,7 +133,7 @@ export function AccountInfo() {
       copyCallback,
       // eslint-disable-next-line @typescript-eslint/no-shadow
       request: password =>
-        Background.getAccountSeed(account.address, currentNetwork, password),
+        Background.getAccountSeed(account.address, currentBlockchainType, password),
       retry: () => getSeed(copyCallback),
     });
   };
