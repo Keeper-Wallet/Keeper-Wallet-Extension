@@ -91,7 +91,7 @@ export function createWavesOnlyMultiWallet({
   type,
 }: {
   name: string;
-  seed: string;
+  seed?: string;
   mainnetAddress: string;
   publicKey: string;
   testnetAddress: string;

@@ -15,6 +15,7 @@ import { SeedWallet } from '../../../wallets/seed';
 import { CHAIN_IDS, NETWORK_CONFIG } from '../../../constants';
 import { NetworkName } from '../../../networks/types';
 import * as styles from './newWalletName.module.css';
+import { PrivateKeyWallet } from '../../../wallets/privateKey';
 
 export function NewWalletName() {
   const navigate = useNavigate();
@@ -32,10 +33,8 @@ export function NewWalletName() {
     ({ address }) => address === account.address,
   );
 
-  console.log(accounts, 'accounts');
-  console.log(account, 'account');
-
   // Check if we're creating a Waves-only account or multichain account
+  const isPrivateKey = account.type === 'privateKey';
   const isWavesOnlyCreation = account.type === 'seed';
   const isMultichainCreation = account.type === 'multichain';
 
@@ -86,7 +85,6 @@ export function NewWalletName() {
           //   wx: WalletTypes.Wx,
           //   ledger: WalletTypes.Ledger,
           // };
-
 
           if (isWavesOnlyCreation) {
             // Create Waves accounts using SeedWallet.create instead of getWavesData
@@ -154,10 +152,7 @@ export function NewWalletName() {
                 accountName,
               );
             } catch (error) {
-              console.trace(
-                'Failed to create Waves-only MultiWallet:',
-                error,
-              );
+              console.trace('Failed to create Waves-only MultiWallet:', error);
               setError('Failed to create wallet. Please try again.');
               setPending(false);
               return;
@@ -195,19 +190,57 @@ export function NewWalletName() {
                 }),
               );
 
-              console.log(
-                'Created Full MultiWallet with name:',
-                accountName,
-              );
             } catch (error) {
-              console.trace(
-                'Failed to create Full MultiWallet:',
-                error,
-              );
+              console.trace('Failed to create Full MultiWallet:', error);
               setError('Failed to create wallet. Please try again.');
               setPending(false);
               return;
             }
+          } else if (isPrivateKey) {
+            const mainnetWallet = await PrivateKeyWallet.create({
+              name: accountName,
+              network: NetworkName.Mainnet,
+              networkCode: NETWORK_CONFIG[NetworkName.Mainnet].networkCode,
+              privateKey: account.privateKey,
+            });
+            const testnetWallet = await PrivateKeyWallet.create({
+              name: accountName,
+              network: NetworkName.Testnet,
+              networkCode: NETWORK_CONFIG[NetworkName.Testnet].networkCode,
+              privateKey: account.privateKey,
+            });
+
+            const stagenetWallet = await PrivateKeyWallet.create({
+              name: accountName,
+              network: NetworkName.Stagenet,
+              networkCode: NETWORK_CONFIG[NetworkName.Stagenet].networkCode,
+              privateKey: account.privateKey,
+            });
+
+            const mainnetData = {
+              address: mainnetWallet.data.address,
+              publicKey: mainnetWallet.data.publicKey,
+            };
+
+            const testnetData = {
+              address: testnetWallet.data.address,
+              publicKey: testnetWallet.data.publicKey,
+            };
+
+            const stagenetData = {
+              address: stagenetWallet.data.address,
+              publicKey: stagenetWallet.data.publicKey,
+            };
+            await dispatch(
+              createWavesOnlyMultiWallet({
+                name: accountName,
+                mainnetAddress: mainnetData.address,
+                publicKey: mainnetData.publicKey,
+                testnetAddress: testnetData.address,
+                stagenetAddress: stagenetData.address,
+                type: account.type,
+              }),
+            );
           }
 
           navigate('/import-success');
