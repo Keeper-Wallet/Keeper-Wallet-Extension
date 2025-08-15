@@ -94,7 +94,6 @@ export function ImportSeedMultichain() {
 
   function handleImport(e: React.FormEvent) {
     e.preventDefault();
-    console.log(error, 'error');
     if (!addressWaves || !addressEvm || error) {
       setShowValidationError(true);
       setError(error || 'Enter valid seed');

@@ -49,7 +49,6 @@ export function ImportSeed() {
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const customCodes = usePopupSelector(state => state.customCodes);
 
-  console.log(accounts, 'accounts');
   const [activeTab, setActiveTab] = useState(SEED_TAB_INDEX);
 
   const [showValidationError, setShowValidationError] = useState(false);
@@ -69,7 +68,6 @@ export function ImportSeed() {
 
   const findExistingAccount = useCallback(
     (addr: string | undefined) => {
-      console.log(accounts, '!!!!!!!');
       return addr && accounts.find(acc => acc.address === addr)
     },
     [accounts],
@@ -100,7 +98,6 @@ export function ImportSeed() {
     function validateAddress(addr: string) {
       const existingAccount = findExistingAccount(addr);
 
-      console.log(existingAccount, 'existingAccount');
       if (existingAccount) {
         setValidationError(
           t('importSeed.accountExistsError', {

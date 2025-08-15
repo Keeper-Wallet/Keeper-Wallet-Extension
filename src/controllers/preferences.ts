@@ -301,15 +301,4 @@ export class PreferencesController extends EventEmitter {
 
     return legacyAccounts;
   }
-
-  async getAccountPrivateKey(
-    address: string,
-    network: NetworkName,
-    password: string,
-  ) {
-    console.log(this.store.getState(), '$$$$$$$$$');
-    // await this.assertPasswordIsValid(password);
-    // const privateKey = await this.getWallet(address, network).getPrivateKey();
-    // return base58Encode(privateKey);
-  }
 }

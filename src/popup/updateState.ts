@@ -115,7 +115,6 @@ export function createUpdateState(store: PopupStore) {
         type: ACTION.UPDATE_CURRENT_BLOCKCHAIN_TYPE,
         payload: currentBlockchainType,
       });
-      console.log('Updated blockchain type:', currentBlockchainType);
     }
 
     const origins = getParam(stateChanges.origins, {});

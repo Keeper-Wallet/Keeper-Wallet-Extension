@@ -130,7 +130,6 @@ export function createWavesOnlyMultiWallet({
 
       await Background.addMultiWallet(multiWallet);
 
-      console.log('Created Waves-only MultiWallet with name:', name);
     } catch (error) {
       console.error('Failed to create Waves-only MultiWallet:', error);
       throw error;
@@ -209,7 +208,6 @@ export function createFullMultiWallet({
       };
       await Background.addMultiWallet(multiWallet);
 
-      console.log('Created Full MultiWallet with name:', name);
     } catch (error) {
       console.error('Failed to create Full MultiWallet:', error);
       throw error;

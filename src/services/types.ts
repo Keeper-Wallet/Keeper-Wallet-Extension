@@ -28,7 +28,7 @@ export interface MultiWallet {
           address?: string;
           networkCode: string;
         };
-        stagenet: {
+        stagenet?: {
           address?: string;
           networkCode: string;
         };

@@ -32,8 +32,6 @@ export async function syncLegacyAccountsToRedux(dispatch: Dispatch, currentNetwo
         payload: networkAccounts,
       });
     }
-    
-    console.log(`Synced ${legacyAccounts.length} legacy accounts to Redux`);
   } catch (error) {
     console.error('Failed to sync legacy accounts to Redux:', error);
   }

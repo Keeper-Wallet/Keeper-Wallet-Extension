@@ -4,17 +4,17 @@ import {
   base58Encode,
   base64Decode,
   base64Encode,
+  createPrivateKey,
   decryptSeed,
   encryptSeed,
   utf8Decode,
-  utf8Encode
+  utf8Encode,
 } from '@keeper-wallet/waves-crypto';
 import invariant from 'tiny-invariant';
 
 import { NetworkName } from '../networks/types';
 import { type ExtensionStorage } from '../storage/storage';
 import { MultiWallet } from '../services/types';
-import { PreferencesAccount } from '../preferences/types';
 import type { PreferencesController } from './preferences';
 
 export interface MultiWalletAccount {
@@ -53,7 +53,13 @@ export class MultiWalletController extends EventEmitter {
   #setSession;
   getLegacyFormatAccounts;
 
-  constructor({ extensionStorage, getLegacyFormatAccounts }: { extensionStorage: ExtensionStorage, getLegacyFormatAccounts: PreferencesController['getLegacyFormatAccounts']; }) {
+  constructor({
+    extensionStorage,
+    getLegacyFormatAccounts,
+  }: {
+    extensionStorage: ExtensionStorage;
+    getLegacyFormatAccounts: PreferencesController['getLegacyFormatAccounts'];
+  }) {
     super();
 
     this.getLegacyFormatAccounts = getLegacyFormatAccounts;
@@ -283,26 +289,32 @@ export class MultiWalletController extends EventEmitter {
     await this.#restoreMultiWallets(password);
   }
 
-
   async getAccountPrivateKey(
     address: string,
     network: NetworkName,
+    blockChainType: string,
     password: string,
-  ): Promise<string> {
-      // Validate password
-      await this.assertPasswordIsValid(password);
-      
-      // Get accounts from PreferencesController
-      const accounts = this.getLegacyFormatAccounts();
-      console.log(`Found ${accounts.length} accounts`, accounts);
-      
-      // Find the account with matching address
-      const matchingAccount = accounts.find(acc => acc.address === address);
-      
-      console.log(`Found matching account for ${address} on network ${network}`, matchingAccount);
+  ): Promise<string | undefined> {
+    // Validate password
+    await this.assertPasswordIsValid(password);
+    // Find the account with matching address
 
-      
-      return base58Encode(privateKey);
-
+    const state = this.store.getState();
+    const { vault } = state.MultiWalletController;
+    if (!vault) return;
+    const decryptedWallets = await decryptVault(vault, password);
+    const matchedWallet = decryptedWallets.find(wallet => {
+      const networks =
+        wallet.coins[blockChainType as keyof typeof wallet.coins]?.networks;
+      // Check if the address matches any of the network addresses
+      return (
+        networks?.mainnet.address === address ||
+        networks?.testnet.address === address ||
+        networks?.stagenet.address === address
+      );
+    });
+    if (!matchedWallet?.seed) return;
+    const privateKey = await createPrivateKey(utf8Encode(matchedWallet.seed!));
+    return base58Encode(privateKey);
   }
 }

@@ -17,8 +17,6 @@ export function AccountOnboarding() {
 
   const handleMultichainAccount = async () => {
     const { account, phrase } = await createMultichainAccount();
-    console.log(account.accounts.waves.networks
-      , '######');
     dispatch(
       newAccountSelect({
         type: 'multichain',

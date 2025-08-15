@@ -62,13 +62,8 @@ export function AccountsHome() {
   useEffect(() => {
     async function syncAccountsToRedux() {
       try {
-        console.log('Syncing accounts to Redux from AccountsHome component');
-        console.log('Current Redux accounts:', accounts);
-        
         // Get legacy format accounts (including those from MultiWallets)
         const legacyAccounts = await background.getLegacyFormatAccounts();
-        console.log('Legacy format accounts:', legacyAccounts);
-        
         if (legacyAccounts && legacyAccounts.length > 0) {
           // Update Redux with all accounts across networks
           dispatch({
@@ -83,7 +78,6 @@ export function AccountsHome() {
             payload: networkAccounts,
           });
           
-          console.log(`Updated Redux with ${networkAccounts.length} accounts for network ${currentNetwork}`);
         }
       } catch (error) {
         console.error('Failed to sync accounts to Redux:', error);

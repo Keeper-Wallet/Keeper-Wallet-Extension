@@ -28,7 +28,7 @@ export function AccountInfo() {
   const assets = usePopupSelector(state => state.assets);
   const balances = usePopupSelector(state => state.balances);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
-
+  const currentBlockchainType = usePopupSelector(state => state.currentBlockchainType);
   const showChangeNameNotification = usePopupSelector(
     state => state.localState.notifications.changeName,
   );
@@ -160,6 +160,7 @@ export function AccountInfo() {
         Background.getAccountPrivateKey(
           account.address,
           currentNetwork,
+          currentBlockchainType,
           password,
         ),
       retry: () => getPrivateKey(copyCallback),
