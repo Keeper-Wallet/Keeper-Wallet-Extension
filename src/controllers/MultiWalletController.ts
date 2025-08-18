@@ -52,17 +52,21 @@ export class MultiWalletController extends EventEmitter {
   #password: string | null | undefined;
   #setSession;
   getLegacyFormatAccounts;
+  getAccounts;
 
   constructor({
     extensionStorage,
     getLegacyFormatAccounts,
+    getAccounts,
   }: {
     extensionStorage: ExtensionStorage;
     getLegacyFormatAccounts: PreferencesController['getLegacyFormatAccounts'];
+    getAccounts: PreferencesController['getAccounts'];
   }) {
     super();
 
     this.getLegacyFormatAccounts = getLegacyFormatAccounts;
+    this.getAccounts = getAccounts;
     // Initialize store with extension storage
     this.store = new ObservableStore(
       extensionStorage.getInitState({
@@ -82,7 +86,7 @@ export class MultiWalletController extends EventEmitter {
   /**
    * Add a new multi-wallet to storage
    */
-   addMultiWallet(multiWallet: MultiWallet): MultiWallet {
+  addMultiWallet(multiWallet: MultiWallet): MultiWallet {
     const state = this.store.getState();
     const { multiWallets } = state.MultiWalletController;
 
@@ -320,7 +324,7 @@ export class MultiWalletController extends EventEmitter {
     network: NetworkName,
     blockChainType: string,
     password: string,
-  ): Promise<string | undefined> {
+  ): Promise<string> {
     // Validate password
     await this.assertPasswordIsValid(password);
 

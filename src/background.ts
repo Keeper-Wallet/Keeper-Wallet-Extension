@@ -266,8 +266,6 @@ class BackgroundService extends EventEmitter {
       extensionStorage: this.extensionStorage,
     });
 
-
-
     // Preferences. Contains accounts, available accounts, selected language etc.
     this.preferencesController = new PreferencesController({
       extensionStorage: this.extensionStorage,
@@ -284,7 +282,11 @@ class BackgroundService extends EventEmitter {
     // MultiWallet. Manages wallet groups across networks
     this.multiWalletController = new MultiWalletController({
       extensionStorage: this.extensionStorage,
-      getLegacyFormatAccounts: this.preferencesController.getLegacyFormatAccounts.bind(
+      getLegacyFormatAccounts:
+        this.preferencesController.getLegacyFormatAccounts.bind(
+          this.preferencesController,
+        ),
+      getAccounts: this.preferencesController.getAccounts.bind(
         this.preferencesController,
       ),
     });
@@ -515,8 +517,8 @@ class BackgroundService extends EventEmitter {
         this.walletController,
       ),
 
-      removeWallet: this.walletController.removeWallet.bind(
-        this.walletController,
+      removeWallet: this.preferencesController.removeWallet.bind(
+        this.preferencesController,
       ),
 
       // TODO: need to use for future multi-wallet actions
@@ -564,9 +566,10 @@ class BackgroundService extends EventEmitter {
         this.walletController,
       ),
 
-      getAccountPrivateKey: this.multiWalletController.getAccountPrivateKey.bind(
-        this.multiWalletController,
-      ),
+      getAccountPrivateKey:
+        this.multiWalletController.getAccountPrivateKey.bind(
+          this.multiWalletController,
+        ),
 
       // messages
       getMessageById: async (id: string) =>

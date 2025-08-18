@@ -152,11 +152,11 @@ class Background {
     return this.background!.batchAddWallets(inputs);
   }
   
-  async removeWallet(address: string, network: NetworkName): Promise<void> {
+  async removeWallet(address: string): Promise<void> {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.background!.removeWallet(address, network);
+    return this.background!.removeWallet(address);
   }
   
   // Multi-Wallet methods
