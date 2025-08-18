@@ -82,17 +82,17 @@ export class MultiWalletController extends EventEmitter {
   /**
    * Add a new multi-wallet to storage
    */
-  addMultiWallet(multiWallet: MultiWallet): void {
+   addMultiWallet(multiWallet: MultiWallet): MultiWallet {
     const state = this.store.getState();
     const { multiWallets } = state.MultiWalletController;
 
     // Add the new multi-wallet
     const updatedWallets = [...multiWallets, multiWallet];
 
-    this.#saveMultiWallets(updatedWallets);
-
-    // Emit change event
     this.emit('multiWalletsChanged', updatedWallets);
+
+    return multiWallet;
+    // Emit change event
   }
 
   /**
@@ -206,8 +206,8 @@ export class MultiWalletController extends EventEmitter {
     multiWallets.forEach(wallet => {
       delete wallet.seed;
     });
-
     this.emit('multiWalletsChanged', multiWallets);
+    return multiWallets;
   }
 
   async #restoreMultiWallets(password: string) {
