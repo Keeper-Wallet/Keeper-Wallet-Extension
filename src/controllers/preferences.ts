@@ -107,6 +107,7 @@ export class PreferencesController extends EventEmitter {
             relevantCoin?.networks?.[
               currentNetwork as keyof typeof relevantCoin.networks
             ];
+
           if (coinNetwork) {
             return [
               {
@@ -114,6 +115,7 @@ export class PreferencesController extends EventEmitter {
                 network: currentNetwork,
                 walletId: wallet.id,
                 lastUsed: wallet.createdAt,
+                networkCode: coinNetwork.networkCode,
               },
             ];
           }
@@ -195,6 +197,10 @@ export class PreferencesController extends EventEmitter {
                 type: wallet.type,
                 walletId: wallet.id,
                 publicKey: wallet.coins.waves.publicKey,
+                networkCode:
+                  wallet.coins.waves.networks[
+                    network as keyof typeof relevantNetwork
+                  ]?.networkCode,
                 coinType: 'waves',
               };
               break;
@@ -271,6 +277,7 @@ export class PreferencesController extends EventEmitter {
       address: string;
       name: string;
       network: string;
+      networkCode: string;
       publicKey: string;
       type: string;
       id: string;
@@ -290,6 +297,7 @@ export class PreferencesController extends EventEmitter {
           legacyAccounts.push({
             address: networkData.address,
             name: wallet.name,
+            networkCode: networkData.networkCode,
             network: currentNetwork,
             publicKey,
             type: wallet.type,
