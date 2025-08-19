@@ -7,7 +7,7 @@ import { type WalletAccount } from 'wallets/types';
 
 import { type ExtensionStorage } from '../storage/storage';
 import { type NetworkController } from './network';
-import { MultiWallet } from '../services/types';
+import { MultiWallet, WalletItem } from '../services/types';
 
 export class PreferencesController extends EventEmitter {
   store;
@@ -127,7 +127,6 @@ export class PreferencesController extends EventEmitter {
     const isSelectedAccountValid =
       selectedAccount &&
       currentNetworkWallets.some(
-
         wallet =>
           wallet.address === selectedAccount.address &&
           wallet.network === currentNetwork,
@@ -151,10 +150,13 @@ export class PreferencesController extends EventEmitter {
   addLabel(address: string, label: string, network: NetworkName) {
     const { accounts, selectedAccount } = this.store.getState();
 
-    const account = accounts.find(
-      current => current.address === address && current.network === network,
-    );
+    console.log(accounts, 'accounts');
+    const account = (accounts as unknown as MultiWallet[]).find(wallet => {
+      if (!wallet.coins?.waves?.networks?.[network]) return false;
+      return wallet.coins.waves.networks[network]?.address === address;
+    });
 
+    console.log(account, 'account');
     if (!account) {
       throw new Error(
         `Account with address "${address}" in ${network} not found`,
@@ -163,16 +165,26 @@ export class PreferencesController extends EventEmitter {
 
     account.name = label;
 
-    this.store.updateState({
-      accounts,
+    // Update the label in the MultiWallet structure
+    const updatedAccounts = (accounts as unknown as MultiWallet[]).map(
+      wallet => {
+        if (wallet.coins?.waves?.networks?.[network]?.address === address) {
+          return {
+            ...wallet,
+            name: label, // Update the wallet name since it applies to all networks
+          };
+        }
+        return wallet;
+      },
+    );
 
-      // selectedAccount can point to a separate object, not an accounts array
-      // item, so we need to update it explicitly
-      selectedAccount:
-        selectedAccount && address === selectedAccount.address
-          ? account
-          : selectedAccount,
-    });
+    this.store.updateState({
+      accounts: updatedAccounts,
+      selectedAccount: selectedAccount &&
+      selectedAccount.address === address &&
+      selectedAccount.network === network
+        ? { ...selectedAccount, name: label }
+        : selectedAccount    });
   }
 
   selectAccount(address: string | undefined, network: string) {
@@ -240,10 +252,11 @@ export class PreferencesController extends EventEmitter {
     if (previousAccount) {
       accounts.forEach(acc => {
         if (
-          !(acc as unknown as MultiWallet).coins &&
-          acc.address === previousAccount.address
+          !acc.coins &&
+          (acc as unknown as PreferencesAccount).address ===
+            previousAccount.address
         ) {
-          acc.lastUsed = Date.now();
+          (acc as unknown as PreferencesAccount).lastUsed = Date.now();
         }
       });
     }
@@ -286,16 +299,20 @@ export class PreferencesController extends EventEmitter {
     // Convert each MultiWallet to legacy accounts for current network and blockchain
     multiWallets.forEach(wallet => {
       // Check if the wallet has the current blockchain type
-      if (wallet.coins?.[currentBlockchainType]) {
-        const blockchainData = wallet.coins[currentBlockchainType];
-        const { publicKey, networks } = blockchainData;
+      const blockchainType = currentBlockchainType as 'waves' | 'unit0';
+      
+      if (wallet.coins && blockchainType in wallet.coins) {
+        const blockchainData = wallet.coins[blockchainType];
+        const publicKey = blockchainData?.publicKey;
+        const networks = blockchainData?.networks as Record<string, WalletItem> | undefined;
+        const currentNetworkKey = currentNetwork as keyof typeof networks;
 
         // Check if the wallet has the current network
-        if (networks?.[currentNetwork] && networks[currentNetwork].address) {
-          const networkData = networks[currentNetwork];
+        if (publicKey && networks && currentNetworkKey in networks && networks[currentNetworkKey]?.address) {
+          const networkData = networks[currentNetworkKey];  // Use currentNetworkKey instead of currentNetwork
 
           legacyAccounts.push({
-            address: networkData.address,
+            address: networkData.address as string,
             name: wallet.name,
             networkCode: networkData.networkCode,
             network: currentNetwork,

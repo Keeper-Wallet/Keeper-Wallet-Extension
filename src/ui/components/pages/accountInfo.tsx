@@ -159,10 +159,9 @@ export function AccountInfo() {
       request: password =>
         Background.getAccountPrivateKey(
           account.address,
-          currentNetwork,
           currentBlockchainType,
           password,
-        ),
+        ) as Promise<string>,
       retry: () => getPrivateKey(copyCallback),
     });
   };

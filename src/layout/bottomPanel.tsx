@@ -18,11 +18,12 @@ import { Tooltip } from '../ui/components/ui/tooltip';
 import * as styles from './bottomPanel.module.css';
 import { CustomNetworkModal } from './customNetworkModal';
 import { BLOCKCHAIN_TYPES, NETWORK_TYPES } from '../assets/constants';
-import { 
-  getAvailableNetworkOptions, 
-  getNetworkDisplayName, 
-  isNetworkSelected 
+import {
+  getAvailableNetworkOptions,
+  getNetworkDisplayName,
+  isNetworkSelected,
 } from '../networks/networkOptions';
+import background from '../ui/services/Background';
 
 interface Props {
   allowChangingNetwork?: boolean;
@@ -38,8 +39,9 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
   const currentBlockchainType = usePopupSelector(
     state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
   );
-  const hideTestAccounts = usePopupSelector(state => state.hideTestAccounts);
+  const [hideTestAccounts, setHideTestAccounts] = useState<boolean>(false);
 
+  console.log(hideTestAccounts, 'hideTestAccounts');
   const setNewNetwork = async (network: NetworkName) => {
     dispatch(setLoading(true));
     await dispatch(setNetwork(network));
@@ -49,6 +51,14 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
   const [isDropdownShown, setIsDropdownShown] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    // Load the hideTestAccounts preference when component mounts
+    (async () => {
+      const hideTestAccountsPref = await background.getHideTestAccounts();
+      setHideTestAccounts(hideTestAccountsPref);
+    })();
+  }, []);
   useEffect(() => {
     const dropdownEl = dropdownRef.current;
 
@@ -84,16 +94,15 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
     currentBlockchainType,
     currentNetwork,
     !hideTestAccounts,
-    t
+    t,
   );
 
   // Get the currently selected network for display
   const currentNetworkDisplayName = getNetworkDisplayName(
     currentBlockchainType,
     currentNetwork,
-    t
+    t,
   );
-
 
   return (
     <div className={styles.root}>
@@ -141,30 +150,30 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                     return !isNetworkSelected(
                       option,
                       currentBlockchainType,
-                      currentNetwork
+                      currentNetwork,
                     );
                   })
                   // Add current selection at the end
                   .concat(
-                    networkOptions.find(
-                      option => isNetworkSelected(
+                    networkOptions.find(option =>
+                      isNetworkSelected(
                         option,
                         currentBlockchainType,
-                        currentNetwork
-                      )
+                        currentNetwork,
+                      ),
                     ) || {
                       blockchain: currentBlockchainType,
                       network: currentNetwork,
                       isTestnet: currentNetwork !== NetworkName.Mainnet,
                       displayName: currentNetworkDisplayName,
-                      value: `${currentBlockchainType}-${currentNetwork}`
-                    }
+                      value: `${currentBlockchainType}-${currentNetwork}`,
+                    },
                   )
                   .map(option => {
                     const isSelected = isNetworkSelected(
                       option,
                       currentBlockchainType,
-                      currentNetwork
+                      currentNetwork,
                     );
 
                     return (
@@ -200,8 +209,8 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                         />
 
                         {/* Use "Custom Network" for custom networks, otherwise use display name */}
-                        {option.network === NETWORK_TYPES.CUSTOM 
-                          ? 'Custom Network' 
+                        {option.network === NETWORK_TYPES.CUSTOM
+                          ? 'Custom Network'
                           : option.displayName}
                       </button>
                     );

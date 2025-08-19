@@ -4,6 +4,11 @@ import { NetworkName } from '../networks/types';
  * MultiWallet represents a single wallet with addresses on multiple networks.
  * It contains a nested structure organized by blockchain type and network.
  */
+export interface WalletItem {
+  address?: string;
+  networkCode: string;
+}
+
 export interface MultiWallet {
   id: string; // Unique identifier for the MultiWallet
   name: string; // User-friendly name
@@ -20,18 +25,10 @@ export interface MultiWallet {
     waves: {
       publicKey?: string;
       networks: {
-        mainnet: {
-          address?: string;
-          networkCode: string;
-        };
-        testnet: {
-          address?: string;
-          networkCode: string;
-        };
-        stagenet?: {
-          address?: string;
-          networkCode: string;
-        };
+        mainnet: WalletItem
+        testnet: WalletItem
+        stagenet?: WalletItem
+        custom?: WalletItem
       };
     };
 
@@ -39,14 +36,8 @@ export interface MultiWallet {
     unit0?: {
       publicKey?: string;
       networks: {
-        mainnet: {
-          address?: string;
-          networkCode: string;
-        };
-        testnet: {
-          address?: string;
-          networkCode: string;
-        };
+        mainnet: WalletItem
+        testnet: WalletItem
       };
     };
   };

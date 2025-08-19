@@ -27,7 +27,6 @@ import { createUpdateState } from './popup/updateState';
 import { PopupRoot } from './popupRoot';
 import { initSentry } from './sentry/init';
 import { setLoading } from './store/actions/localState';
-import { syncLegacyAccountsToRedux } from './store/utils/syncAccounts';
 import { RootWrapper } from './ui/components/RootWrapper';
 import Background, { type BackgroundUiApi } from './ui/services/Background';
 

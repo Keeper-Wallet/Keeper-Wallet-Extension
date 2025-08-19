@@ -227,7 +227,7 @@ export function createUpdateState(store: PopupStore) {
     if (accounts && !deepEqual(accounts, currentState.allNetworksAccounts)) {
       store.dispatch({
         type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
-        payload: accounts,
+        payload: accounts as unknown as PreferencesAccount[],
       });
     }
 

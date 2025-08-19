@@ -321,10 +321,9 @@ export class MultiWalletController extends EventEmitter {
 
   async getAccountPrivateKey(
     address: string,
-    network: NetworkName,
     blockChainType: string,
     password: string,
-  ): Promise<string> {
+  ): Promise<string | undefined> {
     // Validate password
     await this.assertPasswordIsValid(password);
 

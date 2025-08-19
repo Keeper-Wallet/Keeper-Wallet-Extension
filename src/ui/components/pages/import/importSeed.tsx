@@ -6,7 +6,6 @@ import {
   createPublicKey,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
-import clsx from 'clsx';
 import { isAddressString, isBase58 } from 'messages/utils';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useCallback, useEffect, useState } from 'react';
@@ -14,7 +13,6 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { newAccountSelect, selectAccount } from 'store/actions/localState';
 import invariant from 'tiny-invariant';
-import { syncLegacyAccountsToRedux } from '../../../../store/utils/syncAccounts';
 
 import { NETWORK_CONFIG } from '../../../../constants';
 import {

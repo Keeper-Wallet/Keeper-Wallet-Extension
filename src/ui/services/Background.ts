@@ -261,14 +261,13 @@ class Background {
 
   async getAccountPrivateKey(
     address: string,
-    network: NetworkName,
     blockChainType: string,
     password: string,
-  ): Promise<string> {
+  ): Promise<string | undefined> {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.background!.getAccountPrivateKey(address, network, blockChainType, password);
+    return this.background!.getAccountPrivateKey(address, blockChainType, password);
   }
 
   async editWalletName(address: string, name: string, network: NetworkName) {

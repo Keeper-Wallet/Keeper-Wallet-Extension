@@ -65,7 +65,7 @@ export function CreateMultichainAccount() {
       dispatch(
         newAccountSelect({
           type: 'multichain',
-          address: multichainData.account.accounts.waves.address,
+          address: multichainData.account.accounts.waves.networks.mainnet.address,
           ethereumAddress: multichainData.account.accounts.ethereum.address,
           name: accountName,
           accountType: 'multichain',
@@ -125,7 +125,7 @@ export function CreateMultichainAccount() {
           <div className="margin1">
             <div className="tag1 basic500">Waves:</div>
             <div className={`${styles.greyLine} grey-line`}>
-              {multichainData.account.accounts.waves.address}
+              {multichainData.account.accounts.waves.networks.mainnet.address}
             </div>
           </div>
 
@@ -139,14 +139,14 @@ export function CreateMultichainAccount() {
           <div className="margin1">
             <div className="tag1 basic500">Unit0 Mainnet:</div>
             <div className={`${styles.greyLine} grey-line`}>
-              {multichainData.account.accounts.unit0.mainnet.address}
+              {multichainData.account.accounts.unit0.networks.mainnet.address}
             </div>
           </div>
 
           <div className="margin1">
             <div className="tag1 basic500">Unit0 Testnet:</div>
             <div className={`${styles.greyLine} grey-line`}>
-              {multichainData.account.accounts.unit0.testnet.address}
+              {multichainData.account.accounts.unit0.networks.testnet.address}
             </div>
           </div>
 

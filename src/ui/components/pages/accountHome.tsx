@@ -9,6 +9,7 @@ import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { Button } from '../ui';
 import * as styles from './styles/import.styl';
 import { ACTION } from '../../../store/actions/constants';
+import { PreferencesAccount } from '../../../preferences/types';
 
 export function ImportPopup() {
   const { t } = useTranslation();
@@ -68,14 +69,14 @@ export function AccountsHome() {
           // Update Redux with all accounts across networks
           dispatch({
             type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
-            payload: legacyAccounts,
+            payload: legacyAccounts as unknown as PreferencesAccount[],
           });
           
           // Filter accounts for current network
           const networkAccounts = legacyAccounts.filter(acc => acc.network === currentNetwork);
           dispatch({
             type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
-            payload: networkAccounts,
+            payload: networkAccounts as unknown as PreferencesAccount[],
           });
           
         }
