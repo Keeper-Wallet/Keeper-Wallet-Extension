@@ -9,4 +9,5 @@ export type PreferencesAccount = WalletAccount & {
   lastUsed?: number;
   walletId?: string;
   coinType?: string;
+  isWavesOnly?: boolean;
 };

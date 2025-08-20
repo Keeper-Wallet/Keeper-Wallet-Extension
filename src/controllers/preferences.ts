@@ -293,6 +293,7 @@ export class PreferencesController extends EventEmitter {
       networkCode: string;
       publicKey: string;
       type: string;
+      isWavesOnly?: boolean;
       id: string;
     }> = [];
 
@@ -300,9 +301,10 @@ export class PreferencesController extends EventEmitter {
     multiWallets.forEach(wallet => {
       // Check if the wallet has the current blockchain type
       const blockchainType = currentBlockchainType as 'waves' | 'unit0';
-      
+
       if (wallet.coins && blockchainType in wallet.coins) {
         const blockchainData = wallet.coins[blockchainType];
+        console.log(blockchainType, 'blockchainType');
         const publicKey = blockchainData?.publicKey;
         const networks = blockchainData?.networks as Record<string, WalletItem> | undefined;
         const currentNetworkKey = currentNetwork as keyof typeof networks;
@@ -316,6 +318,7 @@ export class PreferencesController extends EventEmitter {
             name: wallet.name,
             networkCode: networkData.networkCode,
             network: currentNetwork,
+            isWavesOnly: !wallet.coins.unit0,
             publicKey,
             type: wallet.type,
             id: wallet.id,

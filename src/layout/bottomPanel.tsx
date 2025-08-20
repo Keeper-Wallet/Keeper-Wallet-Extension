@@ -24,6 +24,8 @@ import {
   isNetworkSelected,
 } from '../networks/networkOptions';
 import background from '../ui/services/Background';
+import { PreferencesAccount } from '../preferences/types';
+import { useAccountsSelector } from '../accounts/store/react';
 
 interface Props {
   allowChangingNetwork?: boolean;
@@ -40,8 +42,10 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
     state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
   );
   const [hideTestAccounts, setHideTestAccounts] = useState<boolean>(false);
+  const selectedAccount = usePopupSelector(state => state.selectedAccount);
+  const accounts = useAccountsSelector(state => state.accounts);
+  const [isWavesOnlyAccount, setIsWavesOnlyAccount] = useState(false);
 
-  console.log(hideTestAccounts, 'hideTestAccounts');
   const setNewNetwork = async (network: NetworkName) => {
     dispatch(setLoading(true));
     await dispatch(setNetwork(network));
@@ -51,6 +55,33 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
   const [isDropdownShown, setIsDropdownShown] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  // Check if the account is Waves-only when component mounts or selected account changes
+  useEffect(() => {
+    const checkIfWavesOnly = async () => {
+      try {
+        // Legacy accounts are Waves-only by default
+        if (!selectedAccount?.walletId) {
+          setIsWavesOnlyAccount(true);
+          return;
+        }
+
+        // For MultiWallet accounts, get the full wallet data from background
+        // Find the wallet that matches the selected account's walletId
+        const wallet = accounts.find(
+          wallet =>
+            (wallet as PreferencesAccount & { id: string }).id ===
+            selectedAccount.walletId,
+        );
+        setIsWavesOnlyAccount(!!wallet?.isWavesOnly);
+      } catch (error) {
+        console.error('Error checking if account is Waves-only:', error);
+        setIsWavesOnlyAccount(false);
+      }
+    };
+
+    checkIfWavesOnly();
+  }, [selectedAccount?.walletId, accounts]);
 
   useEffect(() => {
     // Load the hideTestAccounts preference when component mounts
@@ -89,13 +120,21 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
   const [isCustomNetworkModalShown, setIsCustomNetworkModalShown] =
     useState(false);
 
-  // Get available network options using the shared utility
+  console.log(isWavesOnlyAccount, 'isWavesOnlyAccount');
+
+  // Get all available network options using the shared utility and filter as needed
   const networkOptions = getAvailableNetworkOptions(
     currentBlockchainType,
     currentNetwork,
     !hideTestAccounts,
     t,
-  );
+  ).filter(option => {
+    // If it's a Waves-only account, filter out Unit0 options
+    if (isWavesOnlyAccount && option.blockchain === BLOCKCHAIN_TYPES.UNIT0) {
+      return false;
+    }
+    return true;
+  });
 
   // Get the currently selected network for display
   const currentNetworkDisplayName = getNetworkDisplayName(
