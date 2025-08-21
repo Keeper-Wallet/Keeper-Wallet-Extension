@@ -59,7 +59,6 @@ function parseKeystore(json: string): EncryptedKeystore | null {
               base64Decode(atob(profiles)),
               utf8Encode(password),
             );
-
             return JSON.parse(utf8Decode(decrypted));
           } catch (err) {
             return null;
@@ -238,7 +237,6 @@ export function ImportKeystore() {
       }}
       onSubmit={async selectedAccounts => {
         invariant(walletType);
-
         await dispatch(
           batchAddAccounts(
             selectedAccounts.map(acc => ({

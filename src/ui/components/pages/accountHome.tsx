@@ -67,27 +67,29 @@ export function AccountsHome() {
         const legacyAccounts = await background.getLegacyFormatAccounts();
         if (legacyAccounts && legacyAccounts.length > 0) {
           // Update Redux with all accounts across networks
+          console.log(legacyAccounts, 'legacyAccounts');
           dispatch({
             type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
             payload: legacyAccounts as unknown as PreferencesAccount[],
           });
-          
+
           // Filter accounts for current network
-          const networkAccounts = legacyAccounts.filter(acc => acc.network === currentNetwork);
+          const networkAccounts = legacyAccounts.filter(
+            acc => acc.network === currentNetwork,
+          );
           dispatch({
             type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
             payload: networkAccounts as unknown as PreferencesAccount[],
           });
-          
         }
       } catch (error) {
         console.error('Failed to sync accounts to Redux:', error);
       }
     }
-    
+
     syncAccountsToRedux();
   }, [dispatch, currentNetwork, accounts.length]); // Re-sync when network changes or account count changes
-  
+
   useEffect(() => {
     TransportWebUSB.isSupported().then(setIsLedgerSupported);
 
@@ -96,7 +98,6 @@ export function AccountsHome() {
       setDebug(true);
     }
   }, []);
-  
 
   return (
     <div data-testid="importForm" className={styles.root}>

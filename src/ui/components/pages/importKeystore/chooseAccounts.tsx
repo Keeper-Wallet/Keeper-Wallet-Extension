@@ -66,7 +66,6 @@ export function ImportKeystoreChooseAccounts({
       className={styles.root}
       onSubmit={event => {
         event.preventDefault();
-
         onSubmit(
           Object.values(profiles)
             .flatMap(profile => profile.accounts)

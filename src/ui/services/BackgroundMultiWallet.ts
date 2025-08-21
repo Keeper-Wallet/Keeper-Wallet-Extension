@@ -29,7 +29,7 @@ class BackgroundMultiWallet {
     if (!storedData) {
       return [];
     }
-    
+
     try {
       return JSON.parse(storedData);
     } catch (e) {
@@ -43,33 +43,44 @@ class BackgroundMultiWallet {
    */
   addMultiWallet(multiWallet: MultiWallet): void {
     const multiWallets = this.getMultiWallets();
-    
+
     // Check for duplicates
-    const isDuplicate = multiWallets.some(wallet => 
-      wallet.name === multiWallet.name && 
-      wallet.coins.waves.networks.mainnet.address === multiWallet.coins.waves.networks.mainnet.address
+    const isDuplicate = multiWallets.some(
+      wallet =>
+        wallet.name === multiWallet.name &&
+        wallet.coins.waves.networks.mainnet.address ===
+          multiWallet.coins.waves.networks.mainnet.address,
     );
-    
+
     if (isDuplicate) {
       console.warn('Duplicate MultiWallet not added:', multiWallet.name);
       return;
     }
-    
+
     multiWallets.push(multiWallet);
+    console.log(multiWallets, 'multiWallets');
     this.saveMultiWallets(multiWallets);
   }
 
   /**
    * Find a MultiWallet by account address and network
    */
-  findMultiWalletByAccount(address: string, network: NetworkName): MultiWallet | null {
+  findMultiWalletByAccount(
+    address: string,
+    network: NetworkName,
+  ): MultiWallet | null {
     const multiWallets = this.getMultiWallets();
-    
-    const networkKey = network.toLowerCase() as 'mainnet' | 'testnet' | 'stagenet';
-    
-    return multiWallets.find(wallet => 
-      wallet.coins.waves.networks[networkKey]?.address === address
-    ) || null;
+
+    const networkKey = network.toLowerCase() as
+      | 'mainnet'
+      | 'testnet'
+      | 'stagenet';
+
+    return (
+      multiWallets.find(
+        wallet => wallet.coins.waves.networks[networkKey]?.address === address,
+      ) || null
+    );
   }
 
   /**

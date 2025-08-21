@@ -538,6 +538,9 @@ class BackgroundService extends EventEmitter {
           this.multiWalletController.findMultiWalletByAccount(address, network),
         );
       },
+      getDecryptedVault: this.multiWalletController.getDecryptedVault.bind(
+        this.multiWalletController,
+      ),
 
       lock: async () => this.vaultController.lock(),
       unlock: this.vaultController.unlock.bind(this.vaultController),

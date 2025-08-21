@@ -575,6 +575,27 @@ class Background {
     }
     return [];
   }
+
+  async getDecryptedVault(password: string): Promise<MultiWallet[]> {
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.getDecryptedVault(password);
+  }
+
+  async getLanguage() {
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.getLanguage();
+  }
+
+  async setLanguage(language: string) {
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.setLanguage(language);
+  }
 }
 
 export default new Background();

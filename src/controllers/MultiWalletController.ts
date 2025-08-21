@@ -51,6 +51,7 @@ export class MultiWalletController extends EventEmitter {
   }>;
   #password: string | null | undefined;
   #setSession;
+  #multiwallets: MultiWallet[]; // Private property to store multiwallets in memory
   getLegacyFormatAccounts;
   getAccounts;
 
@@ -77,6 +78,7 @@ export class MultiWalletController extends EventEmitter {
     extensionStorage.subscribe(this.store);
     this.#password = extensionStorage.getInitSession().password;
     this.#setSession = extensionStorage.setSession.bind(extensionStorage);
+    this.#multiwallets = []; // Initialize empty array
 
     if (this.#password) {
       this.#restoreMultiWallets(this.#password).catch(console.error);
@@ -87,32 +89,42 @@ export class MultiWalletController extends EventEmitter {
    * Add a new multi-wallet to storage
    */
   addMultiWallet(multiWallet: MultiWallet): MultiWallet {
-    const state = this.store.getState();
-    const { multiWallets } = state.MultiWalletController;
+    // Add the new multi-wallet to the in-memory array
+    this.#multiwallets.push(multiWallet);
 
-    // Add the new multi-wallet
-    const updatedWallets = [...multiWallets, multiWallet];
+    // Save changes to encrypted storage
+    if (this.#password) {
+      this.#saveMultiWallets().catch(console.error);
+    } else {
+      // If not yet initialized with password, just update the store state
+      const state = this.store.getState();
+      // this.store.updateState({
+      //   MultiWalletController: {
+      //     ...state.MultiWalletController,
+      //     multiWallets: this.#multiwallets,
+      //   },
+      // });
+    }
 
-    this.emit('multiWalletsChanged', updatedWallets);
+    console.log(multiWallet, 'multiWallet');
+    this.emit('multiWalletsChanged', this.#multiwallets);
 
     return multiWallet;
-    // Emit change event
   }
 
   /**
    * Get all multi-wallets
    */
   getMultiWallets(): MultiWallet[] {
-    const state = this.store.getState();
-    return state.MultiWalletController.multiWallets || [];
+    // Return a copy of the in-memory array to prevent direct modification
+    return [...this.#multiwallets];
   }
 
   /**
    * Find a multi-wallet by ID
    */
   findMultiWalletById(id: string): MultiWallet | undefined {
-    const multiWallets = this.getMultiWallets();
-    return multiWallets.find(wallet => wallet.id === id);
+    return this.#multiwallets.find(wallet => wallet.id === id);
   }
 
   /**
@@ -122,10 +134,44 @@ export class MultiWalletController extends EventEmitter {
     address: string,
     network: NetworkName,
   ): MultiWallet | undefined {
-    const multiWallets = this.getMultiWallets();
+    // Improved implementation that checks for the actual address
+    return this.#multiwallets.find(wallet => {
+      // Check if this wallet has the requested address in any of its networks
+      const wavesNetworks = wallet.coins.waves?.networks;
+      if (wavesNetworks) {
+        if (
+          wavesNetworks.mainnet?.address === address &&
+          network === NetworkName.Mainnet
+        ) {
+          return true;
+        }
+        if (
+          wavesNetworks.testnet?.address === address &&
+          network === NetworkName.Testnet
+        ) {
+          return true;
+        }
+        if (
+          wavesNetworks.stagenet?.address === address &&
+          network === NetworkName.Stagenet
+        ) {
+          return true;
+        }
+      }
 
-    //TODO: need to write logic for it
-    return multiWallets.find(wallet => true);
+      // Check Unit0 networks if they exist
+      const unit0Networks = wallet.coins.unit0?.networks;
+      if (unit0Networks) {
+        if (unit0Networks.mainnet?.address === address) {
+          return true;
+        }
+        if (unit0Networks.testnet?.address === address) {
+          return true;
+        }
+      }
+
+      return false;
+    });
   }
 
   /**
@@ -164,24 +210,31 @@ export class MultiWalletController extends EventEmitter {
    * Remove a multi-wallet by ID
    */
   removeMultiWallet(id: string): void {
-    const state = this.store.getState();
-    const { multiWallets } = state.MultiWalletController;
+    const initialLength = this.#multiwallets.length;
 
-    const updatedWallets = multiWallets.filter(wallet => wallet.id !== id);
+    // Filter out the wallet with the specified ID
+    this.#multiwallets = this.#multiwallets.filter(wallet => wallet.id !== id);
 
-    if (updatedWallets.length === multiWallets.length) {
+    if (this.#multiwallets.length === initialLength) {
       // No wallet was removed
       return;
     }
 
-    this.store.updateState({
-      MultiWalletController: {
-        ...state.MultiWalletController,
-        multiWallets: updatedWallets,
-      },
-    });
+    // Save the updated list to storage
+    if (this.#password) {
+      this.#saveMultiWallets().catch(console.error);
+    } else {
+      // If not initialized with password, just update the store state
+      const state = this.store.getState();
+      // this.store.updateState({
+      //   MultiWalletController: {
+      //     ...state.MultiWalletController,
+      //     multiWallets: this.#multiwallets,
+      //   },
+      // });
+    }
 
-    this.emit('multiWalletsChanged', updatedWallets);
+    this.emit('multiWalletsChanged', this.#multiwallets);
   }
 
   // VaultController-required methods
@@ -197,8 +250,11 @@ export class MultiWalletController extends EventEmitter {
   async #saveMultiWallets(wallets?: MultiWallet[]) {
     invariant(this.#password);
 
-    const multiWallets = wallets || this.getMultiWallets();
-    const vault = await encryptVault(multiWallets, this.#password);
+    console.log(this.#multiwallets, 'this.#multiwallets');
+    console.log(wallets, 'wallets');
+    const walletsToSave = wallets || this.#multiwallets;
+
+    const vault = await encryptVault(walletsToSave, this.#password);
 
     this.store.updateState({
       MultiWalletController: {
@@ -207,11 +263,17 @@ export class MultiWalletController extends EventEmitter {
       },
     });
 
-    multiWallets.forEach(wallet => {
+    // Create sanitized copy for emitting event
+    const sanitizedWallets = JSON.parse(
+      JSON.stringify(walletsToSave),
+    ) as MultiWallet[];
+    sanitizedWallets.forEach(wallet => {
       delete wallet.seed;
+      delete wallet.privateKey;
     });
-    this.emit('multiWalletsChanged', multiWallets);
-    return multiWallets;
+
+    this.emit('multiWalletsChanged', sanitizedWallets);
+    return sanitizedWallets;
   }
 
   async #restoreMultiWallets(password: string) {
@@ -223,14 +285,18 @@ export class MultiWalletController extends EventEmitter {
     if (!vault) return;
 
     try {
+      // Decrypt the vault and populate the in-memory array
       const decryptedWallets = await decryptVault(vault, password);
+      this.#multiwallets = decryptedWallets;
 
-      this.store.updateState({
-        MultiWalletController: {
-          ...state.MultiWalletController,
-          multiWallets: decryptedWallets,
-        },
-      });
+      // // Update the store state
+      // this.store.updateState({
+      //   MultiWalletController: {
+      //     ...state.MultiWalletController,
+      //     multiWallets: decryptedWallets,
+      //   },
+      // });
+
       // Create deep copy of wallets and remove sensitive data before emitting
       const sanitizedWallets = JSON.parse(
         JSON.stringify(decryptedWallets),
@@ -257,13 +323,16 @@ export class MultiWalletController extends EventEmitter {
   lock() {
     this.#setPassword(null);
     // Clear sensitive data from memory
+    this.#multiwallets = [];
+
+    // Update store state
     const state = this.store.getState();
-    this.store.updateState({
-      MultiWalletController: {
-        ...state.MultiWalletController,
-        multiWallets: [],
-      },
-    });
+    // this.store.updateState({
+    //   MultiWalletController: {
+    //     ...state.MultiWalletController,
+    //     multiWallets: [],
+    //   },
+    // });
   }
 
   async unlock(password: string) {
@@ -278,11 +347,12 @@ export class MultiWalletController extends EventEmitter {
   }
 
   async deleteVault() {
+    this.#multiwallets = [];
     await this.#setPassword(null);
+
     this.store.updateState({
       MultiWalletController: {
         vault: undefined,
-        multiWallets: [],
       },
     });
     this.emit('multiWalletsChanged', []);
@@ -301,11 +371,29 @@ export class MultiWalletController extends EventEmitter {
     blockChainType: string,
     password: string,
   ): Promise<MultiWallet | undefined> {
+    // First try to find in the in-memory wallets if they're already loaded
+    if (this.#multiwallets.length > 0) {
+      return this.#multiwallets.find(wallet => {
+        const networks =
+          wallet.coins[blockChainType as keyof typeof wallet.coins]?.networks;
+        // Check if the address matches any of the network addresses
+        return (
+          networks?.mainnet.address === address ||
+          networks?.testnet.address === address ||
+          networks?.stagenet?.address === address
+        );
+      });
+    }
+
+    // If not in memory, try to decrypt the vault
     const state = this.store.getState();
     const { vault } = state.MultiWalletController;
     if (!vault) return undefined;
 
     const decryptedWallets = await decryptVault(vault, password);
+
+    // Store the decrypted wallets in memory
+    this.#multiwallets = decryptedWallets;
 
     return decryptedWallets.find(wallet => {
       const networks =
@@ -314,7 +402,7 @@ export class MultiWalletController extends EventEmitter {
       return (
         networks?.mainnet.address === address ||
         networks?.testnet.address === address ||
-        networks?.stagenet.address === address
+        networks?.stagenet?.address === address
       );
     });
   }
@@ -351,5 +439,34 @@ export class MultiWalletController extends EventEmitter {
       password,
     );
     return matchedWallet?.seed ?? '';
+  }
+
+  /**
+   * Returns decrypted vault contents
+   * @param password - Password to decrypt the vault
+   * @returns Promise that resolves to an array of MultiWallet objects
+   * @throws Error if password is invalid or vault doesn't exist
+   */
+  async getDecryptedVault(password: string): Promise<MultiWallet[]> {
+    // If we already have decrypted wallets in memory, return a copy
+    if (this.#multiwallets.length > 0 && this.#password === password) {
+      return JSON.parse(JSON.stringify(this.#multiwallets)) as MultiWallet[];
+    }
+
+    const state = this.store.getState();
+    const { vault } = state.MultiWalletController;
+
+    if (!vault) {
+      throw new Error('Vault does not exist');
+    }
+
+    try {
+      // Use the existing decryptVault function to decrypt the vault
+      const decryptedWallets = await decryptVault(vault, password);
+      return decryptedWallets;
+    } catch (error) {
+      console.error('Failed to decrypt vault:', error);
+      throw error;
+    }
   }
 }

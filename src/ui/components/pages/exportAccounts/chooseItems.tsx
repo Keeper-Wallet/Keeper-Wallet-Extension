@@ -78,6 +78,7 @@ export function ExportKeystoreChooseItems<
       className={styles.root}
       onSubmit={event => {
         event.preventDefault();
+        console.log(items, 'items');
         onSubmit(items.filter(({ address }) => selected.has(address)));
       }}
     >
