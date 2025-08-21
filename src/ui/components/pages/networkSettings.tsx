@@ -2,17 +2,24 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import background from 'ui/services/Background';
-import { Button } from '../ui';
+import { Button, Modal } from '../ui';
 import * as styles from './networkSettings.module.css';
 import { useTranslation } from 'react-i18next';
 import { usePopupSelector } from 'popup/store/react';
 import { useDispatch } from 'react-redux';
 import { BLOCKCHAIN_TYPES, NETWORK_TYPES } from 'assets/constants';
 import { ACTION } from 'store/actions/constants';
-import type { NetworkName } from 'networks/types';
+import { NetworkName } from 'networks/types';
 import { getAvailableNetworkOptions } from 'networks/networkOptions';
 import { useAccountsSelector } from '../../../accounts/store/react';
 import { PreferencesAccount } from '../../../preferences/types';
+import { NETWORK_CONFIG } from '../../../constants';
+import { CustomNetworkModal } from '../../../layout/customNetworkModal';
+import {
+  setCustomCode,
+  setCustomMatcher,
+  setCustomNode,
+} from '../../../store/actions/network';
 
 // Right arrow icon for the UI
 const RightArrowIcon = () => (
@@ -112,9 +119,15 @@ export function NetworkSettings() {
   );
   // Get the selected account to check if it's Waves-only
   const selectedAccount = usePopupSelector(state => state.selectedAccount);
+  const customMatcher = usePopupSelector(state => state.customMatcher);
+  const customNodes = usePopupSelector(state => state.customNodes);
 
   // State to track if the current account is Waves-only
   const [isWavesOnlyAccount, setIsWavesOnlyAccount] = useState(false);
+
+  // State to track if the current account is Waves-only
+  const [isCustomNetworkModalShown, setIsCustomNetworkModalShown] =
+    useState(false);
 
   // Check if the account is Waves-only when component mounts or selected account changes
   useEffect(() => {
@@ -213,7 +226,6 @@ export function NetworkSettings() {
     showTestAccounts,
     t,
   ).filter(option => {
-    console.log(option, 'option');
     // If it's a Waves-only account, filter out Unit0 options
     if (isWavesOnlyAccount && option.blockchain === BLOCKCHAIN_TYPES.UNIT0) {
       return false;
@@ -308,7 +320,7 @@ export function NetworkSettings() {
                 hasRightArrow={option.isCustom}
                 onClick={() => {
                   if (option.isCustom) {
-                    navigate('/custom-network');
+                    setIsCustomNetworkModalShown(true);
                   } else if (option.blockchain) {
                     handleNetworkSelect(option.blockchain, option.network);
                   }
@@ -327,6 +339,56 @@ export function NetworkSettings() {
       >
         {t('networkSettings.confirm')}
       </Button>
+
+      <Modal
+        showModal={isCustomNetworkModalShown}
+        animation={Modal.ANIMATION.FLASH}
+      >
+        <CustomNetworkModal
+          initialMatcher={
+            customMatcher[NetworkName.Custom] ||
+            NETWORK_CONFIG[NetworkName.Custom].matcherBaseUrl
+          }
+          initialNode={
+            customNodes[NetworkName.Custom] ||
+            NETWORK_CONFIG[NetworkName.Custom].nodeBaseUrl
+          }
+          onClose={() => {
+            setIsCustomNetworkModalShown(false);
+          }}
+          onSave={({ matcher, networkCode, node }) => {
+            dispatch(
+              setCustomCode({
+                code: networkCode,
+                network: NetworkName.Custom,
+              }),
+            );
+
+            dispatch(
+              setCustomNode({
+                network: NetworkName.Custom,
+                node,
+              }),
+            );
+
+            if (matcher) {
+              dispatch(
+                setCustomMatcher({
+                  matcher,
+                  network: NetworkName.Custom,
+                }),
+              );
+            }
+
+            setIsCustomNetworkModalShown(false);
+
+            // Update the selected network to Custom
+            setSelectedNetwork(
+              `${currentBlockchainType}-${NetworkName.Custom}`,
+            );
+          }}
+        />
+      </Modal>
     </div>
   );
 }

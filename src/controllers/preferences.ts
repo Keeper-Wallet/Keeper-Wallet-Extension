@@ -180,11 +180,13 @@ export class PreferencesController extends EventEmitter {
 
     this.store.updateState({
       accounts: updatedAccounts,
-      selectedAccount: selectedAccount &&
-      selectedAccount.address === address &&
-      selectedAccount.network === network
-        ? { ...selectedAccount, name: label }
-        : selectedAccount    });
+      selectedAccount:
+        selectedAccount &&
+        selectedAccount.address === address &&
+        selectedAccount.network === network
+          ? { ...selectedAccount, name: label }
+          : selectedAccount,
+    });
   }
 
   selectAccount(address: string | undefined, network: string) {
@@ -304,14 +306,20 @@ export class PreferencesController extends EventEmitter {
 
       if (wallet.coins && blockchainType in wallet.coins) {
         const blockchainData = wallet.coins[blockchainType];
-        console.log(blockchainType, 'blockchainType');
         const publicKey = blockchainData?.publicKey;
-        const networks = blockchainData?.networks as Record<string, WalletItem> | undefined;
+        const networks = blockchainData?.networks as
+          | Record<string, WalletItem>
+          | undefined;
         const currentNetworkKey = currentNetwork as keyof typeof networks;
 
         // Check if the wallet has the current network
-        if (publicKey && networks && currentNetworkKey in networks && networks[currentNetworkKey]?.address) {
-          const networkData = networks[currentNetworkKey];  // Use currentNetworkKey instead of currentNetwork
+        if (
+          publicKey &&
+          networks &&
+          currentNetworkKey in networks &&
+          networks[currentNetworkKey]?.address
+        ) {
+          const networkData = networks[currentNetworkKey]; // Use currentNetworkKey instead of currentNetwork
 
           legacyAccounts.push({
             address: networkData.address as string,
