@@ -8,6 +8,7 @@ import { type PreferencesAccount } from 'preferences/types';
 
 import background from '../ui/services/Background';
 import { type KeystoreAccount, type KeystoreProfiles } from './types';
+import { MultiWallet } from '../services/types';
 
 async function encryptProfiles(
   accountsToExport: PreferencesAccount[],
@@ -25,15 +26,7 @@ async function encryptProfiles(
 
         switch (acc.type) {
           case 'seed':
-            return {
-              ...commonData,
-              type: acc.type,
-              seed: await background.getAccountSeed(
-                acc.address,
-                acc.network,
-                password,
-              ),
-            };
+            return acc;
           case 'encodedSeed':
             return {
               ...commonData,
@@ -68,19 +61,8 @@ async function encryptProfiles(
     ),
   );
 
-  const profiles: KeystoreProfiles = {
-    custom: { accounts: [] },
-    mainnet: { accounts: [] },
-    stagenet: { accounts: [] },
-    testnet: { accounts: [] },
-  };
-
-  accounts.forEach(({ network, ...acc }) => {
-    profiles[network].accounts.push(acc);
-  });
-
   const encrypted = await encryptSeed(
-    utf8Encode(JSON.stringify(profiles)),
+    utf8Encode(JSON.stringify(accounts)),
     utf8Encode(password),
   );
 
@@ -114,7 +96,7 @@ function download(json: string, filename: string) {
 }
 
 export async function downloadKeystore(
-  accounts: PreferencesAccount[] | undefined,
+  accounts: MultiWallet[] | undefined,
   addresses: Record<string, string> | undefined,
   password: string,
   encrypted = false,
@@ -136,7 +118,7 @@ export async function downloadKeystore(
 
   if (accounts) {
     download(
-      JSON.stringify({ profiles: await encryptProfiles(accounts, password) }),
+      JSON.stringify({ accounts: await encryptProfiles(accounts, password) }),
       `keystore-accounts-keeper-${nowStr}.json`,
     );
   }

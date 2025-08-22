@@ -4,14 +4,21 @@ import {
   utf8Decode,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
-import { type KeystoreProfiles } from 'keystore/types';
+import { StageKeys } from 'popup/constants';
+import { setStage } from 'popup/store/actions';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { batchAddAccounts } from 'store/actions/user';
+import {
+  createWavesOnlyMultiWallet,
+  batchAddAccounts,
+} from 'store/actions/user';
 import invariant from 'tiny-invariant';
 import { getNetworkByNetworkCode } from 'ui/utils/waves';
+import { MultiWallet } from 'services/types';
+import { NETWORK_CONFIG } from '../../../../constants';
+import { NetworkName } from '../../../../networks/types';
 
 import { WalletTypes } from '../../../services/Background';
 import { ImportKeystoreChooseAccounts } from './chooseAccounts';
@@ -37,7 +44,24 @@ type ExchangeKeystoreAccount = {
 
 interface EncryptedKeystore {
   type: WalletTypes;
-  decrypt: (password: string) => Promise<KeystoreProfiles | null>;
+  decrypt: (password: string) => Promise<MultiWallet[] | null>;
+}
+
+// Helper function to decrypt keystore content
+async function decrypt<T>(
+  encryptedContent: string,
+  password: string,
+): Promise<T> {
+  try {
+    const decrypted = await decryptSeed(
+      base64Decode(atob(encryptedContent)),
+      utf8Encode(password),
+    );
+    return JSON.parse(utf8Decode(decrypted));
+  } catch (err) {
+    console.error('Decryption error:', err);
+    throw new Error('Failed to decrypt keystore content');
+  }
 }
 
 function parseKeystore(json: string): EncryptedKeystore | null {
@@ -48,6 +72,25 @@ function parseKeystore(json: string): EncryptedKeystore | null {
       return null;
     }
 
+    if ('accounts' in parsedJson && typeof parsedJson.accounts === 'string') {
+      const { accounts } = parsedJson;
+
+      return {
+        type: WalletTypes.Keystore,
+        decrypt: async password => {
+          try {
+            // Decrypt and parse the multi-wallet format
+            const decrypted = await decrypt<MultiWallet[]>(accounts, password);
+            return decrypted;
+          } catch (err) {
+            console.error('Decryption error:', err);
+            return null;
+          }
+        },
+      };
+    }
+
+    // Legacy format handling
     if ('profiles' in parsedJson && typeof parsedJson.profiles === 'string') {
       const { profiles } = parsedJson;
 
@@ -59,8 +102,64 @@ function parseKeystore(json: string): EncryptedKeystore | null {
               base64Decode(atob(profiles)),
               utf8Encode(password),
             );
-            return JSON.parse(utf8Decode(decrypted));
+
+            // Parse profiles data
+            const profilesData = JSON.parse(utf8Decode(decrypted));
+
+            // Convert legacy profiles to MultiWallet format
+            const multiwallets: MultiWallet[] = [];
+
+            // Process each profile
+            Object.values(profilesData).forEach((profile: any) => {
+              if (!profile.accounts || !Array.isArray(profile.accounts)) {
+                return;
+              }
+
+              // Process each account in the profile
+              profile.accounts.forEach((account: any) => {
+                if (!account.seed || account.type !== 'seed') {
+                  // For now, we only handle seed accounts
+                  return;
+                }
+
+                // Create a MultiWallet structure for this account
+                const networkCode = account.networkCode || 'W';
+                const network = getNetworkByNetworkCode(networkCode);
+
+                const multiwallet: MultiWallet = {
+                  id: Date.now().toString(),
+                  name: account.name,
+                  type: account.type,
+                  createdAt: Date.now(),
+                  seed: account.seed,
+                  coins: {
+                    waves: {
+                      publicKey: account.publicKey || '',
+                      networks: {
+                        mainnet: {
+                          address: networkCode === 'W' ? account.address : '',
+                          networkCode: 'W',
+                        },
+                        testnet: {
+                          address: networkCode === 'T' ? account.address : '',
+                          networkCode: 'T',
+                        },
+                        stagenet: {
+                          address: networkCode === 'S' ? account.address : '',
+                          networkCode: 'S',
+                        },
+                      },
+                    },
+                  },
+                };
+
+                multiwallets.push(multiwallet);
+              });
+            });
+
+            return multiwallets;
           } catch (err) {
+            console.error('Legacy format conversion error:', err);
             return null;
           }
         },
@@ -90,18 +189,14 @@ function parseKeystore(json: string): EncryptedKeystore | null {
                 encryptionRounds,
               );
 
-              const accounts: ExchangeKeystoreAccount[] = JSON.parse(
+              const exchangeAccounts: ExchangeKeystoreAccount[] = JSON.parse(
                 utf8Decode(decrypted),
               );
 
-              const profiles: KeystoreProfiles = {
-                custom: { accounts: [] },
-                mainnet: { accounts: [] },
-                stagenet: { accounts: [] },
-                testnet: { accounts: [] },
-              };
+              // Convert exchange accounts to MultiWallet format
+              const multiwallets: MultiWallet[] = [];
 
-              accounts
+              exchangeAccounts
                 .filter(
                   (
                     acc,
@@ -112,19 +207,39 @@ function parseKeystore(json: string): EncryptedKeystore | null {
                 )
                 .forEach(acc => {
                   const networkCode = String.fromCharCode(acc.networkByte);
-                  const network = getNetworkByNetworkCode(networkCode);
 
-                  profiles[network].accounts.push({
-                    address: acc.address,
+                  const multiwallet: MultiWallet = {
+                    id: Date.now().toString(),
                     name: acc.name,
-                    networkCode,
-                    seed: acc.seed,
                     type: 'seed',
-                  });
+                    createdAt: Date.now(),
+                    seed: acc.seed,
+                    coins: {
+                      waves: {
+                        networks: {
+                          mainnet: {
+                            address: networkCode === 'W' ? acc.address : '',
+                            networkCode: 'W',
+                          },
+                          testnet: {
+                            address: networkCode === 'T' ? acc.address : '',
+                            networkCode: 'T',
+                          },
+                          stagenet: {
+                            address: networkCode === 'S' ? acc.address : '',
+                            networkCode: 'S',
+                          },
+                        },
+                      },
+                    },
+                  };
+
+                  multiwallets.push(multiwallet);
                 });
 
-              return profiles;
-            } catch {
+              return multiwallets;
+            } catch (err) {
+              console.error('Exchange format conversion error:', err);
               return null;
             }
           },
@@ -133,26 +248,23 @@ function parseKeystore(json: string): EncryptedKeystore | null {
     }
 
     return null;
-  } catch {
+  } catch (err) {
+    console.error('Keystore parsing error:', err);
     return null;
   }
 }
 
-const suffixRe = /\((\d+)\)$/;
-
 export function ImportKeystore() {
   const navigate = useNavigate();
   const dispatch = usePopupDispatch();
-  const allNetworksAccounts = usePopupSelector(
-    state => state.allNetworksAccounts,
-  );
+  const allNetworksAccounts = usePopupSelector(state => state.accounts);
   const { t } = useTranslation();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [profiles, setProfiles] = useState<KeystoreProfiles | null>(null);
+  const [multiwallets, setMultiwallets] = useState<MultiWallet[] | null>(null);
   const [walletType, setWalletType] = useState<WalletTypes | null>(null);
 
-  if (profiles == null) {
+  if (multiwallets == null) {
     return (
       <ImportKeystoreChooseFile
         title={t('importKeystore.chooseFileTitle')}
@@ -161,64 +273,40 @@ export function ImportKeystore() {
         loading={loading}
         error={error}
         setError={setError}
-        onSubmit={async (result, password) => {
+        onSubmit={async (keystoreContent, password) => {
           setError(null);
           setLoading(true);
 
           try {
-            const keystore = parseKeystore(result);
+            const keystore = JSON.parse(keystoreContent);
+            console.log(keystore, 'keystore');
+            const keystoreParser = parseKeystore(keystoreContent);
 
-            if (!keystore) {
-              setError(t('importKeystore.errorFormat'));
+            if (!keystoreParser) {
+              setError(t('importKeystore.errorInvalidFormat'));
               setLoading(false);
               return;
             }
 
-            const newProfiles = await keystore.decrypt(password);
+            try {
+              const importedWallets = await keystoreParser.decrypt(password);
+              console.log('Imported wallets:', importedWallets);
 
-            if (!newProfiles) {
+              // Validate imported wallets
+              if (!importedWallets || importedWallets.length === 0) {
+                setError(t('importKeystore.errorNoAccounts'));
+                setLoading(false);
+                return;
+              }
+
+              setMultiwallets(importedWallets);
+              setWalletType(keystoreParser.type);
+            } catch (decryptErr) {
+              console.error('Decryption error:', decryptErr);
               setError(t('importKeystore.errorDecrypt'));
-              setLoading(false);
-              return;
             }
-
-            Object.entries(newProfiles).forEach(([network, profile]) => {
-              const currentNetworkAccounts = allNetworksAccounts.filter(
-                acc => acc.network === network,
-              );
-
-              profile.accounts.forEach(profileAccount => {
-                const accounts = currentNetworkAccounts.filter(
-                  acc => acc.address !== profileAccount.address,
-                );
-
-                let sameNameAccount = accounts.find(
-                  existingAccount =>
-                    existingAccount.name === profileAccount.name,
-                );
-
-                while (sameNameAccount) {
-                  const suffixMatch = profileAccount.name.match(suffixRe);
-
-                  if (suffixMatch) {
-                    profileAccount.name = profileAccount.name.replace(
-                      suffixRe,
-                      `(${Number(suffixMatch[1]) + 1})`,
-                    );
-                  } else {
-                    profileAccount.name += ' (1)';
-                  }
-
-                  sameNameAccount = accounts.find(
-                    existingAccount =>
-                      existingAccount.name === profileAccount.name,
-                  );
-                }
-              });
-            });
-            setWalletType(keystore.type);
-            setProfiles(newProfiles);
-          } catch {
+          } catch (err) {
+            console.error('Keystore parsing error:', err);
             setError(t('importKeystore.errorUnexpected'));
           }
 
@@ -228,25 +316,160 @@ export function ImportKeystore() {
     );
   }
 
+  // Prepare accounts from multiwallets for display
+  const flattenedAccounts = multiwallets.flatMap(wallet => {
+    const accounts = [];
+
+    // Add Waves network accounts
+    if (wallet.coins?.waves) {
+      const networks = wallet.coins.waves.networks;
+
+      // Add mainnet account if available
+      if (networks?.mainnet?.address) {
+        accounts.push({
+          address: networks.mainnet.address,
+          name: wallet.name,
+          networkCode: networks.mainnet.networkCode,
+          network: 'mainnet',
+          publicKey: wallet.coins.waves.publicKey,
+          type: wallet.type,
+          seed: wallet.seed,
+          id: wallet.id,
+          multiwallet: wallet,
+        });
+      }
+
+      // Add testnet account if available
+      if (networks?.testnet?.address) {
+        accounts.push({
+          address: networks.testnet.address,
+          name: `${wallet.name} (Testnet)`,
+          networkCode: networks.testnet.networkCode,
+          network: 'testnet',
+          publicKey: wallet.coins.waves.publicKey,
+          type: wallet.type,
+          seed: wallet.seed,
+          id: wallet.id,
+          multiwallet: wallet,
+        });
+      }
+
+      // Add stagenet account if available
+      if (networks?.stagenet?.address) {
+        accounts.push({
+          address: networks.stagenet.address,
+          name: `${wallet.name} (Stagenet)`,
+          networkCode: networks.stagenet.networkCode,
+          network: 'stagenet',
+          publicKey: wallet.coins.waves.publicKey,
+          type: wallet.type,
+          seed: wallet.seed,
+          id: wallet.id,
+          multiwallet: wallet,
+        });
+      }
+    }
+
+    // Add Unit0 accounts if available (for future support)
+    if (wallet.coins?.unit0) {
+      const networks = wallet.coins.unit0.networks;
+
+      if (networks?.mainnet?.address) {
+        accounts.push({
+          address: networks.mainnet.address,
+          name: `${wallet.name} (Unit0)`,
+          networkCode: networks.mainnet.networkCode,
+          network: 'mainnet',
+          publicKey: wallet.coins.unit0.publicKey,
+          type: wallet.type,
+          seed: wallet.seed,
+          id: wallet.id,
+          ethereumAddress: wallet.coins.unit0.networks.mainnet.address,
+          isUnit0: true,
+          multiwallet: wallet,
+        });
+      }
+
+      if (networks?.testnet?.address) {
+        accounts.push({
+          address: networks.testnet.address,
+          name: `${wallet.name} (Unit0 Testnet)`,
+          networkCode: networks.testnet.networkCode,
+          network: 'testnet',
+          publicKey: wallet.coins.unit0.publicKey,
+          type: wallet.type,
+          seed: wallet.seed,
+          id: wallet.id,
+          ethereumAddress: wallet.coins.unit0.networks.testnet.address,
+          isUnit0: true,
+          multiwallet: wallet,
+        });
+      }
+    }
+
+    return accounts;
+  });
+
   return (
     <ImportKeystoreChooseAccounts
       allNetworksAccounts={allNetworksAccounts}
-      profiles={profiles}
+      accounts={flattenedAccounts}
       onSkip={() => {
         navigate('/');
       }}
       onSubmit={async selectedAccounts => {
         invariant(walletType);
-        await dispatch(
-          batchAddAccounts(
-            selectedAccounts.map(acc => ({
-              type: 'seed',
-              ...acc,
-              network: getNetworkByNetworkCode(acc.networkCode),
-            })),
-            walletType,
-          ),
-        );
+        console.log('Selected accounts for import:', selectedAccounts);
+
+        // Extract unique MultiWallet objects from selected accounts
+        const selectedWallets = new Map<string, MultiWallet>();
+        selectedAccounts.forEach(account => {
+          if (
+            account.multiwallet &&
+            !selectedWallets.has(account.multiwallet.id)
+          ) {
+            selectedWallets.set(account.multiwallet.id, account.multiwallet);
+          }
+        });
+
+        // Import each selected MultiWallet
+        for (const wallet of selectedWallets.values()) {
+          try {
+            // Extract required properties from the MultiWallet object
+            const wavesNetworks = wallet.coins?.waves?.networks || {};
+            
+            // Handle Waves networks
+            if (wallet.coins?.waves) {
+              const importParams = {
+                name: wallet.name,
+                seed: wallet.seed,
+                type: wallet.type,
+                mainnetAddress: wavesNetworks.mainnet?.address || '',
+                publicKey: wallet.coins.waves?.publicKey || '',
+                testnetAddress: wavesNetworks.testnet?.address || '',
+                stagenetAddress: wavesNetworks.stagenet?.address || '',
+              };
+              
+              // Check if we have the required data before importing
+              if (importParams.mainnetAddress && importParams.publicKey) {
+                await dispatch(createWavesOnlyMultiWallet(importParams));
+                console.log('Imported Waves wallet successfully:', importParams.name);
+              } else {
+                console.error('Missing required Waves data for import:', wallet);
+              }
+            } 
+            // Handle Unit0 networks if we add support in the future
+            else if (wallet.coins?.unit0) {
+              // Future implementation for Unit0 specific import
+              console.log('Unit0 wallet detected but not yet fully supported for import');
+            } 
+            else {
+              console.error('Wallet has no network data:', wallet);
+            }
+          } catch (error) {
+            console.error('Error importing wallet:', error);
+          }
+        }
 
         navigate('/import-keystore/success');
       }}

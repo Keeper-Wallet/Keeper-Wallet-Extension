@@ -1,14 +1,17 @@
 .root
   display: flex;
   flex-direction: column;
+  padding: 20px 0 0;
   height: calc(100% - 48px);
   overflow: hidden;
+  color: #212121
 
 .title
-  margin: 24px 48px 14px;
+  margin: 0 48px 8px
 
 .description
-  margin: 0 48px 24px;
+  margin: 0 48px 12px
+  max-width: 400px
 
 .accounts
   flex: 1 1 0;
@@ -26,7 +29,7 @@
   display: flex;
   align-items: center;
   border-bottom: 1px solid #edf0f4;
-  padding: 10px 48px;
+  padding: 10px 41px;
   background: #fff;
 
 .accountsGroupIcon
@@ -42,22 +45,16 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 12px 48px;
+  padding: 10px 35px;
 
 .accountListItem
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(155, 166, 178, 0.4);
-  background: #FFFFFF;
-  padding: 11px 16px 11px 14px;
-  min-height: 64px;
+  padding: 0 16px 0 14px;
 
 .accountInfo
   display: flex;
   align-items: center;
-  gap: 14px;
+  width: 100%;
 
 .accountInfoText
   display: flex;
@@ -68,7 +65,64 @@
   font-size: 12px;
   line-height: 14px;
   word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 240px;
+
+.accountNetwork
+  font-size: 12px;
+  color: #757575;
+  margin-top: 4px;
+
+.accountInfoNote
+  color: var(--color-disabled500);
+  margin-right: 24px;
 
 .buttons
   border-top: 1px solid #edf0f4;
   padding: 24px 48px;
+
+.checkbox.checkbox
+  margin-right: 0;
+
+.centered
+  margin-right: 48px;
+  margin-left: 48px;
+
+.walletGroup
+  margin-bottom: 16px
+  border: 1px solid #EEEEEE
+  border-radius: 6px
+  overflow: hidden
+
+.walletHeader
+  display: flex
+  align-items: center
+  justify-content: space-between
+  padding: 12px 16px
+  background: #F5F5F5
+  cursor: pointer
+  &:hover
+    background: #EEEEEE
+
+.walletName
+  font-size: 16px
+  font-weight: 500
+
+.expandIcon
+  font-size: 16px
+  color: #757575
+
+.networkGroups
+  padding: 8px 16px
+
+.networkGroup
+  margin-bottom: 12px
+
+.networkType
+  font-size: 14px
+  font-weight: 500
+  color: #757575
+  margin-bottom: 8px
+  padding-left: 8px

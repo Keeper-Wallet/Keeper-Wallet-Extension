@@ -134,7 +134,6 @@ export class MultiWalletController extends EventEmitter {
     address: string,
     network: NetworkName,
   ): MultiWallet | undefined {
-    // Improved implementation that checks for the actual address
     return this.#multiwallets.find(wallet => {
       // Check if this wallet has the requested address in any of its networks
       const wavesNetworks = wallet.coins.waves?.networks;

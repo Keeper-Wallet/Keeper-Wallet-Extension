@@ -1,63 +1,127 @@
 import clsx from 'clsx';
-import { type KeystoreAccount, type KeystoreProfiles } from 'keystore/types';
-import { NetworkName } from 'networks/types';
-import { type PreferencesAccount } from 'preferences/types';
+import { type KeystoreAccount } from 'keystore/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui/components/ui';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
+import { MultiWallet } from 'services/types';
 
 import * as styles from './chooseAccounts.styl';
 
-const allNetworks: NetworkName[] = Object.values(NetworkName);
+interface Props {
+  allNetworksAccounts: Array<{
+    address: string;
+    name: string;
+    [key: string]: any;
+  }>;
+  accounts: Array<{
+    address: string;
+    name: string;
+    type: string;
+    networkCode: string;
+    network: string;
+    id: string;
+    multiwallet?: MultiWallet;
+    isUnit0?: boolean;
+    [key: string]: any;
+  }>;
+  onSkip: () => void;
+  onSubmit: (selectedAccounts: KeystoreAccount[]) => void;
+}
 
-const networkLabels: Record<NetworkName, string> = {
-  custom: 'Custom',
+// Group accounts by wallet ID
+function groupAccountsByWallet(accounts: Array<Props['accounts'][0]>) {
+  const groups: Record<
+    string,
+    {
+      name: string;
+      networks: {
+        waves: Array<Props['accounts'][0]>;
+        unit0: Array<Props['accounts'][0]>;
+      };
+    }
+  > = {};
+
+  accounts.forEach(account => {
+    const walletId = account.id || account.address;
+
+    if (!groups[walletId]) {
+      // Create new wallet group
+      groups[walletId] = {
+        name: account.name.replace(/ \(.*\)$/, ''), // Remove network suffix
+        networks: {
+          waves: [],
+          unit0: [],
+        },
+      };
+    }
+
+    // Add to appropriate network type
+    const networkType = account.isUnit0 ? 'unit0' : 'waves';
+    groups[walletId].networks[networkType].push(account);
+  });
+
+  return groups;
+}
+
+const networkLabels: Record<string, string> = {
   mainnet: 'Mainnet',
   testnet: 'Testnet',
   stagenet: 'Stagenet',
 };
 
-interface Props {
-  allNetworksAccounts: PreferencesAccount[];
-  profiles: KeystoreProfiles;
-  onSkip: () => void;
-  onSubmit: (selectedAccounts: KeystoreAccount[]) => void;
-}
-
 export function ImportKeystoreChooseAccounts({
   allNetworksAccounts,
-  profiles,
+  accounts,
   onSkip,
   onSubmit,
 }: Props) {
   const { t } = useTranslation();
-  const existingAccounts = new Set(allNetworksAccounts.map(acc => acc.address));
 
-  const [selected, setSelected] = useState(
-    () =>
-      new Set(
-        Object.values(profiles)
-          .flatMap(profile => profile.accounts)
-          .filter(({ address }) => !existingAccounts.has(address))
-          .map(({ address }) => address),
-      ),
+  const groupedAccounts = groupAccountsByWallet(accounts);
+
+  // Set of walletIds that are selected
+  const [selectedWallets, setSelectedWallets] = useState<Set<string>>(
+    () => new Set(Object.keys(groupedAccounts)),
   );
 
-  function toggleSelected(accounts: KeystoreAccount[], isSelected: boolean) {
-    setSelected(prevSelected => {
+  // Simple check for existing accounts
+  const existingAddresses = new Set(
+    allNetworksAccounts.map(acc => acc.address),
+  );
+
+  // Toggle wallet selection
+  function toggleWalletSelected(walletId: string, isSelected: boolean) {
+    setSelectedWallets(prevSelected => {
       const newSelected = new Set(prevSelected);
 
-      accounts.forEach(acc => {
-        if (isSelected) {
-          newSelected.add(acc.address);
-        } else {
-          newSelected.delete(acc.address);
-        }
-      });
+      if (isSelected) {
+        newSelected.add(walletId);
+      } else {
+        newSelected.delete(walletId);
+      }
 
       return newSelected;
     });
+  }
+
+  // Get all accounts from selected wallets
+  function getSelectedAccounts(): KeystoreAccount[] {
+    const selectedAccounts: KeystoreAccount[] = [];
+
+    accounts.forEach(account => {
+      const walletId = account.id || account.address;
+
+      // Only include accounts from selected wallets and that don't exist
+      if (
+        selectedWallets.has(walletId) &&
+        !existingAddresses.has(account.address)
+      ) {
+        selectedAccounts.push(account);
+      }
+    });
+
+    return selectedAccounts;
   }
 
   return (
@@ -66,11 +130,7 @@ export function ImportKeystoreChooseAccounts({
       className={styles.root}
       onSubmit={event => {
         event.preventDefault();
-        onSubmit(
-          Object.values(profiles)
-            .flatMap(profile => profile.accounts)
-            .filter(({ address }) => selected.has(address)),
-        );
+        onSubmit(getSelectedAccounts());
       }}
     >
       <h2 className={clsx(styles.title, 'title1')}>
@@ -82,132 +142,137 @@ export function ImportKeystoreChooseAccounts({
       </p>
 
       <div className={styles.accounts}>
-        {allNetworks
-          .map(network => [network, profiles[network].accounts] as const)
-          .filter(([, accounts]) => accounts.length !== 0)
-          .map(([network, accounts]) => {
-            const newAccounts = accounts.filter(
-              acc => !existingAccounts.has(acc.address),
-            );
+        {Object.entries(groupedAccounts).map(([walletId, walletGroup]) => {
+          const hasExistingNetworks = [
+            ...(walletGroup.networks.waves || []),
+            ...(walletGroup.networks.unit0 || []),
+          ].some(account => existingAddresses.has(account.address));
 
-            return (
-              <div
-                key={network}
-                className={styles.accountsGroup}
-                data-testid="accountsGroup"
-              >
-                <header className={styles.accountsGroupHeader}>
-                  <i
-                    className={clsx(styles.accountsGroupIcon, 'networkIcon')}
-                  />
+          // Check if this wallet has any importable accounts (not already in the wallet)
+          const hasImportableAccounts = [
+            ...(walletGroup.networks.waves || []),
+            ...(walletGroup.networks.unit0 || []),
+          ].some(account => !existingAddresses.has(account.address));
 
-                  <h2
-                    className={styles.accountsGroupLabel}
-                    data-testid="accountsGroupLabel"
-                  >
-                    {networkLabels[network]}
-                  </h2>
+          if (!hasImportableAccounts) {
+            return null; // Skip wallets with no importable accounts
+          }
 
-                  {newAccounts.length !== 0 && (
-                    <input
-                      checked={newAccounts.every(acc =>
-                        selected.has(acc.address),
-                      )}
-                      type="checkbox"
-                      onChange={event => {
-                        toggleSelected(
-                          accounts.filter(
-                            acc => !existingAccounts.has(acc.address),
-                          ),
-                          event.currentTarget.checked,
-                        );
-                      }}
-                    />
-                  )}
-                </header>
+          return (
+            <div key={walletId} className={styles.accountsGroup}>
+              <header className={styles.accountsGroupHeader}>
+                <i className={clsx(styles.accountsGroupIcon, 'accountIcon')} />
 
-                <ul className={styles.accountList}>
-                  {accounts.map(account => {
-                    const existingAccount = allNetworksAccounts.find(
-                      acc => acc.address === account.address,
-                    );
+                <h2 className={styles.accountsGroupLabel}>
+                  {walletGroup.name}
+                </h2>
 
-                    return (
-                      <li
-                        key={account.address}
-                        className={styles.accountListItem}
-                        data-testid="accountCard"
-                        title={account.address}
-                      >
-                        <div className={styles.accountInfo}>
-                          <Avatar
-                            size={32}
-                            address={account.address}
-                            type={account.type}
-                          />
+                <input
+                  checked={selectedWallets.has(walletId)}
+                  className={styles.checkbox}
+                  type="checkbox"
+                  onChange={event => {
+                    toggleWalletSelected(walletId, event.currentTarget.checked);
+                  }}
+                />
+              </header>
 
-                          <div className={styles.accountInfoText}>
-                            <div
-                              className={styles.accountName}
-                              data-testid="accountName"
-                            >
-                              {account.name}
-                            </div>
+              <ul className={styles.accountList}>
+                {/* Waves networks */}
+                {walletGroup.networks.waves.map(account => {
+                  const isExisting = existingAddresses.has(account.address);
+                  const networkLabel =
+                    account.network === 'mainnet'
+                      ? networkLabels.mainnet
+                      : account.network === 'testnet'
+                      ? networkLabels.testnet
+                      : networkLabels.stagenet;
 
-                            {existingAccount && (
-                              <div
-                                className={clsx(
-                                  styles.accountName,
-                                  'body3',
-                                  'disabled500',
-                                )}
-                              >
+                  return (
+                    <li
+                      key={account.address}
+                      className={styles.accountListItem}
+                      data-testid="accountCard"
+                      title={account.address}
+                    >
+                      <div className={styles.accountInfo}>
+                        <div className={styles.accountInfoText}>
+                          <div className={styles.accountName}>
+                            {networkLabel}
+                          </div>
+                          <div className={styles.accountInfoNote}>
+                            {account.address}
+                            {isExisting && (
+                              <span className="disabled500">
+                                {' - '}
                                 {t(
                                   'importKeystore.chooseAccountsExistingAccountNote',
-                                  { existingName: existingAccount.name },
                                 )}
-                              </div>
+                              </span>
                             )}
                           </div>
                         </div>
+                      </div>
+                    </li>
+                  );
+                })}
 
-                        {!existingAccount && (
-                          <input
-                            checked={selected.has(account.address)}
-                            name="selected"
-                            type="checkbox"
-                            value={account.address}
-                            onChange={event => {
-                              toggleSelected(
-                                [account],
-                                event.currentTarget.checked,
-                              );
-                            }}
-                          />
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            );
-          })}
+                {/* Unit0 networks */}
+                {walletGroup.networks.unit0.map(account => {
+                  const isExisting = existingAddresses.has(account.address);
+                  const networkLabel =
+                    account.network === 'mainnet'
+                      ? `Unit0 ${networkLabels.mainnet}`
+                      : `Unit0 ${networkLabels.testnet}`;
+
+                  return (
+                    <li
+                      key={account.address}
+                      className={styles.accountListItem}
+                      data-testid="accountCard"
+                      title={account.address}
+                    >
+                      <div className={styles.accountInfo}>
+                        <div className={styles.accountInfoText}>
+                          <div className={styles.accountName}>
+                            {networkLabel}
+                          </div>
+                          <div className={styles.accountInfoNote}>
+                            {account.address}
+                            {isExisting && (
+                              <span className="disabled500">
+                                {' - '}
+                                {t(
+                                  'importKeystore.chooseAccountsExistingAccountNote',
+                                )}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        })}
       </div>
 
       <div className={styles.buttons}>
-        {selected.size === 0 ? (
+        {selectedWallets.size === 0 ? (
           <Button
             data-testid="skipButton"
-            onClick={() => {
-              onSkip();
-            }}
+            type="button"
+            view="transparent"
+            onClick={onSkip}
           >
             {t('importKeystore.chooseAccountsSkipBtn')}
           </Button>
         ) : (
           <Button data-testid="submitButton" type="submit" view="submit">
             {t('importKeystore.chooseAccountsImportBtn', {
-              count: selected.size,
+              count: getSelectedAccounts().length,
             })}
           </Button>
         )}

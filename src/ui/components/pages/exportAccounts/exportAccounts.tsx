@@ -29,14 +29,14 @@ export function ExportAccounts() {
     null,
   );
   const [accountsToExport, setAccountsToExport] = useState<
-    FlattenedAccount[] | null
+    MultiWallet[] | null
   >(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPasswordModal, setShowPasswordModal] = useState(true);
 
   // Convert MultiWallet items to flattened account format for the component
-  const getAccountsFromVault = (): FlattenedAccount[] => {
+  const getAccountsFromVault = (): MultiWallet[] => {
     if (!decryptedVault) return [];
 
     const accounts: FlattenedAccount[] = [];
@@ -46,7 +46,6 @@ export function ExportAccounts() {
       // Check if this is a waves-only wallet or has multiple coin types
       const isWavesOnly = !wallet.coins?.unit0;
 
-      console.log(wallet, 'wallet');
       // Get wallet seed if available (from authentication data)
       const seed = wallet?.seed || '';
 
@@ -138,8 +137,7 @@ export function ExportAccounts() {
       }
     });
 
-    console.log(accounts, 'accounts');
-    return accounts;
+    return decryptedVault;
   };
 
   const handlePasswordSubmit = async (password: string) => {
@@ -170,22 +168,8 @@ export function ExportAccounts() {
         throw new Error('Vault data or selected accounts are missing');
       }
 
-      // Download keystore with both accounts and vault data
-      // Convert FlattenedAccount back to PreferencesAccount format for downloadKeystore
-      const preferencesAccounts = accountsToExport.map(account => ({
-        name: account.name,
-        address: account.address,
-        network: account.network as NetworkName,
-        networkCode: account.networkCode,
-        publicKey: account.publicKey,
-        type: account.type as 'seed' | 'encodedSeed' | 'privateKey' | 'debug',
-        seed: account.seed, // Include seed data
-      }));
-
-      console.log(preferencesAccounts, 'preferencesAccounts');
-      console.log(decryptedVault, 'decryptedVault');
       // Pass the decrypted vault as the third parameter
-      await downloadKeystore(preferencesAccounts, undefined, password);
+      await downloadKeystore(decryptedVault, undefined, password);
 
       navigate(-2);
     } catch (e) {
@@ -210,8 +194,9 @@ export function ExportAccounts() {
           <ExportKeystoreChooseItems
             items={getAccountsFromVault()}
             type="accounts"
-            onSubmit={accounts => {
-              setAccountsToExport(accounts as FlattenedAccount[]);
+            onSubmit={wallets => {
+              // Correctly type the selected wallets
+              setAccountsToExport(wallets as unknown as MultiWallet[]);
             }}
           />
 
