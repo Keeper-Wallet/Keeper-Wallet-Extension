@@ -28,6 +28,7 @@ export type WalletAccount = {
   | { type: 'ledger'; id: number }
   | { type: 'privateKey' }
   | { type: 'seed' }
+  | { type: 'multichain' }
   | { type: 'wx'; uuid: string; username: string }
 );
 

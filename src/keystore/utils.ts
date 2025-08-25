@@ -26,6 +26,7 @@ async function encryptProfiles(
 
         switch (acc.type) {
           case 'seed':
+          case 'multichain':
             return acc;
           case 'encodedSeed':
             return {

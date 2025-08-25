@@ -120,8 +120,6 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
   const [isCustomNetworkModalShown, setIsCustomNetworkModalShown] =
     useState(false);
 
-  console.log(isWavesOnlyAccount, 'isWavesOnlyAccount');
-
   // Get all available network options using the shared utility and filter as needed
   const networkOptions = getAvailableNetworkOptions(
     currentBlockchainType,

@@ -6,6 +6,7 @@ export type KeystoreAccount = {
   networkCode: string;
 } & (
   | { type?: 'seed'; seed: string }
+  | { type?: 'multichain'; seed: string }
   | { type: 'encodedSeed'; encodedSeed: string }
   | { type: 'privateKey'; privateKey: string }
   | { type: 'debug' }

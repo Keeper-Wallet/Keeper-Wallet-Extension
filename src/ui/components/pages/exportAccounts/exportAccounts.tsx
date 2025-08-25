@@ -195,6 +195,7 @@ export function ExportAccounts() {
             items={getAccountsFromVault()}
             type="accounts"
             onSubmit={wallets => {
+              console.log(wallets, 'wallets');
               // Correctly type the selected wallets
               setAccountsToExport(wallets as unknown as MultiWallet[]);
             }}
