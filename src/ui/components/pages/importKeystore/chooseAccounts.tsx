@@ -2,21 +2,26 @@ import clsx from 'clsx';
 import { type KeystoreAccount } from 'keystore/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { type MultiWallet } from 'services/types';
 import { Button } from 'ui/components/ui';
-import { MultiWallet } from 'services/types';
 
+import { MultiWalletAccount } from '../../../../controllers/MultiWalletController';
 import * as styles from './chooseAccounts.styl';
+import { PreferencesAccount } from '../../../../preferences/types';
 
 interface Props {
-  allNetworksAccounts: Array<{
-    address: string;
-    name: string;
-    [key: string]: any;
-  }>;
+  allNetworksAccounts: PreferencesAccount[];
   accounts: MultiWallet[];
   onSkip: () => void;
   onSubmit: (selectedAccounts: KeystoreAccount[]) => void;
 }
+
+type AccountsForCompare = {
+  address: string;
+  network: string;
+  networkCode: string;
+  isUnit0?: boolean;
+};
 
 export function ImportKeystoreChooseAccounts({
   allNetworksAccounts,
@@ -48,7 +53,7 @@ export function ImportKeystoreChooseAccounts({
   });
 
   // Function to check if an account exists in its specific network
-  const accountExistsInNetwork = (account): boolean => {
+  const accountExistsInNetwork = (account: MultiWalletAccount): boolean => {
     // Check direct address match first
     if (existingAddresses.has(account.address)) {
       return true;
@@ -62,7 +67,7 @@ export function ImportKeystoreChooseAccounts({
 
   // Calculate importable wallets directly without useEffect
   const importableWallets = groupedAccounts.filter(wallet => {
-    const allWalletAccounts = [];
+    const allWalletAccounts = [] as AccountsForCompare[];
 
     // Collect all accounts from all networks in this wallet
     if (wallet.coins?.waves?.networks) {
@@ -112,12 +117,12 @@ export function ImportKeystoreChooseAccounts({
 
     // Check if any of the wallet's accounts already exist
     const hasExistingAccounts = allWalletAccounts.some(account =>
-      accountExistsInNetwork(account),
+      accountExistsInNetwork(account as MultiWalletAccount),
     );
 
     // A wallet is importable only if NONE of its addresses exist
     return !hasExistingAccounts;
-  });
+  }) as MultiWallet[];
 
   // Count importable wallets
   const importableWalletsCount = importableWallets.length;
@@ -139,21 +144,18 @@ export function ImportKeystoreChooseAccounts({
 
   // Get all accounts from selected wallets
   function getSelectedAccounts(): KeystoreAccount[] {
-    const selectedAccounts: KeystoreAccount[] = [];
+    const selectedAccounts: MultiWallet[] = [];
 
     importableWallets.forEach(account => {
-      const walletId = account.id || account.address;
+      const walletId = account.id;
 
       // Only include accounts from selected wallets and that don't exist
-      if (
-        selectedWallets.has(walletId) &&
-        !existingAddresses.has(account.address)
-      ) {
+      if (selectedWallets.has(walletId)) {
         selectedAccounts.push(account);
       }
     });
 
-    return selectedAccounts;
+    return selectedAccounts as unknown as KeystoreAccount[];
   }
 
   return (
@@ -233,7 +235,7 @@ export function ImportKeystoreChooseAccounts({
 
           // Check if any of the wallet's accounts already exist
           const hasExistingAccounts = allWalletAccounts.some(account =>
-            accountExistsInNetwork(account as Props['accounts'][0]),
+            accountExistsInNetwork(account as MultiWalletAccount),
           );
 
           // A wallet is importable only if NONE of its addresses exist

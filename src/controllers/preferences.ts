@@ -90,6 +90,10 @@ export class PreferencesController extends EventEmitter {
     this.store.updateState({ accounts });
     this.ensureSelectedAccountInCurrentNetwork();
   }
+  saveAccounts(accounts: MultiWallet[]) {
+    this.store.updateState({ accounts });
+    this.ensureSelectedAccountInCurrentNetwork();
+  }
 
   ensureSelectedAccountInCurrentNetwork() {
     const currentNetwork = this.getNetwork();
@@ -337,29 +341,29 @@ export class PreferencesController extends EventEmitter {
 
     return legacyAccounts;
   }
-
-  async removeWallet(id: string) {
-    const multiWallets = this.getAccounts() as unknown as MultiWallet[];
-
-    // Find wallets where the address matches any network address
-    const accounts = multiWallets.filter(wallet => {
-      if (!wallet.coins?.waves?.networks) {
-        return true; // Keep non-waves wallets
-      }
-
-      const wavesNetworks = wallet.coins.waves.networks;
-
-      // Check if address matches any network address
-      const hasMatchingAddress =
-        wavesNetworks.mainnet?.address === id ||
-        wavesNetworks.testnet?.address === id ||
-        wavesNetworks.stagenet?.address === id;
-
-      // Keep wallets that DON'T match the address (filter out matching ones)
-      return !hasMatchingAddress;
-    });
-
-    this.store.updateState({ accounts });
-    this.ensureSelectedAccountInCurrentNetwork();
-  }
+  //
+  // async removeWallet(id: string) {
+  //   const multiWallets = this.getAccounts() as unknown as MultiWallet[];
+  //
+  //   // Find wallets where the address matches any network address
+  //   const accounts = multiWallets.filter(wallet => {
+  //     if (!wallet.coins?.waves?.networks) {
+  //       return true; // Keep non-waves wallets
+  //     }
+  //
+  //     const wavesNetworks = wallet.coins.waves.networks;
+  //
+  //     // Check if address matches any network address
+  //     const hasMatchingAddress =
+  //       wavesNetworks.mainnet?.address === id ||
+  //       wavesNetworks.testnet?.address === id ||
+  //       wavesNetworks.stagenet?.address === id;
+  //
+  //     // Keep wallets that DON'T match the address (filter out matching ones)
+  //     return !hasMatchingAddress;
+  //   });
+  //
+  //   this.store.updateState({ accounts });
+  //   this.ensureSelectedAccountInCurrentNetwork();
+  // }
 }

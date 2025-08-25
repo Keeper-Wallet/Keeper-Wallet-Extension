@@ -3,63 +3,59 @@ import {
   encryptSeed,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
-import { type NetworkName } from 'networks/types';
 import { type PreferencesAccount } from 'preferences/types';
 
-import background from '../ui/services/Background';
-import { type KeystoreAccount, type KeystoreProfiles } from './types';
 import { MultiWallet } from '../services/types';
+import background from '../ui/services/Background';
 
 async function encryptProfiles(
   accountsToExport: PreferencesAccount[],
   password: string,
-) {
+): Promise<string> {
   const accounts = await Promise.all(
-    accountsToExport.map(
-      async (acc): Promise<KeystoreAccount & { network: NetworkName }> => {
-        const commonData = {
-          address: acc.address,
-          name: acc.name,
-          network: acc.network,
-          networkCode: acc.networkCode,
-        };
+    accountsToExport.map(async (acc): Promise<MultiWallet[]> => {
+      const commonData = {
+        address: acc.address,
+        name: acc.name,
+        network: acc.network,
+        networkCode: acc.networkCode,
+      };
 
-        switch (acc.type) {
-          case 'seed':
-          case 'multichain':
-            return acc;
-          case 'encodedSeed':
-            return {
-              ...commonData,
-              type: acc.type,
-              encodedSeed: await background.getAccountEncodedSeed(
-                acc.address,
-                acc.network,
-                password,
-              ),
-            };
-          case 'privateKey':
-            return {
-              ...commonData,
-              type: acc.type,
-              privateKey: await background.getAccountPrivateKey(
-                acc.address,
-                acc.network,
-                password,
-              ),
-            };
-          case 'debug':
-            return {
-              ...commonData,
-              type: acc.type,
-            };
-          default:
-            throw new Error(
-              `Trying to export unsupported account type: ${acc.type}`,
-            );
-        }
-      },
-    ),
+      switch (acc.type) {
+        case 'seed':
+        case 'multichain':
+          return acc as unknown as MultiWallet[];
+        case 'encodedSeed':
+          return {
+            ...commonData,
+            type: acc.type,
+            encodedSeed: await background.getAccountEncodedSeed(
+              acc.address,
+              acc.network,
+              password,
+            ),
+          };
+        case 'privateKey':
+          return {
+            ...commonData,
+            type: acc.type,
+            privateKey: await background.getAccountPrivateKey(
+              acc.address,
+              acc.network,
+              password,
+            ),
+          };
+        case 'debug':
+          return {
+            ...commonData,
+            type: acc.type,
+          };
+        default:
+          throw new Error(
+            `Trying to export unsupported account type: ${acc.type}`,
+          );
+      }
+    }),
   );
 
   const encrypted = await encryptSeed(
@@ -119,7 +115,12 @@ export async function downloadKeystore(
 
   if (accounts) {
     download(
-      JSON.stringify({ accounts: await encryptProfiles(accounts, password) }),
+      JSON.stringify({
+        accounts: await encryptProfiles(
+          accounts as unknown as PreferencesAccount[],
+          password,
+        ),
+      }),
       `keystore-accounts-keeper-${nowStr}.json`,
     );
   }

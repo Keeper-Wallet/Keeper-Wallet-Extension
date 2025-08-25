@@ -375,8 +375,13 @@ class BackgroundService extends EventEmitter {
       // Update preferences with processed accounts
       this.preferencesController.syncAccounts(multiWallets);
     });
+    // Listen for MultiWallet changes
+    this.multiWalletController.on('saveAccounts', multiWallets => {
+      // Update preferences with processed accounts
+      this.preferencesController.saveAccounts(multiWallets);
+    });
 
-    this.walletController
+    this.multiWalletController
       .on('addWallet', wallet => {
         if (wallet.getAccount().type === 'wx') {
           // persist current session to storage
@@ -517,8 +522,8 @@ class BackgroundService extends EventEmitter {
         this.walletController,
       ),
 
-      removeWallet: this.preferencesController.removeWallet.bind(
-        this.preferencesController,
+      removeWallet: this.multiWalletController.removeWallet.bind(
+        this.multiWalletController,
       ),
 
       // TODO: need to use for future multi-wallet actions

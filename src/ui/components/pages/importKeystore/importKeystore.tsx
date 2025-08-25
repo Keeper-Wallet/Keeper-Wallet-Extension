@@ -8,13 +8,14 @@ import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { MultiWallet } from 'services/types';
 import { createWavesOnlyMultiWallet } from 'store/actions/user';
 import invariant from 'tiny-invariant';
-import { MultiWallet } from 'services/types';
+
+import { PreferencesAccount } from '../../../../preferences/types';
 import { WalletTypes } from '../../../services/Background';
 import { ImportKeystoreChooseAccounts } from './chooseAccounts';
 import { ImportKeystoreChooseFile } from './chooseFile';
-import { PreferencesAccount } from '../../../../preferences/types';
 
 type ExchangeKeystoreAccount = {
   address: string;
@@ -69,8 +70,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
         type: WalletTypes.Keystore,
         decrypt: async password => {
           try {
-            const decrypted = await decrypt<MultiWallet[]>(accounts, password);
-            return decrypted;
+            return await decrypt<MultiWallet[]>(accounts, password);
           } catch (err) {
             return null;
           }
@@ -305,7 +305,6 @@ export function ImportKeystore() {
         for (const account of selectedAccounts.values()) {
           const wallet = account as unknown as MultiWallet;
           try {
-            console.log(wallet, 'wallet ');
             const wavesNetworks = wallet.coins?.waves?.networks || {};
 
             if (wallet.coins?.waves) {
@@ -324,6 +323,7 @@ export function ImportKeystore() {
               }
             }
           } catch (error) {
+            console.error(error);
             // Error handling in silent mode
           }
         }

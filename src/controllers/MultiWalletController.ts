@@ -106,7 +106,6 @@ export class MultiWalletController extends EventEmitter {
       // });
     }
 
-    console.log(multiWallet, 'multiWallet');
     this.emit('multiWalletsChanged', this.#multiwallets);
 
     return multiWallet;
@@ -248,9 +247,6 @@ export class MultiWalletController extends EventEmitter {
 
   async #saveMultiWallets(wallets?: MultiWallet[]) {
     invariant(this.#password);
-
-    console.log(this.#multiwallets, 'this.#multiwallets');
-    console.log(wallets, 'wallets');
     const walletsToSave = wallets || this.#multiwallets;
 
     const vault = await encryptVault(walletsToSave, this.#password);
@@ -273,6 +269,16 @@ export class MultiWalletController extends EventEmitter {
 
     this.emit('multiWalletsChanged', sanitizedWallets);
     return sanitizedWallets;
+  }
+
+  async updateVault(walletsToSave: MultiWallet[]) {
+    const vault = await encryptVault(walletsToSave, this.#password as string);
+    this.store.updateState({
+      MultiWalletController: {
+        ...this.store.getState().MultiWalletController,
+        vault,
+      },
+    });
   }
 
   async #restoreMultiWallets(password: string) {
@@ -467,5 +473,29 @@ export class MultiWalletController extends EventEmitter {
       console.error('Failed to decrypt vault:', error);
       throw error;
     }
+  }
+
+  async removeWallet(id: string) {
+    const multiWallets = this.getAccounts() as unknown as MultiWallet[];
+
+    // Find wallets where the address matches any network address
+    this.#multiwallets = multiWallets.filter(wallet => {
+      if (!wallet.coins?.waves?.networks) {
+        return true; // Keep non-waves wallets
+      }
+
+      const wavesNetworks = wallet.coins.waves.networks;
+
+      // Check if address matches any network address
+      const hasMatchingAddress =
+        wavesNetworks.mainnet?.address === id ||
+        wavesNetworks.testnet?.address === id ||
+        wavesNetworks.stagenet?.address === id;
+
+      // Keep wallets that DON'T match the address (filter out matching ones)
+      return !hasMatchingAddress;
+    });
+    this.updateVault(this.#multiwallets);
+    this.emit('saveAccounts', this.#multiwallets);
   }
 }
