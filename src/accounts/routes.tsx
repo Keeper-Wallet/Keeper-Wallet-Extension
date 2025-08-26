@@ -2,20 +2,21 @@ import { type RouteObject } from 'react-router-dom';
 import { ErrorPage } from 'ui/components/pages/errorPage';
 import { RootAccounts } from 'ui/components/RootAccounts';
 
-import { BottomPanel } from '../layout/bottomPanel';
-import { Menu } from '../ui/components/menu/Menu';
+import { Menu } from '../ui/components/menu';
+import { AccountsHome } from '../ui/components/pages/accountHome';
 import { AccountOnboarding } from '../ui/components/pages/AccountOnboarding';
 import { BackUpSeed } from '../ui/components/pages/BackupSeed';
 import { ConfirmBackup } from '../ui/components/pages/ConfirmBackup';
 import { CreateMultichainAccount } from '../ui/components/pages/CreateMultichainAccount';
 import { DeleteAllAccounts } from '../ui/components/pages/deleteAllAccounts/deleteAllAccounts';
-import { AccountsHome } from '../ui/components/pages/accountHome';
+import { ImportChoose } from '../ui/components/pages/import/importChoose';
+import { ImportSeed } from '../ui/components/pages/import/importSeed';
+import { ImportSeedMultichain } from '../ui/components/pages/import/ImportSeedMultichain';
 import { ImportDebug } from '../ui/components/pages/importDebug';
 import { ImportEmail } from '../ui/components/pages/importEmail/importEmail';
 import { ImportAddressBook } from '../ui/components/pages/importKeystore/importAddressBook';
 import { ImportKeystore } from '../ui/components/pages/importKeystore/importKeystore';
 import { ImportLedger } from '../ui/components/pages/importLedger/importLedger';
-import { ImportSeed } from '../ui/components/pages/import/importSeed';
 import {
   ImportSuccess,
   ImportSuccessAddressBook,
@@ -23,8 +24,6 @@ import {
 import { NewAccount } from '../ui/components/pages/NewAccount';
 import { NewWallet } from '../ui/components/pages/NewWallet';
 import { NewWalletName } from '../ui/components/pages/NewWalletName';
-import { ImportChoose } from '../ui/components/pages/import/importChoose';
-import { ImportSeedMultichain } from '../ui/components/pages/import/ImportSeedMultichain';
 
 export const routes: RouteObject[] = [
   {
@@ -37,7 +36,6 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasLogo />
             <AccountsHome />
-            <BottomPanel allowChangingNetwork />
           </>
         ),
       },
@@ -47,7 +45,6 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <AccountOnboarding />
-            <BottomPanel />
           </>
         ),
       },
@@ -57,7 +54,6 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <CreateMultichainAccount />
-            <BottomPanel />
           </>
         ),
       },
@@ -67,7 +63,6 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <NewWallet />
-            <BottomPanel />
           </>
         ),
       },
@@ -77,7 +72,6 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <BackUpSeed />
-            <BottomPanel />
           </>
         ),
       },
@@ -87,7 +81,6 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <ConfirmBackup />
-            <BottomPanel />
           </>
         ),
       },
@@ -97,7 +90,6 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <ImportDebug />
-            <BottomPanel />
           </>
         ),
       },
@@ -107,7 +99,6 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <ImportChoose />
-            <BottomPanel />
           </>
         ),
       },
@@ -117,7 +108,6 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <ImportSeed />
-            <BottomPanel />
           </>
         ),
       },
@@ -127,7 +117,6 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <ImportSeedMultichain />
-            <BottomPanel />
           </>
         ),
       },
@@ -155,7 +144,6 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <ImportEmail />
-            <BottomPanel />
           </>
         ),
       },
@@ -165,7 +153,6 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <NewWalletName />
-            <BottomPanel />
           </>
         ),
       },

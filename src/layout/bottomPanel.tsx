@@ -26,6 +26,7 @@ import {
 import background from '../ui/services/Background';
 import { PreferencesAccount } from '../preferences/types';
 import { useAccountsSelector } from '../accounts/store/react';
+import { ACTION } from '../store/actions/constants';
 
 interface Props {
   allowChangingNetwork?: boolean;
@@ -46,9 +47,14 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
   const accounts = useAccountsSelector(state => state.accounts);
   const [isWavesOnlyAccount, setIsWavesOnlyAccount] = useState(false);
 
-  const setNewNetwork = async (network: NetworkName) => {
+  const setNewNetwork = async (network: NetworkName, blockchain: string) => {
     dispatch(setLoading(true));
     await dispatch(setNetwork(network));
+    await background.setCurrentBlockchainType(blockchain);
+    dispatch({
+      type: ACTION.UPDATE_CURRENT_BLOCKCHAIN_TYPE,
+      payload: blockchain,
+    });
     setTimeout(() => dispatch(setLoading(false)), 1000);
   };
 
@@ -224,12 +230,15 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                             ? undefined
                             : () => {
                                 setIsDropdownShown(false);
-
+                                console.log(option, 'option');
                                 if (option.network === NETWORK_TYPES.CUSTOM) {
                                   setIsCustomNetworkModalShown(true);
                                 } else {
-                                  // Update network using existing mechanism
-                                  setNewNetwork(option.network as NetworkName);
+                                  // Update network using both network and blockchain properties
+                                  setNewNetwork(
+                                    option.network as NetworkName,
+                                    option.blockchain,
+                                  );
                                 }
                               }
                         }
@@ -298,7 +307,7 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                   setIsCustomNetworkModalShown(false);
 
                   if (currentNetwork !== NetworkName.Custom) {
-                    setNewNetwork(NetworkName.Custom);
+                    setNewNetwork(NetworkName.Custom, currentBlockchainType);
                   }
                 }}
               />
