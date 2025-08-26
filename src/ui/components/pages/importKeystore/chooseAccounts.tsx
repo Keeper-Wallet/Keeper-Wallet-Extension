@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { type MultiWallet } from 'services/types';
 import { Button } from 'ui/components/ui';
 
-import { MultiWalletAccount } from '../../../../controllers/MultiWalletController';
+import { type MultiWalletAccount } from '../../../../controllers/MultiWalletController';
+import { type PreferencesAccount } from '../../../../preferences/types';
 import * as styles from './chooseAccounts.styl';
-import { PreferencesAccount } from '../../../../preferences/types';
 
 interface Props {
   allNetworksAccounts: PreferencesAccount[];
@@ -246,7 +246,10 @@ export function ImportKeystoreChooseAccounts({
               <header className={styles.accountsGroupHeader}>
                 <i className={clsx(styles.accountsGroupIcon, 'accountIcon')} />
 
-                <h2 className={styles.accountsGroupLabel}>{wallet.name}</h2>
+                <h2 className={styles.accountsGroupLabel}>
+                  {wallet.name}
+                  <span className={styles.walletTypeLabel}>{wallet.type}</span>
+                </h2>
 
                 {isImportable && (
                   <input
@@ -267,96 +270,6 @@ export function ImportKeystoreChooseAccounts({
                   </span>
                 )}
               </header>
-
-              <ul className={styles.accountList}>
-                {wallet.coins?.waves && (
-                  <>
-                    {wallet.coins.waves.networks.mainnet?.address && (
-                      <li
-                        className={clsx(styles.accountListItem, {
-                          [styles.accountListItemDisabled]: !isImportable,
-                        })}
-                        key={wallet.coins.waves.networks.mainnet.address}
-                      >
-                        <span className="body1 input300">Waves</span>
-                        <div className={styles.accountListItemRight}>
-                          <span className="monospace1 input300">
-                            {wallet.coins.waves.networks.mainnet.address}
-                          </span>
-                        </div>
-                      </li>
-                    )}
-
-                    {wallet.coins.waves.networks.testnet?.address && (
-                      <li
-                        className={clsx(styles.accountListItem, {
-                          [styles.accountListItemDisabled]: !isImportable,
-                        })}
-                        key={wallet.coins.waves.networks.testnet.address}
-                      >
-                        <span className="body1 input300">Waves Testnet</span>
-                        <div className={styles.accountListItemRight}>
-                          <span className="monospace1 input300">
-                            {wallet.coins.waves.networks.testnet.address}
-                          </span>
-                        </div>
-                      </li>
-                    )}
-
-                    {wallet.coins.waves.networks.stagenet?.address && (
-                      <li
-                        className={clsx(styles.accountListItem, {
-                          [styles.accountListItemDisabled]: !isImportable,
-                        })}
-                        key={wallet.coins.waves.networks.stagenet.address}
-                      >
-                        <span className="body1 input300">Waves Stagenet</span>
-                        <div className={styles.accountListItemRight}>
-                          <span className="monospace1 input300">
-                            {wallet.coins.waves.networks.stagenet.address}
-                          </span>
-                        </div>
-                      </li>
-                    )}
-                  </>
-                )}
-
-                {wallet.coins?.unit0 && (
-                  <>
-                    {wallet.coins.unit0.networks.mainnet?.address && (
-                      <li
-                        className={clsx(styles.accountListItem, {
-                          [styles.accountListItemDisabled]: !isImportable,
-                        })}
-                        key={wallet.coins.unit0.networks.mainnet.address}
-                      >
-                        <span className="body1 input300">Unit0 Mainnet</span>
-                        <div className={styles.accountListItemRight}>
-                          <span className="monospace1 input300">
-                            {wallet.coins.unit0.networks.mainnet.address}
-                          </span>
-                        </div>
-                      </li>
-                    )}
-
-                    {wallet.coins.unit0.networks.testnet?.address && (
-                      <li
-                        className={clsx(styles.accountListItem, {
-                          [styles.accountListItemDisabled]: !isImportable,
-                        })}
-                        key={wallet.coins.unit0.networks.testnet.address}
-                      >
-                        <span className="body1 input300">Unit0 Testnet</span>
-                        <div className={styles.accountListItemRight}>
-                          <span className="monospace1 input300">
-                            {wallet.coins.unit0.networks.testnet.address}
-                          </span>
-                        </div>
-                      </li>
-                    )}
-                  </>
-                )}
-              </ul>
             </div>
           );
         })}

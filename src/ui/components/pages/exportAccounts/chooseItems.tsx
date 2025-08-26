@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { NetworkName } from 'networks/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   BlockchainType,
@@ -150,35 +150,111 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
       ? flattenMultiWallets(items as MultiWallet[])
       : {};
 
-  // Selection state uses wallet IDs
+  // Selection state for wallets
   const [selectedWallets, setSelectedWallets] = useState<Set<string>>(
     () => new Set(Object.keys(groupedAccounts)),
   );
 
-  // Toggle wallet selection
-  function toggleWalletSelected(walletId: string, isSelected: boolean) {
+  // Selection state for individual accounts
+  const [selectedAccounts, setSelectedAccounts] = useState<Set<string>>(() => {
+    // Initialize with all accounts from selected wallets
+    const initialAccounts = new Set<string>();
+    Object.entries(groupedAccounts).forEach(([_, networks]) => {
+      networks.forEach(account => {
+        initialAccounts.add(account.id);
+      });
+    });
+    return initialAccounts;
+  });
+
+  // Toggle individual account selection
+  function toggleAccountSelected(
+    accountId: string,
+    walletId: string,
+    isSelected: boolean,
+  ) {
+    // Update account selection
+    setSelectedAccounts(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      if (isSelected) {
+        newSelected.add(accountId);
+      } else {
+        newSelected.delete(accountId);
+      }
+      return newSelected;
+    });
+
+    // Check if all accounts in wallet are selected to update wallet selection
+    const walletAccounts = groupedAccounts[walletId] || [];
+
+    // We need to calculate this after the state update, so we do it manually
+    const updatedAccountsSelected = new Set(selectedAccounts);
+    if (isSelected) {
+      updatedAccountsSelected.add(accountId);
+    } else {
+      updatedAccountsSelected.delete(accountId);
+    }
+
+    // Check if all wallet accounts are now selected or deselected
+    const allSelected = walletAccounts.every(account =>
+      updatedAccountsSelected.has(account.id),
+    );
+
+    const noneSelected = walletAccounts.every(
+      account => !updatedAccountsSelected.has(account.id),
+    );
+
+    // Update wallet selection accordingly
     setSelectedWallets(prevSelected => {
       const newSelected = new Set(prevSelected);
+      if (allSelected) {
+        newSelected.add(walletId);
+      } else if (noneSelected) {
+        newSelected.delete(walletId);
+      }
+      return newSelected;
+    });
+  }
 
+  // Toggle wallet selection - affects all its accounts
+  function toggleWalletSelected(walletId: string, isSelected: boolean) {
+    // Update wallet selection
+    setSelectedWallets(prevSelected => {
+      const newSelected = new Set(prevSelected);
       if (isSelected) {
         newSelected.add(walletId);
       } else {
         newSelected.delete(walletId);
       }
+      return newSelected;
+    });
+
+    // Also update account selections
+    setSelectedAccounts(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      const walletAccounts = groupedAccounts[walletId] || [];
+
+      walletAccounts.forEach(account => {
+        if (isSelected) {
+          newSelected.add(account.id);
+        } else {
+          newSelected.delete(account.id);
+        }
+      });
 
       return newSelected;
     });
   }
 
-  // Map selected wallets back to MultiWallet items for submission
-  const getSelectedWallets = (): T[] => {
+  // Get selected items for export
+  const getSelectedItems = (): T[] => {
     if (items[0] && 'coins' in items[0]) {
-      // For MultiWallets, return the original wallets that are selected
+      // Simply filter wallets based on selectedWallets
       return (items as MultiWallet[]).filter(wallet =>
         selectedWallets.has(wallet.id),
       ) as T[];
     } else {
-      // For contacts (not implemented in this example)
+      // For contacts
       return items as T[];
     }
   };
@@ -189,12 +265,16 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
     hasNonExportableWallets,
   );
 
+  // Count selected accounts
+  const selectedAccountsCount = selectedWallets.size;
+
   return (
     <form
       className={styles.root}
       onSubmit={event => {
         event.preventDefault();
-        onSubmit(getSelectedWallets());
+        // console.log(getSelectedItems(), 'getSelectedItems()');
+        onSubmit(getSelectedItems());
       }}
     >
       <h1 className={clsx(styles.centered, 'margin1', 'title1')}>
@@ -217,52 +297,26 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
         {Object.entries(groupedAccounts).map(([walletId, networks]) => {
           // Get wallet info from the first network item
           const walletInfo = networks[0];
-          const isExportableWallet = items.some(
-            item => 'id' in item && item.id === walletId && isExportable(item),
-          );
 
           return (
             <div key={walletId} className={styles.accountsGroup}>
               <header className={styles.accountsGroupHeader}>
                 <i className={clsx(styles.accountsGroupIcon, 'accountIcon')} />
-
-                <h2 className={styles.accountsGroupLabel}>{walletInfo.name}</h2>
-
-                {isExportableWallet && (
-                  <input
-                    checked={selectedWallets.has(walletId)}
-                    className={styles.checkbox}
-                    type="checkbox"
-                    onChange={event => {
-                      toggleWalletSelected(
-                        walletId,
-                        event.currentTarget.checked,
-                      );
-                    }}
-                  />
-                )}
+                <h2 className={styles.accountsGroupLabel}>
+                  {walletInfo.name}
+                  <span className={styles.walletTypeLabel}>
+                    {walletInfo.type}
+                  </span>
+                </h2>
+                <input
+                  checked={selectedWallets.has(walletId)}
+                  className={styles.checkbox}
+                  type="checkbox"
+                  onChange={event => {
+                    toggleWalletSelected(walletId, event.currentTarget.checked);
+                  }}
+                />
               </header>
-
-              <ul className={styles.accountList}>
-                {networks.map(network => (
-                  <li
-                    key={network.id}
-                    className={styles.accountListItem}
-                    title={network.address}
-                  >
-                    <div className={styles.accountInfo}>
-                      <div className={styles.accountInfoText}>
-                        <div className={styles.accountName}>
-                          {network.networkLabel}
-                        </div>
-                        <div className={styles.accountInfoNote}>
-                          {network.address}
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
             </div>
           );
         })}
@@ -278,7 +332,7 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
           {type === 'contacts'
             ? t('exportKeystore.chooseContactsExportBtn')
             : t('exportKeystore.chooseAccountsExportBtn', {
-                count: selectedWallets.size,
+                count: selectedAccountsCount,
               })}
         </Button>
       </div>

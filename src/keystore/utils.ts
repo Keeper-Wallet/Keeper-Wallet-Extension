@@ -24,22 +24,13 @@ async function encryptProfiles(
       switch (acc.type) {
         case 'seed':
         case 'multichain':
+        case 'privateKey':
           return acc as unknown as MultiWallet[];
         case 'encodedSeed':
           return {
             ...commonData,
             type: acc.type,
             encodedSeed: await background.getAccountEncodedSeed(
-              acc.address,
-              acc.network,
-              password,
-            ),
-          };
-        case 'privateKey':
-          return {
-            ...commonData,
-            type: acc.type,
-            privateKey: await background.getAccountPrivateKey(
               acc.address,
               acc.network,
               password,
@@ -113,6 +104,7 @@ export async function downloadKeystore(
     now.getMinutes(),
   )}`;
 
+  console.log(accounts, 'decrypted');
   if (accounts) {
     download(
       JSON.stringify({
