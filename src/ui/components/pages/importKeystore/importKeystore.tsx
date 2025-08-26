@@ -239,7 +239,9 @@ function parseKeystore(json: string): EncryptedKeystore | null {
 export function ImportKeystore() {
   const navigate = useNavigate();
   const dispatch = usePopupDispatch();
-  const allNetworksAccounts = usePopupSelector(state => state.accounts);
+  const allNetworksAccounts = usePopupSelector(state => {
+    return state.allNetworksAccounts;
+  });
   const { t } = useTranslation();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);

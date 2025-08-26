@@ -6,11 +6,11 @@ import { type MultiWallet } from 'services/types';
 import { Button } from 'ui/components/ui';
 
 import { type MultiWalletAccount } from '../../../../controllers/MultiWalletController';
-import { type PreferencesAccount } from '../../../../preferences/types';
 import * as styles from './chooseAccounts.styl';
+import { PreferencesAccount } from '../../../../preferences/types';
 
 interface Props {
-  allNetworksAccounts: PreferencesAccount[];
+  allNetworksAccounts: MultiWallet[];
   accounts: MultiWallet[];
   onSkip: () => void;
   onSubmit: (selectedAccounts: KeystoreAccount[]) => void;
@@ -40,12 +40,15 @@ export function ImportKeystoreChooseAccounts({
 
   // Simple check for existing accounts
   const existingAddresses = new Set(
-    allNetworksAccounts.map(acc => acc.address),
+    allNetworksAccounts.map(acc => {
+      console.log(acc, 'acc');
+      return acc.coins?.waves.networks.mainnet.address || acc.address;
+    }),
   );
 
-  // Track network-specific addresses by wallet ID for better detection
+  // TODO : Track network-specific addresses by wallet ID for better detection
   const existingNetworkAddresses: Record<string, Set<string>> = {};
-  allNetworksAccounts.forEach(acc => {
+  (allNetworksAccounts as unknown as PreferencesAccount[]).forEach(acc => {
     if (!existingNetworkAddresses[acc.network]) {
       existingNetworkAddresses[acc.network] = new Set();
     }
@@ -127,6 +130,28 @@ export function ImportKeystoreChooseAccounts({
   // Count importable wallets
   const importableWalletsCount = importableWallets.length;
 
+  // Track if all importable wallets are selected
+  const allImportableSelected =
+    importableWalletsCount > 0 &&
+    importableWallets.every(wallet => selectedWallets.has(wallet.id));
+
+  // Function to toggle all importable wallets selection
+  const toggleAllWallets = (selectAll: boolean) => {
+    setSelectedWallets(prevSelected => {
+      const newSelected = new Set(prevSelected);
+
+      importableWallets.forEach(wallet => {
+        if (selectAll) {
+          newSelected.add(wallet.id);
+        } else {
+          newSelected.delete(wallet.id);
+        }
+      });
+
+      return newSelected;
+    });
+  };
+
   // Toggle wallet selection
   function toggleWalletSelected(walletId: string, isSelected: boolean) {
     setSelectedWallets(prevSelected => {
@@ -175,6 +200,24 @@ export function ImportKeystoreChooseAccounts({
         {t('importKeystore.chooseAccountsDesc')}
       </p>
 
+      {importableWalletsCount > 0 && (
+        <div className={styles.selectAllContainer}>
+          <label className={styles.selectAllLabel}>
+            <input
+              type="checkbox"
+              className={styles.accountsGroupCheckbox}
+              checked={allImportableSelected}
+              onChange={e => toggleAllWallets(e.target.checked)}
+            />
+            <span className={clsx('body1')}>
+              {allImportableSelected
+                ? t('common.deselectAll')
+                : t('common.selectAll')}
+            </span>
+          </label>
+        </div>
+      )}
+
       {importableWalletsCount > 0 && getSelectedAccounts().length === 0 && (
         <div className={styles.emptyState}>
           <p className={clsx('body1', 'disabled500')}>
@@ -184,95 +227,104 @@ export function ImportKeystoreChooseAccounts({
       )}
 
       <div className={styles.accounts}>
-        {groupedAccounts.map(wallet => {
-          const allWalletAccounts = [];
+        {groupedAccounts
+          .slice()
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map(wallet => {
+            const allWalletAccounts = [];
 
-          // Collect all accounts from all networks in this wallet
-          if (wallet.coins?.waves?.networks) {
-            const wavesNetworks = wallet.coins.waves.networks;
-            if (wavesNetworks.mainnet?.address) {
-              allWalletAccounts.push({
-                address: wavesNetworks.mainnet.address,
-                network: 'mainnet',
-                networkCode: wavesNetworks.mainnet.networkCode,
-              });
+            // Collect all accounts from all networks in this wallet
+            if (wallet.coins?.waves?.networks) {
+              const wavesNetworks = wallet.coins.waves.networks;
+              if (wavesNetworks.mainnet?.address) {
+                allWalletAccounts.push({
+                  address: wavesNetworks.mainnet.address,
+                  network: 'mainnet',
+                  networkCode: wavesNetworks.mainnet.networkCode,
+                });
+              }
+              if (wavesNetworks.testnet?.address) {
+                allWalletAccounts.push({
+                  address: wavesNetworks.testnet.address,
+                  network: 'testnet',
+                  networkCode: wavesNetworks.testnet.networkCode,
+                });
+              }
+              if (wavesNetworks.stagenet?.address) {
+                allWalletAccounts.push({
+                  address: wavesNetworks.stagenet.address,
+                  network: 'stagenet',
+                  networkCode: wavesNetworks.stagenet.networkCode,
+                });
+              }
             }
-            if (wavesNetworks.testnet?.address) {
-              allWalletAccounts.push({
-                address: wavesNetworks.testnet.address,
-                network: 'testnet',
-                networkCode: wavesNetworks.testnet.networkCode,
-              });
+
+            if (wallet.coins?.unit0?.networks) {
+              const unit0Networks = wallet.coins.unit0.networks;
+              if (unit0Networks.mainnet?.address) {
+                allWalletAccounts.push({
+                  address: unit0Networks.mainnet.address,
+                  network: 'mainnet',
+                  networkCode: unit0Networks.mainnet.networkCode,
+                  isUnit0: true,
+                });
+              }
+              if (unit0Networks.testnet?.address) {
+                allWalletAccounts.push({
+                  address: unit0Networks.testnet.address,
+                  network: 'testnet',
+                  networkCode: unit0Networks.testnet.networkCode,
+                  isUnit0: true,
+                });
+              }
             }
-            if (wavesNetworks.stagenet?.address) {
-              allWalletAccounts.push({
-                address: wavesNetworks.stagenet.address,
-                network: 'stagenet',
-                networkCode: wavesNetworks.stagenet.networkCode,
-              });
-            }
-          }
 
-          if (wallet.coins?.unit0?.networks) {
-            const unit0Networks = wallet.coins.unit0.networks;
-            if (unit0Networks.mainnet?.address) {
-              allWalletAccounts.push({
-                address: unit0Networks.mainnet.address,
-                network: 'mainnet',
-                networkCode: unit0Networks.mainnet.networkCode,
-                isUnit0: true,
-              });
-            }
-            if (unit0Networks.testnet?.address) {
-              allWalletAccounts.push({
-                address: unit0Networks.testnet.address,
-                network: 'testnet',
-                networkCode: unit0Networks.testnet.networkCode,
-                isUnit0: true,
-              });
-            }
-          }
+            // Check if any of the wallet's accounts already exist
+            const hasExistingAccounts = allWalletAccounts.some(account =>
+              accountExistsInNetwork(account as MultiWalletAccount),
+            );
 
-          // Check if any of the wallet's accounts already exist
-          const hasExistingAccounts = allWalletAccounts.some(account =>
-            accountExistsInNetwork(account as MultiWalletAccount),
-          );
+            // A wallet is importable only if NONE of its addresses exist
+            const isImportable = !hasExistingAccounts;
 
-          // A wallet is importable only if NONE of its addresses exist
-          const isImportable = !hasExistingAccounts;
-
-          return (
-            <div key={wallet.id} className={styles.accountsGroup}>
-              <header className={styles.accountsGroupHeader}>
-                <i className={clsx(styles.accountsGroupIcon, 'accountIcon')} />
-
-                <h2 className={styles.accountsGroupLabel}>
-                  {wallet.name}
-                  <span className={styles.walletTypeLabel}>{wallet.type}</span>
-                </h2>
-
-                {isImportable && (
-                  <input
-                    checked={selectedWallets.has(wallet.id)}
-                    className={styles.accountsGroupCheckbox}
-                    type="checkbox"
-                    onChange={event => {
-                      toggleWalletSelected(
-                        wallet.id,
-                        event.currentTarget.checked,
-                      );
-                    }}
+            return (
+              <div key={wallet.id} className={styles.accountsGroup}>
+                <header className={styles.accountsGroupHeader}>
+                  <i
+                    className={clsx(styles.accountsGroupIcon, 'accountIcon')}
                   />
-                )}
-                {!isImportable && (
-                  <span className={clsx(styles.existingAccountBadge, 'body3')}>
-                    {t('importKeystore.alreadyExists')}
-                  </span>
-                )}
-              </header>
-            </div>
-          );
-        })}
+
+                  <h2 className={styles.accountsGroupLabel}>
+                    {wallet.name}
+                    <span className={styles.walletTypeLabel}>
+                      {wallet.type}
+                    </span>
+                  </h2>
+
+                  {isImportable && (
+                    <input
+                      checked={selectedWallets.has(wallet.id)}
+                      className={styles.accountsGroupCheckbox}
+                      type="checkbox"
+                      onChange={event => {
+                        toggleWalletSelected(
+                          wallet.id,
+                          event.currentTarget.checked,
+                        );
+                      }}
+                    />
+                  )}
+                  {!isImportable && (
+                    <span
+                      className={clsx(styles.existingAccountBadge, 'body3')}
+                    >
+                      {t('importKeystore.alreadyExists')}
+                    </span>
+                  )}
+                </header>
+              </div>
+            );
+          })}
       </div>
 
       <div className={styles.buttons}>

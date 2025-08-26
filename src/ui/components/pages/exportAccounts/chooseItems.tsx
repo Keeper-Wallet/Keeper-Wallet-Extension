@@ -268,12 +268,36 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
   // Count selected accounts
   const selectedAccountsCount = selectedWallets.size;
 
+  // Track if all wallets are selected
+  const allWalletsCount = Object.keys(groupedAccounts).length;
+  const allSelected = selectedWallets.size === allWalletsCount;
+
+  // Function to toggle all wallets selection
+  const toggleAllWallets = (selectAll: boolean) => {
+    if (selectAll) {
+      // Select all wallets
+      setSelectedWallets(new Set(Object.keys(groupedAccounts)));
+      
+      // Also select all accounts
+      const allAccounts = new Set<string>();
+      Object.entries(groupedAccounts).forEach(([_, networks]) => {
+        networks.forEach(account => {
+          allAccounts.add(account.id);
+        });
+      });
+      setSelectedAccounts(allAccounts);
+    } else {
+      // Deselect all wallets and accounts
+      setSelectedWallets(new Set());
+      setSelectedAccounts(new Set());
+    }
+  };
+
   return (
     <form
       className={styles.root}
       onSubmit={event => {
         event.preventDefault();
-        // console.log(getSelectedItems(), 'getSelectedItems()');
         onSubmit(getSelectedItems());
       }}
     >
@@ -293,8 +317,26 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
         )}
       </p>
 
+      {Object.keys(groupedAccounts).length > 0 && (
+        <div className={styles.selectAllContainer}>
+          <label className={styles.selectAllLabel}>
+            <input
+              type="checkbox"
+              className={styles.checkbox}
+              checked={allSelected}
+              onChange={(e) => toggleAllWallets(e.target.checked)}
+            />
+            <span className={clsx('body1')}>
+              {allSelected ? t('common.deselectAll') : t('common.selectAll')}
+            </span>
+          </label>
+        </div>
+      )}
+
       <div className={styles.accounts}>
-        {Object.entries(groupedAccounts).map(([walletId, networks]) => {
+        {Object.entries(groupedAccounts)
+          .sort(([, a], [, b]) => a[0].name.localeCompare(b[0].name))
+          .map(([walletId, networks]) => {
           // Get wallet info from the first network item
           const walletInfo = networks[0];
 

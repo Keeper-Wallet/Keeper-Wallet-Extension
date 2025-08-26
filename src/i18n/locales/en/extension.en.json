@@ -130,6 +130,10 @@
     "testnet": "Testnet",
     "stagenet": "Stagenet"
   },
+  "common": {
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All"
+  },
   "changeName": {
     "currentName": "Current account name",
     "error": "Name is required",
