@@ -358,9 +358,11 @@ export class MultiWalletController extends EventEmitter {
     this.store.updateState({
       MultiWalletController: {
         vault: undefined,
+        multiWallets: [],
       },
     });
     this.emit('multiWalletsChanged', []);
+    this.emit('saveAccounts', []);
   }
 
   // This method is needed for VaultController.migrate()
