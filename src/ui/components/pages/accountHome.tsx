@@ -67,7 +67,6 @@ export function AccountsHome() {
         const legacyAccounts = await background.getLegacyFormatAccounts();
         if (legacyAccounts && legacyAccounts.length > 0) {
           // Update Redux with all accounts across networks
-          console.log(legacyAccounts, 'legacyAccounts');
           dispatch({
             type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
             payload: legacyAccounts as unknown as PreferencesAccount[],

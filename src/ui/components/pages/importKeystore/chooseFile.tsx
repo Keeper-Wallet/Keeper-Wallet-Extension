@@ -75,7 +75,6 @@ export function ImportKeystoreChooseFile({
     <form
       className={styles.root}
       onSubmit={event => {
-        console.log(result, 'result');
         event.preventDefault();
         onSubmit(result, showPassword ? password : '');
       }}

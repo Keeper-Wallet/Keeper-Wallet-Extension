@@ -230,7 +230,6 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                             ? undefined
                             : () => {
                                 setIsDropdownShown(false);
-                                console.log(option, 'option');
                                 if (option.network === NETWORK_TYPES.CUSTOM) {
                                   setIsCustomNetworkModalShown(true);
                                 } else {

@@ -156,23 +156,42 @@ export class MultiWalletController extends EventEmitter {
         );
       }
 
-      // Get the seed using getAccountSeed
-      const seed = await this.getAccountSeed(
-        address,
-        blockChainType,
-        this.#password,
-      );
-
-      if (!seed) {
-        throw new Error(
-          `Seed not found for address ${address} on network ${network}`,
+      // Check if this is a private key wallet
+      if (account.type === 'privateKey') {
+        // For privateKey wallets, get the private key instead of seed
+        const privateKey = await this.getAccountPrivateKey(
+          address,
+          blockChainType,
+          this.#password,
         );
-      }
 
-      // Return the adapter with the seed
-      return createLegacyWalletAdapter(account, { seed });
+        if (!privateKey) {
+          throw new Error(
+            `Private key not found for address ${address} on network ${network}`,
+          );
+        }
+
+        // Return the adapter with the private key
+        return createLegacyWalletAdapter(account, { privateKey });
+      } else {
+        // For seed wallets, continue with existing logic
+        const seed = await this.getAccountSeed(
+          address,
+          blockChainType,
+          this.#password,
+        );
+
+        if (!seed) {
+          throw new Error(
+            `Seed not found for address ${address} on network ${network}`,
+          );
+        }
+
+        // Return the adapter with the seed
+        return createLegacyWalletAdapter(account, { seed });
+      }
     } catch (error) {
-      console.error('Error getting seed for legacy wallet', error);
+      console.error('Error getting seed/private key for legacy wallet', error);
       throw error;
     }
   }
@@ -449,8 +468,6 @@ export class MultiWalletController extends EventEmitter {
     if (!vault) return undefined;
 
     const decryptedWallets = await decryptVault(vault, password);
-
-    console.log(decryptedWallets, '$$$$$$$$$$$$$');
     // Store the decrypted wallets in memory
     this.#multiwallets = decryptedWallets;
 
@@ -481,6 +498,9 @@ export class MultiWalletController extends EventEmitter {
       password,
     );
 
+    if (matchedWallet?.privateKey) {
+      return matchedWallet?.privateKey;
+    }
     if (!matchedWallet?.seed) return;
     const privateKey = await createPrivateKey(utf8Encode(matchedWallet.seed!));
     return base58Encode(privateKey);
@@ -497,7 +517,6 @@ export class MultiWalletController extends EventEmitter {
       blockChainType,
       password,
     );
-    console.log(matchedWallet, '@@@@@@@@@');
 
     return matchedWallet?.seed ?? '';
   }

@@ -154,13 +154,11 @@ export class PreferencesController extends EventEmitter {
   addLabel(address: string, label: string, network: NetworkName) {
     const { accounts, selectedAccount } = this.store.getState();
 
-    console.log(accounts, 'accounts');
     const account = (accounts as unknown as MultiWallet[]).find(wallet => {
       if (!wallet.coins?.waves?.networks?.[network]) return false;
       return wallet.coins.waves.networks[network]?.address === address;
     });
 
-    console.log(account, 'account');
     if (!account) {
       throw new Error(
         `Account with address "${address}" in ${network} not found`,

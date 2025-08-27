@@ -88,6 +88,7 @@ export function createWavesOnlyMultiWallet({
   seed,
   mainnetAddress,
   publicKey,
+  privateKey,
   testnetAddress,
   stagenetAddress,
   type,
@@ -96,6 +97,7 @@ export function createWavesOnlyMultiWallet({
   seed?: string;
   mainnetAddress: string;
   publicKey: string;
+  privateKey: string;
   testnetAddress: string;
   stagenetAddress: string;
   type: string;
@@ -107,6 +109,7 @@ export function createWavesOnlyMultiWallet({
       type,
       createdAt: Date.now(),
       seed,
+      privateKey,
 
       coins: {
         waves: {
@@ -128,7 +131,6 @@ export function createWavesOnlyMultiWallet({
         },
       },
     };
-
     const wallet = await Background.addMultiWallet(multiWallet);
     const selectedAddress = wallet.coins.waves.networks.mainnet.address;
     const accounts = await Background.getLegacyFormatAccounts();

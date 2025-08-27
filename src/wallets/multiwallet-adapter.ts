@@ -2,6 +2,7 @@ import { type MessageTx } from '../messages/types';
 import { NetworkName } from '../networks/types';
 import { PreferencesAccount } from '../preferences/types';
 import { SeedWallet } from './seed';
+import { PrivateKeyWallet } from './privateKey';
 
 /**
  * Creates a legacy wallet adapter that exposes the same interface as traditional wallets
@@ -9,37 +10,52 @@ import { SeedWallet } from './seed';
  */
 export function createLegacyWalletAdapter(
   account: PreferencesAccount,
-  walletData: any
+  walletData: any,
 ) {
-  if (!walletData.seed) {
-    throw new Error('Seed is required to create a wallet adapter');
-  }
-
+  let wallet: SeedWallet | PrivateKeyWallet;
   // Create a new wallet instance with the account data
   // Using walletData which contains sensitive info like seed that's not in account
-  const wallet = new SeedWallet({
-    address: account.address,
-    name: account.name,
-    network: account.network,
-    networkCode: account.networkCode,
-    publicKey: account.publicKey,
-    seed: walletData.seed,
-    ethereumAddress: account.ethereumAddress,
-  });
+  if (account.type === 'privateKey') {
+    if (!walletData.privateKey) {
+      throw new Error('privateKey is required to create a wallet adapter');
+    }
+    wallet = new PrivateKeyWallet({
+      address: account.address,
+      name: account.name,
+      network: account.network,
+      networkCode: account.networkCode,
+      publicKey: account.publicKey,
+      privateKey: walletData.privateKey,
+    });
+  } else {
+    if (!walletData.seed) {
+      throw new Error('Seed is required to create a wallet adapter');
+    }
+    wallet = new SeedWallet({
+      address: account.address,
+      name: account.name,
+      network: account.network,
+      networkCode: account.networkCode,
+      publicKey: account.publicKey,
+      seed: walletData.seed,
+      ethereumAddress: account.ethereumAddress,
+    });
+  }
 
   return {
     // Pass through all the account properties
     ...account,
-    
+
     // Implement all signing methods by delegating to the wallet
     signAuth: (bytes: Uint8Array) => wallet.signAuth(bytes),
     signCancelOrder: (bytes: Uint8Array) => wallet.signCancelOrder(bytes),
     signCustomData: (bytes: Uint8Array) => wallet.signCustomData(bytes),
-    signOrder: (bytes: Uint8Array, version: 1 | 2 | 3 | 4) => wallet.signOrder(bytes, version),
+    signOrder: (bytes: Uint8Array, version: 1 | 2 | 3 | 4) =>
+      wallet.signOrder(bytes, version),
     signRequest: (bytes: Uint8Array) => wallet.signRequest(bytes),
     signTx: (bytes: Uint8Array, tx: MessageTx) => wallet.signTx(bytes, tx),
     signWavesAuth: (bytes: Uint8Array) => wallet.signWavesAuth(bytes),
-    
+
     // Additional methods that might be needed
     getAccount: () => account,
   };
@@ -51,9 +67,9 @@ export function createLegacyWalletAdapter(
 export function findAccountByAddressAndNetwork(
   accounts: PreferencesAccount[],
   address: string,
-  network: NetworkName
+  network: NetworkName,
 ): PreferencesAccount | undefined {
   return accounts.find(
-    account => account.address === address && account.network === network
+    account => account.address === address && account.network === network,
   );
 }

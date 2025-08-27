@@ -227,7 +227,6 @@ export class MessageController extends EventEmitter {
         address,
         network,
       );
-      console.log(wallet, 'wallet');
 
       switch (message.type) {
         case 'auth': {

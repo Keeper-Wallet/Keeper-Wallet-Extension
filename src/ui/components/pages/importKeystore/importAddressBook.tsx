@@ -32,7 +32,6 @@ function parseAddressBook(json: string): EncryptedAddressBook | null {
     return null;
   }
 
-  console.log(parsedJson, 'parsedJson');
   const { addresses } = parsedJson;
 
   return {
@@ -113,12 +112,10 @@ export function ImportAddressBook() {
       onSubmit={async (result, password) => {
         setError(null);
         setLoading(true);
-        console.log(result, '@@');
 
         try {
           const addressBook = parseAddressBook(result);
 
-          console.log(addressBook, 'addressBook');
           if (!addressBook) {
             setError(t('importKeystore.errorFormat'));
             setLoading(false);

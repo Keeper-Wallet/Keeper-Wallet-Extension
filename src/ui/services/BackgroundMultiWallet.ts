@@ -58,7 +58,6 @@ class BackgroundMultiWallet {
     }
 
     multiWallets.push(multiWallet);
-    console.log(multiWallets, 'multiWallets');
     this.saveMultiWallets(multiWallets);
   }
 

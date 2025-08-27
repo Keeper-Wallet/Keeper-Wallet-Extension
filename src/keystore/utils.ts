@@ -103,7 +103,6 @@ export async function downloadKeystore(
     now.getMinutes(),
   )}`;
 
-  console.log(accounts, 'decrypted');
   if (accounts) {
     download(
       JSON.stringify({

@@ -126,13 +126,6 @@ export function NewWalletName() {
             };
 
             try {
-              console.log('Generated Waves network addresses:', {
-                mainnet: mainnetData,
-                testnet: testnetData.address,
-                stagenet: stagenetData.address,
-                account: account,
-              });
-
               // Use the new MultiWallet approach for Waves-only creation
               // This creates a nested structure with all three Waves networks
               await dispatch(
@@ -145,11 +138,6 @@ export function NewWalletName() {
                   stagenetAddress: stagenetData.address,
                   type: account.type,
                 }),
-              );
-
-              console.log(
-                'Created Waves-only MultiWallet with name:',
-                accountName,
               );
             } catch (error) {
               console.trace('Failed to create Waves-only MultiWallet:', error);
@@ -189,7 +177,6 @@ export function NewWalletName() {
                   type: account.type,
                 }),
               );
-
             } catch (error) {
               console.trace('Failed to create Full MultiWallet:', error);
               setError('Failed to create wallet. Please try again.');
@@ -216,7 +203,6 @@ export function NewWalletName() {
               networkCode: NETWORK_CONFIG[NetworkName.Stagenet].networkCode,
               privateKey: account.privateKey,
             });
-
             const mainnetData = {
               address: mainnetWallet.data.address,
               publicKey: mainnetWallet.data.publicKey,
@@ -236,6 +222,7 @@ export function NewWalletName() {
                 name: accountName,
                 mainnetAddress: mainnetData.address,
                 publicKey: mainnetData.publicKey,
+                privateKey: account.privateKey,
                 testnetAddress: testnetData.address,
                 stagenetAddress: stagenetData.address,
                 type: account.type,
