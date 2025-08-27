@@ -456,7 +456,7 @@ class BackgroundService extends EventEmitter {
         this.currentAccountController,
       ),
       remoteConfigController: this.remoteConfigController,
-      walletController: this.walletController,
+      multiWalletController: this.multiWalletController,
     });
 
     // Notifications

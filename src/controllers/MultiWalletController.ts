@@ -16,6 +16,12 @@ import { NetworkName } from '../networks/types';
 import { type ExtensionStorage } from '../storage/storage';
 import { MultiWallet } from '../services/types';
 import type { PreferencesController } from './preferences';
+import { PreferencesAccount } from '../preferences/types';
+import { type MessageTx } from '../messages/types';
+import {
+  createLegacyWalletAdapter,
+  findAccountByAddressAndNetwork,
+} from '../wallets/multiwallet-adapter';
 
 export interface MultiWalletAccount {
   network: NetworkName;
@@ -124,6 +130,51 @@ export class MultiWalletController extends EventEmitter {
    */
   findMultiWalletById(id: string): MultiWallet | undefined {
     return this.#multiwallets.find(wallet => wallet.id === id);
+  }
+
+  async getLegacyWallet(
+    address: string,
+    network: NetworkName,
+  ): Promise<PreferencesAccount | undefined> {
+    const accounts = this.getLegacyFormatAccounts();
+    const account = findAccountByAddressAndNetwork(accounts, address, network);
+
+    if (!account) {
+      throw new Error(
+        `Wallet with address ${address} on network ${network} not found`,
+      );
+    }
+
+    // Determine the blockchain type based on the network
+    const blockChainType = 'waves'; // Currently, we only support 'waves'
+
+    try {
+      // Use the current password if controller is unlocked
+      if (!this.#password) {
+        throw new Error(
+          'MultiWalletController is locked. Please unlock before accessing wallet data',
+        );
+      }
+
+      // Get the seed using getAccountSeed
+      const seed = await this.getAccountSeed(
+        address,
+        blockChainType,
+        this.#password,
+      );
+
+      if (!seed) {
+        throw new Error(
+          `Seed not found for address ${address} on network ${network}`,
+        );
+      }
+
+      // Return the adapter with the seed
+      return createLegacyWalletAdapter(account, { seed });
+    } catch (error) {
+      console.error('Error getting seed for legacy wallet', error);
+      throw error;
+    }
   }
 
   /**
@@ -399,6 +450,7 @@ export class MultiWalletController extends EventEmitter {
 
     const decryptedWallets = await decryptVault(vault, password);
 
+    console.log(decryptedWallets, '$$$$$$$$$$$$$');
     // Store the decrypted wallets in memory
     this.#multiwallets = decryptedWallets;
 
@@ -445,6 +497,8 @@ export class MultiWalletController extends EventEmitter {
       blockChainType,
       password,
     );
+    console.log(matchedWallet, '@@@@@@@@@');
+
     return matchedWallet?.seed ?? '';
   }
 
