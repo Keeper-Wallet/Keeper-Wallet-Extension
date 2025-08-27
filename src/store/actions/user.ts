@@ -3,12 +3,13 @@ import { type CreateWalletInput } from 'wallets/types';
 import { type AccountsThunkAction } from '../../accounts/store/types';
 import { NETWORK_CONFIG } from '../../constants';
 import { NetworkName } from '../../networks/types';
+import { type PreferencesAccount } from '../../preferences/types';
+import { NETWORK_CODES } from '../../services/types';
+import { type MultiWallet } from '../../services/types';
 import Background, { WalletTypes } from '../../ui/services/Background';
 import { ACTION } from './constants';
 import { selectAccount } from './localState';
 import { updateActiveState } from './notifications';
-import { MultiWallet } from '../../services/types';
-import { PreferencesAccount } from '../../preferences/types';
 
 export function deleteAllAccounts(): AccountsThunkAction<Promise<void>> {
   return async dispatch => {
@@ -48,7 +49,7 @@ export function createAccount(
     );
 
     if (type !== WalletTypes.Debug) {
-      Background.track({ eventType: 'addWallet', type });
+      await Background.track({ eventType: 'addWallet', type });
     }
   };
 }
@@ -63,7 +64,7 @@ export function batchAddAccounts(
     await Background.batchAddWallets(accounts);
 
     if (type !== WalletTypes.Debug) {
-      Background.track({ eventType: 'addWallet', type });
+      await Background.track({ eventType: 'addWallet', type });
     }
   };
 }
@@ -100,46 +101,41 @@ export function createWavesOnlyMultiWallet({
   type: string;
 }): AccountsThunkAction<Promise<void>> {
   return async dispatch => {
-    try {
-      const multiWallet: MultiWallet = {
-        id: Date.now().toString(), // Generate unique ID
-        name,
-        type,
-        createdAt: Date.now(),
-        seed,
+    const multiWallet: MultiWallet = {
+      id: Date.now().toString(), // Generate unique ID
+      name,
+      type,
+      createdAt: Date.now(),
+      seed,
 
-        coins: {
-          waves: {
-            publicKey: publicKey,
-            networks: {
-              mainnet: {
-                address: mainnetAddress,
-                networkCode: NETWORK_CONFIG[NetworkName.Mainnet].networkCode,
-              },
-              testnet: {
-                address: testnetAddress,
-                networkCode: NETWORK_CONFIG[NetworkName.Testnet].networkCode,
-              },
-              stagenet: {
-                address: stagenetAddress,
-                networkCode: NETWORK_CONFIG[NetworkName.Stagenet].networkCode,
-              },
+      coins: {
+        waves: {
+          publicKey,
+          networks: {
+            mainnet: {
+              address: mainnetAddress,
+              networkCode: NETWORK_CONFIG[NetworkName.Mainnet].networkCode,
+            },
+            testnet: {
+              address: testnetAddress,
+              networkCode: NETWORK_CONFIG[NetworkName.Testnet].networkCode,
+            },
+            stagenet: {
+              address: stagenetAddress,
+              networkCode: NETWORK_CONFIG[NetworkName.Stagenet].networkCode,
             },
           },
         },
-      };
+      },
+    };
 
-      const wallet = await Background.addMultiWallet(multiWallet);
-      const selectedAddress = wallet.coins.waves.networks.mainnet.address;
-      const accounts = await Background.getLegacyFormatAccounts();
-      const selectedAccount = accounts.find(
-        account => account.address === selectedAddress,
-      );
-      dispatch(selectAccount(selectedAccount as unknown as PreferencesAccount));
-    } catch (error) {
-      console.error('Failed to create Waves-only MultiWallet:', error);
-      throw error;
-    }
+    const wallet = await Background.addMultiWallet(multiWallet);
+    const selectedAddress = wallet.coins.waves.networks.mainnet.address;
+    const accounts = await Background.getLegacyFormatAccounts();
+    const selectedAccount = accounts.find(
+      account => account.address === selectedAddress,
+    );
+    dispatch(selectAccount(selectedAccount as unknown as PreferencesAccount));
   };
 }
 
@@ -169,57 +165,52 @@ export function createFullMultiWallet({
   type: string;
 }): AccountsThunkAction<Promise<void>> {
   return async dispatch => {
-    try {
-      const multiWallet: MultiWallet = {
-        id: Date.now().toString(), // Generate unique ID
-        name,
-        type,
-        createdAt: Date.now(),
-        seed,
+    const multiWallet: MultiWallet = {
+      id: Date.now().toString(), // Generate unique ID
+      name,
+      type,
+      createdAt: Date.now(),
+      seed,
 
-        coins: {
-          waves: {
-            publicKey: publicKey,
-            networks: {
-              mainnet: {
-                address: mainnetAddress,
-                networkCode: NETWORK_CONFIG[NetworkName.Mainnet].networkCode,
-              },
-              testnet: {
-                address: testnetAddress,
-                networkCode: NETWORK_CONFIG[NetworkName.Testnet].networkCode,
-              },
-              stagenet: {
-                address: stagenetAddress,
-                networkCode: NETWORK_CONFIG[NetworkName.Stagenet].networkCode,
-              },
+      coins: {
+        waves: {
+          publicKey,
+          networks: {
+            mainnet: {
+              address: mainnetAddress,
+              networkCode: NETWORK_CONFIG[NetworkName.Mainnet].networkCode,
             },
-          },
-          unit0: {
-            publicKey: unit0PublicKey,
-            networks: {
-              mainnet: {
-                address: unit0Address,
-                networkCode: NETWORK_CONFIG[NetworkName.Mainnet].networkCode,
-              },
-              testnet: {
-                address: unit0Address,
-                networkCode: NETWORK_CONFIG[NetworkName.Testnet].networkCode,
-              },
+            testnet: {
+              address: testnetAddress,
+              networkCode: NETWORK_CONFIG[NetworkName.Testnet].networkCode,
+            },
+            stagenet: {
+              address: stagenetAddress,
+              networkCode: NETWORK_CONFIG[NetworkName.Stagenet].networkCode,
             },
           },
         },
-      };
-      const wallet = await Background.addMultiWallet(multiWallet);
-      const selectedAddress = wallet.coins.waves.networks.mainnet.address;
-      const accounts = await Background.getLegacyFormatAccounts();
-      const selectedAccount = accounts.find(
-        account => account.address === selectedAddress,
-      );
-      dispatch(selectAccount(selectedAccount as unknown as PreferencesAccount));
-    } catch (error) {
-      console.error('Failed to create Full MultiWallet:', error);
-      throw error;
-    }
+        unit0: {
+          publicKey: unit0PublicKey,
+          networks: {
+            mainnet: {
+              address: unit0Address,
+              networkCode: NETWORK_CODES.unit0.mainnet,
+            },
+            testnet: {
+              address: unit0Address, // For now using same address for both networks
+              networkCode: NETWORK_CODES.unit0.testnet,
+            },
+          },
+        },
+      },
+    };
+    const wallet = await Background.addMultiWallet(multiWallet);
+    const selectedAddress = wallet.coins.waves.networks.mainnet.address;
+    const accounts = await Background.getLegacyFormatAccounts();
+    const selectedAccount = accounts.find(
+      account => account.address === selectedAddress,
+    );
+    dispatch(selectAccount(selectedAccount as unknown as PreferencesAccount));
   };
 }

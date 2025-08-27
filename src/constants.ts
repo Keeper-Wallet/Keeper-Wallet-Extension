@@ -20,19 +20,19 @@ export const NETWORK_CONFIG: Record<
   }
 > = {
   [NetworkName.Testnet]: {
-    matcherBaseUrl: 'https://matcher-testnet.waves.exchange/',
+    matcherBaseUrl: 'https://matcher-testnet.wx.network/',
     name: NetworkName.Testnet,
     networkCode: 'T',
     nodeBaseUrl: 'https://nodes-testnet.wavesnodes.com/',
   },
   [NetworkName.Mainnet]: {
-    matcherBaseUrl: 'https://matcher.waves.exchange/',
+    matcherBaseUrl: 'https://matcher.wx.network/',
     name: NetworkName.Mainnet,
     networkCode: 'W',
     nodeBaseUrl: 'https://nodes-keeper.wavesnodes.com/',
   },
   [NetworkName.Stagenet]: {
-    matcherBaseUrl: 'https://matcher-stagenet.waves.exchange/',
+    matcherBaseUrl: 'https://matcher-stagenet.wx.network/',
     name: NetworkName.Stagenet,
     networkCode: 'S',
     nodeBaseUrl: 'https://nodes-stagenet.wavesnodes.com/',
@@ -135,19 +135,19 @@ export type IgnoreErrorsContext = {
 
 export const DEFAULT_IDENTITY_CONFIG = {
   testnet: {
-    apiUrl: 'https://id-testnet.waves.exchange/api',
+    apiUrl: 'https://id-testnet.wx.network/api',
     cognito: {
       userPoolId: 'eu-central-1_6Bo3FEwt5',
       clientId: '7l8bv0kmvrb4s4n1topofh9d80',
-      endpoint: 'https://testnet.waves.exchange/cognito',
+      endpoint: 'https://testnet.wx.network/cognito',
     },
   },
   mainnet: {
-    apiUrl: 'https://id.waves.exchange/api',
+    apiUrl: 'https://id.wx.network/api',
     cognito: {
       userPoolId: 'eu-central-1_AXIpDLJQx',
       clientId: 'k63vrrmuav01s6p2d344ppnf4',
-      endpoint: 'https://waves.exchange/cognito',
+      endpoint: 'https://wx.network/cognito',
     },
   },
 };
