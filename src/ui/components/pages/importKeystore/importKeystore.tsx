@@ -8,11 +8,14 @@ import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { MultiWallet } from 'services/types';
-import { createWavesOnlyMultiWallet } from 'store/actions/user';
+import { type MultiWallet } from 'services/types';
+import {
+  createFullMultiWallet,
+  createWavesOnlyMultiWallet,
+} from 'store/actions/user';
 import invariant from 'tiny-invariant';
 
-import { PreferencesAccount } from '../../../../preferences/types';
+import { type PreferencesAccount } from '../../../../preferences/types';
 import { WalletTypes } from '../../../services/Background';
 import { ImportKeystoreChooseAccounts } from './chooseAccounts';
 import { ImportKeystoreChooseFile } from './chooseFile';
@@ -93,7 +96,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
 
             const profilesData = JSON.parse(utf8Decode(decrypted)) as Record<
               string,
-              { accounts: (PreferencesAccount & { seed: string })[] }
+              { accounts: Array<PreferencesAccount & { seed: string }> }
             >;
 
             const multiwallets: MultiWallet[] = [];
@@ -107,8 +110,6 @@ function parseKeystore(json: string): EncryptedKeystore | null {
                 if (!account.seed || account.type !== 'seed') {
                   return;
                 }
-                console.log(account, ';account');
-
                 const networkCode = account.networkCode || 'W';
 
                 const multiwallet: MultiWallet = {
@@ -296,7 +297,7 @@ export function ImportKeystore() {
 
   return (
     <ImportKeystoreChooseAccounts
-      allNetworksAccounts={allNetworksAccounts}
+      allNetworksAccounts={allNetworksAccounts as unknown as MultiWallet[]}
       accounts={multiwallets}
       onSkip={() => {
         navigate('/');
@@ -306,27 +307,53 @@ export function ImportKeystore() {
 
         for (const account of selectedAccounts.values()) {
           const wallet = account as unknown as MultiWallet;
-          try {
-            const wavesNetworks = wallet.coins?.waves?.networks || {};
+          // Extract Waves data
+          const wavesData = wallet.coins?.waves;
+          const wavesNetworks = wavesData?.networks || {};
+          const wavesPublicKey = wavesData?.publicKey || '';
+          const wavesMainnetAddress = wavesNetworks.mainnet?.address || '';
+          const wavesTestnetAddress = wavesNetworks.testnet?.address || '';
+          const wavesStagenetAddress = wavesNetworks.stagenet?.address || '';
 
-            if (wallet.coins?.waves) {
-              const importParams = {
-                name: wallet.name,
-                seed: wallet.seed,
-                type: wallet.type,
-                mainnetAddress: wavesNetworks.mainnet?.address || '',
-                publicKey: wallet.coins.waves?.publicKey || '',
-                testnetAddress: wavesNetworks.testnet?.address || '',
-                stagenetAddress: wavesNetworks.stagenet?.address || '',
-              };
+          // Skip if essential Waves data is missing
+          if (!wavesMainnetAddress || !wavesPublicKey) {
+            continue;
+          }
 
-              if (importParams.mainnetAddress && importParams.publicKey) {
-                await dispatch(createWavesOnlyMultiWallet(importParams));
-              }
-            }
-          } catch (error) {
-            console.error(error);
-            // Error handling in silent mode
+          // Extract Unit0 data
+          const unit0Data = wallet.coins?.unit0;
+          const unit0Networks = (unit0Data?.networks || {}) as {
+            mainnet: { address: string };
+          };
+          const unit0PublicKey = unit0Data?.publicKey || '';
+          const unit0MainnetAddress = unit0Networks.mainnet?.address || '';
+
+          // Check if we have valid Unit0 data
+          const hasUnit0Data = !!unit0MainnetAddress && !!unit0PublicKey;
+
+          // Common parameters for both types of wallets
+          const baseParams = {
+            name: wallet.name,
+            seed: wallet.seed as string,
+            type: wallet.type,
+            publicKey: wavesPublicKey,
+            mainnetAddress: wavesMainnetAddress,
+            testnetAddress: wavesTestnetAddress,
+            stagenetAddress: wavesStagenetAddress,
+          };
+
+          if (hasUnit0Data) {
+            // We have Unit0 data, create a full multi-wallet
+            const fullParams = {
+              ...baseParams,
+              unit0PublicKey,
+              unit0Address: unit0MainnetAddress,
+            };
+
+            await dispatch(createFullMultiWallet(fullParams));
+          } else {
+            // No Unit0 data, create a Waves-only wallet
+            await dispatch(createWavesOnlyMultiWallet(baseParams));
           }
         }
 

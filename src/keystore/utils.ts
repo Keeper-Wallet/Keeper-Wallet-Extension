@@ -20,7 +20,6 @@ async function encryptProfiles(
         network: acc.network,
         networkCode: acc.networkCode,
       };
-
       switch (acc.type) {
         case 'seed':
         case 'multichain':

@@ -40,7 +40,6 @@ export function ExportAccounts() {
       }
 
       // Pass the decrypted vault as the third parameter
-      console.log(decryptedVault, 'decryptedVault');
       await downloadKeystore(accountsToExport, undefined, password);
 
       navigate(-2);

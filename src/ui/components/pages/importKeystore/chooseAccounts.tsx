@@ -6,8 +6,8 @@ import { type MultiWallet } from 'services/types';
 import { Button } from 'ui/components/ui';
 
 import { type MultiWalletAccount } from '../../../../controllers/MultiWalletController';
+import { type PreferencesAccount } from '../../../../preferences/types';
 import * as styles from './chooseAccounts.styl';
-import { PreferencesAccount } from '../../../../preferences/types';
 
 interface Props {
   allNetworksAccounts: MultiWallet[];
@@ -41,8 +41,10 @@ export function ImportKeystoreChooseAccounts({
   // Simple check for existing accounts
   const existingAddresses = new Set(
     allNetworksAccounts.map(acc => {
-      console.log(acc, 'acc');
-      return acc.coins?.waves.networks.mainnet.address || acc.address;
+      return (
+        acc.coins?.waves.networks.mainnet.address ||
+        (acc as unknown as PreferencesAccount).address
+      );
     }),
   );
 
