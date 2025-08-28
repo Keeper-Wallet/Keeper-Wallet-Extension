@@ -17,6 +17,7 @@ import {
   Modal,
 } from '../ui';
 import * as styles from './styles/accountInfo.styl';
+import { MultiWallet } from '../../../services/types';
 
 export function AccountInfo() {
   const { t } = useTranslation();
@@ -28,7 +29,9 @@ export function AccountInfo() {
   const assets = usePopupSelector(state => state.assets);
   const balances = usePopupSelector(state => state.balances);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
-  const currentBlockchainType = usePopupSelector(state => state.currentBlockchainType);
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType,
+  );
   const showChangeNameNotification = usePopupSelector(
     state => state.localState.notifications.changeName,
   );
@@ -133,7 +136,11 @@ export function AccountInfo() {
       copyCallback,
       // eslint-disable-next-line @typescript-eslint/no-shadow
       request: password =>
-        Background.getAccountSeed(account.address, currentBlockchainType, password),
+        Background.getAccountSeed(
+          account.address,
+          currentBlockchainType,
+          password,
+        ),
       retry: () => getSeed(copyCallback),
     });
   };
@@ -166,6 +173,62 @@ export function AccountInfo() {
     });
   };
 
+  const getUnit0PrivateKey = (copyCallback: (text: string) => void) => {
+    // Get Unit0 address for the current network
+    const unit0NetworkKey = networkKey === 'stagenet' ? 'testnet' : networkKey;
+    const unit0Address = (account as unknown as MultiWallet).coins?.unit0
+      ?.networks?.[unit0NetworkKey]?.address;
+
+    if (!unit0Address) {
+      console.error('Unit0 address not found for this network');
+      return;
+    }
+
+    requestPrivateData({
+      copyCallback,
+      request: async password => {
+        try {
+          // Use the Unit0 address for seed lookup
+          const seed = await Background.getAccountSeed(
+            unit0Address, // Use Unit0 address instead of Waves address
+            'unit0',
+            password,
+          );
+
+          if (!seed) {
+            console.error('Unable to retrieve seed for Unit0 wallet');
+            return 'Error: Unable to retrieve private key';
+          }
+
+          const ethers = await import('ethers');
+          return ethers.Wallet.fromPhrase(seed).privateKey;
+        } catch (error) {
+          console.error('Error getting Unit0 private key:', error);
+          return 'Error retrieving private key';
+        }
+      },
+      retry: () => getUnit0PrivateKey(copyCallback),
+    });
+  };
+
+  const isMultiChainWallet = account.type === 'multichain';
+
+  const getNetworkKeyForCurrentNetwork = () => {
+    switch (currentNetwork) {
+      case 'mainnet':
+        return 'mainnet';
+      case 'testnet':
+        return 'testnet';
+      case 'stagenet':
+        return 'stagenet';
+      default:
+        return 'mainnet'; // Default to mainnet if unknown
+    }
+  };
+
+  const networkKey = getNetworkKeyForCurrentNetwork();
+
+  const multiAccount = account as unknown as MultiWallet;
   return (
     <div className={styles.content}>
       <div className={styles.header}>
@@ -222,21 +285,131 @@ export function AccountInfo() {
         </div>
       </div>
 
-      <div id="accountInfoAddress" className="margin-main-big">
-        <div className="input-title basic500 tag1">
-          {t('accountInfo.address')}
+      {!isMultiChainWallet && (
+        <div id="accountInfoAddress" className="margin-main-big">
+          <div className="input-title basic500 tag1">
+            {t('accountInfo.address')}
+          </div>
+          <div className="input-like tag1">
+            <CopyText
+              showCopy
+              showText
+              text={account.address}
+              onCopy={onCopyHandler}
+            />
+          </div>
         </div>
-        <div className="input-like tag1">
-          <CopyText
-            showCopy
-            showText
-            text={account.address}
-            onCopy={onCopyHandler}
-          />
-        </div>
-      </div>
+      )}
 
-      {account.type !== 'debug' && (
+      {isMultiChainWallet && multiAccount.coins && (
+        <>
+          <div>Waves</div>
+          {multiAccount.coins.waves &&
+            multiAccount.coins.waves.networks &&
+            multiAccount.coins.waves.networks[networkKey] && (
+              <>
+                <div className="margin-main-big">
+                  <div className="input-title basic500 tag1 flex">
+                    <span>{t('accountInfo.address')}</span>
+                  </div>
+                  <div className="input-like tag1">
+                    <CopyText
+                      showCopy
+                      showText
+                      text={
+                        multiAccount.coins.waves.networks[networkKey]?.address
+                      }
+                      onCopy={onCopyHandler}
+                    />
+                  </div>
+                </div>
+                <div id="wavesPublicKey" className="margin-main-big">
+                  <div className="input-title basic500 tag1">
+                    {t('accountInfo.pubKey')}
+                  </div>
+                  <div className={`input-like tag1 ${styles.ellipsis}`}>
+                    <CopyText
+                      showCopy
+                      showText
+                      text={multiAccount.coins.waves.publicKey}
+                      onCopy={onCopyHandler}
+                    />
+                  </div>
+                </div>
+                <div id="accountInfoPrivateKey" className="margin-main-big">
+                  <div className="input-title basic500 tag1">
+                    {t('accountInfo.privKey')}
+                  </div>
+                  <div className="input-like password-input tag1">
+                    <CopyText
+                      getText={getPrivateKey}
+                      showCopy
+                      type="key"
+                      onCopy={onCopyHandler}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+          <>
+            <div>Ethereum</div>
+            {multiAccount.coins.unit0 &&
+              multiAccount.coins.unit0.networks &&
+              multiAccount.coins.unit0.networks[
+                networkKey === 'stagenet' ? 'testnet' : networkKey
+              ] && (
+                <>
+                  <div className="margin-main-big">
+                    <div className="input-title basic500 tag1 flex">
+                      <span>{t('accountInfo.address')}</span>
+                    </div>
+                    <div className="input-like tag1">
+                      <CopyText
+                        showCopy
+                        showText
+                        text={
+                          multiAccount.coins.unit0.networks[
+                            networkKey === 'stagenet' ? 'testnet' : networkKey
+                          ].address
+                        }
+                        onCopy={onCopyHandler}
+                      />
+                    </div>
+                  </div>
+                  <div id="unit0PublicKey" className="margin-main-big">
+                    <div className="input-title basic500 tag1">
+                      {t('accountInfo.pubKey')}
+                    </div>
+                    <div className={`input-like tag1 ${styles.ellipsis}`}>
+                      <CopyText
+                        showCopy
+                        showText
+                        text={multiAccount.coins.unit0.publicKey}
+                        onCopy={onCopyHandler}
+                      />
+                    </div>
+                  </div>
+                  <div id="unit0PrivateKey" className="margin-main-big">
+                    <div className="input-title basic500 tag1">
+                      {t('accountInfo.privKey')}
+                    </div>
+                    <div className="input-like password-input tag1">
+                      <CopyText
+                        getText={getUnit0PrivateKey}
+                        showCopy
+                        type="key"
+                        onCopy={onCopyHandler}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+          </>
+        </>
+      )}
+
+      {account.type !== 'debug' && multiAccount.type !== 'multichain' && (
         <div id="accountInfoPublicKey" className="margin-main-big">
           <div className="input-title basic500 tag1">
             {t('accountInfo.pubKey')}
@@ -251,7 +424,6 @@ export function AccountInfo() {
           </div>
         </div>
       )}
-
       {['seed', 'encodedSeed', 'privateKey'].includes(account.type) && (
         <div id="accountInfoPrivateKey" className="margin-main-big">
           <div className="input-title basic500 tag1">
@@ -268,7 +440,7 @@ export function AccountInfo() {
         </div>
       )}
 
-      {account.type === 'seed' ? (
+      {account.type === 'seed' || account.type === 'multichain' ? (
         <div id="accountInfoBackupPhrase" className="margin-main-big">
           <div className="input-title basic500 tag1">
             {t('accountInfo.backUp')}

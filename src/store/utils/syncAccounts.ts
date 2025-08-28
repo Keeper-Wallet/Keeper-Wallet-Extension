@@ -7,26 +7,31 @@ import { ACTION } from '../actions/constants';
  * Gets legacy format accounts and dispatches appropriate Redux actions
  * to update both allNetworksAccounts and current network accounts
  */
-export async function syncLegacyAccountsToRedux(dispatch: Dispatch, currentNetwork?: string): Promise<void> {
+export async function syncLegacyAccountsToRedux(
+  dispatch: Dispatch,
+  currentNetwork?: string,
+): Promise<void> {
   try {
     // Get all accounts in legacy format
     const legacyAccounts = await Background.getLegacyFormatAccounts();
-    
+
     if (!legacyAccounts || legacyAccounts.length === 0) {
       console.warn('No legacy accounts found to sync to Redux');
       return;
     }
-    
+
     // Update all networks accounts in Redux
     dispatch({
       type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
       payload: legacyAccounts,
     });
-    
+
     // If currentNetwork is provided, filter accounts by network
     if (currentNetwork) {
-      const networkAccounts = legacyAccounts.filter(account => account.network === currentNetwork);
-      
+      const networkAccounts = legacyAccounts.filter(
+        account => account.network === currentNetwork,
+      );
+
       dispatch({
         type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
         payload: networkAccounts,

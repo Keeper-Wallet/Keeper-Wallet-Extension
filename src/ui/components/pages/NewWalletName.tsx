@@ -146,43 +146,36 @@ export function NewWalletName() {
               return;
             }
           } else if (isMultichainCreation) {
-            try {
-              const mainnetData = await getWavesData(
-                account.seed,
-                CHAIN_IDS[NetworkName.Mainnet],
-              );
-              const testnetData = await getWavesData(
-                account.seed,
-                CHAIN_IDS[NetworkName.Testnet],
-              );
-              const stagenetData = await getWavesData(
-                account.seed,
-                CHAIN_IDS[NetworkName.Stagenet],
-              );
+            const mainnetData = await getWavesData(
+              account.seed,
+              CHAIN_IDS[NetworkName.Mainnet],
+            );
+            const testnetData = await getWavesData(
+              account.seed,
+              CHAIN_IDS[NetworkName.Testnet],
+            );
+            const stagenetData = await getWavesData(
+              account.seed,
+              CHAIN_IDS[NetworkName.Stagenet],
+            );
 
-              // Generate Unit0 account data for both mainnet and testnet
-              const unit0Address = await getUnit0Data(account.seed);
+            // Generate Unit0 account data for both mainnet and testnet
+            const unit0Address = await getUnit0Data(account.seed);
 
-              // Use the new createFullMultiWallet with simplified parameters
-              await dispatch(
-                createFullMultiWallet({
-                  name: accountName,
-                  seed: account.seed,
-                  mainnetAddress: mainnetData.address,
-                  publicKey: mainnetData.publicKey,
-                  testnetAddress: testnetData.address,
-                  stagenetAddress: stagenetData.address,
-                  unit0Address: unit0Address.address,
-                  unit0PublicKey: unit0Address.publicKey,
-                  type: account.type,
-                }),
-              );
-            } catch (error) {
-              console.trace('Failed to create Full MultiWallet:', error);
-              setError('Failed to create wallet. Please try again.');
-              setPending(false);
-              return;
-            }
+            // Use the new createFullMultiWallet with simplified parameters
+            await dispatch(
+              createFullMultiWallet({
+                name: accountName,
+                seed: account.seed,
+                mainnetAddress: mainnetData.address,
+                publicKey: mainnetData.publicKey,
+                testnetAddress: testnetData.address,
+                stagenetAddress: stagenetData.address,
+                unit0Address: unit0Address.address,
+                unit0PublicKey: unit0Address.publicKey,
+                type: account.type,
+              }),
+            );
           } else if (isPrivateKey) {
             const mainnetWallet = await PrivateKeyWallet.create({
               name: accountName,

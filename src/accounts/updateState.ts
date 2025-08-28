@@ -105,7 +105,9 @@ export function createUpdateState(store: AccountsStore) {
 
       actions.push({
         type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
-        payload: (accounts as unknown as PreferencesAccount[]).filter(account => account.network === network),
+        payload: (accounts as unknown as PreferencesAccount[]).filter(
+          account => account.network === network,
+        ),
       });
     }
 

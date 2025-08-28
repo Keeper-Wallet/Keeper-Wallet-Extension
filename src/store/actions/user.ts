@@ -88,21 +88,21 @@ export function createWavesOnlyMultiWallet({
   seed,
   mainnetAddress,
   publicKey,
-  privateKey,
   testnetAddress,
   stagenetAddress,
+  privateKey,
   type,
 }: {
   name: string;
   seed?: string;
   mainnetAddress: string;
   publicKey: string;
-  privateKey: string;
   testnetAddress: string;
   stagenetAddress: string;
+  privateKey?: string;
   type: string;
 }): AccountsThunkAction<Promise<void>> {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     const multiWallet: MultiWallet = {
       id: Date.now().toString(), // Generate unique ID
       name,
@@ -132,7 +132,15 @@ export function createWavesOnlyMultiWallet({
       },
     };
     const wallet = await Background.addMultiWallet(multiWallet);
-    const selectedAddress = wallet.coins.waves.networks.mainnet.address;
+
+    // Get current network from Redux state
+    const currentNetwork = getState().currentNetwork;
+
+    // Use address from current network instead of hardcoded mainnet
+    const selectedAddress =
+      wallet.coins.waves.networks[currentNetwork]?.address ||
+      wallet.coins.waves.networks.mainnet.address;
+
     const accounts = await Background.getLegacyFormatAccounts();
     const selectedAccount = accounts.find(
       account => account.address === selectedAddress,
@@ -166,7 +174,7 @@ export function createFullMultiWallet({
   unit0PublicKey: string;
   type: string;
 }): AccountsThunkAction<Promise<void>> {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     const multiWallet: MultiWallet = {
       id: Date.now().toString(), // Generate unique ID
       name,
@@ -208,7 +216,14 @@ export function createFullMultiWallet({
       },
     };
     const wallet = await Background.addMultiWallet(multiWallet);
-    const selectedAddress = wallet.coins.waves.networks.mainnet.address;
+    // Get current network from Redux state
+    const currentNetwork = getState().currentNetwork;
+
+    // Use address from current network instead of hardcoded mainnet
+    const selectedAddress =
+      wallet.coins.waves.networks[currentNetwork]?.address ||
+      wallet.coins.waves.networks.mainnet.address;
+
     const accounts = await Background.getLegacyFormatAccounts();
     const selectedAccount = accounts.find(
       account => account.address === selectedAddress,
