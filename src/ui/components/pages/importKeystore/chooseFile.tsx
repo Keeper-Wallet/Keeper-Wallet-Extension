@@ -41,7 +41,7 @@ export function ImportKeystoreChooseFile({
     try {
       const reader = new FileReader();
 
-      reader.onerror = () => {
+      reader.onerror = error => {
         setError(t('importKeystore.errorFormat'));
       };
       reader.onload = () => {
@@ -65,6 +65,7 @@ export function ImportKeystoreChooseFile({
 
       reader.readAsText(keystoreFile);
     } catch (err) {
+      console.log(err, 'err');
       setError(t('importKeystore.errorFormat'));
     }
   }, [keystoreFile, setError, t]);

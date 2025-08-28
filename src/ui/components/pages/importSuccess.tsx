@@ -61,16 +61,6 @@ export function ImportSuccess({
         {t('import.readyHelpText')}
       </p>
 
-      {!isKeystoreImport && (
-        <>
-          <div className={`${styles.address} tag1 basic500 input-title`}>
-            {t('newAccountName.accountAddress')}
-          </div>
-
-          <div className="grey-line">{account?.address}</div>
-        </>
-      )}
-
       <div className={styles.footer}>
         <Button
           data-testid="finishBtn"

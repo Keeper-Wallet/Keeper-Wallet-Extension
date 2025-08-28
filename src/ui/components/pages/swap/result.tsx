@@ -158,7 +158,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAccount?.address, nodeBaseUrl, transactionId]);
 
-  const explorerBaseUrl = explorerBaseUrlsByNetwork[currentNetwork];
+  const explorerBaseUrl = explorerBaseUrlsByNetwork[currentNetwork as never];
 
   return (
     <SwapLayout>

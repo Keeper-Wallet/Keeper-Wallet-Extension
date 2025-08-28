@@ -67,6 +67,7 @@
 .searchInput {
   flex-grow: 0;
   margin: 0 14px 10px;
+  max-height: 15px;
 }
 
 .notFound {

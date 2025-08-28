@@ -127,18 +127,21 @@ export class WalletController extends EventEmitter {
           this.#assetInfo,
         );
       case 'privateKey':
-        return PrivateKeyWallet.create({
+        const test =  PrivateKeyWallet.create({
           name: input.name,
           network,
           networkCode,
           privateKey: input.privateKey,
         });
+        return test;
+
       case 'seed':
         return SeedWallet.create({
           name: input.name,
           network,
           networkCode,
           seed: input.seed,
+          ethereumAddress: input.ethereumAddress,
         });
       case 'wx':
         return new WxWallet(

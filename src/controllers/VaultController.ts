@@ -2,7 +2,7 @@ import ObservableStore from 'obs-store';
 
 import { type ExtensionStorage } from '../storage/storage';
 import { type IdentityController } from './IdentityController';
-import { type WalletController } from './wallet';
+import { MultiWalletController } from './MultiWalletController';
 
 export class VaultController {
   #identity;
@@ -16,7 +16,7 @@ export class VaultController {
     identity,
   }: {
     extensionStorage: ExtensionStorage;
-    wallet: WalletController;
+    wallet: MultiWalletController;
     identity: IdentityController;
   }) {
     this.store = new ObservableStore(
@@ -29,7 +29,7 @@ export class VaultController {
     this.#wallet = wallet;
 
     this.store.updateState({
-      initialized: Boolean(wallet.store.getState().WalletController.vault),
+      initialized: Boolean(wallet.store.getState().MultiWalletController.vault),
       locked: !extensionStorage.getInitSession().password,
     });
   }
@@ -70,7 +70,7 @@ export class VaultController {
   }
 
   migrate() {
-    const state = this.#wallet.store.getState().WalletController;
+    const state = this.#wallet.store.getState().MultiWalletController;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((state as any).initialized != null) {
@@ -84,7 +84,7 @@ export class VaultController {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       delete (state as any).initialized;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      this.#wallet.store.putState(state as any);
+      this.#wallet.store.putState({ MultiWalletController: state });
     }
   }
 }

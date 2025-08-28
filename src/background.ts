@@ -50,6 +50,8 @@ import {
   tap,
 } from 'wonka';
 
+import { MultiWalletController } from './controllers/MultiWalletController';
+
 import { fromWebExtensionEvent } from './_core/wonka';
 import { type IgnoreErrorsContext } from './constants';
 import { AddressBookController } from './controllers/AddressBookController';
@@ -80,6 +82,7 @@ import {
   type StorageLocalState,
 } from './storage/storage';
 import { getTxVersions } from './wallets/getTxVersions';
+import { MultiWallet } from './services/types';
 
 const bgPromise = setupBackgroundService();
 
@@ -215,6 +218,7 @@ class BackgroundService extends EventEmitter {
   identityController;
   idleController;
   messageController;
+  multiWalletController;
   networkController;
   nftInfoController;
   notificationsController;
@@ -268,6 +272,22 @@ class BackgroundService extends EventEmitter {
       initLangCode,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController,
+      ),
+      getCurrentBlockchainType:
+        this.networkController.getCurrentBlockchainType.bind(
+          this.networkController,
+        ),
+    });
+
+    // MultiWallet. Manages wallet groups across networks
+    this.multiWalletController = new MultiWalletController({
+      extensionStorage: this.extensionStorage,
+      getLegacyFormatAccounts:
+        this.preferencesController.getLegacyFormatAccounts.bind(
+          this.preferencesController,
+        ),
+      getAccounts: this.preferencesController.getAccounts.bind(
+        this.preferencesController,
       ),
     });
 
@@ -332,14 +352,15 @@ class BackgroundService extends EventEmitter {
 
     this.vaultController = new VaultController({
       extensionStorage: this.extensionStorage,
-      wallet: this.walletController,
+      wallet: this.multiWalletController,
       identity: this.identityController,
     });
 
+    // In background.ts
     this.vaultController.store.subscribe(state => {
       if (!state.locked || !state.initialized) {
-        const accounts = this.walletController.getAccounts();
-        this.preferencesController.syncAccounts(accounts);
+        const multiWallets = this.multiWalletController.getMultiWallets();
+        this.preferencesController.syncAccounts(multiWallets);
       }
     });
 
@@ -349,7 +370,18 @@ class BackgroundService extends EventEmitter {
       this.currentAccountController.updateCurrentAccountBalance();
     });
 
-    this.walletController
+    // Listen for MultiWallet changes
+    this.multiWalletController.on('multiWalletsChanged', multiWallets => {
+      // Update preferences with processed accounts
+      this.preferencesController.syncAccounts(multiWallets);
+    });
+    // Listen for MultiWallet changes
+    this.multiWalletController.on('saveAccounts', multiWallets => {
+      // Update preferences with processed accounts
+      this.preferencesController.saveAccounts(multiWallets);
+    });
+
+    this.multiWalletController
       .on('addWallet', wallet => {
         if (wallet.getAccount().type === 'wx') {
           // persist current session to storage
@@ -394,6 +426,10 @@ class BackgroundService extends EventEmitter {
       getAccounts: this.preferencesController.getAccounts.bind(
         this.preferencesController,
       ),
+      getLegacyFormatAccounts:
+        this.preferencesController.getLegacyFormatAccounts.bind(
+          this.preferencesController,
+        ),
       getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
         this.preferencesController,
       ),
@@ -420,7 +456,7 @@ class BackgroundService extends EventEmitter {
         this.currentAccountController,
       ),
       remoteConfigController: this.remoteConfigController,
-      walletController: this.walletController,
+      multiWalletController: this.multiWalletController,
     });
 
     // Notifications
@@ -486,8 +522,29 @@ class BackgroundService extends EventEmitter {
         this.walletController,
       ),
 
-      removeWallet: this.walletController.removeWallet.bind(
-        this.walletController,
+      removeWallet: this.multiWalletController.removeWallet.bind(
+        this.multiWalletController,
+      ),
+
+      // TODO: need to use for future multi-wallet actions
+      addMultiWallet: async (multiWallet: MultiWallet) => {
+        return Promise.resolve(
+          this.multiWalletController.addMultiWallet(multiWallet),
+        );
+      },
+      getMultiWallets: async () => {
+        return Promise.resolve(this.multiWalletController.getMultiWallets());
+      },
+      findMultiWalletByAccount: async (
+        address: string,
+        network: NetworkName,
+      ) => {
+        return Promise.resolve(
+          this.multiWalletController.findMultiWalletByAccount(address, network),
+        );
+      },
+      getDecryptedVault: this.multiWalletController.getDecryptedVault.bind(
+        this.multiWalletController,
       ),
 
       lock: async () => this.vaultController.lock(),
@@ -509,17 +566,18 @@ class BackgroundService extends EventEmitter {
         this.walletController,
       ),
 
-      getAccountSeed: this.walletController.getAccountSeed.bind(
-        this.walletController,
+      getAccountSeed: this.multiWalletController.getAccountSeed.bind(
+        this.multiWalletController,
       ),
 
       getAccountEncodedSeed: this.walletController.getAccountEncodedSeed.bind(
         this.walletController,
       ),
 
-      getAccountPrivateKey: this.walletController.getAccountPrivateKey.bind(
-        this.walletController,
-      ),
+      getAccountPrivateKey:
+        this.multiWalletController.getAccountPrivateKey.bind(
+          this.multiWalletController,
+        ),
 
       // messages
       getMessageById: async (id: string) =>
@@ -580,6 +638,15 @@ class BackgroundService extends EventEmitter {
       // network
       setNetwork: async (network: NetworkName) =>
         this.networkController.setNetwork(network),
+
+      setHideTestAccounts: async (statusOfShow: boolean) =>
+        this.networkController.setHideTestAccounts(statusOfShow),
+      getHideTestAccounts: async () =>
+        this.networkController.getHideTestAccounts(),
+
+      setCurrentBlockchainType: async (blockchainType: string) =>
+        this.networkController.setCurrentBlockchainType(blockchainType),
+
       setCustomNode: async (url: string | null, network: NetworkName) =>
         this.networkController.setCustomNode(url, network),
       setCustomCode: async (code: string | null, network: NetworkName) => {
@@ -738,6 +805,10 @@ class BackgroundService extends EventEmitter {
           err ? new Error(err) : null,
           signature,
         );
+      },
+      getLegacyFormatAccounts: async () => {
+        // First get accounts from the MultiWalletController
+        return this.preferencesController.getLegacyFormatAccounts();
       },
     };
   }

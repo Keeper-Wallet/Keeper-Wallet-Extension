@@ -99,7 +99,7 @@ class ConfirmBackupComponent extends Component<Props, State> {
           selected
           onSelect={this.onSelect}
         />
-        {showButton ? (
+        {!showButton ? (
           <Button
             id="confirmBackup"
             type="submit"

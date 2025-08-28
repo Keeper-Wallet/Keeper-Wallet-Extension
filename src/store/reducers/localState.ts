@@ -12,6 +12,13 @@ export type NewAccountState = {
   | { type: 'ledger'; id: number; publicKey: string }
   | { type: 'privateKey'; privateKey: string }
   | { type: 'seed'; seed: string }
+  | {
+      type: 'multichain';
+      seed: string;
+      ethereumAddress?: string;
+      addressEvm?: string;
+      accountType?: 'multichain';
+    }
   | { type: 'wx'; publicKey: string; uuid: string; username: string }
 );
 

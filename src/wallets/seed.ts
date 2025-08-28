@@ -17,16 +17,18 @@ export class SeedWallet extends Wallet<WalletPrivateDataOfType<'seed'>> {
     network,
     networkCode,
     seed,
+    ethereumAddress,
   }: {
     name: string;
     network: NetworkName;
     networkCode: string;
     seed: string;
+    ethereumAddress?: string;
   }) {
     const privateKey = await createPrivateKey(utf8Encode(seed));
     const publicKey = await createPublicKey(privateKey);
 
-    return new this({
+    const walletData = {
       address: base58Encode(
         createAddress(publicKey, networkCode.charCodeAt(0)),
       ),
@@ -35,7 +37,10 @@ export class SeedWallet extends Wallet<WalletPrivateDataOfType<'seed'>> {
       networkCode,
       publicKey: base58Encode(publicKey),
       seed,
-    });
+      ethereumAddress,
+    };
+    
+    return new this(walletData);
   }
 
   constructor({
@@ -45,6 +50,7 @@ export class SeedWallet extends Wallet<WalletPrivateDataOfType<'seed'>> {
     networkCode,
     publicKey,
     seed,
+    ethereumAddress,
   }: {
     address: string;
     name: string;
@@ -52,6 +58,7 @@ export class SeedWallet extends Wallet<WalletPrivateDataOfType<'seed'>> {
     networkCode: string;
     publicKey: string;
     seed: string;
+    ethereumAddress?: string;
   }) {
     super({
       address,
@@ -60,6 +67,7 @@ export class SeedWallet extends Wallet<WalletPrivateDataOfType<'seed'>> {
       networkCode,
       publicKey,
       seed,
+      ethereumAddress,
       type: 'seed',
     });
   }
@@ -72,6 +80,7 @@ export class SeedWallet extends Wallet<WalletPrivateDataOfType<'seed'>> {
       networkCode: this.data.networkCode,
       publicKey: this.data.publicKey,
       type: this.data.type,
+      ethereumAddress: this.data.ethereumAddress,
     };
   }
 

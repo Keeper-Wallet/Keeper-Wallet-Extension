@@ -6,7 +6,6 @@ import {
   createPublicKey,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
-import clsx from 'clsx';
 import { isAddressString, isBase58 } from 'messages/utils';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useCallback, useEffect, useState } from 'react';
@@ -15,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { newAccountSelect, selectAccount } from 'store/actions/localState';
 import invariant from 'tiny-invariant';
 
-import { NETWORK_CONFIG } from '../../../constants';
+import { NETWORK_CONFIG } from '../../../../constants';
 import {
   Button,
   ErrorMessage,
@@ -25,9 +24,9 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-} from '../ui';
-import { InlineButton } from '../ui/buttons/inlineButton';
-import * as styles from './importSeed.module.css';
+} from '../../ui';
+import { InlineButton } from '../../ui/buttons/inlineButton';
+import * as styles from '../importSeed.module.css';
 
 const SEED_MIN_LENGTH = 24;
 const ENCODED_SEED_MIN_LENGTH = 16;
@@ -66,8 +65,9 @@ export function ImportSeed() {
   >();
 
   const findExistingAccount = useCallback(
-    (addr: string | undefined) =>
-      addr && accounts.find(acc => acc.address === addr),
+    (addr: string | undefined) => {
+      return addr && accounts.find(acc => acc.address === addr)
+    },
     [accounts],
   );
 
@@ -164,7 +164,6 @@ export function ImportSeed() {
             const newAddress = base58Encode(
               createAddress(publicKey, networkCode.charCodeAt(0)),
             );
-
             validateAddress(newAddress);
             setAddress(newAddress);
           })
@@ -390,17 +389,6 @@ export function ImportSeed() {
         >
           {validationError}
         </ErrorMessage>
-
-        <div className="tag1 basic500 input-title">
-          {t('importSeed.address')}
-        </div>
-
-        <div
-          className={clsx(styles.greyLine, 'grey-line')}
-          data-testid="address"
-        >
-          {address}
-        </div>
 
         <Button data-testid="continueBtn" type="submit" view="submit">
           {t(

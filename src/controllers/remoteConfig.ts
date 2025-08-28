@@ -176,7 +176,7 @@ export class RemoteConfigController extends EventEmitter {
     const { identityConfig } = this.store.getState();
     const networks = [NetworkName.Mainnet, NetworkName.Testnet];
 
-    fetch('https://configs.waves.exchange/web/networks.json')
+    fetch('https://configs.wx.network/web/networks.json')
       .then(resp =>
         resp.ok
           ? resp.json()

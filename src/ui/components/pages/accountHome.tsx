@@ -4,13 +4,12 @@ import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import background from 'ui/services/Background';
-
-import { NETWORK_CONFIG } from '../../../constants';
-import { usePopupSelector } from '../../../popup/store/react';
+import { usePopupDispatch, usePopupSelector } from '../../../popup/store/react';
 import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { Button } from '../ui';
-import { generateNewWalletItems } from './NewWallet';
 import * as styles from './styles/import.styl';
+import { ACTION } from '../../../store/actions/constants';
+import { PreferencesAccount } from '../../../preferences/types';
 
 export function ImportPopup() {
   const { t } = useTranslation();
@@ -51,12 +50,44 @@ export function ImportPopup() {
 
 export function AccountsHome() {
   const navigate = useNavigate();
+  const dispatch = usePopupDispatch();
   const { t } = useTranslation();
-  const customCodes = usePopupSelector(state => state.customCodes);
+  // const customCodes = usePopupSelector(state => state.customCodes);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const accounts = usePopupSelector(state => state.accounts);
 
   const [isLedgerSupported, setIsLedgerSupported] = useState(false);
   const [isDebug, setDebug] = useState(false);
+
+  // Sync accounts from both storage formats (standard accounts and MultiWallets)
+  useEffect(() => {
+    async function syncAccountsToRedux() {
+      try {
+        // Get legacy format accounts (including those from MultiWallets)
+        const legacyAccounts = await background.getLegacyFormatAccounts();
+        if (legacyAccounts && legacyAccounts.length > 0) {
+          // Update Redux with all accounts across networks
+          dispatch({
+            type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
+            payload: legacyAccounts as unknown as PreferencesAccount[],
+          });
+
+          // Filter accounts for current network
+          const networkAccounts = legacyAccounts.filter(
+            acc => acc.network === currentNetwork,
+          );
+          dispatch({
+            type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
+            payload: networkAccounts as unknown as PreferencesAccount[],
+          });
+        }
+      } catch (error) {
+        console.error('Failed to sync accounts to Redux:', error);
+      }
+    }
+
+    syncAccountsToRedux();
+  }, [dispatch, currentNetwork, accounts.length]); // Re-sync when network changes or account count changes
 
   useEffect(() => {
     TransportWebUSB.isSupported().then(setIsLedgerSupported);
@@ -80,13 +111,8 @@ export function AccountsHome() {
       <Button
         data-testid="createNewAccountBtn"
         view="submit"
-        onClick={async () => {
-          const networkCode =
-            customCodes[currentNetwork] ||
-            NETWORK_CONFIG[currentNetwork].networkCode;
-
-          await generateNewWalletItems(networkCode);
-          navigate('/create-account');
+        onClick={() => {
+          navigate('/account-onboarding');
         }}
       >
         {t('import.createNew')}
@@ -129,7 +155,7 @@ export function AccountsHome() {
             data-testid="importSeed"
             view="transparent"
             onClick={() => {
-              navigate('/import-seed');
+              navigate('/import-choose');
             }}
           >
             <svg

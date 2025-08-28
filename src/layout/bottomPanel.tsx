@@ -17,6 +17,16 @@ import { Modal } from '../ui/components/ui';
 import { Tooltip } from '../ui/components/ui/tooltip';
 import * as styles from './bottomPanel.module.css';
 import { CustomNetworkModal } from './customNetworkModal';
+import { BLOCKCHAIN_TYPES, NETWORK_TYPES } from '../assets/constants';
+import {
+  getAvailableNetworkOptions,
+  getNetworkDisplayName,
+  isNetworkSelected,
+} from '../networks/networkOptions';
+import background from '../ui/services/Background';
+import { PreferencesAccount } from '../preferences/types';
+import { useAccountsSelector } from '../accounts/store/react';
+import { ACTION } from '../store/actions/constants';
 
 interface Props {
   allowChangingNetwork?: boolean;
@@ -29,16 +39,63 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const customMatcher = usePopupSelector(state => state.customMatcher);
   const customNodes = usePopupSelector(state => state.customNodes);
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+  );
+  const [hideTestAccounts, setHideTestAccounts] = useState<boolean>(false);
+  const selectedAccount = usePopupSelector(state => state.selectedAccount);
+  const accounts = useAccountsSelector(state => state.accounts);
+  const [isWavesOnlyAccount, setIsWavesOnlyAccount] = useState(false);
 
-  const setNewNetwork = async (network: NetworkName) => {
+  const setNewNetwork = async (network: NetworkName, blockchain: string) => {
     dispatch(setLoading(true));
     await dispatch(setNetwork(network));
+    await background.setCurrentBlockchainType(blockchain);
+    dispatch({
+      type: ACTION.UPDATE_CURRENT_BLOCKCHAIN_TYPE,
+      payload: blockchain,
+    });
     setTimeout(() => dispatch(setLoading(false)), 1000);
   };
 
   const [isDropdownShown, setIsDropdownShown] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  // Check if the account is Waves-only when component mounts or selected account changes
+  useEffect(() => {
+    const checkIfWavesOnly = async () => {
+      try {
+        // Legacy accounts are Waves-only by default
+        if (!selectedAccount?.walletId) {
+          setIsWavesOnlyAccount(true);
+          return;
+        }
+
+        // For MultiWallet accounts, get the full wallet data from background
+        // Find the wallet that matches the selected account's walletId
+        const wallet = accounts.find(
+          wallet =>
+            (wallet as PreferencesAccount & { id: string }).id ===
+            selectedAccount.walletId,
+        );
+        setIsWavesOnlyAccount(!!wallet?.isWavesOnly);
+      } catch (error) {
+        console.error('Error checking if account is Waves-only:', error);
+        setIsWavesOnlyAccount(false);
+      }
+    };
+
+    checkIfWavesOnly();
+  }, [selectedAccount?.walletId, accounts]);
+
+  useEffect(() => {
+    // Load the hideTestAccounts preference when component mounts
+    (async () => {
+      const hideTestAccountsPref = await background.getHideTestAccounts();
+      setHideTestAccounts(hideTestAccountsPref);
+    })();
+  }, []);
   useEffect(() => {
     const dropdownEl = dropdownRef.current;
 
@@ -69,19 +126,26 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
   const [isCustomNetworkModalShown, setIsCustomNetworkModalShown] =
     useState(false);
 
-  const networkHash = Object.fromEntries(
-    Object.entries(NETWORK_CONFIG).map(([key, network]) => [
-      key,
-      {
-        ...network,
-        matcherBaseUrl: customMatcher[network.name] || network.matcherBaseUrl,
-        nodeBaseUrl: customNodes[network.name] || network.nodeBaseUrl,
-      },
-    ]),
-  );
+  // Get all available network options using the shared utility and filter as needed
+  const networkOptions = getAvailableNetworkOptions(
+    currentBlockchainType,
+    currentNetwork,
+    !hideTestAccounts,
+    t,
+  ).filter(option => {
+    // If it's a Waves-only account, filter out Unit0 options
+    if (isWavesOnlyAccount && option.blockchain === BLOCKCHAIN_TYPES.UNIT0) {
+      return false;
+    }
+    return true;
+  });
 
-  const getNetworkTranslationKey = (network: NetworkName) =>
-    `bottom.${network}`;
+  // Get the currently selected network for display
+  const currentNetworkDisplayName = getNetworkDisplayName(
+    currentBlockchainType,
+    currentNetwork,
+    t,
+  );
 
   return (
     <div className={styles.root}>
@@ -104,7 +168,8 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
               <i className={clsx(styles.networkIcon, 'networkIcon')} />
 
               <span className={styles.dropdownButtonText}>
-                {t(getNetworkTranslationKey(currentNetwork))}
+                {/* Use the full display name for the current selection */}
+                {currentNetworkDisplayName}
               </span>
             </button>
 
@@ -122,15 +187,41 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
 
             {isDropdownShown && (
               <div ref={dropdownRef} className={styles.dropdown}>
-                {(Object.keys(NETWORK_CONFIG) as NetworkName[])
-                  .filter(network => network !== currentNetwork)
-                  .concat(currentNetwork)
-                  .map(network => {
-                    const isSelected = currentNetwork === network;
+                {networkOptions
+                  .filter(option => {
+                    // Filter out current selection to place at the end
+                    return !isNetworkSelected(
+                      option,
+                      currentBlockchainType,
+                      currentNetwork,
+                    );
+                  })
+                  // Add current selection at the end
+                  .concat(
+                    networkOptions.find(option =>
+                      isNetworkSelected(
+                        option,
+                        currentBlockchainType,
+                        currentNetwork,
+                      ),
+                    ) || {
+                      blockchain: currentBlockchainType,
+                      network: currentNetwork,
+                      isTestnet: currentNetwork !== NetworkName.Mainnet,
+                      displayName: currentNetworkDisplayName,
+                      value: `${currentBlockchainType}-${currentNetwork}`,
+                    },
+                  )
+                  .map(option => {
+                    const isSelected = isNetworkSelected(
+                      option,
+                      currentBlockchainType,
+                      currentNetwork,
+                    );
 
                     return (
                       <button
-                        key={network}
+                        key={option.value}
                         className={clsx(styles.dropdownItem, {
                           [styles.dropdownItem_selected]: isSelected,
                         })}
@@ -139,13 +230,14 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                             ? undefined
                             : () => {
                                 setIsDropdownShown(false);
-
-                                const newNet = networkHash[network];
-
-                                if (newNet.nodeBaseUrl) {
-                                  setNewNetwork(network);
-                                } else {
+                                if (option.network === NETWORK_TYPES.CUSTOM) {
                                   setIsCustomNetworkModalShown(true);
+                                } else {
+                                  // Update network using both network and blockchain properties
+                                  setNewNetwork(
+                                    option.network as NetworkName,
+                                    option.blockchain,
+                                  );
                                 }
                               }
                         }
@@ -161,7 +253,10 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                           )}
                         />
 
-                        {t(getNetworkTranslationKey(network))}
+                        {/* Use "Custom Network" for custom networks, otherwise use display name */}
+                        {option.network === NETWORK_TYPES.CUSTOM
+                          ? 'Custom Network'
+                          : option.displayName}
                       </button>
                     );
                   })}
@@ -211,7 +306,7 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                   setIsCustomNetworkModalShown(false);
 
                   if (currentNetwork !== NetworkName.Custom) {
-                    setNewNetwork(NetworkName.Custom);
+                    setNewNetwork(NetworkName.Custom, currentBlockchainType);
                   }
                 }}
               />

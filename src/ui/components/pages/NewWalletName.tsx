@@ -2,13 +2,20 @@ import { useAccountsDispatch, useAccountsSelector } from 'accounts/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { newAccountName, selectAccount } from 'store/actions/localState';
-import { createAccount } from 'store/actions/user';
+import { selectAccount } from 'store/actions/localState';
+import {
+  createWavesOnlyMultiWallet,
+  createFullMultiWallet,
+} from 'store/actions/user';
 import { CONFIG } from 'ui/appConfig';
 import { Button, ErrorMessage, Input } from 'ui/components/ui';
-import { WalletTypes } from 'ui/services/Background';
+import { getUnit0Data, getWavesData } from 'units/ed25519';
+import { SeedWallet } from '../../../wallets/seed';
 
+import { CHAIN_IDS, NETWORK_CONFIG } from '../../../constants';
+import { NetworkName } from '../../../networks/types';
 import * as styles from './newWalletName.module.css';
+import { PrivateKeyWallet } from '../../../wallets/privateKey';
 
 export function NewWalletName() {
   const navigate = useNavigate();
@@ -17,6 +24,7 @@ export function NewWalletName() {
 
   const account = useAccountsSelector(state => state.localState.newAccount);
   const accounts = useAccountsSelector(state => state.accounts);
+
   const [accountName, setAccountName] = useState('');
   const [pending, setPending] = useState<boolean>(false);
   const [error, setError] = useState<string | null>('');
@@ -25,9 +33,12 @@ export function NewWalletName() {
     ({ address }) => address === account.address,
   );
 
-  useEffect(() => {
-    dispatch(newAccountName(accountName));
+  // Check if we're creating a Waves-only account or multichain account
+  const isPrivateKey = account.type === 'privateKey';
+  const isWavesOnlyCreation = account.type === 'seed';
+  const isMultichainCreation = account.type === 'multichain';
 
+  useEffect(() => {
     setError(null);
 
     if (accountName.length < CONFIG.NAME_MIN_LENGTH) {
@@ -67,17 +78,150 @@ export function NewWalletName() {
             return;
           }
 
-          const accountTypeToWalletType = {
-            seed: WalletTypes.Seed,
-            encodedSeed: WalletTypes.EncodedSeed,
-            privateKey: WalletTypes.PrivateKey,
-            wx: WalletTypes.Wx,
-            ledger: WalletTypes.Ledger,
-          };
+          // const accountTypeToWalletType = {
+          //   seed: WalletTypes.Seed,
+          //   encodedSeed: WalletTypes.EncodedSeed,
+          //   privateKey: WalletTypes.PrivateKey,
+          //   wx: WalletTypes.Wx,
+          //   ledger: WalletTypes.Ledger,
+          // };
 
-          await dispatch(
-            createAccount(account, accountTypeToWalletType[account.type]),
-          );
+          if (isWavesOnlyCreation) {
+            // Create Waves accounts using SeedWallet.create instead of getWavesData
+            const mainnetWallet = await SeedWallet.create({
+              name: accountName,
+              network: NetworkName.Mainnet,
+              networkCode: NETWORK_CONFIG[NetworkName.Mainnet].networkCode,
+              seed: account.seed,
+            });
+
+            const testnetWallet = await SeedWallet.create({
+              name: accountName,
+              network: NetworkName.Testnet,
+              networkCode: NETWORK_CONFIG[NetworkName.Testnet].networkCode,
+              seed: account.seed,
+            });
+
+            const stagenetWallet = await SeedWallet.create({
+              name: accountName,
+              network: NetworkName.Stagenet,
+              networkCode: NETWORK_CONFIG[NetworkName.Stagenet].networkCode,
+              seed: account.seed,
+            });
+
+            // Extract the data we need from the wallet instances
+            const mainnetData = {
+              address: mainnetWallet.data.address,
+              publicKey: mainnetWallet.data.publicKey,
+            };
+
+            const testnetData = {
+              address: testnetWallet.data.address,
+              publicKey: testnetWallet.data.publicKey,
+            };
+
+            const stagenetData = {
+              address: stagenetWallet.data.address,
+              publicKey: stagenetWallet.data.publicKey,
+            };
+
+            try {
+              // Use the new MultiWallet approach for Waves-only creation
+              // This creates a nested structure with all three Waves networks
+              await dispatch(
+                createWavesOnlyMultiWallet({
+                  name: accountName,
+                  seed: account.seed,
+                  mainnetAddress: mainnetData.address,
+                  publicKey: mainnetData.publicKey,
+                  testnetAddress: testnetData.address,
+                  stagenetAddress: stagenetData.address,
+                  type: account.type,
+                }),
+              );
+            } catch (error) {
+              console.trace('Failed to create Waves-only MultiWallet:', error);
+              setError('Failed to create wallet. Please try again.');
+              setPending(false);
+              return;
+            }
+          } else if (isMultichainCreation) {
+            const mainnetData = await getWavesData(
+              account.seed,
+              CHAIN_IDS[NetworkName.Mainnet],
+            );
+            const testnetData = await getWavesData(
+              account.seed,
+              CHAIN_IDS[NetworkName.Testnet],
+            );
+            const stagenetData = await getWavesData(
+              account.seed,
+              CHAIN_IDS[NetworkName.Stagenet],
+            );
+
+            // Generate Unit0 account data for both mainnet and testnet
+            const unit0Address = await getUnit0Data(account.seed);
+
+            // Use the new createFullMultiWallet with simplified parameters
+            await dispatch(
+              createFullMultiWallet({
+                name: accountName,
+                seed: account.seed,
+                mainnetAddress: mainnetData.address,
+                publicKey: mainnetData.publicKey,
+                testnetAddress: testnetData.address,
+                stagenetAddress: stagenetData.address,
+                unit0Address: unit0Address.address,
+                unit0PublicKey: unit0Address.publicKey,
+                type: account.type,
+              }),
+            );
+          } else if (isPrivateKey) {
+            const mainnetWallet = await PrivateKeyWallet.create({
+              name: accountName,
+              network: NetworkName.Mainnet,
+              networkCode: NETWORK_CONFIG[NetworkName.Mainnet].networkCode,
+              privateKey: account.privateKey,
+            });
+            const testnetWallet = await PrivateKeyWallet.create({
+              name: accountName,
+              network: NetworkName.Testnet,
+              networkCode: NETWORK_CONFIG[NetworkName.Testnet].networkCode,
+              privateKey: account.privateKey,
+            });
+
+            const stagenetWallet = await PrivateKeyWallet.create({
+              name: accountName,
+              network: NetworkName.Stagenet,
+              networkCode: NETWORK_CONFIG[NetworkName.Stagenet].networkCode,
+              privateKey: account.privateKey,
+            });
+            const mainnetData = {
+              address: mainnetWallet.data.address,
+              publicKey: mainnetWallet.data.publicKey,
+            };
+
+            const testnetData = {
+              address: testnetWallet.data.address,
+              publicKey: testnetWallet.data.publicKey,
+            };
+
+            const stagenetData = {
+              address: stagenetWallet.data.address,
+              publicKey: stagenetWallet.data.publicKey,
+            };
+            await dispatch(
+              createWavesOnlyMultiWallet({
+                name: accountName,
+                mainnetAddress: mainnetData.address,
+                publicKey: mainnetData.publicKey,
+                privateKey: account.privateKey,
+                testnetAddress: testnetData.address,
+                stagenetAddress: stagenetData.address,
+                type: account.type,
+              }),
+            );
+          }
 
           navigate('/import-success');
         }}
@@ -101,18 +245,14 @@ export function NewWalletName() {
         </div>
 
         <div className="basic500 tag1 margin2">
-          {t('newAccountName.nameInfo')}
+          {isMultichainCreation
+            ? 'This will create accounts on Waves (Mainnet, Testnet, Stagenet) and Unit0 (Mainnet, Testnet). All accounts include Ethereum access with the same shared address.'
+            : isWavesOnlyCreation
+            ? 'This will create the same account on Waves Mainnet, Testnet, and Stagenet.'
+            : t('newAccountName.nameInfo')}
         </div>
 
         <div className={styles.footer}>
-          <div className="tag1 basic500 input-title">
-            {t('newAccountName.accountAddress')}
-          </div>
-
-          <div className={`${styles.greyLine} grey-line`}>
-            {account.address}
-          </div>
-
           {existingAccount ? (
             <>
               <Button className="margin2" type="submit">

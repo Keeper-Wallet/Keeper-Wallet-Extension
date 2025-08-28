@@ -85,7 +85,9 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
   );
   const address = usePopupSelector(state => state.selectedAccount?.address);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const myAssets = usePopupSelector(state => state.balances[address!]?.assets);
+  const myAssets = usePopupSelector(state => {
+    return state.balances[address!]?.assets
+  });
   const swappableAssetIdsByVendor = usePopupSelector(
     state => state.swappableAssetIdsByVendor,
   );

@@ -12,6 +12,17 @@
   margin-right: 48px;
   margin-left: 48px;
 
+.selectAllContainer
+  margin: 0 48px 12px;
+  display: flex;
+  align-items: center;
+  
+.selectAllLabel
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 8px;
+
 .accounts
   flex: 1 1 0;
   border-top: 1px solid #edf0f4;
@@ -28,7 +39,7 @@
   display: flex;
   align-items: center;
   border-bottom: 1px solid #edf0f4;
-  padding: 10px 50px;
+  padding: 10px 41px;
   background: #fff;
 
 .accountsGroupIcon
@@ -40,26 +51,48 @@
   font-size: 12px;
   font-weight: 300;
 
+.walletTypeLabel
+  margin-left: 8px;
+  padding: 2px 6px;
+  background-color: #f0f2f5;
+  border-radius: 4px;
+  color: #5e6c84;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  display: inline-block;
+  vertical-align: middle;
+
+.networkList
+  padding: 8px 35px 8px 60px;
+  background-color: #f8f9fb;
+
+.networkItem
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  border-bottom: 1px solid #edf0f4;
+  font-size: 12px;
+  color: #4e5c6e;
+
+.networkItem:last-child
+  border-bottom: none;
+
 .accountList
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 12px 48px;
+  gap: 12px;
+  padding: 12px 35px;
 
 .accountListItem
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(155, 166, 178, 0.4);
-  background: #FFFFFF;
-  padding: 11px 16px 11px 14px;
-  min-height: 64px;
+  padding: 0 16px 0 14px;
 
 .accountInfo
   display: flex;
   align-items: center;
-  gap: 14px;
+  width: 100%;
 
 .accountInfoText
   display: flex;

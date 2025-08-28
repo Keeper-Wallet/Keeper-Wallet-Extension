@@ -8,6 +8,8 @@ import { type Message, MessageStatus } from '../messages/types';
 import { type NetworkName } from '../networks/types';
 import { ACTION } from '../store/actions/constants';
 import { type PopupStore } from './store/types';
+import Background from '../ui/services/Background';
+import { PreferencesAccount } from '../preferences/types';
 
 function getParam<S, D>(param: S, defaultParam: D) {
   if (param) {
@@ -99,6 +101,19 @@ export function createUpdateState(store: PopupStore) {
       store.dispatch({
         type: ACTION.UPDATE_CURRENT_NETWORK,
         payload: currentNetwork,
+      });
+    }
+    const currentBlockchainType = getParam(
+      stateChanges.currentBlockchainType,
+      '',
+    );
+    if (
+      currentBlockchainType &&
+      currentBlockchainType !== currentState.currentBlockchainType
+    ) {
+      store.dispatch({
+        type: ACTION.UPDATE_CURRENT_BLOCKCHAIN_TYPE,
+        payload: currentBlockchainType,
       });
     }
 
@@ -212,25 +227,72 @@ export function createUpdateState(store: PopupStore) {
     if (accounts && !deepEqual(accounts, currentState.allNetworksAccounts)) {
       store.dispatch({
         type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
-        payload: accounts,
+        payload: accounts as unknown as PreferencesAccount[],
       });
     }
 
     if (
-      (stateChanges.accounts != null &&
+      (stateChanges.accounts !== null &&
         !deepEqual(stateChanges.accounts, currentState.allNetworksAccounts)) ||
-      (stateChanges.currentNetwork != null &&
-        stateChanges.currentNetwork !== currentState.currentNetwork)
+      (stateChanges.currentNetwork !== null &&
+        stateChanges.currentNetwork !== currentState.currentNetwork) ||
+      (stateChanges.currentBlockchainType !== null &&
+        stateChanges.currentBlockchainType !==
+          currentState.currentBlockchainType)
     ) {
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      const accounts =
-        stateChanges.accounts || currentState.allNetworksAccounts;
-      const network =
-        stateChanges.currentNetwork || currentState.currentNetwork;
+      // Get legacy format accounts from background
+      // This gets accounts in the old format that components expect
+      Background.getLegacyFormatAccounts().then(legacyAccounts => {
+        // Get full MultiWallet data to enrich legacy accounts
+        Background.getMultiWallets()
+          .then(multiWallets => {
+            // Enrich legacy accounts with MultiWallet data
+            const enrichedAccounts = legacyAccounts.map(account => {
+              // Check if this is a multichain wallet
+              if (account.type === 'multichain') {
+                // Find the corresponding MultiWallet
+                const multiWallet = multiWallets.find(
+                  mw => mw.id === account.id,
+                );
+                if (multiWallet) {
+                  // Return the account with additional MultiWallet data
+                  return {
+                    ...account,
+                    // Add the coins data for accessing network-specific info
+                    coins: multiWallet.coins,
+                  };
+                }
+              }
+              return account;
+            });
 
-      store.dispatch({
-        type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
-        payload: accounts.filter(account => account.network === network),
+            store.dispatch({
+              type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
+              payload: enrichedAccounts as unknown as PreferencesAccount[],
+            });
+
+            store.dispatch({
+              type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
+              payload: enrichedAccounts.filter(
+                account => account.network === network,
+              ) as unknown as PreferencesAccount[],
+            });
+          })
+          .catch(error => {
+            console.error('Error fetching MultiWallet data:', error);
+            // Fallback to just using legacy accounts without enrichment
+            store.dispatch({
+              type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
+              payload: legacyAccounts as unknown as PreferencesAccount[],
+            });
+
+            store.dispatch({
+              type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
+              payload: legacyAccounts.filter(
+                account => account.network === network,
+              ) as unknown as PreferencesAccount[],
+            });
+          });
       });
     }
 

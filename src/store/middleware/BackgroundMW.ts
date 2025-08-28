@@ -53,7 +53,8 @@ export const updateCurrentAccountBalance: AppMiddleware =
 export const selectAccount: AppMiddleware = store => next => action => {
   if (
     action.type === ACTION.SELECT_ACCOUNT &&
-    store.getState().selectedAccount?.address !== action.payload.address
+    store.getState().selectedAccount?.address !== action.payload?.address &&
+    action.payload?.address
   ) {
     const { currentNetwork } = store.getState();
     Background.selectAccount(action.payload.address, currentNetwork).then(

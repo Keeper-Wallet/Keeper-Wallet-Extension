@@ -21,6 +21,7 @@ import {
   type NftConfig,
 } from '../constants';
 import { MIGRATIONS } from './migrations';
+import { MultiWallet } from '../services/types';
 
 const CURRENT_MIGRATION_VERSION = 3;
 
@@ -44,7 +45,7 @@ export async function backupStorage() {
 }
 
 export interface StorageLocalState {
-  accounts: PreferencesAccount[];
+  accounts: MultiWallet[];
   addresses: Record<string, string>;
   assetLogos: Record<string, string>;
   assets: Record<NetworkName, AssetsRecord>;
@@ -60,6 +61,7 @@ export interface StorageLocalState {
   cognitoSessions: string | undefined;
   currentLocale: string;
   currentNetwork: NetworkName;
+  currentBlockchainType: string;
   customCodes: Record<NetworkName, string | null>;
   customMatchers: Record<NetworkName, string | null>;
   customNodes: Record<NetworkName, string | null>;

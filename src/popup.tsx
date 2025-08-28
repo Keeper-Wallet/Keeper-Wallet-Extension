@@ -159,4 +159,6 @@ Promise.all([
       Background.showTab(`${window.location.origin}/accounts.html`, 'accounts');
     }
   });
+}).catch((err) => {
+  console.log(err, 'err')
 });

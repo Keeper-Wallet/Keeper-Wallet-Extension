@@ -63,10 +63,10 @@ import type { ExtensionStorage } from '../storage/storage';
 import { getTxVersions } from '../wallets/getTxVersions';
 import type { AssetInfoController } from './assetInfo';
 import type { CurrentAccountController } from './currentAccount';
+import type { MultiWalletController } from './MultiWalletController';
 import type { NetworkController } from './network';
 import type { PermissionsController } from './permissions';
 import type { RemoteConfigController } from './remoteConfig';
-import type { WalletController } from './wallet';
 
 function moneyLikeToMoney(amount: MoneyLike, assets: AssetsRecord) {
   const asset = new Asset(assets[amount.assetId ?? 'WAVES'] ?? assets.WAVES);
@@ -95,7 +95,7 @@ export class MessageController extends EventEmitter {
   setPermission;
   private getAccountBalance;
   private remoteConfigController;
-  private walletController;
+  private multiWalletController;
 
   constructor({
     extensionStorage,
@@ -104,7 +104,7 @@ export class MessageController extends EventEmitter {
     setPermission,
     getAccountBalance,
     remoteConfigController,
-    walletController,
+    multiWalletController,
   }: {
     extensionStorage: ExtensionStorage;
     assetInfoController: AssetInfoController;
@@ -112,7 +112,7 @@ export class MessageController extends EventEmitter {
     setPermission: PermissionsController['setPermission'];
     getAccountBalance: CurrentAccountController['getAccountBalance'];
     remoteConfigController: RemoteConfigController;
-    walletController: WalletController;
+    multiWalletController: MultiWalletController;
   }) {
     super();
 
@@ -124,7 +124,7 @@ export class MessageController extends EventEmitter {
     this.assetInfoController = assetInfoController;
     this.networkController = networkController;
     this.remoteConfigController = remoteConfigController;
-    this.walletController = walletController;
+    this.multiWalletController = multiWalletController;
 
     // permissions
     this.setPermission = setPermission;
@@ -221,7 +221,12 @@ export class MessageController extends EventEmitter {
 
     try {
       const { address, network, publicKey } = message.account;
-      const wallet = this.walletController.getWallet(address, network);
+
+      // getLegacyWallet is now async
+      const wallet = await this.multiWalletController.getLegacyWallet(
+        address,
+        network,
+      );
 
       switch (message.type) {
         case 'auth': {

@@ -1,16 +1,31 @@
 import clsx from 'clsx';
 import { NetworkName } from 'networks/types';
-import { type PreferencesAccount } from 'preferences/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Avatar } from 'ui/components/ui/avatar/Avatar';
+import {
+  BlockchainType,
+  MultiWallet,
+  NetworkType,
+  NETWORK_NAME_MAP,
+} from 'services/types';
 import { Button } from 'ui/components/ui/buttons/Button';
-import { Ellipsis } from 'ui/components/ui/ellipsis/Ellipsis';
 import { Modal } from 'ui/components/ui/modal/Modal';
 
 import * as styles from './chooseItems.styl';
 
-const allNetworks: NetworkName[] = Object.values(NetworkName);
+// Define a flattened account structure for internal use
+interface FlattenedAccount {
+  id: string;
+  name: string;
+  address: string;
+  network: NetworkName;
+  networkCode: string;
+  publicKey?: string;
+  type: string;
+  blockchainType: BlockchainType;
+  walletId: string;
+  networkLabel: string;
+}
 
 const networkLabels: Record<NetworkName, string> = {
   custom: 'Custom',
@@ -33,35 +48,197 @@ interface Props<T> {
   onSubmit: (items: T[]) => void;
 }
 
-export function isExportable(item: PreferencesAccount | Contact) {
-  return (
-    !('type' in item) ||
-    ['seed', 'encodedSeed', 'privateKey', 'debug'].includes(item.type)
-  );
+export function isExportable(item: MultiWallet | Contact) {
+  if ('type' in item) {
+    // For MultiWallet, check if it has a seed or privateKey
+    return (
+      ['seed', 'encodedSeed', 'privateKey', 'debug'].includes(item.type) &&
+      (('seed' in item && item.seed) ||
+        ('privateKey' in item && item.privateKey))
+    );
+  }
+  // For Contact, always exportable
+  return true;
 }
 
-export function ExportKeystoreChooseItems<
-  T extends PreferencesAccount | Contact,
->({ items, type, onSubmit }: Props<T>) {
+// Helper to flatten MultiWallet into account items for display
+function flattenMultiWallets(
+  wallets: MultiWallet[],
+): Record<string, FlattenedAccount[]> {
+  const result: Record<string, FlattenedAccount[]> = {};
+
+  wallets.forEach(wallet => {
+    const walletNetworks: FlattenedAccount[] = [];
+
+    // Process Waves accounts
+    if (wallet.coins?.waves) {
+      const { waves } = wallet.coins;
+      Object.entries(waves.networks).forEach(([networkKey, networkData]) => {
+        // Skip if no address
+        if (!networkData.address) return;
+
+        const network = networkKey as NetworkType;
+        // Map to network name using NETWORK_NAME_MAP reverse lookup
+        let networkName: NetworkName = NetworkName.Mainnet; // Default
+
+        Object.entries(NETWORK_NAME_MAP).forEach(([name, config]) => {
+          if (config.blockchain === 'waves' && config.network === network) {
+            networkName = name as NetworkName;
+          }
+        });
+
+        walletNetworks.push({
+          id: `${wallet.id}-waves-${network}`,
+          name: wallet.name,
+          address: networkData.address,
+          network: networkName,
+          networkCode: networkData.networkCode,
+          publicKey: waves.publicKey,
+          type: wallet.type,
+          blockchainType: 'waves',
+          walletId: wallet.id,
+          networkLabel: networkLabels[networkName],
+        });
+      });
+    }
+
+    // Process Unit0 accounts if available
+    if (wallet.coins?.unit0) {
+      const { unit0 } = wallet.coins;
+      Object.entries(unit0.networks).forEach(([networkKey, networkData]) => {
+        // Skip if no address
+        if (!networkData.address) return;
+
+        const network = networkKey as NetworkType;
+        // For Unit0, we map to mainnet/testnet
+        const networkName =
+          network === 'mainnet' ? NetworkName.Mainnet : NetworkName.Testnet;
+
+        walletNetworks.push({
+          id: `${wallet.id}-unit0-${network}`,
+          name: wallet.name,
+          address: networkData.address,
+          network: networkName,
+          networkCode: networkData.networkCode,
+          publicKey: unit0.publicKey,
+          type: wallet.type,
+          blockchainType: 'unit0',
+          walletId: wallet.id,
+          networkLabel: `Unit0 ${networkLabels[networkName]}`,
+        });
+      });
+    }
+
+    if (walletNetworks.length > 0) {
+      result[wallet.id] = walletNetworks;
+    }
+  });
+
+  return result;
+}
+
+export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
+  items,
+  type,
+  onSubmit,
+}: Props<T>) {
   const { t } = useTranslation();
 
-  const [selected, setSelected] = useState(
-    () => new Set(items.filter(isExportable).map(({ address }) => address)),
+  // Flatten and group MultiWallet items by wallet ID
+  const groupedAccounts =
+    items[0] && 'coins' in items[0]
+      ? flattenMultiWallets(items as MultiWallet[])
+      : {};
+
+  // Selection state for wallets
+  const [selectedWallets, setSelectedWallets] = useState<Set<string>>(
+    () => new Set(Object.keys(groupedAccounts)),
   );
 
-  function toggleSelected(
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    items: Array<PreferencesAccount | Contact>,
+  // Selection state for individual accounts
+  const [selectedAccounts, setSelectedAccounts] = useState<Set<string>>(() => {
+    // Initialize with all accounts from selected wallets
+    const initialAccounts = new Set<string>();
+    Object.entries(groupedAccounts).forEach(([_, networks]) => {
+      networks.forEach(account => {
+        initialAccounts.add(account.id);
+      });
+    });
+    return initialAccounts;
+  });
+
+  // Toggle individual account selection
+  function toggleAccountSelected(
+    accountId: string,
+    walletId: string,
     isSelected: boolean,
   ) {
-    setSelected(prevSelected => {
+    // Update account selection
+    setSelectedAccounts(prevSelected => {
       const newSelected = new Set(prevSelected);
+      if (isSelected) {
+        newSelected.add(accountId);
+      } else {
+        newSelected.delete(accountId);
+      }
+      return newSelected;
+    });
 
-      items.forEach(acc => {
+    // Check if all accounts in wallet are selected to update wallet selection
+    const walletAccounts = groupedAccounts[walletId] || [];
+
+    // We need to calculate this after the state update, so we do it manually
+    const updatedAccountsSelected = new Set(selectedAccounts);
+    if (isSelected) {
+      updatedAccountsSelected.add(accountId);
+    } else {
+      updatedAccountsSelected.delete(accountId);
+    }
+
+    // Check if all wallet accounts are now selected or deselected
+    const allSelected = walletAccounts.every(account =>
+      updatedAccountsSelected.has(account.id),
+    );
+
+    const noneSelected = walletAccounts.every(
+      account => !updatedAccountsSelected.has(account.id),
+    );
+
+    // Update wallet selection accordingly
+    setSelectedWallets(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      if (allSelected) {
+        newSelected.add(walletId);
+      } else if (noneSelected) {
+        newSelected.delete(walletId);
+      }
+      return newSelected;
+    });
+  }
+
+  // Toggle wallet selection - affects all its accounts
+  function toggleWalletSelected(walletId: string, isSelected: boolean) {
+    // Update wallet selection
+    setSelectedWallets(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      if (isSelected) {
+        newSelected.add(walletId);
+      } else {
+        newSelected.delete(walletId);
+      }
+      return newSelected;
+    });
+
+    // Also update account selections
+    setSelectedAccounts(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      const walletAccounts = groupedAccounts[walletId] || [];
+
+      walletAccounts.forEach(account => {
         if (isSelected) {
-          newSelected.add(acc.address);
+          newSelected.add(account.id);
         } else {
-          newSelected.delete(acc.address);
+          newSelected.delete(account.id);
         }
       });
 
@@ -69,16 +246,59 @@ export function ExportKeystoreChooseItems<
     });
   }
 
+  // Get selected items for export
+  const getSelectedItems = (): T[] => {
+    if (items[0] && 'coins' in items[0]) {
+      // Simply filter wallets based on selectedWallets
+      return (items as MultiWallet[]).filter(wallet =>
+        selectedWallets.has(wallet.id),
+      ) as T[];
+    } else {
+      // For contacts
+      return items as T[];
+    }
+  };
+
+  // Check if any wallets aren't exportable
+  const hasNonExportableWallets = items.some(item => !isExportable(item));
   const [showWarningModal, setShowWarningModal] = useState(
-    !items.every(isExportable),
+    hasNonExportableWallets,
   );
+
+  // Count selected accounts
+  const selectedAccountsCount = selectedWallets.size;
+
+  // Track if all wallets are selected
+  const allWalletsCount = Object.keys(groupedAccounts).length;
+  const allSelected = selectedWallets.size === allWalletsCount;
+
+  // Function to toggle all wallets selection
+  const toggleAllWallets = (selectAll: boolean) => {
+    if (selectAll) {
+      // Select all wallets
+      setSelectedWallets(new Set(Object.keys(groupedAccounts)));
+      
+      // Also select all accounts
+      const allAccounts = new Set<string>();
+      Object.entries(groupedAccounts).forEach(([_, networks]) => {
+        networks.forEach(account => {
+          allAccounts.add(account.id);
+        });
+      });
+      setSelectedAccounts(allAccounts);
+    } else {
+      // Deselect all wallets and accounts
+      setSelectedWallets(new Set());
+      setSelectedAccounts(new Set());
+    }
+  };
 
   return (
     <form
       className={styles.root}
       onSubmit={event => {
         event.preventDefault();
-        onSubmit(items.filter(({ address }) => selected.has(address)));
+        onSubmit(getSelectedItems());
       }}
     >
       <h1 className={clsx(styles.centered, 'margin1', 'title1')}>
@@ -97,101 +317,64 @@ export function ExportKeystoreChooseItems<
         )}
       </p>
 
+      {Object.keys(groupedAccounts).length > 0 && (
+        <div className={styles.selectAllContainer}>
+          <label className={styles.selectAllLabel}>
+            <input
+              type="checkbox"
+              className={styles.checkbox}
+              checked={allSelected}
+              onChange={(e) => toggleAllWallets(e.target.checked)}
+            />
+            <span className={clsx('body1')}>
+              {allSelected ? t('common.deselectAll') : t('common.selectAll')}
+            </span>
+          </label>
+        </div>
+      )}
+
       <div className={styles.accounts}>
-        {allNetworks
-          .map<[NetworkName, Array<PreferencesAccount | Contact>]>(network => [
-            network,
-            items.filter(acc => acc.network === network),
-          ])
-          // eslint-disable-next-line @typescript-eslint/no-shadow
-          .filter(([, items]) => items.length !== 0)
-          // eslint-disable-next-line @typescript-eslint/no-shadow
-          .map(([network, items]) => (
-            <div key={network} className={styles.accountsGroup}>
+        {Object.entries(groupedAccounts)
+          .sort(([, a], [, b]) => a[0].name.localeCompare(b[0].name))
+          .map(([walletId, networks]) => {
+          // Get wallet info from the first network item
+          const walletInfo = networks[0];
+
+          return (
+            <div key={walletId} className={styles.accountsGroup}>
               <header className={styles.accountsGroupHeader}>
-                <i className={clsx(styles.accountsGroupIcon, 'networkIcon')} />
-
+                <i className={clsx(styles.accountsGroupIcon, 'accountIcon')} />
                 <h2 className={styles.accountsGroupLabel}>
-                  {networkLabels[network]}
+                  {walletInfo.name}
+                  <span className={styles.walletTypeLabel}>
+                    {walletInfo.type}
+                  </span>
                 </h2>
-
-                {items.some(isExportable) && (
-                  <input
-                    checked={items
-                      .filter(isExportable)
-                      .every(acc => selected.has(acc.address))}
-                    className={styles.checkbox}
-                    type="checkbox"
-                    onChange={event => {
-                      toggleSelected(items, event.currentTarget.checked);
-                    }}
-                  />
-                )}
+                <input
+                  checked={selectedWallets.has(walletId)}
+                  className={styles.checkbox}
+                  type="checkbox"
+                  onChange={event => {
+                    toggleWalletSelected(walletId, event.currentTarget.checked);
+                  }}
+                />
               </header>
-
-              <ul className={styles.accountList}>
-                {items.map(item => {
-                  const showExportable = isExportable(item);
-
-                  return (
-                    <li
-                      key={item.address}
-                      className={styles.accountListItem}
-                      title={item.address}
-                    >
-                      <div className={styles.accountInfo}>
-                        <Avatar
-                          size={32}
-                          address={item.address}
-                          type={'type' in item ? item.type : undefined}
-                        />
-
-                        <div className={styles.accountInfoText}>
-                          <div className={styles.accountName}>{item.name}</div>
-
-                          {type === 'contacts' && (
-                            <Ellipsis text={item.address} size={8} />
-                          )}
-
-                          {!showExportable && (
-                            <div className={styles.accountInfoNote}>
-                              {t('exportKeystore.exportNotSupported')}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {showExportable && (
-                        <input
-                          checked={selected.has(item.address)}
-                          className={styles.checkbox}
-                          name="selected"
-                          type="checkbox"
-                          value={item.address}
-                          onChange={event => {
-                            toggleSelected([item], event.currentTarget.checked);
-                          }}
-                        />
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
             </div>
-          ))}
+          );
+        })}
       </div>
 
       <div className={styles.buttons}>
         <Button
           data-testid="exportButton"
-          disabled={selected.size === 0}
+          disabled={selectedWallets.size === 0}
           type="submit"
           view="submit"
         >
           {type === 'contacts'
             ? t('exportKeystore.chooseContactsExportBtn')
             : t('exportKeystore.chooseAccountsExportBtn', {
-                count: selected.size,
+                count: selectedAccountsCount,
               })}
         </Button>
       </div>

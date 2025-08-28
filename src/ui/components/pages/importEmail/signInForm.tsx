@@ -8,8 +8,8 @@ import { Button, ErrorMessage, Input } from '../../ui';
 import * as styles from './importEmail.module.css';
 
 const baseByNetwork: Partial<Record<NetworkName, string>> = {
-  [NetworkName.Mainnet]: 'https://waves.exchange',
-  [NetworkName.Testnet]: 'https://testnet.waves.exchange',
+  [NetworkName.Mainnet]: 'https://wx.network',
+  [NetworkName.Testnet]: 'https://testnet.wx.network',
 };
 
 interface Props {

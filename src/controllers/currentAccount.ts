@@ -21,7 +21,7 @@ export class CurrentAccountController {
   private store;
   private assetInfoController;
   private nftInfoController;
-  private getAccounts;
+  private getLegacyFormatAccounts;
   private getNetwork;
   private getNode;
   private getSelectedAccount;
@@ -32,6 +32,7 @@ export class CurrentAccountController {
     assetInfoController,
     nftInfoController,
     getAccounts,
+    getLegacyFormatAccounts,
     getNetwork,
     getNode,
     getSelectedAccount,
@@ -41,13 +42,17 @@ export class CurrentAccountController {
     assetInfoController: AssetInfoController;
     nftInfoController: NftInfoController;
     getAccounts: PreferencesController['getAccounts'];
+    getLegacyFormatAccounts: PreferencesController['getLegacyFormatAccounts'];
     getNetwork: NetworkController['getNetwork'];
     getNode: NetworkController['getNode'];
     getSelectedAccount: PreferencesController['getSelectedAccount'];
     isLocked: VaultController['isLocked'];
   }) {
     const defaults: Partial<Record<string, BalancesItem>> = Object.fromEntries(
-      getAccounts().map(acc => [`balance_${acc.address}`, undefined]),
+      getLegacyFormatAccounts().map(acc => [
+        `balance_${acc.address}`,
+        undefined,
+      ]),
     );
 
     const initState = extensionStorage.getInitState(defaults);
@@ -68,7 +73,7 @@ export class CurrentAccountController {
 
     this.assetInfoController = assetInfoController;
     this.nftInfoController = nftInfoController;
-    this.getAccounts = getAccounts;
+    this.getLegacyFormatAccounts = getLegacyFormatAccounts;
     this.getNetwork = getNetwork;
     this.getNode = getNode;
     this.getSelectedAccount = getSelectedAccount;
@@ -206,7 +211,7 @@ export class CurrentAccountController {
 
   async updateCurrentAccountBalance() {
     const currentNetwork = this.getNetwork();
-    const accounts = this.getAccounts().filter(
+    const accounts = this.getLegacyFormatAccounts().filter(
       ({ network }) => network === currentNetwork,
     );
     const activeAccount = this.getSelectedAccount();
@@ -333,7 +338,7 @@ export class CurrentAccountController {
 
   async updateOtherAccountsBalances() {
     const url = new URL('addresses/balance', this.getNode());
-    const addresses = this.getAccounts().map(account => account.address);
+    const addresses = this.getLegacyFormatAccounts().map(account => account.address);
 
     while (addresses.length > 0) {
       const splicedAddresses = addresses.splice(0, 1000);

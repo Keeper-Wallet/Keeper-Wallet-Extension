@@ -3,84 +3,53 @@ import {
   encryptSeed,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
-import { type NetworkName } from 'networks/types';
 import { type PreferencesAccount } from 'preferences/types';
 
+import { MultiWallet } from '../services/types';
 import background from '../ui/services/Background';
-import { type KeystoreAccount, type KeystoreProfiles } from './types';
 
 async function encryptProfiles(
   accountsToExport: PreferencesAccount[],
   password: string,
-) {
+): Promise<string> {
   const accounts = await Promise.all(
-    accountsToExport.map(
-      async (acc): Promise<KeystoreAccount & { network: NetworkName }> => {
-        const commonData = {
-          address: acc.address,
-          name: acc.name,
-          network: acc.network,
-          networkCode: acc.networkCode,
-        };
-
-        switch (acc.type) {
-          case 'seed':
-            return {
-              ...commonData,
-              type: acc.type,
-              seed: await background.getAccountSeed(
-                acc.address,
-                acc.network,
-                password,
-              ),
-            };
-          case 'encodedSeed':
-            return {
-              ...commonData,
-              type: acc.type,
-              encodedSeed: await background.getAccountEncodedSeed(
-                acc.address,
-                acc.network,
-                password,
-              ),
-            };
-          case 'privateKey':
-            return {
-              ...commonData,
-              type: acc.type,
-              privateKey: await background.getAccountPrivateKey(
-                acc.address,
-                acc.network,
-                password,
-              ),
-            };
-          case 'debug':
-            return {
-              ...commonData,
-              type: acc.type,
-            };
-          default:
-            throw new Error(
-              `Trying to export unsupported account type: ${acc.type}`,
-            );
-        }
-      },
-    ),
+    accountsToExport.map(async (acc): Promise<MultiWallet[]> => {
+      const commonData = {
+        address: acc.address,
+        name: acc.name,
+        network: acc.network,
+        networkCode: acc.networkCode,
+      };
+      switch (acc.type) {
+        case 'seed':
+        case 'multichain':
+        case 'privateKey':
+          return acc as unknown as MultiWallet[];
+        case 'encodedSeed':
+          return {
+            ...commonData,
+            type: acc.type,
+            encodedSeed: await background.getAccountEncodedSeed(
+              acc.address,
+              acc.network,
+              password,
+            ),
+          };
+        case 'debug':
+          return {
+            ...commonData,
+            type: acc.type,
+          };
+        default:
+          throw new Error(
+            `Trying to export unsupported account type: ${acc.type}`,
+          );
+      }
+    }),
   );
 
-  const profiles: KeystoreProfiles = {
-    custom: { accounts: [] },
-    mainnet: { accounts: [] },
-    stagenet: { accounts: [] },
-    testnet: { accounts: [] },
-  };
-
-  accounts.forEach(({ network, ...acc }) => {
-    profiles[network].accounts.push(acc);
-  });
-
   const encrypted = await encryptSeed(
-    utf8Encode(JSON.stringify(profiles)),
+    utf8Encode(JSON.stringify(accounts)),
     utf8Encode(password),
   );
 
@@ -114,7 +83,7 @@ function download(json: string, filename: string) {
 }
 
 export async function downloadKeystore(
-  accounts: PreferencesAccount[] | undefined,
+  accounts: MultiWallet[] | undefined,
   addresses: Record<string, string> | undefined,
   password: string,
   encrypted = false,
@@ -136,7 +105,12 @@ export async function downloadKeystore(
 
   if (accounts) {
     download(
-      JSON.stringify({ profiles: await encryptProfiles(accounts, password) }),
+      JSON.stringify({
+        accounts: await encryptProfiles(
+          accounts as unknown as PreferencesAccount[],
+          password,
+        ),
+      }),
       `keystore-accounts-keeper-${nowStr}.json`,
     );
   }
