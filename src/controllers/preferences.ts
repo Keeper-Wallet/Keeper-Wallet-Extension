@@ -97,58 +97,191 @@ export class PreferencesController extends EventEmitter {
 
   ensureSelectedAccountInCurrentNetwork() {
     const currentNetwork = this.getNetwork();
+    const currentBlockchainType = this.getCurrentBlockchainType();
     const accounts = this.store.getState().accounts as unknown as MultiWallet[];
     const selectedAccount = this.store.getState().selectedAccount;
-    // Extract wallet addresses for current network from MultiWallet structure
 
-    const currentNetworkWallets = accounts.flatMap(wallet => {
-      // For MultiWallet structure
-      if (wallet.coins) {
-        // Handle both wallet types (waves-only and multichain)
-        const relevantCoin = wallet.coins.waves || wallet.coins.unit0;
-        if (relevantCoin?.networks) {
-          const coinNetwork =
-            relevantCoin?.networks?.[
-              currentNetwork as keyof typeof relevantCoin.networks
-            ];
-
-          if (coinNetwork) {
-            return [
-              {
-                address: coinNetwork.address,
-                network: currentNetwork,
-                walletId: wallet.id,
-                lastUsed: wallet.createdAt,
-                networkCode: coinNetwork.networkCode,
-              },
-            ];
-          }
-        }
-        return [];
-      }
-      return [];
-    }) as PreferencesAccount[];
-    const isSelectedAccountValid =
-      selectedAccount &&
-      currentNetworkWallets.some(
-        wallet =>
-          wallet.address === selectedAccount.address &&
-          wallet.network === currentNetwork,
+    // If no selected account, select an appropriate one
+    if (!selectedAccount) {
+      const currentNetworkWallets = this.getNetworkWalletsForCurrentNetwork(
+        accounts,
+        currentNetwork,
+        currentBlockchainType
       );
-
-    // If no valid selection, select the most recently used account
-    if (!isSelectedAccountValid) {
+      
       if (currentNetworkWallets.length > 0) {
-        const sortedWallets = currentNetworkWallets.sort(
-          compareAccountsByLastUsed,
-        );
+        const sortedWallets = currentNetworkWallets.sort(compareAccountsByLastUsed);
+        this.emit('updateSelectedAccount', sortedWallets[0]);
+        this.selectAccount(sortedWallets[0].address, currentNetwork);
+      }
+      return;
+    }
+
+    // Get the wallet ID from the selected account
+    const selectedWalletId = selectedAccount.walletId;
+    if (!selectedWalletId) {
+      // Handle legacy accounts
+      const currentNetworkWallets = this.getNetworkWalletsForCurrentNetwork(
+        accounts,
+        currentNetwork,
+        currentBlockchainType
+      );
+      
+      if (currentNetworkWallets.length > 0) {
+        const sortedWallets = currentNetworkWallets.sort(compareAccountsByLastUsed);
         this.emit('updateSelectedAccount', sortedWallets[0]);
         this.selectAccount(sortedWallets[0].address, currentNetwork);
       } else {
-        // No accounts for this network
         this.selectAccount(undefined, currentNetwork);
       }
+      return;
     }
+
+    // Find the selected wallet
+    const selectedWallet = accounts.find(wallet => wallet.id === selectedWalletId);
+    if (!selectedWallet?.coins) {
+      // Handle legacy or invalid wallets
+      const currentNetworkWallets = this.getNetworkWalletsForCurrentNetwork(
+        accounts,
+        currentNetwork,
+        currentBlockchainType
+      );
+      
+      if (currentNetworkWallets.length > 0) {
+        const sortedWallets = currentNetworkWallets.sort(compareAccountsByLastUsed);
+        this.emit('updateSelectedAccount', sortedWallets[0]);
+        this.selectAccount(sortedWallets[0].address, currentNetwork);
+      } else {
+        this.selectAccount(undefined, currentNetwork);
+      }
+      return;
+    }
+
+    // Special Unit0 handling - if blockchain is Unit0, prioritize Unit0 accounts
+    if (currentBlockchainType === 'unit0') {
+      const unit0Coin = selectedWallet.coins.unit0;
+      if (unit0Coin?.networks) {
+        // For Unit0, stagenet doesn't exist so map to testnet
+        const unit0Network = currentNetwork === 'stagenet' ? 'testnet' : currentNetwork;
+        
+        const networkData = unit0Coin.networks[unit0Network as keyof typeof unit0Coin.networks];
+        if (networkData?.address) {
+          // Found Unit0 account in the same wallet for this network
+          this.emit('updateSelectedAccount', {
+            address: networkData.address,
+            network: currentNetwork,
+            walletId: selectedWallet.id,
+            name: selectedWallet.name,
+            networkCode: networkData.networkCode,
+            coinType: 'unit0',
+            publicKey: unit0Coin.publicKey
+          });
+          this.selectAccount(networkData.address, currentNetwork);
+          return;
+        }
+      }
+    }
+    
+    // For Waves blockchain or if no Unit0 account was found
+    if (currentBlockchainType === 'waves' || currentBlockchainType === 'unit0') {
+      // Try to find the account in the specified blockchain first
+      const targetCoin = selectedWallet.coins[currentBlockchainType];
+      if (targetCoin?.networks) {
+        const networkData = targetCoin.networks[currentNetwork as keyof typeof targetCoin.networks];
+        if (networkData?.address) {
+          // Found account in the same wallet for this network and blockchain type
+          this.emit('updateSelectedAccount', {
+            address: networkData.address,
+            network: currentNetwork,
+            walletId: selectedWallet.id,
+            name: selectedWallet.name,
+            networkCode: networkData.networkCode,
+            coinType: currentBlockchainType,
+            publicKey: targetCoin.publicKey
+          });
+          this.selectAccount(networkData.address, currentNetwork);
+          return;
+        }
+      }
+
+      // If no account found in the current blockchain type, try the other one
+      const otherType = currentBlockchainType === 'waves' ? 'unit0' : 'waves';
+      const otherCoin = selectedWallet.coins[otherType];
+      if (otherCoin?.networks) {
+        // Handle network mapping for Unit0
+        const networkToUse = otherType === 'unit0' && currentNetwork === 'stagenet' ? 'testnet' : currentNetwork;
+        
+        const networkData = otherCoin.networks[networkToUse as keyof typeof otherCoin.networks];
+        if (networkData?.address) {
+          // Found account in the other blockchain type
+          this.emit('updateSelectedAccount', {
+            address: networkData.address,
+            network: currentNetwork,
+            walletId: selectedWallet.id,
+            name: selectedWallet.name,
+            networkCode: networkData.networkCode,
+            coinType: otherType,
+            publicKey: otherCoin.publicKey
+          });
+          this.selectAccount(networkData.address, currentNetwork);
+          return;
+        }
+      }
+    }
+
+    // Fallback: If no matching account found in the selected wallet,
+    // select the most recently used account for this network and blockchain type
+    const currentNetworkWallets = this.getNetworkWalletsForCurrentNetwork(
+      accounts,
+      currentNetwork,
+      currentBlockchainType
+    );
+    
+    if (currentNetworkWallets.length > 0) {
+      const sortedWallets = currentNetworkWallets.sort(compareAccountsByLastUsed);
+      this.emit('updateSelectedAccount', sortedWallets[0]);
+      this.selectAccount(sortedWallets[0].address, currentNetwork);
+    } else {
+      this.selectAccount(undefined, currentNetwork);
+    }
+  }
+
+  // Helper method to get wallets for current network and blockchain type
+  private getNetworkWalletsForCurrentNetwork(
+    accounts: MultiWallet[],
+    currentNetwork: string, 
+    currentBlockchainType: string
+  ): PreferencesAccount[] {
+    return accounts.flatMap(wallet => {
+      if (wallet.coins) {
+        // First try to match the current blockchain type
+        const relevantCoin = wallet.coins[currentBlockchainType as keyof typeof wallet.coins];
+        
+        if (relevantCoin?.networks) {
+          // For Unit0, handle stagenet mapping to testnet
+          const networkKey = currentBlockchainType === 'unit0' && currentNetwork === 'stagenet' 
+            ? 'testnet' as keyof typeof relevantCoin.networks
+            : currentNetwork as keyof typeof relevantCoin.networks;
+            
+          const coinNetwork = relevantCoin.networks[networkKey];
+
+          if (coinNetwork) {
+            return [{
+              address: coinNetwork.address,
+              network: currentNetwork,
+              walletId: wallet.id,
+              lastUsed: wallet.lastUsed || wallet.createdAt,
+              networkCode: coinNetwork.networkCode,
+              coinType: currentBlockchainType as string,
+              name: wallet.name,
+              type: wallet.type,
+              publicKey: relevantCoin.publicKey
+            }];
+          }
+        }
+      }
+      return [];
+    }) as PreferencesAccount[];
   }
 
   addLabel(address: string, label: string, network: NetworkName) {
@@ -199,12 +332,11 @@ export class PreferencesController extends EventEmitter {
       // First check MultiWallet structure
       for (const wallet of accounts as unknown as MultiWallet[]) {
         if (wallet.coins) {
-          const relevantNetwork = wallet.coins.waves?.networks;
-          if (relevantNetwork) {
-            // Check waves accounts
+          // Check waves accounts first
+          const wavesNetworks = wallet.coins.waves?.networks;
+          if (wavesNetworks) {
             if (
-              relevantNetwork[network as keyof typeof relevantNetwork]
-                ?.address === address
+              wavesNetworks[network as keyof typeof wavesNetworks]?.address === address
             ) {
               selectedAccount = {
                 address,
@@ -214,18 +346,21 @@ export class PreferencesController extends EventEmitter {
                 walletId: wallet.id,
                 publicKey: wallet.coins.waves.publicKey,
                 networkCode:
-                  wallet.coins.waves.networks[
-                    network as keyof typeof relevantNetwork
-                  ]?.networkCode,
+                  wavesNetworks[network as keyof typeof wavesNetworks]?.networkCode,
                 coinType: 'waves',
               };
               break;
             }
+          }
 
-            // Check unit0 accounts
+          // Check unit0 accounts
+          const unit0Networks = wallet.coins.unit0?.networks;
+          if (unit0Networks) {
+            // For Unit0, map stagenet to testnet since Unit0 doesn't have stagenet
+            const unit0Network = network === 'stagenet' ? 'testnet' : network;
+            
             if (
-              relevantNetwork[network as keyof typeof relevantNetwork]
-                ?.address === address
+              unit0Networks[unit0Network as keyof typeof unit0Networks]?.address === address
             ) {
               selectedAccount = {
                 address,
@@ -233,7 +368,8 @@ export class PreferencesController extends EventEmitter {
                 name: wallet.name,
                 type: wallet.type,
                 walletId: wallet.id,
-                publicKey: wallet.coins.unit0?.publicKey,
+                publicKey: wallet.coins.unit0.publicKey,
+                networkCode: unit0Networks[unit0Network as keyof typeof unit0Networks]?.networkCode,
                 coinType: 'unit0',
               };
               break;
@@ -261,6 +397,9 @@ export class PreferencesController extends EventEmitter {
             previousAccount.address
         ) {
           (acc as unknown as PreferencesAccount).lastUsed = Date.now();
+        } else if (acc.coins && acc.id === previousAccount.walletId) {
+          // Update lastUsed time for MultiWallet
+          acc.lastUsed = Date.now();
         }
       });
     }
