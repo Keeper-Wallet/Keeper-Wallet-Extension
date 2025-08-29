@@ -1,6 +1,5 @@
 import { type NetworkName } from 'networks/types';
 
-
 // Define blockchain and network type constants to match MultiWallet structure
 export const BLOCKCHAIN_TYPES = {
   WAVES: 'waves',
@@ -47,6 +46,7 @@ export const NETWORK_OPTIONS = [
 export const assetIds: Record<NetworkName, Record<string, string>> = {
   mainnet: {
     WAVES: 'WAVES',
+    UNIT0: 'unit0',
     BAG: 'Euz5HtYcj3nVTZxppA7wdabwTe5BzHFiu4QG1EJtzeUx',
     BCH: 'zMFqXuoyrn5w17PFurTqxB7GsS71fp9dfk6XFwxbPCy',
     BNB: '5UYBPpq4WoU5n4MwpFkgJnW3Fq4B1u3ukpK33ik4QerR',
@@ -120,6 +120,8 @@ export const assetIds: Record<NetworkName, Record<string, string>> = {
   },
   testnet: {
     WAVES: 'WAVES',
+    UNIT0: 'unit0',
+    UNIT0_TEST: '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84',
     BTC: 'iHTVbu8ArLhtdtJ8BQhyaomgVogSfXT45RtwNFiK4We',
     DASH: '13mWHq1h58WRTiRNBqDRD63gsV8Hq4joxYQzH3iRdHiR',
     EGG: 'Gp75gygbc1woJMheDomSY1ULyaRVGVEWS64wNWfvncyg',
@@ -290,6 +292,7 @@ const logosByName: Record<string, string> = {
   FTM: new URL('./logos/FTM.svg', import.meta.url).toString(),
   FOMO: new URL('./logos/FOMO.webp', import.meta.url).toString(),
   FORKLOG: new URL('./logos/FORKLOG.webp', import.meta.url).toString(),
+  unit0: new URL('./logos/unit0.svg', import.meta.url).toString(),
   KOLKHOZ: new URL('./logos/KOLKHOZ.webp', import.meta.url).toString(),
   LINK: new URL('./logos/LINK.svg', import.meta.url).toString(),
   LTC: new URL('./logos/LTC.svg', import.meta.url).toString(),
@@ -325,6 +328,7 @@ const logosByName: Record<string, string> = {
   VIRES: new URL('./logos/VIRES.svg', import.meta.url).toString(),
   VIRES_USDC_LP: new URL('./logos/USDC.svg', import.meta.url).toString(),
   VIRES_USDT_LP: new URL('./logos/USDT.svg', import.meta.url).toString(),
+  UNIT0: new URL('./logos/unit0.svg', import.meta.url).toString(),
   WAVES: new URL('./logos/WAVES.svg', import.meta.url).toString(),
   WCT: new URL('./logos/WCT.svg', import.meta.url).toString(),
   WEST: new URL('./logos/WEST.svg', import.meta.url).toString(),

@@ -17,6 +17,7 @@ export const NETWORK_CONFIG: Record<
     name: NetworkName;
     networkCode: string;
     nodeBaseUrl: string;
+    explorerUrl: string;
   }
 > = {
   [NetworkName.Testnet]: {
@@ -24,24 +25,28 @@ export const NETWORK_CONFIG: Record<
     name: NetworkName.Testnet,
     networkCode: 'T',
     nodeBaseUrl: 'https://nodes-testnet.wavesnodes.com/',
+    explorerUrl: 'https://testnet.wavesexplorer.com',
   },
   [NetworkName.Mainnet]: {
     matcherBaseUrl: 'https://matcher.wx.network/',
     name: NetworkName.Mainnet,
     networkCode: 'W',
     nodeBaseUrl: 'https://nodes-keeper.wavesnodes.com/',
+    explorerUrl: 'https://wavesexplorer.com',
   },
   [NetworkName.Stagenet]: {
     matcherBaseUrl: 'https://matcher-stagenet.wx.network/',
     name: NetworkName.Stagenet,
     networkCode: 'S',
     nodeBaseUrl: 'https://nodes-stagenet.wavesnodes.com/',
+    explorerUrl: 'https://stagenet.wavesexplorer.com',
   },
   [NetworkName.Custom]: {
     matcherBaseUrl: '',
     name: NetworkName.Custom,
     networkCode: '',
     nodeBaseUrl: '',
+    explorerUrl: '',
   },
   // TODO: we will think about this later
   [NetworkName.unit0MainNet]: {
@@ -49,12 +54,14 @@ export const NETWORK_CONFIG: Record<
     name: NetworkName.Mainnet,
     networkCode: '88811',
     nodeBaseUrl: 'https://rpc.unit0.dev/',
+    explorerUrl: 'https://explorer.unit0.dev/',
   },
   [NetworkName.unit0Testnet]: {
     matcherBaseUrl: '',
     name: NetworkName.Testnet,
     networkCode: '88817',
     nodeBaseUrl: 'https://rpc-testnet.unit0.dev/',
+    explorerUrl: 'https://explorer-testnet.unit0.dev/',
   },
 };
 

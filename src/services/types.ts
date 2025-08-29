@@ -14,7 +14,7 @@ export interface MultiWallet {
   name: string; // User-friendly name
   type: string; // 'seed', 'privateKey', 'ledger', etc.
   createdAt: number; // Timestamp for sorting and tracking
-
+  lastUsed?: number;
   // Authentication data - stored securely
   seed?: string; // Optional seed phrase (for seed wallets)
   privateKey?: string; // Optional private key (for privateKey wallets)
@@ -25,10 +25,10 @@ export interface MultiWallet {
     waves: {
       publicKey?: string;
       networks: {
-        mainnet: WalletItem
-        testnet: WalletItem
-        stagenet?: WalletItem
-        custom?: WalletItem
+        mainnet: WalletItem;
+        testnet: WalletItem;
+        stagenet?: WalletItem;
+        custom?: WalletItem;
       };
     };
 
@@ -36,8 +36,8 @@ export interface MultiWallet {
     unit0?: {
       publicKey?: string;
       networks: {
-        mainnet: WalletItem
-        testnet: WalletItem
+        mainnet: WalletItem;
+        testnet: WalletItem;
       };
     };
   };

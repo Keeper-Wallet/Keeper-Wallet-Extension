@@ -1,4 +1,4 @@
-import { BigNumber } from '@waves/bignumber';
+import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { type AssetsRecord } from 'assets/types';
 import { type BalanceAssets } from 'balances/types';
@@ -9,13 +9,15 @@ import { useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList as List } from 'react-window';
 import invariant from 'tiny-invariant';
-import { AssetItem } from 'ui/components/pages/assets//assetItem';
+import { AssetItem } from 'ui/components/pages/assets/assetItem';
 import { icontains } from 'ui/components/pages/assets/helpers';
 import * as styles from 'ui/components/pages/styles/assets.styl';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import { Tooltip } from 'ui/components/ui/tooltip';
+import { type MultiWallet } from '../../../../../services/types';
 
 import { CARD_FULL_HEIGHT, sortAssetEntries, useUiState } from './helpers';
+import { BLOCKCHAIN_TYPES } from '../../../../../assets/constants';
 
 const Row = ({
   data,
@@ -45,7 +47,6 @@ const Row = ({
   } = data;
   const [assetId, { balance = 0 } = {}] = assetEntries[index];
   const asset = assets[assetId];
-
   return (
     <div style={style}>
       <AssetItem
@@ -79,15 +80,95 @@ interface Props {
 
 export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
   const { t } = useTranslation();
-  const assets = usePopupSelector(state => state.assets);
+  const allAssets = usePopupSelector(state => state.assets);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+  );
+
+  // Get assets for the effective network
+  // For Unit0 blockchain, use direct asset access since Unit0 assets are at root level
+  const assets =
+    currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+      ? allAssets // Use all assets directly for Unit0
+      : currentNetwork
+      ? allAssets[currentNetwork] || {}
+      : {};
   const showSuspiciousAssets = usePopupSelector(
     state => state.uiState?.showSuspiciousAssets,
   );
-  const address = usePopupSelector(state => state.selectedAccount?.address);
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const myAssets = usePopupSelector(state => {
-    return state.balances[address!]?.assets
-  });
+  const activeAccount = usePopupSelector(state => state.selectedAccount);
+  const balances = usePopupSelector(state => state.balances);
+
+  const myAssets = useMemo(() => {
+    if (!activeAccount) {
+      return undefined;
+    }
+
+    const multiAccount = activeAccount as unknown as MultiWallet;
+
+    // For Unit0 blockchain type, use Unit0/Ethereum address
+    if (currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0) {
+      // For multichain accounts, look for unit0 address
+      if (activeAccount.type === 'multichain' && multiAccount.coins?.unit0) {
+        // Use currentNetwork from Redux to match popupHome.tsx pattern
+        const network = currentNetwork?.toLowerCase() || 'mainnet';
+        const unit0NetworkKey = network === 'stagenet' ? 'testnet' : network;
+        const unit0Address = (multiAccount.coins.unit0.networks as any)?.[
+          unit0NetworkKey
+        ]?.address;
+
+        return unit0Address ? balances[unit0Address]?.assets : undefined;
+      } else {
+        return activeAccount.address
+          ? balances[activeAccount.address]?.assets
+          : undefined;
+      }
+    }
+
+    if (activeAccount.type === 'multichain' && activeAccount.coins?.waves) {
+      const network = currentNetwork?.toLowerCase() || 'mainnet';
+      const wavesAddress = (multiAccount.coins.waves.networks as any)?.[network]
+        ?.address;
+
+      return wavesAddress ? balances[wavesAddress]?.assets : undefined;
+    } else {
+      return activeAccount.address
+        ? balances[activeAccount.address]?.assets
+        : undefined;
+    }
+  }, [activeAccount, currentBlockchainType, balances, currentNetwork]);
+
+  const issuerAddress = useMemo(() => {
+    if (!activeAccount) return null;
+
+    const multiAccount = activeAccount as unknown as MultiWallet;
+
+    if (currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0) {
+      // For multichain accounts, use Unit0/Ethereum address
+      if (activeAccount.type === 'multichain' && multiAccount.coins?.unit0) {
+        const network = currentNetwork?.toLowerCase() || 'mainnet';
+        const unit0NetworkKey = network === 'stagenet' ? 'testnet' : network;
+        return (
+          (multiAccount.coins.unit0.networks as any)?.[unit0NetworkKey]
+            ?.address || null
+        );
+      } else {
+        return activeAccount.address || null;
+      }
+    }
+
+    // Waves blockchain type
+    if (activeAccount.type === 'multichain' && multiAccount.coins?.waves) {
+      const network = currentNetwork?.toLowerCase() || 'mainnet';
+      return (
+        (multiAccount.coins.waves.networks as any)?.[network]?.address || null
+      );
+    } else {
+      return activeAccount.address || null;
+    }
+  }, [activeAccount, currentBlockchainType, currentNetwork]);
+
   const swappableAssetIdsByVendor = usePopupSelector(
     state => state.swappableAssetIdsByVendor,
   );
@@ -114,13 +195,13 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
     ? sortAssetEntries(
         Object.entries(myAssets).filter(
           ([assetId]) =>
-            (!onlyFav || assets[assetId]?.isFavorite === onlyFav) &&
-            (!onlyMy || assets[assetId]?.issuer === address) &&
+            (!onlyFav || (assets as any)[assetId]?.isFavorite === onlyFav) &&
+            (!onlyMy || (assets as any)[assetId]?.issuer === issuerAddress) &&
             (!term ||
               assetId === term ||
-              icontains(assets[assetId]?.displayName, term)),
+              icontains((assets as any)[assetId]?.displayName, term)),
         ),
-        assets,
+        assets as AssetsRecord,
         showSuspiciousAssets,
       )
     : PLACEHOLDERS;
@@ -217,14 +298,14 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
                   itemSize={CARD_FULL_HEIGHT}
                   itemData={{
                     assetEntries,
-                    assets,
+                    assets: assets as AssetsRecord,
                     swappableAssetIdsSet,
                     onInfoClick,
                     onSendClick,
                     onSwapClick,
                   }}
                   itemKey={(index, itemData) =>
-                    `${itemData.assetEntries[index][0]}:${assets[
+                    `${itemData.assetEntries[index][0]}:${(assets as any)[
                       itemData.assetEntries[index][0]
                     ]?.isFavorite}`
                   }

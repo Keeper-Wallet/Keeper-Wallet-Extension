@@ -14,6 +14,7 @@ import { type NetworkController } from './network';
 import { type NftInfoController } from './NftInfoController';
 import { type PreferencesController } from './preferences';
 import { type VaultController } from './VaultController';
+import { BalanceService } from './services/balanceService';
 
 const PERIOD_IN_SECONDS = 10;
 
@@ -26,6 +27,8 @@ export class CurrentAccountController {
   private getNode;
   private getSelectedAccount;
   private isLocked;
+  private balanceService;
+  private getBlockchainType;
 
   constructor({
     extensionStorage,
@@ -37,6 +40,7 @@ export class CurrentAccountController {
     getNode,
     getSelectedAccount,
     isLocked,
+    getBlockchainType,
   }: {
     extensionStorage: ExtensionStorage;
     assetInfoController: AssetInfoController;
@@ -47,6 +51,7 @@ export class CurrentAccountController {
     getNode: NetworkController['getNode'];
     getSelectedAccount: PreferencesController['getSelectedAccount'];
     isLocked: VaultController['isLocked'];
+    getBlockchainType: NetworkController['getCurrentBlockchainType'];
   }) {
     const defaults: Partial<Record<string, BalancesItem>> = Object.fromEntries(
       getLegacyFormatAccounts().map(acc => [
@@ -78,6 +83,8 @@ export class CurrentAccountController {
     this.getNode = getNode;
     this.getSelectedAccount = getSelectedAccount;
     this.isLocked = isLocked;
+    this.balanceService = new BalanceService();
+    this.getBlockchainType = getBlockchainType;
 
     Browser.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'updateCurrentAccountBalance') {
@@ -211,14 +218,30 @@ export class CurrentAccountController {
 
   async updateCurrentAccountBalance() {
     const currentNetwork = this.getNetwork();
+    const currentBlockchainType = this.getBlockchainType();
     const accounts = this.getLegacyFormatAccounts().filter(
       ({ network }) => network === currentNetwork,
     );
     const activeAccount = this.getSelectedAccount();
 
-    if (this.isLocked() || accounts.length < 1 || !activeAccount) return;
+    if (this.isLocked() || accounts.length < 1 || !activeAccount) {
+      return;
+    }
 
     const { address } = activeAccount;
+
+    if (this.balanceService.isUnit0Network(currentBlockchainType)) {
+      const balance = await this.balanceService.fetchUnit0Balance(
+        address,
+        currentNetwork,
+      );
+
+      this.store.updateState({
+        [`balance_${address}`]: balance,
+      });
+
+      return;
+    }
 
     const [wavesBalance, myAssets, myNfts, aliases, txHistory] =
       await Promise.all([
@@ -331,6 +354,13 @@ export class CurrentAccountController {
       })),
     };
 
+    console.log('🔍 CurrentAccount Debug - Final Waves balance to store:', {
+      address,
+      balance,
+      assetsInBalance: Object.keys(balance.assets || {}),
+      assetsCount: Object.keys(balance.assets || {}).length,
+    });
+
     this.store.updateState({
       [`balance_${address}`]: balance,
     });
@@ -338,7 +368,9 @@ export class CurrentAccountController {
 
   async updateOtherAccountsBalances() {
     const url = new URL('addresses/balance', this.getNode());
-    const addresses = this.getLegacyFormatAccounts().map(account => account.address);
+    const addresses = this.getLegacyFormatAccounts().map(
+      account => account.address,
+    );
 
     while (addresses.length > 0) {
       const splicedAddresses = addresses.splice(0, 1000);

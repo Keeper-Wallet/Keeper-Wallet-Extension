@@ -28,6 +28,22 @@ const WAVES: AssetDetail = {
   displayName: 'WAVES',
 };
 
+const UNIT0: AssetDetail = {
+  quantity: '10000000000000000',
+  ticker: 'UNIT0',
+  id: 'unit0',
+  name: 'Unit0',
+  precision: 8,
+  description: 'Unit0 native token',
+  height: 0,
+  issuer: '',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  timestamp: '2024-01-01T00:00:00.000Z' as any,
+  sender: '',
+  reissuable: false,
+  displayName: 'UNIT0',
+};
+
 const SUSPICIOUS_LIST_URL =
   'https://raw.githubusercontent.com/wavesplatform/waves-community/master/Scam%20tokens%20according%20to%20the%20opinion%20of%20Waves%20Community.csv';
 const SUSPICIOUS_PERIOD_IN_MINUTES = 60;
@@ -94,12 +110,14 @@ export class AssetInfoController {
       assets: {
         [NetworkName.Mainnet]: {
           WAVES,
+          unit0: UNIT0,
         },
         [NetworkName.Stagenet]: {
           WAVES,
         },
         [NetworkName.Testnet]: {
           WAVES,
+          unit0: UNIT0,
         },
         [NetworkName.Custom]: {
           WAVES,
@@ -111,8 +129,11 @@ export class AssetInfoController {
       assetLogos: {},
       assetTickers: defaultAssetTickers,
     });
+
     this.store = new ObservableStore(initState);
     extensionStorage.subscribe(this.store);
+
+    this.ensureUnit0AssetExists();
 
     this.#remoteConfig = remoteConfig;
     this.getNode = getNode;
@@ -152,6 +173,28 @@ export class AssetInfoController {
     });
   }
 
+  private ensureUnit0AssetExists() {
+    const state = this.store.getState();
+    const assets = { ...state.assets };
+    let needsUpdate = false;
+
+    // Check if Unit0 asset exists in mainnet
+    if (!assets[NetworkName.Mainnet].unit0) {
+      assets[NetworkName.Mainnet].unit0 = UNIT0;
+      needsUpdate = true;
+    }
+
+    // Check if Unit0 asset exists in testnet
+    if (!assets[NetworkName.Testnet].unit0) {
+      assets[NetworkName.Testnet].unit0 = UNIT0;
+      needsUpdate = true;
+    }
+
+    if (needsUpdate) {
+      this.store.updateState({ assets });
+    }
+  }
+
   addTickersForExistingAssets() {
     const { assets, assetTickers } = this.store.getState();
 
@@ -177,6 +220,10 @@ export class AssetInfoController {
 
   getWavesAsset() {
     return WAVES;
+  }
+
+  getUnit0Asset() {
+    return UNIT0;
   }
 
   getAssets() {
