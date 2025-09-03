@@ -45,12 +45,18 @@ const Row = ({
     onSendClick,
     onSwapClick,
   } = data;
-  const [assetId, { balance = 0 } = {}] = assetEntries[index];
+  const [assetId, assetBalance = {}] = assetEntries[index];
+  const balance = assetBalance.balance || 0;
   const asset = assets[assetId];
+  
   return (
     <div style={style}>
       <AssetItem
-        balance={asset && new Money(new BigNumber(balance), new Asset(asset))}
+        balance={
+          asset && balance !== undefined 
+            ? Money.fromCoins(new BigNumber(balance), new Asset(asset))
+            : undefined
+        }
         assetId={assetId}
         isSwappable={swappableAssetIdsSet.has(assetId)}
         onInfoClick={onInfoClick}
@@ -86,14 +92,8 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
     state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
   );
 
-  // Get assets for the effective network
-  // For Unit0 blockchain, use direct asset access since Unit0 assets are at root level
-  const assets =
-    currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
-      ? allAssets // Use all assets directly for Unit0
-      : currentNetwork
-      ? allAssets[currentNetwork] || {}
-      : {};
+  // Assets are stored flat at root level for both WAVES and Unit0
+  const assets = allAssets;
   const showSuspiciousAssets = usePopupSelector(
     state => state.uiState?.showSuspiciousAssets,
   );
@@ -131,14 +131,14 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
       const wavesAddress = (multiAccount.coins.waves.networks as any)?.[network]
         ?.address;
 
-      return wavesAddress ? balances[wavesAddress]?.assets : undefined;
+      return wavesAddress ? balances[wavesAddress] : undefined;
     } else {
       return activeAccount.address
-        ? balances[activeAccount.address]?.assets
+        ? balances[activeAccount.address]
         : undefined;
     }
   }, [activeAccount, currentBlockchainType, balances, currentNetwork]);
-
+  
   const issuerAddress = useMemo(() => {
     if (!activeAccount) return null;
 
@@ -193,14 +193,28 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
 
   const assetEntries = myAssets
     ? sortAssetEntries(
-        Object.entries(myAssets).filter(
-          ([assetId]) =>
+        Object.entries(
+          currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+            ? myAssets
+            : myAssets.assets || {}
+        ).filter(([assetId, assetBalance]) => {
+          
+          // Always show WAVES even with 0 balance
+          if (assetId === 'WAVES') return true;
+
+          // For other assets, check balance > 0 and other filters
+          const hasBalance = assetBalance && Number(assetBalance.balance) > 0;
+          if (!hasBalance) return false;
+
+          // Apply other filters
+          return (
             (!onlyFav || (assets as any)[assetId]?.isFavorite === onlyFav) &&
             (!onlyMy || (assets as any)[assetId]?.issuer === issuerAddress) &&
             (!term ||
               assetId === term ||
-              icontains((assets as any)[assetId]?.displayName, term)),
-        ),
+              icontains((assets as any)[assetId]?.displayName, term))
+          );
+        }),
         assets as AssetsRecord,
         showSuspiciousAssets,
       )

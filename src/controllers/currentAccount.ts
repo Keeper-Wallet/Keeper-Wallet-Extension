@@ -230,140 +230,142 @@ export class CurrentAccountController {
 
     const { address } = activeAccount;
 
-    if (this.balanceService.isUnit0Network(currentBlockchainType)) {
-      const balance = await this.balanceService.fetchUnit0Balance(
-        address,
-        currentNetwork,
-      );
+    // Always try to fetch Waves balance for Waves networks
+    if (!this.balanceService.isUnit0Network(currentBlockchainType)) {
+      try {
+        const [wavesBalance, myAssets, myNfts, aliases, txHistory] =
+          await Promise.all([
+            this.#fetchWavesBalance(address),
+            this.#fetchAssetsBalance(address),
+            this.#fetchNfts(address),
+            this.#fetchAliases(address),
+            this.#fetchTxHistory(address),
+          ]);
 
-      this.store.updateState({
-        [`balance_${address}`]: balance,
-      });
+        const assets = this.assetInfoController.getAssets();
 
-      return;
+        const assetExists = (assetId: string) => !!assets[assetId];
+
+        const isMaxAgeExceeded = (assetId: string) =>
+          this.assetInfoController.isMaxAgeExceeded(assets[assetId]?.lastUpdated);
+
+        const isSponsorshipUpdated = (balanceAsset: {
+          assetId: string;
+          minSponsoredAssetFee: string | null;
+        }) =>
+          balanceAsset.minSponsoredAssetFee !==
+          assets[balanceAsset.assetId]?.minSponsoredFee;
+
+        const fetchAssetIds = (
+          myAssets.balances.filter(
+            info =>
+              !assetExists(info.assetId) ||
+              isSponsorshipUpdated(info) ||
+              isMaxAgeExceeded(info.assetId),
+          ) as Array<{ assetId: string }>
+        )
+          .concat(
+            myNfts.filter(
+              info => !assetExists(info.assetId) || isMaxAgeExceeded(info.assetId),
+            ),
+          )
+          .map(info => info.assetId)
+          .concat(
+            txHistory
+              .flatMap(tx => [
+                ...('assetId' in tx ? [tx.assetId] : []),
+                ...('order1' in tx
+                  ? [
+                      tx.order1.assetPair.amountAsset,
+                      tx.order1.assetPair.priceAsset,
+                    ]
+                  : []),
+                ...('payment' in tx ? tx.payment?.map(x => x.assetId) ?? [] : []),
+                ...('stateChanges' in tx
+                  ? tx.stateChanges.transfers.map(x => x.asset)
+                  : []),
+              ])
+              .filter(isNotNull)
+              .filter(
+                assetId => !assetExists(assetId) && isMaxAgeExceeded(assetId),
+              ),
+          );
+
+        await Promise.all([
+          this.assetInfoController.updateAssets(fetchAssetIds, {
+            ignoreCache: true,
+          }),
+          this.nftInfoController.updateNfts(myNfts),
+        ]);
+
+        const wavesAssetBalance: AssetBalance = {
+          minSponsoredAssetFee: '100000',
+          sponsorBalance: wavesBalance.available,
+          balance: wavesBalance.available,
+        };
+
+        const balance: BalancesItem = {
+          aliases,
+          available: wavesBalance.available,
+          regular: wavesBalance.regular,
+          leasedOut: new BigNumber(wavesBalance.regular)
+            .sub(wavesBalance.available)
+            .toString(),
+          network: currentNetwork,
+          txHistory,
+
+          assets: Object.fromEntries([
+            ['WAVES', wavesAssetBalance],
+            ...myAssets.balances.map(info => {
+              const assetBalance: AssetBalance = {
+                minSponsoredAssetFee: info.minSponsoredAssetFee,
+                sponsorBalance: info.sponsorBalance,
+                balance: info.balance,
+              };
+
+              return [info.assetId, assetBalance];
+            }),
+          ]),
+          nfts: myNfts.map(nft => ({
+            id: nft.assetId,
+            name: nft.name,
+            precision: nft.decimals,
+            description: nft.description,
+            height: nft.issueHeight,
+            timestamp: new Date(nft.issueTimestamp).toJSON() as unknown as Date,
+            sender: nft.issuer,
+            quantity: nft.quantity,
+            reissuable: nft.reissuable,
+            hasScript: nft.scripted,
+            displayName: nft.name,
+            minSponsoredFee: nft.minSponsoredAssetFee ?? undefined,
+            originTransactionId: nft.originTransactionId,
+            issuer: nft.issuer,
+          })),
+        };
+
+        this.store.updateState({
+          [`balance_${address}`]: balance,
+        });
+      } catch (error) {
+        console.error('Error fetching Waves balance:', error);
+        return;
+      }
+    } else {
+      try {
+        // For Unit0 networks, fetch Unit0 balances
+        const balance = await this.balanceService.fetchUnit0Balance(
+          address,
+          currentNetwork,
+        );
+
+        this.store.updateState({
+          [`balance_${address}`]: balance,
+        });
+      } catch (error) {
+        console.error('Error fetching Unit0 balance:', error);
+      }
     }
-
-    const [wavesBalance, myAssets, myNfts, aliases, txHistory] =
-      await Promise.all([
-        this.#fetchWavesBalance(address),
-        this.#fetchAssetsBalance(address),
-        this.#fetchNfts(address),
-        this.#fetchAliases(address),
-        this.#fetchTxHistory(address),
-      ]);
-
-    const assets = this.assetInfoController.getAssets();
-
-    const assetExists = (assetId: string) => !!assets[assetId];
-
-    const isMaxAgeExceeded = (assetId: string) =>
-      this.assetInfoController.isMaxAgeExceeded(assets[assetId]?.lastUpdated);
-
-    const isSponsorshipUpdated = (balanceAsset: {
-      assetId: string;
-      minSponsoredAssetFee: string | null;
-    }) =>
-      balanceAsset.minSponsoredAssetFee !==
-      assets[balanceAsset.assetId]?.minSponsoredFee;
-
-    const fetchAssetIds = (
-      myAssets.balances.filter(
-        info =>
-          !assetExists(info.assetId) ||
-          isSponsorshipUpdated(info) ||
-          isMaxAgeExceeded(info.assetId),
-      ) as Array<{ assetId: string }>
-    )
-      .concat(
-        myNfts.filter(
-          info => !assetExists(info.assetId) || isMaxAgeExceeded(info.assetId),
-        ),
-      )
-      .map(info => info.assetId)
-      .concat(
-        txHistory
-          .flatMap(tx => [
-            ...('assetId' in tx ? [tx.assetId] : []),
-            ...('order1' in tx
-              ? [
-                  tx.order1.assetPair.amountAsset,
-                  tx.order1.assetPair.priceAsset,
-                ]
-              : []),
-            ...('payment' in tx ? tx.payment?.map(x => x.assetId) ?? [] : []),
-            ...('stateChanges' in tx
-              ? tx.stateChanges.transfers.map(x => x.asset)
-              : []),
-          ])
-          .filter(isNotNull)
-          .filter(
-            assetId => !assetExists(assetId) && isMaxAgeExceeded(assetId),
-          ),
-      );
-
-    await Promise.all([
-      this.assetInfoController.updateAssets(fetchAssetIds, {
-        ignoreCache: true,
-      }),
-      this.nftInfoController.updateNfts(myNfts),
-    ]);
-
-    const wavesAssetBalance: AssetBalance = {
-      minSponsoredAssetFee: '100000',
-      sponsorBalance: wavesBalance.available,
-      balance: wavesBalance.available,
-    };
-
-    const balance: BalancesItem = {
-      aliases,
-      available: wavesBalance.available,
-      regular: wavesBalance.regular,
-      leasedOut: new BigNumber(wavesBalance.regular)
-        .sub(wavesBalance.available)
-        .toString(),
-      network: currentNetwork,
-      txHistory,
-
-      assets: Object.fromEntries([
-        ['WAVES', wavesAssetBalance],
-        ...myAssets.balances.map(info => {
-          const assetBalance: AssetBalance = {
-            minSponsoredAssetFee: info.minSponsoredAssetFee,
-            sponsorBalance: info.sponsorBalance,
-            balance: info.balance,
-          };
-
-          return [info.assetId, assetBalance];
-        }),
-      ]),
-      nfts: myNfts.map(nft => ({
-        id: nft.assetId,
-        name: nft.name,
-        precision: nft.decimals,
-        description: nft.description,
-        height: nft.issueHeight,
-        timestamp: new Date(nft.issueTimestamp).toJSON() as unknown as Date,
-        sender: nft.issuer,
-        quantity: nft.quantity,
-        reissuable: nft.reissuable,
-        hasScript: nft.scripted,
-        displayName: nft.name,
-        minSponsoredFee: nft.minSponsoredAssetFee ?? undefined,
-        originTransactionId: nft.originTransactionId,
-        issuer: nft.issuer,
-      })),
-    };
-
-    console.log('🔍 CurrentAccount Debug - Final Waves balance to store:', {
-      address,
-      balance,
-      assetsInBalance: Object.keys(balance.assets || {}),
-      assetsCount: Object.keys(balance.assets || {}).length,
-    });
-
-    this.store.updateState({
-      [`balance_${address}`]: balance,
-    });
   }
 
   async updateOtherAccountsBalances() {

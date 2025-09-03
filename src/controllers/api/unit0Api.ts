@@ -24,7 +24,12 @@ export class Unit0Api {
   ): Promise<Unit0BalanceResponse> {
     const baseUrl = this.getBaseUrl(network);
 
-    const response = await fetch(`${baseUrl}${address}`);
+    console.log(network, 'network');
+    const mockAddress =
+      network === NetworkName.Testnet
+        ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
+        : '0xA18Ea8fE573189e35bb4321adf04F0428d6C1612';
+    const response = await fetch(`${baseUrl}${mockAddress}`);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch unit0 balance: ${response.status}`);
@@ -38,7 +43,11 @@ export class Unit0Api {
     network: NetworkName = NetworkName.Mainnet,
   ): Promise<Unit0TokenBalance[]> {
     const baseUrl = this.getBaseUrl(network);
-    const response = await fetch(`${baseUrl}${address}/token-balances`);
+    const mockAddress =
+      network === NetworkName.Testnet
+        ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
+        : '0xA18Ea8fE573189e35bb4321adf04F0428d6C1612';
+    const response = await fetch(`${baseUrl}${mockAddress}/token-balances`);
 
     if (!response.ok) {
       throw new Error(

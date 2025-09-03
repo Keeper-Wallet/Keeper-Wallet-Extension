@@ -35,11 +35,16 @@ export class BalanceService {
     };
 
     for (const token of tokenData) {
-      assets[token.token_id] = {
-        balance: token.balance || '0',
-        sponsorBalance: token.balance || '0',
-        minSponsoredAssetFee: null,
-      };
+      const tokenAddress = token.token?.address;
+      const tokenBalance = token.value || '0';
+
+      if (tokenAddress) {
+        assets[tokenAddress] = {
+          balance: tokenBalance,
+          sponsorBalance: tokenBalance,
+          minSponsoredAssetFee: null,
+        };
+      }
     }
 
     return {
@@ -62,7 +67,6 @@ export class BalanceService {
       );
       return this.buildUnit0Balance(address, network, balance, tokens);
     } catch (error) {
-      console.error('Error fetching unit0 balance:', error);
       return this.buildUnit0Balance(
         address,
         network,
