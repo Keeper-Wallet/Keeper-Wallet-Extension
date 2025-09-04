@@ -60,7 +60,6 @@ export class Unit0Api {
     network: NetworkName = NetworkName.Mainnet,
   ): Promise<Unit0BalanceResponse> {
     const baseUrl = this.getBaseUrl(network);
-
     const mockAddress =
       network === NetworkName.Testnet
         ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
@@ -109,7 +108,6 @@ export class Unit0Api {
 
     return { balance, tokens };
   }
-
   async fetchTransactionHistory(
     address: string,
     network: NetworkName = NetworkName.Mainnet,
