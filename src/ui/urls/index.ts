@@ -3,6 +3,8 @@ const explorerUrls = new Map([
   ['T', 'testnet.wavesexplorer.com'],
   ['S', 'stagenet.wavesexplorer.com'],
   ['custom', 'wavesexplorer.com/custom'],
+  ['88811', 'explorer.unit0.dev'], // Unit0 mainnet
+  ['88817', 'explorer-testnet.unit0.dev'], // Unit0 testnet
 ]);
 
 export function getAccountLink(

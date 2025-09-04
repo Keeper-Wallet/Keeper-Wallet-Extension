@@ -247,7 +247,9 @@ export class CurrentAccountController {
         const assetExists = (assetId: string) => !!assets[assetId];
 
         const isMaxAgeExceeded = (assetId: string) =>
-          this.assetInfoController.isMaxAgeExceeded(assets[assetId]?.lastUpdated);
+          this.assetInfoController.isMaxAgeExceeded(
+            assets[assetId]?.lastUpdated,
+          );
 
         const isSponsorshipUpdated = (balanceAsset: {
           assetId: string;
@@ -266,7 +268,8 @@ export class CurrentAccountController {
         )
           .concat(
             myNfts.filter(
-              info => !assetExists(info.assetId) || isMaxAgeExceeded(info.assetId),
+              info =>
+                !assetExists(info.assetId) || isMaxAgeExceeded(info.assetId),
             ),
           )
           .map(info => info.assetId)
@@ -280,7 +283,9 @@ export class CurrentAccountController {
                       tx.order1.assetPair.priceAsset,
                     ]
                   : []),
-                ...('payment' in tx ? tx.payment?.map(x => x.assetId) ?? [] : []),
+                ...('payment' in tx
+                  ? tx.payment?.map(x => x.assetId) ?? []
+                  : []),
                 ...('stateChanges' in tx
                   ? tx.stateChanges.transfers.map(x => x.asset)
                   : []),

@@ -33,7 +33,7 @@ const UNIT0: AssetDetail = {
   ticker: 'UNIT0',
   id: 'unit0',
   name: 'Unit0',
-  precision: 8,
+  precision: 18,
   description: 'Unit0 native token',
   height: 0,
   issuer: '',
