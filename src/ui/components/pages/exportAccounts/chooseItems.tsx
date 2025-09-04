@@ -228,7 +228,6 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
     if (selectAll) {
       // Select all wallets
       setSelectedWallets(new Set(Object.keys(groupedAccounts)));
-
       // Also select all accounts
       const allAccounts = new Set<string>();
       Object.entries(groupedAccounts).forEach(([_, networks]) => {

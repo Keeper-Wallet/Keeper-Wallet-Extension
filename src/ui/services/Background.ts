@@ -151,14 +151,14 @@ class Background {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.batchAddWallets(inputs);
   }
-  
+
   async removeWallet(address: string): Promise<void> {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.removeWallet(address);
   }
-  
+
   // Multi-Wallet methods
   async addMultiWallet(multiWallet: MultiWallet) {
     await this.initPromise;
@@ -166,15 +166,18 @@ class Background {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.addMultiWallet(multiWallet);
   }
-  
+
   async getMultiWallets(): Promise<MultiWallet[]> {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.background!.getMultiWallets();
   }
-  
-  async findMultiWalletByAccount(address: string, network: NetworkName): Promise<MultiWallet | undefined> {
+
+  async findMultiWalletByAccount(
+    address: string,
+    network: NetworkName,
+  ): Promise<MultiWallet | undefined> {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -267,7 +270,11 @@ class Background {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.background!.getAccountPrivateKey(address, blockChainType, password);
+    return this.background!.getAccountPrivateKey(
+      address,
+      blockChainType,
+      password,
+    );
   }
 
   async editWalletName(address: string, name: string, network: NetworkName) {
@@ -328,7 +335,6 @@ class Background {
     this._connect();
     return this.background!.getHideTestAccounts();
   }
-
 
   async setCurrentBlockchainType(blockchainType: string): Promise<void> {
     await this.initPromise;

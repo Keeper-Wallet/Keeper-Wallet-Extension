@@ -152,17 +152,19 @@ export function createWavesOnlyMultiWallet({
       selectedAccount = accounts.find(
         account => account.address === selectedAddress,
       );
-      
+
       if (selectedAccount) break;
-      
+
       // Wait a bit and try again
       await new Promise(resolve => setTimeout(resolve, 100));
     }
-    
+
     if (!selectedAccount) {
-      throw new Error(`No account found with address: ${selectedAddress} after 3 attempts`);
+      throw new Error(
+        `No account found with address: ${selectedAddress} after 3 attempts`,
+      );
     }
-    
+
     dispatch(selectAccount(selectedAccount as PreferencesAccount));
   };
 }
@@ -254,17 +256,19 @@ export function createFullMultiWallet({
       selectedAccount = accounts.find(
         account => account.address === selectedAddress,
       );
-      
+
       if (selectedAccount) break;
-      
+
       // Wait a bit and try again
       await new Promise(resolve => setTimeout(resolve, 100));
     }
-    
+
     if (!selectedAccount) {
-      throw new Error(`No account found with address: ${selectedAddress} after 3 attempts`);
+      throw new Error(
+        `No account found with address: ${selectedAddress} after 3 attempts`,
+      );
     }
-    
+
     dispatch(selectAccount(selectedAccount as PreferencesAccount));
   };
 }
