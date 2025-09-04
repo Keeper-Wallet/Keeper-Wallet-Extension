@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { NetworkName } from 'networks/types';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   BlockchainType,
@@ -156,7 +156,7 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
   );
 
   // Selection state for individual accounts
-  const [selectedAccounts, setSelectedAccounts] = useState<Set<string>>(() => {
+  const [, setSelectedAccounts] = useState<Set<string>>(() => {
     // Initialize with all accounts from selected wallets
     const initialAccounts = new Set<string>();
     Object.entries(groupedAccounts).forEach(([_, networks]) => {
@@ -166,55 +166,6 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
     });
     return initialAccounts;
   });
-
-  // Toggle individual account selection
-  function toggleAccountSelected(
-    accountId: string,
-    walletId: string,
-    isSelected: boolean,
-  ) {
-    // Update account selection
-    setSelectedAccounts(prevSelected => {
-      const newSelected = new Set(prevSelected);
-      if (isSelected) {
-        newSelected.add(accountId);
-      } else {
-        newSelected.delete(accountId);
-      }
-      return newSelected;
-    });
-
-    // Check if all accounts in wallet are selected to update wallet selection
-    const walletAccounts = groupedAccounts[walletId] || [];
-
-    // We need to calculate this after the state update, so we do it manually
-    const updatedAccountsSelected = new Set(selectedAccounts);
-    if (isSelected) {
-      updatedAccountsSelected.add(accountId);
-    } else {
-      updatedAccountsSelected.delete(accountId);
-    }
-
-    // Check if all wallet accounts are now selected or deselected
-    const allSelected = walletAccounts.every(account =>
-      updatedAccountsSelected.has(account.id),
-    );
-
-    const noneSelected = walletAccounts.every(
-      account => !updatedAccountsSelected.has(account.id),
-    );
-
-    // Update wallet selection accordingly
-    setSelectedWallets(prevSelected => {
-      const newSelected = new Set(prevSelected);
-      if (allSelected) {
-        newSelected.add(walletId);
-      } else if (noneSelected) {
-        newSelected.delete(walletId);
-      }
-      return newSelected;
-    });
-  }
 
   // Toggle wallet selection - affects all its accounts
   function toggleWalletSelected(walletId: string, isSelected: boolean) {
@@ -277,7 +228,7 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
     if (selectAll) {
       // Select all wallets
       setSelectedWallets(new Set(Object.keys(groupedAccounts)));
-      
+
       // Also select all accounts
       const allAccounts = new Set<string>();
       Object.entries(groupedAccounts).forEach(([_, networks]) => {
@@ -324,7 +275,7 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
               type="checkbox"
               className={styles.checkbox}
               checked={allSelected}
-              onChange={(e) => toggleAllWallets(e.target.checked)}
+              onChange={e => toggleAllWallets(e.target.checked)}
             />
             <span className={clsx('body1')}>
               {allSelected ? t('common.deselectAll') : t('common.selectAll')}
@@ -337,31 +288,36 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
         {Object.entries(groupedAccounts)
           .sort(([, a], [, b]) => a[0].name.localeCompare(b[0].name))
           .map(([walletId, networks]) => {
-          // Get wallet info from the first network item
-          const walletInfo = networks[0];
+            // Get wallet info from the first network item
+            const walletInfo = networks[0];
 
-          return (
-            <div key={walletId} className={styles.accountsGroup}>
-              <header className={styles.accountsGroupHeader}>
-                <i className={clsx(styles.accountsGroupIcon, 'accountIcon')} />
-                <h2 className={styles.accountsGroupLabel}>
-                  {walletInfo.name}
-                  <span className={styles.walletTypeLabel}>
-                    {walletInfo.type}
-                  </span>
-                </h2>
-                <input
-                  checked={selectedWallets.has(walletId)}
-                  className={styles.checkbox}
-                  type="checkbox"
-                  onChange={event => {
-                    toggleWalletSelected(walletId, event.currentTarget.checked);
-                  }}
-                />
-              </header>
-            </div>
-          );
-        })}
+            return (
+              <div key={walletId} className={styles.accountsGroup}>
+                <header className={styles.accountsGroupHeader}>
+                  <i
+                    className={clsx(styles.accountsGroupIcon, 'accountIcon')}
+                  />
+                  <h2 className={styles.accountsGroupLabel}>
+                    {walletInfo.name}
+                    <span className={styles.walletTypeLabel}>
+                      {walletInfo.type}
+                    </span>
+                  </h2>
+                  <input
+                    checked={selectedWallets.has(walletId)}
+                    className={styles.checkbox}
+                    type="checkbox"
+                    onChange={event => {
+                      toggleWalletSelected(
+                        walletId,
+                        event.currentTarget.checked,
+                      );
+                    }}
+                  />
+                </header>
+              </div>
+            );
+          })}
       </div>
 
       <div className={styles.buttons}>

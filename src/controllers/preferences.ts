@@ -106,11 +106,13 @@ export class PreferencesController extends EventEmitter {
       const currentNetworkWallets = this.getNetworkWalletsForCurrentNetwork(
         accounts,
         currentNetwork,
-        currentBlockchainType
+        currentBlockchainType,
       );
-      
+
       if (currentNetworkWallets.length > 0) {
-        const sortedWallets = currentNetworkWallets.sort(compareAccountsByLastUsed);
+        const sortedWallets = currentNetworkWallets.sort(
+          compareAccountsByLastUsed,
+        );
         this.emit('updateSelectedAccount', sortedWallets[0]);
         this.selectAccount(sortedWallets[0].address, currentNetwork);
       }
@@ -124,11 +126,13 @@ export class PreferencesController extends EventEmitter {
       const currentNetworkWallets = this.getNetworkWalletsForCurrentNetwork(
         accounts,
         currentNetwork,
-        currentBlockchainType
+        currentBlockchainType,
       );
-      
+
       if (currentNetworkWallets.length > 0) {
-        const sortedWallets = currentNetworkWallets.sort(compareAccountsByLastUsed);
+        const sortedWallets = currentNetworkWallets.sort(
+          compareAccountsByLastUsed,
+        );
         this.emit('updateSelectedAccount', sortedWallets[0]);
         this.selectAccount(sortedWallets[0].address, currentNetwork);
       } else {
@@ -138,17 +142,21 @@ export class PreferencesController extends EventEmitter {
     }
 
     // Find the selected wallet
-    const selectedWallet = accounts.find(wallet => wallet.id === selectedWalletId);
+    const selectedWallet = accounts.find(
+      wallet => wallet.id === selectedWalletId,
+    );
     if (!selectedWallet?.coins) {
       // Handle legacy or invalid wallets
       const currentNetworkWallets = this.getNetworkWalletsForCurrentNetwork(
         accounts,
         currentNetwork,
-        currentBlockchainType
+        currentBlockchainType,
       );
-      
+
       if (currentNetworkWallets.length > 0) {
-        const sortedWallets = currentNetworkWallets.sort(compareAccountsByLastUsed);
+        const sortedWallets = currentNetworkWallets.sort(
+          compareAccountsByLastUsed,
+        );
         this.emit('updateSelectedAccount', sortedWallets[0]);
         this.selectAccount(sortedWallets[0].address, currentNetwork);
       } else {
@@ -162,9 +170,11 @@ export class PreferencesController extends EventEmitter {
       const unit0Coin = selectedWallet.coins.unit0;
       if (unit0Coin?.networks) {
         // For Unit0, stagenet doesn't exist so map to testnet
-        const unit0Network = currentNetwork === 'stagenet' ? 'testnet' : currentNetwork;
-        
-        const networkData = unit0Coin.networks[unit0Network as keyof typeof unit0Coin.networks];
+        const unit0Network =
+          currentNetwork === 'stagenet' ? 'testnet' : currentNetwork;
+
+        const networkData =
+          unit0Coin.networks[unit0Network as keyof typeof unit0Coin.networks];
         if (networkData?.address) {
           // Found Unit0 account in the same wallet for this network
           this.emit('updateSelectedAccount', {
@@ -174,20 +184,26 @@ export class PreferencesController extends EventEmitter {
             name: selectedWallet.name,
             networkCode: networkData.networkCode,
             coinType: 'unit0',
-            publicKey: unit0Coin.publicKey
+            publicKey: unit0Coin.publicKey,
           });
           this.selectAccount(networkData.address, currentNetwork);
           return;
         }
       }
     }
-    
+
     // For Waves blockchain or if no Unit0 account was found
-    if (currentBlockchainType === 'waves' || currentBlockchainType === 'unit0') {
+    if (
+      currentBlockchainType === 'waves' ||
+      currentBlockchainType === 'unit0'
+    ) {
       // Try to find the account in the specified blockchain first
       const targetCoin = selectedWallet.coins[currentBlockchainType];
       if (targetCoin?.networks) {
-        const networkData = targetCoin.networks[currentNetwork as keyof typeof targetCoin.networks];
+        const networkData =
+          targetCoin.networks[
+            currentNetwork as keyof typeof targetCoin.networks
+          ];
         if (networkData?.address) {
           // Found account in the same wallet for this network and blockchain type
           this.emit('updateSelectedAccount', {
@@ -197,7 +213,7 @@ export class PreferencesController extends EventEmitter {
             name: selectedWallet.name,
             networkCode: networkData.networkCode,
             coinType: currentBlockchainType,
-            publicKey: targetCoin.publicKey
+            publicKey: targetCoin.publicKey,
           });
           this.selectAccount(networkData.address, currentNetwork);
           return;
@@ -209,9 +225,13 @@ export class PreferencesController extends EventEmitter {
       const otherCoin = selectedWallet.coins[otherType];
       if (otherCoin?.networks) {
         // Handle network mapping for Unit0
-        const networkToUse = otherType === 'unit0' && currentNetwork === 'stagenet' ? 'testnet' : currentNetwork;
-        
-        const networkData = otherCoin.networks[networkToUse as keyof typeof otherCoin.networks];
+        const networkToUse =
+          otherType === 'unit0' && currentNetwork === 'stagenet'
+            ? 'testnet'
+            : currentNetwork;
+
+        const networkData =
+          otherCoin.networks[networkToUse as keyof typeof otherCoin.networks];
         if (networkData?.address) {
           // Found account in the other blockchain type
           this.emit('updateSelectedAccount', {
@@ -221,7 +241,7 @@ export class PreferencesController extends EventEmitter {
             name: selectedWallet.name,
             networkCode: networkData.networkCode,
             coinType: otherType,
-            publicKey: otherCoin.publicKey
+            publicKey: otherCoin.publicKey,
           });
           this.selectAccount(networkData.address, currentNetwork);
           return;
@@ -234,11 +254,13 @@ export class PreferencesController extends EventEmitter {
     const currentNetworkWallets = this.getNetworkWalletsForCurrentNetwork(
       accounts,
       currentNetwork,
-      currentBlockchainType
+      currentBlockchainType,
     );
-    
+
     if (currentNetworkWallets.length > 0) {
-      const sortedWallets = currentNetworkWallets.sort(compareAccountsByLastUsed);
+      const sortedWallets = currentNetworkWallets.sort(
+        compareAccountsByLastUsed,
+      );
       this.emit('updateSelectedAccount', sortedWallets[0]);
       this.selectAccount(sortedWallets[0].address, currentNetwork);
     } else {
@@ -249,34 +271,38 @@ export class PreferencesController extends EventEmitter {
   // Helper method to get wallets for current network and blockchain type
   private getNetworkWalletsForCurrentNetwork(
     accounts: MultiWallet[],
-    currentNetwork: string, 
-    currentBlockchainType: string
+    currentNetwork: string,
+    currentBlockchainType: string,
   ): PreferencesAccount[] {
     return accounts.flatMap(wallet => {
       if (wallet.coins) {
         // First try to match the current blockchain type
-        const relevantCoin = wallet.coins[currentBlockchainType as keyof typeof wallet.coins];
-        
+        const relevantCoin =
+          wallet.coins[currentBlockchainType as keyof typeof wallet.coins];
+
         if (relevantCoin?.networks) {
           // For Unit0, handle stagenet mapping to testnet
-          const networkKey = currentBlockchainType === 'unit0' && currentNetwork === 'stagenet' 
-            ? 'testnet' as keyof typeof relevantCoin.networks
-            : currentNetwork as keyof typeof relevantCoin.networks;
-            
+          const networkKey =
+            currentBlockchainType === 'unit0' && currentNetwork === 'stagenet'
+              ? ('testnet' as keyof typeof relevantCoin.networks)
+              : (currentNetwork as keyof typeof relevantCoin.networks);
+
           const coinNetwork = relevantCoin.networks[networkKey];
 
           if (coinNetwork) {
-            return [{
-              address: coinNetwork.address,
-              network: currentNetwork,
-              walletId: wallet.id,
-              lastUsed: wallet.lastUsed || wallet.createdAt,
-              networkCode: coinNetwork.networkCode,
-              coinType: currentBlockchainType as string,
-              name: wallet.name,
-              type: wallet.type,
-              publicKey: relevantCoin.publicKey
-            }];
+            return [
+              {
+                address: coinNetwork.address,
+                network: currentNetwork,
+                walletId: wallet.id,
+                lastUsed: wallet.lastUsed || wallet.createdAt,
+                networkCode: coinNetwork.networkCode,
+                coinType: currentBlockchainType as string,
+                name: wallet.name,
+                type: wallet.type,
+                publicKey: relevantCoin.publicKey,
+              },
+            ];
           }
         }
       }
@@ -336,7 +362,8 @@ export class PreferencesController extends EventEmitter {
           const wavesNetworks = wallet.coins.waves?.networks;
           if (wavesNetworks) {
             if (
-              wavesNetworks[network as keyof typeof wavesNetworks]?.address === address
+              wavesNetworks[network as keyof typeof wavesNetworks]?.address ===
+              address
             ) {
               selectedAccount = {
                 address,
@@ -346,7 +373,8 @@ export class PreferencesController extends EventEmitter {
                 walletId: wallet.id,
                 publicKey: wallet.coins.waves.publicKey,
                 networkCode:
-                  wavesNetworks[network as keyof typeof wavesNetworks]?.networkCode,
+                  wavesNetworks[network as keyof typeof wavesNetworks]
+                    ?.networkCode,
                 coinType: 'waves',
               };
               break;
@@ -358,9 +386,10 @@ export class PreferencesController extends EventEmitter {
           if (unit0Networks) {
             // For Unit0, map stagenet to testnet since Unit0 doesn't have stagenet
             const unit0Network = network === 'stagenet' ? 'testnet' : network;
-            
+
             if (
-              unit0Networks[unit0Network as keyof typeof unit0Networks]?.address === address
+              unit0Networks[unit0Network as keyof typeof unit0Networks]
+                ?.address === address
             ) {
               selectedAccount = {
                 address,
@@ -368,8 +397,10 @@ export class PreferencesController extends EventEmitter {
                 name: wallet.name,
                 type: wallet.type,
                 walletId: wallet.id,
-                publicKey: wallet.coins.unit0.publicKey,
-                networkCode: unit0Networks[unit0Network as keyof typeof unit0Networks]?.networkCode,
+                publicKey: wallet.coins.unit0?.publicKey,
+                networkCode:
+                  unit0Networks[unit0Network as keyof typeof unit0Networks]
+                    ?.networkCode,
                 coinType: 'unit0',
               };
               break;

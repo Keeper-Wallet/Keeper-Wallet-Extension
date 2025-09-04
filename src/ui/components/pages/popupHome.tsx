@@ -43,8 +43,7 @@ export function PopupHome() {
           multiChainAccount.coins?.unit0
         ) {
           // Use currentNetwork from Redux state
-          const network =
-            state.network?.currentNetwork?.toLowerCase() || 'mainnet';
+          const network = state.currentNetwork?.toLowerCase() || 'mainnet';
           // For stagenet, use testnet for Unit0 since Unit0 doesn't have stagenet
           const unit0NetworkKey = network === 'stagenet' ? 'testnet' : network;
 

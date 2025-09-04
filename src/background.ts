@@ -419,10 +419,8 @@ class BackgroundService extends EventEmitter {
     // Balance. Polls balances for accounts
     this.currentAccountController = new CurrentAccountController({
       extensionStorage: this.extensionStorage,
-      getNetwork: this.networkController.getNetwork.bind(
-        this.networkController,
-      ),
-      getNode: this.networkController.getNode.bind(this.networkController),
+      assetInfoController: this.assetInfoController,
+      nftInfoController: this.nftInfoController,
       getAccounts: this.preferencesController.getAccounts.bind(
         this.preferencesController,
       ),
@@ -430,12 +428,17 @@ class BackgroundService extends EventEmitter {
         this.preferencesController.getLegacyFormatAccounts.bind(
           this.preferencesController,
         ),
+      getNetwork: this.networkController.getNetwork.bind(
+        this.networkController,
+      ),
+      getNode: this.networkController.getNode.bind(this.networkController),
       getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
         this.preferencesController,
       ),
       isLocked: this.vaultController.isLocked.bind(this.vaultController),
-      assetInfoController: this.assetInfoController,
-      nftInfoController: this.nftInfoController,
+      getBlockchainType: this.networkController.getCurrentBlockchainType.bind(
+        this.networkController,
+      ),
     });
 
     this.addressBookController = new AddressBookController({

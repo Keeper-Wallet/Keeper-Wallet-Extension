@@ -1,6 +1,5 @@
 import { type NetworkName } from 'networks/types';
 
-
 // Define blockchain and network type constants to match MultiWallet structure
 export const BLOCKCHAIN_TYPES = {
   WAVES: 'waves',
@@ -47,6 +46,23 @@ export const NETWORK_OPTIONS = [
 export const assetIds: Record<NetworkName, Record<string, string>> = {
   mainnet: {
     WAVES: 'WAVES',
+    UNIT0: 'unit0',
+    // Unit0 ERC-20/ERC-721 tokens
+    'UNIT0-WETH': '0x1B100DE3F13E3f8Bb2f66FE58c1949c32E7124B',
+    'UNIT0-DAI': '0xfA88d31044197fa9fAC50b8b7f6F4b54CC68d80e',
+    'UNIT0-AAVE': '0xbF66EaedC8A3a3B16d2A11F269f3FEC755fca4E5',
+    'UNIT0-WUNIT0': '0x5E73CEc92450a4eAE6B7A3Ea99459B0D069eFef5',
+    'UNIT0-USDC': '0xD48A37F4F6B9f5a5d1be16e87459Bc1AcA201026',
+    'UNIT0-WBTC': '0x1876c32a0CF3eeB7d1eFf2F3C29AdFCF5B956270',
+    'UNIT0-USDT': '0x333fE97265D2C95bC1CF06d8ac1f410fCf97A737',
+    'UNIT0-UNI-V3-POS': '0x4B72F0F2c222C6323589E46c0119154b74839d0f',
+    'UNIT0-Memma': '0xF252401108d869656Fa682e67B04AC9e9F4a388e',
+    'UNIT0-Sancho': '0x7900c01eED60868beEA1DE79730CA5633A4b6a45',
+    'UNIT0-uWUNIT0': '0x94b514606C161677d1B243d4c4b069B3f2Fb8682',
+    'UNIT0-variableDebtWUNIT0': '0xC447FCdFab3b8D70EEc7d4F85dE486b4E5ea74Ac',
+    'UNIT0-variableDebtUSDT': '0xeEdF214BB01499364e4e44e4325e5bFFd0ae2719',
+    'UNIT0-USDT-NEW': '0xb303d80db8415FD1d3C9FED68A52EEAc9a052671',
+    'UNIT0-USDC-NEW': '0xEb19000D90f17FFbd3AD9CDB8915D928F4980fD1',
     BAG: 'Euz5HtYcj3nVTZxppA7wdabwTe5BzHFiu4QG1EJtzeUx',
     BCH: 'zMFqXuoyrn5w17PFurTqxB7GsS71fp9dfk6XFwxbPCy',
     BNB: '5UYBPpq4WoU5n4MwpFkgJnW3Fq4B1u3ukpK33ik4QerR',
@@ -120,6 +136,24 @@ export const assetIds: Record<NetworkName, Record<string, string>> = {
   },
   testnet: {
     WAVES: 'WAVES',
+    UNIT0: 'unit0',
+    UNIT0_TEST: '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84',
+    // Unit0 ERC-20/ERC-721 tokens (same contracts for testnet)
+    'UNIT0-WETH': '0x1B100DE3F13E3f8Bb2f66FE58c1949c32E7124B',
+    'UNIT0-DAI': '0xfA88d31044197fa9fAC50b8b7f6F4b54CC68d80e',
+    'UNIT0-AAVE': '0xbF66EaedC8A3a3B16d2A11F269f3FEC755fca4E5',
+    'UNIT0-WUNIT0': '0x5E73CEc92450a4eAE6B7A3Ea99459B0D069eFef5',
+    'UNIT0-USDC': '0xD48A37F4F6B9f5a5d1be16e87459Bc1AcA201026',
+    'UNIT0-WBTC': '0x1876c32a0CF3eeB7d1eFf2F3C29AdFCF5B956270',
+    'UNIT0-USDT': '0x333fE97265D2C95bC1CF06d8ac1f410fCf97A737',
+    'UNIT0-UNI-V3-POS': '0x4B72F0F2c222C6323589E46c0119154b74839d0f',
+    'UNIT0-Memma': '0xF252401108d869656Fa682e67B04AC9e9F4a388e',
+    'UNIT0-Sancho': '0x7900c01eED60868beEA1DE79730CA5633A4b6a45',
+    'UNIT0-uWUNIT0': '0x94b514606C161677d1B243d4c4b069B3f2Fb8682',
+    'UNIT0-variableDebtWUNIT0': '0xC447FCdFab3b8D70EEc7d4F85dE486b4E5ea74Ac',
+    'UNIT0-variableDebtUSDT': '0xeEdF214BB01499364e4e44e4325e5bFFd0ae2719',
+    'UNIT0-USDT-NEW': '0xb303d80db8415FD1d3C9FED68A52EEAc9a052671',
+    'UNIT0-USDC-NEW': '0xEb19000D90f17FFbd3AD9CDB8915D928F4980fD1',
     BTC: 'iHTVbu8ArLhtdtJ8BQhyaomgVogSfXT45RtwNFiK4We',
     DASH: '13mWHq1h58WRTiRNBqDRD63gsV8Hq4joxYQzH3iRdHiR',
     EGG: 'Gp75gygbc1woJMheDomSY1ULyaRVGVEWS64wNWfvncyg',
@@ -162,8 +196,7 @@ export const defaultAssetTickers = {
   '62LyMjcr2DtiyF5yVXFhoQ2q414VPPJXjsNYp72SuDCH': 'BSV',
   '8DLiYZjo3UUaRBTHU7Ayoqg4ihwb6YH1AfXrrhdjQ7K1': 'BUSD',
   '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS': 'BTC',
-  DRVGiwqmsZpFzaMoAFQXjBNXT4PFepgPvnJ5sGUrhXQt: 'BTCDOWN',
-  DazN41oAedqwGZ8aabf4nJQwJNZhsEgPH3YQWDtPsdeV: 'BTCLP',
+  DRVGiwqmsZpFzaMoAFQXjBNXT4PFepgPvnJGMMEnjMafRMfap5vZyaLwgMKD: 'BTCLP',
   '8b53M5vTk8wRBRuJ27ebTvTeGfbjpLZuoZQ7hkFjHsu4': 'BTCUP',
   '8WhH5CCJ6NakPvEvAJcizqqD7H6axhupdYHDFumSDwsy': 'BTCUSDNLP',
   ESaD2AREvgk7o4C9eQkZ8Nmau9BSHqgTK5ymHV36xocy: 'CGU',
@@ -259,9 +292,51 @@ export const defaultAssetTickers = {
   '5WvPKSJXzVE2orvbkJ8wsQmmQKqTv9sGBPksV4adViw3': 'XMR',
   BLRxWVJWaVuR2CsCoTvTw2bDZ3sQLeTbCofcJv7dP5J4: 'YFI',
   BrjUWjndUanm5VsJkbUip8VRYy6LWJePtxya3FNv4TQa: 'ZEC',
+  // Unit0 ERC-20/ERC-721 tokens
+  '0x1B100DE3F13E3f8Bb2f66FE58c1949c32E7124B': 'WETH',
+  '0xfA88d31044197fa9fAC50b8b7f6F4b54CC68d80e': 'DAI',
+  '0xbF66EaedC8A3a3B16d2A11F269f3FEC755fca4E5': 'AAVE',
+  '0x5E73CEc92450a4eAE6B7A3Ea99459B0D069eFef5': 'WUNIT0',
+  '0xD48A37F4F6B9f5a5d1be16e87459Bc1AcA201026': 'USDC',
+  '0x1876c32a0CF3eeB7d1eFf2F3C29AdFCF5B956270': 'WBTC',
+  '0x333fE97265D2C95bC1CF06d8ac1f410fCf97A737': 'USDT',
+  '0x4B72F0F2c222C6323589E46c0119154b74839d0f': 'UNI-V3-POS',
+  '0xF252401108d869656Fa682e67B04AC9e9F4a388e': 'Memma',
+  '0x7900c01eED60868beEA1DE79730CA5633A4b6a45': 'Sancho',
+  '0x94b514606C161677d1B243d4c4b069B3f2Fb8682': 'uWUNIT0',
+  '0xC447FCdFab3b8D70EEc7d4F85dE486b4E5ea74Ac': 'variableDebtWUNIT0',
+  '0xeEdF214BB01499364e4e44e4325e5bFFd0ae2719': 'variableDebtUSDT',
+  '0xb303d80db8415FD1d3C9FED68A52EEAc9a052671': 'USDT',
+  '0xEb19000D90f17FFbd3AD9CDB8915D928F4980fD1': 'USDC',
 };
 
-const logosByName: Record<string, string> = {
+export const logosByName: Record<string, string> = {
+  // Unit0 token logo mappings (reuse existing logos)
+  'UNIT0-WETH': new URL('./logos/ETH.svg', import.meta.url).toString(),
+  'UNIT0-DAI': new URL('./logos/DAI.svg', import.meta.url).toString(),
+  'UNIT0-AAVE': new URL('./logos/AAVE.svg', import.meta.url).toString(),
+  'UNIT0-USDC': new URL('./logos/USDC.svg', import.meta.url).toString(),
+  'UNIT0-WBTC': new URL('./logos/BTC.svg', import.meta.url).toString(),
+  'UNIT0-USDT': new URL('./logos/USDT.svg', import.meta.url).toString(),
+  'UNIT0-WUNIT0': new URL('./logos/unit0.svg', import.meta.url).toString(),
+  'UNIT0-UNI-V3-POS': new URL('./logos/UNI.svg', import.meta.url).toString(),
+
+  // Direct contract address mappings for Unit0 tokens
+  '0x1B100DE3F13E3f8Bb2f66FE58c1949c32E7124B': new URL('./logos/ETH.svg', import.meta.url).toString(), // WETH
+  '0xfA88d31044197fa9fAC50b8b7f6F4b54CC68d80e': new URL('./logos/DAI.svg', import.meta.url).toString(), // DAI
+  '0xbF66EaedC8A3a3B16d2A11F269f3FEC755fca4E5': new URL('./logos/AAVE.svg', import.meta.url).toString(), // AAVE
+  '0x5E73CEc92450a4eAE6B7A3Ea99459B0D069eFef5': new URL('./logos/unit0.svg', import.meta.url).toString(), // WUNIT0
+  '0xD48A37F4F6B9f5a5d1be16e87459Bc1AcA201026': new URL('./logos/USDC.svg', import.meta.url).toString(), // USDC
+  '0x1876c32a0CF3eeB7d1eFf2F3C29AdFCF5B956270': new URL('./logos/BTC.svg', import.meta.url).toString(), // WBTC
+  '0x333fE97265D2C95bC1CF06d8ac1f410fCf97A737': new URL('./logos/USDT.svg', import.meta.url).toString(), // USDT
+  '0x4B72F0F2c222C6323589E46c0119154b74839d0f': new URL('./logos/UNI.svg', import.meta.url).toString(), // UNI-V3-POS
+
+  // Additional tokens use existing logos as placeholders
+  uWUNIT0: new URL('./logos/unit0.svg', import.meta.url).toString(),
+  variableDebtWUNIT0: new URL('./logos/unit0.svg', import.meta.url).toString(),
+  variableDebtUSDT: new URL('./logos/USDT.svg', import.meta.url).toString(),
+  USDT_NEW: new URL('./logos/USDT.svg', import.meta.url).toString(),
+  USDC_NEW: new URL('./logos/USDC.svg', import.meta.url).toString(),
   BAG: new URL('./logos/BAG.svg', import.meta.url).toString(),
   BCH: new URL('./logos/BCH.svg', import.meta.url).toString(),
   BNB: new URL('./logos/BNB.svg', import.meta.url).toString(),
@@ -290,6 +365,7 @@ const logosByName: Record<string, string> = {
   FTM: new URL('./logos/FTM.svg', import.meta.url).toString(),
   FOMO: new URL('./logos/FOMO.webp', import.meta.url).toString(),
   FORKLOG: new URL('./logos/FORKLOG.webp', import.meta.url).toString(),
+  unit0: new URL('./logos/unit0.svg', import.meta.url).toString(),
   KOLKHOZ: new URL('./logos/KOLKHOZ.webp', import.meta.url).toString(),
   LINK: new URL('./logos/LINK.svg', import.meta.url).toString(),
   LTC: new URL('./logos/LTC.svg', import.meta.url).toString(),
@@ -325,6 +401,7 @@ const logosByName: Record<string, string> = {
   VIRES: new URL('./logos/VIRES.svg', import.meta.url).toString(),
   VIRES_USDC_LP: new URL('./logos/USDC.svg', import.meta.url).toString(),
   VIRES_USDT_LP: new URL('./logos/USDT.svg', import.meta.url).toString(),
+  UNIT0: new URL('./logos/unit0.svg', import.meta.url).toString(),
   WAVES: new URL('./logos/WAVES.svg', import.meta.url).toString(),
   WCT: new URL('./logos/WCT.svg', import.meta.url).toString(),
   WEST: new URL('./logos/WEST.svg', import.meta.url).toString(),

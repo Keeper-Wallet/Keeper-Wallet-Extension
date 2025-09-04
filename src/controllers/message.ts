@@ -67,6 +67,8 @@ import type { MultiWalletController } from './MultiWalletController';
 import type { NetworkController } from './network';
 import type { PermissionsController } from './permissions';
 import type { RemoteConfigController } from './remoteConfig';
+import { Wallet } from '../wallets/wallet';
+import { WalletPrivateData } from '../wallets/types';
 
 function moneyLikeToMoney(amount: MoneyLike, assets: AssetsRecord) {
   const asset = new Asset(assets[amount.assetId ?? 'WAVES'] ?? assets.WAVES);
@@ -223,10 +225,10 @@ export class MessageController extends EventEmitter {
       const { address, network, publicKey } = message.account;
 
       // getLegacyWallet is now async
-      const wallet = await this.multiWalletController.getLegacyWallet(
+      const wallet = (await this.multiWalletController.getLegacyWallet(
         address,
         network,
-      );
+      )) as unknown as Wallet<WalletPrivateData>;
 
       switch (message.type) {
         case 'auth': {

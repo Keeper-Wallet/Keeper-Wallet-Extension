@@ -14,6 +14,7 @@ import { type NetworkController } from './network';
 import { type NftInfoController } from './NftInfoController';
 import { type PreferencesController } from './preferences';
 import { type VaultController } from './VaultController';
+import { BalanceService } from './services/balanceService';
 
 const PERIOD_IN_SECONDS = 10;
 
@@ -26,6 +27,8 @@ export class CurrentAccountController {
   private getNode;
   private getSelectedAccount;
   private isLocked;
+  private balanceService;
+  private getBlockchainType;
 
   constructor({
     extensionStorage,
@@ -37,6 +40,7 @@ export class CurrentAccountController {
     getNode,
     getSelectedAccount,
     isLocked,
+    getBlockchainType,
   }: {
     extensionStorage: ExtensionStorage;
     assetInfoController: AssetInfoController;
@@ -47,6 +51,7 @@ export class CurrentAccountController {
     getNode: NetworkController['getNode'];
     getSelectedAccount: PreferencesController['getSelectedAccount'];
     isLocked: VaultController['isLocked'];
+    getBlockchainType: NetworkController['getCurrentBlockchainType'];
   }) {
     const defaults: Partial<Record<string, BalancesItem>> = Object.fromEntries(
       getLegacyFormatAccounts().map(acc => [
@@ -78,6 +83,8 @@ export class CurrentAccountController {
     this.getNode = getNode;
     this.getSelectedAccount = getSelectedAccount;
     this.isLocked = isLocked;
+    this.balanceService = new BalanceService();
+    this.getBlockchainType = getBlockchainType;
 
     Browser.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'updateCurrentAccountBalance') {
@@ -211,134 +218,161 @@ export class CurrentAccountController {
 
   async updateCurrentAccountBalance() {
     const currentNetwork = this.getNetwork();
+    const currentBlockchainType = this.getBlockchainType();
     const accounts = this.getLegacyFormatAccounts().filter(
       ({ network }) => network === currentNetwork,
     );
     const activeAccount = this.getSelectedAccount();
 
-    if (this.isLocked() || accounts.length < 1 || !activeAccount) return;
+    if (this.isLocked() || accounts.length < 1 || !activeAccount) {
+      return;
+    }
 
     const { address } = activeAccount;
 
-    const [wavesBalance, myAssets, myNfts, aliases, txHistory] =
-      await Promise.all([
-        this.#fetchWavesBalance(address),
-        this.#fetchAssetsBalance(address),
-        this.#fetchNfts(address),
-        this.#fetchAliases(address),
-        this.#fetchTxHistory(address),
-      ]);
+    // Always try to fetch Waves balance for Waves networks
+    if (!this.balanceService.isUnit0Network(currentBlockchainType)) {
+      try {
+        const [wavesBalance, myAssets, myNfts, aliases, txHistory] =
+          await Promise.all([
+            this.#fetchWavesBalance(address),
+            this.#fetchAssetsBalance(address),
+            this.#fetchNfts(address),
+            this.#fetchAliases(address),
+            this.#fetchTxHistory(address),
+          ]);
 
-    const assets = this.assetInfoController.getAssets();
+        const assets = this.assetInfoController.getAssets();
 
-    const assetExists = (assetId: string) => !!assets[assetId];
+        const assetExists = (assetId: string) => !!assets[assetId];
 
-    const isMaxAgeExceeded = (assetId: string) =>
-      this.assetInfoController.isMaxAgeExceeded(assets[assetId]?.lastUpdated);
+        const isMaxAgeExceeded = (assetId: string) =>
+          this.assetInfoController.isMaxAgeExceeded(assets[assetId]?.lastUpdated);
 
-    const isSponsorshipUpdated = (balanceAsset: {
-      assetId: string;
-      minSponsoredAssetFee: string | null;
-    }) =>
-      balanceAsset.minSponsoredAssetFee !==
-      assets[balanceAsset.assetId]?.minSponsoredFee;
+        const isSponsorshipUpdated = (balanceAsset: {
+          assetId: string;
+          minSponsoredAssetFee: string | null;
+        }) =>
+          balanceAsset.minSponsoredAssetFee !==
+          assets[balanceAsset.assetId]?.minSponsoredFee;
 
-    const fetchAssetIds = (
-      myAssets.balances.filter(
-        info =>
-          !assetExists(info.assetId) ||
-          isSponsorshipUpdated(info) ||
-          isMaxAgeExceeded(info.assetId),
-      ) as Array<{ assetId: string }>
-    )
-      .concat(
-        myNfts.filter(
-          info => !assetExists(info.assetId) || isMaxAgeExceeded(info.assetId),
-        ),
-      )
-      .map(info => info.assetId)
-      .concat(
-        txHistory
-          .flatMap(tx => [
-            ...('assetId' in tx ? [tx.assetId] : []),
-            ...('order1' in tx
-              ? [
-                  tx.order1.assetPair.amountAsset,
-                  tx.order1.assetPair.priceAsset,
-                ]
-              : []),
-            ...('payment' in tx ? tx.payment?.map(x => x.assetId) ?? [] : []),
-            ...('stateChanges' in tx
-              ? tx.stateChanges.transfers.map(x => x.asset)
-              : []),
-          ])
-          .filter(isNotNull)
-          .filter(
-            assetId => !assetExists(assetId) && isMaxAgeExceeded(assetId),
-          ),
-      );
+        const fetchAssetIds = (
+          myAssets.balances.filter(
+            info =>
+              !assetExists(info.assetId) ||
+              isSponsorshipUpdated(info) ||
+              isMaxAgeExceeded(info.assetId),
+          ) as Array<{ assetId: string }>
+        )
+          .concat(
+            myNfts.filter(
+              info => !assetExists(info.assetId) || isMaxAgeExceeded(info.assetId),
+            ),
+          )
+          .map(info => info.assetId)
+          .concat(
+            txHistory
+              .flatMap(tx => [
+                ...('assetId' in tx ? [tx.assetId] : []),
+                ...('order1' in tx
+                  ? [
+                      tx.order1.assetPair.amountAsset,
+                      tx.order1.assetPair.priceAsset,
+                    ]
+                  : []),
+                ...('payment' in tx ? tx.payment?.map(x => x.assetId) ?? [] : []),
+                ...('stateChanges' in tx
+                  ? tx.stateChanges.transfers.map(x => x.asset)
+                  : []),
+              ])
+              .filter(isNotNull)
+              .filter(
+                assetId => !assetExists(assetId) && isMaxAgeExceeded(assetId),
+              ),
+          );
 
-    await Promise.all([
-      this.assetInfoController.updateAssets(fetchAssetIds, {
-        ignoreCache: true,
-      }),
-      this.nftInfoController.updateNfts(myNfts),
-    ]);
+        await Promise.all([
+          this.assetInfoController.updateAssets(fetchAssetIds, {
+            ignoreCache: true,
+          }),
+          this.nftInfoController.updateNfts(myNfts),
+        ]);
 
-    const wavesAssetBalance: AssetBalance = {
-      minSponsoredAssetFee: '100000',
-      sponsorBalance: wavesBalance.available,
-      balance: wavesBalance.available,
-    };
+        const wavesAssetBalance: AssetBalance = {
+          minSponsoredAssetFee: '100000',
+          sponsorBalance: wavesBalance.available,
+          balance: wavesBalance.available,
+        };
 
-    const balance: BalancesItem = {
-      aliases,
-      available: wavesBalance.available,
-      regular: wavesBalance.regular,
-      leasedOut: new BigNumber(wavesBalance.regular)
-        .sub(wavesBalance.available)
-        .toString(),
-      network: currentNetwork,
-      txHistory,
+        const balance: BalancesItem = {
+          aliases,
+          available: wavesBalance.available,
+          regular: wavesBalance.regular,
+          leasedOut: new BigNumber(wavesBalance.regular)
+            .sub(wavesBalance.available)
+            .toString(),
+          network: currentNetwork,
+          txHistory,
 
-      assets: Object.fromEntries([
-        ['WAVES', wavesAssetBalance],
-        ...myAssets.balances.map(info => {
-          const assetBalance: AssetBalance = {
-            minSponsoredAssetFee: info.minSponsoredAssetFee,
-            sponsorBalance: info.sponsorBalance,
-            balance: info.balance,
-          };
+          assets: Object.fromEntries([
+            ['WAVES', wavesAssetBalance],
+            ...myAssets.balances.map(info => {
+              const assetBalance: AssetBalance = {
+                minSponsoredAssetFee: info.minSponsoredAssetFee,
+                sponsorBalance: info.sponsorBalance,
+                balance: info.balance,
+              };
 
-          return [info.assetId, assetBalance];
-        }),
-      ]),
-      nfts: myNfts.map(nft => ({
-        id: nft.assetId,
-        name: nft.name,
-        precision: nft.decimals,
-        description: nft.description,
-        height: nft.issueHeight,
-        timestamp: new Date(nft.issueTimestamp).toJSON() as unknown as Date,
-        sender: nft.issuer,
-        quantity: nft.quantity,
-        reissuable: nft.reissuable,
-        hasScript: nft.scripted,
-        displayName: nft.name,
-        minSponsoredFee: nft.minSponsoredAssetFee ?? undefined,
-        originTransactionId: nft.originTransactionId,
-        issuer: nft.issuer,
-      })),
-    };
+              return [info.assetId, assetBalance];
+            }),
+          ]),
+          nfts: myNfts.map(nft => ({
+            id: nft.assetId,
+            name: nft.name,
+            precision: nft.decimals,
+            description: nft.description,
+            height: nft.issueHeight,
+            timestamp: new Date(nft.issueTimestamp).toJSON() as unknown as Date,
+            sender: nft.issuer,
+            quantity: nft.quantity,
+            reissuable: nft.reissuable,
+            hasScript: nft.scripted,
+            displayName: nft.name,
+            minSponsoredFee: nft.minSponsoredAssetFee ?? undefined,
+            originTransactionId: nft.originTransactionId,
+            issuer: nft.issuer,
+          })),
+        };
 
-    this.store.updateState({
-      [`balance_${address}`]: balance,
-    });
+        this.store.updateState({
+          [`balance_${address}`]: balance,
+        });
+      } catch (error) {
+        console.error('Error fetching Waves balance:', error);
+        return;
+      }
+    } else {
+      try {
+        // For Unit0 networks, fetch Unit0 balances
+        const balance = await this.balanceService.fetchUnit0Balance(
+          address,
+          currentNetwork,
+        );
+
+        this.store.updateState({
+          [`balance_${address}`]: balance,
+        });
+      } catch (error) {
+        console.error('Error fetching Unit0 balance:', error);
+      }
+    }
   }
 
   async updateOtherAccountsBalances() {
     const url = new URL('addresses/balance', this.getNode());
-    const addresses = this.getLegacyFormatAccounts().map(account => account.address);
+    const addresses = this.getLegacyFormatAccounts().map(
+      account => account.address,
+    );
 
     while (addresses.length > 0) {
       const splicedAddresses = addresses.splice(0, 1000);
