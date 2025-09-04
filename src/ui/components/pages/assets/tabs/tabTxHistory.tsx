@@ -98,7 +98,6 @@ export function TabTxHistory() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     state => state.balances[address!]?.txHistory,
   );
-
   const thisYear = new Date().getFullYear();
   const thisMonth = new Date().getMonth();
   const thisDate = new Date().getDate();

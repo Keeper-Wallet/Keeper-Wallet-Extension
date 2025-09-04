@@ -576,6 +576,15 @@ class Background {
     return [];
   }
 
+  async syncAccountsFromMultiWallets() {
+    await this.initPromise;
+    this._connect();
+    if (this.background) {
+      return this.background.syncAccountsFromMultiWallets();
+    }
+    return Promise.resolve();
+  }
+
   async getDecryptedVault(password: string): Promise<MultiWallet[]> {
     await this.initPromise;
     this._connect();

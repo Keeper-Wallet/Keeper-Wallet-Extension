@@ -28,11 +28,21 @@ export function HistoryItem({ tx, className }: Props) {
   const networkCode = usePopupSelector(
     state => state.selectedAccount?.networkCode,
   );
-  const chainId = usePopupSelector(
-    state =>
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      state.selectedAccount?.networkCode!.charCodeAt(0),
-  );
+
+  // Use proper chainId based on transaction type
+  const chainId = usePopupSelector(state => {
+    const selectedAccount = state.selectedAccount;
+    if (!selectedAccount) return 87; // Default Waves mainnet
+
+    // For Unit0 transactions, use Ethereum chainId
+    if (tx.type === TRANSACTION_TYPE.ETHEREUM) {
+      return selectedAccount.networkCode === '88811' ? 88811 : 88817; // Unit0 mainnet : testnet
+    }
+
+    // For Waves transactions, use networkCode charCode
+    return selectedAccount.networkCode.charCodeAt(0);
+  });
+
   const assets = usePopupSelector(state => state.assets);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const aliases = usePopupSelector(state => state.balances[address!]?.aliases);
@@ -428,24 +438,62 @@ export function HistoryItem({ tx, className }: Props) {
 
       switch (payload.type) {
         case 'transfer':
-          tooltip = t('historyCard.transferReceive');
-          label = (
-            <AddressRecipient
-              className={styles.recipient}
-              recipient={tx.sender}
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              chainId={chainId!}
-              showAliasWarning={false}
-              showMirrorAddress
-            />
-          );
-          addSign = '+';
-          messageType = 'receive';
+          // Use direction field to determine if incoming, outgoing, or self-transfer
+          const direction = payload.direction;
+          const amount = payload.amount || '0';
+          const isZeroAmount = amount === '0' || parseFloat(amount) === 0;
+
+          if (direction === 'incoming') {
+            tooltip = t('historyCard.transferReceive');
+            label = (
+              <AddressRecipient
+                className={styles.recipient}
+                recipient={tx.sender}
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                chainId={chainId!}
+                showAliasWarning={false}
+                showMirrorAddress
+              />
+            );
+            addSign = isZeroAmount ? '' : '+';
+            messageType = 'receive';
+          } else if (direction === 'self') {
+            tooltip = t('historyCard.transferSelf');
+            label = (
+              <AddressRecipient
+                className={styles.recipient}
+                recipient={tx.sender}
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                chainId={chainId!}
+                showAliasWarning={false}
+                showMirrorAddress
+              />
+            );
+            addSign = '';
+            messageType = 'self-transfer';
+          } else {
+            // outgoing or default
+            tooltip = t('historyCard.transfer');
+            label = (
+              <AddressRecipient
+                className={styles.recipient}
+                recipient={payload.to}
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                chainId={chainId!}
+                showAliasWarning={false}
+                showMirrorAddress
+              />
+            );
+            addSign = isZeroAmount ? '' : '-';
+            messageType = 'transfer';
+          }
+
           info = (
             <Balance
               split
               showAsset
               addSign={addSign}
+              isShortFormat
               balance={fromCoins(payload.amount, payload.asset)}
             />
           );

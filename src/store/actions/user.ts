@@ -133,6 +133,10 @@ export function createWavesOnlyMultiWallet({
     };
     const wallet = await Background.addMultiWallet(multiWallet);
 
+    // Manually trigger account sync to ensure immediate availability
+    const allMultiWallets = await Background.getMultiWallets();
+    await Background.syncAccountsFromMultiWallets(allMultiWallets);
+
     // Get current network from Redux state
     const currentNetwork = getState().currentNetwork;
 
@@ -141,11 +145,25 @@ export function createWavesOnlyMultiWallet({
       wallet.coins.waves.networks[currentNetwork]?.address ||
       wallet.coins.waves.networks.mainnet.address;
 
-    const accounts = await Background.getLegacyFormatAccounts();
-    const selectedAccount = accounts.find(
-      account => account.address === selectedAddress,
-    );
-    dispatch(selectAccount(selectedAccount as unknown as PreferencesAccount));
+    // Retry mechanism to handle potential timing issues
+    let selectedAccount;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const accounts = await Background.getLegacyFormatAccounts();
+      selectedAccount = accounts.find(
+        account => account.address === selectedAddress,
+      );
+      
+      if (selectedAccount) break;
+      
+      // Wait a bit and try again
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    
+    if (!selectedAccount) {
+      throw new Error(`No account found with address: ${selectedAddress} after 3 attempts`);
+    }
+    
+    dispatch(selectAccount(selectedAccount as PreferencesAccount));
   };
 }
 
@@ -216,6 +234,11 @@ export function createFullMultiWallet({
       },
     };
     const wallet = await Background.addMultiWallet(multiWallet);
+
+    // Manually trigger account sync to ensure immediate availability
+    const allMultiWallets = await Background.getMultiWallets();
+    await Background.syncAccountsFromMultiWallets(allMultiWallets);
+
     // Get current network from Redux state
     const currentNetwork = getState().currentNetwork;
 
@@ -224,10 +247,24 @@ export function createFullMultiWallet({
       wallet.coins.waves.networks[currentNetwork]?.address ||
       wallet.coins.waves.networks.mainnet.address;
 
-    const accounts = await Background.getLegacyFormatAccounts();
-    const selectedAccount = accounts.find(
-      account => account.address === selectedAddress,
-    );
-    dispatch(selectAccount(selectedAccount as unknown as PreferencesAccount));
+    // Retry mechanism to handle potential timing issues
+    let selectedAccount;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const accounts = await Background.getLegacyFormatAccounts();
+      selectedAccount = accounts.find(
+        account => account.address === selectedAddress,
+      );
+      
+      if (selectedAccount) break;
+      
+      // Wait a bit and try again
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    
+    if (!selectedAccount) {
+      throw new Error(`No account found with address: ${selectedAddress} after 3 attempts`);
+    }
+    
+    dispatch(selectAccount(selectedAccount as PreferencesAccount));
   };
 }

@@ -80,6 +80,8 @@ export function AddressRecipient({
     );
   }
 
+  console.log(address, 'address');
+  console.log(name, 'name');
   return (
     <>
       {name ? (
