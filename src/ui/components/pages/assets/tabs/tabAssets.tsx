@@ -92,8 +92,26 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
     state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
   );
 
+  // Create address-to-asset lookup for Unit0 assets
+  const assetsByAddress = useMemo(() => {
+    const lookup: Record<string, any> = {};
+    Object.values(allAssets).forEach(asset => {
+      if (asset.id && asset.id !== asset.name) {
+        // Contract addresses have different id and name
+        lookup[asset.id] = asset;
+      } else {
+        lookup[asset.id || asset.name] = asset; // For WAVES/native tokens
+      }
+    });
+    return lookup;
+  }, [allAssets]);
+
   // Assets are stored flat at root level for both WAVES and Unit0
-  const assets = allAssets;
+  const assets =
+    currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+      ? assetsByAddress
+      : allAssets;
+
   const showSuspiciousAssets = usePopupSelector(
     state => state.uiState?.showSuspiciousAssets,
   );
@@ -104,38 +122,18 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
     if (!activeAccount) {
       return undefined;
     }
-    const multiAccount = activeAccount as unknown as MultiWallet;
+    // New architecture: selectedAccount IS the current blockchain selection
+    // Use currentBlockchainType to determine behavior, but selectedAccount already has the right address
 
-    // For Unit0 blockchain type, use Unit0/Ethereum address
     if (currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0) {
-      // For multichain accounts, look for unit0 address
-      if (activeAccount.type === 'multichain' && multiAccount.coins?.unit0) {
-        // Use currentNetwork from Redux to match popupHome.tsx pattern
-        const network = currentNetwork?.toLowerCase() || 'mainnet';
-        const unit0NetworkKey = network === 'stagenet' ? 'testnet' : network;
-        const unit0Address = (multiAccount.coins.unit0.networks as any)?.[
-          unit0NetworkKey
-        ]?.address;
-
-        return unit0Address ? balances[unit0Address]?.assets : undefined;
-      } else {
-        return activeAccount.address
-          ? balances[activeAccount.address]?.assets
-          : undefined;
-      }
+      // For Unit0, selectedAccount.address should be the Unit0 address for current network
+      const unit0Address = activeAccount.address;
+      return unit0Address ? balances[unit0Address]?.assets : undefined;
     }
 
-    if (activeAccount.type === 'multichain' && activeAccount.coins?.waves) {
-      const network = currentNetwork?.toLowerCase() || 'mainnet';
-      const wavesAddress = (multiAccount.coins.waves.networks as any)?.[network]
-        ?.address;
-
-      return wavesAddress ? balances[wavesAddress] : undefined;
-    } else {
-      return activeAccount.address
-        ? balances[activeAccount.address]
-        : undefined;
-    }
+    // For Waves, selectedAccount.address should be the Waves address for current network
+    const wavesAddress = activeAccount.address;
+    return wavesAddress ? balances[wavesAddress] : undefined;
   }, [activeAccount, currentBlockchainType, balances, currentNetwork]);
 
   const issuerAddress = useMemo(() => {
