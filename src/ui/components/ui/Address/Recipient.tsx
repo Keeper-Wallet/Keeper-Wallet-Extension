@@ -79,9 +79,6 @@ export function AddressRecipient({
       </div>
     );
   }
-
-  console.log(address, 'address');
-  console.log(name, 'name');
   return (
     <>
       {name ? (

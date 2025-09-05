@@ -3,14 +3,18 @@ const explorerUrls = new Map([
   ['T', 'testnet.wavesexplorer.com'],
   ['S', 'stagenet.wavesexplorer.com'],
   ['custom', 'wavesexplorer.com/custom'],
-  ['88811', 'explorer.unit0.dev'], // Unit0 mainnet
-  ['88817', 'explorer-testnet.unit0.dev'], // Unit0 testnet
 ]);
 
 export function getAccountLink(
   networkCode: string,
   address: string | null | undefined,
 ) {
+  // Check if this is a Unit0 address (starts with 0x)
+  if (address?.startsWith('0x')) {
+    // Use Unit0 explorer for Unit0 addresses
+    return `https://explorer.unit0.dev/address/${address}`;
+  }
+  
   const explorer = explorerUrls.get(
     explorerUrls.has(networkCode) ? networkCode : 'custom',
   );
@@ -36,6 +40,12 @@ export function getAssetDetailLink(
   networkCode: string,
   assetId: string,
 ): string {
+  // Check if this is a Unit0 NFT (starts with 0x)
+  if (assetId.startsWith('0x')) {
+    // Use Unit0 explorer for Unit0 NFTs
+    return `https://explorer.unit0.dev/token/${assetId}`;
+  }
+  
   const explorer = explorerUrls.get(
     explorerUrls.has(networkCode) ? networkCode : 'custom',
   );

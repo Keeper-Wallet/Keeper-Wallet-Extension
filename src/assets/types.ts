@@ -19,6 +19,18 @@ export interface AssetDetail {
   sender: string;
   ticker?: string;
   timestamp: Date;
+  // NFT-specific fields
+  author?: string;
+  creator?: string;
+  rank?: number;
+  rarity_rank?: number;
+  image_url?: string;
+  animation_url?: string;
+  external_url?: string;
+  attributes?: Array<{
+    trait_type: string;
+    value: string | number;
+  }>;
 }
 
 export interface AssetsRecord {

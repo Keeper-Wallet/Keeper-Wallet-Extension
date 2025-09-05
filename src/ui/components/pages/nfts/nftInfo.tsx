@@ -25,9 +25,12 @@ export function NftInfo() {
   );
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const asset = usePopupSelector(state => state.assets[params.assetId!]);
+  const asset = usePopupSelector(state => {
+    return state.assets[params.assetId!];
+  });
 
   const nftInfo = usePopupSelector(state => asset && state.nfts?.[asset.id]);
+  const assets = usePopupSelector(state => state.assets);
   const nftConfig = usePopupSelector(state => state.nftConfig);
 
   const nft =
@@ -45,7 +48,6 @@ export function NftInfo() {
     (nft?.creator && getAccountLink(networkCode!, nft.creator));
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const nftUrl = nft ? getAssetDetailLink(networkCode!, nft.id) : undefined;
-
   return (
     <div className={styles.root}>
       <div className={styles.header}>
@@ -118,6 +120,38 @@ export function NftInfo() {
           <>
             <div className={styles.fieldName}>{t('nftInfo.description')}</div>
             <div className={styles.fieldContent}>{nft.description}</div>
+          </>
+        )}
+
+        {/* Display author if available */}
+        {(nft as any)?.author && (
+          <>
+            <div className={styles.fieldName}>Author</div>
+            <div className={styles.fieldContent}>{(nft as any).author}</div>
+          </>
+        )}
+
+        {/* Display rank if available */}
+        {((nft as any)?.rank || (nft as any)?.rarity_rank) && (
+          <>
+            <div className={styles.fieldName}>Rank</div>
+            <div className={styles.fieldContent}>
+              #{(nft as any)?.rank || (nft as any)?.rarity_rank}
+            </div>
+          </>
+        )}
+
+        {/* Display attributes if available */}
+        {(nft as any)?.attributes && Array.isArray((nft as any).attributes) && (
+          <>
+            <div className={styles.fieldName}>Traits</div>
+            <div className={styles.fieldContent}>
+              {(nft as any).attributes.map((attr: any, index: number) => (
+                <div key={index} style={{ marginBottom: '4px' }}>
+                  <strong>{attr.trait_type}:</strong> {attr.value}
+                </div>
+              ))}
+            </div>
           </>
         )}
       </div>
