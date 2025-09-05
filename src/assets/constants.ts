@@ -63,6 +63,9 @@ export const assetIds: Record<NetworkName, Record<string, string>> = {
     'UNIT0-variableDebtUSDT': '0xeEdF214BB01499364e4e44e4325e5bFFd0ae2719',
     'UNIT0-USDT-NEW': '0xb303d80db8415FD1d3C9FED68A52EEAc9a052671',
     'UNIT0-USDC-NEW': '0xEb19000D90f17FFbd3AD9CDB8915D928F4980fD1',
+    'UNIT0-DOGE': '0x6D118c61A03d63CE6b4387EfdE9E3bA3323833b9',
+    'UNIT0-MCSASHA': '0x6DFE63380149E04f4DD9BD7E8d892eEc28878556',
+    'UNIT0-ZNS': '0xFb2Cd41a8aeC89EFBb19575C6c48d872cE97A0A5',
     BAG: 'Euz5HtYcj3nVTZxppA7wdabwTe5BzHFiu4QG1EJtzeUx',
     BCH: 'zMFqXuoyrn5w17PFurTqxB7GsS71fp9dfk6XFwxbPCy',
     BNB: '5UYBPpq4WoU5n4MwpFkgJnW3Fq4B1u3ukpK33ik4QerR',
@@ -133,6 +136,18 @@ export const assetIds: Record<NetworkName, Record<string, string>> = {
     XMR: '5WvPKSJXzVE2orvbkJ8wsQmmQKqTv9sGBPksV4adViw3',
     YFI: 'BLRxWVJWaVuR2CsCoTvTw2bDZ3sQLeTbCofcJv7dP5J4',
     ZEC: 'BrjUWjndUanm5VsJkbUip8VRYy6LWJePtxya3FNv4TQa',
+  },
+  unit0MainNet: {
+    UNIT0: 'unit0',
+    'UNIT0-DOGE': '0x6D118c61A03d63CE6b4387EfdE9E3bA3323833b9',
+    'UNIT0-Memma': '0xF252401108d869656Fa682e67B04AC9e9F4a388e',
+    'UNIT0-MCSASHA': '0x6DFE63380149E04f4DD9BD7E8d892eEc28878556',
+    'UNIT0-ZNS': '0xFb2Cd41a8aeC89EFBb19575C6c48d872cE97A0A5',
+    'UNIT0-USDT-NEW': '0xb303d80db8415FD1d3C9FED68A52EEAc9a052671',
+  },
+  unit0Testnet: {
+    UNIT0: 'unit0',
+    UNIT0_TEST: '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84',
   },
   testnet: {
     WAVES: 'WAVES',
@@ -322,21 +337,55 @@ export const logosByName: Record<string, string> = {
   'UNIT0-UNI-V3-POS': new URL('./logos/UNI.svg', import.meta.url).toString(),
 
   // Direct contract address mappings for Unit0 tokens
-  '0x1B100DE3F13E3f8Bb2f66FE58c1949c32E7124B': new URL('./logos/ETH.svg', import.meta.url).toString(), // WETH
-  '0xfA88d31044197fa9fAC50b8b7f6F4b54CC68d80e': new URL('./logos/DAI.svg', import.meta.url).toString(), // DAI
-  '0xbF66EaedC8A3a3B16d2A11F269f3FEC755fca4E5': new URL('./logos/AAVE.svg', import.meta.url).toString(), // AAVE
-  '0x5E73CEc92450a4eAE6B7A3Ea99459B0D069eFef5': new URL('./logos/unit0.svg', import.meta.url).toString(), // WUNIT0
-  '0xD48A37F4F6B9f5a5d1be16e87459Bc1AcA201026': new URL('./logos/USDC.svg', import.meta.url).toString(), // USDC
-  '0x1876c32a0CF3eeB7d1eFf2F3C29AdFCF5B956270': new URL('./logos/BTC.svg', import.meta.url).toString(), // WBTC
-  '0x333fE97265D2C95bC1CF06d8ac1f410fCf97A737': new URL('./logos/USDT.svg', import.meta.url).toString(), // USDT
-  '0x4B72F0F2c222C6323589E46c0119154b74839d0f': new URL('./logos/UNI.svg', import.meta.url).toString(), // UNI-V3-POS
+  '0x1B100DE3F13E3f8Bb2f66FE58c1949c32E7124B': new URL(
+    './logos/ETH.svg',
+    import.meta.url,
+  ).toString(), // WETH
+  '0xfA88d31044197fa9fAC50b8b7f6F4b54CC68d80e': new URL(
+    './logos/DAI.svg',
+    import.meta.url,
+  ).toString(), // DAI
+  '0xbF66EaedC8A3a3B16d2A11F269f3FEC755fca4E5': new URL(
+    './logos/AAVE.svg',
+    import.meta.url,
+  ).toString(), // AAVE
+  '0x5E73CEc92450a4eAE6B7A3Ea99459B0D069eFef5': new URL(
+    './logos/unit0.svg',
+    import.meta.url,
+  ).toString(), // WUNIT0
+  '0xD48A37F4F6B9f5a5d1be16e87459Bc1AcA201026': new URL(
+    './logos/USDC.svg',
+    import.meta.url,
+  ).toString(), // USDC
+  '0x1876c32a0CF3eeB7d1eFf2F3C29AdFCF5B956270': new URL(
+    './logos/BTC.svg',
+    import.meta.url,
+  ).toString(), // WBTC
+  '0x333fE97265D2C95bC1CF06d8ac1f410fCf97A737': new URL(
+    './logos/USDT.svg',
+    import.meta.url,
+  ).toString(), // USDT
+  '0x4B72F0F2c222C6323589E46c0119154b74839d0f': new URL(
+    './logos/UNI.svg',
+    import.meta.url,
+  ).toString(), // UNI-V3-POS
+
+  // Unit0 mainnet specific tokens
+  '0x6D118c61A03d63CE6b4387EfdE9E3bA3323833b9': new URL(
+    './logos/DOGE.svg',
+    import.meta.url,
+  ).toString(), // DOGE
+  '0xb303d80db8415FD1d3C9FED68A52EEAc9a052671': new URL(
+    './logos/USDT.svg',
+    import.meta.url,
+  ).toString(), // USDT
 
   // Additional tokens use existing logos as placeholders
   uWUNIT0: new URL('./logos/unit0.svg', import.meta.url).toString(),
   variableDebtWUNIT0: new URL('./logos/unit0.svg', import.meta.url).toString(),
   variableDebtUSDT: new URL('./logos/USDT.svg', import.meta.url).toString(),
-  USDT_NEW: new URL('./logos/USDT.svg', import.meta.url).toString(),
-  USDC_NEW: new URL('./logos/USDC.svg', import.meta.url).toString(),
+  'UNIT0-USDT-NEW': new URL('./logos/USDT.svg', import.meta.url).toString(),
+  'UNIT0-USDC-NEW': new URL('./logos/USDC.svg', import.meta.url).toString(),
   BAG: new URL('./logos/BAG.svg', import.meta.url).toString(),
   BCH: new URL('./logos/BCH.svg', import.meta.url).toString(),
   BNB: new URL('./logos/BNB.svg', import.meta.url).toString(),
@@ -389,10 +438,8 @@ export const logosByName: Record<string, string> = {
   SWOP: new URL('./logos/SWOP.svg', import.meta.url).toString(),
   TN: new URL('./logos/TN.svg', import.meta.url).toString(),
   TSN: new URL('./logos/TSN.svg', import.meta.url).toString(),
-  TRY: new URL('./logos/TRY.svg', import.meta.url).toString(),
-  TURTLE: new URL('./logos/TURTLE.webp', import.meta.url).toString(),
-  UNI: new URL('./logos/UNI.svg', import.meta.url).toString(),
-  USDAP: new URL('./logos/USDAP.svg', import.meta.url).toString(),
+  UNIT0: new URL('./logos/unit0.svg', import.meta.url).toString(),
+  'UNIT0-DOGE': new URL('./logos/DOGE.svg', import.meta.url).toString(),
   USDC: new URL('./logos/USDC.svg', import.meta.url).toString(),
   USDCLP: new URL('./logos/USDCLP.svg', import.meta.url).toString(),
   USDTLP: new URL('./logos/USDTLP.svg', import.meta.url).toString(),
@@ -401,7 +448,6 @@ export const logosByName: Record<string, string> = {
   VIRES: new URL('./logos/VIRES.svg', import.meta.url).toString(),
   VIRES_USDC_LP: new URL('./logos/USDC.svg', import.meta.url).toString(),
   VIRES_USDT_LP: new URL('./logos/USDT.svg', import.meta.url).toString(),
-  UNIT0: new URL('./logos/unit0.svg', import.meta.url).toString(),
   WAVES: new URL('./logos/WAVES.svg', import.meta.url).toString(),
   WCT: new URL('./logos/WCT.svg', import.meta.url).toString(),
   WEST: new URL('./logos/WEST.svg', import.meta.url).toString(),

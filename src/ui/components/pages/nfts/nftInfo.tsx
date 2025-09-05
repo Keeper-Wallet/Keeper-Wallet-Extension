@@ -48,10 +48,6 @@ export function NftInfo() {
     (nft?.creator && getAccountLink(networkCode!, nft.creator));
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const nftUrl = nft ? getAssetDetailLink(networkCode!, nft.id) : undefined;
-
-  console.log(nft, 'nft');
-  console.log(asset, 'asset - check Unit0 vendor criteria');
-
   return (
     <div className={styles.root}>
       <div className={styles.header}>

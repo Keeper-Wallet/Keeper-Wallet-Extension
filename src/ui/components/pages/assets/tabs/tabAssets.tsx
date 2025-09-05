@@ -48,12 +48,12 @@ const Row = ({
   const [assetId, assetBalance = {}] = assetEntries[index];
   const balance = assetBalance.balance || 0;
   const asset = assets[assetId];
-  
+
   return (
     <div style={style}>
       <AssetItem
         balance={
-          asset && balance !== undefined 
+          asset && balance !== undefined
             ? Money.fromCoins(new BigNumber(balance), new Asset(asset))
             : undefined
         }
@@ -104,7 +104,6 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
     if (!activeAccount) {
       return undefined;
     }
-
     const multiAccount = activeAccount as unknown as MultiWallet;
 
     // For Unit0 blockchain type, use Unit0/Ethereum address
@@ -138,7 +137,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
         : undefined;
     }
   }, [activeAccount, currentBlockchainType, balances, currentNetwork]);
-  
+
   const issuerAddress = useMemo(() => {
     if (!activeAccount) return null;
 
@@ -196,9 +195,8 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
         Object.entries(
           currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
             ? myAssets
-            : myAssets.assets || {}
+            : myAssets.assets || {},
         ).filter(([assetId, assetBalance]) => {
-          
           // Always show WAVES even with 0 balance
           if (assetId === 'WAVES') return true;
 

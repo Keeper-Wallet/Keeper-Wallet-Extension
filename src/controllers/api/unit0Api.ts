@@ -249,8 +249,6 @@ export class Unit0Api {
         )}${contractAddress}/instances/${tokenId}`,
       );
 
-      console.log(response, 'response');
-
       if (!response.ok) {
         return null;
       }
@@ -264,7 +262,6 @@ export class Unit0Api {
       return null;
     }
   }
-
 
   // Convert Unit0 transaction to Waves-compatible format for history display
   convertToWavesTransaction(
