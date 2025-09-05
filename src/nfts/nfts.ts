@@ -12,6 +12,7 @@ import { DucksNftVendor } from './vendors/ducks';
 import { DucksArtefactsNftVendor } from './vendors/ducksArtefacts';
 import { PuzzleNftVendor } from './vendors/puzzle';
 import { SignArtNftVendor } from './vendors/signArt';
+import { Unit0NftVendor } from './vendors/unit0';
 import { WavesDomainsNftVendor } from './vendors/wavesDomains';
 
 const vendors = {
@@ -19,6 +20,7 @@ const vendors = {
   [NftVendorId.Ducklings]: new DucklingsNftVendor(),
   [NftVendorId.Ducks]: new DucksNftVendor(),
   [NftVendorId.SignArt]: new SignArtNftVendor(),
+  [NftVendorId.Unit0]: new Unit0NftVendor(),
   [NftVendorId.WavesDomains]: new WavesDomainsNftVendor(),
   [NftVendorId.Puzzle]: new PuzzleNftVendor(),
 };

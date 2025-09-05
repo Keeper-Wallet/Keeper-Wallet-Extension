@@ -44,7 +44,7 @@ const UNIT0: AssetDetail = {
   displayName: 'UNIT0',
 };
 
-// Unit0 ERC-20/ERC-721 tokens
+// Unit0 tokens with their contract addresses and asset objects
 const UNIT0_WETH: AssetDetail = {
   quantity: '33935200000000000000000',
   ticker: 'WETH',
@@ -148,21 +148,6 @@ const UNIT0_USDT: AssetDetail = {
   sender: '',
   reissuable: false,
   displayName: 'USDT',
-};
-
-const UNIT0_UNI_V3_POS: AssetDetail = {
-  quantity: '9',
-  ticker: 'UNI-V3-POS',
-  id: '0x4B72F0F2c222C6323589E46c0119154b74839d0f',
-  name: 'Uniswap V3 Positions NFT-V1',
-  precision: 0,
-  description: 'Uniswap V3 NFT Positions',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'UNI-V3-POS',
 };
 
 const UNIT0_UNI_V3_POS_NEW: AssetDetail = {
@@ -285,6 +270,51 @@ const UNIT0_USDC_NEW: AssetDetail = {
   displayName: 'USDC',
 };
 
+const UNIT0_DOGE: AssetDetail = {
+  quantity: '1000000000000000000000000000',
+  ticker: 'DOGE',
+  id: '0x6D118c61A03d63CE6b4387EfdE9E3bA3323833b9',
+  name: 'DOGE on Unit0',
+  precision: 18,
+  description: 'DOGE Token on Unit0',
+  height: 0,
+  issuer: '',
+  timestamp: '2024-01-01T00:00:00.000Z' as any,
+  sender: '',
+  reissuable: false,
+  displayName: 'DOGE',
+};
+
+const UNIT0_MCSASHA: AssetDetail = {
+  quantity: '1000000000000000000000000000',
+  ticker: 'MCSASHA',
+  id: '0x6DFE63380149E04f4DD9BD7E8d892eEc28878556',
+  name: 'McSasha on Unit0',
+  precision: 18,
+  description: 'McSasha Token on Unit0',
+  height: 0,
+  issuer: '',
+  timestamp: '2024-01-01T00:00:00.000Z' as any,
+  sender: '',
+  reissuable: false,
+  displayName: 'McSasha',
+};
+
+const UNIT0_ZNS_CONNECT: AssetDetail = {
+  quantity: '1',
+  ticker: '.unit',
+  id: '0xFb2Cd41a8aeC89EFBb19575C6c48d872cE97A0A5',
+  name: 'ZNS Connect NFT',
+  precision: 0,
+  description: 'ZNS Connect Domain NFT on Unit0',
+  height: 0,
+  issuer: '',
+  timestamp: '2024-01-01T00:00:00.000Z' as any,
+  sender: '',
+  reissuable: false,
+  displayName: 'ZNS Connect',
+};
+
 const SUSPICIOUS_LIST_URL =
   'https://raw.githubusercontent.com/wavesplatform/waves-community/master/Scam%20tokens%20according%20to%20the%20opinion%20of%20Waves%20Community.csv';
 const SUSPICIOUS_PERIOD_IN_MINUTES = 60;
@@ -367,6 +397,9 @@ export class AssetInfoController {
           variableDebtUSDT: UNIT0_VARIABLE_DEBT_USDT,
           USDT_NEW: UNIT0_USDT_NEW,
           USDC_NEW: UNIT0_USDC_NEW,
+          doge: UNIT0_DOGE,
+          mcsasha: UNIT0_MCSASHA,
+          'zns-connect': UNIT0_ZNS_CONNECT,
         },
         [NetworkName.Stagenet]: {
           WAVES,
@@ -466,6 +499,9 @@ export class AssetInfoController {
       '0xeEdF214BB01499364e4e44e4325e5bFFd0ae2719': UNIT0_VARIABLE_DEBT_USDT,
       '0xb303d80db8415FD1d3C9FED68A52EEAc9a052671': UNIT0_USDT_NEW,
       '0xEb19000D90f17FFbd3AD9CDB8915D928F4980fD1': UNIT0_USDC_NEW,
+      '0x6D118c61A03d63CE6b4387EfdE9E3bA3323833b9': UNIT0_DOGE,
+      '0x6DFE63380149E04f4DD9BD7E8d892eEc28878556': UNIT0_MCSASHA,
+      '0xFb2Cd41a8aeC89EFBb19575C6c48d872cE97A0A5': UNIT0_ZNS_CONNECT,
     };
 
     // Check if Unit0 native token exists in mainnet
@@ -543,6 +579,9 @@ export class AssetInfoController {
       '0xeEdF214BB01499364e4e44e4325e5bFFd0ae2719': 'variableDebtUSDT',
       '0xb303d80db8415FD1d3C9FED68A52EEAc9a052671': 'USDT',
       '0xEb19000D90f17FFbd3AD9CDB8915D928F4980fD1': 'USDC',
+      '0x6D118c61A03d63CE6b4387EfdE9E3bA3323833b9': 'DOGE',
+      '0x6DFE63380149E04f4DD9BD7E8d892eEc28878556': 'MCSASHA',
+      '0xFb2Cd41a8aeC89EFBb19575C6c48d872cE97A0A5': 'ZNS Connect',
     };
 
     const assetIdsToUpdate = Object.keys(unit0AssetTickers).filter(assetId => {

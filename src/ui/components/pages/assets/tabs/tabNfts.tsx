@@ -12,6 +12,8 @@ import { getNftsLink } from 'ui/urls';
 
 import { MAX_NFT_ITEMS } from '../../../../../constants';
 import { sortAndFilterNfts, useUiState } from './helpers';
+import { BLOCKCHAIN_TYPES } from '../../../../../assets/constants';
+import { type MultiWallet } from '../../../../../services/types';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
   key =>
@@ -25,16 +27,71 @@ export function TabNfts() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const userAddress = usePopupSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    state => state.selectedAccount?.address!,
+  const activeAccount = usePopupSelector(state => state.selectedAccount);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
   );
+  const balances = usePopupSelector(state => state.balances);
 
-  const networkCode = usePopupSelector(
-    state => state.selectedAccount?.networkCode,
-  );
+  // Get the correct address based on blockchain type and account type
+  const { userAddress, networkCode } = useMemo(() => {
+    if (!activeAccount) {
+      return { userAddress: '', networkCode: '' };
+    }
 
-  const myNfts = usePopupSelector(state => state.balances[userAddress]?.nfts);
+    const multiAccount = activeAccount as unknown as MultiWallet;
+
+    // For Unit0 blockchain type, use Unit0/Ethereum address
+    if (currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0) {
+      if (activeAccount.type === 'multichain' && multiAccount.coins?.unit0) {
+        const network = currentNetwork?.toLowerCase() || 'mainnet';
+        const unit0NetworkKey = network === 'stagenet' ? 'testnet' : network;
+        const unit0Address = (multiAccount.coins.unit0.networks as any)?.[
+          unit0NetworkKey
+        ]?.address;
+        const unit0NetworkCode = (multiAccount.coins.unit0.networks as any)?.[
+          unit0NetworkKey
+        ]?.networkCode;
+
+        return {
+          userAddress: unit0Address || '',
+          networkCode: unit0NetworkCode || '',
+        };
+      } else {
+        return {
+          userAddress: activeAccount.address || '',
+          networkCode: activeAccount.networkCode || '',
+        };
+      }
+    }
+
+    // Waves blockchain type
+    if (activeAccount.type === 'multichain' && multiAccount.coins?.waves) {
+      const network = currentNetwork?.toLowerCase() || 'mainnet';
+      const wavesAddress = (multiAccount.coins.waves.networks as any)?.[network]
+        ?.address;
+      const wavesNetworkCode = (multiAccount.coins.waves.networks as any)?.[
+        network
+      ]?.networkCode;
+
+      return {
+        userAddress: wavesAddress || '',
+        networkCode: wavesNetworkCode || '',
+      };
+    } else {
+      return {
+        userAddress: activeAccount.address || '',
+        networkCode: activeAccount.networkCode || '',
+      };
+    }
+  }, [activeAccount, currentBlockchainType, currentNetwork]);
+
+  const myNfts = useMemo(() => {
+    const result = userAddress ? balances[userAddress]?.nfts : undefined;
+    return result;
+  }, [balances, userAddress, currentBlockchainType, currentNetwork]);
+
   const nfts = usePopupSelector(state => state.nfts);
 
   const [filters, setFilters] = useUiState('nftFilters');
@@ -45,8 +102,8 @@ export function TabNfts() {
 
   const nftConfig = usePopupSelector(state => state.nftConfig);
 
-  const sortedNfts = useMemo(
-    () =>
+  const sortedNfts = useMemo(() => {
+    const result =
       myNfts && nfts
         ? sortAndFilterNfts(
             myNfts.map(nft =>
@@ -59,9 +116,10 @@ export function TabNfts() {
             ),
             { term },
           )
-        : PLACEHOLDERS,
-    [myNfts, nftConfig, nfts, term, userAddress],
-  );
+        : PLACEHOLDERS;
+
+    return result;
+  }, [myNfts, nftConfig, nfts, term, userAddress]);
 
   const [creatorNfts, creatorCounts] = useMemo(
     () =>

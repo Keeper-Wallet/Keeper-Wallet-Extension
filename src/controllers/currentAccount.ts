@@ -364,9 +364,33 @@ export class CurrentAccountController {
           currentNetwork,
         );
 
+        // Process Unit0 NFTs through the NFT vendor system
+        if (balance.nfts && balance.nfts.length > 0) {
+          // Convert Unit0 NFTs to NftAssetDetail format for vendor processing
+          const unit0NftsForProcessing = balance.nfts.map(nft => ({
+            assetId: nft.id,
+            decimals: 0 as const,
+            description: nft.description,
+            issueHeight: nft.height,
+            issueTimestamp: nft.timestamp instanceof Date ? nft.timestamp.getTime() : new Date(nft.timestamp).getTime(),
+            issuer: nft.issuer,
+            issuerPublicKey: '', // Unit0 doesn't have this concept
+            minSponsoredAssetFee: null,
+            name: nft.name,
+            originTransactionId: nft.originTransactionId || '',
+            quantity: '1' as const,
+            reissuable: false as const,
+            scripted: nft.hasScript || false,
+          }));
+
+          // Process Unit0 NFTs through vendor system
+          await this.nftInfoController.updateNfts(unit0NftsForProcessing);
+        }
+
         this.store.updateState({
           [`balance_${address}`]: balance,
         });
+
       } catch (error) {
         console.error('Error fetching Unit0 balance:', error);
       }
