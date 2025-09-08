@@ -27,6 +27,7 @@ export interface Props {
   showAliasWarning?: boolean;
   showMirrorAddress?: boolean;
   testid?: string;
+  name?: string;
 }
 
 export function AddressRecipient({
@@ -36,6 +37,7 @@ export function AddressRecipient({
   showAliasWarning = true,
   showMirrorAddress,
   testid,
+  name,
 }: Props) {
   const { t } = useTranslation();
   const address = isEthereumAddress(recipient)
@@ -45,7 +47,7 @@ export function AddressRecipient({
   const accounts = usePopupSelector(state => state.accounts);
   const addresses = usePopupSelector(state => state.addresses);
 
-  const name =
+  const accountName =
     accounts.find(account => account.address === address)?.name ||
     addresses[address];
 
@@ -81,9 +83,9 @@ export function AddressRecipient({
   }
   return (
     <>
-      {name ? (
+      {accountName || name ? (
         <div className={clsx(styles.content, className)} data-testid={testid}>
-          <div className={styles.name}>{name}</div>
+          <div className={styles.name}>{accountName || name}</div>
           <AddressTooltip address={address} />
         </div>
       ) : (
@@ -94,7 +96,7 @@ export function AddressRecipient({
                 [styles.ethereum]: type === 'ethereum',
                 [styles.waves]: type === 'waves',
               })}
-              content={mirrorAddress}
+              content={name || mirrorAddress}
               placement="auto-end"
             >
               {props => (
@@ -111,7 +113,7 @@ export function AddressRecipient({
               )}
             </Tooltip>
           ) : (
-            <Tooltip content={address} placement="auto-end">
+            <Tooltip content={name || address} placement="auto-end">
               {props => (
                 <div className={styles.recipientWrapper} {...props}>
                   <Ellipsis

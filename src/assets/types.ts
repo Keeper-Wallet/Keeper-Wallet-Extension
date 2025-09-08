@@ -27,6 +27,8 @@ export interface AssetDetail {
   image_url?: string;
   animation_url?: string;
   external_url?: string;
+  displayCreator?: string;
+  tokenId?: string;
   attributes?: Array<{
     trait_type: string;
     value: string | number;

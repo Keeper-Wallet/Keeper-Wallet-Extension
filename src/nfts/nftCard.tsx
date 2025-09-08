@@ -77,6 +77,9 @@ export function NftCard({
       onClick={() => !isPlaceholder && onClick(nft)}
     >
       <NftCover nft={nft} />
+      {nft.tokenType && (
+        <div className={styles.tokenTypeBadge}>{nft.tokenType}</div>
+      )}
       <figcaption
         className={clsx(styles.footer, isPlaceholder && 'skeleton-glow')}
       >

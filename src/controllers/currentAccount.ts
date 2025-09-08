@@ -372,7 +372,12 @@ export class CurrentAccountController {
             decimals: 0 as const,
             description: nft.description,
             issueHeight: nft.height,
-            issueTimestamp: nft.timestamp instanceof Date ? nft.timestamp.getTime() : new Date(nft.timestamp).getTime(),
+            creator: nft.creator,
+            tokenId: nft.tokenId,
+            issueTimestamp:
+              nft.timestamp instanceof Date
+                ? nft.timestamp.getTime()
+                : new Date(nft.timestamp).getTime(),
             issuer: nft.issuer,
             issuerPublicKey: '', // Unit0 doesn't have this concept
             minSponsoredAssetFee: null,
@@ -383,14 +388,14 @@ export class CurrentAccountController {
             scripted: nft.hasScript || false,
           }));
 
+          console.log(unit0NftsForProcessing, 'unit0NftsForProcessing');
           // Process Unit0 NFTs through vendor system
-          await this.nftInfoController.updateNfts(unit0NftsForProcessing);
+          await this.nftInfoController.updateNfts(unit0NftsForProcessing, true);
         }
 
         this.store.updateState({
           [`balance_${address}`]: balance,
         });
-
       } catch (error) {
         console.error('Error fetching Unit0 balance:', error);
       }

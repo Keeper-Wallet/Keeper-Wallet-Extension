@@ -30,6 +30,11 @@ export function getNftsLink(networkCode: string, address: string): string {
 }
 
 export function getTxDetailLink(networkCode: string, txId: string): string {
+  // Handle Unit0 network codes
+  if (networkCode === '88811' || networkCode === '88817') {
+    return `https://explorer.unit0.dev/tx/${txId}`;
+  }
+  
   const explorer = explorerUrls.get(
     explorerUrls.has(networkCode) ? networkCode : 'custom',
   );

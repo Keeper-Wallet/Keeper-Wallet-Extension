@@ -151,7 +151,7 @@ export class Unit0Api {
     return response.json();
   }
 
-  async fetchTokenBalances(
+  async fetchERC20Tokens(
     address: string,
     network: NetworkName = NetworkName.Mainnet,
   ): Promise<Unit0TokenBalance[]> {
@@ -160,16 +160,73 @@ export class Unit0Api {
       network === NetworkName.Testnet
         ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
         : '0xCaf68F88a7262A66dAf6c361d1824bf8A3E4b5DD';
-    const response = await fetch(`${baseUrl}${mockAddress}/token-balances`);
+
+    const response = await fetch(`${baseUrl}${mockAddress}/tokens?type=ERC-20`);
 
     if (!response.ok) {
-      throw new Error(
-        `Failed to fetch unit0 token balances: ${response.status}`,
-      );
+      throw new Error(`Failed to fetch ERC-20 tokens: ${response.status}`);
     }
 
-    const tokens = await response.json();
-    return Array.isArray(tokens) ? tokens : [];
+    const data = await response.json();
+    return Array.isArray(data.items) ? data.items : [];
+  }
+
+  async fetchERC721Tokens(
+    address: string,
+    network: NetworkName = NetworkName.Mainnet,
+  ): Promise<Unit0TokenBalance[]> {
+    const baseUrl = this.getBaseUrl(network);
+    const mockAddress =
+      network === NetworkName.Testnet
+        ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
+        : '0xCaf68F88a7262A66dAf6c361d1824bf8A3E4b5DD';
+
+    const response = await fetch(
+      `${baseUrl}${mockAddress}/tokens?type=ERC-721`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ERC-721 tokens: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return Array.isArray(data.items) ? data.items : [];
+  }
+
+  async fetchERC1155Tokens(
+    address: string,
+    network: NetworkName = NetworkName.Mainnet,
+  ): Promise<Unit0TokenBalance[]> {
+    const baseUrl = this.getBaseUrl(network);
+    const mockAddress =
+      network === NetworkName.Testnet
+        ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
+        : '0xCaf68F88a7262A66dAf6c361d1824bf8A3E4b5DD';
+
+    const response = await fetch(
+      `${baseUrl}${mockAddress}/tokens?type=ERC-1155`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ERC-1155 tokens: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return Array.isArray(data.items) ? data.items : [];
+  }
+
+  async fetchTokenBalances(
+    address: string,
+    network: NetworkName = NetworkName.Mainnet,
+  ): Promise<Unit0TokenBalance[]> {
+    // Fetch all token types and combine them
+    const [erc20Tokens, erc721Tokens, erc1155Tokens] = await Promise.all([
+      this.fetchERC20Tokens(address, network),
+      this.fetchERC721Tokens(address, network),
+      this.fetchERC1155Tokens(address, network),
+    ]);
+
+    return [...erc20Tokens, ...erc721Tokens, ...erc1155Tokens];
   }
 
   async fetchBalanceAndTokens(
@@ -190,7 +247,7 @@ export class Unit0Api {
   async fetchTransactionHistory(
     address: string,
     network: NetworkName = NetworkName.Mainnet,
-    limit: number = 50,
+    limit: number = 100,
   ): Promise<Unit0Transaction[]> {
     const baseUrl = this.getBaseUrl(network);
     const mockAddress =
@@ -199,7 +256,7 @@ export class Unit0Api {
         : '0xCaf68F88a7262A66dAf6c361d1824bf8A3E4b5DD';
 
     const response = await fetch(
-      `${baseUrl}${mockAddress}/transactions?limit=${limit}`,
+      `${baseUrl}${mockAddress}/token-transfers?type=&limit=${limit}`,
     );
 
     if (!response.ok) {
@@ -240,14 +297,13 @@ export class Unit0Api {
     network: NetworkName = NetworkName.Mainnet,
   ): Promise<Unit0TokenInstance | null> {
     const baseUrl = this.getBaseUrl(network);
+    const url = `${baseUrl.replace(
+      '/addresses/',
+      '/tokens/',
+    )}${contractAddress}/instances/${tokenId}`;
 
     try {
-      const response = await fetch(
-        `${baseUrl.replace(
-          '/addresses/',
-          '/tokens/',
-        )}${contractAddress}/instances/${tokenId}`,
-      );
+      const response = await fetch(url);
 
       if (!response.ok) {
         return null;
@@ -263,9 +319,55 @@ export class Unit0Api {
     }
   }
 
+  async fetchNftInventory(
+    contractAddress: string,
+    holderAddress: string,
+    network: NetworkName,
+  ) {
+    const baseUrl = this.getBaseUrl(network);
+
+    // Use mocked addresses for consistent testing
+    const mockAddress =
+      network === NetworkName.Testnet
+        ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
+        : '0xCaf68F88a7262A66dAf6c361d1824bf8A3E4b5DD';
+
+    // Use the nft/collections endpoint to get inventory data
+    const url = `${baseUrl}${mockAddress}/nft/collections?type=`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching NFT inventory:', error);
+      throw error;
+    }
+  }
+
+  async fetchContractInfo(contractAddress: string, network: NetworkName) {
+    const baseUrl = this.getBaseUrl(network);
+    const url = `${baseUrl}${contractAddress}`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching contract info:', error);
+      throw error;
+    }
+  }
+
   // Convert Unit0 transaction to Waves-compatible format for history display
   convertToWavesTransaction(
-    unit0Tx: Unit0Transaction,
+    unit0Tx: Unit0NftTransfer,
     address: string,
   ): TransactionFromNode {
     const timestamp = new Date(unit0Tx.timestamp).getTime();
@@ -292,18 +394,23 @@ export class Unit0Api {
     }
 
     return {
-      id: unit0Tx.hash,
+      id: unit0Tx.transaction_hash,
       type: TRANSACTION_TYPE.ETHEREUM,
       timestamp,
       height: unit0Tx.block_number,
       sender,
-      fee: unit0Tx.fee?.value || '0',
+      fee: '0', // Token transfers don't have direct fee info in this API
       payload: {
         type: 'transfer',
-        amount: unit0Tx.value || '0',
-        asset: 'unit0', // Unit0 native token
+        amount: unit0Tx.total.value || '0',
+        asset: unit0Tx.token.address, // Use token contract address as asset ID
         to: recipient,
         direction,
+        tokenSymbol: unit0Tx.token.symbol,
+        tokenName: unit0Tx.token.name,
+        tokenDecimals: unit0Tx.token.decimals,
+        fromName: unit0Tx.from?.name,
+        toName: unit0Tx.to?.name,
       },
     } as TransactionFromNode;
   }

@@ -62,9 +62,12 @@ export function createNft({
           })
         : result,
     {
-      creator: asset.issuer,
-      description: asset.description,
-      displayCreator: asset.issuer === userAddress ? 'My NFTs' : asset.issuer,
+      creator: asset.issuer || (info as any).creator,
+      description: (info as any).description || asset.description,
+      displayCreator:
+        asset.issuer === userAddress
+          ? 'My NFTs'
+          : asset.displayCreator || asset.issuer || (info as any).creator,
       displayName: asset.displayName,
       foreground: new URL('./unknown.svg', import.meta.url).toString(),
       id: asset.id,

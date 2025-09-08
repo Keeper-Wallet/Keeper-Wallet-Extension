@@ -453,6 +453,7 @@ export function HistoryItem({ tx, className }: Props) {
                 chainId={chainId!}
                 showAliasWarning={false}
                 showMirrorAddress
+                name={payload.fromName}
               />
             );
             addSign = isZeroAmount ? '' : '+';
@@ -467,6 +468,7 @@ export function HistoryItem({ tx, className }: Props) {
                 chainId={chainId!}
                 showAliasWarning={false}
                 showMirrorAddress
+                name={payload.fromName}
               />
             );
             addSign = '';
@@ -482,6 +484,7 @@ export function HistoryItem({ tx, className }: Props) {
                 chainId={chainId!}
                 showAliasWarning={false}
                 showMirrorAddress
+                name={payload.toName}
               />
             );
             addSign = isZeroAmount ? '' : '-';
@@ -494,7 +497,22 @@ export function HistoryItem({ tx, className }: Props) {
               showAsset
               addSign={addSign}
               isShortFormat
-              balance={fromCoins(payload.amount, payload.asset)}
+              balance={(() => {
+                // For Unit0 token transfers, create proper Money object with token metadata
+                if (payload.tokenDecimals && payload.tokenSymbol) {
+                  const tokenDecimals = parseInt(payload.tokenDecimals);
+                  const asset = {
+                    id: payload.asset,
+                    displayName: payload.tokenSymbol,
+                    name: payload.tokenName || payload.tokenSymbol,
+                    precision: tokenDecimals,
+                    ticker: payload.tokenSymbol,
+                  };
+                  return Money.fromCoins(payload.amount, new Asset(asset));
+                }
+                // Fallback to existing logic
+                return fromCoins(payload.amount, payload.asset);
+              })()}
             />
           );
           break;

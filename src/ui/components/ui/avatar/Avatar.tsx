@@ -43,7 +43,9 @@ export class Avatar extends Component<Props, State> {
 
     const style = {
       width: size,
+      minWidth: size,
       height: size,
+      minHeight: size,
     };
 
     return (

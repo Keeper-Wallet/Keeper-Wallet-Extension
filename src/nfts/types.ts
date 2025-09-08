@@ -40,6 +40,7 @@ export interface Nft {
   id: string;
   marketplaceUrl?: string;
   name: string;
+  tokenType?: string;
   vendor: NftVendorId;
 }
 
