@@ -30,16 +30,30 @@ export class NftInfoController {
 
     this.getNetwork = getNetwork;
     this.getNode = getNode;
-    this.getCurrentBlockchainType = getCurrentBlockchainType || (() => BLOCKCHAIN_TYPES.WAVES);
+    this.getCurrentBlockchainType =
+      getCurrentBlockchainType || (() => BLOCKCHAIN_TYPES.WAVES);
   }
 
-  async updateNfts(nftsAssetDetails: NftAssetDetail[]) {
+  async updateNfts(nftsAssetDetails: NftAssetDetail[], forceUpdate: boolean) {
+    if (forceUpdate) {
+      const { nfts } = this.store.getState();
+      nftsAssetDetails.forEach(asset => {
+        nfts[asset.assetId] = asset;
+      });
+
+      // const nftsToStore = { ...nfts, ...nftsAssetDetails }.filter();
+      this.store.updateState({
+        nfts,
+      });
+      return;
+    }
     const currentNetwork = this.getNetwork();
     const currentBlockchainType = this.getCurrentBlockchainType();
-    
+
     // Support NFTs for both Waves mainnet and Unit0 networks
-    const shouldFetchNfts = 
-      (currentBlockchainType === BLOCKCHAIN_TYPES.WAVES && currentNetwork === NetworkName.Mainnet) ||
+    const shouldFetchNfts =
+      (currentBlockchainType === BLOCKCHAIN_TYPES.WAVES &&
+        currentNetwork === NetworkName.Mainnet) ||
       currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0;
 
     if (!shouldFetchNfts) {
@@ -48,7 +62,7 @@ export class NftInfoController {
 
     const { nfts } = this.store.getState();
     const nftsToFetch = nftsAssetDetails.filter(nft => !nfts[nft.assetId]);
-    
+
     if (nftsToFetch.length === 0) {
       return;
     }

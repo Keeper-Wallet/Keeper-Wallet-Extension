@@ -18,7 +18,15 @@
     "debugNoBackupPhrase": "This account is for debugging, so there's no backup phrase, private key or public key to copy",
     "privKey": "Private key",
     "pubKey": "Public key",
-    "viewInExplorer": "View in Explorer"
+    "viewInExplorer": "View in Explorer",
+    "publicInfo": "Public info",
+    "privateInfo": "Private info",
+    "wavesAddress": "Your Waves address",
+    "unit0Address": "Your Unit0 address",
+    "wavesPublicKey": "Waves Public Key",
+    "unit0PublicKey": "Unit0 Public Key",
+    "wavesPrivateKey": "Waves Private Key",
+    "unit0PrivateKey": "Unit0 Private key"
   },
   "activeAccountCard": {
     "swapButton": "Swap"

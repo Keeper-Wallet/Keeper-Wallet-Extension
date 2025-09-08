@@ -303,15 +303,17 @@ export function AccountInfo() {
 
       {isMultiChainWallet && multiAccount.coins && (
         <>
-          <div>Waves</div>
-          {multiAccount.coins.waves &&
-            multiAccount.coins.waves.networks &&
-            multiAccount.coins.waves.networks[networkKey] && (
-              <>
+          {/* Public info section */}
+          <div className="margin-main-big">
+            <h2>{t('accountInfo.publicInfo')}</h2>
+
+            <div className="input-title basic500 tag1">
+              {t('accountInfo.wavesAddress')}
+            </div>
+            {multiAccount.coins.waves &&
+              multiAccount.coins.waves.networks &&
+              multiAccount.coins.waves.networks[networkKey] && (
                 <div className="margin-main-big">
-                  <div className="input-title basic500 tag1 flex">
-                    <span>{t('accountInfo.address')}</span>
-                  </div>
                   <div className="input-like tag1">
                     <CopyText
                       showCopy
@@ -323,23 +325,76 @@ export function AccountInfo() {
                     />
                   </div>
                 </div>
-                <div id="wavesPublicKey" className="margin-main-big">
-                  <div className="input-title basic500 tag1">
-                    {t('accountInfo.pubKey')}
-                  </div>
-                  <div className={`input-like tag1 ${styles.ellipsis}`}>
+              )}
+
+            <div className="input-title basic500 tag1">
+              {t('accountInfo.unit0Address')}
+            </div>
+            {multiAccount.coins.unit0 &&
+              multiAccount.coins.unit0.networks &&
+              multiAccount.coins.unit0.networks[
+                networkKey === 'stagenet' ? 'testnet' : networkKey
+              ] && (
+                <div className="margin-main-big">
+                  <div className="input-like tag1">
                     <CopyText
                       showCopy
                       showText
-                      text={multiAccount.coins.waves.publicKey}
+                      text={
+                        multiAccount.coins.unit0.networks[
+                          networkKey === 'stagenet' ? 'testnet' : networkKey
+                        ].address
+                      }
                       onCopy={onCopyHandler}
                     />
                   </div>
                 </div>
-                <div id="accountInfoPrivateKey" className="margin-main-big">
-                  <div className="input-title basic500 tag1">
-                    {t('accountInfo.privKey')}
-                  </div>
+              )}
+
+            <div className="input-title basic500 tag1">
+              {t('accountInfo.wavesPublicKey')}
+            </div>
+            {multiAccount.coins.waves && (
+              <div className="margin-main-big">
+                <div className={`input-like tag1 ${styles.ellipsis}`}>
+                  <CopyText
+                    showCopy
+                    showText
+                    text={multiAccount.coins.waves.publicKey}
+                    onCopy={onCopyHandler}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="input-title basic500 tag1">
+              {t('accountInfo.unit0PublicKey')}
+            </div>
+            {multiAccount.coins.unit0 && (
+              <div className="margin-main-big">
+                <div className={`input-like tag1 ${styles.ellipsis}`}>
+                  <CopyText
+                    showCopy
+                    showText
+                    text={multiAccount.coins.unit0.publicKey}
+                    onCopy={onCopyHandler}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Private info section */}
+          <div className="margin-main-big">
+            <h2>{t('accountInfo.privateInfo')}</h2>
+
+            <div className="input-title basic500 tag1">
+              {t('accountInfo.wavesPrivateKey')}
+            </div>
+            {multiAccount.coins.waves &&
+              multiAccount.coins.waves.networks &&
+              multiAccount.coins.waves.networks[networkKey] && (
+                <div className="margin-main-big">
                   <div className="input-like password-input tag1">
                     <CopyText
                       getText={getPrivateKey}
@@ -349,66 +404,44 @@ export function AccountInfo() {
                     />
                   </div>
                 </div>
-              </>
-            )}
+              )}
 
-          <>
-            <div>Ethereum</div>
+            <div className="input-title basic500 tag1">
+              {t('accountInfo.unit0PrivateKey')}
+            </div>
             {multiAccount.coins.unit0 &&
               multiAccount.coins.unit0.networks &&
               multiAccount.coins.unit0.networks[
                 networkKey === 'stagenet' ? 'testnet' : networkKey
               ] && (
-                <>
-                  <div className="margin-main-big">
-                    <div className="input-title basic500 tag1 flex">
-                      <span>{t('accountInfo.address')}</span>
-                    </div>
-                    <div className="input-like tag1">
-                      <CopyText
-                        showCopy
-                        showText
-                        text={
-                          multiAccount.coins.unit0.networks[
-                            networkKey === 'stagenet' ? 'testnet' : networkKey
-                          ].address
-                        }
-                        onCopy={onCopyHandler}
-                      />
-                    </div>
+                <div className="margin-main-big">
+                  <div className="input-like password-input tag1">
+                    <CopyText
+                      getText={getUnit0PrivateKey}
+                      showCopy
+                      type="key"
+                      onCopy={onCopyHandler}
+                    />
                   </div>
-                  <div id="unit0PublicKey" className="margin-main-big">
-                    <div className="input-title basic500 tag1">
-                      {t('accountInfo.pubKey')}
-                    </div>
-                    <div className={`input-like tag1 ${styles.ellipsis}`}>
-                      <CopyText
-                        showCopy
-                        showText
-                        text={multiAccount.coins.unit0.publicKey}
-                        onCopy={onCopyHandler}
-                      />
-                    </div>
-                  </div>
-                  <div id="unit0PrivateKey" className="margin-main-big">
-                    <div className="input-title basic500 tag1">
-                      {t('accountInfo.privKey')}
-                    </div>
-                    <div className="input-like password-input tag1">
-                      <CopyText
-                        getText={getUnit0PrivateKey}
-                        showCopy
-                        type="key"
-                        onCopy={onCopyHandler}
-                      />
-                    </div>
-                  </div>
-                </>
+                </div>
               )}
-          </>
+
+            <div className="input-title basic500 tag1">
+              {t('accountInfo.backUp')}
+            </div>
+            <div className="margin-main-big">
+              <div className="input-like password-input tag1">
+                <CopyText
+                  getText={getSeed}
+                  showCopy
+                  type="key"
+                  onCopy={onCopyHandler}
+                />
+              </div>
+            </div>
+          </div>
         </>
       )}
-
       {account.type !== 'debug' && multiAccount.type !== 'multichain' && (
         <div id="accountInfoPublicKey" className="margin-main-big">
           <div className="input-title basic500 tag1">
@@ -440,21 +473,7 @@ export function AccountInfo() {
         </div>
       )}
 
-      {account.type === 'seed' || account.type === 'multichain' ? (
-        <div id="accountInfoBackupPhrase" className="margin-main-big">
-          <div className="input-title basic500 tag1">
-            {t('accountInfo.backUp')}
-          </div>
-          <div className="input-like password-input tag1">
-            <CopyText
-              getText={getSeed}
-              showCopy
-              type="key"
-              onCopy={onCopyHandler}
-            />
-          </div>
-        </div>
-      ) : account.type === 'privateKey' ? (
+      {account.type === 'privateKey' ? (
         <div className="margin-main-big basic500">
           <div className="input-title tag1">{t('accountInfo.backUp')}</div>
 

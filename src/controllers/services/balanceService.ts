@@ -34,87 +34,162 @@ export class BalanceService {
         MAX_TX_HISTORY_ITEMS,
       ));
 
-    // Separate ERC-20 tokens and ERC-721 NFTs from token data
+    // Separate ERC-20 tokens and NFTs (ERC-721 + ERC-1155) from token data
     const erc20Tokens = tokenData.filter(
       token => token.token?.type === 'ERC-20',
     );
-    const erc721Tokens = tokenData.filter(
-      token => token.token?.type === 'ERC-721',
+    const nftTokens = tokenData.filter(
+      token =>
+        token.token?.type === 'ERC-721' || token.token?.type === 'ERC-1155',
     );
 
-    // Convert ERC-721 tokens to NFT format with enhanced metadata
+    // Convert ERC-721 and ERC-1155 tokens to NFT format with enhanced metadata
+    // Use collections endpoint for each NFT contract to get comprehensive data with amounts and token instances
     const nftData = await Promise.all(
-      erc721Tokens.map(async token => {
-        if (!token.token) {
+      nftTokens.map(async (tokenData: any) => {
+        if (!tokenData || !tokenData.token) {
           return null;
         }
 
-        const baseNft = {
-          id: token.token.address,
-          assetId: token.token.address,
-          name: token.token.name || 'Unknown NFT',
-          displayName: token.token.name || 'Unknown NFT',
-          description: `${token.token.name || 'Unknown NFT'} (${token.token.symbol || 'NFT'})`,
-          quantity: token.value || '1',
-          decimals: 0,
-          reissuable: false,
-          issuer: token.token.address,
-          issuerPublicKey: '',
-          scripted: false,
-          minSponsoredAssetFee: null,
-          originTransactionId: '',
-          issueHeight: 0,
-          issueTimestamp: Date.now(),
-          height: 0,
-          precision: 0,
-          sender: token.token.address,
-          timestamp: new Date(),
-          // Add tokenId for rank display
-          rank: parseInt(token.value || '1'),
-          rarity_rank: parseInt(token.value || '1'),
-        };
+        const token = tokenData.token;
 
-        // Try to fetch enhanced metadata from Unit0's indexed API only
         try {
-          const tokenId = token.value || '1';
-          
-          // Use Unit0's indexed API for cached metadata
-          const unit0Metadata = await this.unit0Api.fetchNftMetadata(
-            token.token.address,
-            tokenId,
-            network,
-          );
+          // Fetch detailed collection data for this specific NFT contract
+          let collectionData = null;
+          let contractInfo = null;
 
-          if (unit0Metadata && unit0Metadata.metadata) {
-            const meta = unit0Metadata.metadata;
+          // Fetch contract info to get creator address
+          try {
+            contractInfo = await this.unit0Api.fetchContractInfo(
+              token.address,
+              network,
+            );
+          } catch (error) {
+            console.warn(
+              `Failed to fetch contract info for ${token.address}:`,
+              error,
+            );
+          }
+
+          try {
+            const collectionsResponse = await this.unit0Api.fetchNftInventory(
+              token.address, // Use the NFT contract address
+              address, // User wallet address
+              network,
+            );
+
+            if (
+              collectionsResponse?.items &&
+              collectionsResponse.items.length > 0
+            ) {
+              // Find the collection data for this specific token address
+              collectionData = collectionsResponse.items.find(
+                (item: any) =>
+                  item.token?.address?.toLowerCase() ===
+                  token.address.toLowerCase(),
+              );
+            }
+          } catch (error) {
+            console.warn(
+              `Failed to fetch collection data for ${token.address}:`,
+              error,
+            );
+          }
+
+          // Create individual NFT entries for each token_instance
+          if (
+            collectionData &&
+            collectionData.token_instances &&
+            collectionData.token_instances.length > 0
+          ) {
+            // Create separate NFT for each token instance
+            return collectionData.token_instances.map((tokenInstance: any) => {
+              const creatorValue =
+                contractInfo?.creator_address_hash || token.address;
+
+              return {
+                id: token.address,
+                assetId: token.address,
+                name: token.name || 'Unknown NFT',
+                displayName: `${token.name || 'Unknown NFT'} ID# ${
+                  tokenInstance.id
+                }`,
+                displayCreator: token.name || 'Unknown NFT',
+                creator: creatorValue,
+                description: `${token.name || 'Unknown NFT'} #${
+                  tokenInstance.id
+                } (${token.symbol || 'NFT'})`,
+                quantity: tokenInstance.value || '1',
+                decimals: 0,
+                reissuable: false,
+                issuer: token.address,
+                issuerPublicKey: '',
+                scripted: false,
+                minSponsoredAssetFee: null,
+                originTransactionId: '',
+                issueHeight: 0,
+                issueTimestamp: Date.now(),
+                height: 0,
+                precision: 0,
+                sender: token.address,
+                timestamp: new Date(),
+                // Add individual token data
+                collectionAddress: token.address,
+                tokenId: tokenInstance.id,
+                tokenType: token.type,
+                rank: parseInt(tokenInstance.id) || 1,
+                rarity_rank: parseInt(tokenInstance.id) || 1,
+              };
+            });
+          } else {
+            // Fallback: Create single NFT entry using basic token data
             return {
-              ...baseNft,
-              name: meta.name || baseNft.name,
-              displayName: meta.name || baseNft.displayName,
-              description: meta.description || baseNft.description,
-              author: meta.author,
-              creator: meta.creator,
-              rank: meta.rank,
-              rarity_rank: meta.rarity_rank || meta.rank,
-              image_url: meta.image,
-              animation_url: meta.animation_url,
-              external_url: meta.external_url,
-              attributes: meta.attributes,
+              id: token.address,
+              assetId: token.address,
+              name: token.name || 'Unknown NFT',
+              displayName: `${token.name || 'Unknown NFT'} ID# ${
+                tokenData.token_id
+              }`,
+              displayCreator: token.name || 'Unknown NFT',
+              creator: contractInfo?.creator_address_hash || token.address,
+              description: `${token.name || 'Unknown NFT'} (${
+                token.symbol || 'NFT'
+              })`,
+              quantity: collectionData?.amount || tokenData.value || '1',
+              decimals: 0,
+              reissuable: false,
+              issuer: token.address,
+              issuerPublicKey: '',
+              scripted: false,
+              minSponsoredAssetFee: null,
+              originTransactionId: '',
+              issueHeight: 0,
+              issueTimestamp: Date.now(),
+              height: 0,
+              precision: 0,
+              sender: token.address,
+              timestamp: new Date(),
+              // Add collection-specific data if available
+              collectionAddress: token.address,
+              tokenId: tokenData.token_id,
+              tokenType: token.type || 'ERC-721',
+              rank: 1,
+              rarity_rank: 1,
             };
           }
         } catch (error) {
           console.warn(
-            `Failed to fetch metadata for NFT ${token.token.address}:${token.value}`,
+            `Failed to process NFT collection ${token.address}`,
             error,
           );
+          return null;
         }
-
-        return baseNft;
       }),
     );
 
-    // Filter out null values from failed token processing
-    const validNftData = nftData.filter(nft => nft !== null);
+    // Flatten the array since some entries might return arrays of NFTs
+    const validNftData = nftData.flat().filter(nft => nft !== null);
+
     const unit0AssetBalance: AssetBalance = {
       balance: balanceData.coin_balance || '0',
       sponsorBalance: balanceData.coin_balance || '0',
@@ -139,8 +214,27 @@ export class BalanceService {
       }
     }
 
+    // Convert NFT objects to AssetDetail format with creator field preserved
+    console.log(validNftData, '***************');
+    const nftAssets = validNftData.map(nft => ({
+      ...nft,
+      // Ensure AssetDetail compatibility
+      quantity: nft.quantity,
+      tokenId: nft.rank,
+      precision: nft.precision || 0,
+      reissuable: nft.reissuable || false,
+      height: nft.height || 0,
+      timestamp: nft.timestamp || new Date(),
+      issuer: nft.issuer || nft.id,
+      sender: nft.sender || nft.id,
+      description: nft.description || '',
+      displayName: nft.displayName || nft.name,
+      // Preserve creator field for AssetDetail
+      creator: nft.creator,
+    }));
+
     // Add NFT assets to the assets object so they can be found by nftInfo.tsx
-    for (const nft of validNftData) {
+    for (const nft of nftAssets) {
       assets[nft.id] = {
         balance: nft.quantity,
         sponsorBalance: nft.quantity,

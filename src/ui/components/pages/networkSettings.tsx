@@ -173,7 +173,7 @@ export function NetworkSettings() {
     return `${currentBlockchainType}-${currentNetwork}`;
   });
 
-  const [showTestAccounts, setShowTestAccounts] = useState(true);
+  const [showTestAccounts, setShowTestAccounts] = useState(false);
 
   useEffect(() => {
     // Load the hideTestAccounts preference when component mounts

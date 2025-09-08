@@ -61,3 +61,17 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.tokenTypeBadge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  z-index: 2;
+}

@@ -22,7 +22,7 @@ export class NetworkController {
       extensionStorage.getInitState({
         currentNetwork: NetworkName.Mainnet,
         currentBlockchainType: 'waves',
-        hideTestAccounts: false,
+        hideTestAccounts: true,
         customNodes: {
           mainnet: null,
           stagenet: null,

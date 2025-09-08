@@ -29,6 +29,7 @@ export function OtherAccountsPage() {
 
   const [term, setTerm] = useState<string>('');
 
+  console.log(accounts, 'accounts');
   const otherAccounts = accounts
     .filter(
       account =>
