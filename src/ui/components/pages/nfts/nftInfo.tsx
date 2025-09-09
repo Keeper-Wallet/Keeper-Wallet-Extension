@@ -50,7 +50,7 @@ export function NftInfo() {
       userAddress,
     });
 
-  const tokenId = nftInfo?.tokenId;
+  const tokenId = nftInfo.tokenId;
   const creatorUrl =
     nft?.creatorUrl ||
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -151,6 +151,34 @@ export function NftInfo() {
               <div className={styles.fieldContent}>{nft.description}</div>
             </>
           )}
+
+        {/* Display token type if available */}
+        {(nft?.tokenType || nft?.token_type) && (
+          <>
+            <div className={styles.fieldName}>Token Type</div>
+            <div className={styles.fieldContent}>
+              {nft?.tokenType || nft?.token_type}
+            </div>
+          </>
+        )}
+
+        {/* Display token ID if available */}
+        {(tokenId || (nft as any)?.tokenId) && (
+          <>
+            <div className={styles.fieldName}>Token ID</div>
+            <div className={styles.fieldContent}>
+              #{tokenId || (nft as any)?.tokenId}
+            </div>
+          </>
+        )}
+
+        {/* Display token value/quantity if available */}
+        {(nft as any)?.value && (
+          <>
+            <div className={styles.fieldName}>Quantity</div>
+            <div className={styles.fieldContent}>{(nft as any).value}</div>
+          </>
+        )}
 
         {/* Display token type if available */}
         {(nft?.tokenType || nft?.token_type) && (

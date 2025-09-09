@@ -40,7 +40,6 @@ export class NftInfoController {
       nftsAssetDetails.forEach(asset => {
         nfts[`${asset.assetId}_${asset.tokenId}`] = asset;
       });
-
       this.store.updateState({
         nfts,
       });

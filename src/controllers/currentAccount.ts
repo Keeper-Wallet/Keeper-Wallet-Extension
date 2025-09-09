@@ -388,6 +388,7 @@ export class CurrentAccountController {
             scripted: nft.hasScript || false,
           }));
 
+          console.log(unit0NftsForProcessing, 'unit0NftsForProcessing');
           // Process Unit0 NFTs through vendor system
           await this.nftInfoController.updateNfts(unit0NftsForProcessing, true);
         }
