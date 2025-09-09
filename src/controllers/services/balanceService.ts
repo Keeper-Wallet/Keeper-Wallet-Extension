@@ -111,10 +111,10 @@ export class BalanceService {
                 id: token.address,
                 assetId: token.address,
                 name: token.name || 'Unknown NFT',
-                displayName: `${token.name || 'Unknown NFT'} ID# ${
+                displayName: `${token.name || 'Unknown NFT'} ID #${
                   tokenInstance.id
                 }`,
-                displayCreator: token.name || 'Unknown NFT',
+                displayCreator: token.symbol || token.name || 'Unknown NFT',
                 creator: creatorValue,
                 description: `${token.name || 'Unknown NFT'} #${
                   tokenInstance.id
@@ -147,10 +147,10 @@ export class BalanceService {
               id: token.address,
               assetId: token.address,
               name: token.name || 'Unknown NFT',
-              displayName: `${token.name || 'Unknown NFT'} ID# ${
+              displayName: `${token.name || 'Unknown NFT'} ID #${
                 tokenData.token_id
               }`,
-              displayCreator: token.name || 'Unknown NFT',
+              displayCreator: token.symbol || token.name || 'Unknown NFT',
               creator: contractInfo?.creator_address_hash || token.address,
               description: `${token.name || 'Unknown NFT'} (${
                 token.symbol || 'NFT'
@@ -215,7 +215,6 @@ export class BalanceService {
     }
 
     // Convert NFT objects to AssetDetail format with creator field preserved
-    console.log(validNftData, '***************');
     const nftAssets = validNftData.map(nft => ({
       ...nft,
       // Ensure AssetDetail compatibility

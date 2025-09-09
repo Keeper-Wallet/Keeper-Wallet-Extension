@@ -38,10 +38,8 @@ export class NftInfoController {
     if (forceUpdate) {
       const { nfts } = this.store.getState();
       nftsAssetDetails.forEach(asset => {
-        nfts[asset.assetId] = asset;
+        nfts[`${asset.assetId}_${asset.tokenId}`] = asset;
       });
-
-      // const nftsToStore = { ...nfts, ...nftsAssetDetails }.filter();
       this.store.updateState({
         nfts,
       });

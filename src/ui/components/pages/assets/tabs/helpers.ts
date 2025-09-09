@@ -34,7 +34,11 @@ export function sortAssetEntries<T>(
   assetEntries: Array<[string, T]>,
   assets: AssetsRecord,
   showSuspiciousAssets: boolean | undefined,
+  currentBlockchainType?: string,
 ): Array<[string, T]> {
+  // Determine native token based on blockchain type
+  const nativeTokenId = currentBlockchainType === 'unit0' ? 'unit0' : 'WAVES';
+  
   return assetEntries
     .filter(
       ([assetId]) => showSuspiciousAssets || !assets[assetId]?.isSuspicious,
@@ -44,8 +48,8 @@ export function sortAssetEntries<T>(
       const b = assets[bAssetId];
 
       return (
-        (aAssetId === 'WAVES' && -1) ||
-        (bAssetId === 'WAVES' && 1) ||
+        (aAssetId === nativeTokenId && -1) ||
+        (bAssetId === nativeTokenId && 1) ||
         (a && b
           ? +!!b.isFavorite - +!!a.isFavorite ||
             +!!a.isSuspicious - +!!b.isSuspicious ||

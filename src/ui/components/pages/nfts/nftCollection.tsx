@@ -35,10 +35,12 @@ export function NftCollection() {
   const networkCode = usePopupSelector(
     state => state.selectedAccount?.networkCode,
   );
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || 'waves',
+  );
 
   const myNfts = usePopupSelector(state => state.balances[userAddress]?.nfts);
   const nfts = usePopupSelector(state => state.nfts);
-
   const [filters, setFilters] = useUiState('nftFilters');
   const [term, setTerm] = [
     filters?.term,
@@ -66,6 +68,10 @@ export function NftCollection() {
 
   const creatorNft = creatorNfts.at(0);
 
+  const nameOfDisplay =
+    currentBlockchainType === 'unit0'
+      ? creatorNft?.collectionName
+      : creatorNft?.displayCreator;
   return (
     <div className={styles.root}>
       <div className={styles.header}>
@@ -73,7 +79,7 @@ export function NftCollection() {
           {creatorNft?.creator === creatorNft?.displayCreator ? (
             <Ellipsis text={creatorNft?.creator} size={12} />
           ) : (
-            creatorNft?.displayCreator
+            nameOfDisplay
           )}
         </div>
         <div>
@@ -85,9 +91,14 @@ export function NftCollection() {
                 className="link"
                 target="_blank"
                 href={
-                  creatorNft?.creatorUrl ??
-                  (networkCode &&
-                    getAccountLink(networkCode, creatorNft?.creator))
+                  // For Unit0 NFTs, open token page instead of creator page
+                  creatorNft?.creator?.startsWith('0x')
+                    ? networkCode === '88817'
+                      ? `https://explorer-testnet.unit0.dev/token/${creatorNft.creator}`
+                      : `https://explorer.unit0.dev/token/${creatorNft.creator}`
+                    : creatorNft?.creatorUrl ??
+                      (networkCode &&
+                        getAccountLink(networkCode, creatorNft?.creator))
                 }
                 {...props}
               >
@@ -134,7 +145,7 @@ export function NftCollection() {
             mode={DisplayMode.Name}
             nfts={creatorNfts}
             onClick={nft => {
-              navigate(`/nft/${nft.id}`);
+              navigate(`/nft/${nft.id}/${nft.tokenId}`);
             }}
           />
         )}

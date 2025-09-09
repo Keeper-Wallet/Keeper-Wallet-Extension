@@ -16,6 +16,7 @@ export interface NftAssetDetail {
   quantity: '1';
   reissuable: false;
   scripted: boolean;
+  tokenId?: string;
 }
 
 export enum NftVendorId {
@@ -42,6 +43,7 @@ export interface Nft {
   name: string;
   tokenType?: string;
   vendor: NftVendorId;
+  tokenid?: string;
 }
 
 export interface FetchInfoParams {
@@ -53,6 +55,7 @@ export interface CreateParams<T extends { vendor: NftVendorId }> {
   asset: AssetDetail;
   config: NftConfig;
   info: T;
+  networkCode?: string;
 }
 
 export interface NftVendor<T extends { vendor: NftVendorId }> {

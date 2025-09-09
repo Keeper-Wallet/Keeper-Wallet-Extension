@@ -98,7 +98,7 @@ export class Unit0NftVendor implements NftVendor<Unit0NftInfo> {
   }
 
   create(params: CreateParams<Unit0NftInfo>): Nft {
-    const { asset, info } = params;
+    const { asset, info, networkCode } = params;
     // Try to get creator from info object (which should contain contract address)
     const creator =
       (info as any)?.creator_address_hash ||
@@ -114,7 +114,9 @@ export class Unit0NftVendor implements NftVendor<Unit0NftInfo> {
       creator: creator,
       displayCreator: info?.name || asset.displayCreator || 'Unit0 NFT',
       creatorUrl: creator
-        ? `https://explorer.unit0.dev/address/${creator}`
+        ? networkCode === '88817'
+          ? `https://explorer-testnet.unit0.dev/address/${creator}`
+          : `https://explorer.unit0.dev/address/${creator}`
         : undefined,
       foreground: info?.imageUrl || info?.mediaUrl,
       background:
@@ -124,6 +126,7 @@ export class Unit0NftVendor implements NftVendor<Unit0NftInfo> {
       marketplaceUrl: this.getMarketplaceUrl(
         info?.contractAddress,
         info?.tokenId,
+        networkCode,
       ),
     };
   }
@@ -210,12 +213,16 @@ export class Unit0NftVendor implements NftVendor<Unit0NftInfo> {
   private getMarketplaceUrl(
     contractAddress?: string,
     tokenId?: string,
+    networkCode?: string,
   ): string | undefined {
     if (!contractAddress || !tokenId) {
       return undefined;
     }
 
     // Unit0 explorer URL format
-    return `https://explorer.unit0.dev/token/${contractAddress}/instance/${tokenId}`;
+    const baseUrl = networkCode === '88817'
+      ? 'https://explorer-testnet.unit0.dev'
+      : 'https://explorer.unit0.dev';
+    return `${baseUrl}/token/${contractAddress}/instance/${tokenId}`;
   }
 }

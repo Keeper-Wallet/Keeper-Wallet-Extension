@@ -46,11 +46,13 @@ export function createNft({
   config,
   info,
   userAddress,
+  networkCode,
 }: {
   asset: AssetDetail;
   config: NftConfig;
   info: NftInfo | undefined;
   userAddress: string;
+  networkCode?: string;
 }): Nft {
   return Object.values(vendors).reduce<Nft>(
     (result, vendor) =>
@@ -59,11 +61,14 @@ export function createNft({
             asset,
             config,
             info: info as never,
+            networkCode,
           })
         : result,
     {
-      creator: asset.issuer || (info as any).creator,
-      description: (info as any).description || asset.description,
+      creator: asset.issuer || (info as any)?.creator,
+      tokenId: asset.tokenId,
+      description: (info as any)?.description || asset.description,
+      collectionName: `${asset.name} (${asset.displayCreator})`,
       displayCreator:
         asset.issuer === userAddress
           ? 'My NFTs'
