@@ -59,21 +59,39 @@ export function AccountInfo() {
   const [showPassword, setShowPassword] = useState(false);
 
   const wavesAsset = assets.WAVES;
+  const unit0Asset = assets['unit0']; // Unit0 native token
 
   let balance: Money | undefined;
   let leaseBalance: Money | undefined;
 
-  if (wavesAsset && account) {
+  if (account) {
+    const isMultiChainWallet = account.type === 'multichain';
     const balanceItem = balances[account.address];
 
     if (balanceItem) {
-      const assetInstance = new Asset(wavesAsset);
+      // For multichain accounts, check if base account should be Unit0
+      if (
+        isMultiChainWallet &&
+        currentBlockchainType === 'unit0' &&
+        unit0Asset
+      ) {
+        // Use Unit0 balance
+        const assetInstance = new Asset(unit0Asset);
 
-      if (typeof balanceItem.available !== 'undefined')
-        balance = new Money(balanceItem.available, assetInstance);
+        if (typeof balanceItem.available !== 'undefined')
+          balance = new Money(balanceItem.available, assetInstance);
 
-      if (typeof balanceItem.leasedOut !== 'undefined')
-        leaseBalance = new Money(balanceItem.leasedOut, assetInstance);
+        // Unit0 doesn't have lease functionality, so no leaseBalance
+      } else if (wavesAsset) {
+        // Use Waves balance (default for non-multichain or when on Waves blockchain)
+        const assetInstance = new Asset(wavesAsset);
+
+        if (typeof balanceItem.available !== 'undefined')
+          balance = new Money(balanceItem.available, assetInstance);
+
+        if (typeof balanceItem.leasedOut !== 'undefined')
+          leaseBalance = new Money(balanceItem.leasedOut, assetInstance);
+      }
     }
   }
 

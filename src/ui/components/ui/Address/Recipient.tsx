@@ -93,7 +93,6 @@ export function AddressRecipient({
           {showMirrorAddress ? (
             <Tooltip
               className={clsx(styles.mirrorAddress, {
-                [styles.ethereum]: type === 'ethereum',
                 [styles.waves]: type === 'waves',
               })}
               content={name || mirrorAddress}
@@ -105,7 +104,6 @@ export function AddressRecipient({
                     text={address}
                     size={12}
                     className={clsx(styles.recipient, {
-                      [styles.ethereum]: type === 'ethereum',
                       [styles.waves]: type === 'waves',
                     })}
                   />

@@ -195,8 +195,12 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
             ? myAssets
             : myAssets.assets || {},
         ).filter(([assetId, assetBalance]) => {
-          // Always show WAVES even with 0 balance
-          if (assetId === 'WAVES') return true;
+          // Always show native token even with 0 balance
+          const nativeTokenId =
+            currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+              ? 'unit0'
+              : 'WAVES';
+          if (assetId === nativeTokenId) return true;
 
           // For other assets, check balance > 0 and other filters
           const hasBalance = assetBalance && Number(assetBalance.balance) > 0;
@@ -213,6 +217,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
         }),
         assets as AssetsRecord,
         showSuspiciousAssets,
+        currentBlockchainType,
       )
     : PLACEHOLDERS;
 

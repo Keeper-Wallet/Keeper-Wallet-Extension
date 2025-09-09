@@ -119,6 +119,15 @@ export const routes: RouteObject[] = [
         ),
       },
       {
+        path: '/nft/:assetId/:tokenId',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <NftInfo />
+          </>
+        ),
+      },
+      {
         path: '/nft/:assetId',
         element: (
           <>

@@ -11,7 +11,10 @@ export function getAccountLink(
 ) {
   // Check if this is a Unit0 address (starts with 0x)
   if (address?.startsWith('0x')) {
-    // Use Unit0 explorer for Unit0 addresses
+    // Use appropriate Unit0 explorer based on network code
+    if (networkCode === '88817') {
+      return `https://explorer-testnet.unit0.dev/address/${address}`;
+    }
     return `https://explorer.unit0.dev/address/${address}`;
   }
   
@@ -47,7 +50,10 @@ export function getAssetDetailLink(
 ): string {
   // Check if this is a Unit0 NFT (starts with 0x)
   if (assetId.startsWith('0x')) {
-    // Use Unit0 explorer for Unit0 NFTs
+    // Use appropriate Unit0 explorer based on network code
+    if (networkCode === '88817') {
+      return `https://explorer-testnet.unit0.dev/token/${assetId}`;
+    }
     return `https://explorer.unit0.dev/token/${assetId}`;
   }
   
