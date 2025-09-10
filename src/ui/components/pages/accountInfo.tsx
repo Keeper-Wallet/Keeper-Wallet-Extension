@@ -491,7 +491,21 @@ export function AccountInfo() {
         </div>
       )}
 
-      {account.type === 'privateKey' ? (
+      {account.type === 'seed' ? (
+        <div id="accountInfoBackupPhrase" className="margin-main-big">
+          <div className="input-title basic500 tag1">
+            {t('accountInfo.backUp')}
+          </div>
+          <div className="input-like password-input tag1">
+            <CopyText
+              getText={getSeed}
+              showCopy
+              type="key"
+              onCopy={onCopyHandler}
+            />
+          </div>
+        </div>
+      ) : account.type === 'privateKey' ? (
         <div className="margin-main-big basic500">
           <div className="input-title tag1">{t('accountInfo.backUp')}</div>
 
