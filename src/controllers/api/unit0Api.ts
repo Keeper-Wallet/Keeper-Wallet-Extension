@@ -10,7 +10,8 @@ export interface Unit0TokenBalance {
   token_id: string;
   balance: string;
   token?: {
-    address: string;
+    address?: string;
+    address_hash?: string;
     name?: string;
     symbol?: string;
     decimals?: number;
@@ -125,10 +126,45 @@ export interface Unit0NftResponse {
   next_page_params: any | null;
 }
 
+export interface Unit0TokenMetadata {
+  address: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  icon_url: string | null;
+  total_supply: string | null;
+  holders_count: string;
+  circulating_market_cap: string | null;
+  exchange_rate: string | null;
+  volume_24h: string | null;
+}
+
+export interface Unit0TokenDetailsResponse {
+  address: string;
+  address_hash: string;
+  name: string;
+  symbol: string;
+  decimals: number | null;
+  icon_url: string | null;
+  total_supply: string | null;
+  holders_count: string;
+  circulating_market_cap: string | null;
+  exchange_rate: string | null;
+  volume_24h: string | null;
+  type: string;
+}
+
 export class Unit0Api {
   private getBaseUrl(network: NetworkName): string {
     if (network === NetworkName.Testnet || network === NetworkName.Stagenet) {
       return 'https://explorer-testnet.unit0.dev/api/v2/addresses/';
+    }
+    return 'https://explorer.unit0.dev/api/v2/addresses/';
+  }
+
+  private getTokenBaseUrl(network: NetworkName): string {
+    if (network === NetworkName.Testnet || network === NetworkName.Stagenet) {
+      return 'https://explorer-testnet.unit0.dev/api/v2/tokens/';
     }
     return 'https://explorer.unit0.dev/api/v2/addresses/';
   }
@@ -141,7 +177,7 @@ export class Unit0Api {
     const mockAddress =
       network === NetworkName.Testnet
         ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
-        : '0xCaf68F88a7262A66dAf6c361d1824bf8A3E4b5DD';
+        : '0x145205f669f49F55727de5b542D9C1EACa03A246';
     const response = await fetch(`${baseUrl}${mockAddress}`);
 
     if (!response.ok) {
@@ -162,7 +198,6 @@ export class Unit0Api {
         : '0xCaf68F88a7262A66dAf6c361d1824bf8A3E4b5DD';
 
     const response = await fetch(`${baseUrl}${mockAddress}/tokens?type=ERC-20`);
-
     if (!response.ok) {
       throw new Error(`Failed to fetch ERC-20 tokens: ${response.status}`);
     }
@@ -253,10 +288,10 @@ export class Unit0Api {
     const mockAddress =
       network === NetworkName.Testnet
         ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
-        : '0xCaf68F88a7262A66dAf6c361d1824bf8A3E4b5DD';
+        : '0x145205f669f49F55727de5b542D9C1EACa03A246';
 
     const response = await fetch(
-      `${baseUrl}${mockAddress}/token-transfers?type=&limit=${limit}`,
+      `${baseUrl}${mockAddress}/token-transfers?type=`,
     );
 
     if (!response.ok) {
@@ -277,7 +312,7 @@ export class Unit0Api {
     const mockAddress =
       network === NetworkName.Testnet
         ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
-        : '0xCaf68F88a7262A66dAf6c361d1824bf8A3E4b5DD';
+        : '0x145205f669f49F55727de5b542D9C1EACa03A246';
 
     const response = await fetch(
       `${baseUrl}${mockAddress}/token-transfers?type=ERC-721`,
@@ -365,6 +400,44 @@ export class Unit0Api {
     }
   }
 
+  async fetchTokenMetadata(
+    contractAddress: string,
+    network: NetworkName = NetworkName.Mainnet,
+  ): Promise<Unit0TokenMetadata | null> {
+    try {
+      const baseUrl = this.getTokenBaseUrl(network);
+      const response = await fetch(`${baseUrl}${contractAddress}`);
+
+      if (!response.ok) {
+        console.warn(
+          `Failed to fetch token metadata for ${contractAddress}: ${response.status}`,
+        );
+        return null;
+      }
+
+      const tokenDetails: Unit0TokenDetailsResponse = await response.json();
+
+      return {
+        address: tokenDetails.address ?? tokenDetails.hash,
+        name: tokenDetails.name,
+        symbol: tokenDetails.symbol,
+        decimals: Number(tokenDetails.decimals) || 18,
+        icon_url: tokenDetails.icon_url,
+        total_supply: tokenDetails.total_supply,
+        holders_count: tokenDetails.holders_count,
+        circulating_market_cap: tokenDetails.circulating_market_cap,
+        exchange_rate: tokenDetails.exchange_rate,
+        volume_24h: tokenDetails.volume_24h,
+      };
+    } catch (error) {
+      console.error(
+        `Error fetching token metadata for ${contractAddress}:`,
+        error,
+      );
+      return null;
+    }
+  }
+
   // Convert Unit0 transaction to Waves-compatible format for history display
   convertToWavesTransaction(
     unit0Tx: Unit0NftTransfer,
@@ -403,7 +476,7 @@ export class Unit0Api {
       payload: {
         type: 'transfer',
         amount: unit0Tx.total.value || '0',
-        asset: unit0Tx.token.address, // Use token contract address as asset ID
+        asset: unit0Tx.token.hash ?? unit0Tx.token.address, // Use token contract address as asset ID
         to: recipient,
         direction,
         tokenSymbol: unit0Tx.token.symbol,

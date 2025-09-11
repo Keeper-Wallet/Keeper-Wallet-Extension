@@ -43,7 +43,8 @@ export interface Nft {
   name: string;
   tokenType?: string;
   vendor: NftVendorId;
-  tokenid?: string;
+  tokenId?: string;
+  assetId?: string;
 }
 
 export interface FetchInfoParams {

@@ -12,17 +12,17 @@ import { DucksNftVendor } from './vendors/ducks';
 import { DucksArtefactsNftVendor } from './vendors/ducksArtefacts';
 import { PuzzleNftVendor } from './vendors/puzzle';
 import { SignArtNftVendor } from './vendors/signArt';
-import { Unit0NftVendor } from './vendors/unit0';
 import { WavesDomainsNftVendor } from './vendors/wavesDomains';
+import { Unit0NftVendor } from './vendors/unit0';
 
 const vendors = {
   [NftVendorId.DucksArtefact]: new DucksArtefactsNftVendor(),
   [NftVendorId.Ducklings]: new DucklingsNftVendor(),
   [NftVendorId.Ducks]: new DucksNftVendor(),
   [NftVendorId.SignArt]: new SignArtNftVendor(),
-  [NftVendorId.Unit0]: new Unit0NftVendor(),
   [NftVendorId.WavesDomains]: new WavesDomainsNftVendor(),
   [NftVendorId.Puzzle]: new PuzzleNftVendor(),
+  [NftVendorId.Unit0]: new Unit0NftVendor(),
 };
 
 export type NftInfo = (typeof vendors)[keyof typeof vendors] extends NftVendor<
@@ -46,13 +46,11 @@ export function createNft({
   config,
   info,
   userAddress,
-  networkCode,
 }: {
   asset: AssetDetail;
   config: NftConfig;
   info: NftInfo | undefined;
   userAddress: string;
-  networkCode?: string;
 }): Nft {
   return Object.values(vendors).reduce<Nft>(
     (result, vendor) =>
@@ -61,18 +59,12 @@ export function createNft({
             asset,
             config,
             info: info as never,
-            networkCode,
           })
         : result,
     {
-      creator: asset.issuer || (info as any)?.creator,
-      tokenId: asset.tokenId,
-      description: (info as any)?.description || asset.description,
-      collectionName: `${asset.name} (${asset.displayCreator})`,
-      displayCreator:
-        asset.issuer === userAddress
-          ? 'My NFTs'
-          : asset.displayCreator || asset.issuer || (info as any).creator,
+      creator: asset.issuer,
+      description: asset.description,
+      displayCreator: asset.issuer === userAddress ? 'My NFTs' : asset.issuer,
       displayName: asset.displayName,
       foreground: new URL('./unknown.svg', import.meta.url).toString(),
       id: asset.id,

@@ -44,277 +44,6 @@ const UNIT0: AssetDetail = {
   displayName: 'UNIT0',
 };
 
-// Unit0 tokens with their contract addresses and asset objects
-const UNIT0_WETH: AssetDetail = {
-  quantity: '33935200000000000000000',
-  ticker: 'WETH',
-  id: '0x1B100DE3F13E3f8Bb2f66FE58c1949c32E7124B',
-  name: 'Wrapped Ethereum on Unit0',
-  precision: 18,
-  description: 'Wrapped Ethereum on Unit0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'WETH',
-};
-
-const UNIT0_DAI: AssetDetail = {
-  quantity: '1118000000000000000000000',
-  ticker: 'DAI',
-  id: '0xfA88d31044197fa9fAC50b8b7f6F4b54CC68d80e',
-  name: 'DAI Stablecoin on Unit0',
-  precision: 18,
-  description: 'DAI Stablecoin on Unit0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'DAI',
-};
-
-const UNIT0_AAVE: AssetDetail = {
-  quantity: '15000000000000000000000',
-  ticker: 'AAVE',
-  id: '0xbF66EaedC8A3a3B16d2A11F269f3FEC755fca4E5',
-  name: 'AAVE Token on Unit0',
-  precision: 18,
-  description: 'AAVE Token on Unit0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'AAVE',
-};
-
-const UNIT0_WUNIT0: AssetDetail = {
-  quantity: '8142890803253827481',
-  ticker: 'WUNIT0',
-  id: '0x5E73CEc92450a4eAE6B7A3Ea99459B0D069eFef5',
-  name: 'Wrapped Unit0 Token',
-  precision: 18,
-  description: 'Wrapped Unit0 Token',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'WUNIT0',
-};
-
-const UNIT0_USDC: AssetDetail = {
-  quantity: '1000000002476110000000',
-  ticker: 'USDC',
-  id: '0xD48A37F4F6B9f5a5d1be16e87459Bc1AcA201026',
-  name: 'USD Coin on Unit0',
-  precision: 6,
-  description: 'USD Coin on Unit0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'USDC',
-};
-
-const UNIT0_WBTC: AssetDetail = {
-  quantity: '3800000000000',
-  ticker: 'WBTC',
-  id: '0x1876c32a0CF3eeB7d1eFf2F3C29AdFCF5B956270',
-  name: 'Wrapped Bitcoin on Unit0',
-  precision: 8,
-  description: 'Wrapped Bitcoin on Unit0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'WBTC',
-};
-
-const UNIT0_USDT: AssetDetail = {
-  quantity: '50000000002581102000000',
-  ticker: 'USDT',
-  id: '0x333fE97265D2C95bC1CF06d8ac1f410fCf97A737',
-  name: 'Tether USD on Unit0',
-  precision: 6,
-  description: 'Tether USD on Unit0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'USDT',
-};
-
-const UNIT0_UNI_V3_POS_NEW: AssetDetail = {
-  quantity: '1',
-  ticker: 'UNI-V3-POS',
-  id: '0x4B72F0F2c222C6323589E46c0119154b74839d0f',
-  name: 'Uniswap V3 Positions NFT on Unit0',
-  precision: 0,
-  description: 'Uniswap V3 Positions NFT on Unit0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'UNI-V3-POS',
-};
-
-const UNIT0_MEMMA: AssetDetail = {
-  quantity: '1000000000000000000000000000',
-  ticker: 'Memma',
-  id: '0xF252401108d869656Fa682e67B04AC9e9F4a388e',
-  name: 'Memma',
-  precision: 18,
-  description: 'Memma token on Unit0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'Memma',
-};
-
-const UNIT0_SANCHO: AssetDetail = {
-  quantity: '1000000000000000000000000000',
-  ticker: 'Sancho',
-  id: '0x7900c01eED60868beEA1DE79730CA5633A4b6a45',
-  name: 'Sancho',
-  precision: 18,
-  description: 'Sancho token on Unit0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'Sancho',
-};
-
-const UNIT0_UWUNIT0: AssetDetail = {
-  quantity: '756568624198905160675594',
-  ticker: 'uWUNIT0',
-  id: '0x94b514606C161677d1B243d4c4b069B3f2Fb8682',
-  name: 'Unilend Interest Bearing WUNIT0',
-  precision: 18,
-  description: 'Unilend Interest Bearing WUNIT0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'uWUNIT0',
-};
-
-const UNIT0_VARIABLE_DEBT_WUNIT0: AssetDetail = {
-  quantity: '75121296297620043212772',
-  ticker: 'variableDebtWUNIT0',
-  id: '0xC447FCdFab3b8D70EEc7d4F85dE486b4E5ea74Ac',
-  name: 'Unilend Variable Debt WUNIT0',
-  precision: 18,
-  description: 'Unilend Variable Debt WUNIT0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'variableDebtWUNIT0',
-};
-
-const UNIT0_VARIABLE_DEBT_USDT: AssetDetail = {
-  quantity: '216491492118',
-  ticker: 'variableDebtUSDT',
-  id: '0xeEdF214BB01499364e4e44e4325e5bFFd0ae2719',
-  name: 'Unilend Variable Debt USDT',
-  precision: 6,
-  description: 'Unilend Variable Debt USDT',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'variableDebtUSDT',
-};
-
-const UNIT0_USDT_NEW: AssetDetail = {
-  quantity: '477991904097',
-  ticker: 'USDT',
-  id: '0xb303d80db8415FD1d3C9FED68A52EEAc9a052671',
-  name: 'USDT',
-  precision: 6,
-  description: 'USDT on Unit0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'USDT',
-};
-
-const UNIT0_USDC_NEW: AssetDetail = {
-  quantity: '94359012595',
-  ticker: 'USDC',
-  id: '0xEb19000D90f17FFbd3AD9CDB8915D928F4980fD1',
-  name: 'USDC',
-  precision: 6,
-  description: 'USDC on Unit0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'USDC',
-};
-
-const UNIT0_DOGE: AssetDetail = {
-  quantity: '1000000000000000000000000000',
-  ticker: 'DOGE',
-  id: '0x6D118c61A03d63CE6b4387EfdE9E3bA3323833b9',
-  name: 'DOGE on Unit0',
-  precision: 18,
-  description: 'DOGE Token on Unit0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'DOGE',
-};
-
-const UNIT0_MCSASHA: AssetDetail = {
-  quantity: '1000000000000000000000000000',
-  ticker: 'MCSASHA',
-  id: '0x6DFE63380149E04f4DD9BD7E8d892eEc28878556',
-  name: 'McSasha on Unit0',
-  precision: 18,
-  description: 'McSasha Token on Unit0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'McSasha',
-};
-
-const UNIT0_ZNS_CONNECT: AssetDetail = {
-  quantity: '1',
-  ticker: '.unit',
-  id: '0xFb2Cd41a8aeC89EFBb19575C6c48d872cE97A0A5',
-  name: 'ZNS Connect NFT',
-  precision: 0,
-  description: 'ZNS Connect Domain NFT on Unit0',
-  height: 0,
-  issuer: '',
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
-  sender: '',
-  reissuable: false,
-  displayName: 'ZNS Connect',
-};
-
 const SUSPICIOUS_LIST_URL =
   'https://raw.githubusercontent.com/wavesplatform/waves-community/master/Scam%20tokens%20according%20to%20the%20opinion%20of%20Waves%20Community.csv';
 const SUSPICIOUS_PERIOD_IN_MINUTES = 60;
@@ -382,24 +111,6 @@ export class AssetInfoController {
         [NetworkName.Mainnet]: {
           WAVES,
           unit0: UNIT0,
-          weth: UNIT0_WETH,
-          dai: UNIT0_DAI,
-          aave: UNIT0_AAVE,
-          wunit0: UNIT0_WUNIT0,
-          usdc: UNIT0_USDC,
-          wbtc: UNIT0_WBTC,
-          usdt: UNIT0_USDT,
-          'uni-v3-pos': UNIT0_UNI_V3_POS_NEW,
-          memma: UNIT0_MEMMA,
-          sancho: UNIT0_SANCHO,
-          uWUNIT0: UNIT0_UWUNIT0,
-          variableDebtWUNIT0: UNIT0_VARIABLE_DEBT_WUNIT0,
-          variableDebtUSDT: UNIT0_VARIABLE_DEBT_USDT,
-          USDT_NEW: UNIT0_USDT_NEW,
-          USDC_NEW: UNIT0_USDC_NEW,
-          doge: UNIT0_DOGE,
-          mcsasha: UNIT0_MCSASHA,
-          'zns-connect': UNIT0_ZNS_CONNECT,
         },
         [NetworkName.Stagenet]: {
           WAVES,
@@ -407,21 +118,6 @@ export class AssetInfoController {
         [NetworkName.Testnet]: {
           WAVES,
           unit0: UNIT0,
-          weth: UNIT0_WETH,
-          dai: UNIT0_DAI,
-          aave: UNIT0_AAVE,
-          wunit0: UNIT0_WUNIT0,
-          usdc: UNIT0_USDC,
-          wbtc: UNIT0_WBTC,
-          usdt: UNIT0_USDT,
-          'uni-v3-pos': UNIT0_UNI_V3_POS_NEW,
-          memma: UNIT0_MEMMA,
-          sancho: UNIT0_SANCHO,
-          uWUNIT0: UNIT0_UWUNIT0,
-          variableDebtWUNIT0: UNIT0_VARIABLE_DEBT_WUNIT0,
-          variableDebtUSDT: UNIT0_VARIABLE_DEBT_USDT,
-          USDT_NEW: UNIT0_USDT_NEW,
-          USDC_NEW: UNIT0_USDC_NEW,
         },
         [NetworkName.Custom]: {
           WAVES,
@@ -482,28 +178,7 @@ export class AssetInfoController {
     const assets = { ...state.assets };
     let needsUpdate = false;
 
-    // Unit0 tokens with their contract addresses and asset objects
-    const unit0TokensMap = {
-      '0x1B100DE3F13E3f8Bb2f66FE58c1949c32E7124B': UNIT0_WETH,
-      '0xfA88d31044197fa9fAC50b8b7f6F4b54CC68d80e': UNIT0_DAI,
-      '0xbF66EaedC8A3a3B16d2A11F269f3FEC755fca4E5': UNIT0_AAVE,
-      '0x5E73CEc92450a4eAE6B7A3Ea99459B0D069eFef5': UNIT0_WUNIT0,
-      '0xD48A37F4F6B9f5a5d1be16e87459Bc1AcA201026': UNIT0_USDC,
-      '0x1876c32a0CF3eeB7d1eFf2F3C29AdFCF5B956270': UNIT0_WBTC,
-      '0x333fE97265D2C95bC1CF06d8ac1f410fCf97A737': UNIT0_USDT,
-      '0x4B72F0F2c222C6323589E46c0119154b74839d0f': UNIT0_UNI_V3_POS_NEW,
-      '0xF252401108d869656Fa682e67B04AC9e9F4a388e': UNIT0_MEMMA,
-      '0x7900c01eED60868beEA1DE79730CA5633A4b6a45': UNIT0_SANCHO,
-      '0x94b514606C161677d1B243d4c4b069B3f2Fb8682': UNIT0_UWUNIT0,
-      '0xC447FCdFab3b8D70EEc7d4F85dE486b4E5ea74Ac': UNIT0_VARIABLE_DEBT_WUNIT0,
-      '0xeEdF214BB01499364e4e44e4325e5bFFd0ae2719': UNIT0_VARIABLE_DEBT_USDT,
-      '0xb303d80db8415FD1d3C9FED68A52EEAc9a052671': UNIT0_USDT_NEW,
-      '0xEb19000D90f17FFbd3AD9CDB8915D928F4980fD1': UNIT0_USDC_NEW,
-      '0x6D118c61A03d63CE6b4387EfdE9E3bA3323833b9': UNIT0_DOGE,
-      '0x6DFE63380149E04f4DD9BD7E8d892eEc28878556': UNIT0_MCSASHA,
-      '0xFb2Cd41a8aeC89EFBb19575C6c48d872cE97A0A5': UNIT0_ZNS_CONNECT,
-    };
-
+    // Only ensure Unit0 native token exists - ERC-20 tokens will be handled dynamically
     // Check if Unit0 native token exists in mainnet
     if (!assets[NetworkName.Mainnet].unit0) {
       assets[NetworkName.Mainnet].unit0 = UNIT0;
@@ -515,22 +190,6 @@ export class AssetInfoController {
       assets[NetworkName.Testnet].unit0 = UNIT0;
       needsUpdate = true;
     }
-
-    // Check if Unit0 ERC-20/ERC-721 tokens exist in mainnet
-    Object.entries(unit0TokensMap).forEach(([contractAddress, assetDetail]) => {
-      if (!assets[NetworkName.Mainnet][contractAddress]) {
-        assets[NetworkName.Mainnet][contractAddress] = assetDetail;
-        needsUpdate = true;
-      }
-    });
-
-    // Check if Unit0 ERC-20/ERC-721 tokens exist in testnet
-    Object.entries(unit0TokensMap).forEach(([contractAddress, assetDetail]) => {
-      if (!assets[NetworkName.Testnet][contractAddress]) {
-        assets[NetworkName.Testnet][contractAddress] = assetDetail;
-        needsUpdate = true;
-      }
-    });
 
     if (needsUpdate) {
       this.store.updateState({ assets });
@@ -566,7 +225,6 @@ export class AssetInfoController {
     const unit0AssetTickers: Record<string, string> = {
       '0x1B100DE3F13E3f8Bb2f66FE58c1949c32E7124B': 'WETH',
       '0xfA88d31044197fa9fAC50b8b7f6F4b54CC68d80e': 'DAI',
-      '0xbF66EaedC8A3a3B16d2A11F269f3FEC755fca4E5': 'AAVE',
       '0x5E73CEc92450a4eAE6B7A3Ea99459B0D069eFef5': 'WUNIT0',
       '0xD48A37F4F6B9f5a5d1be16e87459Bc1AcA201026': 'USDC',
       '0x1876c32a0CF3eeB7d1eFf2F3C29AdFCF5B956270': 'WBTC',
@@ -885,6 +543,53 @@ export class AssetInfoController {
         string[]
       >;
       this.store.updateState({ swappableAssetIdsByVendor });
+    }
+  }
+
+  async storeUnit0TokenMetadata(
+    contractAddress: string,
+    metadata: any,
+    network: NetworkName = NetworkName.Mainnet,
+  ) {
+    const state = this.store.getState();
+    const assets = { ...state.assets };
+
+    // Create asset object from dynamic metadata
+    const assetDetail = {
+      id: contractAddress,
+      collectionName: contractAddress,
+      issuer: metadata.issuer,
+      name: metadata.symbol || contractAddress, // Use symbol as name for consistency
+      displayName: metadata.name, // Full name for display
+      ticker: metadata.symbol,
+      precision: Number(metadata.decimals) || 18,
+      height: 0,
+      timestamp: new Date(),
+      sender: '',
+      quantity: 1,
+      reissuable: false,
+    };
+
+    // Store in both mainnet and testnet for consistency
+    if (!assets[NetworkName.Mainnet][contractAddress]) {
+      assets[NetworkName.Mainnet][contractAddress] = assetDetail;
+    }
+    if (!assets[NetworkName.Testnet][contractAddress]) {
+      assets[NetworkName.Testnet][contractAddress] = assetDetail;
+    }
+
+    // Update Redux store
+    this.store.updateState({ assets });
+
+    // Also store logo if available
+    if (metadata.icon_url) {
+      const state = this.store.getState();
+      const logos = { ...state.assetLogos };
+
+      // Store logo for contract address key
+      logos[contractAddress] = metadata.icon_url;
+
+      this.store.updateState({ assetLogos: logos });
     }
   }
 }

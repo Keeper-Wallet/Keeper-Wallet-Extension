@@ -1,3 +1,4 @@
+import { BLOCKCHAIN_TYPES } from 'assets/constants';
 import { type AssetDetail } from 'assets/types';
 import { NftList } from 'nfts/nftList';
 import { createNft } from 'nfts/nfts';
@@ -51,27 +52,40 @@ export function NftCollection() {
 
   const nftConfig = usePopupSelector(state => state.nftConfig);
 
-  const getNftDetails = (asset: AssetDetail) =>
-    createNft({
+  const getNftDetails = (asset: AssetDetail) => {
+    const nftId =
+      currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+        ? `${asset.id}_${asset.rank}`
+        : asset.id;
+
+    return createNft({
       asset,
       config: nftConfig,
-      info: nfts?.[asset.id],
+      info: nfts?.[nftId],
       userAddress,
     });
+  };
 
   const creatorNfts = myNfts
     ? sortAndFilterNfts(myNfts.map(getNftDetails), {
         term,
-        creator: params.creator,
+        creator:
+          currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+            ? null
+            : params.creator,
       })
     : PLACEHOLDERS;
 
   const creatorNft = creatorNfts.at(0);
 
-  const nameOfDisplay =
-    currentBlockchainType === 'unit0'
-      ? creatorNft?.collectionName
-      : creatorNft?.displayCreator;
+  const navigateNftInfoPage = (nft: Nft) => {
+    const nagiationUrl =
+      currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+        ? `/nft/multi/${nft.id}/${nft.tokenId}`
+        : `/nft/wave/${nft.id}`;
+
+    navigate(nagiationUrl);
+  };
   return (
     <div className={styles.root}>
       <div className={styles.header}>
@@ -79,7 +93,7 @@ export function NftCollection() {
           {creatorNft?.creator === creatorNft?.displayCreator ? (
             <Ellipsis text={creatorNft?.creator} size={12} />
           ) : (
-            nameOfDisplay
+            creatorNft?.displayCreator
           )}
         </div>
         <div>
@@ -94,8 +108,8 @@ export function NftCollection() {
                   // For Unit0 NFTs, open token page instead of creator page
                   creatorNft?.creator?.startsWith('0x')
                     ? networkCode === '88817'
-                      ? `https://explorer-testnet.unit0.dev/token/${creatorNft.creator}`
-                      : `https://explorer.unit0.dev/token/${creatorNft.creator}`
+                      ? `https://explorer-testnet.unit0.dev/token/${creatorNft.id}`
+                      : `https://explorer.unit0.dev/token/${creatorNft.id}`
                     : creatorNft?.creatorUrl ??
                       (networkCode &&
                         getAccountLink(networkCode, creatorNft?.creator))
@@ -144,9 +158,7 @@ export function NftCollection() {
           <NftList
             mode={DisplayMode.Name}
             nfts={creatorNfts}
-            onClick={nft => {
-              navigate(`/nft/${nft.id}/${nft.tokenId}`);
-            }}
+            onClick={navigateNftInfoPage}
           />
         )}
 

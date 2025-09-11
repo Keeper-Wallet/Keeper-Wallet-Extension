@@ -108,11 +108,13 @@ export class Unit0NftVendor implements NftVendor<Unit0NftInfo> {
 
     return {
       id: asset.id,
-      name: asset.name,
-      displayName: info?.name || asset.displayName,
+      assetId: info.assetId,
+      name: asset.description,
+      tokenId: info.tokenId,
+      displayName: asset.displayName || info?.name,
       description: asset.description,
       creator: creator,
-      displayCreator: info?.name || asset.displayCreator || 'Unit0 NFT',
+      displayCreator: `${info?.name} (${asset?.displayCreator})`,
       creatorUrl: creator
         ? networkCode === '88817'
           ? `https://explorer-testnet.unit0.dev/address/${creator}`
@@ -124,8 +126,8 @@ export class Unit0NftVendor implements NftVendor<Unit0NftInfo> {
       tokenType: (asset as any).tokenType,
       vendor: NftVendorId.Unit0,
       marketplaceUrl: this.getMarketplaceUrl(
-        info?.contractAddress,
-        info?.tokenId,
+        info.assetId,
+        info.tokenId,
         networkCode,
       ),
     };
@@ -220,9 +222,10 @@ export class Unit0NftVendor implements NftVendor<Unit0NftInfo> {
     }
 
     // Unit0 explorer URL format
-    const baseUrl = networkCode === '88817'
-      ? 'https://explorer-testnet.unit0.dev'
-      : 'https://explorer.unit0.dev';
+    const baseUrl =
+      networkCode === '88817'
+        ? 'https://explorer-testnet.unit0.dev'
+        : 'https://explorer.unit0.dev';
     return `${baseUrl}/token/${contractAddress}/instance/${tokenId}`;
   }
 }
