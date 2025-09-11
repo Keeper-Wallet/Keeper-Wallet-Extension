@@ -3,7 +3,7 @@ import { BigNumber } from '@waves/bignumber';
 import { type TransactionFromNode } from '@waves/ts-types';
 import { type AssetBalance, type BalancesItem } from 'balances/types';
 import { collectBalances } from 'balances/utils';
-import { type NftAssetDetail } from 'nfts/types';
+import { type NftAssetDetail, NftVendorId } from 'nfts/types';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
@@ -83,7 +83,7 @@ export class CurrentAccountController {
     this.getNode = getNode;
     this.getSelectedAccount = getSelectedAccount;
     this.isLocked = isLocked;
-    this.balanceService = new BalanceService();
+    this.balanceService = new BalanceService(assetInfoController);
     this.getBlockchainType = getBlockchainType;
 
     Browser.alarms.onAlarm.addListener(({ name }) => {
@@ -372,6 +372,7 @@ export class CurrentAccountController {
             decimals: 0 as const,
             description: nft.description,
             issueHeight: nft.height,
+            vendor: NftVendorId.Unit0,
             creator: nft.creator,
             tokenId: nft.tokenId,
             issueTimestamp:
@@ -388,7 +389,6 @@ export class CurrentAccountController {
             scripted: nft.hasScript || false,
           }));
 
-          console.log(unit0NftsForProcessing, 'unit0NftsForProcessing');
           // Process Unit0 NFTs through vendor system
           await this.nftInfoController.updateNfts(unit0NftsForProcessing, true);
         }

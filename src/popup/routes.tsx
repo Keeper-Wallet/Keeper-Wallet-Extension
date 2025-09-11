@@ -19,7 +19,6 @@ import { LangsSettings } from '../ui/components/pages/LangsSettings';
 import { MessagesAndNotificationsPage } from '../ui/components/pages/messagesAndNotifications';
 import { NetworkSettings } from '../ui/components/pages/networkSettings';
 import { NftCollection } from '../ui/components/pages/nfts/nftCollection';
-import { NftInfo } from '../ui/components/pages/nfts/nftInfo';
 import { OtherAccountsPage } from '../ui/components/pages/otherAccounts';
 import { PermissionsSettings } from '../ui/components/pages/PermissionsSettings/PermissionSettings';
 import { PopupHome } from '../ui/components/pages/popupHome';
@@ -29,6 +28,7 @@ import { Settings } from '../ui/components/pages/Settings';
 import { SettingsGeneral } from '../ui/components/pages/SettingsGeneral';
 import { Swap } from '../ui/components/pages/swap/swap';
 import { Root } from '../ui/components/Root';
+import { NftInfo } from '../ui/components/pages/nfts/nftInfo';
 
 export const routes: RouteObject[] = [
   {
@@ -119,7 +119,7 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/nft/:assetId/:tokenId',
+        path: '/nft/multi/:assetId/:tokenId',
         element: (
           <>
             <Menu hasBack hasLogo />
@@ -128,7 +128,7 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/nft/:assetId',
+        path: '/nft/wave/:assetId',
         element: (
           <>
             <Menu hasBack hasLogo />

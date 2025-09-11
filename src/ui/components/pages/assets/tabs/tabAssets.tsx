@@ -96,11 +96,17 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
   const assetsByAddress = useMemo(() => {
     const lookup: Record<string, any> = {};
     Object.values(allAssets).forEach(asset => {
+      // Ensure precision is always a number to prevent BigNumber errors
+      const safeAsset = {
+        ...asset,
+        precision: Number(asset.precision) || 8, // Default to 8 for safety
+      };
+      
       if (asset.id && asset.id !== asset.name) {
         // Contract addresses have different id and name
-        lookup[asset.id] = asset;
+        lookup[asset.id] = safeAsset;
       } else {
-        lookup[asset.id || asset.name] = asset; // For WAVES/native tokens
+        lookup[asset.id || asset.name] = safeAsset; // For WAVES/native tokens
       }
     });
     return lookup;
