@@ -1,19 +1,19 @@
 import { type AssetBalance, type BalancesItem } from '../../balances/types';
 import { NetworkName } from '../../networks/types';
 import { MAX_TX_HISTORY_ITEMS } from '../../constants';
+import { Unit0Api } from '../api/unit0Api';
 import {
-  Unit0Api,
   type Unit0BalanceResponse,
   type Unit0TokenBalance,
-  type Unit0Transaction,
-} from '../api/unit0Api';
-import { AssetInfo } from '../assetInfo';
+  type Unit0NftTransfer,
+} from '../../unit0/types';
+import { AssetInfoController } from '../assetInfo';
 
 export class BalanceService {
   private unit0Api: Unit0Api;
-  private assetInfo: AssetInfo;
+  private assetInfo: AssetInfoController;
 
-  constructor(assetInfo: AssetInfo) {
+  constructor(assetInfo: AssetInfoController) {
     this.unit0Api = new Unit0Api();
     this.assetInfo = assetInfo;
   }
@@ -23,19 +23,13 @@ export class BalanceService {
     network: NetworkName,
     data?: Unit0BalanceResponse,
     tokens?: Unit0TokenBalance[],
-    transactions?: Unit0Transaction[],
+    transactions?: Unit0NftTransfer[],
   ): Promise<BalancesItem> {
     const balanceData =
       data || (await this.unit0Api.fetchBalance(address, network));
     const tokenData =
       tokens || (await this.unit0Api.fetchTokenBalances(address, network));
-    const txData =
-      transactions ||
-      (await this.unit0Api.fetchTransactionHistory(
-        address,
-        network,
-        MAX_TX_HISTORY_ITEMS,
-      ));
+    const txData = transactions || [];
 
     // Separate ERC-20 tokens and NFTs (ERC-721 + ERC-1155) from token data
     const erc20Tokens = tokenData.filter(
@@ -322,15 +316,14 @@ export class BalanceService {
       );
     }
 
-    // Convert Unit0 transactions to Waves-compatible format
-    // Use the same mock address that was used to fetch the transactions
+    // TODO: need to remove this hardcoded logic after full implementation
     const mockAddress =
       network === NetworkName.Testnet || network === NetworkName.Stagenet
         ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
         : '0x145205f669f49F55727de5b542D9C1EACa03A246';
 
     const txHistory = txData.map(tx =>
-      this.unit0Api.convertToWavesTransaction(tx, mockAddress),
+      this.unit0Api.convertUnit0ToTransaction(tx, mockAddress),
     );
 
     return {
@@ -366,7 +359,6 @@ export class BalanceService {
         transactions,
       );
     } catch (error) {
-      console.error('Error fetching Unit0 balance and transactions:', error);
       return this.buildUnit0Balance(
         address,
         network,

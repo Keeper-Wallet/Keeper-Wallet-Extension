@@ -1,9 +1,6 @@
-import { type NftConfig } from '../../constants';
 import { NetworkName } from '../../networks/types';
-import {
-  Unit0Api,
-  type Unit0NftTransfer,
-} from '../../controllers/api/unit0Api';
+import { Unit0Api } from '../../controllers/api/unit0Api';
+import { type Unit0NftTransfer } from '../../unit0/types';
 import {
   type CreateParams,
   type FetchInfoParams,

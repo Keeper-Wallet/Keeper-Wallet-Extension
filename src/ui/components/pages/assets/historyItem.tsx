@@ -5,10 +5,12 @@ import {
   TRANSACTION_TYPE,
   type TransactionFromNode,
 } from '@waves/ts-types';
+import { type Unit0TransferPayload } from 'balances/types';
 import clsx from 'clsx';
 import { MessageIcon } from 'messages/_common/icon';
 import { useTranslation } from 'react-i18next';
 
+import { BLOCKCHAIN_TYPES } from '../../../../assets/constants';
 import { InfoIcon } from '../../../../icons/info';
 import { usePopupSelector } from '../../../../popup/store/react';
 import { getTxDetailLink } from '../../../urls';
@@ -16,7 +18,6 @@ import { Balance, Loader } from '../../ui';
 import { AddressRecipient } from '../../ui/Address/Recipient';
 import { Tooltip } from '../../ui/tooltip';
 import * as styles from './historyItem.module.css';
-import { BLOCKCHAIN_TYPES } from '../../../../assets/constants';
 
 interface Props {
   tx: TransactionFromNode;
@@ -60,6 +61,28 @@ export function HistoryItem({ tx, className }: Props) {
     const asset = assets[assetId ?? 'WAVES'];
 
     return asset && Money.fromTokens(amount, new Asset(asset));
+  };
+
+  const createUnit0TokenBalance = (transferPayload: Unit0TransferPayload) => {
+    // For Unit0 token transfers, create proper Money object with token metadata
+    if (transferPayload.tokenDecimals && transferPayload.tokenSymbol) {
+      const tokenDecimals = parseInt(transferPayload.tokenDecimals, 10);
+      const asset = {
+        id: transferPayload.asset || '',
+        name: transferPayload.tokenName || transferPayload.tokenSymbol,
+        precision: tokenDecimals,
+        description: transferPayload.tokenName || transferPayload.tokenSymbol,
+        height: transferPayload.height, // Not available from Unit0 API
+        timestamp: new Date(transferPayload.timestamp as number), // Use current time as fallback
+        sender: transferPayload.sender,
+        quantity: '0', // TODO: what should be
+        reissuable: false, // TODO: what should be
+        ticker: transferPayload.tokenSymbol,
+      };
+      return Money.fromCoins(transferPayload.amount, new Asset(asset));
+    }
+    // Fallback to existing logic
+    return fromCoins(transferPayload.amount, transferPayload.asset);
   };
 
   switch (tx.type) {
@@ -434,13 +457,15 @@ export function HistoryItem({ tx, className }: Props) {
       const payload = tx.payload;
 
       switch (payload.type) {
-        case 'transfer':
-          // Use direction field to determine if incoming, outgoing, or self-transfer
-          const direction = payload.direction;
-          const amount = payload.amount || '0';
-          const isZeroAmount = amount === '0' || parseFloat(amount) === 0;
+        case 'transfer': {
+          // Cast to extended type to access Unit0-specific properties
+          const transferPayload = payload as Unit0TransferPayload;
 
-          if (direction === 'incoming') {
+          const amount = transferPayload.amount || '0';
+          const isZeroAmount =
+            amount === '0' || parseFloat(amount.toString()) === 0;
+
+          if (transferPayload.isIncoming) {
             tooltip = t('historyCard.transferReceive');
             label = (
               <AddressRecipient
@@ -450,38 +475,23 @@ export function HistoryItem({ tx, className }: Props) {
                 chainId={chainId!}
                 showAliasWarning={false}
                 showMirrorAddress
-                name={payload.fromName}
+                name={transferPayload.fromName}
               />
             );
             addSign = isZeroAmount ? '' : '+';
             messageType = 'receive';
-          } else if (direction === 'self') {
-            tooltip = t('historyCard.transferSelf');
-            label = (
-              <AddressRecipient
-                className={styles.recipient}
-                recipient={tx.sender}
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                chainId={chainId!}
-                showAliasWarning={false}
-                showMirrorAddress
-                name={payload.fromName}
-              />
-            );
-            addSign = '';
-            messageType = 'self-transfer';
           } else {
             // outgoing or default
             tooltip = t('historyCard.transfer');
             label = (
               <AddressRecipient
                 className={styles.recipient}
-                recipient={payload.to}
+                recipient={transferPayload.recipient}
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 chainId={chainId!}
                 showAliasWarning={false}
                 showMirrorAddress
-                name={payload.toName}
+                name={transferPayload.toName}
               />
             );
             addSign = isZeroAmount ? '' : '-';
@@ -494,25 +504,11 @@ export function HistoryItem({ tx, className }: Props) {
               showAsset
               addSign={addSign}
               isShortFormat
-              balance={(() => {
-                // For Unit0 token transfers, create proper Money object with token metadata
-                if (payload.tokenDecimals && payload.tokenSymbol) {
-                  const tokenDecimals = parseInt(payload.tokenDecimals);
-                  const asset = {
-                    id: payload.asset,
-                    displayName: payload.tokenSymbol,
-                    name: payload.tokenName || payload.tokenSymbol,
-                    precision: tokenDecimals,
-                    ticker: payload.tokenSymbol,
-                  };
-                  return Money.fromCoins(payload.amount, new Asset(asset));
-                }
-                // Fallback to existing logic
-                return fromCoins(payload.amount, payload.asset);
-              })()}
+              balance={createUnit0TokenBalance(transferPayload)}
             />
           );
           break;
+        }
         case 'invocation':
           tooltip = t('historyCard.scriptInvocation');
           label = (

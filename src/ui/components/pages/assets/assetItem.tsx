@@ -32,10 +32,7 @@ export function AssetItem({
   const { t } = useTranslation();
   const assets = usePopupSelector(state => state.assets);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
-  const currentBlockchainType = usePopupSelector(
-    state => state.currentBlockchainType || 'waves',
-  );
-  
+
   // Assets are stored flat at root level, not nested by network
   const asset = assets[assetId];
 
