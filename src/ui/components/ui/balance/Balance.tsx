@@ -36,7 +36,7 @@ export function Balance({
     );
   }
 
-  if (balance.getTokens().isNaN()) {
+  if (balance?.getTokens().isNaN()) {
     return <div>N/A</div>;
   }
 

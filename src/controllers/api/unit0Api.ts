@@ -291,7 +291,7 @@ export class Unit0Api {
         : '0x145205f669f49F55727de5b542D9C1EACa03A246';
 
     const response = await fetch(
-      `${baseUrl}${mockAddress}/token-transfers?type=`,
+      `${baseUrl}${mockAddress}/token-transfers?type=&items_count=${limit}`,
     );
 
     if (!response.ok) {

@@ -18,6 +18,7 @@ import {
 } from '../ui';
 import * as styles from './styles/accountInfo.styl';
 import { MultiWallet } from '../../../services/types';
+import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
 
 export function AccountInfo() {
   const { t } = useTranslation();
@@ -59,7 +60,7 @@ export function AccountInfo() {
   const [showPassword, setShowPassword] = useState(false);
 
   const wavesAsset = assets.WAVES;
-  const unit0Asset = assets['unit0']; // Unit0 native token
+  const unit0Asset = assets.unit0; // Unit0 native token
 
   let balance: Money | undefined;
   let leaseBalance: Money | undefined;
@@ -72,7 +73,7 @@ export function AccountInfo() {
       // For multichain accounts, check if base account should be Unit0
       if (
         isMultiChainWallet &&
-        currentBlockchainType === 'unit0' &&
+        currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0 &&
         unit0Asset
       ) {
         // Use Unit0 balance

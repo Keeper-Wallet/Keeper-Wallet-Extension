@@ -16,6 +16,7 @@ import { Balance, Loader } from '../../ui';
 import { AddressRecipient } from '../../ui/Address/Recipient';
 import { Tooltip } from '../../ui/tooltip';
 import * as styles from './historyItem.module.css';
+import { BLOCKCHAIN_TYPES } from '../../../../assets/constants';
 
 interface Props {
   tx: TransactionFromNode;
@@ -29,18 +30,14 @@ export function HistoryItem({ tx, className }: Props) {
     state => state.selectedAccount?.networkCode,
   );
 
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || 'waves',
+  );
   // Use proper chainId based on transaction type
   const chainId = usePopupSelector(state => {
-    const selectedAccount = state.selectedAccount;
-    if (!selectedAccount) return 87; // Default Waves mainnet
-
-    // For Unit0 transactions, use Ethereum chainId
-    if (tx.type === TRANSACTION_TYPE.ETHEREUM) {
-      return selectedAccount.networkCode === '88811' ? 88811 : 88817; // Unit0 mainnet : testnet
-    }
-
-    // For Waves transactions, use networkCode charCode
-    return selectedAccount.networkCode.charCodeAt(0);
+    return currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+      ? Number(state.selectedAccount?.networkCode)
+      : state.selectedAccount?.networkCode.charCodeAt(0);
   });
 
   const assets = usePopupSelector(state => state.assets);

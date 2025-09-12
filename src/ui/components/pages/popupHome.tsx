@@ -16,6 +16,7 @@ import { TabNfts } from './assets/tabs/tabNfts';
 import { TabTxHistory } from './assets/tabs/tabTxHistory';
 import { ImportPopup } from './accountHome';
 import * as styles from './styles/assets.styl';
+import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
 
 export function PopupHome() {
   const navigate = useNavigate();
@@ -70,10 +71,13 @@ export function PopupHome() {
   const assets = usePopupSelector(state => state.assets);
   const usdPrices = usePopupSelector(state => state.usdPrices);
   const balances = usePopupSelector(state => state.balances);
-
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType,
+  );
   const notifications = usePopupSelector(
     state => state.localState.notifications,
   );
+  const unit0Asset = assets.unit0;
 
   const [activeTab, setActiveTab] = useUiState('assetsTab');
 
@@ -94,6 +98,26 @@ export function PopupHome() {
     return <ImportPopup />;
   }
 
+  const currentBalance = () => {
+    const availableBalance = balances[activeAccount.address]?.available;
+    if (
+      currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0 &&
+      unit0Asset &&
+      availableBalance
+    ) {
+      // Use Unit0 balance
+      const assetInstance = new Asset(unit0Asset);
+      return new Money(availableBalance, assetInstance);
+    } else {
+      return (
+        assets.WAVES &&
+        new Money(
+          balances[activeAccount.address]?.available || 0,
+          new Asset(assets.WAVES),
+        )
+      );
+    }
+  };
   const amountInUsd = balances[activeAccount.address]?.assets
     ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       Object.entries(balances[activeAccount.address]!.assets!).reduce(
@@ -119,6 +143,7 @@ export function PopupHome() {
       <div className={styles.activeAccount}>
         <ActiveAccountCard
           account={activeAccount}
+          currentBalance={currentBalance()}
           wavesBalance={
             assets.WAVES &&
             new Money(

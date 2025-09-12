@@ -1,6 +1,6 @@
 import { NetworkName } from 'networks/types';
 
-export const MAX_TX_HISTORY_ITEMS = 101;
+export const MAX_TX_HISTORY_ITEMS = 50;
 export const MAX_NFT_ITEMS = 1000;
 
 export const STATUS = {

@@ -23,6 +23,7 @@ interface Props {
   account: PreferencesAccount;
   amountInUsd: BigNumber | null;
   wavesBalance?: Money;
+  currentBalance?: Money;
   onClick: (account: PreferencesAccount) => void;
   onCopy: () => void;
   onOtherAccountsClick: () => void;
@@ -32,7 +33,7 @@ interface Props {
 
 export function ActiveAccountCard({
   account,
-  wavesBalance,
+  currentBalance,
   amountInUsd,
   onClick,
   onCopy,
@@ -42,6 +43,9 @@ export function ActiveAccountCard({
 }: Props) {
   const { t } = useTranslation();
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const isMultiChainAccount = usePopupSelector(
+    state => state.selectedAccount?.type === 'multichain',
+  );
   const isMainnet = currentNetwork === 'mainnet';
 
   return (
@@ -58,7 +62,7 @@ export function ActiveAccountCard({
             <UsdAmount amount={amountInUsd} />
           ) : (
             <Balance
-              balance={wavesBalance}
+              balance={currentBalance}
               isShortFormat={false}
               showAsset
               split
@@ -87,7 +91,7 @@ export function ActiveAccountCard({
       />
 
       <div className={styles.controls}>
-        {isMainnet && (
+        {isMainnet && !isMultiChainAccount && (
           <button className={styles.button} onClick={onSwapClick}>
             <svg width="14" height="14" fill="currentColor">
               <path d="m11.56 4.01-1.266-1.268a.6.6 0 0 1 .848-.848l2.291 2.29a.6.6 0 0 1 0 .85l-2.29 2.29a.6.6 0 1 1-.85-.848l1.268-1.267H4.99a.6.6 0 0 1 0-1.2h6.57ZM2.44 9.99l1.266 1.268a.6.6 0 1 1-.848.848L.567 9.816a.6.6 0 0 1 0-.85l2.29-2.29a.6.6 0 1 1 .849.848L2.439 8.791h6.57a.6.6 0 0 1 0 1.2h-6.57Z" />
