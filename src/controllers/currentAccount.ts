@@ -1,13 +1,12 @@
 import { isNotNull } from '_core/isNotNull';
 import { BigNumber } from '@waves/bignumber';
-import { type TransactionFromNode } from '@waves/ts-types';
 import { type AssetBalance, type BalancesItem } from 'balances/types';
 import { collectBalances } from 'balances/utils';
 import { type NftAssetDetail, NftVendorId } from 'nfts/types';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
-import { MAX_NFT_ITEMS, MAX_TX_HISTORY_ITEMS } from '../constants';
+import { MAX_NFT_ITEMS } from '../constants';
 import { type ExtensionStorage } from '../storage/storage';
 import { type AssetInfoController } from './assetInfo';
 import { type NetworkController } from './network';
@@ -15,6 +14,7 @@ import { type NftInfoController } from './NftInfoController';
 import { type PreferencesController } from './preferences';
 import { type VaultController } from './VaultController';
 import { BalanceService } from './services/balanceService';
+import { TransactionContext } from './strategies/contexts/TransactionContext';
 
 const PERIOD_IN_SECONDS = 10;
 
@@ -29,6 +29,7 @@ export class CurrentAccountController {
   private isLocked;
   private balanceService;
   private getBlockchainType;
+  private transactionContext: TransactionContext;
 
   constructor({
     extensionStorage,
@@ -85,6 +86,12 @@ export class CurrentAccountController {
     this.isLocked = isLocked;
     this.balanceService = new BalanceService(assetInfoController);
     this.getBlockchainType = getBlockchainType;
+    
+    // Initialize transaction context with current blockchain type
+    this.transactionContext = new TransactionContext(
+      this.getBlockchainType(),
+      this.getNode
+    );
 
     Browser.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'updateCurrentAccountBalance') {
@@ -187,26 +194,6 @@ export class CurrentAccountController {
     return json;
   }
 
-  async #fetchTxHistory(address: string) {
-    const url = new URL(
-      `transactions/address/${address}/limit/${MAX_TX_HISTORY_ITEMS}`,
-      this.getNode(),
-    );
-
-    const response = await fetch(url, {
-      headers: {
-        accept: 'application/json; large-significand-format=string',
-      },
-    });
-
-    if (!response.ok) {
-      throw response;
-    }
-
-    const json = (await response.json()) as [TransactionFromNode[]];
-
-    return json[0];
-  }
 
   getAccountBalance() {
     const selectedAccount = this.getSelectedAccount();
@@ -233,14 +220,19 @@ export class CurrentAccountController {
     // Always try to fetch Waves balance for Waves networks
     if (!this.balanceService.isUnit0Network(currentBlockchainType)) {
       try {
-        const [wavesBalance, myAssets, myNfts, aliases, txHistory] =
+        // Update transaction strategy for current blockchain type
+        this.transactionContext.setStrategy(currentBlockchainType, this.getNode);
+        
+        const [wavesBalance, myAssets, myNfts, aliases, txHistoryResult] =
           await Promise.all([
             this.#fetchWavesBalance(address),
             this.#fetchAssetsBalance(address),
             this.#fetchNfts(address),
             this.#fetchAliases(address),
-            this.#fetchTxHistory(address),
+            this.transactionContext.fetchTransactions(address, currentNetwork),
           ]);
+        
+        const txHistory = txHistoryResult.transactions;
 
         const assets = this.assetInfoController.getAssets();
 
@@ -310,7 +302,7 @@ export class CurrentAccountController {
         };
 
         const balance: BalancesItem = {
-          aliases,
+          aliases: aliases || [],
           available: wavesBalance.available,
           regular: wavesBalance.regular,
           leasedOut: new BigNumber(wavesBalance.regular)
@@ -358,11 +350,15 @@ export class CurrentAccountController {
       }
     } else {
       try {
-        // For Unit0 networks, fetch Unit0 balances
-        const balance = await this.balanceService.fetchUnit0Balance(
-          address,
-          currentNetwork,
-        );
+        // Update transaction strategy for Unit0
+        this.transactionContext.setStrategy(currentBlockchainType, this.getNode);
+        
+        // For Unit0 networks, fetch Unit0 balances and transactions
+        const txHistoryResult = await this.transactionContext.fetchTransactions(address, currentNetwork);
+        const balance = await this.balanceService.fetchUnit0Balance(address, currentNetwork, txHistoryResult.transactions);
+        
+        // Add transaction history to balance
+        balance.txHistory = txHistoryResult.transactions;
 
         // Process Unit0 NFTs through the NFT vendor system
         if (balance.nfts && balance.nfts.length > 0) {

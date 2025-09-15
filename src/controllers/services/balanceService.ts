@@ -1,11 +1,9 @@
 import { type AssetBalance, type BalancesItem } from '../../balances/types';
 import { NetworkName } from '../../networks/types';
-import { MAX_TX_HISTORY_ITEMS } from '../../constants';
 import { Unit0Api } from '../api/unit0Api';
 import {
   type Unit0BalanceResponse,
   type Unit0TokenBalance,
-  type Unit0NftTransfer,
 } from '../../unit0/types';
 import { AssetInfoController } from '../assetInfo';
 
@@ -23,7 +21,7 @@ export class BalanceService {
     network: NetworkName,
     data?: Unit0BalanceResponse,
     tokens?: Unit0TokenBalance[],
-    transactions?: Unit0NftTransfer[],
+    transactions?: any[],
   ): Promise<BalancesItem> {
     const balanceData =
       data || (await this.unit0Api.fetchBalance(address, network));
@@ -33,11 +31,11 @@ export class BalanceService {
 
     // Separate ERC-20 tokens and NFTs (ERC-721 + ERC-1155) from token data
     const erc20Tokens = tokenData.filter(
-      token => token.token?.type === 'ERC-20',
+      token => (token as any).token?.type === 'ERC-20',
     );
     const nftTokens = tokenData.filter(
       token =>
-        token.token?.type === 'ERC-721' || token.token?.type === 'ERC-1155',
+        (token as any).token?.type === 'ERC-721' || (token as any).token?.type === 'ERC-1155',
     );
 
     // Convert ERC-721 and ERC-1155 tokens to NFT format with enhanced metadata
@@ -49,15 +47,14 @@ export class BalanceService {
         }
 
         const token = tokenData.token;
-        const address = token.address ?? token.address_hash;
-        const baseNft = {
+        const address = token.address ?? (token as any).address_hash;
+        // Base NFT data structure for Unit0 tokens
+        const baseNftData = {
           id: address,
           assetId: address,
           name: token.name || 'Unknown NFT',
           displayName: token.name || 'Unknown NFT',
-          description: `${token.name || 'Unknown NFT'} (${
-            token.symbol || 'NFT'
-          })`,
+          description: `${token.name || 'Unknown NFT'} (${token.symbol || 'NFT'})`,
           quantity: token.value || '1',
           decimals: 0,
           reissuable: false,
@@ -72,7 +69,6 @@ export class BalanceService {
           precision: 0,
           sender: address,
           timestamp: new Date(),
-          // Add tokenId for rank display
           rank: parseInt(token.value || '1'),
           rarity_rank: parseInt(token.value || '1'),
         };
@@ -130,6 +126,31 @@ export class BalanceService {
               const creatorValue =
                 contractInfo?.creator_address_hash || address;
 
+              const assetData = {
+                ...baseNftData,
+                ...collectionData,
+                issuer: contractInfo?.creator_address_hash ?? address,
+                image: collectionData?.metadata?.image ?? collectionData?.image_url ?? collectionData?.animation_url ?? token.icon_url ?? '',
+                logo: collectionData?.metadata?.image ?? collectionData?.image_url ?? token.icon_url ?? '',
+                icon: collectionData?.metadata?.image ?? collectionData?.image_url ?? token.icon_url ?? '',
+                metadata: {
+                  ...collectionData?.metadata,
+                  image: collectionData?.metadata?.image ?? collectionData?.image_url ?? token.icon_url,
+                  animation_url: collectionData?.animation_url,
+                  attributes: collectionData?.metadata?.attributes ?? [],
+                  token_address: address,
+                  token_id: collectionData?.token?.id ?? token.value,
+                  contract_address: address,
+                },
+                tokenId: collectionData?.token?.id ?? token.value,
+                contractAddress: address,
+                rank: collectionData?.rarity_rank ?? parseInt(token.value || '1', 10),
+                rarity_rank: collectionData?.rarity_rank ?? parseInt(token.value || '1', 10),
+                total_supply: collectionData?.total_supply ?? '1',
+                external_url: collectionData?.external_url,
+                background_color: collectionData?.background_color,
+              };
+
               return {
                 id: address,
                 assetId: address,
@@ -162,6 +183,7 @@ export class BalanceService {
                 tokenType: token.type,
                 rank: parseInt(tokenInstance.id) || 1,
                 rarity_rank: parseInt(tokenInstance.id) || 1,
+                ...assetData,
               };
             });
           } else {
@@ -316,15 +338,7 @@ export class BalanceService {
       );
     }
 
-    // TODO: need to remove this hardcoded logic after full implementation
-    const mockAddress =
-      network === NetworkName.Testnet || network === NetworkName.Stagenet
-        ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
-        : '0x145205f669f49F55727de5b542D9C1EACa03A246';
-
-    const txHistory = txData.map(tx =>
-      this.unit0Api.convertUnit0ToTransaction(tx, mockAddress),
-    );
+    // txHistory is now passed directly as txData
 
     return {
       available: balanceData.coin_balance || '0',
@@ -332,7 +346,7 @@ export class BalanceService {
       leasedOut: '0',
       network,
       assets,
-      txHistory, // Include transaction history
+      txHistory: txData, // Include transaction history
       aliases: [], // Unit0 doesn't have aliases like Waves
       nfts: validNftData, // Include NFTs
     };
@@ -341,22 +355,16 @@ export class BalanceService {
   async fetchUnit0Balance(
     address: string,
     network: NetworkName,
+    transactions?: any[],
   ): Promise<BalancesItem> {
     try {
-      const [{ balance, tokens }, transactions] = await Promise.all([
-        this.unit0Api.fetchBalanceAndTokens(address, network),
-        this.unit0Api.fetchTransactionHistory(
-          address,
-          network,
-          MAX_TX_HISTORY_ITEMS,
-        ),
-      ]);
+      const { balance, tokens } = await this.unit0Api.fetchBalanceAndTokens(address, network);
       return this.buildUnit0Balance(
         address,
         network,
         balance,
         tokens,
-        transactions,
+        transactions || [],
       );
     } catch (error) {
       return this.buildUnit0Balance(
@@ -364,7 +372,7 @@ export class BalanceService {
         network,
         { coin_balance: '0' },
         [],
-        [],
+        transactions || [],
       );
     }
   }

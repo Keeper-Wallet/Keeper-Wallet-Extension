@@ -137,29 +137,6 @@ export class Unit0Api {
     return { balance, tokens };
   }
 
-  async fetchTransactionHistory(
-    address: string,
-    network: NetworkName = NetworkName.Mainnet,
-    limit: number = 100,
-  ): Promise<Unit0NftTransfer[]> {
-    const baseUrl = this.getBaseUrl(network);
-    // TODO: will be used address instead of mock address
-    const mockAddress =
-      network === NetworkName.Testnet
-        ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
-        : '0x145205f669f49F55727de5b542D9C1EACa03A246';
-
-    const response = await fetch(
-      `${baseUrl}${mockAddress}/token-transfers?type=&items_count=${limit}`,
-    );
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch unit0 transaction history: ${response.status}`,
-      );
-    }
-    const data = await response.json();
-    return Array.isArray(data.items) ? data.items : [];
-  }
 
   async fetchNfts(
     address: string,
