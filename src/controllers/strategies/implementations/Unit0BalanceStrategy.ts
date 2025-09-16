@@ -1,39 +1,96 @@
-import { type AssetBalance, type BalancesItem } from '../../balances/types';
-import { NetworkName } from '../../networks/types';
-import { Unit0Api } from '../api/unit0Api';
-import {
-  type Unit0BalanceResponse,
-  type Unit0TokenBalance,
-} from '../../unit0/types';
-import { AssetInfoController } from '../assetInfo';
+import { type TransactionFromNode } from '@waves/ts-types';
 
-export class BalanceService {
+import { type AssetBalance, type BalancesItem, type Unit0Transfer } from 'balances/types';
+import { type NetworkName } from 'networks/types';
+
+import { Unit0Api } from '../../api/unit0Api';
+import { AssetInfoController } from '../../assetInfo';
+import { NftInfoController } from '../../NftInfoController';
+import { type BalanceFetchResult, type IBalanceStrategy } from '../interfaces/IBalanceStrategy';
+
+/**
+ * Unit0 Balance Strategy Implementation
+ * Handles balance fetching for Unit0 blockchain
+ */
+export class Unit0BalanceStrategy implements IBalanceStrategy {
   private unit0Api: Unit0Api;
   private assetInfo: AssetInfoController;
+  private nftInfo: NftInfoController;
 
-  constructor(assetInfo: AssetInfoController) {
+  constructor(assetInfo: AssetInfoController, nftInfo: NftInfoController) {
     this.unit0Api = new Unit0Api();
     this.assetInfo = assetInfo;
+    this.nftInfo = nftInfo;
   }
 
-  async buildUnit0Balance(
+  async fetchBalance(
     address: string,
     network: NetworkName,
-    data?: Unit0BalanceResponse,
-    tokens?: Unit0TokenBalance[],
-    transactions?: any[],
-  ): Promise<BalancesItem> {
-    const balanceData =
-      data || (await this.unit0Api.fetchBalance(address, network));
-    const tokenData =
-      tokens || (await this.unit0Api.fetchTokenBalances(address, network));
-    const txData = transactions || [];
+    transactions?: TransactionFromNode[] | Unit0Transfer[],
+  ): Promise<BalanceFetchResult> {
+    try {
+      const balance = await this.fetchUnit0Balance(address, network, transactions as Unit0Transfer[]);
 
+      return {
+        balance,
+        success: true,
+      };
+    } catch (error) {
+      console.error('Error fetching Unit0 balance:', error);
+      return {
+        balance: {
+          aliases: [],
+          available: '0',
+          regular: '0',
+          leasedOut: '0',
+          network,
+          txHistory: [],
+          assets: {},
+          nfts: [],
+        },
+        success: false,
+        error: error instanceof Error ? error : new Error('Unknown error'),
+      };
+    }
+  }
+
+  private async fetchUnit0Balance(
+    address: string,
+    network: NetworkName,
+    transactions?: Unit0Transfer[],
+  ): Promise<BalancesItem> {
+    try {
+      const { balance, tokens } = await this.unit0Api.fetchBalanceAndTokens(address, network);
+      return this.buildUnit0Balance(
+        address,
+        network,
+        balance,
+        tokens,
+        transactions || [],
+      );
+    } catch (error) {
+      return this.buildUnit0Balance(
+        address,
+        network,
+        { coin_balance: '0' },
+        [],
+        transactions || [],
+      );
+    }
+  }
+
+  private async buildUnit0Balance(
+    walletAddress: string,
+    network: NetworkName,
+    balanceData: any,
+    tokens: any[],
+    transactions: Unit0Transfer[],
+  ): Promise<BalancesItem> {
     // Separate ERC-20 tokens and NFTs (ERC-721 + ERC-1155) from token data
-    const erc20Tokens = tokenData.filter(
+    const erc20Tokens = tokens.filter(
       token => (token as any).token?.type === 'ERC-20',
     );
-    const nftTokens = tokenData.filter(
+    const nftTokens = tokens.filter(
       token =>
         (token as any).token?.type === 'ERC-721' || (token as any).token?.type === 'ERC-1155',
     );
@@ -48,7 +105,8 @@ export class BalanceService {
 
         const token = tokenData.token;
         const address = token.address ?? (token as any).address_hash;
-        // Base NFT data structure for Unit0 tokens
+        
+        
         const baseNftData = {
           id: address,
           assetId: address,
@@ -74,57 +132,39 @@ export class BalanceService {
         };
 
         try {
-          // Fetch detailed collection data for this specific NFT contract
           let collectionData = null;
           let contractInfo = null;
-          // Fetch contract info to get creator address
+          
           try {
-            contractInfo = await this.unit0Api.fetchContractInfo(
-              address,
-              network,
-            );
+            contractInfo = await this.unit0Api.fetchContractInfo(address, network);
           } catch (error) {
-            console.warn(
-              `Failed to fetch contract info for ${address}:`,
-              error,
-            );
+            console.warn(`Failed to fetch contract info for ${address}:`, error);
           }
 
           try {
             const collectionsResponse = await this.unit0Api.fetchNftInventory(
               address, // Use the NFT contract address
-              address, // User wallet address
+              walletAddress, // User wallet address
               network,
             );
 
-            if (
-              collectionsResponse?.items &&
-              collectionsResponse.items.length > 0
-            ) {
-              // Find the collection data for this specific token address
+            if (collectionsResponse?.items && collectionsResponse.items.length > 0) {
               collectionData = collectionsResponse.items.find(
                 (item: any) =>
-                  item.token?.address_hash?.toLowerCase() ===
-                  address.toLowerCase(),
+                  item.token?.address_hash?.toLowerCase() === address.toLowerCase(),
               );
             }
           } catch (error) {
-            console.warn(
-              `Failed to fetch collection data for ${address}:`,
-              error,
-            );
+            console.warn(`Failed to fetch collection data for ${address}:`, error);
           }
 
-          // Create individual NFT entries for each token_instance
           if (
             collectionData &&
             collectionData.token_instances &&
             collectionData.token_instances.length > 0
           ) {
-            // Create separate NFT for each token instance
             return collectionData.token_instances.map((tokenInstance: any) => {
-              const creatorValue =
-                contractInfo?.creator_address_hash || address;
+              const creatorValue = contractInfo?.creator_address_hash || address;
 
               const assetData = {
                 ...baseNftData,
@@ -139,13 +179,13 @@ export class BalanceService {
                   animation_url: collectionData?.animation_url,
                   attributes: collectionData?.metadata?.attributes ?? [],
                   token_address: address,
-                  token_id: collectionData?.token?.id ?? token.value,
+                  token_id: tokenInstance.id,
                   contract_address: address,
                 },
-                tokenId: collectionData?.token?.id ?? token.value,
+                tokenId: tokenInstance.id,
                 contractAddress: address,
-                rank: collectionData?.rarity_rank ?? parseInt(token.value || '1', 10),
-                rarity_rank: collectionData?.rarity_rank ?? parseInt(token.value || '1', 10),
+                rank: tokenInstance?.id ?? parseInt(token.value || '1', 10),
+                rarity_rank: tokenInstance?.id ?? parseInt(token.value || '1', 10),
                 total_supply: collectionData?.total_supply ?? '1',
                 external_url: collectionData?.external_url,
                 background_color: collectionData?.background_color,
@@ -155,14 +195,10 @@ export class BalanceService {
                 id: address,
                 assetId: address,
                 name: token.name || 'Unknown NFT',
-                displayName: `${token.name || 'Unknown NFT'} ID #${
-                  tokenInstance.id
-                }`,
+                displayName: `${token.name || 'Unknown NFT'} ID #${tokenInstance.id}`,
                 displayCreator: token.symbol || token.name || 'Unknown NFT',
                 creator: creatorValue,
-                description: `${token.name || 'Unknown NFT'} #${
-                  tokenInstance.id
-                } (${token.symbol || 'NFT'})`,
+                description: `${token.name || 'Unknown NFT'} #${tokenInstance.id} (${token.symbol || 'NFT'})`,
                 quantity: tokenInstance.value || '1',
                 decimals: 0,
                 reissuable: false,
@@ -183,24 +219,18 @@ export class BalanceService {
                 tokenType: token.type,
                 rank: parseInt(tokenInstance.id) || 1,
                 rarity_rank: parseInt(tokenInstance.id) || 1,
-                ...assetData,
               };
             });
           } else {
-            // Fallback: Create single NFT entry using basic token data
             return {
               id: address,
               assetId: address,
               name: token.name || 'Unknown NFT',
-              displayName: `${token.name || 'Unknown NFT'} ID #${
-                tokenData.token_id
-              }`,
+              displayName: `${token.name || 'Unknown NFT'} ID #${token.value || tokenData.token_id || '1'}`,
               displayCreator: token.symbol || token.name || 'Unknown NFT',
               creator: contractInfo?.creator_address_hash || address,
-              description: `${token.name || 'Unknown NFT'} (${
-                token.symbol || 'NFT'
-              })`,
-              quantity: collectionData?.amount || tokenData.value || '1',
+              description: `${token.name || 'Unknown NFT'} #${token.value || tokenData.token_id || '1'} (${token.symbol || 'NFT'})`,
+              quantity: tokenData.value || '1',
               decimals: 0,
               reissuable: false,
               issuer: address,
@@ -229,7 +259,6 @@ export class BalanceService {
       }),
     );
 
-    // Flatten the array since some entries might return arrays of NFTs
     const validNftData = nftData.flat().filter(nft => nft !== null);
 
     const unit0AssetBalance: AssetBalance = {
@@ -242,32 +271,30 @@ export class BalanceService {
       unit0: unit0AssetBalance,
     };
 
-    // Add ERC-20 token balances with dynamic metadata
+    // Add ERC-20 token balances
     const tokenMetadataPromises = erc20Tokens.map(async token => {
-      const tokenAddress = (token.token as any)?.address_hash ?? token.token?.address;
+      const address = token.token?.address_hash ?? token.token?.address;
       const tokenBalance = token.value || '0';
 
-      if (!tokenAddress) return null;
+      if (!address) return null;
 
-      // Fetch token metadata from Unit0 explorer
-      const metadata = await this.unit0Api.fetchTokenMetadata(
-        tokenAddress,
-        network,
-      );
+      const metadata = await this.unit0Api.fetchTokenMetadata(address, network);
 
+      console.log(metadata, 'metadata');
       return {
-        address: tokenAddress,
+        address: address,
         balance: tokenBalance,
         metadata,
       };
     });
 
-    const tokenResults = await Promise.all(tokenMetadataPromises);
+    const tokenMetadata = await Promise.all(tokenMetadataPromises);
+    const validTokenMetadata = tokenMetadata.filter(Boolean);
 
     // Prepare all assets for storage (ERC-20 tokens + NFTs)
     const assetsToStore = [];
 
-    for (const result of tokenResults) {
+    for (const result of validTokenMetadata) {
       if (!result) continue;
 
       // Add balance data
@@ -338,7 +365,10 @@ export class BalanceService {
       );
     }
 
-    // txHistory is now passed directly as txData
+    // Update NFTs using NftInfoController
+    if (nftAssets.length > 0) {
+      await this.nftInfo.updateNfts(nftAssets as any[], true);
+    }
 
     return {
       available: balanceData.coin_balance || '0',
@@ -346,34 +376,17 @@ export class BalanceService {
       leasedOut: '0',
       network,
       assets,
-      txHistory: txData, // Include transaction history
+      txHistory: transactions, // Include transaction history
       aliases: [], // Unit0 doesn't have aliases like Waves
       nfts: validNftData, // Include NFTs
     };
   }
 
-  async fetchUnit0Balance(
-    address: string,
-    network: NetworkName,
-    transactions?: any[],
-  ): Promise<BalancesItem> {
-    try {
-      const { balance, tokens } = await this.unit0Api.fetchBalanceAndTokens(address, network);
-      return this.buildUnit0Balance(
-        address,
-        network,
-        balance,
-        tokens,
-        transactions || [],
-      );
-    } catch (error) {
-      return this.buildUnit0Balance(
-        address,
-        network,
-        { coin_balance: '0' },
-        [],
-        transactions || [],
-      );
-    }
+  getBlockchainType(): string {
+    return 'unit0';
+  }
+
+  canHandle(blockchainType: string): boolean {
+    return blockchainType === 'unit0';
   }
 }

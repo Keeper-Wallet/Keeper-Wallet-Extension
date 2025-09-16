@@ -21,7 +21,7 @@ export class WavesTransactionStrategy implements ITransactionStrategy {
 
     const response = await fetch(url, {
       headers: {
-        accept: 'application/json; large-significand-format=string',
+        accept: 'application/json',
       },
     });
 
@@ -46,7 +46,7 @@ export class WavesTransactionStrategy implements ITransactionStrategy {
     
     const response = await fetch(url, {
       headers: {
-        accept: 'application/json; large-significand-format=string',
+        accept: 'application/json',
       },
     });
 

@@ -1,5 +1,6 @@
 import { type TransactionFromNode } from '@waves/ts-types';
 import {BLOCKCHAIN_TYPES } from 'assets/constants';
+import { type Unit0Transfer } from 'balances/types';
 import { type NetworkName } from 'networks/types';
 
 import { Unit0TransactionStrategy } from '../implementations/Unit0TransactionStrategy';
@@ -45,7 +46,7 @@ export class TransactionContext {
   async fetchTransactionById(
     txId: string,
     network: NetworkName
-  ): Promise<TransactionFromNode | null> {
+  ): Promise<TransactionFromNode | Unit0Transfer | null> {
     return this.strategy.fetchTransactionById(txId, network);
   }
 

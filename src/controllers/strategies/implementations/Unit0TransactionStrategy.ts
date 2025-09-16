@@ -1,5 +1,6 @@
-import { TRANSACTION_TYPE,type TransactionFromNode } from '@waves/ts-types';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { NetworkName } from 'networks/types';
+import { type Unit0Transfer } from 'balances/types';
 import { type Unit0NftTransfer } from 'unit0/types';
 
 import { type ITransactionStrategy, type TransactionFetchResult,type TransactionFilter } from '../interfaces/ITransactionStrategy';
@@ -49,7 +50,7 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
     );
 
     return {
-      transactions: transactions as unknown as TransactionFromNode[],
+      transactions: transactions as Unit0Transfer[],
       hasMore: unit0Transfers.length === limit,
     };
   }
@@ -57,7 +58,7 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
   async fetchTransactionById(
     txId: string,
     network: NetworkName
-  ): Promise<TransactionFromNode | null> {
+  ): Promise<Unit0Transfer | null> {
     // Unit0 API doesn't have single transaction endpoint in current implementation
     // This would need to be implemented based on Unit0 API capabilities
     return null;
@@ -66,10 +67,11 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
   private convertUnit0ToTransaction(
     unit0Tx: Unit0NftTransfer,
     address: string
-  ): unknown {
+  ): Unit0Transfer {
     const sender = unit0Tx.from?.hash;
     const recipient = unit0Tx.to?.hash;
     const isIncoming = recipient === address;
+    const isOutgoing = sender === address;
     const timestamp = new Date(unit0Tx.timestamp).getTime();
     const assetId = unit0Tx.token.hash ?? unit0Tx.token.address_hash ?? unit0Tx.token.address;
 
@@ -77,8 +79,7 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
       id: unit0Tx.transaction_hash,
       sender,
       type: TRANSACTION_TYPE.ETHEREUM,
-      fee: '0', // TODO: Unit0 fee handling
-      bytes: '', // Required for EthereumTransaction compatibility
+      fee: '0',
       payload: {
         type: 'transfer' as const,
         height: unit0Tx.block_number,
@@ -89,11 +90,11 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
         asset: assetId,
         tokenSymbol: unit0Tx.token.symbol,
         tokenName: unit0Tx.token.name,
-        tokenDecimals: unit0Tx.token.decimals,
+        tokenDecimals: unit0Tx.token.decimals?.toString(),
         fromName: unit0Tx.from?.name,
         toName: unit0Tx.to?.name,
         isIncoming,
-        isOutgoing: sender === address,
+        isOutgoing,
       },
     };
   }

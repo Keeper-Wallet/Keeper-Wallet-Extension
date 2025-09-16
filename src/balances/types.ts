@@ -29,7 +29,8 @@ export type Unit0Transfer = {
   id?: string;
   type: TRANSACTION_TYPE;
   fee: string;
-  sender: string;
+  sender?: string;
+  recipient?: string;
   payload: Unit0TransferPayload;
 };
 
@@ -49,5 +50,5 @@ export interface BalancesItem {
   regular?: string;
   network?: NetworkName;
   nfts?: AssetDetail[];
-  txHistory?: TransactionFromNode[];
+  txHistory?: TransactionFromNode[] | Unit0Transfer[];
 }

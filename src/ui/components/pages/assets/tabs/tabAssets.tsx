@@ -45,8 +45,8 @@ const Row = ({
     onSendClick,
     onSwapClick,
   } = data;
-  const [assetId, assetBalance = {}] = assetEntries[index];
-  const balance = assetBalance.balance || 0;
+  const [assetId, assetBalance] = assetEntries[index];
+  const balance = assetBalance?.balance || 0;
   const asset = assets[assetId];
 
   return (
@@ -96,6 +96,8 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
   const assetsByAddress = useMemo(() => {
     const lookup: Record<string, any> = {};
     Object.values(allAssets).forEach(asset => {
+      if (!asset) return;
+      
       // Ensure precision is always a number to prevent BigNumber errors
       const safeAsset = {
         ...asset,

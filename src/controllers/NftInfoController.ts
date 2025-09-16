@@ -34,7 +34,7 @@ export class NftInfoController {
       getCurrentBlockchainType || (() => BLOCKCHAIN_TYPES.WAVES);
   }
 
-  async updateNfts(nftsAssetDetails: NftAssetDetail[], forceUpdate: boolean) {
+  async updateNfts(nftsAssetDetails: NftAssetDetail[], forceUpdate?: boolean) {
     if (forceUpdate) {
       const { nfts } = this.store.getState();
       nftsAssetDetails.forEach(asset => {
