@@ -3,8 +3,8 @@ import {BLOCKCHAIN_TYPES } from 'assets/constants';
 import { type Unit0Transfer } from 'balances/types';
 import { type NetworkName } from 'networks/types';
 
-import { Unit0TransactionStrategy } from '../implementations/Unit0TransactionStrategy';
-import { WavesTransactionStrategy } from '../implementations/WavesTransactionStrategy';
+import { Unit0TransactionStrategy } from '../implementations/transactionStrategy/Unit0TransactionStrategy';
+import { WavesTransactionStrategy } from '../implementations/transactionStrategy/WavesTransactionStrategy';
 import { type ITransactionStrategy, type TransactionFetchResult,type TransactionFilter } from '../interfaces/ITransactionStrategy';
 
 export class TransactionContext {

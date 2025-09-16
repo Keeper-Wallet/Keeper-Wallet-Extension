@@ -4,10 +4,10 @@ import { type AssetBalance, type BalancesItem } from 'balances/types';
 import { type NetworkName } from 'networks/types';
 import { type NftAssetDetail } from 'nfts/types';
 
-import { MAX_NFT_ITEMS } from '../../../constants';
-import { type AssetInfoController } from '../../assetInfo';
-import { type NftInfoController } from '../../NftInfoController';
-import { type BalanceFetchResult,type IBalanceStrategy } from '../interfaces/IBalanceStrategy';
+import { MAX_NFT_ITEMS } from '../../../../constants';
+import { type AssetInfoController } from '../../../assetInfo';
+import { type NftInfoController } from '../../../NftInfoController';
+import { type BalanceFetchResult,type IBalanceStrategy } from '../../interfaces/IBalanceStrategy';
 
 /**
  * Waves Balance Strategy Implementation

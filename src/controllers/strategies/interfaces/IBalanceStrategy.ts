@@ -1,5 +1,4 @@
 import { type TransactionFromNode } from '@waves/ts-types';
-
 import { type BalancesItem, type Unit0Transfer } from 'balances/types';
 import { type NetworkName } from 'networks/types';
 

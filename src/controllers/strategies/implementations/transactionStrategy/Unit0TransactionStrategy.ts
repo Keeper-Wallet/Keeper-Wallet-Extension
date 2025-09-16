@@ -1,9 +1,9 @@
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { NetworkName } from 'networks/types';
 import { type Unit0Transfer } from 'balances/types';
-import { type Unit0NftTransfer } from 'unit0/types';
+import { type Unit0NftTransfer } from '../../interfaces/IUnit0Types';
 
-import { type ITransactionStrategy, type TransactionFetchResult,type TransactionFilter } from '../interfaces/ITransactionStrategy';
+import { type ITransactionStrategy, type TransactionFetchResult,type TransactionFilter } from '../../interfaces/ITransactionStrategy';
 
 export class Unit0TransactionStrategy implements ITransactionStrategy {
   readonly networkType = 'unit0' as const;

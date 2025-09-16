@@ -1,7 +1,7 @@
 import { TransactionFromNode } from '@waves/ts-types';
-import { NetworkName } from '../../../networks/types';
-import { MAX_TX_HISTORY_ITEMS } from '../../../constants';
-import { ITransactionStrategy, TransactionFilter, TransactionFetchResult } from '../interfaces/ITransactionStrategy';
+import { NetworkName } from '../../../../networks/types';
+import { MAX_TX_HISTORY_ITEMS } from '../../../../constants';
+import { ITransactionStrategy, TransactionFilter, TransactionFetchResult } from '../../interfaces/ITransactionStrategy';
 
 export class WavesTransactionStrategy implements ITransactionStrategy {
   readonly networkType = 'waves' as const;

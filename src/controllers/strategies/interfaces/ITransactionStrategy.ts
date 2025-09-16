@@ -1,6 +1,7 @@
-import { NetworkName } from '../../../networks/types';
 import { type TransactionFromNode } from '@waves/ts-types';
 import { type Unit0Transfer } from 'balances/types';
+
+import { type NetworkName } from '../../../networks/types';
 
 export interface TransactionFilter {
   limit?: number;
@@ -18,15 +19,15 @@ export interface TransactionFetchResult {
 
 export interface ITransactionStrategy {
   readonly networkType: 'waves' | 'unit0';
-  
+
   fetchTransactions(
     address: string,
     network: NetworkName,
-    filter?: TransactionFilter
+    filter?: TransactionFilter,
   ): Promise<TransactionFetchResult>;
-  
+
   fetchTransactionById(
     txId: string,
-    network: NetworkName
+    network: NetworkName,
   ): Promise<TransactionFromNode | Unit0Transfer | null>;
 }

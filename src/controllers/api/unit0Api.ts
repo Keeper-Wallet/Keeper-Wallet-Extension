@@ -8,7 +8,7 @@ import {
   type Unit0TokenDetailsResponse,
   type Unit0TokenInstance,
   type Unit0TokenMetadata,
-} from 'unit0/types';
+} from '../strategies/interfaces/IUnit0Types';
 
 import { NetworkName } from '../../networks/types';
 

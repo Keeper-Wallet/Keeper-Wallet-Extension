@@ -1,3 +1,8 @@
+/**
+ * Unit0 Blockchain Type Definitions
+ * Strategy-specific types for Unit0 balance, NFT, and transaction operations
+ */
+
 export interface Unit0BalanceResponse {
   coin_balance: string;
   exchange_rate?: string;
@@ -7,13 +12,44 @@ export interface Unit0TokenBalance {
   token_id: string;
   balance: string;
   token?: {
-    address: string;
+    address?: string;
+    address_hash?: string;
     name?: string;
     symbol?: string;
     decimals?: number;
+    type?: string;
   };
   value?: string;
 }
+export interface Unit0TokenAsset {
+  address: string;
+  metadata: {
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+    icon_url: string | null;
+    total_supply: string | null;
+    holders_count: string;
+    circulating_market_cap: string | null;
+    exchange_rate: string | null;
+    volume_24h: string | null;
+  };
+}
+
+export interface Unit0NftAsset {
+  address: string;
+  id: string;
+  metadata: {
+    name: string;
+    issuer: string;
+    rank: number;
+    symbol: string;
+    decimals: number;
+  };
+}
+
+export type Unit0Assets = Unit0TokenAsset | Unit0NftAsset;
 
 export interface Unit0TokenInstance {
   animation_url: string | null;
@@ -23,9 +59,9 @@ export interface Unit0TokenInstance {
   is_unique: boolean | null;
   media_type: string | null;
   media_url: string | null;
-  metadata: any | null;
-  owner: any | null;
-  thumbnails: any | null;
+  metadata: string | null;
+  owner: string | null;
+  thumbnails: string[] | null;
   token: {
     address: string;
     address_hash: string;
@@ -77,7 +113,7 @@ export interface Unit0NftTransfer {
 
 export interface Unit0NftResponse {
   items: Unit0NftTransfer[];
-  next_page_params: any | null;
+  next_page_params: number | null;
 }
 
 export interface Unit0TokenMetadata {

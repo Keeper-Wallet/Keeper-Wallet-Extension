@@ -3,8 +3,8 @@ import { AssetInfoController } from 'controllers/assetInfo';
 import { NftInfoController } from '../../NftInfoController';
 import { type NetworkName } from 'networks/types';
 
-import { Unit0BalanceStrategy } from '../implementations/Unit0BalanceStrategy';
-import { WavesBalanceStrategy } from '../implementations/WavesBalanceStrategy';
+import { Unit0BalanceStrategy } from '../implementations/balanceStrategy/Unit0BalanceStrategy';
+import { WavesBalanceStrategy } from '../implementations/balanceStrategy/WavesBalanceStrategy';
 import { type BalanceFetchResult, type IBalanceStrategy } from '../interfaces/IBalanceStrategy';
 import { TransactionContext } from './TransactionContext';
 
