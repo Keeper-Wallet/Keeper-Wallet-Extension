@@ -1,5 +1,6 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import clsx from 'clsx';
 import { TxDetailTabs } from 'messages/_common/detailTabs';
 import { MessageFooter } from 'messages/_common/footer';
@@ -29,14 +30,20 @@ export function OrderCard({
     state => state.assets[message.data.assetPair.amountAsset ?? 'WAVES'],
   );
   invariant(amountAsset);
-  const amount = new Money(message.data.amount, new Asset(amountAsset));
+  const amount = new Money(
+    message.data.amount,
+    new Asset(amountAsset as IAssetInfo),
+  );
 
   const priceAsset = usePopupSelector(
     state => state.assets[message.data.assetPair.priceAsset ?? 'WAVES'],
   );
   invariant(priceAsset);
 
-  const priceInput = new Money(message.data.price, new Asset(priceAsset));
+  const priceInput = new Money(
+    message.data.price,
+    new Asset(priceAsset as IAssetInfo),
+  );
 
   const price = Money.fromTokens(
     priceInput
@@ -189,7 +196,7 @@ export function OrderScreen({
                   balance={
                     new Money(
                       message.data.matcherFee,
-                      new Asset(matcherFeeAsset),
+                      new Asset(matcherFeeAsset as IAssetInfo),
                     )
                   }
                   data-testid="createOrderFee"

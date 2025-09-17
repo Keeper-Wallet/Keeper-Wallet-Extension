@@ -1,4 +1,5 @@
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import clsx from 'clsx';
 import { TxDetailTabs } from 'messages/_common/detailTabs';
 import { MessageFooter } from 'messages/_common/footer';
@@ -39,7 +40,7 @@ export function LeaseCard({
 
           <h1 className="headline1">
             <Balance
-              balance={new Money(tx.amount, new Asset(asset))}
+              balance={new Money(tx.amount, new Asset(asset as IAssetInfo))}
               data-testid="leaseAmount"
               showAsset
               showUsdAmount

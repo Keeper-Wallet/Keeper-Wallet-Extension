@@ -40,7 +40,6 @@ export function AddressRecipient({
   name,
 }: Props) {
   const { t } = useTranslation();
-  console.log(recipient, 'recipient');
   const address = isEthereumAddress(recipient)
     ? recipient
     : processAliasOrAddress(recipient, chainId);

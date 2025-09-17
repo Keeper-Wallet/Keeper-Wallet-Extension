@@ -1,7 +1,12 @@
-import { TransactionFromNode } from '@waves/ts-types';
-import { NetworkName } from '../../../../networks/types';
+import { type TransactionFromNode } from '@waves/ts-types';
+import { type NetworkName } from 'networks/types';
+
 import { MAX_TX_HISTORY_ITEMS } from '../../../../constants';
-import { ITransactionStrategy, TransactionFilter, TransactionFetchResult } from '../../interfaces/ITransactionStrategy';
+import {
+  type ITransactionStrategy,
+  type TransactionFetchResult,
+  type TransactionFilter,
+} from '../../interfaces/ITransactionStrategy';
 
 export class WavesTransactionStrategy implements ITransactionStrategy {
   readonly networkType = 'waves' as const;
@@ -11,12 +16,12 @@ export class WavesTransactionStrategy implements ITransactionStrategy {
   async fetchTransactions(
     address: string,
     network: NetworkName,
-    filter: TransactionFilter = {}
+    filter: TransactionFilter = {},
   ): Promise<TransactionFetchResult> {
     const limit = filter.limit || MAX_TX_HISTORY_ITEMS;
     const url = new URL(
       `transactions/address/${address}/limit/${limit}`,
-      this.getNode()
+      this.getNode(),
     );
 
     const response = await fetch(url, {
@@ -40,10 +45,9 @@ export class WavesTransactionStrategy implements ITransactionStrategy {
 
   async fetchTransactionById(
     txId: string,
-    network: NetworkName
   ): Promise<TransactionFromNode | null> {
     const url = new URL(`transactions/info/${txId}`, this.getNode());
-    
+
     const response = await fetch(url, {
       headers: {
         accept: 'application/json',

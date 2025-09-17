@@ -1,11 +1,9 @@
-import { type TransactionFromNode } from '@waves/ts-types';
-import {BLOCKCHAIN_TYPES } from 'assets/constants';
-import { type Unit0Transfer } from 'balances/types';
+import { BLOCKCHAIN_TYPES } from 'assets/constants';
 import { type NetworkName } from 'networks/types';
 
 import { Unit0TransactionStrategy } from '../implementations/transactionStrategy/Unit0TransactionStrategy';
 import { WavesTransactionStrategy } from '../implementations/transactionStrategy/WavesTransactionStrategy';
-import { type ITransactionStrategy, type TransactionFetchResult,type TransactionFilter } from '../interfaces/ITransactionStrategy';
+import { type ITransactionStrategy, type TransactionFetchResult, type TransactionFilter } from '../interfaces/ITransactionStrategy';
 
 export class TransactionContext {
   private strategy!: ITransactionStrategy;
@@ -43,14 +41,4 @@ export class TransactionContext {
     return this.strategy.fetchTransactions(address, network, filter);
   }
 
-  async fetchTransactionById(
-    txId: string,
-    network: NetworkName
-  ): Promise<TransactionFromNode | Unit0Transfer | null> {
-    return this.strategy.fetchTransactionById(txId, network);
-  }
-
-  get networkType(): 'waves' | 'unit0' {
-    return this.strategy.networkType;
-  }
 }

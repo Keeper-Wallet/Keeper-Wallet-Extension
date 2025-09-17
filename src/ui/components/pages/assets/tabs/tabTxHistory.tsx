@@ -39,7 +39,6 @@ const Row = ({
   const { historyWithGroups, hasMore, hasFilters, historyLink } = data;
   const historyOrGroup = historyWithGroups[index];
 
-  console.log(historyOrGroup, '$$$');
   return (
     <div style={style}>
       {'groupName' in historyOrGroup ? (

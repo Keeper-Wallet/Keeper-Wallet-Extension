@@ -10,7 +10,7 @@ export interface AssetDetail {
   issuer: string;
   isSuspicious?: boolean;
   lastUpdated?: number;
-  minSponsoredFee?: string | number;
+  minSponsoredFee?: string | number | null;
   name: string;
   originTransactionId?: string;
   precision: number;
@@ -36,6 +36,6 @@ export interface AssetDetail {
 }
 
 export interface AssetsRecord {
-  WAVES: AssetDetail;
+  WAVES?: AssetDetail;
   [key: string]: AssetDetail | undefined;
 }

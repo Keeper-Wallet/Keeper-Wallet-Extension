@@ -14,6 +14,7 @@ import invariant from 'tiny-invariant';
 import * as transactionsStyles from '../../ui/components/pages/styles/transactions.module.css';
 import { Balance } from '../../ui/components/ui';
 import { type MessageOfType, type MessageTxBurn } from '../types';
+import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
 export function BurnCard({
   className,
@@ -44,7 +45,7 @@ export function BurnCard({
               split
               addSign="-"
               showAsset
-              balance={new Money(tx.amount, new Asset(asset))}
+              balance={new Money(tx.amount, new Asset(asset as IAssetInfo))}
               showUsdAmount
             />
           </h1>

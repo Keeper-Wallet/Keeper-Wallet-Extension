@@ -8,8 +8,8 @@ import { type AssetInfoController } from './assetInfo';
 import { type NetworkController } from './network';
 import { type NftInfoController } from './NftInfoController';
 import { type PreferencesController } from './preferences';
-import { type VaultController } from './VaultController';
 import { BalanceContext } from './strategies/contexts/BalanceContext';
+import { type VaultController } from './VaultController';
 
 const PERIOD_IN_SECONDS = 10;
 
@@ -27,7 +27,6 @@ export class CurrentAccountController {
     extensionStorage,
     assetInfoController,
     nftInfoController,
-    getAccounts,
     getLegacyFormatAccounts,
     getNetwork,
     getNode,
@@ -75,7 +74,7 @@ export class CurrentAccountController {
     this.getSelectedAccount = getSelectedAccount;
     this.isLocked = isLocked;
     this.getBlockchainType = getBlockchainType;
-    
+
     // Initialize balance context (handles transactions internally)
     this.balanceContext = new BalanceContext(
       this.getNode,
@@ -97,8 +96,6 @@ export class CurrentAccountController {
       periodInMinutes: PERIOD_IN_SECONDS / 60,
     });
   }
-
-
 
   getAccountBalance() {
     const selectedAccount = this.getSelectedAccount();
@@ -132,9 +129,7 @@ export class CurrentAccountController {
         currentNetwork,
       );
 
-      console.log(balanceResult, '((((')
       if (!balanceResult.success) {
-        console.error('Error fetching balance:', balanceResult.error);
         return;
       }
 

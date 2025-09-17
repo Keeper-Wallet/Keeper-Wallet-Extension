@@ -1,5 +1,14 @@
 import { isNotNull } from '_core/isNotNull';
-import { type AssetDetail } from 'assets/types';
+import { type AssetDetail, type AssetsRecord } from 'assets/types';
+
+import {
+  type Unit0NftAsset,
+  type Unit0TokenAsset,
+} from './strategies/interfaces/IUnit0Types';
+
+type Unit0AssetMetadata =
+  | Unit0TokenAsset['metadata']
+  | Unit0NftAsset['metadata'];
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
@@ -12,7 +21,7 @@ import {
 import { type NetworkController } from './network';
 import { type RemoteConfigController } from './remoteConfig';
 
-const WAVES: AssetDetail = {
+export const WAVES: AssetDetail = {
   quantity: '10000000000000000',
   ticker: 'WAVES',
   id: 'WAVES',
@@ -21,8 +30,7 @@ const WAVES: AssetDetail = {
   description: '',
   height: 0,
   issuer: '',
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  timestamp: '2016-04-11T21:00:00.000Z' as any,
+  timestamp: new Date('2016-04-11T21:00:00.000Z'),
   sender: '',
   reissuable: false,
   displayName: 'WAVES',
@@ -37,8 +45,7 @@ const UNIT0: AssetDetail = {
   description: 'Unit0 native token',
   height: 0,
   issuer: '',
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  timestamp: '2024-01-01T00:00:00.000Z' as any,
+  timestamp: new Date('2024-01-01T00:00:00.000Z'),
   sender: '',
   reissuable: false,
   displayName: 'UNIT0',
@@ -122,6 +129,8 @@ export class AssetInfoController {
         [NetworkName.Custom]: {
           WAVES,
         },
+        [NetworkName.unit0MainNet]: {},
+        [NetworkName.unit0Testnet]: {},
       },
       swappableAssetIdsByVendor: {},
       suspiciousAssets: [],
@@ -219,58 +228,7 @@ export class AssetInfoController {
     }
   }
 
-  addTickersForExistingUnit0Assets() {
-    const { assets } = this.store.getState();
-
-    const unit0AssetTickers: Record<string, string> = {
-      '0x1B100DE3F13E3f8Bb2f66FE58c1949c32E7124B': 'WETH',
-      '0xfA88d31044197fa9fAC50b8b7f6F4b54CC68d80e': 'DAI',
-      '0x5E73CEc92450a4eAE6B7A3Ea99459B0D069eFef5': 'WUNIT0',
-      '0xD48A37F4F6B9f5a5d1be16e87459Bc1AcA201026': 'USDC',
-      '0x1876c32a0CF3eeB7d1eFf2F3C29AdFCF5B956270': 'WBTC',
-      '0x333fE97265D2C95bC1CF06d8ac1f410fCf97A737': 'USDT',
-      '0x4B72F0F2c222C6323589E46c0119154b74839d0f': 'UNI-V3-POS',
-      '0xF252401108d869656Fa682e67B04AC9e9F4a388e': 'Memma',
-      '0x7900c01eED60868beEA1DE79730CA5633A4b6a45': 'Sancho',
-      '0x94b514606C161677d1B243d4c4b069B3f2Fb8682': 'uWUNIT0',
-      '0xC447FCdFab3b8D70EEc7d4F85dE486b4E5ea74Ac': 'variableDebtWUNIT0',
-      '0xeEdF214BB01499364e4e44e4325e5bFFd0ae2719': 'variableDebtUSDT',
-      '0xb303d80db8415FD1d3C9FED68A52EEAc9a052671': 'USDT',
-      '0xEb19000D90f17FFbd3AD9CDB8915D928F4980fD1': 'USDC',
-      '0x6D118c61A03d63CE6b4387EfdE9E3bA3323833b9': 'DOGE',
-      '0x6DFE63380149E04f4DD9BD7E8d892eEc28878556': 'MCSASHA',
-      '0xFb2Cd41a8aeC89EFBb19575C6c48d872cE97A0A5': 'ZNS Connect',
-    };
-
-    const assetIdsToUpdate = Object.keys(unit0AssetTickers).filter(assetId => {
-      const asset = assets.mainnet[assetId];
-      const ticker = unit0AssetTickers[assetId];
-
-      return asset && (asset.displayName !== ticker || asset.ticker !== ticker);
-    });
-
-    if (assetIdsToUpdate.length !== 0) {
-      assetIdsToUpdate.forEach(assetId => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const asset = assets.mainnet[assetId]!;
-        const ticker = unit0AssetTickers[assetId];
-
-        asset.displayName = asset.ticker = ticker;
-      });
-
-      this.store.updateState({ assets });
-    }
-  }
-
-  getWavesAsset() {
-    return WAVES;
-  }
-
-  getUnit0Asset() {
-    return UNIT0;
-  }
-
-  getAssets() {
+  getAssets(): AssetsRecord {
     return this.store.getState().assets[this.getNetwork()];
   }
 
@@ -325,8 +283,7 @@ export class AssetInfoController {
           assets[network][assetId] = {
             ...assets[network][assetId],
             ...this.toAssetDetails(assetInfo),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          } as any;
+          };
           this.store.updateState({ assets });
           break;
         }
@@ -439,8 +396,7 @@ export class AssetInfoController {
         assets[network][assetInfo.assetId] = {
           ...assets[network][assetInfo.assetId],
           ...this.toAssetDetails(assetInfo),
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any;
+        };
       });
 
       this.store.updateState({ assets });
@@ -548,24 +504,23 @@ export class AssetInfoController {
 
   async storeUnit0TokenMetadata(
     contractAddress: string,
-    metadata: any,
-    network: NetworkName = NetworkName.Mainnet,
+    metadata: Unit0AssetMetadata,
   ) {
     const state = this.store.getState();
     const assets = { ...state.assets };
 
     // Create asset object from dynamic metadata
-    const assetDetail = {
+    const assetDetail: AssetDetail = {
       id: contractAddress,
-      collectionName: contractAddress,
-      issuer: metadata.issuer,
       name: metadata.symbol || contractAddress, // Use symbol as name for consistency
       displayName: metadata.name, // Full name for display
       ticker: metadata.symbol,
       precision: Number(metadata.decimals) || 18,
+      description: '',
       height: 0,
       timestamp: new Date(),
       sender: '',
+      issuer: 'issuer' in metadata ? metadata.issuer : '',
       quantity: 1,
       reissuable: false,
     };
@@ -582,9 +537,9 @@ export class AssetInfoController {
     this.store.updateState({ assets });
 
     // Also store logo if available
-    if (metadata.icon_url) {
-      const state = this.store.getState();
-      const logos = { ...state.assetLogos };
+    if ('icon_url' in metadata && metadata.icon_url) {
+      const currentState = this.store.getState();
+      const logos = { ...currentState.assetLogos };
 
       // Store logo for contract address key
       logos[contractAddress] = metadata.icon_url;

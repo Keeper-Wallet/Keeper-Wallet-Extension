@@ -5,27 +5,23 @@ import { type NetworkName } from 'networks/types';
 import { type NftAssetDetail } from 'nfts/types';
 
 import { MAX_NFT_ITEMS } from '../../../../constants';
-import { type AssetInfoController } from '../../../assetInfo';
-import { type NftInfoController } from '../../../NftInfoController';
-import { type BalanceFetchResult,type IBalanceStrategy } from '../../interfaces/IBalanceStrategy';
+import { type IAssetInfoStrategy } from '../../interfaces/IAssetInfoStrategy';
+import {
+  type BalanceFetchResult,
+  type IBalanceStrategy,
+} from '../../interfaces/IBalanceStrategy';
 
 /**
  * Waves Balance Strategy Implementation
  * Handles balance fetching for Waves blockchain
  */
 export class WavesBalanceStrategy implements IBalanceStrategy {
-  private getNode: () => string;
-  private assetInfoController: AssetInfoController;
-  private nftInfoController: NftInfoController;
+  private readonly getNode: () => string;
+  private assetInfoStrategy: IAssetInfoStrategy;
 
-  constructor(
-    getNode: () => string,
-    assetInfoController: AssetInfoController,
-    nftInfoController: NftInfoController,
-  ) {
+  constructor(getNode: () => string, assetInfoStrategy: IAssetInfoStrategy) {
     this.getNode = getNode;
-    this.assetInfoController = assetInfoController;
-    this.nftInfoController = nftInfoController;
+    this.assetInfoStrategy = assetInfoStrategy;
   }
 
   async fetchBalance(
@@ -41,12 +37,15 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
         this.fetchAliases(address),
       ]);
 
-      const assets = this.assetInfoController.getAssets();
+      const assets = this.assetInfoStrategy.getAssets?.() || {};
       const assetExists = (assetId: string) => !!assets[assetId];
-      const isMaxAgeExceeded = (assetId: string) =>
-        this.assetInfoController.isMaxAgeExceeded(
-          assets[assetId]?.lastUpdated,
-        );
+      const isMaxAgeExceeded = (assetId: string) => {
+        const asset = assets[assetId];
+        if (!asset || asset.lastUpdated === undefined) {
+          return false;
+        }
+        return this.assetInfoStrategy.isMaxAgeExceeded?.(asset.lastUpdated) || false;
+      };
 
       // Determine which assets need sponsorship updates
       const isSponsorshipUpdated = (balanceAsset: {
@@ -59,7 +58,7 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
       // Build asset IDs that need updating from balance data
       const fetchAssetIds = (
         myAssets.balances.filter(
-          (info) =>
+          info =>
             !assetExists(info.assetId) ||
             isSponsorshipUpdated(info) ||
             isMaxAgeExceeded(info.assetId),
@@ -67,14 +66,14 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
       )
         .concat(
           myNfts.filter(
-            (info) =>
+            info =>
               !assetExists(info.assetId) || isMaxAgeExceeded(info.assetId),
           ),
         )
-        .map((info) => info.assetId)
+        .map(info => info.assetId)
         .concat(
           (transactions || [])
-            .flatMap((tx) => [
+            .flatMap(tx => [
               ...('assetId' in tx ? [tx.assetId] : []),
               ...('order1' in tx
                 ? [
@@ -82,23 +81,25 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
                     tx.order1.assetPair.priceAsset,
                   ]
                 : []),
-              ...('payment' in tx
-                ? tx.payment?.map((x) => x.assetId) ?? []
-                : []),
+              ...('payment' in tx ? tx.payment?.map(x => x.assetId) ?? [] : []),
               ...('stateChanges' in tx
-                ? tx.stateChanges.transfers.map((x) => x.asset)
+                ? tx.stateChanges.transfers.map(x => x.asset)
                 : []),
             ])
             .filter((item): item is string => item != null)
             .filter(
-              (assetId) => !assetExists(assetId) && isMaxAgeExceeded(assetId),
+              assetId => !assetExists(assetId) && isMaxAgeExceeded(assetId),
             ),
         );
 
-      await Promise.all([
-        this.assetInfoController.updateAssets(fetchAssetIds, { ignoreCache: true }),
-        this.nftInfoController.updateNfts(myNfts),
-      ]);
+      await Promise.all(
+        [
+          this.assetInfoStrategy.updateAssets?.(fetchAssetIds, {
+            ignoreCache: true,
+          }),
+          this.assetInfoStrategy.updateNfts(myNfts),
+        ].filter(Boolean),
+      );
 
       const wavesAssetBalance: AssetBalance = {
         minSponsoredAssetFee: '100000',
@@ -117,7 +118,7 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
         txHistory: transactions || [],
         assets: Object.fromEntries([
           ['WAVES', wavesAssetBalance],
-          ...myAssets.balances.map((info) => {
+          ...myAssets.balances.map(info => {
             const assetBalance: AssetBalance = {
               minSponsoredAssetFee: info.minSponsoredAssetFee,
               sponsorBalance: info.sponsorBalance,
@@ -126,7 +127,7 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
             return [info.assetId, assetBalance];
           }),
         ]),
-        nfts: myNfts.map((nft) => ({
+        nfts: myNfts.map(nft => ({
           id: nft.assetId,
           name: nft.name,
           precision: nft.decimals,
@@ -149,7 +150,6 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
         success: true,
       };
     } catch (error) {
-      console.error('Error fetching Waves balance:', error);
       return {
         balance: {
           aliases: [],
@@ -180,11 +180,11 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
     const response = await fetch(url, {
       headers: { accept: 'application/json; large-significand-format=string' },
     });
-    
+
     if (!response.ok) {
       throw response;
     }
-    
+
     return (await response.json()) as {
       address: string;
       regular: string;
@@ -199,11 +199,11 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
     const response = await fetch(url, {
       headers: { accept: 'application/json; large-significand-format=string' },
     });
-    
+
     if (!response.ok) {
       throw response;
     }
-    
+
     return (await response.json()) as {
       address: string;
       balances: Array<{
@@ -223,7 +223,7 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
     const response = await fetch(url, {
       headers: { accept: 'application/json; large-significand-format=string' },
     });
-    
+
     if (!response.ok) {
       throw response;
     }
@@ -237,11 +237,11 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
     const response = await fetch(url, {
       headers: { accept: 'application/json' },
     });
-    
+
     if (!response.ok) {
       throw response;
     }
-    
+
     const aliases = (await response.json()) as string[];
     return Array.isArray(aliases) ? aliases : [];
   }

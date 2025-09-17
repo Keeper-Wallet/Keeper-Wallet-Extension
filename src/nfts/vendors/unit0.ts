@@ -10,21 +10,35 @@ import {
   NftVendorId,
 } from '../types';
 
+interface Unit0NftMetadata {
+  name?: string;
+  description?: string;
+  image?: string;
+  animation_url?: string;
+  external_url?: string;
+  attributes?: Array<{ trait_type: string; value: string | number }>;
+  background_color?: string;
+  youtube_url?: string;
+  [key: string]: unknown;
+}
+
 export interface Unit0NftInfo {
   id: string;
   name: string;
   symbol: string;
   contractAddress: string;
   tokenId: string;
+  assetId: string;
   imageUrl?: string;
   animationUrl?: string;
   mediaUrl?: string;
   mediaType?: string;
   vendor: NftVendorId.Unit0;
-  metadata?: any;
+  metadata?: Unit0NftMetadata;
   // Enhanced metadata fields
   author?: string;
   creator?: string;
+  creator_address_hash?: string;
   rank?: number;
   rarity_rank?: number;
   attributes?: Array<{ trait_type: string; value: string | number }>;
@@ -98,9 +112,9 @@ export class Unit0NftVendor implements NftVendor<Unit0NftInfo> {
     const { asset, info, networkCode } = params;
     // Try to get creator from info object (which should contain contract address)
     const creator =
-      (info as any)?.creator_address_hash ||
-      (info as any)?.creator ||
-      (asset as any).creator ||
+      info?.creator_address_hash ||
+      info?.creator ||
+      asset.creator ||
       asset.issuer;
 
     return {
@@ -120,7 +134,7 @@ export class Unit0NftVendor implements NftVendor<Unit0NftInfo> {
       foreground: info?.imageUrl || info?.mediaUrl,
       background:
         info?.mediaType === 'video' ? { backgroundColor: '#000' } : undefined,
-      tokenType: (asset as any).tokenType,
+      tokenType: asset.tokenType,
       vendor: NftVendorId.Unit0,
       marketplaceUrl: this.getMarketplaceUrl(
         info.assetId,
@@ -173,6 +187,7 @@ export class Unit0NftVendor implements NftVendor<Unit0NftInfo> {
         symbol: transfer.token.symbol,
         contractAddress: transfer.token.address,
         tokenId: transfer.total.token_id,
+        assetId: `${transfer.token.address}_${transfer.total.token_id}`,
         imageUrl: tokenInstance.image_url || metadata?.image_url || undefined,
         animationUrl:
           tokenInstance.animation_url || metadata?.animation_url || undefined,
@@ -180,28 +195,27 @@ export class Unit0NftVendor implements NftVendor<Unit0NftInfo> {
         mediaType:
           tokenInstance.media_type || metadata?.media_type || undefined,
         vendor: NftVendorId.Unit0,
-        metadata: tokenInstance.metadata || metadata?.metadata,
+        metadata:
+          (tokenInstance.metadata || metadata?.metadata) &&
+          typeof (tokenInstance.metadata || metadata?.metadata) === 'object'
+            ? ((tokenInstance.metadata ||
+                metadata?.metadata) as unknown as Unit0NftMetadata)
+            : undefined,
         // Enhanced metadata fields from nested metadata objects
-        author:
-          (tokenInstance.metadata as any)?.author ||
-          (metadata?.metadata as any)?.author,
-        creator:
-          (tokenInstance.metadata as any)?.creator ||
-          (metadata?.metadata as any)?.creator,
+        author: tokenInstance.metadata?.author || metadata?.metadata?.author,
+        creator: tokenInstance.metadata?.creator || metadata?.metadata?.creator,
         rank:
-          (tokenInstance.metadata as any)?.rank ||
-          (metadata?.metadata as any)?.rank ||
+          tokenInstance.metadata?.rank ||
+          metadata?.metadata?.rank ||
           parseInt(transfer.total.token_id),
         rarity_rank:
-          (tokenInstance.metadata as any)?.rarity_rank ||
-          (metadata?.metadata as any)?.rarity_rank ||
+          tokenInstance.metadata?.rarity_rank ||
+          metadata?.metadata?.rarity_rank ||
           parseInt(transfer.total.token_id),
         attributes:
-          (tokenInstance.metadata as any)?.attributes ||
-          (metadata?.metadata as any)?.attributes,
+          tokenInstance.metadata?.attributes || metadata?.metadata?.attributes,
         external_url:
-          tokenInstance.external_app_url ||
-          (metadata?.metadata as any)?.external_url,
+          tokenInstance.external_app_url || metadata?.metadata?.external_url,
       };
     } catch (error) {
       console.warn('Failed to create Unit0 NFT info:', error);

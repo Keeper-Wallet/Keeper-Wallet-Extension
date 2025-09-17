@@ -1,5 +1,6 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import clsx from 'clsx';
 import { TxDetailTabs } from 'messages/_common/detailTabs';
 import { MessageFooter } from 'messages/_common/footer';
@@ -56,7 +57,7 @@ export function MassTransferCard({
                   BigNumber.sum(
                     ...tx.transfers.map(transfer => transfer.amount),
                   ),
-                  new Asset(asset),
+                  new Asset(asset as IAssetInfo),
                 )
               }
               data-testid="massTransferAmount"
@@ -101,7 +102,9 @@ export function MassTransferCard({
 
                   <div className="body3 submit400">
                     <Balance
-                      balance={new Money(amount, new Asset(asset))}
+                      balance={
+                        new Money(amount, new Asset(asset as IAssetInfo))
+                      }
                       data-testid="massTransferItemAmount"
                       isShortFormat
                       showAsset={false}

@@ -1,9 +1,13 @@
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { NetworkName } from 'networks/types';
 import { type Unit0Transfer } from 'balances/types';
-import { type Unit0NftTransfer } from '../../interfaces/IUnit0Types';
+import { NetworkName } from 'networks/types';
 
-import { type ITransactionStrategy, type TransactionFetchResult,type TransactionFilter } from '../../interfaces/ITransactionStrategy';
+import {
+  type ITransactionStrategy,
+  type TransactionFetchResult,
+  type TransactionFilter,
+} from '../../interfaces/ITransactionStrategy';
+import { type Unit0NftTransfer } from '../../interfaces/IUnit0Types';
 
 export class Unit0TransactionStrategy implements ITransactionStrategy {
   readonly networkType = 'unit0' as const;
@@ -26,14 +30,14 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
   async fetchTransactions(
     address: string,
     network: NetworkName,
-    filter: TransactionFilter = {}
+    filter: TransactionFilter = {},
   ): Promise<TransactionFetchResult> {
     const limit = filter.limit || 50;
     const baseUrl = this.getBaseUrl(network);
     const mockAddress = this.getMockAddress(network);
 
     const response = await fetch(
-      `${baseUrl}${mockAddress}/token-transfers?type=&items_count=${limit}`
+      `${baseUrl}${mockAddress}/token-transfers?type=&items_count=${limit}`,
     );
 
     if (!response.ok) {
@@ -44,9 +48,10 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
     const unit0Transfers = Array.isArray(data.items) ? data.items : [];
 
     // Convert Unit0 transfers to TransactionFromNode format
-    const transactions = unit0Transfers.map((transfer: Unit0NftTransfer) => 
-      this.convertUnit0ToTransaction(transfer, mockAddress)
-        // TODO: need to delete after removing mock address)
+    const transactions = unit0Transfers.map(
+      (transfer: Unit0NftTransfer) =>
+        this.convertUnit0ToTransaction(transfer, mockAddress),
+      // TODO: need to delete after removing mock address)
     );
 
     return {
@@ -55,10 +60,7 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
     };
   }
 
-  async fetchTransactionById(
-    txId: string,
-    network: NetworkName
-  ): Promise<Unit0Transfer | null> {
+  async fetchTransactionById(): Promise<Unit0Transfer | null> {
     // Unit0 API doesn't have single transaction endpoint in current implementation
     // This would need to be implemented based on Unit0 API capabilities
     return null;
@@ -66,14 +68,15 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
 
   private convertUnit0ToTransaction(
     unit0Tx: Unit0NftTransfer,
-    address: string
+    address: string,
   ): Unit0Transfer {
     const sender = unit0Tx.from?.hash;
     const recipient = unit0Tx.to?.hash;
     const isIncoming = recipient === address;
     const isOutgoing = sender === address;
     const timestamp = new Date(unit0Tx.timestamp).getTime();
-    const assetId = unit0Tx.token.hash ?? unit0Tx.token.address_hash ?? unit0Tx.token.address;
+    const assetId =
+      unit0Tx.token.hash ?? unit0Tx.token.address_hash ?? unit0Tx.token.address;
 
     return {
       id: unit0Tx.transaction_hash,

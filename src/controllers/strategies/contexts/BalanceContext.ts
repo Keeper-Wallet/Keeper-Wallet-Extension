@@ -1,11 +1,16 @@
 import { BLOCKCHAIN_TYPES } from 'assets/constants';
-import { AssetInfoController } from 'controllers/assetInfo';
-import { NftInfoController } from '../../NftInfoController';
+import { type AssetInfoController } from 'controllers/assetInfo';
 import { type NetworkName } from 'networks/types';
 
+import { type NftInfoController } from '../../NftInfoController';
+import { Unit0AssetInfoStrategy } from '../implementations/assetInfoStrategy/Unit0AssetInfoStrategy';
+import { WavesAssetInfoStrategy } from '../implementations/assetInfoStrategy/WavesAssetInfoStrategy';
 import { Unit0BalanceStrategy } from '../implementations/balanceStrategy/Unit0BalanceStrategy';
 import { WavesBalanceStrategy } from '../implementations/balanceStrategy/WavesBalanceStrategy';
-import { type BalanceFetchResult, type IBalanceStrategy } from '../interfaces/IBalanceStrategy';
+import {
+  type BalanceFetchResult,
+  type IBalanceStrategy,
+} from '../interfaces/IBalanceStrategy';
 import { TransactionContext } from './TransactionContext';
 
 /**
@@ -14,10 +19,10 @@ import { TransactionContext } from './TransactionContext';
  */
 export class BalanceContext {
   private strategy!: IBalanceStrategy;
-  private wavesStrategy: WavesBalanceStrategy;
-  private unit0Strategy: Unit0BalanceStrategy;
+  private readonly wavesStrategy: WavesBalanceStrategy;
+  private readonly unit0Strategy: Unit0BalanceStrategy;
   private transactionContext: TransactionContext;
-  private getNode: () => string;
+  private readonly getNode: () => string;
 
   constructor(
     getNode: () => string,
@@ -25,9 +30,25 @@ export class BalanceContext {
     nftInfoController: NftInfoController,
   ) {
     this.getNode = getNode;
-    this.wavesStrategy = new WavesBalanceStrategy(getNode, assetInfoController, nftInfoController);
-    this.unit0Strategy = new Unit0BalanceStrategy(assetInfoController, nftInfoController);
-    this.transactionContext = new TransactionContext(BLOCKCHAIN_TYPES.WAVES, getNode);
+
+    const wavesAssetInfoStrategy = new WavesAssetInfoStrategy(
+      assetInfoController,
+      nftInfoController,
+    );
+    const unit0AssetInfoStrategy = new Unit0AssetInfoStrategy(
+      assetInfoController,
+      nftInfoController,
+    );
+
+    this.wavesStrategy = new WavesBalanceStrategy(
+      getNode,
+      wavesAssetInfoStrategy,
+    );
+    this.unit0Strategy = new Unit0BalanceStrategy(unit0AssetInfoStrategy);
+    this.transactionContext = new TransactionContext(
+      BLOCKCHAIN_TYPES.WAVES,
+      getNode,
+    );
     this.strategy = this.wavesStrategy;
   }
 
@@ -36,8 +57,6 @@ export class BalanceContext {
    * @param blockchainType - The blockchain type ('waves', 'unit0', etc.)
    */
   setStrategy(blockchainType: string): void {
-    console.log('BalanceContext.setStrategy:', blockchainType);
-    
     switch (blockchainType) {
       case BLOCKCHAIN_TYPES.WAVES:
         this.strategy = this.wavesStrategy;
@@ -62,13 +81,16 @@ export class BalanceContext {
     address: string,
     network: NetworkName,
   ): Promise<BalanceFetchResult> {
-    console.log('BalanceContext.fetchBalance called with strategy:', this.strategy.constructor.name);
-    
-    // First fetch transactions using the transaction strategy
-    const txHistoryResult = await this.transactionContext.fetchTransactions(address, network);
-    
-    // Then fetch balance using the balance strategy with the transactions
-    return this.strategy.fetchBalance(address, network, txHistoryResult.transactions);
+    const txHistoryResult = await this.transactionContext.fetchTransactions(
+      address,
+      network,
+    );
+
+    return this.strategy.fetchBalance(
+      address,
+      network,
+      txHistoryResult.transactions,
+    );
   }
 
   /**
@@ -77,14 +99,5 @@ export class BalanceContext {
    */
   getCurrentBlockchainType(): string {
     return this.strategy.getBlockchainType();
-  }
-
-  /**
-   * Check if the current strategy can handle a specific blockchain type
-   * @param blockchainType - The blockchain type to check
-   * @returns True if the current strategy can handle the blockchain type
-   */
-  canHandleBlockchainType(blockchainType: string): boolean {
-    return this.strategy.canHandle(blockchainType);
   }
 }

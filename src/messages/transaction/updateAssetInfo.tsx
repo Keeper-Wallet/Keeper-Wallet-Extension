@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import * as transactionsStyles from '../../ui/components/pages/styles/transactions.module.css';
 import { Balance, DateFormat } from '../../ui/components/ui';
 import { type MessageOfType, type MessageTxUpdateAssetInfo } from '../types';
+import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
 export function UpdateAssetInfoCard({ className }: { className?: string }) {
   const { t } = useTranslation();
@@ -118,7 +119,9 @@ export function UpdateAssetInfoScreen({
 
               <div className={transactionsStyles.txValue}>
                 <Balance
-                  balance={new Money(tx.fee, new Asset(assets.WAVES))}
+                  balance={
+                    new Money(tx.fee, new Asset(assets.WAVES as IAssetInfo))
+                  }
                   data-testid="updateAssetInfoFee"
                   isShortFormat
                   showAsset

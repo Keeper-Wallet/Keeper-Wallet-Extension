@@ -10,6 +10,7 @@ import {
 import { captureException } from '@sentry/browser';
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { binary } from '@waves/marshall';
 import { waves } from '@waves/protobuf-serialization';
 import {
@@ -61,17 +62,19 @@ import { PERMISSIONS } from '../permissions/constants';
 import type { PreferencesAccount } from '../preferences/types';
 import type { ExtensionStorage } from '../storage/storage';
 import { getTxVersions } from '../wallets/getTxVersions';
+import { type WalletPrivateData } from '../wallets/types';
+import { type Wallet } from '../wallets/wallet';
 import type { AssetInfoController } from './assetInfo';
 import type { CurrentAccountController } from './currentAccount';
 import type { MultiWalletController } from './MultiWalletController';
 import type { NetworkController } from './network';
 import type { PermissionsController } from './permissions';
 import type { RemoteConfigController } from './remoteConfig';
-import { Wallet } from '../wallets/wallet';
-import { WalletPrivateData } from '../wallets/types';
 
 function moneyLikeToMoney(amount: MoneyLike, assets: AssetsRecord) {
-  const asset = new Asset(assets[amount.assetId ?? 'WAVES'] ?? assets.WAVES);
+  const assetsToCreate = (assets[amount.assetId ?? 'WAVES'] ??
+    assets.WAVES) as unknown as IAssetInfo;
+  const asset = new Asset(assetsToCreate);
 
   if (amount.tokens != null || amount.coins != null) {
     let result = new Money(0, asset);

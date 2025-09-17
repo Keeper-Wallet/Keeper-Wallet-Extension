@@ -4,11 +4,11 @@ import {
   type BalancesItem,
   type Unit0Transfer,
 } from 'balances/types';
+import { Unit0Api } from 'controllers/api/unit0Api';
 import { type NetworkName } from 'networks/types';
+import { type NftAssetDetail } from 'nfts/types';
 
-import { Unit0Api } from '../../../api/unit0Api';
-import { type AssetInfoController } from '../../../assetInfo';
-import { type NftInfoController } from '../../../NftInfoController';
+import { type IAssetInfoStrategy } from '../../interfaces/IAssetInfoStrategy';
 import {
   type BalanceFetchResult,
   type IBalanceStrategy,
@@ -18,9 +18,9 @@ import {
   type Unit0Assets,
   type Unit0BalanceResponse,
   type Unit0TokenBalance,
-  type Unit0TokenAsset,
 } from '../../interfaces/IUnit0Types';
 import { Unit0NftStrategy } from '../nftStrategy/Unit0NftStrategy';
+import { Unit0TokenStrategy } from '../tokenStrategy/Unit0TokenStrategy';
 
 /**
  * Unit0 Balance Strategy Implementation
@@ -28,15 +28,15 @@ import { Unit0NftStrategy } from '../nftStrategy/Unit0NftStrategy';
  */
 export class Unit0BalanceStrategy implements IBalanceStrategy {
   private unit0Api: Unit0Api;
-  private assetInfo: AssetInfoController;
-  private nftInfo: NftInfoController;
+  private assetInfoStrategy: IAssetInfoStrategy;
   private nftStrategy: Unit0NftStrategy;
+  private tokenStrategy: Unit0TokenStrategy;
 
-  constructor(assetInfo: AssetInfoController, nftInfo: NftInfoController) {
+  constructor(assetInfoStrategy: IAssetInfoStrategy) {
     this.unit0Api = new Unit0Api();
-    this.assetInfo = assetInfo;
-    this.nftInfo = nftInfo;
+    this.assetInfoStrategy = assetInfoStrategy;
     this.nftStrategy = new Unit0NftStrategy();
+    this.tokenStrategy = new Unit0TokenStrategy();
   }
 
   async fetchBalance(
@@ -56,7 +56,6 @@ export class Unit0BalanceStrategy implements IBalanceStrategy {
         success: true,
       };
     } catch (error) {
-      console.error('Error fetching Unit0 balance:', error);
       return {
         balance: {
           aliases: [],
@@ -80,10 +79,10 @@ export class Unit0BalanceStrategy implements IBalanceStrategy {
     transactions?: Unit0Transfer[],
   ): Promise<BalancesItem> {
     try {
-      const { balance, tokens } = await this.unit0Api.fetchBalanceAndTokens(
-        address,
-        network,
-      );
+      // Fetch balance and tokens separately using strategies
+      const balance = await this.unit0Api.fetchBalance(address, network);
+      const tokens = await this.tokenStrategy.fetchTokens(address, network);
+
       return this.buildUnit0Balance(
         address,
         network,
@@ -109,9 +108,8 @@ export class Unit0BalanceStrategy implements IBalanceStrategy {
     tokens: Unit0TokenBalance[],
     transactions: Unit0Transfer[],
   ): Promise<BalancesItem> {
-    console.log(tokens, 'tokens');
-    // Separate ERC-20 tokens and NFTs (ERC-721 + ERC-1155) from token data
-    const erc20Tokens = tokens.filter(token => token.token?.type === 'ERC-20');
+    // Separate ERC-20 tokens and NFTs using token strategy
+    const erc20Tokens = this.tokenStrategy.filterTokensByType(tokens, 'ERC-20');
     const nftTokens = tokens.filter(
       token =>
         token.token?.type === 'ERC-721' || token.token?.type === 'ERC-1155',
@@ -137,46 +135,25 @@ export class Unit0BalanceStrategy implements IBalanceStrategy {
       unit0: unit0AssetBalance,
     };
 
-    // Add ERC-20 token balances
-    const tokenMetadataPromises = erc20Tokens.map(async token => {
-      const address = token.token?.address_hash ?? token.token?.address;
-      const tokenBalance = token.value || '0';
+    // Process ERC-20 tokens using token strategy
+    const { processedTokens, assetsToStore: tokenAssetsToStore } =
+      await this.tokenStrategy.processTokens(erc20Tokens, network);
 
-      if (!address) return null;
-
-      const metadata = await this.unit0Api.fetchTokenMetadata(address, network);
-
-      return {
-        address,
-        balance: tokenBalance,
-        metadata,
-      };
-    });
-
-    const tokenMetadata = await Promise.all(tokenMetadataPromises);
-    const validTokenMetadata = tokenMetadata.filter(Boolean);
-
-    // Prepare ERC-20 token assets for storage
+    // Prepare all assets for storage (ERC-20 tokens + NFTs)
     const assetsToStore: Unit0Assets[] = [];
 
-    for (const result of validTokenMetadata) {
-      if (!result) continue;
-
+    // Add processed token balances and assets
+    for (const token of processedTokens) {
       // Add balance data
-      assets[result.address] = {
-        balance: result.balance,
-        sponsorBalance: result.balance,
+      assets[token.address] = {
+        balance: token.balance,
+        sponsorBalance: token.balance,
         minSponsoredAssetFee: null,
       };
-
-      // Store metadata in Redux if available
-      if (result.metadata) {
-        assetsToStore.push({
-          address: result.address,
-          metadata: result.metadata,
-        } as Unit0TokenAsset);
-      }
     }
+
+    // Add token assets to storage
+    assetsToStore.push(...(tokenAssetsToStore as Unit0Assets[]));
 
     // Add NFT assets to balance assets
     for (const nft of validNftData) {
@@ -193,23 +170,12 @@ export class Unit0BalanceStrategy implements IBalanceStrategy {
     );
     assetsToStore.push(...nftAssetsForStorage);
 
-    // Store all assets (ERC-20 tokens + NFTs) at once
-    for (const assetData of assetsToStore) {
-      const address =
-        'id' in assetData && assetData.id
-          ? `${assetData.address}_${assetData.id}`
-          : assetData.address;
-      await this.assetInfo.storeUnit0TokenMetadata(
-        address,
-        assetData.metadata,
-        network,
-      );
-    }
-    console.log(validNftData, 'validNftData');
+    // Store all assets (ERC-20 tokens + NFTs) using asset info strategy
+    await this.assetInfoStrategy.storeAllAssets(assetsToStore);
 
-    // Update NFTs using NftInfoController
+    // Update NFTs using asset info strategy
     if (validNftData.length > 0) {
-      await this.nftInfo.updateNfts(validNftData, true);
+      await this.assetInfoStrategy.updateNfts(validNftData as NftAssetDetail[]);
     }
 
     return {

@@ -1,7 +1,7 @@
+import { Unit0Api } from 'controllers/api/unit0Api';
 import { type NetworkName } from 'networks/types';
 import { NftVendorId } from 'nfts/types';
 
-import { Unit0Api } from '../../../api/unit0Api';
 import {
   type INftInventory,
   type INftStrategy,
