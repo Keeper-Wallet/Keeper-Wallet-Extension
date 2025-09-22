@@ -1,10 +1,13 @@
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { notificationChangeName } from 'store/actions/localState';
 
+import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
+import { type MultiWallet } from '../../../services/types';
 import Background from '../../services/Background';
 import { getAccountLink } from '../../urls';
 import {
@@ -17,8 +20,6 @@ import {
   Modal,
 } from '../ui';
 import * as styles from './styles/accountInfo.styl';
-import { MultiWallet } from '../../../services/types';
-import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
 
 export function AccountInfo() {
   const { t } = useTranslation();
@@ -77,7 +78,7 @@ export function AccountInfo() {
         unit0Asset
       ) {
         // Use Unit0 balance
-        const assetInstance = new Asset(unit0Asset);
+        const assetInstance = new Asset(unit0Asset as IAssetInfo);
 
         if (typeof balanceItem.available !== 'undefined')
           balance = new Money(balanceItem.available, assetInstance);
@@ -85,7 +86,7 @@ export function AccountInfo() {
         // Unit0 doesn't have lease functionality, so no leaseBalance
       } else if (wavesAsset) {
         // Use Waves balance (default for non-multichain or when on Waves blockchain)
-        const assetInstance = new Asset(wavesAsset);
+        const assetInstance = new Asset(wavesAsset as IAssetInfo);
 
         if (typeof balanceItem.available !== 'undefined')
           balance = new Money(balanceItem.available, assetInstance);
@@ -205,24 +206,22 @@ export function AccountInfo() {
 
     requestPrivateData({
       copyCallback,
-      request: async password => {
+      request: async passwordForSeed => {
         try {
           // Use the Unit0 address for seed lookup
           const seed = await Background.getAccountSeed(
             unit0Address, // Use Unit0 address instead of Waves address
             'unit0',
-            password,
+            passwordForSeed,
           );
 
           if (!seed) {
-            console.error('Unable to retrieve seed for Unit0 wallet');
             return 'Error: Unable to retrieve private key';
           }
 
           const ethers = await import('ethers');
           return ethers.Wallet.fromPhrase(seed).privateKey;
         } catch (error) {
-          console.error('Error getting Unit0 private key:', error);
           return 'Error retrieving private key';
         }
       },

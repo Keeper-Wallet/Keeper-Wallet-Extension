@@ -122,8 +122,6 @@ export class Unit0BalanceStrategy implements IBalanceStrategy {
         walletAddress,
         network,
       );
-    // console.log(validNftData, 'validNftData')
-    // console.log(nftAssetsToStore, 'nftAssetsToStore')
 
     const unit0AssetBalance: AssetBalance = {
       balance: balanceData.coin_balance || '0',

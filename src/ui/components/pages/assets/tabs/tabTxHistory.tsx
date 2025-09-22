@@ -169,7 +169,7 @@ export function TabTxHistory() {
     );
 
   const historyWithGroups = txHistory
-    ? txHistory
+    ? (txHistory as TransactionFromNode[])
         .slice(0, MAX_TX_HISTORY_ITEMS - 1)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .filter((tx: any) => {

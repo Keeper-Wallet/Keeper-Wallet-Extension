@@ -32,6 +32,7 @@ export interface Unit0TokenAsset {
     total_supply: string | null;
     holders_count: string;
     circulating_market_cap: string | null;
+    type?: 'ERC-20' | 'ERC-721' | 'ERC-1155';
     exchange_rate: string | null;
     volume_24h: string | null;
   };
@@ -46,6 +47,7 @@ export interface Unit0NftAsset {
     rank: number;
     symbol: string;
     decimals: number;
+    type?: 'ERC-20' | 'ERC-721' | 'ERC-1155';
   };
 }
 

@@ -18,6 +18,7 @@ import { Balance, Loader } from '../../ui';
 import { AddressRecipient } from '../../ui/Address/Recipient';
 import { Tooltip } from '../../ui/tooltip';
 import * as styles from './historyItem.module.css';
+import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
 interface Props {
   tx: TransactionFromNode;
@@ -54,13 +55,13 @@ export function HistoryItem({ tx, className }: Props) {
 
   const fromCoins = (amount: Long | BigNumber, assetId?: string | null) => {
     const asset = assets[assetId ?? 'WAVES'];
-    return asset && Money.fromCoins(amount, new Asset(asset));
+    return asset && Money.fromCoins(amount, new Asset(asset as IAssetInfo));
   };
 
   const fromTokens = (amount: Long | BigNumber, assetId?: string | null) => {
     const asset = assets[assetId ?? 'WAVES'];
 
-    return asset && Money.fromTokens(amount, new Asset(asset));
+    return asset && Money.fromTokens(amount, new Asset(asset as IAssetInfo));
   };
 
   const createUnit0TokenBalance = (transferPayload: Unit0TransferPayload) => {

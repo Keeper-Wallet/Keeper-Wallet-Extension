@@ -4,6 +4,7 @@ import { base58Encode } from '@keeper-wallet/waves-crypto';
 import { captureException } from '@sentry/browser';
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { type AssetDetail } from 'assets/types';
 import { useAssetIdByTicker } from 'assets/utils';
@@ -114,12 +115,18 @@ export function Swap() {
       setSwapErrorMessage(null);
       setIsSwapInProgress(true);
 
-      const wavesFee = new Money(wavesFeeCoins, new Asset(assets.WAVES));
+      const wavesFee = new Money(
+        wavesFeeCoins,
+        new Asset(assets.WAVES as IAssetInfo),
+      );
       const feeAsset = assets[feeAssetId];
       invariant(feeAsset);
 
       try {
-        const fee = convertFeeToAsset(wavesFee, new Asset(feeAsset)).toCoins();
+        const fee = convertFeeToAsset(
+          wavesFee,
+          new Asset(feeAsset as IAssetInfo),
+        ).toCoins();
 
         const fullSwapTx = {
           ...tx,
@@ -164,7 +171,7 @@ export function Swap() {
         invariant(fromAsset);
 
         setPerformedSwapData({
-          fromMoney: new Money(fromCoins, new Asset(fromAsset)),
+          fromMoney: new Money(fromCoins, new Asset(fromAsset as IAssetInfo)),
           transactionId: broadcastedTx.id,
         });
       } catch (err) {

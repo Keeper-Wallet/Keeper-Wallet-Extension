@@ -132,6 +132,7 @@ export class Unit0NftStrategy implements INftStrategy {
       address: nft.id,
       id: nft.rank.toString(),
       metadata: {
+        type: nft.tokenType,
         name: nft.displayName || nft.name,
         issuer: nft.creator,
         rank: nft.rank,

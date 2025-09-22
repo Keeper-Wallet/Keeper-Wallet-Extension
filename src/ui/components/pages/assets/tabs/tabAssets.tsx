@@ -1,6 +1,6 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
-import { type AssetsRecord } from 'assets/types';
+import { AssetDetail, type AssetsRecord } from 'assets/types';
 import { type BalanceAssets } from 'balances/types';
 import clsx from 'clsx';
 import { usePopupSelector } from 'popup/store/react';
@@ -18,6 +18,7 @@ import { type MultiWallet } from '../../../../../services/types';
 
 import { CARD_FULL_HEIGHT, sortAssetEntries, useUiState } from './helpers';
 import { BLOCKCHAIN_TYPES } from '../../../../../assets/constants';
+import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
 const Row = ({
   data,
@@ -54,7 +55,10 @@ const Row = ({
       <AssetItem
         balance={
           asset && balance !== undefined
-            ? Money.fromCoins(new BigNumber(balance), new Asset(asset))
+            ? Money.fromCoins(
+                new BigNumber(balance),
+                new Asset(asset as IAssetInfo),
+              )
             : undefined
         }
         assetId={assetId}
@@ -94,16 +98,16 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
 
   // Create address-to-asset lookup for Unit0 assets
   const assetsByAddress = useMemo(() => {
-    const lookup: Record<string, any> = {};
+    const lookup: Record<string, AssetDetail> = {};
     Object.values(allAssets).forEach(asset => {
       if (!asset) return;
-      
+
       // Ensure precision is always a number to prevent BigNumber errors
       const safeAsset = {
         ...asset,
         precision: Number(asset.precision) || 8, // Default to 8 for safety
       };
-      
+
       if (asset.id && asset.id !== asset.name) {
         // Contract addresses have different id and name
         lookup[asset.id] = safeAsset;
@@ -117,7 +121,11 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
   // Assets are stored flat at root level for both WAVES and Unit0
   const assets =
     currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
-      ? assetsByAddress
+      ? Object.fromEntries(
+          Object.entries(assetsByAddress).filter(
+            ([_, asset]) => asset?.type === 'ERC-20' || asset?.id === 'unit0',
+          ),
+        )
       : allAssets;
 
   const showSuspiciousAssets = usePopupSelector(
@@ -136,13 +144,28 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
     if (currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0) {
       // For Unit0, selectedAccount.address should be the Unit0 address for current network
       const unit0Address = activeAccount.address;
-      return unit0Address ? balances[unit0Address]?.assets : undefined;
+      const balanceData = unit0Address
+        ? balances[unit0Address]?.assets
+        : undefined;
+
+      if (balanceData) {
+        // Filter balance data to only include ERC-20 tokens and native Unit0
+        const filteredAssets: Record<string, BalanceAssets[string]> = {};
+        Object.entries(balanceData).forEach(([assetId, balance]) => {
+          const asset = (assets as Record<string, AssetDetail>)[assetId];
+          if ((asset?.type === 'ERC-20' || assetId === 'unit0') && balance) {
+            filteredAssets[assetId] = balance;
+          }
+        });
+        return filteredAssets;
+      }
+      return balanceData;
     }
 
     // For Waves, selectedAccount.address should be the Waves address for current network
     const wavesAddress = activeAccount.address;
     return wavesAddress ? balances[wavesAddress] : undefined;
-  }, [activeAccount, currentBlockchainType, balances, currentNetwork]);
+  }, [activeAccount, currentBlockchainType, balances, currentNetwork, assets]);
 
   const issuerAddress = useMemo(() => {
     if (!activeAccount) return null;
@@ -216,14 +239,21 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
 
           // Apply other filters
           return (
-            (!onlyFav || (assets as any)[assetId]?.isFavorite === onlyFav) &&
-            (!onlyMy || (assets as any)[assetId]?.issuer === issuerAddress) &&
+            (!onlyFav ||
+              (assets as Record<string, AssetDetail>)[assetId]?.isFavorite ===
+                onlyFav) &&
+            (!onlyMy ||
+              (assets as Record<string, AssetDetail>)[assetId]?.issuer ===
+                issuerAddress) &&
             (!term ||
               assetId === term ||
-              icontains((assets as any)[assetId]?.displayName, term))
+              icontains(
+                (assets as Record<string, AssetDetail>)[assetId]?.displayName,
+                term,
+              ))
           );
         }),
-        assets as AssetsRecord,
+        assets,
         showSuspiciousAssets,
         currentBlockchainType,
       )
@@ -328,7 +358,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
                     onSwapClick,
                   }}
                   itemKey={(index, itemData) =>
-                    `${itemData.assetEntries[index][0]}:${(assets as any)[
+                    `${itemData.assetEntries[index][0]}:${assets[
                       itemData.assetEntries[index][0]
                     ]?.isFavorite}`
                   }

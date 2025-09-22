@@ -17,7 +17,6 @@ import { type ExtensionStorage } from '../storage/storage';
 import { MultiWallet } from '../services/types';
 import type { PreferencesController } from './preferences';
 import { PreferencesAccount } from '../preferences/types';
-import { type MessageTx } from '../messages/types';
 import {
   createLegacyWalletAdapter,
   findAccountByAddressAndNetwork,

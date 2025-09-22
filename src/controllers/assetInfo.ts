@@ -515,6 +515,7 @@ export class AssetInfoController {
       name: metadata.symbol || contractAddress, // Use symbol as name for consistency
       displayName: metadata.name, // Full name for display
       ticker: metadata.symbol,
+      type: metadata.type,
       precision: Number(metadata.decimals) || 18,
       description: '',
       height: 0,

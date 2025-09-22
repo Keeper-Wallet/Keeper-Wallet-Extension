@@ -48,7 +48,7 @@ export class Unit0TokenStrategy implements ITokenStrategy {
       return {
         address,
         balance: tokenBalance,
-        metadata,
+        metadata: { ...metadata, type: 'ERC-20' },
       };
     });
 

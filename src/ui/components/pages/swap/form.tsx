@@ -6,6 +6,7 @@ import {
 } from '@keeper-wallet/swap-client';
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { AssetAmountInput } from 'assets/amountInput';
 import { AssetSelect, type AssetSelectOption } from 'assets/assetSelect';
@@ -130,7 +131,10 @@ export function SwapForm({
   );
 
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
-  const wavesFee = new Money(wavesFeeCoins, new Asset(assets.WAVES));
+  const wavesFee = new Money(
+    wavesFeeCoins,
+    new Asset(assets.WAVES as IAssetInfo),
+  );
 
   const feeOptions = useFeeOptions({
     initialFee: wavesFee,
@@ -151,19 +155,16 @@ export function SwapForm({
   });
 
   const fromAsset = useMemo(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    () => new Asset(assets[fromAssetId]!),
+    () => new Asset(assets[fromAssetId] as IAssetInfo),
     [assets, fromAssetId],
   );
 
   const toAsset = useMemo(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    () => new Asset(assets[toAssetId]!),
+    () => new Asset(assets[toAssetId] as IAssetInfo),
     [assets, toAssetId],
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const feeAsset = new Asset(assets[feeAssetId]!);
+  const feeAsset = new Asset(assets[feeAssetId] as IAssetInfo);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const fromAssetBalance = getAssetBalance(fromAsset, accountBalance!);
@@ -534,8 +535,7 @@ export function SwapForm({
               ) {
                 const fee = convertFeeToAsset(
                   wavesFee,
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  new Asset(assets[feeAssetId]!),
+                  new Asset(assets[feeAssetId] as IAssetInfo),
                 );
 
                 max = max.gt(fee) ? max.minus(fee) : max.cloneWithCoins(0);

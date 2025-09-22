@@ -1,5 +1,6 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { isAddressString, isAlias } from 'messages/utils';
 import { createNft } from 'nfts/nfts';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
@@ -11,9 +12,9 @@ import Background from 'ui/services/Background';
 
 import { AssetAmountInput } from '../../../assets/amountInput';
 import { ErrorMessage, Loader } from '../ui';
+import { Button } from '../ui';
+import { Input } from '../ui';
 import { AddressSuggestInput } from '../ui/Address/SuggestInput';
-import { Button } from '../ui/buttons/Button';
-import { Input } from '../ui/input';
 import * as styles from './send.module.css';
 
 export function Send() {
@@ -79,7 +80,7 @@ export function Send() {
     ? Money.fromCoins(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         !isNft ? assetBalances![asset.id]?.balance ?? 0 : 1,
-        new Asset(asset),
+        new Asset(asset as IAssetInfo),
       )
     : null;
 
@@ -185,7 +186,7 @@ export function Send() {
                   const balance = new Money(
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     new BigNumber(assetBalances![asset.id]?.balance ?? 0),
-                    new Asset(asset),
+                    new Asset(asset as IAssetInfo),
                   );
 
                   return (

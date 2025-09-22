@@ -56,8 +56,6 @@ export function createNft({
 
   if (info) {
     for (const vendor of Object.values(vendors)) {
-      console.log(info.vendor, '1########');
-      console.log(vendor.id, '2########');
       if (info.vendor === vendor.id) {
         return vendor.create({
           asset,
