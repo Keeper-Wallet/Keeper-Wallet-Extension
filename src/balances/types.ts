@@ -6,11 +6,13 @@ import {
 import { type AssetDetail } from 'assets/types';
 import { type NetworkName } from 'networks/types';
 
-// Extract and extend the transfer payload type from EthereumTransactionFields for Unit0 transactions
-type TransferPayload = Extract<
-  EthereumTransactionFields['payload'],
-  { type: 'transfer' }
->;
+// Extract and modify the transfer payload type to support both string and numeric types
+type TransferPayload = Omit<
+  Extract<EthereumTransactionFields['payload'], { type: 'transfer' }>,
+  'type'
+> & {
+  type: 'transfer' | 4 | 'invocation';
+};
 
 export type Unit0TransferPayload = TransferPayload & {
   tokenSymbol?: string;
@@ -23,7 +25,15 @@ export type Unit0TransferPayload = TransferPayload & {
   timestamp?: number;
   height: number;
   sender: string;
+  // Invocation payload properties (optional for compatibility)
+  dApp?: string;
+  call?: { function?: string };
 };
+
+// Create a union type that explicitly includes all possible payload types
+export type Unit0PayloadUnion =
+  | Unit0TransferPayload
+  | Extract<EthereumTransactionFields['payload'], { type: 'invocation' }>;
 
 export type Unit0Transfer = {
   id?: string;
@@ -31,7 +41,7 @@ export type Unit0Transfer = {
   fee: string;
   sender?: string;
   recipient?: string;
-  payload: Unit0TransferPayload;
+  payload: Unit0PayloadUnion;
 };
 
 export interface AssetBalance {

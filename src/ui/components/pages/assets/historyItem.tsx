@@ -1,11 +1,12 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import {
   type Long,
   TRANSACTION_TYPE,
   type TransactionFromNode,
 } from '@waves/ts-types';
-import { type Unit0TransferPayload } from 'balances/types';
+import { type Unit0Transfer, type Unit0TransferPayload } from 'balances/types';
 import clsx from 'clsx';
 import { MessageIcon } from 'messages/_common/icon';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +19,6 @@ import { Balance, Loader } from '../../ui';
 import { AddressRecipient } from '../../ui/Address/Recipient';
 import { Tooltip } from '../../ui/tooltip';
 import * as styles from './historyItem.module.css';
-import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
 interface Props {
   tx: TransactionFromNode;
@@ -455,10 +455,13 @@ export function HistoryItem({ tx, className }: Props) {
       messageType = 'issue';
       break;
     case TRANSACTION_TYPE.ETHEREUM: {
-      const payload = tx.payload;
+      // Cast tx to Unit0Transfer to handle extended payload types
+      const unit0Tx = tx as unknown as Unit0Transfer;
+      const payload = unit0Tx.payload;
 
       switch (payload.type) {
-        case 'transfer': {
+        case 'transfer':
+        case TRANSACTION_TYPE.TRANSFER: {
           // Cast to extended type to access Unit0-specific properties
           const transferPayload = payload as Unit0TransferPayload;
 
@@ -476,7 +479,7 @@ export function HistoryItem({ tx, className }: Props) {
                 chainId={chainId!}
                 showAliasWarning={false}
                 showMirrorAddress
-                name={transferPayload.fromName}
+                name={transferPayload.toName}
               />
             );
             addSign = isZeroAmount ? '' : '+';
@@ -492,7 +495,7 @@ export function HistoryItem({ tx, className }: Props) {
                 chainId={chainId!}
                 showAliasWarning={false}
                 showMirrorAddress
-                name={transferPayload.toName}
+                name={transferPayload.fromName}
               />
             );
             addSign = isZeroAmount ? '' : '-';
@@ -515,7 +518,7 @@ export function HistoryItem({ tx, className }: Props) {
           label = (
             <AddressRecipient
               className={styles.recipient}
-              recipient={payload.dApp}
+              recipient={payload.dApp || ''}
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               chainId={chainId!}
               showAliasWarning={false}

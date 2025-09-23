@@ -26,7 +26,7 @@ export interface NftData {
   timestamp: Date;
   collectionAddress: string;
   tokenId: string;
-  tokenType: string;
+  tokenType: 'ERC-20' | 'ERC-721' | 'ERC-1155' | undefined;
   rank: number;
   rarity_rank: number;
   image?: string;

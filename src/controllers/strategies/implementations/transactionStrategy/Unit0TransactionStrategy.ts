@@ -72,8 +72,8 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
   ): Unit0Transfer {
     const sender = unit0Tx.from?.hash;
     const recipient = unit0Tx.to?.hash;
-    const isIncoming = recipient === address;
-    const isOutgoing = sender === address;
+    const isOutgoing = recipient === address;
+    const isIncoming = sender === address;
     const timestamp = new Date(unit0Tx.timestamp).getTime();
     const assetId =
       unit0Tx.token.hash ?? unit0Tx.token.address_hash ?? unit0Tx.token.address;
@@ -84,7 +84,7 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
       type: TRANSACTION_TYPE.ETHEREUM,
       fee: '0',
       payload: {
-        type: 'transfer' as const,
+        type: TRANSACTION_TYPE.TRANSFER,
         height: unit0Tx.block_number,
         timestamp,
         sender,
