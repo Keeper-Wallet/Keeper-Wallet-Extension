@@ -1,4 +1,5 @@
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import clsx from 'clsx';
 import { TxDetailTabs } from 'messages/_common/detailTabs';
 import { Expandable } from 'messages/_common/expandable';
@@ -130,7 +131,9 @@ export function InvokeScriptCard({
                   return (
                     <div key={index} className={styles.paymentItem}>
                       <Balance
-                        balance={new Money(item.amount, new Asset(asset))}
+                        balance={
+                          new Money(item.amount, new Asset(asset as IAssetInfo))
+                        }
                         data-testid="invokeScriptPaymentItem"
                         isShortFormat
                         showAsset

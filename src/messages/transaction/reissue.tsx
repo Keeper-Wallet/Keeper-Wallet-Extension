@@ -14,6 +14,7 @@ import { Balance } from 'ui/components/ui/balance/Balance';
 
 import * as transactionsStyles from '../../ui/components/pages/styles/transactions.module.css';
 import { type MessageOfType, type MessageTxReissue } from '../types';
+import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
 export function ReissueCard({
   className,
@@ -41,7 +42,7 @@ export function ReissueCard({
           <h1 className="headline1">
             <Balance
               addSign="+"
-              balance={new Money(tx.quantity, new Asset(asset))}
+              balance={new Money(tx.quantity, new Asset(asset as IAssetInfo))}
               data-testid="reissueAmount"
               showAsset
               showUsdAmount

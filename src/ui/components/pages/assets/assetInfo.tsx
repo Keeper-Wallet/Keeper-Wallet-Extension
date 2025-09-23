@@ -1,8 +1,9 @@
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { type AssetDetail } from 'assets/types';
+import { usePopupSelector } from 'popup/store/react';
 import { useTranslation } from 'react-i18next';
 
-import { usePopupSelector } from '../../../../popup/store/react';
 import { getAssetDetailLink } from '../../../urls';
 import { Balance, Button, Copy, DateFormat, Ellipsis } from '../../ui';
 
@@ -57,7 +58,11 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
             {t('assetInfo.quantity')}
           </div>
           <div className="tag1">
-            <Balance balance={new Money(asset.quantity, new Asset(asset))} />
+            <Balance
+              balance={
+                new Money(asset.quantity, new Asset(asset as IAssetInfo))
+              }
+            />
           </div>
         </div>
 
@@ -104,7 +109,7 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
             {t('assetInfo.timestamp')}
           </div>
           <div className="tag1">
-            <DateFormat date={asset.timestamp} />
+            <DateFormat date={Number(asset.timestamp)} />
           </div>
         </div>
 

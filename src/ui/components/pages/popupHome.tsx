@@ -1,5 +1,6 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { type AssetDetail } from 'assets/types';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
@@ -9,14 +10,14 @@ import { getBalances } from 'store/actions/balances';
 import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
 
+import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
+import { ImportPopup } from './accountHome';
 import { AssetInfo } from './assets/assetInfo';
 import { TabAssets } from './assets/tabs/tabAssets';
 import { TabNfts } from './assets/tabs/tabNfts';
 import { TabTxHistory } from './assets/tabs/tabTxHistory';
-import { ImportPopup } from './accountHome';
 import * as styles from './styles/assets.styl';
-import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
 
 export function PopupHome() {
   const navigate = useNavigate();
@@ -106,14 +107,14 @@ export function PopupHome() {
       availableBalance
     ) {
       // Use Unit0 balance
-      const assetInstance = new Asset(unit0Asset);
+      const assetInstance = new Asset(unit0Asset as IAssetInfo);
       return new Money(availableBalance, assetInstance);
     } else {
       return (
         assets.WAVES &&
         new Money(
           balances[activeAccount.address]?.available || 0,
-          new Asset(assets.WAVES),
+          new Asset(assets.WAVES as IAssetInfo),
         )
       );
     }
@@ -128,7 +129,10 @@ export function PopupHome() {
           const usdPrice = usdPrices[id];
 
           if (asset && usdPrice) {
-            const tokens = new Money(balance, new Asset(asset)).getTokens();
+            const tokens = new Money(
+              balance,
+              new Asset(asset as IAssetInfo),
+            ).getTokens();
             acc = acc.add(new BigNumber(usdPrice).mul(tokens));
           }
 
@@ -148,7 +152,7 @@ export function PopupHome() {
             assets.WAVES &&
             new Money(
               balances[activeAccount.address]?.available || 0,
-              new Asset(assets.WAVES),
+              new Asset(assets.WAVES as IAssetInfo),
             )
           }
           amountInUsd={amountInUsd}

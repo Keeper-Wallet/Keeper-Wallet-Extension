@@ -38,7 +38,7 @@ export function sortAssetEntries<T>(
 ): Array<[string, T]> {
   // Determine native token based on blockchain type
   const nativeTokenId = currentBlockchainType === 'unit0' ? 'unit0' : 'WAVES';
-  
+
   return assetEntries
     .filter(
       ([assetId]) => showSuspiciousAssets || !assets[assetId]?.isSuspicious,
@@ -104,6 +104,21 @@ export const MONTH = [
   'Oct',
   'Nov',
   'Dec',
+];
+
+export const buildUnit0TxTypeOptions = (
+  t: TFunction<'translation', undefined>,
+) => [
+  {
+    id: 0,
+    value: 0,
+    text: t('historyFilters.all'),
+  },
+  {
+    id: TRANSACTION_TYPE.TRANSFER,
+    value: TRANSACTION_TYPE.TRANSFER,
+    text: t('historyFilters.transfer'),
+  },
 ];
 
 export const buildTxTypeOptions = (t: TFunction<'translation', undefined>) => [

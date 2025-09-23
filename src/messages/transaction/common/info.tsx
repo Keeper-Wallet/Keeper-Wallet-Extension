@@ -1,4 +1,5 @@
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import {
   type FeeOption,
   getFeeOptions,
@@ -50,7 +51,7 @@ export function TxInfo({ message }: Props) {
           balance,
           initialFee: new Money(
             message.data.initialFee,
-            new Asset(initailFeeAsset),
+            new Asset(initailFeeAsset as IAssetInfo),
           ),
           txType: message.data.type,
           usdPrices,
@@ -72,7 +73,7 @@ export function TxInfo({ message }: Props) {
     ];
   invariant(feeAsset);
 
-  const fee = new Money(message.data.fee, new Asset(feeAsset));
+  const fee = new Money(message.data.fee, new Asset(feeAsset as IAssetInfo));
   const assetBalance = balance?.assets?.[feeAsset.id];
 
   if (

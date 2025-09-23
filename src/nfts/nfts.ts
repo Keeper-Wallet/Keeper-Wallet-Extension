@@ -52,24 +52,29 @@ export function createNft({
   info: NftInfo | undefined;
   userAddress: string;
 }): Nft {
-  return Object.values(vendors).reduce<Nft>(
-    (result, vendor) =>
-      info?.vendor === vendor.id
-        ? vendor.create({
-            asset,
-            config,
-            info: info as never,
-          })
-        : result,
-    {
-      creator: asset.issuer,
-      description: asset.description,
-      displayCreator: asset.issuer === userAddress ? 'My NFTs' : asset.issuer,
-      displayName: asset.displayName,
-      foreground: new URL('./unknown.svg', import.meta.url).toString(),
-      id: asset.id,
-      name: asset.name,
-      vendor: NftVendorId.Unknown,
-    },
-  );
+  // If info exists, find the matching vendor and create NFT
+
+  if (info) {
+    for (const vendor of Object.values(vendors)) {
+      if (info.vendor === vendor.id) {
+        return vendor.create({
+          asset,
+          config,
+          info: info as never,
+        });
+      }
+    }
+  }
+
+  // Return default NFT if no vendor matches or info is undefined
+  return {
+    creator: asset.issuer,
+    description: asset.description,
+    displayCreator: asset.issuer === userAddress ? 'My NFTs' : asset.issuer,
+    displayName: asset.displayName,
+    foreground: new URL('./unknown.svg', import.meta.url).toString(),
+    id: asset.id,
+    name: asset.name,
+    vendor: NftVendorId.Unknown,
+  };
 }

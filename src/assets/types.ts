@@ -10,7 +10,7 @@ export interface AssetDetail {
   issuer: string;
   isSuspicious?: boolean;
   lastUpdated?: number;
-  minSponsoredFee?: string | number;
+  minSponsoredFee?: string | number | null;
   name: string;
   originTransactionId?: string;
   precision: number;
@@ -18,7 +18,7 @@ export interface AssetDetail {
   reissuable: boolean;
   sender: string;
   ticker?: string;
-  timestamp: Date;
+  timestamp: Date | string;
   // NFT-specific fields
   author?: string;
   creator?: string;
@@ -29,6 +29,8 @@ export interface AssetDetail {
   external_url?: string;
   displayCreator?: string;
   tokenId?: string;
+  type?: 'ERC-20' | 'ERC-721' | 'ERC-1155';
+  tokenType?: string;
   attributes?: Array<{
     trait_type: string;
     value: string | number;
@@ -36,6 +38,6 @@ export interface AssetDetail {
 }
 
 export interface AssetsRecord {
-  WAVES: AssetDetail;
+  WAVES?: AssetDetail;
   [key: string]: AssetDetail | undefined;
 }

@@ -48,7 +48,14 @@ export interface StorageLocalState {
   accounts: MultiWallet[];
   addresses: Record<string, string>;
   assetLogos: Record<string, string>;
-  assets: Record<NetworkName, AssetsRecord>;
+  assets: {
+    [NetworkName.Mainnet]: AssetsRecord;
+    [NetworkName.Testnet]: AssetsRecord;
+    [NetworkName.Stagenet]: AssetsRecord;
+    [NetworkName.Custom]: AssetsRecord;
+    [NetworkName.unit0MainNet]: AssetsRecord;
+    [NetworkName.unit0Testnet]: AssetsRecord;
+  };
   swappableAssetIdsByVendor: Record<string, string[]>;
   assetsConfig: AssetsConfig;
   assetTickers: Record<string, string>;

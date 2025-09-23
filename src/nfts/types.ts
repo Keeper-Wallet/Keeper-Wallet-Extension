@@ -62,7 +62,7 @@ export interface CreateParams<T extends { vendor: NftVendorId }> {
 export interface NftVendor<T extends { vendor: NftVendorId }> {
   id: T['vendor'];
   is(nft: NftAssetDetail): boolean;
-  fetchInfo(params: FetchInfoParams): T[] | Promise<T[]>;
+  fetchInfo?(params: FetchInfoParams): T[] | Promise<T[]>;
   create(params: CreateParams<T>): Nft;
 }
 

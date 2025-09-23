@@ -9,6 +9,7 @@ import { Tooltip } from '../../ui/tooltip';
 import * as styles from './assetItem.module.css';
 import { AssetLogo } from './assetLogo';
 import { MoreActions } from './moreActions';
+import { BLOCKCHAIN_TYPES } from '../../../../assets/constants';
 
 interface Props {
   balance: Money | undefined;
@@ -29,13 +30,14 @@ export function AssetItem({
   onSendClick,
   onSwapClick,
 }: Props) {
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+  );
+  const isUnit0Assets = currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0;
   const { t } = useTranslation();
   const assets = usePopupSelector(state => state.assets);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
-  const currentBlockchainType = usePopupSelector(
-    state => state.currentBlockchainType || 'waves',
-  );
-  
+
   // Assets are stored flat at root level, not nested by network
   const asset = assets[assetId];
 
@@ -104,7 +106,7 @@ export function AssetItem({
 
       {!isLoading && (
         <MoreActions>
-          {assetId !== 'WAVES' && (
+          {assetId !== 'WAVES' && !isUnit0Assets && (
             <Tooltip content={t('assetInfo.infoTooltip')}>
               {props => (
                 <button
@@ -155,28 +157,30 @@ export function AssetItem({
             )}
           </Tooltip>
 
-          <Tooltip content={t('assetInfo.sendAssetTooltip')}>
-            {props => (
-              <button
-                className={styles.sendBtn}
-                type="button"
-                onClick={() => onSendClick(assetId)}
-                {...props}
-                data-testid="sendBtn"
-              >
-                <svg
-                  className={styles.sendIcon}
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
+          {!isUnit0Assets && (
+            <Tooltip content={t('assetInfo.sendAssetTooltip')}>
+              {props => (
+                <button
+                  className={styles.sendBtn}
+                  type="button"
+                  onClick={() => onSendClick(assetId)}
+                  {...props}
+                  data-testid="sendBtn"
                 >
-                  <path d="M15.19 7.77178L4.08117 18.8806L5.46862 20.2681L16.5774 9.15923L18.6586 11.2404L19.5743 4.77489L13.1088 5.69061L15.19 7.77178Z" />
-                </svg>
-              </button>
-            )}
-          </Tooltip>
+                  <svg
+                    className={styles.sendIcon}
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M15.19 7.77178L4.08117 18.8806L5.46862 20.2681L16.5774 9.15923L18.6586 11.2404L19.5743 4.77489L13.1088 5.69061L15.19 7.77178Z" />
+                  </svg>
+                </button>
+              )}
+            </Tooltip>
+          )}
 
-          {currentNetwork === 'mainnet' && isSwappable && (
+          {currentNetwork === 'mainnet' && isSwappable && !isUnit0Assets && (
             <Tooltip content={t('assetInfo.swapAssetTooltip')}>
               {props => (
                 <button

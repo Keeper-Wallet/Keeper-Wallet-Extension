@@ -1,4 +1,5 @@
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import clsx from 'clsx';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { compareAccountsByLastUsed } from 'preferences/utils';
@@ -42,7 +43,7 @@ export function OtherAccountsPage() {
     )
     .sort(compareAccountsByLastUsed);
 
-  const wavesAsset = new Asset(assets.WAVES);
+  const wavesAsset = new Asset(assets.WAVES as IAssetInfo);
 
   const balancesMoney = Object.fromEntries(
     Object.entries(balances).map(([key, balance]) => [

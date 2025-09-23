@@ -13,6 +13,7 @@ import { Tooltip } from 'ui/components/ui/tooltip';
 import * as styles from './selectModal.module.css';
 import { type AssetDetail } from './types';
 import { useAssetLogo } from './utils';
+import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
 export interface AssetSelectModalOption extends AssetDetail {
   disabled?: boolean;
@@ -108,7 +109,7 @@ export function AssetSelectModal({
         .map(asset => {
           const balance = new Money(
             new BigNumber(assetBalances[asset.id]?.balance ?? 0),
-            new Asset(asset),
+            new Asset(asset as IAssetInfo),
           );
 
           return {

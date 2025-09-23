@@ -1,158 +1,16 @@
+import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { type Unit0Transfer } from 'balances/types';
+import {
+  type Unit0BalanceResponse,
+  type Unit0NftResponse,
+  type Unit0NftTransfer,
+  type Unit0TokenBalance,
+  type Unit0TokenDetailsResponse,
+  type Unit0TokenInstance,
+  type Unit0TokenMetadata,
+} from '../strategies/interfaces/IUnit0Types';
+
 import { NetworkName } from '../../networks/types';
-import { type TransactionFromNode, TRANSACTION_TYPE } from '@waves/ts-types';
-
-export interface Unit0BalanceResponse {
-  coin_balance: string;
-  exchange_rate?: string;
-}
-
-export interface Unit0TokenBalance {
-  token_id: string;
-  balance: string;
-  token?: {
-    address?: string;
-    address_hash?: string;
-    name?: string;
-    symbol?: string;
-    decimals?: number;
-  };
-  value?: string;
-}
-
-export interface Unit0Transaction {
-  hash: string;
-  block_number: number;
-  timestamp: string;
-  from: {
-    hash: string;
-    name?: string | null;
-    is_contract: boolean;
-  };
-  to: {
-    hash: string;
-    name?: string | null;
-    is_contract: boolean;
-  };
-  value: string;
-  gas_used: string;
-  gas_limit: string;
-  gas_price: string;
-  fee: {
-    type: string;
-    value: string;
-  };
-  status: string;
-  type: number;
-  nonce: number;
-  method?: string | null;
-  transaction_types?: string[];
-}
-
-export interface Unit0TokenInstance {
-  animation_url: string | null;
-  external_app_url: string | null;
-  id: string;
-  image_url: string | null;
-  is_unique: boolean | null;
-  media_type: string | null;
-  media_url: string | null;
-  metadata: any | null;
-  owner: any | null;
-  thumbnails: any | null;
-  token: {
-    address: string;
-    address_hash: string;
-    circulating_market_cap: string | null;
-    decimals: number | null;
-    exchange_rate: string | null;
-    holders: string;
-    holders_count: string;
-    icon_url: string | null;
-    name: string;
-    symbol: string;
-    total_supply: string | null;
-    type: string;
-    volume_24h: string | null;
-  };
-}
-
-export interface Unit0NftMetadata {
-  name?: string;
-  description?: string;
-  image?: string;
-  animation_url?: string;
-  external_url?: string;
-  attributes?: Array<{
-    trait_type: string;
-    value: string | number;
-  }>;
-  author?: string;
-  creator?: string;
-  rank?: number;
-  rarity_rank?: number;
-}
-
-export interface Unit0NftTransfer {
-  block_hash: string;
-  block_number: number;
-  from: {
-    hash: string;
-    name: string | null;
-  };
-  to: {
-    hash: string;
-    name: string | null;
-  };
-  log_index: number;
-  method: string;
-  timestamp: string;
-  token: {
-    address: string;
-    address_hash: string;
-    name: string;
-    symbol: string;
-    type: string;
-  };
-  total: {
-    token_id: string;
-    token_instance: Unit0TokenInstance;
-  };
-  transaction_hash: string;
-  type: string;
-}
-
-export interface Unit0NftResponse {
-  items: Unit0NftTransfer[];
-  next_page_params: any | null;
-}
-
-export interface Unit0TokenMetadata {
-  address: string;
-  name: string;
-  symbol: string;
-  decimals: number;
-  icon_url: string | null;
-  total_supply: string | null;
-  holders_count: string;
-  circulating_market_cap: string | null;
-  exchange_rate: string | null;
-  volume_24h: string | null;
-}
-
-export interface Unit0TokenDetailsResponse {
-  address: string;
-  address_hash: string;
-  name: string;
-  symbol: string;
-  decimals: number | null;
-  icon_url: string | null;
-  total_supply: string | null;
-  holders_count: string;
-  circulating_market_cap: string | null;
-  exchange_rate: string | null;
-  volume_24h: string | null;
-  type: string;
-}
 
 export class Unit0Api {
   private getBaseUrl(network: NetworkName): string {
@@ -279,30 +137,6 @@ export class Unit0Api {
     return { balance, tokens };
   }
 
-  async fetchTransactionHistory(
-    address: string,
-    network: NetworkName = NetworkName.Mainnet,
-    limit: number = 100,
-  ): Promise<Unit0Transaction[]> {
-    const baseUrl = this.getBaseUrl(network);
-    const mockAddress =
-      network === NetworkName.Testnet
-        ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
-        : '0x145205f669f49F55727de5b542D9C1EACa03A246';
-
-    const response = await fetch(
-      `${baseUrl}${mockAddress}/token-transfers?type=&items_count=${limit}`,
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch unit0 transaction history: ${response.status}`,
-      );
-    }
-
-    const data = await response.json();
-    return Array.isArray(data.items) ? data.items : [];
-  }
 
   async fetchNfts(
     address: string,
@@ -346,10 +180,6 @@ export class Unit0Api {
 
       return response.json();
     } catch (error) {
-      console.warn(
-        `Failed to fetch NFT metadata for ${contractAddress}:${tokenId}`,
-        error,
-      );
       return null;
     }
   }
@@ -369,122 +199,85 @@ export class Unit0Api {
 
     // Use the nft/collections endpoint to get inventory data
     const url = `${baseUrl}${mockAddress}/nft/collections?type=`;
-
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error fetching NFT inventory:', error);
-      throw error;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+    return await response.json();
   }
 
   async fetchContractInfo(contractAddress: string, network: NetworkName) {
     const baseUrl = this.getBaseUrl(network);
     const url = `${baseUrl}${contractAddress}`;
-
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error fetching contract info:', error);
-      throw error;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+    return await response.json();
   }
 
   async fetchTokenMetadata(
     contractAddress: string,
     network: NetworkName = NetworkName.Mainnet,
   ): Promise<Unit0TokenMetadata | null> {
-    try {
-      const baseUrl = this.getTokenBaseUrl(network);
-      const response = await fetch(`${baseUrl}${contractAddress}`);
+    const baseUrl = this.getTokenBaseUrl(network);
+    const response = await fetch(`${baseUrl}${contractAddress}`);
 
-      if (!response.ok) {
-        console.warn(
-          `Failed to fetch token metadata for ${contractAddress}: ${response.status}`,
-        );
-        return null;
-      }
-
-      const tokenDetails: Unit0TokenDetailsResponse = await response.json();
-
-      return {
-        address: tokenDetails.address ?? tokenDetails.hash,
-        name: tokenDetails.name,
-        symbol: tokenDetails.symbol,
-        decimals: Number(tokenDetails.decimals) || 18,
-        icon_url: tokenDetails.icon_url,
-        total_supply: tokenDetails.total_supply,
-        holders_count: tokenDetails.holders_count,
-        circulating_market_cap: tokenDetails.circulating_market_cap,
-        exchange_rate: tokenDetails.exchange_rate,
-        volume_24h: tokenDetails.volume_24h,
-      };
-    } catch (error) {
-      console.error(
-        `Error fetching token metadata for ${contractAddress}:`,
-        error,
-      );
+    if (!response.ok) {
       return null;
     }
-  }
 
-  // Convert Unit0 transaction to Waves-compatible format for history display
-  convertToWavesTransaction(
-    unit0Tx: Unit0NftTransfer,
-    address: string,
-  ): TransactionFromNode {
-    const timestamp = new Date(unit0Tx.timestamp).getTime();
-
-    const sender =
-      unit0Tx.from?.hash || '0x0000000000000000000000000000000000000000';
-    const recipient =
-      unit0Tx.to?.hash || '0x0000000000000000000000000000000000000000';
-
-    // Determine transaction direction for better UI handling
-    const isSender = sender.toLowerCase() === address.toLowerCase();
-    const isRecipient = recipient.toLowerCase() === address.toLowerCase();
-
-    let direction: string;
-    if (isRecipient && !isSender) {
-      direction = 'incoming';
-    } else if (isSender && !isRecipient) {
-      direction = 'outgoing';
-    } else if (isSender && isRecipient) {
-      direction = 'self';
-    } else {
-      // Fallback case - shouldn't normally happen
-      direction = 'outgoing';
-    }
+    const tokenDetails: Unit0TokenDetailsResponse = await response.json();
 
     return {
+      address: (tokenDetails.address ?? tokenDetails.hash) as string,
+      name: tokenDetails.name,
+      symbol: tokenDetails.symbol,
+      decimals: Number(tokenDetails.decimals) || 18,
+      icon_url: tokenDetails.icon_url,
+      total_supply: tokenDetails.total_supply,
+      holders_count: tokenDetails.holders_count,
+      circulating_market_cap: tokenDetails.circulating_market_cap,
+      exchange_rate: tokenDetails.exchange_rate,
+      volume_24h: tokenDetails.volume_24h,
+    };
+  }
+
+  convertUnit0ToTransaction(
+    unit0Tx: Unit0NftTransfer,
+    address: string,
+  ): Unit0Transfer {
+    const sender = unit0Tx.from?.hash;
+    const recipient = unit0Tx.to?.hash;
+
+    const isIncoming = recipient === address;
+    const isOutgoing = sender === address;
+
+    const timestamp = new Date(unit0Tx.timestamp).getTime();
+
+    const assetId =
+      unit0Tx.token.hash ?? unit0Tx.token.address_hash ?? unit0Tx.token.address;
+    return {
       id: unit0Tx.transaction_hash,
-      type: TRANSACTION_TYPE.ETHEREUM,
-      timestamp,
-      height: unit0Tx.block_number,
       sender,
-      fee: '0', // Token transfers don't have direct fee info in this API
+      type: TRANSACTION_TYPE.ETHEREUM,
+      fee: '0', // TODO: we need to do another request for getting fee of transaction
       payload: {
-        type: 'transfer',
+        type: 'transfer' as const,
+        height: unit0Tx.block_number,
+        timestamp,
+        sender,
+        recipient,
         amount: unit0Tx.total.value || '0',
-        asset: unit0Tx.token.hash ?? unit0Tx.token.address, // Use token contract address as asset ID
-        to: recipient,
-        direction,
+        asset: assetId, // Use token contract address as asset ID
         tokenSymbol: unit0Tx.token.symbol,
         tokenName: unit0Tx.token.name,
         tokenDecimals: unit0Tx.token.decimals,
         fromName: unit0Tx.from?.name,
         toName: unit0Tx.to?.name,
+        isIncoming,
+        isOutgoing,
       },
-    } as TransactionFromNode;
+    };
   }
 }

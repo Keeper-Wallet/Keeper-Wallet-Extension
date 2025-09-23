@@ -108,8 +108,8 @@ export class LedgerWallet extends Wallet<WalletPrivateDataOfType<'ledger'>> {
           this.#getAssetInfo(tx.feeAssetId),
         ]);
 
-        amountPrecision = asset.precision;
-        feePrecision = feeAsset.precision;
+        amountPrecision = asset?.precision ?? 0;
+        feePrecision = feeAsset?.precision ?? 0;
         break;
       }
     }

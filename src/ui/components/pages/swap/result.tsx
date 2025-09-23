@@ -1,5 +1,6 @@
 import { captureException, withScope } from '@sentry/browser';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import clsx from 'clsx';
 import { NetworkName } from 'networks/types';
 import { usePopupSelector } from 'popup/store/react';
@@ -104,7 +105,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
               new Money(
                 transfer.amount,
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                new Asset(assets[transfer.asset || 'WAVES']!),
+                new Asset(assets[transfer.asset || 'WAVES'] as IAssetInfo),
               ),
             );
             setSwapStatus(SwapStatus.Succeeded);

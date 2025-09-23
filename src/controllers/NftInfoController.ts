@@ -1,9 +1,9 @@
 import { NetworkName } from 'networks/types';
-import { fetchNftInfo } from 'nfts/nfts';
+import { fetchNftInfo, type NftInfo } from 'nfts/nfts';
 import { type NftAssetDetail } from 'nfts/types';
 import ObservableStore from 'obs-store';
-import { BLOCKCHAIN_TYPES } from '../assets/constants';
 
+import { BLOCKCHAIN_TYPES } from '../assets/constants';
 import { type ExtensionStorage } from '../storage/storage';
 import { type NetworkController } from './network';
 
@@ -34,11 +34,11 @@ export class NftInfoController {
       getCurrentBlockchainType || (() => BLOCKCHAIN_TYPES.WAVES);
   }
 
-  async updateNfts(nftsAssetDetails: NftAssetDetail[], forceUpdate: boolean) {
+  async updateNfts(nftsAssetDetails: NftAssetDetail[], forceUpdate?: boolean) {
     if (forceUpdate) {
       const { nfts } = this.store.getState();
       nftsAssetDetails.forEach(asset => {
-        nfts[`${asset.assetId}_${asset.tokenId}`] = asset;
+        nfts[`${asset.assetId}_${asset.tokenId}`] = asset as unknown as NftInfo;
       });
       this.store.updateState({
         nfts,

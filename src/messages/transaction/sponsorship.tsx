@@ -14,6 +14,7 @@ import { Balance } from 'ui/components/ui/balance/Balance';
 
 import * as transactionsStyles from '../../ui/components/pages/styles/transactions.module.css';
 import { type MessageOfType, type MessageTxSponsorship } from '../types';
+import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
 export function SponsorshipCard({
   className,
@@ -59,7 +60,12 @@ export function SponsorshipCard({
                 <span data-testid="sponsorshipAsset">{asset.displayName}</span>
               ) : (
                 <Balance
-                  balance={new Money(tx.minSponsoredAssetFee, new Asset(asset))}
+                  balance={
+                    new Money(
+                      tx.minSponsoredAssetFee,
+                      new Asset(asset as IAssetInfo),
+                    )
+                  }
                   data-testid="sponsorshipAmount"
                   showAsset
                   showUsdAmount

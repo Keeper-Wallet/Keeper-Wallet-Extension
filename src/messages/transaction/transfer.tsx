@@ -1,5 +1,6 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import clsx from 'clsx';
 import { TxDetailTabs } from 'messages/_common/detailTabs';
 import { MessageFooter } from 'messages/_common/footer';
@@ -45,7 +46,10 @@ export function TransferCard({
           <h1 className="headline1">
             <Balance
               balance={
-                new Money(new BigNumber(0).sub(tx.amount), new Asset(asset))
+                new Money(
+                  new BigNumber(0).sub(tx.amount),
+                  new Asset(asset as IAssetInfo),
+                )
               }
               data-testid="transferAmount"
               showAsset
