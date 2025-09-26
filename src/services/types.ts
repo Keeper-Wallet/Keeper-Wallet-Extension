@@ -5,7 +5,7 @@ import { NetworkName } from '../networks/types';
  * It contains a nested structure organized by blockchain type and network.
  */
 export interface WalletItem {
-  address?: string;
+  address: string;
   networkCode: string;
 }
 

@@ -7,7 +7,6 @@ import { AccountsHome } from '../ui/components/pages/accountHome';
 import { AccountOnboarding } from '../ui/components/pages/AccountOnboarding';
 import { BackUpSeed } from '../ui/components/pages/BackupSeed';
 import { ConfirmBackup } from '../ui/components/pages/ConfirmBackup';
-import { CreateMultichainAccount } from '../ui/components/pages/CreateMultichainAccount';
 import { DeleteAllAccounts } from '../ui/components/pages/deleteAllAccounts/deleteAllAccounts';
 import { ImportChoose } from '../ui/components/pages/import/importChoose';
 import { ImportSeed } from '../ui/components/pages/import/importSeed';
@@ -49,16 +48,7 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/create-multichain-account',
-        element: (
-          <>
-            <Menu hasBack hasLogo />
-            <CreateMultichainAccount />
-          </>
-        ),
-      },
-      {
-        path: '/create-waves-account',
+        path: '/create-account',
         element: (
           <>
             <Menu hasBack hasLogo />
