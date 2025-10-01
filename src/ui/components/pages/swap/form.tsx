@@ -154,14 +154,38 @@ export function SwapForm({
     return defaultOption?.money.asset.id || 'WAVES';
   });
 
+  // Early return if assets are not loaded yet
+  const fromAssetInfo = assets[fromAssetId];
+  const toAssetInfo = assets[toAssetId];
+  const feeAssetInfo = assets[feeAssetId];
+
+  if (!fromAssetInfo || !toAssetInfo || !feeAssetInfo) {
+    console.log('Assets not fully loaded yet:', {
+      fromAssetId,
+      toAssetId,
+      feeAssetId,
+      hasFromAsset: !!fromAssetInfo,
+      hasToAsset: !!toAssetInfo,
+      hasFeeAsset: !!feeAssetInfo,
+      totalAssets: Object.keys(assets).length,
+    });
+
+    return (
+      <div className="flex items-center justify-center p-4">
+        <Loader />
+        {/*<span className="ml-2">Loading assets...</span>*/}
+      </div>
+    );
+  }
+
   const fromAsset = useMemo(
-    () => new Asset(assets[fromAssetId] as IAssetInfo),
-    [assets, fromAssetId],
+    () => new Asset(fromAssetInfo as IAssetInfo),
+    [fromAssetInfo],
   );
 
   const toAsset = useMemo(
-    () => new Asset(assets[toAssetId] as IAssetInfo),
-    [assets, toAssetId],
+    () => new Asset(toAssetInfo as IAssetInfo),
+    [toAssetInfo],
   );
 
   const feeAsset = new Asset(assets[feeAssetId] as IAssetInfo);

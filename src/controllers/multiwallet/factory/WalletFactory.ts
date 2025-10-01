@@ -7,6 +7,7 @@ import {
   type ValidationResult,
 } from '../interfaces/types';
 import { SeedWalletStrategy } from '../strategies/SeedWalletStrategy';
+import { DebugMultiWalletStrategy } from '../strategies/DebugMultiWalletStrategy';
 
 export class WalletFactory implements IWalletFactory {
   async createWallet(
@@ -125,6 +126,13 @@ export class WalletFactory implements IWalletFactory {
           throw new Error('Seed is required for seed wallet');
         }
         strategy = new SeedWalletStrategy(input.seed);
+        break;
+
+      case 'debug':
+        if (!('address' in input) || !input.address) {
+          throw new Error('Debug address is required for debug wallet');
+        }
+        strategy = new DebugMultiWalletStrategy(input.address, input.unit0Address);
         break;
 
       default:

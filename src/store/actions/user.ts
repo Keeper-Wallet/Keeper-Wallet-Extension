@@ -21,7 +21,7 @@ export function deleteAllAccounts(): AccountsThunkAction<Promise<void>> {
 
 export function createAccount(
   account: { name: string } & (
-    | { type: 'debug'; address: string }
+    | { type: 'debug'; address: string; unit0Address?: string }
     | { type: 'encodedSeed'; encodedSeed: string }
     | { type: 'ledger'; address: string; id: number; publicKey: string }
     | { type: 'privateKey'; privateKey: string }
@@ -42,11 +42,74 @@ export function createAccount(
     const networkCode =
       customCodes[currentNetwork] || NETWORK_CONFIG[currentNetwork].networkCode;
 
-    dispatch(
-      selectAccount(
-        await Background.addWallet(account, currentNetwork, networkCode),
-      ),
-    );
+    if (type === WalletTypes.Debug && account.type === 'debug') {
+      const { WalletFactory } = await import(
+        '../../controllers/multiwallet/factory/WalletFactory'
+      );
+
+      const factory = new WalletFactory();
+
+      const blockchains: Array<'waves' | 'unit0'> = ['waves'];
+      const networks: Partial<Record<'waves' | 'unit0', NetworkName[]>> = {
+        waves: [
+          NetworkName.Mainnet,
+          NetworkName.Testnet,
+          NetworkName.Stagenet,
+        ],
+      };
+
+      if (account.unit0Address) {
+        blockchains.push('unit0');
+        networks.unit0 = [
+          NetworkName.unit0MainNet,
+          NetworkName.unit0Testnet,
+        ];
+      }
+
+      const input = {
+        name: account.name,
+        type: 'debug' as const,
+        address: account.address,
+        unit0Address: account.unit0Address,
+        blockchains,
+        networks,
+      };
+
+      const result = await factory.createWallet(input);
+
+      if (!result.success || !result.wallet) {
+        throw result.error || new Error('Failed to create debug MultiWallet');
+      }
+
+      const wallet = await Background.addMultiWallet(result.wallet);
+
+      await Background.syncAccountsFromMultiWallets();
+
+      const selectedAddress = wallet.coins.waves?.networks.mainnet?.address;
+      if (!selectedAddress) {
+        throw new Error('No address found in created debug MultiWallet');
+      }
+
+      const selectedAccount = {
+        address: selectedAddress,
+        name: wallet.name,
+        network: 'mainnet' as const,
+        networkCode: 'W',
+        publicKey: wallet.coins.waves?.publicKey || '',
+        type: 'debug' as const,
+        walletId: wallet.id,
+        coinType: 'waves',
+      };
+
+      dispatch(selectAccount(selectedAccount as unknown as PreferencesAccount));
+    } else {
+      const createdAccount = await Background.addWallet(
+        account,
+        currentNetwork,
+        networkCode,
+      );
+      dispatch(selectAccount(createdAccount));
+    }
 
     if (type !== WalletTypes.Debug) {
       await Background.track({ eventType: 'addWallet', type });
@@ -163,7 +226,7 @@ export function createWavesOnlyMultiWallet({
       publicKey: wallet.coins.waves?.publicKey || '',
       type: 'seed' as const,
       id: wallet.id,
-    }
+    };
 
     dispatch(selectAccount(selectedAccount as unknown as PreferencesAccount));
   };
@@ -359,14 +422,17 @@ export function createFullMultiWallet({
 
     // Use address from current network instead of hardcoded mainnet
     let selectedAddress = '';
-    
+
     // Type-safe network access
     const wavesNetworks = wallet.coins.waves.networks;
     if (currentNetwork === 'mainnet' && wavesNetworks.mainnet?.address) {
       selectedAddress = wavesNetworks.mainnet.address;
     } else if (currentNetwork === 'testnet' && wavesNetworks.testnet?.address) {
       selectedAddress = wavesNetworks.testnet.address;
-    } else if (currentNetwork === 'stagenet' && wavesNetworks.stagenet?.address) {
+    } else if (
+      currentNetwork === 'stagenet' &&
+      wavesNetworks.stagenet?.address
+    ) {
       selectedAddress = wavesNetworks.stagenet.address;
     } else {
       // Fallback to mainnet if current network not available

@@ -10,6 +10,10 @@ import { WalletTypes } from 'ui/services/Background';
 
 import { NETWORK_CONFIG } from '../../../constants';
 
+function isValidUnit0Address(address: string): boolean {
+  return /^0x[a-fA-F0-9]{40}$/.test(address);
+}
+
 export function ImportDebug() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -23,6 +27,7 @@ export function ImportDebug() {
 
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
+  const [unit0Address, setUnit0Address] = useState('');
 
   const nameError = useMemo(() => {
     if (!name) {
@@ -54,6 +59,22 @@ export function ImportDebug() {
     return null;
   }, [address, accounts, currentNetwork, networkCode, t]);
 
+  const unit0AddressError = useMemo(() => {
+    if (!unit0Address) {
+      return null;
+    }
+
+    if (!isValidUnit0Address(unit0Address)) {
+      return t('importDebug.invalidUnit0AddressError');
+    }
+
+    if (accounts.some(account => account.address === unit0Address)) {
+      return t('importDebug.alreadyExists');
+    }
+
+    return null;
+  }, [unit0Address, accounts, t]);
+
   const [showErrors, setShowErrors] = useState<boolean>(false);
 
   return (
@@ -66,7 +87,7 @@ export function ImportDebug() {
 
           setShowErrors(true);
 
-          if (nameError || addressError) {
+          if (nameError || addressError || unit0AddressError) {
             return;
           }
 
@@ -76,6 +97,7 @@ export function ImportDebug() {
                 type: 'debug',
                 address,
                 name,
+                ...(unit0Address && { unit0Address }),
               },
               WalletTypes.Debug,
             ),
@@ -116,6 +138,24 @@ export function ImportDebug() {
           />
           <ErrorMessage show={showErrors && !!addressError}>
             {addressError}
+          </ErrorMessage>
+        </div>
+
+        <div className="margin4">
+          <label className="input-title basic500 tag1" htmlFor="unit0Address">
+            {t('importDebug.unit0AddressInput')} <span className="basic500">({t('importDebug.optional')})</span>
+          </label>
+          <Input
+            id="unit0Address"
+            className="margin1"
+            onChange={e => setUnit0Address(e.target.value)}
+            value={unit0Address}
+            maxLength={42}
+            placeholder="0x..."
+            error={showErrors && !!unit0AddressError}
+          />
+          <ErrorMessage show={showErrors && !!unit0AddressError}>
+            {unit0AddressError}
           </ErrorMessage>
         </div>
 

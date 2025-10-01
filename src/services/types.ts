@@ -1,4 +1,10 @@
 import { NetworkName } from '../networks/types';
+import { SeedWallet } from '../wallets/seed';
+import { PrivateKeyWallet } from '../wallets/privateKey';
+import { LedgerWallet } from '../wallets/ledger';
+import { WxWallet } from '../wallets/wx';
+import { DebugWallet } from '../wallets/debug';
+import { EncodedSeedWallet } from '../wallets/encodedSeed';
 
 /**
  * MultiWallet represents a single wallet with addresses on multiple networks.
@@ -41,7 +47,27 @@ export interface MultiWallet {
       };
     };
   };
+
+  // Runtime-only wallet instances for signing (not serialized to storage)
+  walletInstances?: {
+    [networkName: string]:
+      | SeedWallet
+      | PrivateKeyWallet
+      | LedgerWallet
+      | WxWallet
+      | DebugWallet
+      | EncodedSeedWallet;
+  };
 }
+
+// Type alias for wallet instances
+export type WalletInstance =
+  | SeedWallet
+  | PrivateKeyWallet
+  | LedgerWallet
+  | WxWallet
+  | DebugWallet
+  | EncodedSeedWallet;
 
 /**
  * Network identifiers
@@ -99,4 +125,6 @@ export const NETWORK_NAME_MAP: Record<
   [NetworkName.Testnet]: { blockchain: 'waves', network: 'testnet' },
   [NetworkName.Stagenet]: { blockchain: 'waves', network: 'stagenet' },
   [NetworkName.Custom]: { blockchain: 'waves', network: 'mainnet' }, // Default to mainnet for custom
+  [NetworkName.unit0MainNet]: { blockchain: 'unit0', network: 'mainnet' },
+  [NetworkName.unit0Testnet]: { blockchain: 'unit0', network: 'testnet' },
 };

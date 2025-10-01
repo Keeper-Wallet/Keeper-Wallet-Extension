@@ -1,5 +1,3 @@
-import { EventEmitter } from 'events';
-import ObservableStore from 'obs-store';
 import {
   base58Encode,
   base64Decode,
@@ -10,17 +8,23 @@ import {
   utf8Decode,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
+import { EventEmitter } from 'events';
+import ObservableStore from 'obs-store';
 import invariant from 'tiny-invariant';
 
 import { NetworkName } from '../networks/types';
+import { type MultiWallet, type WalletInstance } from '../services/types';
 import { type ExtensionStorage } from '../storage/storage';
-import { MultiWallet } from '../services/types';
+import { SeedWalletStrategy } from './multiwallet/strategies/SeedWalletStrategy';
+import { DebugMultiWalletStrategy } from './multiwallet/strategies/DebugMultiWalletStrategy';
 import type { PreferencesController } from './preferences';
-import { PreferencesAccount } from '../preferences/types';
-import {
-  createLegacyWalletAdapter,
-  findAccountByAddressAndNetwork,
-} from '../wallets/multiwallet-adapter';
+
+// Type for strategy that can create wallet instances
+type WalletInstanceCreator = {
+  createWalletInstances(
+    networks: NetworkName[],
+  ): Promise<{ [key: string]: WalletInstance }>;
+};
 
 export interface MultiWalletAccount {
   network: NetworkName;
@@ -92,15 +96,30 @@ export class MultiWalletController extends EventEmitter {
   }
 
   /**
-   * Add a new multi-wallet to storage
+   * Add a new multi-wallet to storage and create wallet instances
    */
-  addMultiWallet(multiWallet: MultiWallet): MultiWallet {
+  async addMultiWallet(multiWallet: MultiWallet): Promise<MultiWallet> {
+    if (!this.#password) {
+      throw new Error('Password must be set before creating wallets. Please unlock the vault first.');
+    }
+
     // Validate wallet doesn't already exist
     const existingWallet = this.#multiwallets.find(
       wallet => wallet.id === multiWallet.id,
     );
     if (existingWallet) {
       throw new Error(`Multi-wallet with ID ${multiWallet.id} already exists`);
+    }
+
+    // Create wallet instances for signing operations
+    try {
+      const walletInstances =
+        await this.#createWalletInstancesFromMultiWallet(multiWallet);
+      if (walletInstances) {
+        multiWallet.walletInstances = walletInstances;
+      }
+    } catch (error) {
+      console.error('Failed to create wallet instances:', error);
     }
 
     // Add the new multi-wallet to the in-memory array
@@ -143,69 +162,122 @@ export class MultiWalletController extends EventEmitter {
     return [...this.#multiwallets];
   }
 
-  async getLegacyWallet(
+  getWalletForSigning(
     address: string,
     network: NetworkName,
-  ): Promise<PreferencesAccount | undefined> {
-    const accounts =
-      this.getLegacyFormatAccounts() as unknown as PreferencesAccount[];
-    const account = findAccountByAddressAndNetwork(accounts, address, network);
+  ): WalletInstance {
+    // Find the MultiWallet from stored wallets
+    const multiWallet = this.findMultiWalletByAccount(address, network);
 
-    if (!account) {
+    if (!multiWallet) {
       throw new Error(
         `Wallet with address ${address} on network ${network} not found`,
       );
     }
 
-    // Determine the blockchain type based on the network
-    const blockChainType = 'waves'; // Currently, we only support 'waves'
+    // Return wallet instance if available
+    if (multiWallet.walletInstances && multiWallet.walletInstances[network]) {
+      return multiWallet.walletInstances[network];
+    }
 
+    // If no wallet instance available, create one on demand
+    throw new Error(
+      `Wallet instance not available for address ${address} on network ${network}. Please ensure wallet instances are created.`,
+    );
+  }
+
+  /**
+   * Create wallet instances from MultiWallet data
+   */
+  async #createWalletInstancesFromMultiWallet(
+    multiWallet: MultiWallet,
+  ): Promise<{ [key: string]: WalletInstance } | null> {
     try {
-      // Use the current password if controller is unlocked
-      if (!this.#password) {
-        throw new Error(
-          'MultiWalletController is locked. Please unlock before accessing wallet data',
-        );
+      const strategy = this.#createStrategyFromMultiWallet(multiWallet);
+      if (!strategy) {
+        return null;
       }
 
-      // Check if this is a private key wallet
-      if (account.type === 'privateKey') {
-        // For privateKey wallets, get the private key instead of seed
-        const privateKey = await this.getAccountPrivateKey(
-          address,
-          blockChainType,
-          this.#password,
-        );
+      const networks = this.#extractNetworksFromMultiWallet(multiWallet);
+      if (networks.length === 0) {
+        return null;
+      }
 
-        if (!privateKey) {
-          throw new Error(
-            `Private key not found for address ${address} on network ${network}`,
-          );
+      return await strategy.createWalletInstances(networks);
+    } catch (error) {
+      console.error('Error creating wallet instances from MultiWallet:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Create appropriate strategy from MultiWallet data
+   */
+  #createStrategyFromMultiWallet(
+    multiWallet: MultiWallet,
+  ): WalletInstanceCreator | null {
+    try {
+      switch (multiWallet.type) {
+        case 'seed': {
+          if (!multiWallet.seed) return null;
+          return new SeedWalletStrategy(multiWallet.seed);
         }
 
-        // Return the adapter with the private key
-        return createLegacyWalletAdapter(account, { privateKey });
-      } else {
-        // For seed wallets, continue with existing logic
-        const seed = await this.getAccountSeed(
-          address,
-          blockChainType,
-          this.#password,
-        );
-
-        if (!seed) {
-          throw new Error(
-            `Seed not found for address ${address} on network ${network}`,
-          );
+        case 'privateKey': {
+          if (!multiWallet.privateKey) return null;
+          return null;
         }
 
-        // Return the adapter with the seed
-        return createLegacyWalletAdapter(account, { seed });
+        case 'ledger': {
+          return null;
+        }
+
+        case 'wx': {
+          return null;
+        }
+
+        case 'debug': {
+          const debugAddress = multiWallet.coins.waves?.networks?.mainnet?.address;
+          if (!debugAddress) return null;
+          return new DebugMultiWalletStrategy(debugAddress);
+        }
+
+        default: {
+          console.warn(
+            `Unsupported wallet type for instance creation: ${multiWallet.type}`,
+          );
+          return null;
+        }
       }
     } catch (error) {
-      console.error('Error getting seed/private key for legacy wallet', error);
-      throw error;
+      console.error('Error creating strategy from MultiWallet:', error);
+      return null;
     }
+  }
+
+  /**
+   * Extract network names from MultiWallet structure
+   */
+  #extractNetworksFromMultiWallet(multiWallet: MultiWallet): NetworkName[] {
+    const networks: NetworkName[] = [];
+
+    // Extract Waves networks
+    if (multiWallet.coins.waves?.networks) {
+      const wavesNetworks = multiWallet.coins.waves.networks;
+      if (wavesNetworks.mainnet) networks.push(NetworkName.Mainnet);
+      if (wavesNetworks.testnet) networks.push(NetworkName.Testnet);
+      if (wavesNetworks.stagenet) networks.push(NetworkName.Stagenet);
+      if (wavesNetworks.custom) networks.push(NetworkName.Custom);
+    }
+
+    // Extract Unit0 networks
+    if (multiWallet.coins.unit0?.networks) {
+      const unit0Networks = multiWallet.coins.unit0.networks;
+      if (unit0Networks.mainnet) networks.push(NetworkName.unit0MainNet);
+      if (unit0Networks.testnet) networks.push(NetworkName.unit0Testnet);
+    }
+
+    return networks;
   }
 
   /**
@@ -299,6 +371,9 @@ export class MultiWalletController extends EventEmitter {
   }
 
   async #saveMultiWallets(wallets?: MultiWallet[]) {
+    if (!this.#password) {
+      throw new Error('Password is required to save multi-wallets');
+    }
     invariant(this.#password);
     const walletsToSave = wallets || this.#multiwallets;
 

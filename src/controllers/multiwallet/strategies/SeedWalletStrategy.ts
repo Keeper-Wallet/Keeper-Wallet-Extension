@@ -9,6 +9,7 @@ import { Wallet } from 'ethers';
 
 import { NetworkName } from '../../../networks/types';
 import { NETWORK_CODES, type WalletItem } from '../../../services/types';
+import { SeedWallet } from '../../../wallets/seed';
 import { type IMultiWalletCreationStrategy } from '../interfaces/IMultiWalletCreationStrategy';
 import {
   type CreateMultiWalletInput,
@@ -105,6 +106,57 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
     };
 
     return networkData;
+  }
+
+  /**
+   * Create SeedWallet instances for signing operations
+   * This integrates with the existing wallet infrastructure
+   */
+  async createWalletInstances(
+    networks: NetworkName[],
+  ): Promise<{ [key: string]: SeedWallet }> {
+    const walletInstances: { [key: string]: SeedWallet } = {};
+
+    // Create Waves wallet instances for each requested network
+    for (const network of networks) {
+      if ([NetworkName.Mainnet, NetworkName.Testnet, NetworkName.Stagenet, NetworkName.Custom].includes(network)) {
+        const networkCode = this.#getWavesNetworkCode(network);
+        const walletInstance = await SeedWallet.create({
+          name: `${network}-wallet`,
+          network,
+          networkCode,
+          seed: this.seed,
+          ethereumAddress: undefined, // Will be added for multichain
+        });
+        
+        walletInstances[network] = walletInstance;
+      }
+    }
+
+    return walletInstances;
+  }
+
+  /**
+   * Create complete wallet with both addresses and signing capability
+   */
+  async createCompleteWallet(input: CreateMultiWalletInput) {
+    const wavesNetworks = input.networks?.waves || [NetworkName.Mainnet, NetworkName.Testnet];
+    const unit0Networks = input.networks?.unit0 || [NetworkName.unit0MainNet, NetworkName.unit0Testnet];
+
+    // Create address data
+    const wavesData = await this.createWavesAddresses(wavesNetworks);
+    const unit0Data = input.blockchains?.includes('unit0') 
+      ? await this.createUnit0Addresses(unit0Networks)
+      : null;
+
+    // Create wallet instances for signing
+    const walletInstances = await this.createWalletInstances(wavesNetworks);
+
+    return {
+      addressData: { waves: wavesData, unit0: unit0Data },
+      walletInstances,
+      authData: this.getAuthData(),
+    };
   }
 
   /**

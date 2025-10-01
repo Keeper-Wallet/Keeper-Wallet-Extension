@@ -16,7 +16,7 @@ export type CreateMultiWalletInput = {
   | { type: 'seed'; seed: string; isSupportMultiBlockchain?: boolean }
   | { type: 'privateKey'; privateKey: string }
   | { type: 'ledger'; id: number; publicKey: string; address: string }
-  | { type: 'debug'; address: string }
+  | { type: 'debug'; address: string; unit0Address?: string }
   | {
       type: 'wx';
       uuid: string;

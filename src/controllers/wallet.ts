@@ -232,6 +232,7 @@ export class WalletController extends EventEmitter {
     }
 
     this.#wallets.push(wallet);
+    
     await this.#saveWallets();
 
     this.emit('addWallet', wallet);

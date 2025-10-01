@@ -61,7 +61,6 @@ export class PreferencesController extends EventEmitter {
   }
 
   syncAccounts(wallets: (WalletAccount | MultiWallet)[]) {
-    const multiWallets = wallets as MultiWallet[];
     const oldAccounts = this.store.getState()
       .accounts as unknown as MultiWallet[];
 
@@ -76,11 +75,16 @@ export class PreferencesController extends EventEmitter {
     });
 
     // Add new accounts or update existing ones
-    multiWallets.forEach(wallet => {
-      if (wallet.id) {
-        // If this ID doesn't exist in our map, or we want to update it
-        // You could add logic here to decide whether to update or keep old account
+    wallets.forEach(wallet => {
+      // Handle MultiWallet objects (have id property)
+      if ('id' in wallet && wallet.id) {
         accountsById.set(wallet.id, wallet);
+      }
+      // Handle WalletAccount objects (legacy accounts)
+      else if ('address' in wallet && 'network' in wallet) {
+        // Create a unique key for legacy accounts
+        const key = `${wallet.address}-${wallet.network}`;
+        accountsById.set(key, wallet);
       }
     });
 
