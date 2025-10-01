@@ -62,8 +62,6 @@ import { PERMISSIONS } from '../permissions/constants';
 import type { PreferencesAccount } from '../preferences/types';
 import type { ExtensionStorage } from '../storage/storage';
 import { getTxVersions } from '../wallets/getTxVersions';
-import { type WalletPrivateData } from '../wallets/types';
-import { type Wallet } from '../wallets/wallet';
 import type { AssetInfoController } from './assetInfo';
 import type { CurrentAccountController } from './currentAccount';
 import type { MultiWalletController } from './MultiWalletController';
@@ -227,11 +225,11 @@ export class MessageController extends EventEmitter {
     try {
       const { address, network, publicKey } = message.account;
 
-      // getLegacyWallet is now async
-      const wallet = (await this.multiWalletController.getLegacyWallet(
+      // Get wallet instance (SeedWallet with signing methods) from factory-created wallets
+      const wallet = this.multiWalletController.getWalletForSigning(
         address,
         network,
-      )) as unknown as Wallet<WalletPrivateData>;
+      );
 
       switch (message.type) {
         case 'auth': {

@@ -21,7 +21,7 @@ export function deleteAllAccounts(): AccountsThunkAction<Promise<void>> {
 
 export function createAccount(
   account: { name: string } & (
-    | { type: 'debug'; address: string }
+    | { type: 'debug'; address: string; unit0Address?: string }
     | { type: 'encodedSeed'; encodedSeed: string }
     | { type: 'ledger'; address: string; id: number; publicKey: string }
     | { type: 'privateKey'; privateKey: string }
@@ -42,11 +42,74 @@ export function createAccount(
     const networkCode =
       customCodes[currentNetwork] || NETWORK_CONFIG[currentNetwork].networkCode;
 
-    dispatch(
-      selectAccount(
-        await Background.addWallet(account, currentNetwork, networkCode),
-      ),
-    );
+    if (type === WalletTypes.Debug && account.type === 'debug') {
+      const { WalletFactory } = await import(
+        '../../controllers/multiwallet/factory/WalletFactory'
+      );
+
+      const factory = new WalletFactory();
+
+      const blockchains: Array<'waves' | 'unit0'> = ['waves'];
+      const networks: Partial<Record<'waves' | 'unit0', NetworkName[]>> = {
+        waves: [
+          NetworkName.Mainnet,
+          NetworkName.Testnet,
+          NetworkName.Stagenet,
+        ],
+      };
+
+      if (account.unit0Address) {
+        blockchains.push('unit0');
+        networks.unit0 = [
+          NetworkName.unit0MainNet,
+          NetworkName.unit0Testnet,
+        ];
+      }
+
+      const input = {
+        name: account.name,
+        type: 'debug' as const,
+        address: account.address,
+        unit0Address: account.unit0Address,
+        blockchains,
+        networks,
+      };
+
+      const result = await factory.createWallet(input);
+
+      if (!result.success || !result.wallet) {
+        throw result.error || new Error('Failed to create debug MultiWallet');
+      }
+
+      const wallet = await Background.addMultiWallet(result.wallet);
+
+      await Background.syncAccountsFromMultiWallets();
+
+      const selectedAddress = wallet.coins.waves?.networks.mainnet?.address;
+      if (!selectedAddress) {
+        throw new Error('No address found in created debug MultiWallet');
+      }
+
+      const selectedAccount = {
+        address: selectedAddress,
+        name: wallet.name,
+        network: 'mainnet' as const,
+        networkCode: 'W',
+        publicKey: wallet.coins.waves?.publicKey || '',
+        type: 'debug' as const,
+        walletId: wallet.id,
+        coinType: 'waves',
+      };
+
+      dispatch(selectAccount(selectedAccount as unknown as PreferencesAccount));
+    } else {
+      const createdAccount = await Background.addWallet(
+        account,
+        currentNetwork,
+        networkCode,
+      );
+      dispatch(selectAccount(createdAccount));
+    }
 
     if (type !== WalletTypes.Debug) {
       await Background.track({ eventType: 'addWallet', type });
@@ -86,84 +149,200 @@ export const changePassword = (oldPassword: string, newPassword: string) => ({
 export function createWavesOnlyMultiWallet({
   name,
   seed,
-  mainnetAddress,
-  publicKey,
-  testnetAddress,
-  stagenetAddress,
   privateKey,
   type,
 }: {
   name: string;
   seed?: string;
-  mainnetAddress: string;
-  publicKey: string;
-  testnetAddress: string;
-  stagenetAddress: string;
   privateKey?: string;
   type: string;
 }): AccountsThunkAction<Promise<void>> {
-  return async (dispatch, getState) => {
-    const multiWallet: MultiWallet = {
-      id: Date.now().toString(), // Generate unique ID
-      name,
-      type,
-      createdAt: Date.now(),
-      seed,
-      privateKey,
+  return async dispatch => {
+    // Import factory system
+    const { WalletFactory } = await import(
+      '../../controllers/multiwallet/factory/WalletFactory'
+    );
 
-      coins: {
-        waves: {
-          publicKey,
-          networks: {
-            mainnet: {
-              address: mainnetAddress,
-              networkCode: NETWORK_CONFIG[NetworkName.Mainnet].networkCode,
-            },
-            testnet: {
-              address: testnetAddress,
-              networkCode: NETWORK_CONFIG[NetworkName.Testnet].networkCode,
-            },
-            stagenet: {
-              address: stagenetAddress,
-              networkCode: NETWORK_CONFIG[NetworkName.Stagenet].networkCode,
-            },
-          },
+    // Create Waves-only wallet using our factory
+    const factory = new WalletFactory();
+
+    // Create appropriate input based on type
+    let result;
+    if (type === 'privateKey' && privateKey) {
+      const input = {
+        name,
+        type: 'privateKey' as const,
+        privateKey,
+        blockchains: ['waves'] as Array<'waves'>,
+        networks: {
+          waves: [
+            NetworkName.Mainnet,
+            NetworkName.Testnet,
+            NetworkName.Stagenet,
+          ],
         },
+      };
+      result = await factory.createWallet(input);
+    } else {
+      const input = {
+        name,
+        type: 'seed' as const,
+        seed: seed || '',
+        blockchains: ['waves'] as Array<'waves'>,
+        networks: {
+          waves: [
+            NetworkName.Mainnet,
+            NetworkName.Testnet,
+            NetworkName.Stagenet,
+          ],
+        },
+      };
+      result = await factory.createWallet(input);
+    }
+
+    if (!result.success || !result.wallet) {
+      throw result.error || new Error('Failed to create Waves-only wallet');
+    }
+
+    const wallet = await Background.addMultiWallet(result.wallet);
+
+    // For Waves-only wallet, create account directly from wallet data (bypass legacy sync)
+    const selectedAddress =
+      wallet.coins.waves?.networks.mainnet?.address ||
+      wallet.coins.waves?.networks.testnet?.address ||
+      wallet.coins.waves?.networks.stagenet?.address ||
+      '';
+
+    if (!selectedAddress) {
+      throw new Error('No address found in created Waves-only wallet');
+    }
+
+    // Create account object directly from wallet data (bypass problematic legacy sync)
+    const selectedAccount = {
+      address: selectedAddress,
+      name: wallet.name,
+      network: 'mainnet' as const,
+      networkCode: 'W',
+      publicKey: wallet.coins.waves?.publicKey || '',
+      type: 'seed' as const,
+      id: wallet.id,
+    };
+
+    dispatch(selectAccount(selectedAccount as unknown as PreferencesAccount));
+  };
+}
+
+/**
+ * NEW: Creates a MultiWallet using the factory system
+{{ ... }}
+ * Uses our Strategy + Factory pattern for reliable multi-blockchain wallet creation
+ */
+export function createMultiWalletWithFactory({
+  name,
+  seed,
+}: {
+  name: string;
+  seed: string;
+}): AccountsThunkAction<Promise<void>> {
+  return async dispatch => {
+    // Import factory system
+    const { WalletFactory } = await import(
+      '../../controllers/multiwallet/factory/WalletFactory'
+    );
+
+    // Create wallet using our factory
+    const factory = new WalletFactory();
+
+    const input = {
+      name,
+      type: 'seed' as const,
+      seed,
+      blockchains: ['waves', 'unit0'] as Array<'waves' | 'unit0'>,
+      networks: {
+        waves: [NetworkName.Mainnet, NetworkName.Testnet, NetworkName.Stagenet],
+        unit0: [NetworkName.unit0MainNet, NetworkName.unit0Testnet],
       },
     };
-    const wallet = await Background.addMultiWallet(multiWallet);
 
-    // Manually trigger account sync to ensure immediate availability
-    const allMultiWallets = await Background.getMultiWallets();
-    await Background.syncAccountsFromMultiWallets(allMultiWallets);
+    const result = await factory.createWallet(input);
 
-    // Get current network from Redux state
-    const currentNetwork = getState().currentNetwork;
+    if (!result.success || !result.wallet) {
+      throw result.error || new Error('Failed to create multichain wallet');
+    }
 
-    // Use address from current network instead of hardcoded mainnet
-    const selectedAddress =
-      wallet.coins.waves.networks[currentNetwork]?.address ||
-      wallet.coins.waves.networks.mainnet.address;
+    const wallet = await Background.addMultiWallet(result.wallet);
 
-    // Retry mechanism to handle potential timing issues
+    // Check available accounts to determine which address type to select
+    const legacyAccounts = await Background.getLegacyFormatAccounts();
+    const accountsWithNetworkCode = legacyAccounts as Array<{
+      address: string;
+      name: string;
+      network: string;
+      networkCode: string;
+      publicKey: string;
+      type: string;
+      id: string;
+    }>;
+    const hasUnit0Accounts = accountsWithNetworkCode.some(
+      acc => acc.networkCode === '88811',
+    );
+    const hasWavesAccounts = accountsWithNetworkCode.some(
+      acc => acc.networkCode === 'W',
+    );
+
+    // Select address based on what exists in legacy accounts, not just current network
+    let selectedAddress = '';
+
+    if (hasUnit0Accounts && !hasWavesAccounts) {
+      // Only Unit0 accounts exist - select Unit0 address
+      selectedAddress =
+        wallet.coins.unit0?.networks.mainnet?.address ||
+        wallet.coins.unit0?.networks.testnet?.address ||
+        '';
+    } else {
+      // Waves accounts exist (or mixed) - select Waves address
+      selectedAddress =
+        wallet.coins.waves?.networks.mainnet?.address ||
+        wallet.coins.waves?.networks.testnet?.address ||
+        wallet.coins.waves?.networks.stagenet?.address ||
+        '';
+    }
+
+    if (!selectedAddress) {
+      throw new Error('No address found in created wallet for current network');
+    }
+
+    // Enhanced retry mechanism with better sync handling
     let selectedAccount;
-    for (let attempt = 0; attempt < 3; attempt++) {
+    for (let attempt = 0; attempt < 5; attempt++) {
+      // Trigger sync before each attempt
+      await Background.syncAccountsFromMultiWallets();
+
+      // Wait a bit for sync to complete
+      await new Promise(resolve => setTimeout(resolve, 200));
+
       const accounts = await Background.getLegacyFormatAccounts();
       selectedAccount = accounts.find(
         account => account.address === selectedAddress,
       );
-      
+
       if (selectedAccount) break;
-      
-      // Wait a bit and try again
-      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Longer wait for subsequent attempts
+      await new Promise(resolve => setTimeout(resolve, 300 * (attempt + 1)));
     }
-    
+
     if (!selectedAccount) {
-      throw new Error(`No account found with address: ${selectedAddress} after 3 attempts`);
+      console.error(
+        'Available accounts:',
+        await Background.getLegacyFormatAccounts(),
+      );
+      throw new Error(
+        `No account found with address: ${selectedAddress} after 5 attempts`,
+      );
     }
-    
-    dispatch(selectAccount(selectedAccount as PreferencesAccount));
+
+    dispatch(selectAccount(selectedAccount as unknown as PreferencesAccount));
   };
 }
 
@@ -236,16 +415,29 @@ export function createFullMultiWallet({
     const wallet = await Background.addMultiWallet(multiWallet);
 
     // Manually trigger account sync to ensure immediate availability
-    const allMultiWallets = await Background.getMultiWallets();
-    await Background.syncAccountsFromMultiWallets(allMultiWallets);
+    await Background.syncAccountsFromMultiWallets();
 
     // Get current network from Redux state
     const currentNetwork = getState().currentNetwork;
 
     // Use address from current network instead of hardcoded mainnet
-    const selectedAddress =
-      wallet.coins.waves.networks[currentNetwork]?.address ||
-      wallet.coins.waves.networks.mainnet.address;
+    let selectedAddress = '';
+
+    // Type-safe network access
+    const wavesNetworks = wallet.coins.waves.networks;
+    if (currentNetwork === 'mainnet' && wavesNetworks.mainnet?.address) {
+      selectedAddress = wavesNetworks.mainnet.address;
+    } else if (currentNetwork === 'testnet' && wavesNetworks.testnet?.address) {
+      selectedAddress = wavesNetworks.testnet.address;
+    } else if (
+      currentNetwork === 'stagenet' &&
+      wavesNetworks.stagenet?.address
+    ) {
+      selectedAddress = wavesNetworks.stagenet.address;
+    } else {
+      // Fallback to mainnet if current network not available
+      selectedAddress = wavesNetworks.mainnet.address;
+    }
 
     // Retry mechanism to handle potential timing issues
     let selectedAccount;
@@ -254,17 +446,19 @@ export function createFullMultiWallet({
       selectedAccount = accounts.find(
         account => account.address === selectedAddress,
       );
-      
+
       if (selectedAccount) break;
-      
+
       // Wait a bit and try again
       await new Promise(resolve => setTimeout(resolve, 100));
     }
-    
+
     if (!selectedAccount) {
-      throw new Error(`No account found with address: ${selectedAddress} after 3 attempts`);
+      throw new Error(
+        `No account found with address: ${selectedAddress} after 3 attempts`,
+      );
     }
-    
-    dispatch(selectAccount(selectedAccount as PreferencesAccount));
+
+    dispatch(selectAccount(selectedAccount as unknown as PreferencesAccount));
   };
 }

@@ -21,12 +21,6 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
     return 'https://explorer.unit0.dev/api/v2/addresses/';
   }
 
-  private getMockAddress(network: NetworkName): string {
-    return network === NetworkName.Testnet
-      ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
-      : '0x145205f669f49F55727de5b542D9C1EACa03A246';
-  }
-
   async fetchTransactions(
     address: string,
     network: NetworkName,
@@ -34,10 +28,9 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
   ): Promise<TransactionFetchResult> {
     const limit = filter.limit || 50;
     const baseUrl = this.getBaseUrl(network);
-    const mockAddress = this.getMockAddress(network);
 
     const response = await fetch(
-      `${baseUrl}${mockAddress}/token-transfers?type=&items_count=${limit}`,
+      `${baseUrl}${address}/token-transfers?type=&items_count=${limit}`,
     );
 
     if (!response.ok) {
@@ -48,10 +41,8 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
     const unit0Transfers = Array.isArray(data.items) ? data.items : [];
 
     // Convert Unit0 transfers to TransactionFromNode format
-    const transactions = unit0Transfers.map(
-      (transfer: Unit0NftTransfer) =>
-        this.convertUnit0ToTransaction(transfer, mockAddress),
-      // TODO: need to delete after removing mock address)
+    const transactions = unit0Transfers.map((transfer: Unit0NftTransfer) =>
+      this.convertUnit0ToTransaction(transfer, address),
     );
 
     return {
@@ -84,7 +75,7 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
       type: TRANSACTION_TYPE.ETHEREUM,
       fee: '0',
       payload: {
-        type: TRANSACTION_TYPE.TRANSFER,
+        type: 'transfer' as const,
         height: unit0Tx.block_number,
         timestamp,
         sender,

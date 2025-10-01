@@ -27,7 +27,12 @@ interface FlattenedAccount {
   networkLabel: string;
 }
 
-const networkLabels: Record<NetworkName, string> = {
+const networkLabels: {
+  custom: string;
+  mainnet: string;
+  testnet: string;
+  stagenet: string;
+} = {
   custom: 'Custom',
   mainnet: 'Mainnet',
   testnet: 'Testnet',

@@ -312,10 +312,13 @@
     "title": "Import Debug Account",
     "nameInput": "Name",
     "addressInput": "Address",
+    "unit0AddressInput": "Unit0 Address",
+    "optional": "optional",
     "continueBtn": "Continue",
     "requiredError": "Cannot be blank",
     "alreadyExists": "Account already exists",
-    "invalidAddressError": "Should be valid {{ networkName }} address"
+    "invalidAddressError": "Should be valid {{ networkName }} address",
+    "invalidUnit0AddressError": "Should be valid Unit0 address"
   },
   "importEmail": {
     "importEmailTitle": "Import Email Account",

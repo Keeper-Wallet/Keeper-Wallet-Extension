@@ -8,7 +8,6 @@ import { Button } from '../ui';
 import { generateNewWalletItems } from './NewWallet';
 import * as styles from './styles/accountOnboarding.styl';
 import { newAccountSelect } from '../../../store/actions/localState';
-import { createMultichainAccount } from '../../../units/createMultichainAccount';
 
 export function AccountOnboarding() {
   const { t } = useTranslation();
@@ -16,17 +15,27 @@ export function AccountOnboarding() {
   const dispatch = useAccountsDispatch();
 
   const handleMultichainAccount = async () => {
-    const { account, phrase } = await createMultichainAccount();
-    dispatch(
-      newAccountSelect({
-        type: 'multichain',
-        address: account.accounts.waves.networks.mainnet.address,
-        name: '',
-        accountType: 'multichain',
-        seed: phrase,
-      }),
-    );
-    navigate('/create-account/save-backup');
+    try {
+      // Generate multichain account and seed phrase using factory system
+      const { Mnemonic } = await import('ethers');
+      const mnemonic = Mnemonic.fromEntropy(crypto.getRandomValues(new Uint8Array(16)));
+      const phrase = mnemonic.phrase;
+
+      // Set up complete multichain account state (matching original flow)
+      dispatch(
+        newAccountSelect({
+          type: 'multichain',
+          name: '',
+          address: '', // Will be populated by factory
+          seed: phrase, // Include generated seed phrase for backup page
+        }),
+      );
+      
+      // Navigate directly to backup page (matching original flow)
+      navigate('/create-account/save-backup');
+    } catch (error) {
+      console.error('Failed to create multichain account:', error);
+    }
   };
 
   const handleWavesAccount = async () => {
@@ -43,8 +52,8 @@ export function AccountOnboarding() {
         seed: '',
       }),
     );
-    // Navigate to the account creation flow with query parameter
-    navigate('/create-waves-account');
+    // Navigate to the account creation flow
+    navigate('/create-account');
   };
 
   return (

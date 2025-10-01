@@ -1,4 +1,3 @@
-import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { type Unit0Transfer } from 'balances/types';
 import {
   type Unit0BalanceResponse,
@@ -32,11 +31,7 @@ export class Unit0Api {
     network: NetworkName = NetworkName.Mainnet,
   ): Promise<Unit0BalanceResponse> {
     const baseUrl = this.getBaseUrl(network);
-    const mockAddress =
-      network === NetworkName.Testnet
-        ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
-        : '0x145205f669f49F55727de5b542D9C1EACa03A246';
-    const response = await fetch(`${baseUrl}${mockAddress}`);
+    const response = await fetch(`${baseUrl}${address}`);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch unit0 balance: ${response.status}`);
@@ -50,12 +45,8 @@ export class Unit0Api {
     network: NetworkName = NetworkName.Mainnet,
   ): Promise<Unit0TokenBalance[]> {
     const baseUrl = this.getBaseUrl(network);
-    const mockAddress =
-      network === NetworkName.Testnet
-        ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
-        : '0xCaf68F88a7262A66dAf6c361d1824bf8A3E4b5DD';
 
-    const response = await fetch(`${baseUrl}${mockAddress}/tokens?type=ERC-20`);
+    const response = await fetch(`${baseUrl}${address}/tokens?type=ERC-20`);
     if (!response.ok) {
       throw new Error(`Failed to fetch ERC-20 tokens: ${response.status}`);
     }
@@ -69,13 +60,9 @@ export class Unit0Api {
     network: NetworkName = NetworkName.Mainnet,
   ): Promise<Unit0TokenBalance[]> {
     const baseUrl = this.getBaseUrl(network);
-    const mockAddress =
-      network === NetworkName.Testnet
-        ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
-        : '0xCaf68F88a7262A66dAf6c361d1824bf8A3E4b5DD';
 
     const response = await fetch(
-      `${baseUrl}${mockAddress}/tokens?type=ERC-721`,
+      `${baseUrl}${address}/tokens?type=ERC-721`,
     );
 
     if (!response.ok) {
@@ -91,13 +78,9 @@ export class Unit0Api {
     network: NetworkName = NetworkName.Mainnet,
   ): Promise<Unit0TokenBalance[]> {
     const baseUrl = this.getBaseUrl(network);
-    const mockAddress =
-      network === NetworkName.Testnet
-        ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
-        : '0xCaf68F88a7262A66dAf6c361d1824bf8A3E4b5DD';
 
     const response = await fetch(
-      `${baseUrl}${mockAddress}/tokens?type=ERC-1155`,
+      `${baseUrl}${address}/tokens?type=ERC-1155`,
     );
 
     if (!response.ok) {
@@ -143,13 +126,9 @@ export class Unit0Api {
     network: NetworkName = NetworkName.Mainnet,
   ): Promise<Unit0NftTransfer[]> {
     const baseUrl = this.getBaseUrl(network);
-    const mockAddress =
-      network === NetworkName.Testnet
-        ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
-        : '0x145205f669f49F55727de5b542D9C1EACa03A246';
 
     const response = await fetch(
-      `${baseUrl}${mockAddress}/token-transfers?type=ERC-721`,
+      `${baseUrl}${address}/token-transfers?type=ERC-721`,
     );
 
     if (!response.ok) {
@@ -191,14 +170,7 @@ export class Unit0Api {
   ) {
     const baseUrl = this.getBaseUrl(network);
 
-    // Use mocked addresses for consistent testing
-    const mockAddress =
-      network === NetworkName.Testnet
-        ? '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84'
-        : '0xCaf68F88a7262A66dAf6c361d1824bf8A3E4b5DD';
-
-    // Use the nft/collections endpoint to get inventory data
-    const url = `${baseUrl}${mockAddress}/nft/collections?type=`;
+    const url = `${baseUrl}${holderAddress}/nft/collections?type=`;
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -260,7 +232,7 @@ export class Unit0Api {
     return {
       id: unit0Tx.transaction_hash,
       sender,
-      type: TRANSACTION_TYPE.ETHEREUM,
+      type: 18 as any,
       fee: '0', // TODO: we need to do another request for getting fee of transaction
       payload: {
         type: 'transfer' as const,

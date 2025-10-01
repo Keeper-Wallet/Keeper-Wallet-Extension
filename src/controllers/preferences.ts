@@ -61,7 +61,6 @@ export class PreferencesController extends EventEmitter {
   }
 
   syncAccounts(wallets: (WalletAccount | MultiWallet)[]) {
-    const multiWallets = wallets as MultiWallet[];
     const oldAccounts = this.store.getState()
       .accounts as unknown as MultiWallet[];
 
@@ -76,11 +75,16 @@ export class PreferencesController extends EventEmitter {
     });
 
     // Add new accounts or update existing ones
-    multiWallets.forEach(wallet => {
-      if (wallet.id) {
-        // If this ID doesn't exist in our map, or we want to update it
-        // You could add logic here to decide whether to update or keep old account
+    wallets.forEach(wallet => {
+      // Handle MultiWallet objects (have id property)
+      if ('id' in wallet && wallet.id) {
         accountsById.set(wallet.id, wallet);
+      }
+      // Handle WalletAccount objects (legacy accounts)
+      else if ('address' in wallet && 'network' in wallet) {
+        // Create a unique key for legacy accounts
+        const key = `${wallet.address}-${wallet.network}`;
+        accountsById.set(key, wallet);
       }
     });
 
@@ -314,8 +318,29 @@ export class PreferencesController extends EventEmitter {
     const { accounts, selectedAccount } = this.store.getState();
 
     const account = (accounts as unknown as MultiWallet[]).find(wallet => {
-      if (!wallet.coins?.waves?.networks?.[network]) return false;
-      return wallet.coins.waves.networks[network]?.address === address;
+      const wavesNetworks = wallet.coins?.waves?.networks;
+      if (!wavesNetworks) return false;
+      
+      // Type-safe network access for Waves networks only
+      let networkItem;
+      switch (network) {
+        case 'mainnet':
+          networkItem = wavesNetworks.mainnet;
+          break;
+        case 'testnet':
+          networkItem = wavesNetworks.testnet;
+          break;
+        case 'stagenet':
+          networkItem = wavesNetworks.stagenet;
+          break;
+        case 'custom':
+          networkItem = wavesNetworks.custom;
+          break;
+        default:
+          return false; // Unit0 or other networks don't exist on Waves
+      }
+      
+      return networkItem?.address === address;
     });
 
     if (!account) {
@@ -329,7 +354,29 @@ export class PreferencesController extends EventEmitter {
     // Update the label in the MultiWallet structure
     const updatedAccounts = (accounts as unknown as MultiWallet[]).map(
       wallet => {
-        if (wallet.coins?.waves?.networks?.[network]?.address === address) {
+        const wavesNetworks = wallet.coins?.waves?.networks;
+        if (!wavesNetworks) return wallet;
+        
+        // Type-safe network access for Waves networks only
+        let networkItem;
+        switch (network) {
+          case 'mainnet':
+            networkItem = wavesNetworks.mainnet;
+            break;
+          case 'testnet':
+            networkItem = wavesNetworks.testnet;
+            break;
+          case 'stagenet':
+            networkItem = wavesNetworks.stagenet;
+            break;
+          case 'custom':
+            networkItem = wavesNetworks.custom;
+            break;
+          default:
+            return wallet; // Unit0 or other networks don't exist on Waves
+        }
+        
+        if (networkItem?.address === address) {
           return {
             ...wallet,
             name: label, // Update the wallet name since it applies to all networks
@@ -453,6 +500,7 @@ export class PreferencesController extends EventEmitter {
     address: string;
     name: string;
     network: string;
+    networkCode: string;
     publicKey: string;
     type: string;
     id: string;
@@ -485,13 +533,28 @@ export class PreferencesController extends EventEmitter {
         const currentNetworkKey = currentNetwork as keyof typeof networks;
 
         // Check if the wallet has the current network
-        if (
-          publicKey &&
-          networks &&
-          currentNetworkKey in networks &&
-          networks[currentNetworkKey]?.address
-        ) {
-          const networkData = networks[currentNetworkKey]; // Use currentNetworkKey instead of currentNetwork
+        // Type-safe network access for Waves networks
+        let networkData;
+        if (publicKey && networks) {
+          switch (currentNetworkKey) {
+            case 'mainnet':
+              networkData = networks.mainnet;
+              break;
+            case 'testnet':
+              networkData = networks.testnet;
+              break;
+            case 'stagenet':
+              networkData = networks.stagenet;
+              break;
+            case 'custom':
+              networkData = networks.custom;
+              break;
+            default:
+              networkData = null; // Unit0 networks don't exist on Waves
+          }
+        }
+        
+        if (networkData?.address) {
 
           legacyAccounts.push({
             address: networkData.address as string,
@@ -499,7 +562,7 @@ export class PreferencesController extends EventEmitter {
             networkCode: networkData.networkCode,
             network: currentNetwork,
             isWavesOnly: !wallet.coins.unit0,
-            publicKey,
+            publicKey: publicKey || '',
             type: wallet.type,
             id: wallet.id,
           });
