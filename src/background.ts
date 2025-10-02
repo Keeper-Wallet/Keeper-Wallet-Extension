@@ -813,6 +813,9 @@ class BackgroundService extends EventEmitter {
         // First get accounts from the MultiWalletController
         return this.preferencesController.getLegacyFormatAccounts();
       },
+      getLegacyFormatAccountsByBlockchain: async (blockchainType?: 'waves' | 'unit0') => {
+        return this.preferencesController.getLegacyFormatAccountsByBlockchain(blockchainType);
+      },
       syncAccountsFromMultiWallets: async () => {
         const multiWallets = this.multiWalletController.getMultiWallets();
         this.preferencesController.syncAccounts(multiWallets);

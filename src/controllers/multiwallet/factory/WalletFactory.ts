@@ -8,6 +8,7 @@ import {
 } from '../interfaces/types';
 import { SeedWalletStrategy } from '../strategies/SeedWalletStrategy';
 import { DebugMultiWalletStrategy } from '../strategies/DebugMultiWalletStrategy';
+import { WavesPrivateKeyStrategy } from '../strategies/WavesPrivateKeyStrategy';
 
 export class WalletFactory implements IWalletFactory {
   async createWallet(
@@ -126,6 +127,13 @@ export class WalletFactory implements IWalletFactory {
           throw new Error('Seed is required for seed wallet');
         }
         strategy = new SeedWalletStrategy(input.seed);
+        break;
+
+      case 'privateKey':
+        if (!('privateKey' in input) || !input.privateKey) {
+          throw new Error('Private key is required for private key wallet');
+        }
+        strategy = new WavesPrivateKeyStrategy(input.privateKey);
         break;
 
       case 'debug':

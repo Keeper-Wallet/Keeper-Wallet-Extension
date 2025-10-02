@@ -9,7 +9,10 @@ import {
 } from 'store/actions/user';
 import { Button, ErrorMessage, Input } from 'ui/components/ui';
 
+import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
+import { NetworkName } from '../../../networks/types';
 import { useWalletValidation } from '../../hooks/useWalletValidation';
+import Background from '../../services/Background';
 import * as styles from './newWalletName.module.css';
 
 export function NewWalletName() {
@@ -78,6 +81,12 @@ export function NewWalletName() {
           e.preventDefault();
 
           setPending(true);
+
+          // This ensures selectAccount can find the account in the correct network
+          await Background.setNetwork(NetworkName.Mainnet);
+          await Background.setCurrentBlockchainType(BLOCKCHAIN_TYPES.WAVES);
+          // Wait for Redux state propagation
+          await new Promise(resolve => setTimeout(resolve, 100));
 
           if (existingAccount) {
             dispatch(selectAccount(existingAccount));

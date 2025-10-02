@@ -576,6 +576,15 @@ class Background {
     return [];
   }
 
+  async getLegacyFormatAccountsByBlockchain(blockchainType?: 'waves' | 'unit0') {
+    await this.initPromise;
+    this._connect();
+    if (this.background) {
+      return this.background.getLegacyFormatAccountsByBlockchain(blockchainType);
+    }
+    return [];
+  }
+
   async syncAccountsFromMultiWallets() {
     await this.initPromise;
     this._connect();
