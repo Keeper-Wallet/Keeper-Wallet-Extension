@@ -15,6 +15,9 @@ import { newAccountSelect, selectAccount } from 'store/actions/localState';
 import invariant from 'tiny-invariant';
 
 import { NETWORK_CONFIG } from '../../../../constants';
+import { NetworkName } from '../../../../networks/types';
+import { type PreferencesAccount } from '../../../../preferences/types';
+import Background from '../../../services/Background';
 import {
   Button,
   ErrorMessage,
@@ -43,8 +46,6 @@ export function ImportSeed() {
   const navigate = useNavigate();
   const dispatch = usePopupDispatch();
   const { t } = useTranslation();
-  const accounts = usePopupSelector(state => state.accounts);
-  const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const customCodes = usePopupSelector(state => state.customCodes);
 
   const [activeTab, setActiveTab] = useState(SEED_TAB_INDEX);
@@ -55,20 +56,44 @@ export function ImportSeed() {
   const [encodedSeedValue, setEncodedSeedValue] = useState<string>('');
   const [privateKeyValue, setPrivateKeyValue] = useState<string>('');
 
+  // Always use Waves mainnet for seed import
+  const targetNetwork = NetworkName.Mainnet;
   const networkCode =
-    customCodes[currentNetwork] || NETWORK_CONFIG[currentNetwork].networkCode;
+    customCodes[targetNetwork] || NETWORK_CONFIG[targetNetwork].networkCode;
 
   const [address, setAddress] = useState<string>();
+  const [wavesAccounts, setWavesAccounts] = useState<
+    Array<{
+      address: string;
+      name: string;
+      network: string;
+    }>
+  >([]);
 
   const [validationError, setValidationError] = useState<
     React.ReactElement | string
   >();
 
+  // Fetch ALL Waves accounts (mainnet, testnet, stagenet, custom) on mount
+  useEffect(() => {
+    Background.getLegacyFormatAccountsByBlockchain('waves')
+      .then(
+        (
+          accounts: Array<{ address: string; name: string; network: string }>,
+        ) => {
+          setWavesAccounts(accounts);
+        },
+      )
+      .catch((err: Error) => {
+        console.error('Failed to fetch Waves accounts:', err);
+      });
+  }, []);
+
   const findExistingAccount = useCallback(
     (addr: string | undefined) => {
-      return addr && accounts.find(acc => acc.address === addr)
+      return addr && wavesAccounts.find(acc => acc.address === addr);
     },
-    [accounts],
+    [wavesAccounts],
   );
 
   const [isAddressInProgress, setIsAddressInProgress] = useState(false);
@@ -263,15 +288,22 @@ export function ImportSeed() {
       </div>
 
       <form
-        onSubmit={event => {
+        onSubmit={async event => {
           event.preventDefault();
 
           if (isAddressInProgress) {
             return;
           }
 
+          // For private key imports, ensure we're on Waves network
+
           if (showValidationError && existingAccount) {
-            dispatch(selectAccount(existingAccount));
+            // Switch to account's network FIRST
+            await Background.setNetwork(existingAccount.network as NetworkName);
+            await Background.setCurrentBlockchainType('waves');
+            await new Promise(resolve => setTimeout(resolve, 100)); // Redux propagation
+
+            dispatch(selectAccount(existingAccount as PreferencesAccount));
             navigate('/import-success');
             return;
           }

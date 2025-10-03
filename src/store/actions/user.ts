@@ -51,19 +51,12 @@ export function createAccount(
 
       const blockchains: Array<'waves' | 'unit0'> = ['waves'];
       const networks: Partial<Record<'waves' | 'unit0', NetworkName[]>> = {
-        waves: [
-          NetworkName.Mainnet,
-          NetworkName.Testnet,
-          NetworkName.Stagenet,
-        ],
+        waves: [NetworkName.Mainnet, NetworkName.Testnet, NetworkName.Stagenet],
       };
 
       if (account.unit0Address) {
         blockchains.push('unit0');
-        networks.unit0 = [
-          NetworkName.unit0MainNet,
-          NetworkName.unit0Testnet,
-        ];
+        networks.unit0 = [NetworkName.unit0MainNet, NetworkName.unit0Testnet];
       }
 
       const input = {
