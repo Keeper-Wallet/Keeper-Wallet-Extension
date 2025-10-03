@@ -14,6 +14,7 @@ import {
 } from '../interfaces/types';
 import { NetworkName } from '../../../networks/types';
 import { NETWORK_CODES } from '../../../services/types';
+import { PrivateKeyWallet } from '../../../wallets/privateKey';
 
 export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
   constructor(private privateKey: string) {}
@@ -70,6 +71,39 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
    */
   async createUnit0Addresses(networks: NetworkName[]): Promise<Unit0NetworkData> {
     throw new Error('Unit0 blockchain is not supported for private key wallets');
+  }
+
+  /**
+   * Create PrivateKeyWallet instances for signing operations
+   */
+  async createWalletInstances(
+    networks: NetworkName[],
+  ): Promise<{ [key: string]: PrivateKeyWallet }> {
+    const walletInstances: { [key: string]: PrivateKeyWallet } = {};
+
+    // Create wallet instances for each Waves network
+    for (const network of networks) {
+      if (
+        [
+          NetworkName.Mainnet,
+          NetworkName.Testnet,
+          NetworkName.Stagenet,
+          NetworkName.Custom,
+        ].includes(network)
+      ) {
+        const networkCode = this.#getWavesNetworkCode(network);
+        const walletInstance = await PrivateKeyWallet.create({
+          name: `${network}-wallet`,
+          network,
+          networkCode,
+          privateKey: this.privateKey,
+        });
+
+        walletInstances[network] = walletInstance;
+      }
+    }
+
+    return walletInstances;
   }
 
   /**

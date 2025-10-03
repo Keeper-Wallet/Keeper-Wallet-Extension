@@ -17,6 +17,7 @@ import { type MultiWallet, type WalletInstance } from '../services/types';
 import { type ExtensionStorage } from '../storage/storage';
 import { SeedWalletStrategy } from './multiwallet/strategies/SeedWalletStrategy';
 import { DebugMultiWalletStrategy } from './multiwallet/strategies/DebugMultiWalletStrategy';
+import { WavesPrivateKeyStrategy } from './multiwallet/strategies/WavesPrivateKeyStrategy';
 import type { PreferencesController } from './preferences';
 
 // Type for strategy that can create wallet instances
@@ -225,7 +226,7 @@ export class MultiWalletController extends EventEmitter {
 
         case 'privateKey': {
           if (!multiWallet.privateKey) return null;
-          return null;
+          return new WavesPrivateKeyStrategy(multiWallet.privateKey);
         }
 
         case 'ledger': {
