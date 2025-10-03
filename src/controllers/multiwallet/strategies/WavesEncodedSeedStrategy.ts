@@ -1,8 +1,10 @@
 import {
   base58Encode,
-  createAddress,
-  createPublicKey,
   base58Decode,
+  createAddress,
+  createPrivateKey,
+  createPublicKey,
+  utf8Decode,
 } from '@keeper-wallet/waves-crypto';
 import { IMultiWalletCreationStrategy } from '../interfaces/IMultiWalletCreationStrategy';
 import { 
@@ -14,20 +16,28 @@ import {
 } from '../interfaces/types';
 import { NetworkName } from '../../../networks/types';
 import { NETWORK_CODES } from '../../../services/types';
-import { PrivateKeyWallet } from '../../../wallets/privateKey';
+import { EncodedSeedWallet } from '../../../wallets/encodedSeed';
 
-export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
-  constructor(private privateKey: string) {}
+/**
+ * Waves Encoded Seed-based Wallet Creation Strategy
+ * Only supports Waves blockchain (mainnet, testnet, stagenet, custom)
+ */
+export class WavesEncodedSeedStrategy implements IMultiWalletCreationStrategy {
+  constructor(private encodedSeed: string) {}
 
   /**
    * Create Waves addresses for specified networks
-   * Uses private key to generate public key and addresses
+   * Decodes encoded seed and uses it for address generation
    */
   async createWavesAddresses(networks: NetworkName[]): Promise<WavesNetworkData> {
-    const privateKeyBytes = base58Decode(this.privateKey);
-    const publicKey = await createPublicKey(privateKeyBytes);
+    // Decode the encoded seed (base58 -> bytes)
+    const decodedSeed = this.#decodeSeed(this.encodedSeed);
+    
+    const privateKey = await createPrivateKey(decodedSeed);
+    const publicKey = await createPublicKey(privateKey);
     const publicKeyBase58 = base58Encode(publicKey);
 
+    // Always generate mainnet and testnet addresses
     const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet);
     const mainnetAddress = base58Encode(
       createAddress(publicKey, mainnetCode.charCodeAt(0)),
@@ -46,6 +56,7 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
       },
     };
 
+    // Add optional networks if requested
     for (const network of networks) {
       const networkCode = this.#getWavesNetworkCode(network);
       const address = base58Encode(
@@ -67,19 +78,19 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
 
   /**
    * Create Unit0 addresses for specified networks
-   * Unit0 not supported for private key wallets
+   * Unit0 not supported for encoded seed wallets
    */
   async createUnit0Addresses(networks: NetworkName[]): Promise<Unit0NetworkData> {
-    throw new Error('Unit0 blockchain is not supported for private key wallets');
+    throw new Error('Unit0 blockchain is not supported for encoded seed wallets');
   }
 
   /**
-   * Create PrivateKeyWallet instances for signing operations
+   * Create EncodedSeedWallet instances for signing operations
    */
   async createWalletInstances(
     networks: NetworkName[],
-  ): Promise<{ [key: string]: PrivateKeyWallet }> {
-    const walletInstances: { [key: string]: PrivateKeyWallet } = {};
+  ): Promise<{ [key: string]: EncodedSeedWallet }> {
+    const walletInstances: { [key: string]: EncodedSeedWallet } = {};
 
     // Create wallet instances for each Waves network
     for (const network of networks) {
@@ -92,11 +103,11 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
         ].includes(network)
       ) {
         const networkCode = this.#getWavesNetworkCode(network);
-        const walletInstance = await PrivateKeyWallet.create({
+        const walletInstance = await EncodedSeedWallet.create({
+          encodedSeed: this.encodedSeed,
           name: `${network}-wallet`,
           network,
           networkCode,
-          privateKey: this.privateKey,
         });
 
         walletInstances[network] = walletInstance;
@@ -110,7 +121,7 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
    * Get authentication data for secure storage
    */
   getAuthData(): WalletAuthData {
-    return { privateKey: this.privateKey };
+    return { encodedSeed: this.encodedSeed };
   }
 
   /**
@@ -119,26 +130,30 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
   validateInput(input: CreateMultiWalletInput): ValidationResult {
     const errors: string[] = [];
 
-    if (input.type !== 'privateKey') {
-      errors.push('Strategy type mismatch: expected privateKey wallet');
+    if (input.type !== 'encodedSeed') {
+      errors.push('Strategy type mismatch: expected encodedSeed wallet');
     }
 
-    if (!('privateKey' in input) || !input.privateKey) {
-      errors.push('Private key is required');
+    if (!('encodedSeed' in input) || !input.encodedSeed) {
+      errors.push('Encoded seed is required');
     } else {
-      // Validate private key format
-      const privateKey = input.privateKey.trim();
-      
-      // Check for base58 format (Waves) or hex format (Ethereum)
-      const isBase58 = /^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]+$/.test(privateKey);
-      const isHex = /^(0x)?[0-9a-fA-F]{64}$/.test(privateKey);
-      
-      if (!isBase58 && !isHex) {
-        errors.push('Private key must be in base58 format (Waves)');
+      // Basic encoded seed validation
+      const encodedSeed = input.encodedSeed.trim();
+      if (encodedSeed.length < 32) {
+        errors.push('Encoded seed is too short');
       }
-      
-      if (privateKey.length < 32) {
-        errors.push('Private key is too short');
+
+      // Try to decode the seed to validate it
+      try {
+        const decodedSeed = this.#decodeSeed(encodedSeed);
+        // Convert bytes to string to check if it's a valid seed phrase
+        const seedString = utf8Decode(decodedSeed);
+        const seedWords = seedString.trim().split(/\s+/);
+        if (seedWords.length < 12 || seedWords.length > 24) {
+          errors.push('Decoded seed phrase must be 12-24 words');
+        }
+      } catch (error) {
+        errors.push('Invalid encoded seed format');
       }
     }
 
@@ -152,7 +167,7 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
 
     // Check for Unit0 blockchain selection (not supported)
     if (input.blockchains.includes('unit0')) {
-      errors.push('Unit0 blockchain is not supported for private key wallets');
+      errors.push('Unit0 blockchain is not supported for encoded seed wallets');
     }
 
     return {
@@ -165,14 +180,14 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
    * Simple boolean check for strategy selection
    */
   canHandle(input: CreateMultiWalletInput): boolean {
-    return input.type === 'privateKey' && 'privateKey' in input && Boolean(input.privateKey);
+    return input.type === 'encodedSeed' && 'encodedSeed' in input && Boolean(input.encodedSeed);
   }
 
   /**
    * Get wallet type identifier
    */
   getWalletType(): string {
-    return 'privateKey';
+    return 'encodedSeed';
   }
 
   /**
@@ -187,6 +202,22 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
    */
   supportsBlockchain(blockchainType: string): boolean {
     return blockchainType === 'waves'; // Only Waves supported
+  }
+
+  /**
+   * Decode the encoded seed
+   * Strips 'base58:' prefix if present and decodes base58 to bytes
+   */
+  #decodeSeed(encodedSeed: string): Uint8Array {
+    try {
+      // Strip 'base58:' prefix if present (matches EncodedSeedWallet.create pattern)
+      const cleanEncodedSeed = encodedSeed.replace(/^base58:/, '');
+      
+      // Decode base58 to bytes
+      return base58Decode(cleanEncodedSeed);
+    } catch (error) {
+      throw new Error('Failed to decode encoded seed. Must be valid base58 format.');
+    }
   }
 
   /**
@@ -206,4 +237,5 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
         return NETWORK_CODES.waves.mainnet;
     }
   }
+
 }
