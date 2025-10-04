@@ -316,6 +316,9 @@ class BackgroundService extends EventEmitter {
       ),
     });
 
+    // Provide IdentityApi to MultiWalletController for WX wallet support
+    this.multiWalletController.setIdentityApi(this.identityController);
+
     // Wallet. Wallet creation, app locking, signing method
     this.walletController = new WalletController({
       extensionStorage: this.extensionStorage,

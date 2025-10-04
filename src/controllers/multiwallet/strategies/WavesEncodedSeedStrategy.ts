@@ -1,38 +1,51 @@
 import {
   base58Encode,
+  base58Decode,
   createAddress,
   createPrivateKey,
   createPublicKey,
+  utf8Decode,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
-import { Wallet } from 'ethers';
-
-import { NetworkName } from '../../../networks/types';
-import { NETWORK_CODES, type WalletItem } from '../../../services/types';
-import { SeedWallet } from '../../../wallets/seed';
-import { type IMultiWalletCreationStrategy } from '../interfaces/IMultiWalletCreationStrategy';
+import { IMultiWalletCreationStrategy } from '../interfaces/IMultiWalletCreationStrategy';
 import {
-  type CreateMultiWalletInput,
-  type Unit0NetworkData,
-  type ValidationResult,
-  type WalletAuthData,
-  type WavesNetworkData,
+  WavesNetworkData,
+  Unit0NetworkData,
+  WalletAuthData,
+  CreateMultiWalletInput,
+  ValidationResult,
 } from '../interfaces/types';
+import { NetworkName } from '../../../networks/types';
+import { NETWORK_CODES } from '../../../services/types';
+import { EncodedSeedWallet } from '../../../wallets/encodedSeed';
 
 /**
- * Seed-based Wallet Creation Strategy
+ * Waves Encoded Seed-based Wallet Creation Strategy
+ * Only supports Waves blockchain (mainnet, testnet, stagenet, custom)
  */
-export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
-  constructor(private seed: string) {}
+export class WavesEncodedSeedStrategy implements IMultiWalletCreationStrategy {
+  constructor(private encodedSeed: string) {}
+
+  /**
+   * Static helper method to create an encoded seed from a regular seed phrase
+   * Useful for testing and converting plain seed phrases to encoded format
+   * @param seedPhrase - Regular seed phrase (12-24 words)
+   * @returns Base58-encoded seed string
+   */
+  static createEncodedSeed(seedPhrase: string): string {
+    return base58Encode(utf8Encode(seedPhrase));
+  }
 
   /**
    * Create Waves addresses for specified networks
-   * Uses existing @keeper-wallet/waves-crypto functions
+   * Decodes encoded seed and uses it for address generation
    */
   async createWavesAddresses(
     networks: NetworkName[],
   ): Promise<WavesNetworkData> {
-    const privateKey = await createPrivateKey(utf8Encode(this.seed));
+    // Decode the encoded seed (base58 -> bytes)
+    const decodedSeed = this.#decodeSeed(this.encodedSeed);
+    const privateKey = await createPrivateKey(decodedSeed);
     const publicKey = await createPublicKey(privateKey);
     const publicKeyBase58 = base58Encode(publicKey);
 
@@ -77,47 +90,25 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
 
   /**
    * Create Unit0 addresses for specified networks
-   * Uses ethers.js for EVM-compatible address generation
+   * Unit0 not supported for encoded seed wallets
    */
   async createUnit0Addresses(
     networks: NetworkName[],
   ): Promise<Unit0NetworkData> {
-    // Create HD wallet from seed phrase
-    const hdWallet = Wallet.fromPhrase(this.seed);
-    const derivedWallet = hdWallet.derivePath("m/44'/60'/0'/0/0");
-    const address = derivedWallet.address;
-
-    const mainnetData: WalletItem = {
-      address,
-      networkCode: this.#getUnit0NetworkCode(NetworkName.unit0MainNet),
-    };
-
-    const testnetData: WalletItem = {
-      address: address as string,
-      networkCode: this.#getUnit0NetworkCode(NetworkName.unit0Testnet),
-    };
-
-    const networkData: Unit0NetworkData = {
-      publicKey: derivedWallet.signingKey.publicKey,
-      networks: {
-        mainnet: mainnetData,
-        testnet: testnetData,
-      },
-    };
-
-    return networkData;
+    throw new Error(
+      'Unit0 blockchain is not supported for encoded seed wallets',
+    );
   }
 
   /**
-   * Create SeedWallet instances for signing operations
-   * This integrates with the existing wallet infrastructure
+   * Create EncodedSeedWallet instances for signing operations
    */
   async createWalletInstances(
     networks: NetworkName[],
-  ): Promise<{ [key: string]: SeedWallet }> {
-    const walletInstances: { [key: string]: SeedWallet } = {};
+  ): Promise<{ [key: string]: EncodedSeedWallet }> {
+    const walletInstances: { [key: string]: EncodedSeedWallet } = {};
 
-    // Create Waves wallet instances for each requested network
+    // Create wallet instances for each Waves network
     for (const network of networks) {
       if (
         [
@@ -128,12 +119,11 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
         ].includes(network)
       ) {
         const networkCode = this.#getWavesNetworkCode(network);
-        const walletInstance = await SeedWallet.create({
+        const walletInstance = await EncodedSeedWallet.create({
+          encodedSeed: this.encodedSeed,
           name: `${network}-wallet`,
           network,
           networkCode,
-          seed: this.seed,
-          ethereumAddress: undefined, // Will be added for multichain
         });
 
         walletInstances[network] = walletInstance;
@@ -144,39 +134,10 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
   }
 
   /**
-   * Create complete wallet with both addresses and signing capability
-   */
-  async createCompleteWallet(input: CreateMultiWalletInput) {
-    const wavesNetworks = input.networks?.waves || [
-      NetworkName.Mainnet,
-      NetworkName.Testnet,
-    ];
-    const unit0Networks = input.networks?.unit0 || [
-      NetworkName.unit0MainNet,
-      NetworkName.unit0Testnet,
-    ];
-
-    // Create address data
-    const wavesData = await this.createWavesAddresses(wavesNetworks);
-    const unit0Data = input.blockchains?.includes('unit0')
-      ? await this.createUnit0Addresses(unit0Networks)
-      : null;
-
-    // Create wallet instances for signing
-    const walletInstances = await this.createWalletInstances(wavesNetworks);
-
-    return {
-      addressData: { waves: wavesData, unit0: unit0Data },
-      walletInstances,
-      authData: this.getAuthData(),
-    };
-  }
-
-  /**
    * Get authentication data for secure storage
    */
   getAuthData(): WalletAuthData {
-    return { seed: this.seed };
+    return { encodedSeed: this.encodedSeed };
   }
 
   /**
@@ -185,17 +146,30 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
   validateInput(input: CreateMultiWalletInput): ValidationResult {
     const errors: string[] = [];
 
-    if (input.type !== 'seed') {
-      errors.push('Strategy type mismatch: expected seed wallet');
+    if (input.type !== 'encodedSeed') {
+      errors.push('Strategy type mismatch: expected encodedSeed wallet');
     }
 
-    if (!('seed' in input) || !input.seed) {
-      errors.push('Seed phrase is required');
+    if (!('encodedSeed' in input) || !input.encodedSeed) {
+      errors.push('Encoded seed is required');
     } else {
-      // Validate seed phrase format (basic check)
-      const seedWords = input.seed.trim().split(/\s+/);
-      if (seedWords.length < 12 || seedWords.length > 24) {
-        errors.push('Seed phrase must be 12-24 words');
+      // Basic encoded seed validation
+      const encodedSeed = input.encodedSeed.trim();
+      if (encodedSeed.length < 32) {
+        errors.push('Encoded seed is too short');
+      }
+
+      // Try to decode the seed to validate it
+      try {
+        const decodedSeed = this.#decodeSeed(encodedSeed);
+        // Convert bytes to string to check if it's a valid seed phrase
+        const seedString = utf8Decode(decodedSeed);
+        const seedWords = seedString.trim().split(/\s+/);
+        if (seedWords.length < 12 || seedWords.length > 24) {
+          errors.push('Decoded seed phrase must be 12-24 words');
+        }
+      } catch (error) {
+        errors.push('Invalid encoded seed format');
       }
     }
 
@@ -205,6 +179,11 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
 
     if (!input.blockchains || input.blockchains.length === 0) {
       errors.push('At least one blockchain must be selected');
+    }
+
+    // Check for Unit0 blockchain selection (not supported)
+    if (input.blockchains.includes('unit0')) {
+      errors.push('Unit0 blockchain is not supported for encoded seed wallets');
     }
 
     return {
@@ -217,28 +196,50 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
    * Simple boolean check for strategy selection
    */
   canHandle(input: CreateMultiWalletInput): boolean {
-    return input.type === 'seed' && 'seed' in input && Boolean(input.seed);
+    return (
+      input.type === 'encodedSeed' &&
+      'encodedSeed' in input &&
+      Boolean(input.encodedSeed)
+    );
   }
 
   /**
    * Get wallet type identifier
    */
   getWalletType(): string {
-    return 'seed';
+    return 'encodedSeed';
   }
 
   /**
    * Get blockchain type for strategy categorization
    */
   getBlockchainType(): string {
-    return 'multi'; // Supports multiple blockchains
+    return 'waves'; // Only Waves supported
   }
 
   /**
    * Check blockchain support
    */
   supportsBlockchain(blockchainType: string): boolean {
-    return ['waves', 'unit0'].includes(blockchainType);
+    return blockchainType === 'waves'; // Only Waves supported
+  }
+
+  /**
+   * Decode the encoded seed
+   * Strips 'base58:' prefix if present and decodes base58 to bytes
+   */
+  #decodeSeed(encodedSeed: string): Uint8Array {
+    try {
+      // Strip 'base58:' prefix if present (matches EncodedSeedWallet.create pattern)
+      const cleanEncodedSeed = encodedSeed.replace(/^base58:/, '');
+
+      // Decode base58 to bytes
+      return base58Decode(cleanEncodedSeed);
+    } catch (error) {
+      throw new Error(
+        'Failed to decode encoded seed. Must be valid base58 format.',
+      );
+    }
   }
 
   /**
@@ -256,20 +257,6 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
         return NETWORK_CODES.waves.mainnet;
       default:
         return NETWORK_CODES.waves.mainnet;
-    }
-  }
-
-  /**
-   * Get Unit0 network code from NetworkName
-   */
-  #getUnit0NetworkCode(network: NetworkName): string {
-    switch (network) {
-      case NetworkName.unit0MainNet:
-        return NETWORK_CODES.unit0.mainnet;
-      case NetworkName.unit0Testnet:
-        return NETWORK_CODES.unit0.testnet;
-      default:
-        return NETWORK_CODES.unit0.mainnet;
     }
   }
 }

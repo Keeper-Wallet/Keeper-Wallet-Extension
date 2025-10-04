@@ -18,7 +18,10 @@ import { type ExtensionStorage } from '../storage/storage';
 import { SeedWalletStrategy } from './multiwallet/strategies/SeedWalletStrategy';
 import { DebugMultiWalletStrategy } from './multiwallet/strategies/DebugMultiWalletStrategy';
 import { WavesPrivateKeyStrategy } from './multiwallet/strategies/WavesPrivateKeyStrategy';
+import { WavesEncodedSeedStrategy } from './multiwallet/strategies/WavesEncodedSeedStrategy';
+import { WavesWxWalletStrategy } from './multiwallet/strategies/WavesWxWalletStrategy';
 import type { PreferencesController } from './preferences';
+import type { IdentityApi } from './IdentityController';
 
 // Type for strategy that can create wallet instances
 type WalletInstanceCreator = {
@@ -62,6 +65,7 @@ export class MultiWalletController extends EventEmitter {
   #password: string | null | undefined;
   #setSession;
   #multiwallets: MultiWallet[]; // Private property to store multiwallets in memory
+  #identityApi: IdentityApi | null = null;
   getLegacyFormatAccounts;
   getAccounts;
 
@@ -97,6 +101,14 @@ export class MultiWalletController extends EventEmitter {
   }
 
   /**
+   * Set the IdentityApi for WX wallet support
+   * Must be called after IdentityController is initialized
+   */
+  setIdentityApi(identityApi: IdentityApi): void {
+    this.#identityApi = identityApi;
+  }
+
+  /**
    * Add a new multi-wallet to storage and create wallet instances
    */
   async addMultiWallet(multiWallet: MultiWallet): Promise<MultiWallet> {
@@ -118,9 +130,14 @@ export class MultiWalletController extends EventEmitter {
         await this.#createWalletInstancesFromMultiWallet(multiWallet);
       if (walletInstances) {
         multiWallet.walletInstances = walletInstances;
+      } else {
+        console.warn(
+          `No wallet instances created for ${multiWallet.type} wallet ${multiWallet.id}`,
+        );
       }
     } catch (error) {
       console.error('Failed to create wallet instances:', error);
+      throw error; // Re-throw to prevent adding wallet without instances
     }
 
     // Add the new multi-wallet to the in-memory array
@@ -163,13 +180,14 @@ export class MultiWalletController extends EventEmitter {
     return [...this.#multiwallets];
   }
 
-  getWalletForSigning(
+  async getWalletForSigning(
     address: string,
     network: NetworkName,
-  ): WalletInstance {
+  ): Promise<WalletInstance> {
     // Find the MultiWallet from stored wallets
     const multiWallet = this.findMultiWalletByAccount(address, network);
 
+    console.log('multiWallet', multiWallet);
     if (!multiWallet) {
       throw new Error(
         `Wallet with address ${address} on network ${network} not found`,
@@ -181,7 +199,22 @@ export class MultiWalletController extends EventEmitter {
       return multiWallet.walletInstances[network];
     }
 
-    // If no wallet instance available, create one on demand
+    // If no wallet instance available, try to create one on demand
+    console.warn(
+      `Wallet instance not found for ${address} on ${network}. Attempting to create...`,
+    );
+
+    try {
+      const walletInstances =
+        await this.#createWalletInstancesFromMultiWallet(multiWallet);
+      if (walletInstances && walletInstances[network]) {
+        multiWallet.walletInstances = walletInstances;
+        return walletInstances[network];
+      }
+    } catch (error) {
+      console.error('Failed to create wallet instance on demand:', error);
+    }
+
     throw new Error(
       `Wallet instance not available for address ${address} on network ${network}. Please ensure wallet instances are created.`,
     );
@@ -202,6 +235,16 @@ export class MultiWalletController extends EventEmitter {
       const networks = this.#extractNetworksFromMultiWallet(multiWallet);
       if (networks.length === 0) {
         return null;
+      }
+
+      // For WX wallets, pass identityApi
+      if (multiWallet.type === 'wx' && strategy instanceof WavesWxWalletStrategy) {
+        if (!this.#identityApi) {
+          throw new Error(
+            'IdentityApi not available for WX wallet creation. Ensure setIdentityApi() is called first.',
+          );
+        }
+        return await strategy.createWalletInstances(networks, this.#identityApi);
       }
 
       return await strategy.createWalletInstances(networks);
@@ -229,11 +272,25 @@ export class MultiWalletController extends EventEmitter {
           return new WavesPrivateKeyStrategy(multiWallet.privateKey);
         }
 
-        case 'ledger': {
-          return null;
+        case 'encodedSeed': {
+          if (!multiWallet.encodedSeed) return null;
+          return new WavesEncodedSeedStrategy(multiWallet.encodedSeed);
         }
 
         case 'wx': {
+          const wxData = multiWallet.coins.waves;
+          if (!wxData?.publicKey || !wxData?.networks?.mainnet?.address) return null;
+          if (!multiWallet.wxUuid || !multiWallet.wxUsername) return null;
+          
+          return new WavesWxWalletStrategy(
+            multiWallet.wxUuid,
+            multiWallet.wxUsername,
+            wxData.publicKey,
+            wxData.networks.mainnet.address,
+          );
+        }
+
+        case 'ledger': {
           return null;
         }
 
@@ -422,6 +479,19 @@ export class MultiWalletController extends EventEmitter {
       // Decrypt the vault and populate the in-memory array
       const decryptedWallets = await decryptVault(vault, password);
       this.#multiwallets = decryptedWallets;
+
+      // Recreate wallet instances for each restored wallet
+      for (const wallet of this.#multiwallets) {
+        try {
+          const walletInstances = await this.#createWalletInstancesFromMultiWallet(wallet);
+          if (walletInstances) {
+            wallet.walletInstances = walletInstances;
+          }
+        } catch (error) {
+          console.warn(`Failed to create wallet instances for wallet ${wallet.id}:`, error);
+          // Continue with other wallets even if one fails
+        }
+      }
 
       // Update the store state
       this.store.updateState({

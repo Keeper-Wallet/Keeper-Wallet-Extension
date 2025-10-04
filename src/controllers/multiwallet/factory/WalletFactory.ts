@@ -9,6 +9,8 @@ import {
 import { SeedWalletStrategy } from '../strategies/SeedWalletStrategy';
 import { DebugMultiWalletStrategy } from '../strategies/DebugMultiWalletStrategy';
 import { WavesPrivateKeyStrategy } from '../strategies/WavesPrivateKeyStrategy';
+import { WavesEncodedSeedStrategy } from '../strategies/WavesEncodedSeedStrategy';
+import { WavesWxWalletStrategy } from '../strategies/WavesWxWalletStrategy';
 
 export class WalletFactory implements IWalletFactory {
   async createWallet(
@@ -134,6 +136,36 @@ export class WalletFactory implements IWalletFactory {
           throw new Error('Private key is required for private key wallet');
         }
         strategy = new WavesPrivateKeyStrategy(input.privateKey);
+        break;
+
+      case 'encodedSeed':
+        if (!('encodedSeed' in input) || !input.encodedSeed) {
+          throw new Error('Encoded seed is required for encoded seed wallet');
+        }
+        strategy = new WavesEncodedSeedStrategy(input.encodedSeed);
+        break;
+
+      case 'wx':
+        if (
+          !('uuid' in input) ||
+          !input.uuid ||
+          !('username' in input) ||
+          !input.username ||
+          !('publicKey' in input) ||
+          !input.publicKey ||
+          !('address' in input) ||
+          !input.address
+        ) {
+          throw new Error(
+            'UUID, username, publicKey, and address are required for WX wallet',
+          );
+        }
+        strategy = new WavesWxWalletStrategy(
+          input.uuid,
+          input.username,
+          input.publicKey,
+          input.address,
+        );
         break;
 
       case 'debug':

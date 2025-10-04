@@ -143,11 +143,13 @@ export function createWavesOnlyMultiWallet({
   name,
   seed,
   privateKey,
+  encodedSeed,
   type,
 }: {
   name: string;
   seed?: string;
   privateKey?: string;
+  encodedSeed?: string;
   type: string;
 }): AccountsThunkAction<Promise<void>> {
   return async dispatch => {
@@ -166,6 +168,21 @@ export function createWavesOnlyMultiWallet({
         name,
         type: 'privateKey' as const,
         privateKey,
+        blockchains: ['waves'] as Array<'waves'>,
+        networks: {
+          waves: [
+            NetworkName.Mainnet,
+            NetworkName.Testnet,
+            NetworkName.Stagenet,
+          ],
+        },
+      };
+      result = await factory.createWallet(input);
+    } else if (type === 'encodedSeed' && encodedSeed) {
+      const input = {
+        name,
+        type: 'encodedSeed' as const,
+        encodedSeed,
         blockchains: ['waves'] as Array<'waves'>,
         networks: {
           waves: [

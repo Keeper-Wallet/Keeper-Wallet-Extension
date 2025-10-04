@@ -226,7 +226,7 @@ export class MessageController extends EventEmitter {
       const { address, network, publicKey } = message.account;
 
       // Get wallet instance (SeedWallet with signing methods) from factory-created wallets
-      const wallet = this.multiWalletController.getWalletForSigning(
+      const wallet = await this.multiWalletController.getWalletForSigning(
         address,
         network,
       );

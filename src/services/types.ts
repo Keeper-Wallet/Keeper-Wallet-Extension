@@ -24,6 +24,9 @@ export interface MultiWallet {
   // Authentication data - stored securely
   seed?: string; // Optional seed phrase (for seed wallets)
   privateKey?: string; // Optional private key (for privateKey wallets)
+  encodedSeed?: string; // Optional encoded seed (base58-encoded seed phrase)
+  wxUuid?: string; // Optional WX wallet UUID
+  wxUsername?: string; // Optional WX wallet username
 
   // Nested structure for different blockchains
   coins: {

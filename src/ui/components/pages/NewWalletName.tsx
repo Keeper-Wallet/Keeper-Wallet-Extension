@@ -38,6 +38,7 @@ export function NewWalletName() {
   // Check if we're creating a Waves-only account or multichain account
   const isMultichainFromState = location.state?.multichain === true;
   const isPrivateKey = account.type === 'privateKey';
+  const isEncodedSeed = account.type === 'encodedSeed';
   const isWavesOnlyCreation = account.type === 'seed' && !isMultichainFromState;
   const isMultichainCreation =
     account.type === 'multichain' || isMultichainFromState;
@@ -141,6 +142,21 @@ export function NewWalletName() {
                 type: account.type,
               }),
             );
+          } else if (isEncodedSeed) {
+            try {
+              await dispatch(
+                createWavesOnlyMultiWallet({
+                  name: accountName,
+                  encodedSeed: account.encodedSeed,
+                  type: account.type,
+                }),
+              );
+            } catch (error) {
+              console.error('Failed to create encoded seed wallet:', error);
+              setError('Failed to create wallet. Please try again.');
+              setPending(false);
+              return;
+            }
           }
 
           navigate('/import-success');
