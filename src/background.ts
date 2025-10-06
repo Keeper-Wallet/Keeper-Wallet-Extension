@@ -279,6 +279,16 @@ class BackgroundService extends EventEmitter {
         ),
     });
 
+    // AssetInfo. Provides information about assets
+    this.assetInfoController = new AssetInfoController({
+      extensionStorage: this.extensionStorage,
+      getNetwork: this.networkController.getNetwork.bind(
+        this.networkController,
+      ),
+      getNode: this.networkController.getNode.bind(this.networkController),
+      remoteConfig: this.remoteConfigController,
+    });
+
     // MultiWallet. Manages wallet groups across networks
     this.multiWalletController = new MultiWalletController({
       extensionStorage: this.extensionStorage,
@@ -289,6 +299,29 @@ class BackgroundService extends EventEmitter {
       getAccounts: this.preferencesController.getAccounts.bind(
         this.preferencesController,
       ),
+      assetInfoController: this.assetInfoController,
+      ledgerApi: {
+        signOrder: data =>
+          this.ledgerSign('order', {
+            ...data,
+            dataBuffer: Array.from(data.dataBuffer),
+          }),
+        signRequest: data =>
+          this.ledgerSign('request', {
+            ...data,
+            dataBuffer: Array.from(data.dataBuffer),
+          }),
+        signSomeData: data =>
+          this.ledgerSign('someData', {
+            ...data,
+            dataBuffer: Array.from(data.dataBuffer),
+          }),
+        signTransaction: data =>
+          this.ledgerSign('transaction', {
+            ...data,
+            dataBuffer: Array.from(data.dataBuffer),
+          }),
+      },
     });
 
     // On network change
@@ -400,16 +433,6 @@ class BackgroundService extends EventEmitter {
     this.networkController.store.subscribe(() =>
       this.currentAccountController.updateCurrentAccountBalance(),
     );
-
-    // AssetInfo. Provides information about assets
-    this.assetInfoController = new AssetInfoController({
-      extensionStorage: this.extensionStorage,
-      getNetwork: this.networkController.getNetwork.bind(
-        this.networkController,
-      ),
-      getNode: this.networkController.getNode.bind(this.networkController),
-      remoteConfig: this.remoteConfigController,
-    });
 
     this.nftInfoController = new NftInfoController({
       extensionStorage: this.extensionStorage,
@@ -800,6 +823,7 @@ class BackgroundService extends EventEmitter {
         this.identityController,
       ),
       identityClear: async () => this.identityController.clearSession(),
+
 
       ledgerSignResponse: async (
         requestId: string,

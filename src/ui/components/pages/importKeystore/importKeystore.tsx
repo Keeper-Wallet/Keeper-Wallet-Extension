@@ -334,7 +334,16 @@ export function ImportKeystore() {
           // Common parameters for both types of wallets
           const baseParams = {
             name: wallet.name,
-            seed: wallet.seed as string,
+            ...(wallet.type === 'encodedSeed' 
+              ? { encodedSeed: wallet.encodedSeed as string }
+              : wallet.type === 'privateKey'
+              ? { privateKey: wallet.privateKey as string }
+              : wallet.type === 'ledger'
+              ? { ledgerId: wallet.ledgerId, address: wavesMainnetAddress }
+              : wallet.type === 'wx'
+              ? { uuid: wallet.wxUuid, username: wallet.wxUsername, address: wavesMainnetAddress }
+              : { seed: wallet.seed as string }
+            ),
             type: wallet.type,
             publicKey: wavesPublicKey,
             mainnetAddress: wavesMainnetAddress,
@@ -342,17 +351,23 @@ export function ImportKeystore() {
             stagenetAddress: wavesStagenetAddress,
           };
 
-          if (hasUnit0Data) {
-            // We have Unit0 data, create a full multi-wallet
-            const fullParams = {
-              ...baseParams,
+          if (hasUnit0Data && wallet.type === 'seed') {
+            // Only SEED wallets can have Unit0 data - create specific seed params
+            const seedParams = {
+              name: wallet.name,
+              seed: wallet.seed as string,
+              type: wallet.type,
+              publicKey: wavesPublicKey,
+              mainnetAddress: wavesMainnetAddress,
+              testnetAddress: wavesTestnetAddress,
+              stagenetAddress: wavesStagenetAddress,
               unit0PublicKey,
               unit0Address: unit0MainnetAddress,
             };
 
-            await dispatch(createFullMultiWallet(fullParams));
+            await dispatch(createFullMultiWallet(seedParams));
           } else {
-            // No Unit0 data, create a Waves-only wallet
+            // All other wallet types (privateKey, encodedSeed, ledger, wx) or seed without Unit0
             await dispatch(createWavesOnlyMultiWallet(baseParams));
           }
         }

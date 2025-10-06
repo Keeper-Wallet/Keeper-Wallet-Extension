@@ -11,6 +11,7 @@ import { DebugMultiWalletStrategy } from '../strategies/DebugMultiWalletStrategy
 import { WavesPrivateKeyStrategy } from '../strategies/WavesPrivateKeyStrategy';
 import { WavesEncodedSeedStrategy } from '../strategies/WavesEncodedSeedStrategy';
 import { WavesWxWalletStrategy } from '../strategies/WavesWxWalletStrategy';
+import { WavesLedgerWalletStrategy } from '../strategies/WavesLedgerWalletStrategy';
 
 export class WalletFactory implements IWalletFactory {
   async createWallet(
@@ -163,6 +164,26 @@ export class WalletFactory implements IWalletFactory {
         strategy = new WavesWxWalletStrategy(
           input.uuid,
           input.username,
+          input.publicKey,
+          input.address,
+        );
+        break;
+
+      case 'ledger':
+        if (
+          !('id' in input) ||
+          input.id === undefined ||
+          !('publicKey' in input) ||
+          !input.publicKey ||
+          !('address' in input) ||
+          !input.address
+        ) {
+          throw new Error(
+            'ID, publicKey, and address are required for Ledger wallet',
+          );
+        }
+        strategy = new WavesLedgerWalletStrategy(
+          input.id,
           input.publicKey,
           input.address,
         );

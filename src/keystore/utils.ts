@@ -5,7 +5,7 @@ import {
 } from '@keeper-wallet/waves-crypto';
 import { type PreferencesAccount } from 'preferences/types';
 
-import { MultiWallet } from '../services/types';
+import { type MultiWallet } from '../services/types';
 import background from '../ui/services/Background';
 
 async function encryptProfiles(
@@ -14,32 +14,14 @@ async function encryptProfiles(
 ): Promise<string> {
   const accounts = await Promise.all(
     accountsToExport.map(async (acc): Promise<MultiWallet[]> => {
-      const commonData = {
-        address: acc.address,
-        name: acc.name,
-        network: acc.network,
-        networkCode: acc.networkCode,
-      };
       switch (acc.type) {
         case 'seed':
         case 'multichain':
         case 'privateKey':
-          return acc as unknown as MultiWallet[];
         case 'encodedSeed':
-          return {
-            ...commonData,
-            type: acc.type,
-            encodedSeed: await background.getAccountEncodedSeed(
-              acc.address,
-              acc.network,
-              password,
-            ),
-          };
-        case 'debug':
-          return {
-            ...commonData,
-            type: acc.type,
-          };
+        case 'ledger':
+        case 'wx':
+          return acc as unknown as MultiWallet[];
         default:
           throw new Error(
             `Trying to export unsupported account type: ${acc.type}`,

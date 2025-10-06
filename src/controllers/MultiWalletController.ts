@@ -20,13 +20,17 @@ import { DebugMultiWalletStrategy } from './multiwallet/strategies/DebugMultiWal
 import { WavesPrivateKeyStrategy } from './multiwallet/strategies/WavesPrivateKeyStrategy';
 import { WavesEncodedSeedStrategy } from './multiwallet/strategies/WavesEncodedSeedStrategy';
 import { WavesWxWalletStrategy } from './multiwallet/strategies/WavesWxWalletStrategy';
+import { WavesLedgerWalletStrategy } from './multiwallet/strategies/WavesLedgerWalletStrategy';
 import type { PreferencesController } from './preferences';
 import type { IdentityApi } from './IdentityController';
+import type { AssetInfoController } from './assetInfo';
+import type { LedgerApi } from '../wallets/ledger';
 
 // Type for strategy that can create wallet instances
 type WalletInstanceCreator = {
   createWalletInstances(
     networks: NetworkName[],
+    ...args: any[]
   ): Promise<{ [key: string]: WalletInstance }>;
 };
 
@@ -66,6 +70,8 @@ export class MultiWalletController extends EventEmitter {
   #setSession;
   #multiwallets: MultiWallet[]; // Private property to store multiwallets in memory
   #identityApi: IdentityApi | null = null;
+  #assetInfoController: AssetInfoController;
+  #ledgerApi: LedgerApi;
   getLegacyFormatAccounts;
   getAccounts;
 
@@ -73,15 +79,21 @@ export class MultiWalletController extends EventEmitter {
     extensionStorage,
     getLegacyFormatAccounts,
     getAccounts,
+    assetInfoController,
+    ledgerApi,
   }: {
     extensionStorage: ExtensionStorage;
     getLegacyFormatAccounts: PreferencesController['getLegacyFormatAccounts'];
     getAccounts: PreferencesController['getAccounts'];
+    assetInfoController: AssetInfoController;
+    ledgerApi: LedgerApi;
   }) {
     super();
 
     this.getLegacyFormatAccounts = getLegacyFormatAccounts;
     this.getAccounts = getAccounts;
+    this.#assetInfoController = assetInfoController;
+    this.#ledgerApi = ledgerApi;
 
     // Initialize store with extension storage
     this.store = new ObservableStore(
@@ -247,6 +259,15 @@ export class MultiWalletController extends EventEmitter {
         return await strategy.createWalletInstances(networks, this.#identityApi);
       }
 
+      // For Ledger wallets, pass ledgerApi and assetInfoController
+      if (multiWallet.type === 'ledger' && strategy instanceof WavesLedgerWalletStrategy) {
+        return await strategy.createWalletInstances(
+          networks,
+          this.#ledgerApi,
+          this.#assetInfoController
+        );
+      }
+
       return await strategy.createWalletInstances(networks);
     } catch (error) {
       console.error('Error creating wallet instances from MultiWallet:', error);
@@ -291,7 +312,14 @@ export class MultiWalletController extends EventEmitter {
         }
 
         case 'ledger': {
-          return null;
+          const ledgerData = multiWallet.coins.waves;
+          if (!ledgerData?.publicKey || !multiWallet.ledgerId) return null;
+          
+          return new WavesLedgerWalletStrategy(
+            multiWallet.ledgerId,
+            ledgerData.publicKey,
+            ledgerData.networks.mainnet.address,
+          );
         }
 
         case 'debug': {

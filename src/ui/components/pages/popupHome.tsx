@@ -11,6 +11,7 @@ import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
 
 import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
+import { type MultiWallet } from '../../../services/types';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { ImportPopup } from './accountHome';
 import { AssetInfo } from './assets/assetInfo';
@@ -25,14 +26,16 @@ export function PopupHome() {
   const dispatch = usePopupDispatch();
 
   const activeAccount = usePopupSelector(state => {
-    // Handle multi-chain wallet case
+    // Handle multichain wallet case
     if (
       state.selectedAccount?.type === 'multichain' &&
       state.selectedAccount?.walletId
     ) {
       // First try to find by walletId which is more reliable for multi-chain wallets
       const multiChainAccount = state.accounts.find(
-        account => account.id === state.selectedAccount?.walletId,
+        account =>
+          (account as unknown as MultiWallet).id ===
+          state.selectedAccount?.walletId,
       );
 
       if (multiChainAccount) {
@@ -42,7 +45,7 @@ export function PopupHome() {
         // If we need to get Unit0 address when unit0 is selected as blockchain type
         if (
           currentBlockchainType === 'unit0' &&
-          multiChainAccount.coins?.unit0
+          (multiChainAccount as unknown as MultiWallet).coins?.unit0
         ) {
           // Use currentNetwork from Redux state
           const network = state.currentNetwork?.toLowerCase() || 'mainnet';
@@ -50,12 +53,17 @@ export function PopupHome() {
           const unit0NetworkKey = network === 'stagenet' ? 'testnet' : network;
 
           // Create a modified account with the Unit0 address for the current network
+          const unit0Networks = (multiChainAccount as unknown as MultiWallet)
+            .coins.unit0?.networks;
+          const networkAddress =
+            unit0Networks?.[unit0NetworkKey as 'mainnet' | 'testnet']?.address;
+
           return {
             ...multiChainAccount,
             address:
-              multiChainAccount.coins.unit0.networks[unit0NetworkKey]
-                ?.address ||
-              multiChainAccount.coins.unit0.networks.mainnet?.address,
+              networkAddress ||
+              unit0Networks?.mainnet?.address ||
+              multiChainAccount.address,
           };
         }
 

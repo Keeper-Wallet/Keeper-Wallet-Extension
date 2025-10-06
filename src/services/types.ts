@@ -27,6 +27,7 @@ export interface MultiWallet {
   encodedSeed?: string; // Optional encoded seed (base58-encoded seed phrase)
   wxUuid?: string; // Optional WX wallet UUID
   wxUsername?: string; // Optional WX wallet username
+  ledgerId?: number; // Optional Ledger device account ID
 
   // Nested structure for different blockchains
   coins: {

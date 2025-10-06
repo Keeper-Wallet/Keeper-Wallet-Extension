@@ -1,16 +1,13 @@
-import { type CreateWalletInput } from 'wallets/types';
-
 import { type AccountsThunkAction } from '../../accounts/store/types';
 import { NETWORK_CONFIG } from '../../constants';
 import { NetworkName } from '../../networks/types';
 import { type PreferencesAccount } from '../../preferences/types';
-import { NETWORK_CODES } from '../../services/types';
-import { type MultiWallet } from '../../services/types';
+import { type MultiWallet, NETWORK_CODES } from '../../services/types';
 import Background, { WalletTypes } from '../../ui/services/Background';
+import { type CreateWalletInput } from '../../wallets/types';
 import { ACTION } from './constants';
 import { selectAccount } from './localState';
 import { updateActiveState } from './notifications';
-
 export function deleteAllAccounts(): AccountsThunkAction<Promise<void>> {
   return async dispatch => {
     await Background.deleteVault();
@@ -144,12 +141,22 @@ export function createWavesOnlyMultiWallet({
   seed,
   privateKey,
   encodedSeed,
+  ledgerId,
+  publicKey,
+  address,
+  uuid,
+  username,
   type,
 }: {
   name: string;
   seed?: string;
   privateKey?: string;
   encodedSeed?: string;
+  ledgerId?: number;
+  publicKey?: string;
+  address?: string;
+  uuid?: string;
+  username?: string;
   type: string;
 }): AccountsThunkAction<Promise<void>> {
   return async dispatch => {
@@ -193,11 +200,43 @@ export function createWavesOnlyMultiWallet({
         },
       };
       result = await factory.createWallet(input);
+    } else if (
+      type === 'ledger' &&
+      ledgerId !== undefined &&
+      publicKey &&
+      address
+    ) {
+      const input = {
+        name,
+        type: 'ledger' as const,
+        id: ledgerId,
+        publicKey,
+        address,
+        blockchains: ['waves'] as Array<'waves'>,
+        networks: {
+          waves: [
+            NetworkName.Mainnet,
+            NetworkName.Testnet,
+            NetworkName.Stagenet,
+          ],
+        },
+      };
+      result = await factory.createWallet(input);
     } else {
       const input = {
         name,
-        type: 'seed' as const,
-        seed: seed || '',
+        type: type as any,
+        ...(type === 'seed'
+          ? { seed: seed || '' }
+          : type === 'privateKey'
+          ? { privateKey: privateKey || '' }
+          : type === 'encodedSeed'
+          ? { encodedSeed: encodedSeed || '' }
+          : type === 'ledger'
+          ? { ledgerId: ledgerId || 0, address: address || '' }
+          : type === 'wx'
+          ? { uuid: uuid, username: username, address: address || '' }
+          : { seed: seed || '' }),
         blockchains: ['waves'] as Array<'waves'>,
         networks: {
           waves: [
@@ -247,6 +286,7 @@ export function createWavesOnlyMultiWallet({
 {{ ... }}
  * Uses our Strategy + Factory pattern for reliable multi-blockchain wallet creation
  */
+
 export function createMultiWalletWithFactory({
   name,
   seed,

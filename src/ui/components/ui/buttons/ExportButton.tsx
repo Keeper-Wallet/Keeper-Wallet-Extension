@@ -7,6 +7,7 @@ import { downloadKeystore } from '../../../../keystore/utils';
 import { isExportable } from '../../pages/exportAccounts/chooseItems';
 import { ExportPasswordModal } from '../../pages/exportAccounts/passwordModal';
 import * as styles from './ExportButton.module.css';
+import { MultiWallet } from '../../../../services/types';
 
 interface Props {
   className?: string;
@@ -41,7 +42,7 @@ export const ExportButton = ({ className }: Props) => {
           }}
           onSubmit={async (password, encrypted) => {
             await downloadKeystore(
-              accounts.filter(isExportable),
+              accounts.filter(isExportable) as unknown as MultiWallet[],
               addresses,
               password,
               encrypted,

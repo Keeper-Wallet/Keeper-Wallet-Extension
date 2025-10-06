@@ -5,9 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import background from 'ui/services/Background';
 
 import { downloadKeystore } from '../../../keystore/utils';
-import { isExportable } from '../pages/exportAccounts/chooseItems';
-import { ExportPasswordModal } from '../pages/exportAccounts/passwordModal';
+import { type MultiWallet } from '../../../services/types';
 import { Button } from '../ui';
+import { isExportable } from './exportAccounts/chooseItems';
+import { ExportPasswordModal } from './exportAccounts/passwordModal';
 import * as styles from './ExportAndImport.module.css';
 
 export function ExportAndImport() {
@@ -98,7 +99,9 @@ export function ExportAndImport() {
             }}
             onSubmit={async (password, encrypted) => {
               await downloadKeystore(
-                allNetworksAccounts.filter(isExportable),
+                allNetworksAccounts.filter(
+                  isExportable,
+                ) as unknown as MultiWallet[],
                 addresses,
                 password,
                 encrypted,

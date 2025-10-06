@@ -4,7 +4,7 @@ import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { newAccountSelect } from 'store/actions/localState';
+import { createWavesOnlyMultiWallet } from 'store/actions/user';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { ErrorMessage } from 'ui/components/ui/error';
 import { Input } from 'ui/components/ui/input';
@@ -312,7 +312,7 @@ export function ImportLedger() {
             <Button
               disabled={!selectedUser}
               view="submit"
-              onClick={() => {
+              onClick={async () => {
                 if (
                   accounts.some(acc => acc.address === selectedUser.address)
                 ) {
@@ -320,18 +320,25 @@ export function ImportLedger() {
                   return;
                 }
 
-                dispatch(
-                  newAccountSelect({
-                    type: 'ledger',
-                    address: selectedUser.address,
-                    id: selectedUser.id,
-                    publicKey: selectedUser.publicKey,
-                    name: '',
-                    hasBackup: true,
-                  }),
-                );
+                try {
+                  // Use MultiWallet system - following the same pattern as other wallet types
+                  await dispatch(
+                    createWavesOnlyMultiWallet({
+                      name: `Ledger ${selectedUser.id}`, // Default name, user can change later
+                      type: 'ledger',
+                      ledgerId: selectedUser.id,
+                      publicKey: selectedUser.publicKey,
+                      address: selectedUser.address,
+                    }),
+                  );
 
-                navigate('/account-name');
+                  navigate('/');
+                } catch (error) {
+                  console.error('Failed to create Ledger wallet:', error);
+                  setSelectAccountError(
+                    error instanceof Error ? error.message : 'Failed to create wallet'
+                  );
+                }
               }}
             >
               {t('importLedger.continueButton')}
