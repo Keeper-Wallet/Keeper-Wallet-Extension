@@ -92,12 +92,4 @@ export class BalanceContext {
       txHistoryResult.transactions,
     );
   }
-
-  /**
-   * Get the current strategy's blockchain type
-   * @returns The blockchain type
-   */
-  getCurrentBlockchainType(): string {
-    return this.strategy.getBlockchainType();
-  }
 }

@@ -292,10 +292,6 @@ class BackgroundService extends EventEmitter {
     // MultiWallet. Manages wallet groups across networks
     this.multiWalletController = new MultiWalletController({
       extensionStorage: this.extensionStorage,
-      getLegacyFormatAccounts:
-        this.preferencesController.getLegacyFormatAccounts.bind(
-          this.preferencesController,
-        ),
       getAccounts: this.preferencesController.getAccounts.bind(
         this.preferencesController,
       ),
@@ -824,7 +820,6 @@ class BackgroundService extends EventEmitter {
       ),
       identityClear: async () => this.identityController.clearSession(),
 
-
       ledgerSignResponse: async (
         requestId: string,
         err: string | null,
@@ -840,8 +835,12 @@ class BackgroundService extends EventEmitter {
         // First get accounts from the MultiWalletController
         return this.preferencesController.getLegacyFormatAccounts();
       },
-      getLegacyFormatAccountsByBlockchain: async (blockchainType?: 'waves' | 'unit0') => {
-        return this.preferencesController.getLegacyFormatAccountsByBlockchain(blockchainType);
+      getLegacyFormatAccountsByBlockchain: async (
+        blockchainType?: 'waves' | 'unit0',
+      ) => {
+        return this.preferencesController.getLegacyFormatAccountsByBlockchain(
+          blockchainType,
+        );
       },
       syncAccountsFromMultiWallets: async () => {
         const multiWallets = this.multiWalletController.getMultiWallets();

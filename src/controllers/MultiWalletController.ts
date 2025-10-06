@@ -72,25 +72,21 @@ export class MultiWalletController extends EventEmitter {
   #identityApi: IdentityApi | null = null;
   #assetInfoController: AssetInfoController;
   #ledgerApi: LedgerApi;
-  getLegacyFormatAccounts;
   getAccounts;
 
   constructor({
     extensionStorage,
-    getLegacyFormatAccounts,
     getAccounts,
     assetInfoController,
     ledgerApi,
   }: {
     extensionStorage: ExtensionStorage;
-    getLegacyFormatAccounts: PreferencesController['getLegacyFormatAccounts'];
     getAccounts: PreferencesController['getAccounts'];
     assetInfoController: AssetInfoController;
     ledgerApi: LedgerApi;
   }) {
     super();
 
-    this.getLegacyFormatAccounts = getLegacyFormatAccounts;
     this.getAccounts = getAccounts;
     this.#assetInfoController = assetInfoController;
     this.#ledgerApi = ledgerApi;
@@ -125,7 +121,9 @@ export class MultiWalletController extends EventEmitter {
    */
   async addMultiWallet(multiWallet: MultiWallet): Promise<MultiWallet> {
     if (!this.#password) {
-      throw new Error('Password must be set before creating wallets. Please unlock the vault first.');
+      throw new Error(
+        'Password must be set before creating wallets. Please unlock the vault first.',
+      );
     }
 
     // Validate wallet doesn't already exist
@@ -138,8 +136,7 @@ export class MultiWalletController extends EventEmitter {
 
     // Create wallet instances for signing operations
     try {
-      const walletInstances =
-        await this.#createWalletInstancesFromMultiWallet(multiWallet);
+      const walletInstances = await this.#restoreWalletInstances(multiWallet);
       if (walletInstances) {
         multiWallet.walletInstances = walletInstances;
       } else {
@@ -217,8 +214,7 @@ export class MultiWalletController extends EventEmitter {
     );
 
     try {
-      const walletInstances =
-        await this.#createWalletInstancesFromMultiWallet(multiWallet);
+      const walletInstances = await this.#restoreWalletInstances(multiWallet);
       if (walletInstances && walletInstances[network]) {
         multiWallet.walletInstances = walletInstances;
         return walletInstances[network];
@@ -233,9 +229,9 @@ export class MultiWalletController extends EventEmitter {
   }
 
   /**
-   * Create wallet instances from MultiWallet data
+   * Restore wallet instances from stored wallet data
    */
-  async #createWalletInstancesFromMultiWallet(
+  async #restoreWalletInstances(
     multiWallet: MultiWallet,
   ): Promise<{ [key: string]: WalletInstance } | null> {
     try {
@@ -250,21 +246,30 @@ export class MultiWalletController extends EventEmitter {
       }
 
       // For WX wallets, pass identityApi
-      if (multiWallet.type === 'wx' && strategy instanceof WavesWxWalletStrategy) {
+      if (
+        multiWallet.type === 'wx' &&
+        strategy instanceof WavesWxWalletStrategy
+      ) {
         if (!this.#identityApi) {
           throw new Error(
             'IdentityApi not available for WX wallet creation. Ensure setIdentityApi() is called first.',
           );
         }
-        return await strategy.createWalletInstances(networks, this.#identityApi);
+        return await strategy.createWalletInstances(
+          networks,
+          this.#identityApi,
+        );
       }
 
       // For Ledger wallets, pass ledgerApi and assetInfoController
-      if (multiWallet.type === 'ledger' && strategy instanceof WavesLedgerWalletStrategy) {
+      if (
+        multiWallet.type === 'ledger' &&
+        strategy instanceof WavesLedgerWalletStrategy
+      ) {
         return await strategy.createWalletInstances(
           networks,
           this.#ledgerApi,
-          this.#assetInfoController
+          this.#assetInfoController,
         );
       }
 
@@ -300,9 +305,10 @@ export class MultiWalletController extends EventEmitter {
 
         case 'wx': {
           const wxData = multiWallet.coins.waves;
-          if (!wxData?.publicKey || !wxData?.networks?.mainnet?.address) return null;
+          if (!wxData?.publicKey || !wxData?.networks?.mainnet?.address)
+            return null;
           if (!multiWallet.wxUuid || !multiWallet.wxUsername) return null;
-          
+
           return new WavesWxWalletStrategy(
             multiWallet.wxUuid,
             multiWallet.wxUsername,
@@ -314,7 +320,7 @@ export class MultiWalletController extends EventEmitter {
         case 'ledger': {
           const ledgerData = multiWallet.coins.waves;
           if (!ledgerData?.publicKey || !multiWallet.ledgerId) return null;
-          
+
           return new WavesLedgerWalletStrategy(
             multiWallet.ledgerId,
             ledgerData.publicKey,
@@ -323,7 +329,8 @@ export class MultiWalletController extends EventEmitter {
         }
 
         case 'debug': {
-          const debugAddress = multiWallet.coins.waves?.networks?.mainnet?.address;
+          const debugAddress =
+            multiWallet.coins.waves?.networks?.mainnet?.address;
           if (!debugAddress) return null;
           return new DebugMultiWalletStrategy(debugAddress);
         }
@@ -412,40 +419,6 @@ export class MultiWalletController extends EventEmitter {
     });
   }
 
-  /**
-   * Remove a multi-wallet by ID
-   */
-  removeMultiWallet(id: string): void {
-    const initialLength = this.#multiwallets.length;
-
-    // Filter out the wallet with the specified ID
-    this.#multiwallets = this.#multiwallets.filter(wallet => wallet.id !== id);
-
-    if (this.#multiwallets.length === initialLength) {
-      // No wallet was removed
-      return;
-    }
-
-    // Save the updated list to storage
-    if (this.#password) {
-      this.#saveMultiWallets().catch(error => {
-        console.error('Failed to save multi-wallets after removal:', error);
-        // Note: Could implement rollback here if needed
-      });
-    } else {
-      // If not initialized with password, update the store state
-      const state = this.store.getState();
-      this.store.updateState({
-        MultiWalletController: {
-          ...state.MultiWalletController,
-          multiWallets: this.#multiwallets,
-        },
-      });
-    }
-
-    this.emit('multiWalletsChanged', this.#multiwallets);
-  }
-
   // VaultController-required methods
 
   async #setPassword(password: string | null) {
@@ -511,12 +484,15 @@ export class MultiWalletController extends EventEmitter {
       // Recreate wallet instances for each restored wallet
       for (const wallet of this.#multiwallets) {
         try {
-          const walletInstances = await this.#createWalletInstancesFromMultiWallet(wallet);
+          const walletInstances = await this.#restoreWalletInstances(wallet);
           if (walletInstances) {
             wallet.walletInstances = walletInstances;
           }
         } catch (error) {
-          console.warn(`Failed to create wallet instances for wallet ${wallet.id}:`, error);
+          console.warn(
+            `Failed to create wallet instances for wallet ${wallet.id}:`,
+            error,
+          );
           // Continue with other wallets even if one fails
         }
       }
