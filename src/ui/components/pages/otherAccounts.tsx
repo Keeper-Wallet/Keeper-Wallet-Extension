@@ -1,6 +1,5 @@
-import { Asset, Money } from '@waves/data-entities';
-import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import clsx from 'clsx';
+import { createMoneyFromBalance } from 'balances/utils';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { compareAccountsByLastUsed } from 'preferences/utils';
 import { useEffect, useState } from 'react';
@@ -10,6 +9,7 @@ import { selectAccount } from 'store/actions/localState';
 import { SearchInput } from 'ui/components/ui/searchInput/searchInput';
 import background from 'ui/services/Background';
 
+import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
 import { startPolling } from '../../../_core/polling';
 import { AccountCard } from '../accounts/accountCard';
 import { Tooltip } from '../ui/tooltip';
@@ -27,6 +27,10 @@ export function OtherAccountsPage() {
   );
   const assets = usePopupSelector(state => state.assets);
   const balances = usePopupSelector(state => state.balances);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+  );
 
   const [term, setTerm] = useState<string>('');
 
@@ -43,14 +47,39 @@ export function OtherAccountsPage() {
     )
     .sort(compareAccountsByLastUsed);
 
-  const wavesAsset = new Asset(assets.WAVES as IAssetInfo);
+  // Map currentNetwork to base network name for comparison
+  // currentNetwork can be 'unit0MainNet' but balance.network is 'mainnet'
+  const baseNetworkName =
+    currentNetwork === 'unit0MainNet'
+      ? 'mainnet'
+      : currentNetwork === 'unit0Testnet'
+      ? 'testnet'
+      : currentNetwork; // For Waves: mainnet, testnet, stagenet, custom
+
+  // Filter balances to only show those matching the current network and blockchain
+  const filteredBalances = Object.fromEntries(
+    Object.entries(balances).filter(([_, balance]) => {
+      // If balance has no network info, keep it (legacy data)
+      if (!balance?.network) return true;
+
+      // Determine if this balance is Unit0 or Waves
+      const isUnit0Balance = balance.assets?.unit0 !== undefined;
+      const isCurrentlyUnit0 = currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0;
+
+      // Blockchain type must match
+      if (isUnit0Balance !== isCurrentlyUnit0) {
+        return false;
+      }
+
+      // Network name must match (mainnet/testnet/stagenet/custom)
+      return balance.network === baseNetworkName;
+    }),
+  );
 
   const balancesMoney = Object.fromEntries(
-    Object.entries(balances).map(([key, balance]) => [
+    Object.entries(filteredBalances).map(([key, balance]) => [
       key,
-      typeof balance?.regular !== 'undefined'
-        ? new Money(balance.regular, wavesAsset)
-        : undefined,
+      createMoneyFromBalance(balance, assets),
     ]),
   );
 
@@ -59,10 +88,13 @@ export function OtherAccountsPage() {
     navigate('/', { replace: true });
   };
 
-  useEffect(
-    () => startPolling(10000, () => background.updateOtherAccountsBalances()),
-    [],
-  );
+  useEffect(() => {
+    // Immediately update balances when network changes
+    background.updateOtherAccountsBalances();
+
+    // Then start polling
+    return startPolling(10000, () => background.updateOtherAccountsBalances());
+  }, [currentNetwork]);
 
   return (
     <div className={styles.root} data-testid="otherAccountsPage">

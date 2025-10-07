@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { notificationChangeName } from 'store/actions/localState';
 
-import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
 import { type MultiWallet } from '../../../services/types';
 import Background from '../../services/Background';
 import { getAccountLink } from '../../urls';
@@ -67,32 +66,20 @@ export function AccountInfo() {
   let leaseBalance: Money | undefined;
 
   if (account) {
-    const isMultiChainWallet = account.type === 'multichain';
     const balanceItem = balances[account.address];
-
     if (balanceItem) {
-      // For multichain accounts, check if base account should be Unit0
-      if (
-        isMultiChainWallet &&
-        currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0 &&
-        unit0Asset
-      ) {
-        // Use Unit0 balance
-        const assetInstance = new Asset(unit0Asset as IAssetInfo);
+      // Check if this balance has unit0 asset to determine blockchain type
+      const hasUnit0Asset = balanceItem.assets?.unit0 !== undefined;
+      const assetToUse = hasUnit0Asset && unit0Asset ? unit0Asset : wavesAsset;
 
-        if (typeof balanceItem.available !== 'undefined')
-          balance = new Money(balanceItem.available, assetInstance);
+      if (assetToUse && typeof balanceItem.available !== 'undefined') {
+        const assetInstance = new Asset(assetToUse as IAssetInfo);
+        balance = new Money(balanceItem.available, assetInstance);
 
-        // Unit0 doesn't have lease functionality, so no leaseBalance
-      } else if (wavesAsset) {
-        // Use Waves balance (default for non-multichain or when on Waves blockchain)
-        const assetInstance = new Asset(wavesAsset as IAssetInfo);
-
-        if (typeof balanceItem.available !== 'undefined')
-          balance = new Money(balanceItem.available, assetInstance);
-
-        if (typeof balanceItem.leasedOut !== 'undefined')
+        // Lease balance only exists for Waves
+        if (!hasUnit0Asset && typeof balanceItem.leasedOut !== 'undefined') {
           leaseBalance = new Money(balanceItem.leasedOut, assetInstance);
+        }
       }
     }
   }

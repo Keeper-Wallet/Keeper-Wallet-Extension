@@ -109,7 +109,7 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
             {t('assetInfo.timestamp')}
           </div>
           <div className="tag1">
-            <DateFormat date={Number(asset.timestamp)} />
+            <DateFormat date={asset.timestamp} />
           </div>
         </div>
 

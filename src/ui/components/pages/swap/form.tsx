@@ -160,16 +160,6 @@ export function SwapForm({
   const feeAssetInfo = assets[feeAssetId];
 
   if (!fromAssetInfo || !toAssetInfo || !feeAssetInfo) {
-    console.log('Assets not fully loaded yet:', {
-      fromAssetId,
-      toAssetId,
-      feeAssetId,
-      hasFromAsset: !!fromAssetInfo,
-      hasToAsset: !!toAssetInfo,
-      hasFeeAsset: !!feeAssetInfo,
-      totalAssets: Object.keys(assets).length,
-    });
-
     return (
       <div className="flex items-center justify-center p-4">
         <Loader />

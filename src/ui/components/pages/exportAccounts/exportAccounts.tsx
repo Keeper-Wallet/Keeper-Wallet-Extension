@@ -38,8 +38,6 @@ export function ExportAccounts() {
       if (!decryptedVault || !accountsToExport) {
         throw new Error('Vault data or selected accounts are missing');
       }
-      console.log(accountsToExport, 'accountsToExport');
-
       // Pass the decrypted vault as the third parameter
       await downloadKeystore(accountsToExport, undefined, password);
 

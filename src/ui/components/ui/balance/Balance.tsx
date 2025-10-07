@@ -1,9 +1,26 @@
 import { type Money } from '@waves/data-entities';
+import { BigNumber } from '@waves/bignumber';
 import clsx from 'clsx';
 
 import { Loader } from '../loader';
 import { UsdAmount } from '../UsdAmount';
 import * as styles from './Balance.module.css';
+
+/**
+ * Formats balance display to limit Unit0 tokens to 8 decimal places (same as Waves)
+ * while keeping the correct 18-decimal precision for calculations
+ */
+function formatBalanceDisplay(balance: Money, isShortFormat?: boolean): string {
+  // For Unit0 tokens (18 decimals), limit display to 8 decimals like Waves
+  if (balance.asset.id === 'unit0' || balance.asset.precision === 18) {
+    const maxDisplayDecimals = 8;
+    const tokens = balance.getTokens();
+    return tokens.toFormat(maxDisplayDecimals, BigNumber.ROUND_MODE.ROUND_DOWN);
+  }
+  
+  // For all other assets, use default formatting
+  return isShortFormat ? balance.toFormat() : balance.toTokens();
+}
 
 interface Props {
   addSign?: string;
@@ -40,9 +57,7 @@ export function Balance({
     return <div>N/A</div>;
   }
 
-  const tokens = (
-    isShortFormat ? balance.toFormat() : balance.toTokens()
-  ).split('.');
+  const tokens = formatBalanceDisplay(balance, isShortFormat).split('.');
 
   const assetName = showAsset ? balance.asset.displayName : null;
 

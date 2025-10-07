@@ -44,7 +44,7 @@ export function getCollectionLink(
 }
 
 export function getTxHistoryLink(networkCode: string, address: string): string {
-  return `${getAccountLink(networkCode, address)}/tx/`;
+  return `${getAccountLink(networkCode, address)}?tab=token_transfers`;
 }
 
 export function getNftsLink(networkCode: string, address: string): string {

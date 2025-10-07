@@ -1,7 +1,7 @@
 import { TRANSACTION_TYPE, type TransactionFromNode } from '@waves/ts-types';
 import clsx from 'clsx';
 import { usePopupSelector } from 'popup/store/react';
-import { type CSSProperties, useEffect, useRef } from 'react';
+import { type CSSProperties, useEffect, useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { VariableSizeList } from 'react-window';
@@ -18,7 +18,10 @@ import {
   type Unit0Transfer,
   type Unit0TransferPayload,
 } from '../../../../../balances/types';
-import { MAX_TX_HISTORY_ITEMS } from '../../../../../constants';
+import {
+  MAX_TX_HISTORY_ITEMS,
+  UNIT0_MAX_TX_HISTORY_ITEMS,
+} from '../../../../../constants';
 import {
   buildTxTypeOptions,
   buildUnit0TxTypeOptions,
@@ -37,12 +40,14 @@ const Row = ({
     hasMore: boolean | undefined;
     hasFilters: string | number | boolean | undefined;
     historyLink: string;
+    MaxItems: number;
   };
   index: number;
   style: CSSProperties;
 }) => {
   const { t } = useTranslation();
-  const { historyWithGroups, hasMore, hasFilters, historyLink } = data;
+  const { historyWithGroups, hasMore, hasFilters, historyLink, MaxItems } =
+    data;
   const historyOrGroup = historyWithGroups[index];
   return (
     <div style={style}>
@@ -59,9 +64,9 @@ const Row = ({
           <div className="margin-min">
             {hasFilters
               ? t('assets.maxFiltersHistory', {
-                  count: MAX_TX_HISTORY_ITEMS - 1,
+                  count: MaxItems - 1,
                 })
-              : t('assets.maxHistory', { count: MAX_TX_HISTORY_ITEMS - 1 })}
+              : t('assets.maxHistory', { count: MaxItems - 1 })}
           </div>
           <a
             className="blue link"
@@ -109,6 +114,12 @@ export function TabTxHistory() {
   const thisYear = new Date().getFullYear();
   const thisMonth = new Date().getMonth();
   const thisDate = new Date().getDate();
+
+  const MaxItems = useMemo(() => {
+    return currentBlockchainType === BLOCKCHAIN_TYPES.WAVES
+      ? MAX_TX_HISTORY_ITEMS
+      : UNIT0_MAX_TX_HISTORY_ITEMS;
+  }, [currentBlockchainType]);
 
   const [filters, setFilters] = useUiState('txHistoryFilters');
   const [term, setTerm] = [
@@ -229,7 +240,7 @@ export function TabTxHistory() {
 
   const historyWithGroups = txHistory
     ? (txHistory as TransactionFromNode[])
-        .slice(0, MAX_TX_HISTORY_ITEMS - 1)
+        .slice(0, MaxItems - 1)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .filter((tx: any) => {
           const hasMassTransfers = (tx.transfers ?? []).reduce(
@@ -441,7 +452,7 @@ export function TabTxHistory() {
                 <Trans
                   t={t}
                   i18nKey="assets.notFoundHistory"
-                  values={{ count: MAX_TX_HISTORY_ITEMS - 1 }}
+                  values={{ count: MaxItems - 1 }}
                 />
               </div>
               <p className="blue link" onClick={() => setFilters(null)}>
@@ -459,8 +470,7 @@ export function TabTxHistory() {
               invariant(width != null);
               invariant(height != null);
 
-              const hasMore =
-                txHistory && txHistory.length === MAX_TX_HISTORY_ITEMS;
+              const hasMore = txHistory && txHistory.length === MaxItems;
               return (
                 <>
                   <VariableSizeList
@@ -483,6 +493,7 @@ export function TabTxHistory() {
                       hasFilters: term || type || onlyIn || onlyOut,
                       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                       historyLink: getTxHistoryLink(networkCode!, address!),
+                      MaxItems,
                     }}
                     // eslint-disable-next-line @typescript-eslint/no-shadow
                     itemKey={(index, { historyWithGroups }) =>

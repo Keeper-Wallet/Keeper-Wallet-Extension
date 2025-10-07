@@ -196,7 +196,6 @@ export class MultiWalletController extends EventEmitter {
     // Find the MultiWallet from stored wallets
     const multiWallet = this.findMultiWalletByAccount(address, network);
 
-    console.log('multiWallet', multiWallet);
     if (!multiWallet) {
       throw new Error(
         `Wallet with address ${address} on network ${network} not found`,
