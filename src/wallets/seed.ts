@@ -6,6 +6,7 @@ import {
   signBytes,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
+import { Wallet as EthWallet, Transaction } from 'ethers';
 import { type NetworkName } from 'networks/types';
 
 import { type WalletPrivateDataOfType } from './types';
@@ -96,5 +97,38 @@ export class SeedWallet extends Wallet<WalletPrivateDataOfType<'seed'>> {
     const privateKey = await this.getPrivateKey();
 
     return signBytes(privateKey, bytes);
+  }
+
+  /**
+   * Sign Unit0 (Ethereum) transaction using seed phrase
+   */
+  async signUnit0Transaction(txData: {
+    to: string;
+    value: string;
+    gasLimit: string;
+    gasPrice: string;
+    nonce: number;
+    data?: string;
+    chainId: number;
+  }): Promise<string> {
+    // Derive Ethereum wallet from seed phrase
+    const hdWallet = EthWallet.fromPhrase(this.getSeed());
+    const derivedWallet = hdWallet.derivePath("m/44'/60'/0'/0/0");
+
+    // Build transaction
+    const tx = Transaction.from({
+      to: txData.to,
+      value: txData.value,
+      gasLimit: txData.gasLimit,
+      gasPrice: txData.gasPrice,
+      nonce: txData.nonce,
+      data: txData.data || '0x',
+      chainId: txData.chainId,
+    });
+
+    // Sign transaction
+    const signedTx = await derivedWallet.signTransaction(tx);
+
+    return signedTx;
   }
 }

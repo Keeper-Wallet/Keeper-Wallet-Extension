@@ -53,7 +53,7 @@ export function createAccount(
 
       if (account.unit0Address) {
         blockchains.push('unit0');
-        networks.unit0 = [NetworkName.unit0MainNet, NetworkName.unit0Testnet];
+        networks.unit0 = [NetworkName.Mainnet, NetworkName.Testnet];
       }
 
       const input = {
@@ -310,7 +310,7 @@ export function createMultiWalletWithFactory({
       blockchains: ['waves', 'unit0'] as Array<'waves' | 'unit0'>,
       networks: {
         waves: [NetworkName.Mainnet, NetworkName.Testnet, NetworkName.Stagenet],
-        unit0: [NetworkName.unit0MainNet, NetworkName.unit0Testnet],
+        unit0: [NetworkName.Mainnet, NetworkName.Testnet],
       },
     };
 

@@ -52,6 +52,22 @@ export abstract class Wallet<TData extends WalletPrivateData> {
     return this.signBytes(bytes);
   }
 
+  /**
+   * Sign Unit0 (Ethereum) transaction
+   * Override this method in wallet implementations that support Unit0
+   */
+  async signUnit0Transaction(txData: {
+    to: string;
+    value: string;
+    gasLimit: string;
+    gasPrice: string;
+    nonce: number;
+    data?: string;
+    chainId: number;
+  }): Promise<string> {
+    throw new Error('Unit0 transaction signing not supported for this wallet type');
+  }
+
   getSeed(): string {
     throw new Error('Cannot get seed');
   }

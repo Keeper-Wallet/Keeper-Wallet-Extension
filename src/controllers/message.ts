@@ -63,6 +63,7 @@ import type { PreferencesAccount } from '../preferences/types';
 import type { ExtensionStorage } from '../storage/storage';
 import { getTxVersions } from '../wallets/getTxVersions';
 import type { AssetInfoController } from './assetInfo';
+import { Unit0Api } from './api/unit0Api';
 import type { CurrentAccountController } from './currentAccount';
 import type { MultiWalletController } from './MultiWalletController';
 import type { NetworkController } from './network';
@@ -99,6 +100,7 @@ export class MessageController extends EventEmitter {
   private getAccountBalance;
   private remoteConfigController;
   private multiWalletController;
+  private unit0Api;
 
   constructor({
     extensionStorage,
@@ -128,6 +130,7 @@ export class MessageController extends EventEmitter {
     this.networkController = networkController;
     this.remoteConfigController = remoteConfigController;
     this.multiWalletController = multiWalletController;
+    this.unit0Api = new Unit0Api();
 
     // permissions
     this.setPermission = setPermission;
@@ -410,6 +413,46 @@ export class MessageController extends EventEmitter {
           };
 
           message.status = MessageStatus.Signed;
+          break;
+        }
+        case 'unit0Transaction': {
+          // Sign Unit0 (Ethereum) transaction
+          const signedTx = await wallet.signUnit0Transaction({
+            to: message.data.to,
+            value: message.data.value,
+            gasLimit: message.data.gasLimit,
+            gasPrice: message.data.gasPrice,
+            nonce: message.data.nonce,
+            data: message.data.data,
+            chainId: message.data.chainId,
+          });
+
+          if (message.broadcast) {
+            // Broadcast to Unit0 blockchain
+            const txHash = await this.unit0Api.sendRawTransaction(
+              signedTx,
+              message.account.network,
+            );
+
+            message.result = JSON.stringify({
+              txHash,
+              signedTransaction: signedTx,
+            });
+            message.status = MessageStatus.Published;
+          } else {
+            // Just return signed transaction
+            message.result = signedTx;
+            message.status = MessageStatus.Signed;
+          }
+
+          if (message.successPath) {
+            const url = new URL(message.successPath);
+            const resultData = message.broadcast
+              ? JSON.parse(message.result)
+              : { txHash: '' };
+            url.searchParams.append('txHash', resultData.txHash || '');
+            this.emit('Open new tab', url.href);
+          }
           break;
         }
       }
@@ -1996,6 +2039,30 @@ export class MessageController extends EventEmitter {
           id: nanoid(),
           input: messageInput,
           status: MessageStatus.UnApproved,
+          timestamp: Date.now(),
+        };
+      }
+      case 'unit0Transaction': {
+        let successPath: string | null = null;
+
+        try {
+          successPath = messageInput.data.successPath
+            ? new URL(
+                messageInput.data.successPath,
+                `https://${messageInput.origin}`,
+              ).href
+            : null;
+        } catch {
+          // ignore
+        }
+
+        return {
+          ...messageInput,
+          data: messageInput.data,
+          ext_uuid: messageInput.options && messageInput.options.uid,
+          id: nanoid(),
+          status: MessageStatus.UnApproved,
+          successPath,
           timestamp: Date.now(),
         };
       }

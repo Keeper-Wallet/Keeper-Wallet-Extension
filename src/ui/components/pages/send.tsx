@@ -1,6 +1,9 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
+import { BLOCKCHAIN_TYPES } from 'assets/constants';
+import { Unit0Api } from 'controllers/api/unit0Api';
+import { NetworkName } from '../../../networks/types';
 import { isAddressString, isAlias } from 'messages/utils';
 import { createNft } from 'nfts/nfts';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
@@ -23,11 +26,17 @@ export function Send() {
 
   const { t } = useTranslation();
   const dispatch = usePopupDispatch();
+  const selectedAccount = usePopupSelector(state => state.selectedAccount);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const chainId = usePopupSelector(
     state =>
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       state.selectedAccount?.networkCode!.charCodeAt(0),
   );
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+  );
+  const isUnit0 = currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0;
   const accountBalance = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
     state => state.balances[state.selectedAccount?.address!],
@@ -87,9 +96,15 @@ export function Send() {
   const [isTriedToSubmit, setIsTriedToSubmit] = useState(false);
 
   const [recipientValue, setRecipientValue] = useState('');
+
+  // Validate recipient based on blockchain type
+  const isValidRecipient = isUnit0
+    ? /^0x[a-fA-F0-9]{40}$/.test(recipientValue) // Ethereum address format
+    : isAddressString(recipientValue, chainId) || isAlias(recipientValue); // Waves address
+
   const recipientError = !recipientValue
     ? t('send.recipientRequiredError')
-    : !(isAddressString(recipientValue, chainId) || isAlias(recipientValue))
+    : !isValidRecipient
     ? t('send.recipientInvalidError')
     : null;
   const showRecipientError = isTriedToSubmit && recipientError != null;
@@ -125,6 +140,57 @@ export function Send() {
         }
 
         setIsSubmitting(true);
+
+        if (isUnit0) {
+          // Unit0 (Ethereum) transaction sending
+          (async () => {
+            try {
+              if (!selectedAccount?.address) {
+                throw new Error('No account selected');
+              }
+
+              const unit0Api = new Unit0Api();
+
+              // Convert amount from tokens to wei (multiply by 10^18)
+              const amountInWei = new BigNumber(amountValue)
+                .mul(new BigNumber(10).pow(18))
+                .toFixed(0);
+
+              // Get nonce and gas price from blockchain
+              const [nonce, gasPrice] = await Promise.all([
+                unit0Api.getTransactionCount(
+                  selectedAccount.address,
+                  currentNetwork,
+                ),
+                unit0Api.getGasPrice(currentNetwork),
+              ]);
+
+              // Determine chainId based on network
+              // Unit0 chain IDs: Mainnet 88811, Testnet 88817
+              const unit0ChainId =
+                currentNetwork === NetworkName.Mainnet ? 88811 : 88817;
+
+              await Background.signAndPublishUnit0Transaction({
+                to: recipientValue,
+                value: amountInWei,
+                gasLimit: '21000', // TODO: hardcoded need to get dynamic
+                gasPrice,
+                nonce,
+                chainId: unit0ChainId,
+              });
+
+              // Success - navigate back
+              navigate(-1);
+            } catch (err) {
+              setIsSubmitting(false);
+              if (err instanceof Error && /user denied/i.test(err.message)) {
+                return;
+              }
+              throw err;
+            }
+          })();
+          return;
+        }
 
         Background.signAndPublishTransaction({
           type: 4,

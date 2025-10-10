@@ -3,6 +3,4 @@ export enum NetworkName {
   Testnet = 'testnet',
   Stagenet = 'stagenet',
   Custom = 'custom',
-  unit0MainNet = 'unit0MainNet',
-  unit0Testnet = 'unit0Testnet',
 }

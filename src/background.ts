@@ -799,6 +799,30 @@ class BackgroundService extends EventEmitter {
       },
       broadcastTransaction: (tx: MessageTx) =>
         this.networkController.broadcastTransaction(tx),
+
+      signAndPublishUnit0Transaction: async (
+        data: MessageInputOfType<'unit0Transaction'>['data'],
+        options?: MessageInputOfType<'unit0Transaction'>['options'],
+      ) => {
+        const { selectedAccount } = this.extensionStorage.getState([
+          'selectedAccount',
+        ]);
+
+        if (!selectedAccount) {
+          throw ERRORS.EMPTY_KEEPER();
+        }
+
+        const message = await this.messageController.newMessage({
+          account: selectedAccount,
+          broadcast: true,
+          data,
+          options,
+          type: 'unit0Transaction',
+        });
+
+        // Wait for user approval via Unit0TransactionScreen
+        await this.messageController.getMessageResult(message.id);
+      },
       getExtraFee: (address: string, network: NetworkName) =>
         getExtraFee(address, this.networkController.getNode(network)),
 

@@ -467,6 +467,15 @@ class Background {
     return this.background!.signAndPublishTransaction(data);
   }
 
+  async signAndPublishUnit0Transaction(
+    data: MessageInputOfType<'unit0Transaction'>['data'],
+  ) {
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.background!.signAndPublishUnit0Transaction(data);
+  }
+
   async getExtraFee(address: string, network: NetworkName) {
     await this.initPromise;
     this._connect();

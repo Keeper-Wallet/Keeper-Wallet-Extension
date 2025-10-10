@@ -365,8 +365,8 @@ export class MultiWalletController extends EventEmitter {
     // Extract Unit0 networks
     if (multiWallet.coins.unit0?.networks) {
       const unit0Networks = multiWallet.coins.unit0.networks;
-      if (unit0Networks.mainnet) networks.push(NetworkName.unit0MainNet);
-      if (unit0Networks.testnet) networks.push(NetworkName.unit0Testnet);
+      if (unit0Networks.mainnet) networks.push(NetworkName.Mainnet);
+      if (unit0Networks.testnet) networks.push(NetworkName.Testnet);
     }
 
     return networks;

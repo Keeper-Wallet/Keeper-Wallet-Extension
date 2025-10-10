@@ -70,12 +70,12 @@ export class DebugMultiWalletStrategy implements IMultiWalletCreationStrategy {
 
     const mainnetData: WalletItem = {
       address: this.unit0DebugAddress,
-      networkCode: this.#getUnit0NetworkCode(NetworkName.unit0MainNet),
+      networkCode: this.#getUnit0NetworkCode(NetworkName.Mainnet),
     };
 
     const testnetData: WalletItem = {
       address: this.unit0DebugAddress,
-      networkCode: this.#getUnit0NetworkCode(NetworkName.unit0Testnet),
+      networkCode: this.#getUnit0NetworkCode(NetworkName.Testnet),
     };
 
     const networkData: Unit0NetworkData = {
@@ -210,9 +210,9 @@ export class DebugMultiWalletStrategy implements IMultiWalletCreationStrategy {
    */
   #getUnit0NetworkCode(network: NetworkName): string {
     switch (network) {
-      case NetworkName.unit0MainNet:
+      case NetworkName.Mainnet:
         return NETWORK_CODES.unit0.mainnet;
-      case NetworkName.unit0Testnet:
+      case NetworkName.Testnet:
         return NETWORK_CODES.unit0.testnet;
       default:
         return NETWORK_CODES.unit0.mainnet;

@@ -129,6 +129,4 @@ export const NETWORK_NAME_MAP: Record<
   [NetworkName.Testnet]: { blockchain: 'waves', network: 'testnet' },
   [NetworkName.Stagenet]: { blockchain: 'waves', network: 'stagenet' },
   [NetworkName.Custom]: { blockchain: 'waves', network: 'mainnet' }, // Default to mainnet for custom
-  [NetworkName.unit0MainNet]: { blockchain: 'unit0', network: 'mainnet' },
-  [NetworkName.unit0Testnet]: { blockchain: 'unit0', network: 'testnet' },
 };

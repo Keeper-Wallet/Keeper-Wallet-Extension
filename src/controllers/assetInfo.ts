@@ -129,8 +129,6 @@ export class AssetInfoController {
         [NetworkName.Custom]: {
           WAVES,
         },
-        [NetworkName.unit0MainNet]: {},
-        [NetworkName.unit0Testnet]: {},
       },
       swappableAssetIdsByVendor: {},
       suspiciousAssets: [],

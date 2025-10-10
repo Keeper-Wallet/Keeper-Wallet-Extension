@@ -21,6 +21,13 @@ export class Unit0Api {
     return 'https://explorer.unit0.dev/api/v2/tokens/';
   }
 
+  private getRpcUrl(network: NetworkName): string {
+    if (network === NetworkName.Testnet) {
+      return 'https://rpc-testnet.unit0.dev';
+    }
+    return 'https://rpc.unit0.dev';
+  }
+
   async fetchBalance(
     address: string,
     network: NetworkName = NetworkName.Mainnet,
@@ -146,5 +153,165 @@ export class Unit0Api {
       exchange_rate: tokenDetails.exchange_rate,
       volume_24h: tokenDetails.volume_24h,
     };
+  }
+
+  /**
+   * Send a signed transaction to the blockchain
+   * @param signedTx - The signed transaction hex string (with 0x prefix)
+   * @param network - The network to broadcast to
+   * @returns Transaction hash
+   */
+  async sendRawTransaction(
+    signedTx: string,
+    network: NetworkName = NetworkName.Mainnet,
+  ): Promise<string> {
+    const rpcUrl = this.getRpcUrl(network);
+
+    const response = await fetch(rpcUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'eth_sendRawTransaction',
+        params: [signedTx],
+        id: 1,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to broadcast transaction: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (result.error) {
+      throw new Error(
+        `RPC error: ${result.error.message || JSON.stringify(result.error)}`,
+      );
+    }
+
+    return result.result;
+  }
+
+  /**
+   * Get transaction receipt (to confirm transaction was mined)
+   * @param txHash - Transaction hash
+   * @param network - The network
+   * @returns Transaction receipt or null if not yet mined
+   */
+  async getTransactionReceipt(
+    txHash: string,
+    network: NetworkName = NetworkName.Mainnet,
+  ): Promise<any> {
+    const rpcUrl = this.getRpcUrl(network);
+
+    const response = await fetch(rpcUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'eth_getTransactionReceipt',
+        params: [txHash],
+        id: 1,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch transaction receipt: ${response.status}`,
+      );
+    }
+
+    const result = await response.json();
+
+    if (result.error) {
+      throw new Error(
+        `RPC error: ${result.error.message || JSON.stringify(result.error)}`,
+      );
+    }
+
+    return result.result;
+  }
+
+  /**
+   * Get current transaction count (nonce) for an address
+   * @param address - Ethereum address
+   * @param network - The network
+   * @returns Transaction count (nonce)
+   */
+  async getTransactionCount(
+    address: string,
+    network: NetworkName = NetworkName.Mainnet,
+  ): Promise<number> {
+    const rpcUrl = this.getRpcUrl(network);
+
+    const response = await fetch(rpcUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'eth_getTransactionCount',
+        params: [address, 'latest'],
+        id: 1,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch transaction count: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (result.error) {
+      throw new Error(
+        `RPC error: ${result.error.message || JSON.stringify(result.error)}`,
+      );
+    }
+
+    return parseInt(result.result, 16);
+  }
+
+  /**
+   * Get current gas price
+   * @param network - The network
+   * @returns Gas price in wei (as hex string)
+   */
+  async getGasPrice(
+    network: NetworkName = NetworkName.Mainnet,
+  ): Promise<string> {
+    const rpcUrl = this.getRpcUrl(network);
+
+    const response = await fetch(rpcUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'eth_gasPrice',
+        params: [],
+        id: 1,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch gas price: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (result.error) {
+      throw new Error(
+        `RPC error: ${result.error.message || JSON.stringify(result.error)}`,
+      );
+    }
+
+    return result.result;
   }
 }

@@ -47,14 +47,9 @@ export function OtherAccountsPage() {
     )
     .sort(compareAccountsByLastUsed);
 
-  // Map currentNetwork to base network name for comparison
-  // currentNetwork can be 'unit0MainNet' but balance.network is 'mainnet'
-  const baseNetworkName =
-    currentNetwork === 'unit0MainNet'
-      ? 'mainnet'
-      : currentNetwork === 'unit0Testnet'
-      ? 'testnet'
-      : currentNetwork; // For Waves: mainnet, testnet, stagenet, custom
+  // currentNetwork is now always 'mainnet', 'testnet', 'stagenet', or 'custom'
+  // Both Waves and Unit0 use the same network names
+  const baseNetworkName = currentNetwork;
 
   // Filter balances to only show those matching the current network and blockchain
   const filteredBalances = Object.fromEntries(

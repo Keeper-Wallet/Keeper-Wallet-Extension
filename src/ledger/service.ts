@@ -124,7 +124,7 @@ class LedgerService {
         );
       }
 
-      let signature: string;
+      let signature: string | undefined;
 
       switch (request.type) {
         case 'order':
@@ -160,6 +160,10 @@ class LedgerService {
             },
           );
           break;
+      }
+
+      if (!signature) {
+        throw new Error('Failed to get signature from Ledger device');
       }
 
       await Background.ledgerSignResponse(request.id, null, signature);
