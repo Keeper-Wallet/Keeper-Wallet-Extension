@@ -35,8 +35,10 @@ function AssetSelectItem({
   balance,
   onSelect,
 }: ItemProps) {
+  console.log(asset, 'asset');
   const logoSrc = useAssetLogo(network, asset.id);
 
+  const displayName = asset.name || asset.displayName;
   const listItemEl = (
     <li
       className={className}
@@ -54,12 +56,12 @@ function AssetSelectItem({
               backgroundColor: new ColorHash().hex(asset.id),
             }}
           >
-            {asset.displayName[0].toUpperCase()}
+            {displayName?.[0]?.toUpperCase()}
           </div>
         )}
       </div>
 
-      <div className={styles.listItemName}>{asset.displayName}</div>
+      <div className={styles.listItemName}>{displayName}</div>
       <div className={styles.listItemBalance}>{balance.toFormat()}</div>
     </li>
   );

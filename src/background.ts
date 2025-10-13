@@ -791,9 +791,11 @@ class BackgroundService extends EventEmitter {
         await this.messageController.getMessageResult(message.id);
       },
       signTransaction: async (account: PreferencesAccount, tx: MessageTx) => {
-        const signature = await this.walletController
-          .getWallet(account.address, account.network)
-          .signTx(makeTxBytes(tx), tx);
+        const wallet = await this.multiWalletController.getWalletForSigning(
+          account.address,
+          account.network,
+        );
+        const signature = await wallet.signTx(makeTxBytes(tx), tx);
 
         return base58Encode(signature);
       },
@@ -1312,7 +1314,7 @@ class BackgroundService extends EventEmitter {
           throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
         }
 
-        const wallet = this.walletController.getWallet(
+        const wallet = await this.multiWalletController.getWalletForSigning(
           selectedAccount.address,
           selectedAccount.network,
         );
@@ -1340,7 +1342,7 @@ class BackgroundService extends EventEmitter {
           throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
         }
 
-        const wallet = this.walletController.getWallet(
+        const wallet = await this.multiWalletController.getWalletForSigning(
           selectedAccount.address,
           selectedAccount.network,
         );
@@ -1366,7 +1368,7 @@ class BackgroundService extends EventEmitter {
           throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
         }
 
-        const wallet = this.walletController.getWallet(
+        const wallet = await this.multiWalletController.getWalletForSigning(
           selectedAccount.address,
           selectedAccount.network,
         );
