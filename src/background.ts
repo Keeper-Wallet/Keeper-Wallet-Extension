@@ -1299,87 +1299,21 @@ class BackgroundService extends EventEmitter {
           PERMISSIONS.REJECTED,
         );
       },
-
-      getKEK: async (publicKey: string, prefix: string) => {
-        const { selectedAccount } = await this.validatePermission(
-          origin,
-          connectionId,
-        );
-
-        if (!prefix || typeof prefix !== 'string') {
-          throw ERRORS.INVALID_FORMAT(undefined, 'prefix is invalid');
-        }
-
-        if (!publicKey || typeof publicKey !== 'string') {
-          throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
-        }
-
-        const wallet = await this.multiWalletController.getWalletForSigning(
-          selectedAccount.address,
-          selectedAccount.network,
-        );
-
-        const sharedKey = await wallet.createSharedKey(publicKey, prefix);
-
-        return base58Encode(sharedKey);
-      },
-
-      encryptMessage: async (
-        message: string,
-        publicKey: string,
-        prefix: string,
-      ) => {
-        const { selectedAccount } = await this.validatePermission(
-          origin,
-          connectionId,
-        );
-
-        if (!message || typeof message !== 'string') {
-          throw ERRORS.INVALID_FORMAT(undefined, 'message is invalid');
-        }
-
-        if (!publicKey || typeof publicKey !== 'string') {
-          throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
-        }
-
-        const wallet = await this.multiWalletController.getWalletForSigning(
-          selectedAccount.address,
-          selectedAccount.network,
-        );
-
-        return wallet.encryptMessage(message, publicKey, prefix);
-      },
-
-      decryptMessage: async (
-        message: string,
-        publicKey: string,
-        prefix: string,
-      ) => {
-        const { selectedAccount } = await this.validatePermission(
-          origin,
-          connectionId,
-        );
-
-        if (!message || typeof message !== 'string') {
-          throw ERRORS.INVALID_FORMAT(undefined, 'message is invalid');
-        }
-
-        if (!publicKey || typeof publicKey !== 'string') {
-          throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
-        }
-
-        const wallet = await this.multiWalletController.getWalletForSigning(
-          selectedAccount.address,
-          selectedAccount.network,
-        );
-
-        return wallet.decryptMessage(message, publicKey, prefix);
-      },
       subscribeToPublicState: async () => {
+        // Send initial state immediately
+        if (
+          this.preferencesController.getSelectedAccount() != null &&
+          this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED)
+        ) {
+          const initialState = await this.getPublicState(origin, connectionId);
+          port?.postMessage({ event: 'updatePublicState', publicState: initialState });
+        }
+
+        // Subscribe to future updates
         pipe(
           publicStateUpdates,
           subscribe(publicState => {
-            port.postMessage({ event: 'updatePublicState', publicState });
+            port?.postMessage({ event: 'updatePublicState', publicState });
           }),
         );
       },

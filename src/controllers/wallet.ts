@@ -127,14 +127,12 @@ export class WalletController extends EventEmitter {
           this.#assetInfo,
         );
       case 'privateKey':
-        const test =  PrivateKeyWallet.create({
+        return PrivateKeyWallet.create({
           name: input.name,
           network,
           networkCode,
           privateKey: input.privateKey,
         });
-        return test;
-
       case 'seed':
         return SeedWallet.create({
           name: input.name,
@@ -232,7 +230,7 @@ export class WalletController extends EventEmitter {
     }
 
     this.#wallets.push(wallet);
-    
+
     await this.#saveWallets();
 
     this.emit('addWallet', wallet);
@@ -373,7 +371,6 @@ export class WalletController extends EventEmitter {
     const wallet = this.#getWalletsByNetwork(network).find(
       w => w.data.address === address,
     );
-
     if (!wallet) throw new Error(`Wallet not found for address ${address}`);
 
     return wallet;
