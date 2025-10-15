@@ -7,7 +7,7 @@ import {
   type TransactionFetchResult,
   type TransactionFilter,
 } from '../../interfaces/ITransactionStrategy';
-import { type Unit0NftTransfer } from '../../interfaces/IUnit0Types';
+import { type Unit0Transaction } from '../../interfaces/IUnit0Types';
 
 export class Unit0TransactionStrategy implements ITransactionStrategy {
   readonly networkType = 'unit0' as const;
@@ -29,25 +29,23 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
     const limit = filter.limit || 50;
     const baseUrl = this.getBaseUrl(network);
 
-    const response = await fetch(
-      `${baseUrl}${address}/token-transfers?type=&items_count=${limit}`,
-    );
+    const response = await fetch(`${baseUrl}${address}/transactions`);
 
     if (!response.ok) {
       throw new Error(`Unit0 transaction fetch failed: ${response.status}`);
     }
 
     const data = await response.json();
-    const unit0Transfers = Array.isArray(data.items) ? data.items : [];
+    const unit0Txs = Array.isArray(data.items) ? data.items : [];
 
-    // Convert Unit0 transfers to TransactionFromNode format
-    const transactions = unit0Transfers.map((transfer: Unit0NftTransfer) =>
-      this.convertUnit0ToTransaction(transfer, address),
+    // Convert Unit0 transactions to internal format
+    const transactions = unit0Txs.map((tx: Unit0Transaction) =>
+      this.convertUnit0ToTransaction(tx, address),
     );
 
     return {
       transactions: transactions as Unit0Transfer[],
-      hasMore: unit0Transfers.length === limit,
+      hasMore: unit0Txs.length === limit,
     };
   }
 
@@ -58,35 +56,37 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
   }
 
   private convertUnit0ToTransaction(
-    unit0Tx: Unit0NftTransfer,
+    unit0Tx: Unit0Transaction,
     address: string,
   ): Unit0Transfer {
     const sender = unit0Tx.from?.hash;
     const recipient = unit0Tx.to?.hash;
-    const isOutgoing = recipient === address;
-    const isIncoming = sender === address;
+    const isOutgoing = sender?.toLowerCase() === address.toLowerCase();
+    const isIncoming = recipient?.toLowerCase() === address.toLowerCase();
     const timestamp = new Date(unit0Tx.timestamp).getTime();
-    const assetId =
-      unit0Tx.token.hash ?? unit0Tx.token.address_hash ?? unit0Tx.token.address;
+
+    // For native coin transfers, asset is null (UNIT0 native token)
+    // For token transfers, we would get it from token_transfers array
+    const assetId = null;
 
     return {
-      id: unit0Tx.transaction_hash,
+      id: unit0Tx.hash,
       sender,
       type: TRANSACTION_TYPE.ETHEREUM,
-      fee: '0',
+      fee: unit0Tx.fee?.value || '0',
       payload: {
         type: 'transfer' as const,
         height: unit0Tx.block_number,
         timestamp,
         sender,
         recipient,
-        amount: unit0Tx.total.value || '0',
+        amount: unit0Tx.value || '0',
         asset: assetId,
-        tokenSymbol: unit0Tx.token.symbol,
-        tokenName: unit0Tx.token.name,
-        tokenDecimals: unit0Tx.token.decimals?.toString(),
-        fromName: unit0Tx.from?.name,
-        toName: unit0Tx.to?.name,
+        tokenSymbol: 'UNIT0',
+        tokenName: 'UNIT0',
+        tokenDecimals: '18',
+        fromName: unit0Tx.from?.name ?? undefined,
+        toName: unit0Tx.to?.name ?? undefined,
         isIncoming,
         isOutgoing,
       },

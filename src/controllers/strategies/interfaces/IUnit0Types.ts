@@ -148,3 +148,50 @@ export interface Unit0TokenDetailsResponse {
   type: string;
   volume_24h: string | null;
 }
+
+export interface Unit0AddressInfo {
+  ens_domain_name: string | null;
+  hash: string;
+  implementations: any[];
+  is_contract: boolean;
+  is_scam: boolean;
+  is_verified: boolean;
+  metadata: any;
+  name: string | null;
+  private_tags: any[];
+  proxy_type: string | null;
+  public_tags: any[];
+  watchlist_names: any[];
+}
+
+export interface Unit0Transaction {
+  hash: string;
+  block_number: number;
+  timestamp: string;
+  from: Unit0AddressInfo;
+  to: Unit0AddressInfo;
+  value: string;
+  fee: {
+    type: string;
+    value: string;
+  };
+  gas_used: string;
+  gas_limit: string;
+  gas_price: string;
+  status: string;
+  method: string | null;
+  result: string;
+  type: number;
+  nonce: number;
+  position: number;
+  confirmations: number;
+  transaction_types: string[];
+  token_transfers: any[] | null;
+  base_fee_per_gas: string;
+  exchange_rate: string | null;
+}
+
+export interface Unit0TransactionResponse {
+  items: Unit0Transaction[];
+  next_page_params: any;
+}
