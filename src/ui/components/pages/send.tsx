@@ -165,6 +165,32 @@ export function Send() {
                 unit0Api.getGasPrice(currentNetwork),
               ]);
 
+              // Estimate gas limit for this transaction
+              let gasLimit: string;
+              try {
+                // Convert amount to hex for eth_estimateGas
+                const valueHex = `0x${BigInt(amountInWei).toString(16)}`;
+
+                const estimatedGas = await unit0Api.estimateGas(
+                  {
+                    from: selectedAccount.address,
+                    to: recipientValue,
+                    value: valueHex,
+                    gasPrice,
+                  },
+                  currentNetwork,
+                );
+                // Convert hex result to decimal string
+                gasLimit = parseInt(estimatedGas, 16).toString();
+              } catch (estimateError) {
+                console.warn(
+                  'Gas estimation failed, using default:',
+                  estimateError,
+                );
+                // Fallback to 21000 for simple transfers
+                gasLimit = '21000';
+              }
+
               // Determine chainId based on network
               // Unit0 chain IDs: Mainnet 88811, Testnet 88817
               const unit0ChainId =
@@ -173,7 +199,7 @@ export function Send() {
               await Background.signAndPublishUnit0Transaction({
                 to: recipientValue,
                 value: amountInWei,
-                gasLimit: '21000', // TODO: hardcoded need to get dynamic
+                gasLimit,
                 gasPrice,
                 nonce,
                 chainId: unit0ChainId,

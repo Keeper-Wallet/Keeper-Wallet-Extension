@@ -314,4 +314,68 @@ export class Unit0Api {
 
     return result.result;
   }
+
+  /**
+   * Estimate gas for a transaction
+   * @param transaction - Transaction parameters
+   * @param network - The network
+   * @returns Estimated gas limit (as hex string)
+   */
+  async estimateGas(
+    transaction: {
+      from: string;
+      to: string;
+      value?: string;
+      data?: string;
+      gasPrice?: string;
+    },
+    network: NetworkName = NetworkName.Mainnet,
+  ): Promise<string> {
+    const rpcUrl = this.getRpcUrl(network);
+
+    // Build transaction object for estimation
+    const txParams: Record<string, string> = {
+      from: transaction.from,
+      to: transaction.to,
+    };
+
+    if (transaction.value) {
+      txParams.value = transaction.value;
+    }
+
+    if (transaction.data) {
+      txParams.data = transaction.data;
+    }
+
+    if (transaction.gasPrice) {
+      txParams.gasPrice = transaction.gasPrice;
+    }
+
+    const response = await fetch(rpcUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'eth_estimateGas',
+        params: [txParams],
+        id: 1,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to estimate gas: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (result.error) {
+      throw new Error(
+        `RPC error: ${result.error.message || JSON.stringify(result.error)}`,
+      );
+    }
+
+    return result.result;
+  }
 }
