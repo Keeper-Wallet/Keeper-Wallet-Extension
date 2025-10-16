@@ -111,9 +111,9 @@ export class SeedWallet extends Wallet<WalletPrivateDataOfType<'seed'>> {
     data?: string;
     chainId: number;
   }): Promise<string> {
-    // Derive Ethereum wallet from seed phrase
-    const hdWallet = EthWallet.fromPhrase(this.getSeed());
-    const derivedWallet = hdWallet.derivePath("m/44'/60'/0'/0/0");
+    // Derive Ethereum wallet from seed phrase using default path
+    // This matches MetaMask and Trust Wallet behavior
+    const derivedWallet = EthWallet.fromPhrase(this.getSeed());
 
     // Build transaction
     const tx = Transaction.from({

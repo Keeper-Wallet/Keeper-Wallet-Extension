@@ -83,8 +83,8 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
     networks: NetworkName[],
   ): Promise<Unit0NetworkData> {
     // Create HD wallet from seed phrase
-    const hdWallet = Wallet.fromPhrase(this.seed);
-    const derivedWallet = hdWallet.derivePath("m/44'/60'/0'/0/0");
+    // Use default path to match MetaMask and Trust Wallet behavior
+    const derivedWallet = Wallet.fromPhrase(this.seed);
     const address = derivedWallet.address;
 
     const mainnetData: WalletItem = {

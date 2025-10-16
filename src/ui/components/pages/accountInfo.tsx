@@ -207,7 +207,9 @@ export function AccountInfo() {
           }
 
           const ethers = await import('ethers');
-          return ethers.Wallet.fromPhrase(seed).privateKey;
+          // Use default path to match MetaMask and Trust Wallet
+          const derivedWallet = ethers.Wallet.fromPhrase(seed);
+          return derivedWallet.privateKey;
         } catch (error) {
           return 'Error retrieving private key';
         }
