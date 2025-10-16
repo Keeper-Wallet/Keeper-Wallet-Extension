@@ -151,10 +151,49 @@ export function Send() {
 
               const unit0Api = new Unit0Api();
 
-              // Convert amount from tokens to wei (multiply by 10^18)
-              const amountInWei = new BigNumber(amountValue)
-                .mul(new BigNumber(10).pow(18))
+              // Check if this is an ERC-20 token or native UNIT0
+              const isERC20Token = asset && asset.id !== 'unit0';
+              const tokenDecimals = asset?.precision ?? 18;
+
+              // Convert amount from tokens to smallest unit (wei for native, token units for ERC-20)
+              const amountInSmallestUnit = new BigNumber(amountValue)
+                .mul(new BigNumber(10).pow(tokenDecimals))
                 .toFixed(0);
+
+              // Prepare transaction data based on token type
+              let txData: any;
+              
+              if (isERC20Token) {
+                // ERC-20 token transfer
+                // Encode transfer(address to, uint256 amount) function call
+                const { ethers } = await import('ethers');
+                
+                // Create interface for ERC-20 transfer function
+                const iface = new ethers.Interface([
+                  'function transfer(address to, uint256 amount)'
+                ]);
+                
+                // Encode the function call
+                const encodedData = iface.encodeFunctionData('transfer', [
+                  recipientValue,
+                  amountInSmallestUnit
+                ]);
+
+                txData = {
+                  from: selectedAccount.address,
+                  to: asset.id, // Send to token contract, not recipient!
+                  value: '0x0', // No native UNIT0 value for token transfers
+                  data: encodedData,
+                };
+              } else {
+                // Native UNIT0 transfer
+                const valueHex = `0x${BigInt(amountInSmallestUnit).toString(16)}`;
+                txData = {
+                  from: selectedAccount.address,
+                  to: recipientValue,
+                  value: valueHex,
+                };
+              }
 
               // Get nonce and gas price from blockchain
               const [nonce, gasPrice] = await Promise.all([
@@ -168,16 +207,8 @@ export function Send() {
               // Estimate gas limit for this transaction
               let gasLimit: string;
               try {
-                // Convert amount to hex for eth_estimateGas
-                const valueHex = `0x${BigInt(amountInWei).toString(16)}`;
-
                 const estimatedGas = await unit0Api.estimateGas(
-                  {
-                    from: selectedAccount.address,
-                    to: recipientValue,
-                    value: valueHex,
-                    gasPrice,
-                  },
+                  { ...txData, gasPrice },
                   currentNetwork,
                 );
                 // Convert hex result to decimal string
@@ -187,8 +218,8 @@ export function Send() {
                   'Gas estimation failed, using default:',
                   estimateError,
                 );
-                // Fallback to 21000 for simple transfers
-                gasLimit = '21000';
+                // Fallback: 21000 for native, ~65000 for ERC-20
+                gasLimit = isERC20Token ? '65000' : '21000';
               }
 
               // Determine chainId based on network
@@ -197,11 +228,12 @@ export function Send() {
                 currentNetwork === NetworkName.Mainnet ? 88811 : 88817;
 
               await Background.signAndPublishUnit0Transaction({
-                to: recipientValue,
-                value: amountInWei,
+                to: isERC20Token ? asset.id : recipientValue, // Token contract for ERC-20, recipient for native
+                value: isERC20Token ? '0' : amountInSmallestUnit, // 0 for ERC-20, amount for native
                 gasLimit,
                 gasPrice,
                 nonce,
+                data: isERC20Token ? txData.data : undefined, // Encoded transfer call for ERC-20
                 chainId: unit0ChainId,
               });
 
