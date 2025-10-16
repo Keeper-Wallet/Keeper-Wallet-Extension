@@ -19,6 +19,7 @@ import { Tooltip } from '../tooltip';
 import { AddModal } from './AddModal';
 import * as styles from './Recipient.module.css';
 import { AddressTooltip } from './Tooltip';
+import { BLOCKCHAIN_TYPES } from '../../../../assets/constants';
 
 export interface Props {
   className?: string;
@@ -47,6 +48,9 @@ export function AddressRecipient({
   const accounts = usePopupSelector(state => state.accounts);
   const addresses = usePopupSelector(state => state.addresses);
 
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+  );
   const accountName =
     accounts.find(account => account.address === address)?.name ||
     addresses[address];
@@ -81,6 +85,11 @@ export function AddressRecipient({
       </div>
     );
   }
+  const tooltipContent =
+    currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+      ? name || address
+      : name || mirrorAddress;
+
   return (
     <>
       {accountName || name ? (
@@ -95,7 +104,7 @@ export function AddressRecipient({
               className={clsx(styles.mirrorAddress, {
                 [styles.waves]: type === 'waves',
               })}
-              content={name || mirrorAddress}
+              content={tooltipContent}
               placement="auto-end"
             >
               {props => (
