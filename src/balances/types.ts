@@ -1,7 +1,7 @@
-import { type TRANSACTION_TYPE } from '@waves/marshall/dist/schemas';
 import {
   type EthereumTransactionFields,
   type TransactionFromNode,
+  type TransactionType,
 } from '@waves/ts-types';
 import { type AssetDetail } from 'assets/types';
 import { type NetworkName } from 'networks/types';
@@ -25,6 +25,9 @@ export type Unit0TransferPayload = TransferPayload & {
   timestamp?: number;
   height: number;
   sender: string;
+  // Transaction ordering fields
+  position?: number;
+  nonce?: number;
   // Invocation payload properties (optional for compatibility)
   dApp?: string;
   call?: { function?: string };
@@ -37,7 +40,7 @@ export type Unit0PayloadUnion =
 
 export type Unit0Transfer = {
   id?: string;
-  type: TRANSACTION_TYPE;
+  type: TransactionType;
   fee: string;
   sender?: string;
   recipient?: string;

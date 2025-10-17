@@ -195,3 +195,32 @@ export interface Unit0TransactionResponse {
   items: Unit0Transaction[];
   next_page_params: any;
 }
+
+export interface Unit0TokenTransfer {
+  from: Unit0AddressInfo;
+  to: Unit0AddressInfo;
+  total: {
+    value: string;
+    token_id?: string;
+  };
+  token: {
+    address: string;
+    address_hash?: string;
+    name: string;
+    symbol: string;
+    type: string;
+    decimals: string;
+  };
+  type: string;
+  log_index?: number;
+  block_hash?: string;
+  block_number?: number;
+  timestamp: string;
+  transaction_hash: string;
+  method?: string;
+}
+
+export interface Unit0TokenTransferResponse {
+  items: Unit0TokenTransfer[];
+  next_page_params: any;
+}
