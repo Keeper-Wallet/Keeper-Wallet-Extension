@@ -6,6 +6,7 @@ import { MessageHeader } from 'messages/_common/header';
 import { MessageIcon } from 'messages/_common/icon';
 import { type PreferencesAccount } from 'preferences/types';
 import { useTranslation } from 'react-i18next';
+import { usePopupSelector } from 'popup/store/react';
 
 import * as transactionsStyles from '../../ui/components/pages/styles/transactions.module.css';
 import { Ellipsis } from '../../ui/components/ui/ellipsis/Ellipsis';
@@ -20,11 +21,47 @@ export function Unit0TransactionCard({
   message: MessageOfType<'unit0Transaction'>;
 }) {
   const { t } = useTranslation();
+  const assets = usePopupSelector(state => state.assets);
 
-  // Convert wei to tokens - ensure we handle string properly
-  const amountInTokens = new BigNumber(message.data.value.toString()).div(
-    new BigNumber(10).pow(18),
-  );
+  // Check if this is an ERC-20 token transfer
+  const isERC20 = message.data.data && message.data.data.startsWith('0xa9059cbb');
+  
+  let displayAmount = '';
+  let displayAsset = 'Unit0';
+  
+  if (isERC20 && message.data.data) {
+    // ERC-20 transfer: decode the data field
+    // data format: 0xa9059cbb (4 bytes) + recipient (32 bytes) + amount (32 bytes)
+    try {
+      const tokenAmount = message.data.data.slice(74); // Skip function selector + recipient
+      const amountInSmallestUnit = BigInt('0x' + tokenAmount);
+      
+      // Get token info from assets
+      const tokenAsset = assets[message.data.to];
+      const decimals = tokenAsset?.precision ?? 18;
+      const tokenName = tokenAsset?.displayName ?? 'Token';
+      
+      // Convert to token units
+      const amountInTokens = new BigNumber(amountInSmallestUnit.toString()).div(
+        new BigNumber(10).pow(decimals),
+      );
+      
+      displayAmount = amountInTokens.toFixed(8);
+      displayAsset = tokenName;
+    } catch (err) {
+      console.warn('Failed to decode ERC-20 transfer:', err);
+      // Fallback to showing 0 Unit0
+      displayAmount = '0.00000000';
+      displayAsset = 'Unit0';
+    }
+  } else {
+    // Native Unit0 transfer
+    const amountInTokens = new BigNumber(message.data.value.toString()).div(
+      new BigNumber(10).pow(18),
+    );
+    displayAmount = amountInTokens.toFixed(8);
+    displayAsset = 'Unit0';
+  }
 
   return (
     <div className={clsx(className, transactionsStyles.transactionCard)}>
@@ -39,7 +76,7 @@ export function Unit0TransactionCard({
           </div>
 
           <h1 className="headline1">
-            <span>-{amountInTokens.toFixed(8)} Unit0</span>
+            <span>-{displayAmount} {displayAsset}</span>
           </h1>
         </div>
       </div>
