@@ -126,6 +126,7 @@ export function Send() {
   const showAttachmentError = isTriedToSubmit && attachmentError != null;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   return (
     <form
@@ -134,6 +135,7 @@ export function Send() {
         event.preventDefault();
 
         setIsTriedToSubmit(true);
+        setSubmitError(null); // Clear previous submit errors
 
         if (recipientError || amountError || attachmentError) {
           return;
@@ -162,21 +164,21 @@ export function Send() {
 
               // Prepare transaction data based on token type
               let txData: any;
-              
+
               if (isERC20Token) {
                 // ERC-20 token transfer
                 // Encode transfer(address to, uint256 amount) function call
                 const { ethers } = await import('ethers');
-                
+
                 // Create interface for ERC-20 transfer function
                 const iface = new ethers.Interface([
-                  'function transfer(address to, uint256 amount)'
+                  'function transfer(address to, uint256 amount)',
                 ]);
-                
+
                 // Encode the function call
                 const encodedData = iface.encodeFunctionData('transfer', [
                   recipientValue,
-                  amountInSmallestUnit
+                  amountInSmallestUnit,
                 ]);
 
                 txData = {
@@ -187,7 +189,9 @@ export function Send() {
                 };
               } else {
                 // Native UNIT0 transfer
-                const valueHex = `0x${BigInt(amountInSmallestUnit).toString(16)}`;
+                const valueHex = `0x${BigInt(amountInSmallestUnit).toString(
+                  16,
+                )}`;
                 txData = {
                   from: selectedAccount.address,
                   to: recipientValue,
@@ -222,6 +226,29 @@ export function Send() {
                 gasLimit = isERC20Token ? '65000' : '21000';
               }
 
+              // Validate sufficient UNIT0 balance for gas
+              const gasCost = new BigNumber(gasPrice).mul(gasLimit);
+              const totalCost = isERC20Token
+                ? gasCost // For tokens, only gas cost matters
+                : gasCost.add(amountInSmallestUnit); // For native, add transfer amount
+              
+              // Get current UNIT0 balance (already in wei from assetBalances)
+              const unit0Balance = assetBalances?.['unit0']?.balance ?? '0';
+              const balanceInWei = new BigNumber(unit0Balance);
+              
+              // Check if balance is sufficient
+              if (balanceInWei.lt(totalCost)) {
+                const gasCostFormatted = gasCost.div(new BigNumber(10).pow(18)).toFixed(6);
+                const balanceFormatted = balanceInWei.div(new BigNumber(10).pow(18)).toFixed(6);
+                const totalCostFormatted = totalCost.div(new BigNumber(10).pow(18)).toFixed(6);
+                
+                throw new Error(
+                  isERC20Token
+                    ? `Insufficient UNIT0 for gas fees. You need ${gasCostFormatted} UNIT0 but have ${balanceFormatted} UNIT0`
+                    : `Insufficient UNIT0. Total needed: ${totalCostFormatted} UNIT0 (${amountValue} UNIT0 + ${gasCostFormatted} gas), but balance is ${balanceFormatted} UNIT0`
+                );
+              }
+
               // Determine chainId based on network
               // Unit0 chain IDs: Mainnet 88811, Testnet 88817
               const unit0ChainId =
@@ -244,7 +271,12 @@ export function Send() {
               if (err instanceof Error && /user denied/i.test(err.message)) {
                 return;
               }
-              throw err;
+              // Display error to user
+              setSubmitError(
+                err instanceof Error 
+                  ? err.message 
+                  : 'Transaction failed. Please try again.'
+              );
             }
           })();
           return;
@@ -336,9 +368,59 @@ export function Send() {
                         onAssetChange={assetId => {
                           navigate(`/send/${assetId}`, { replace: true });
                         }}
-                        onBalanceClick={() => {
-                          setAmountValue(balance.toTokens());
-                          setAmountValueMasked(balance.toTokens());
+                        onBalanceClick={async () => {
+                          // For Unit0 native currency, subtract estimated gas
+                          // For tokens and WAVES, use full balance
+                          const isUnit0Native = isUnit0 && asset.id === 'unit0';
+
+                          if (!isUnit0Native) {
+                            // Tokens and WAVES: use full balance (original behavior)
+                            setAmountValue(balance.toTokens());
+                            setAmountValueMasked(balance.toTokens());
+                            return;
+                          }
+
+                          // Unit0 native: subtract estimated gas
+                          let maxSendable = balance.toTokens();
+
+                          try {
+                            const unit0Api = new Unit0Api();
+                            const gasPrice =
+                              await unit0Api.getGasPrice(currentNetwork);
+
+                            // Standard transfer gas limit: 21000
+                            const gasLimit = '21000';
+
+                            // Calculate gas cost in wei, then convert to tokens
+                            const gasCostWei = new BigNumber(gasPrice).mul(
+                              gasLimit,
+                            );
+                            const gasCostTokens = gasCostWei
+                              .div(new BigNumber(10).pow(18))
+                              .toFixed();
+
+                            // Subtract gas from balance
+                            maxSendable = new BigNumber(balance.toTokens())
+                              .sub(gasCostTokens)
+                              .toFixed(asset.precision);
+
+                            // Ensure non-negative
+                            if (new BigNumber(maxSendable).lte(0)) {
+                              maxSendable = '0';
+                            }
+                          } catch (err) {
+                            console.warn(
+                              'Failed to estimate gas, using balance minus default fee:',
+                              err,
+                            );
+                            // Fallback: subtract ~0.001 UNIT0 for gas
+                            maxSendable = new BigNumber(balance.toTokens())
+                              .sub(0.001)
+                              .toFixed(asset.precision);
+                          }
+
+                          setAmountValue(maxSendable);
+                          setAmountValueMasked(maxSendable);
                         }}
                         onChange={(newValue, newMaskedValue) => {
                           setAmountValue(newValue);
@@ -347,6 +429,9 @@ export function Send() {
                       />
                       <ErrorMessage show={showAmountError}>
                         {amountError}
+                      </ErrorMessage>
+                      <ErrorMessage show={!!submitError} data-testid="submitError">
+                        {submitError}
                       </ErrorMessage>
                     </>
                   );
