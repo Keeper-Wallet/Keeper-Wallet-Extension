@@ -1,18 +1,24 @@
 import clsx from 'clsx';
+import {
+  base58Encode,
+  createAddress,
+  createPrivateKey,
+  createPublicKey,
+  utf8Encode,
+} from '@keeper-wallet/waves-crypto';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { type PreferencesAccount } from 'preferences/types';
-import {  useEffect, useRef, useState } from 'react';
+import { type MultiWallet } from 'services/types';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { newAccountSelect } from 'store/actions/localState';
-import { getEthereumData, getWavesData, getUnit0Data } from 'units/ed25519';
+import { getEthereumData } from 'units/ed25519';
+
+import Background from '../../../services/Background';
 
 import { CHAIN_IDS } from '../../../../constants';
 import { NetworkName } from 'networks/types';
-import {
-  Button,
-  ErrorMessage,
-  Input,
-} from '../../ui';
+import { Button, ErrorMessage, Input } from '../../ui';
 import * as styles from './import.module.css';
 
 export function ImportSeedMultichain() {
@@ -27,36 +33,50 @@ export function ImportSeedMultichain() {
   const [existingAccount, setExistingAccount] =
     useState<PreferencesAccount | null>(null);
 
-
   const nameRef = useRef('');
   const addressWavesRef = useRef('');
   const addressEvmRef = useRef('');
 
   useEffect(() => {
-    if (!addressWaves) {
+    if (!addressWaves || !addressEvm) {
       setExistingAccount(null);
       return;
     }
-    
-    // Find account by matching Waves address instead of taking accounts[0]
-    const found = accounts.find(acc => acc.address === addressWaves);
-    
-    setExistingAccount(found || null);
-    if (found) {
-      setError(
-        `Account with this Waves address already exists${
-          found.name ? `: ${found.name}` : ''
-        }`,
+
+    // Check for Waves address duplication in MultiWallet storage
+    // This works regardless of which network is currently selected
+    async function checkDuplicates() {
+      const multiWallets = await Background.getMultiWallets();
+
+      // Check if any multiwallet has this Waves mainnet address
+      const found = multiWallets.find(
+        (wallet: MultiWallet) =>
+          wallet.coins?.waves?.networks?.mainnet?.address === addressWaves,
       );
-    } else {
+
+      if (found) {
+        // Find matching account in accounts array for UI state
+        const accountMatch = accounts.find(acc => acc.name === found.name);
+        setExistingAccount(accountMatch || null);
+        setError(
+          `Account already exists${found.name ? `: ${found.name}` : ''}`,
+        );
+        setShowValidationError(true);
+        return;
+      }
+
+      setExistingAccount(null);
       setError(null);
     }
-  }, [addressWaves, accounts]);
+
+    checkDuplicates();
+  }, [addressWaves, addressEvm, accounts]);
 
   async function handleSeedChange(value: string) {
     const normalizedSeed = value.trim().replace(/\s+/g, ' ');
     setSeed(normalizedSeed);
     setError(null);
+    setShowValidationError(false);
     setAddressWaves('');
     setAddressEvm('');
     setExistingAccount(null);
@@ -69,23 +89,24 @@ export function ImportSeedMultichain() {
       return;
     }
     try {
-      const mainnetData = await getWavesData(
-        normalizedSeed,
-        CHAIN_IDS[NetworkName.Mainnet],
+      // Use SAME derivation as SeedWalletStrategy (standard Waves)
+      const privateKey = await createPrivateKey(utf8Encode(normalizedSeed));
+      const publicKey = await createPublicKey(privateKey);
+      const mainnetAddress = base58Encode(
+        createAddress(publicKey, CHAIN_IDS[NetworkName.Mainnet]),
       );
-      
-      const unit0Address = await getUnit0Data(normalizedSeed);
+
       const ethereum = getEthereumData(normalizedSeed);
-      
-      if (!ethereum.address || !unit0Address.address) {
+
+      if (!ethereum.address) {
         setError('Invalid seed');
         return;
       }
-      
-      setAddressWaves(mainnetData.address);
+
+      setAddressWaves(mainnetAddress);
       setAddressEvm(ethereum.address);
-      
-      addressWavesRef.current = mainnetData.address;
+
+      addressWavesRef.current = mainnetAddress;
       addressEvmRef.current = ethereum.address;
     } catch (e) {
       setError('Invalid seed');
@@ -94,20 +115,15 @@ export function ImportSeedMultichain() {
 
   function handleImport(e: React.FormEvent) {
     e.preventDefault();
+
+    // All validation (including duplicate check) is handled by useEffect
+    // Just check if there's any error
     if (!addressWaves || !addressEvm || error) {
       setShowValidationError(true);
       setError(error || 'Enter valid seed');
       return;
     }
-    if (existingAccount) {
-      setShowValidationError(true);
-      setError(
-        `Account with this Waves address already exists${
-          existingAccount.name ? `: ${existingAccount.name}` : ''
-        }`,
-      );
-      return;
-    }
+
     nameRef.current = '';
 
     dispatch(
@@ -115,7 +131,7 @@ export function ImportSeedMultichain() {
         address: addressWaves,
         type: 'multichain',
         seed,
-        name: ''
+        name: '',
       }),
     );
     navigate('/account-name');
@@ -123,7 +139,7 @@ export function ImportSeedMultichain() {
 
   return (
     <div className={styles.root}>
-      <form  onSubmit={handleImport}>
+      <form onSubmit={handleImport}>
         <div>
           <h2 className="title1 margin3 left">Welcome Back</h2>
         </div>
