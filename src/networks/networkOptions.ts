@@ -1,4 +1,8 @@
-import { BLOCKCHAIN_TYPES, NETWORK_OPTIONS, NETWORK_TYPES } from '../assets/constants';
+import {
+  BLOCKCHAIN_TYPES,
+  NETWORK_OPTIONS,
+  NETWORK_TYPES,
+} from '../assets/constants';
 import { NetworkName } from './types';
 import { TFunction } from 'i18next';
 
@@ -17,10 +21,10 @@ export interface NetworkOption {
 export const getNetworkDisplayName = (
   blockchain?: string,
   network?: string,
-  t?: TFunction
+  t?: TFunction,
 ): string => {
   if (network === NETWORK_TYPES.CUSTOM) {
-    return t ? t('networkSettings.customNetwork') : 'Custom Network';
+    return t ? t('networkSettings.wavesCustom') : 'Waves Custom';
   }
 
   if (!blockchain || !network) {
@@ -45,21 +49,19 @@ export const getAvailableNetworkOptions = (
   currentBlockchainType: string = BLOCKCHAIN_TYPES.WAVES,
   currentNetwork: string = NetworkName.Mainnet,
   showTestAccounts: boolean = true,
-  t?: TFunction
+  t?: TFunction,
 ): NetworkOption[] => {
-  return NETWORK_OPTIONS
-    .filter(option => {
-      // Filter out test networks if showTestAccounts is false
-      if (option.isTestnet && !showTestAccounts) {
-        return false;
-      }
-      return true;
-    })
-    .map(option => ({
-      ...option,
-      displayName: getNetworkDisplayName(option.blockchain, option.network, t),
-      value: `${option.blockchain || ''}-${option.network}`,
-    })) as NetworkOption[];
+  return NETWORK_OPTIONS.filter(option => {
+    // Filter out test networks if showTestAccounts is false
+    if (option.isTestnet && !showTestAccounts) {
+      return false;
+    }
+    return true;
+  }).map(option => ({
+    ...option,
+    displayName: getNetworkDisplayName(option.blockchain, option.network, t),
+    value: `${option.blockchain || ''}-${option.network}`,
+  })) as NetworkOption[];
 };
 
 /**
@@ -68,7 +70,7 @@ export const getAvailableNetworkOptions = (
 export const isNetworkSelected = (
   option: Pick<NetworkOption, 'blockchain' | 'network'>,
   currentBlockchainType: string,
-  currentNetwork: string
+  currentNetwork: string,
 ): boolean => {
   if (!option.blockchain && option.network === NETWORK_TYPES.CUSTOM) {
     return currentNetwork === NETWORK_TYPES.CUSTOM;
@@ -84,7 +86,7 @@ export const isNetworkSelected = (
  */
 export const formatNetworkValue = (
   blockchain: string,
-  network: string
+  network: string,
 ): string => {
   return `${blockchain}-${network}`;
 };
@@ -93,7 +95,7 @@ export const formatNetworkValue = (
  * Parses a combined network value into blockchain and network components
  */
 export const parseNetworkValue = (
-  combinedValue: string
+  combinedValue: string,
 ): { blockchain: string; network: string } => {
   const [blockchain, network] = combinedValue.split('-');
   return { blockchain, network };

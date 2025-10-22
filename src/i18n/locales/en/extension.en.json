@@ -430,6 +430,7 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "customNetwork": "network",
+    "wavesCustom": "Waves Custom",
     "matcherError": "Incorrect matcher address",
     "nodeError": "Incorrect node address",
     "nodeUrlEmpty": "URL is required",

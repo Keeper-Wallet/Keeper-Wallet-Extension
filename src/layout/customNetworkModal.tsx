@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { NetworkName } from '../networks/types';
 import { Button } from '../ui/components/ui/buttons/Button';
 import { ErrorMessage } from '../ui/components/ui/error';
 import { Input } from '../ui/components/ui/input/Input';
@@ -72,8 +71,7 @@ export function CustomNetworkModal({
         }}
       >
         <h2 className="headline2 margin-main-big">
-          {t(`bottom.${NetworkName.Custom}`)}{' '}
-          {t('networkSettings.customNetwork')}
+          {t('networkSettings.wavesCustom')}
         </h2>
 
         <div className="margin-main-big relative">

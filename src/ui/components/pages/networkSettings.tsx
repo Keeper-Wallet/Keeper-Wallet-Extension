@@ -7,10 +7,10 @@ import * as styles from './networkSettings.module.css';
 import { useTranslation } from 'react-i18next';
 import { usePopupSelector } from 'popup/store/react';
 import { useDispatch } from 'react-redux';
-import { BLOCKCHAIN_TYPES, NETWORK_TYPES } from 'assets/constants';
+import { BLOCKCHAIN_TYPES } from 'assets/constants';
 import { ACTION } from 'store/actions/constants';
 import { NetworkName } from 'networks/types';
-import { getAvailableNetworkOptions } from 'networks/networkOptions';
+import { getAvailableNetworkOptions, getNetworkDisplayName } from 'networks/networkOptions';
 import { useAccountsSelector } from '../../../accounts/store/react';
 import { PreferencesAccount } from '../../../preferences/types';
 import { NETWORK_CONFIG } from '../../../constants';
@@ -311,11 +311,7 @@ export function NetworkSettings() {
             <div key={option.value}>
               {showDivider && <div className={styles.divider} />}
               <NetworkOptionItem
-                name={
-                  option.network === NETWORK_TYPES.CUSTOM
-                    ? t('Custom network')
-                    : option.displayName
-                }
+                name={getNetworkDisplayName(option.blockchain, option.network, t)}
                 isSelected={isOptionSelected}
                 hasRightArrow={option.isCustom}
                 onClick={() => {
