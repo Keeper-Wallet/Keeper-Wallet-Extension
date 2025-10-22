@@ -445,7 +445,9 @@
     "save": "Save",
     "savedModal": "Saved!",
     "setDefault": "Set Default",
-    "setDefaultModal": "Save default!"
+    "setDefaultModal": "Save default!",
+    "toggleLabel": "Show testnet networks"
+
   },
   "newAccount": {
     "acceptTerms": "I have read and agree with the",

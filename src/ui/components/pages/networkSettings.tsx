@@ -10,7 +10,10 @@ import { useDispatch } from 'react-redux';
 import { BLOCKCHAIN_TYPES } from 'assets/constants';
 import { ACTION } from 'store/actions/constants';
 import { NetworkName } from 'networks/types';
-import { getAvailableNetworkOptions, getNetworkDisplayName } from 'networks/networkOptions';
+import {
+  getAvailableNetworkOptions,
+  getNetworkDisplayName,
+} from 'networks/networkOptions';
 import { useAccountsSelector } from '../../../accounts/store/react';
 import { PreferencesAccount } from '../../../preferences/types';
 import { NETWORK_CONFIG } from '../../../constants';
@@ -273,7 +276,7 @@ export function NetworkSettings() {
       {/* Display Options Section */}
       <div className={styles.displayOptionsSection}>
         <ToggleSwitch
-          label="Test Network Accounts"
+          label={t('networksSettings.toggleLabel')}
           checked={showTestAccounts}
           onChange={handleHideTestAccountsChange}
         />
@@ -311,7 +314,11 @@ export function NetworkSettings() {
             <div key={option.value}>
               {showDivider && <div className={styles.divider} />}
               <NetworkOptionItem
-                name={getNetworkDisplayName(option.blockchain, option.network, t)}
+                name={getNetworkDisplayName(
+                  option.blockchain,
+                  option.network,
+                  t,
+                )}
                 isSelected={isOptionSelected}
                 hasRightArrow={option.isCustom}
                 onClick={() => {
