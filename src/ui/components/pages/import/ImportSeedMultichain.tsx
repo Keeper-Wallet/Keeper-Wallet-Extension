@@ -19,12 +19,14 @@ import Background from '../../../services/Background';
 import { CHAIN_IDS } from '../../../../constants';
 import { NetworkName } from 'networks/types';
 import { Button, ErrorMessage, Input } from '../../ui';
+import { useTranslation } from 'react-i18next';
 import * as styles from './import.module.css';
 
 export function ImportSeedMultichain() {
   const navigate = useNavigate();
   const dispatch = usePopupDispatch();
   const accounts = usePopupSelector(state => state.accounts);
+  const { t } = useTranslation();
   const [seed, setSeed] = useState('');
   const [addressWaves, setAddressWaves] = useState('');
   const [addressEvm, setAddressEvm] = useState('');
@@ -72,6 +74,8 @@ export function ImportSeedMultichain() {
     checkDuplicates();
   }, [addressWaves, addressEvm, accounts]);
 
+  const SEED_MIN_LENGTH = 24;
+
   async function handleSeedChange(value: string) {
     const normalizedSeed = value.trim().replace(/\s+/g, ' ');
     setSeed(normalizedSeed);
@@ -83,9 +87,12 @@ export function ImportSeedMultichain() {
     nameRef.current = '';
     addressWavesRef.current = '';
     addressEvmRef.current = '';
-    if (!normalizedSeed) return;
-    if (normalizedSeed.length < 12) {
-      setError('Seed phrase too short');
+    if (!normalizedSeed) {
+      setError(t('importSeed.requiredError'));
+      return;
+    }
+    if (normalizedSeed.length < SEED_MIN_LENGTH) {
+      setError(t('importSeed.seedLengthError', { minLength: SEED_MIN_LENGTH }));
       return;
     }
     try {
@@ -116,8 +123,12 @@ export function ImportSeedMultichain() {
   function handleImport(e: React.FormEvent) {
     e.preventDefault();
 
-    // All validation (including duplicate check) is handled by useEffect
-    // Just check if there's any error
+    if (!seed) {
+      setShowValidationError(true);
+      setError(t('importSeed.requiredError'));
+      return;
+    }
+
     if (!addressWaves || !addressEvm || error) {
       setShowValidationError(true);
       setError(error || 'Enter valid seed');

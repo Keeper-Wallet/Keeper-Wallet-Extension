@@ -31,7 +31,7 @@ import {
 import { InlineButton } from '../../ui/buttons/inlineButton';
 import * as styles from '../importSeed.module.css';
 
-const SEED_MIN_LENGTH = 24;
+const SEED_MIN_LENGTH = 15;
 const ENCODED_SEED_MIN_LENGTH = 16;
 
 const SEED_TAB_INDEX = 0;
