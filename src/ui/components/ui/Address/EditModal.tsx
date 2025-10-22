@@ -1,4 +1,5 @@
 import { isAddressString, isAlias } from 'messages/utils';
+import { isValidEthereumAddress } from 'ui/utils/ethereum';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -58,7 +59,12 @@ export function EditModal({
       return t('address.addressAlreadyExist');
     }
 
-    if (!isAddressString(addressValue)) {
+    if (
+      !(
+        isAddressString(addressValue) ||
+        isValidEthereumAddress(addressValue)
+      )
+    ) {
       return t('address.addressInvalidError');
     }
   }, [addresses, address, addressValue, t]);

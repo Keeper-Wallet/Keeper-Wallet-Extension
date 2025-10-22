@@ -35,7 +35,6 @@ function AssetSelectItem({
   balance,
   onSelect,
 }: ItemProps) {
-  console.log(asset, 'asset');
   const logoSrc = useAssetLogo(network, asset.id);
 
   const displayName = asset.name || asset.displayName;

@@ -87,7 +87,10 @@
 
 .accountListItem
   display: flex;
-  padding: 0 16px 0 14px;
+  padding: 10px 16px 10px 14px;
+  background: #fff;
+  border: 1px solid #edf0f4;
+  border-radius: 8px;
 
 .accountInfo
   display: flex;
@@ -98,15 +101,41 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0; // allow children to shrink for ellipsis
+  margin-left: 12px;
 
 .accountName
   font-size: 12px;
   line-height: 14px;
-  word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+
+.accountNameRow
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
 .accountInfoNote
   color: var(--color-disabled500);
   margin-right: 24px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 11px;
+
+.accountCheckbox
+  margin-left: auto;
+
+.accountListItem:hover
+  border-color: #e2e6ec;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+
+.accountListItemSelected
+  border-color: #d9dee6;
+  background: #fafbfc;
 
 .buttons
   border-top: 1px solid #edf0f4;

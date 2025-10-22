@@ -4,6 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { icontains } from 'ui/components/pages/assets/helpers';
 
 import { Avatar, Button, Copy, Ellipsis, Modal, SearchInput } from '../ui';
+import { isValidEthereumAddress } from 'ui/utils/ethereum';
+import { getNetworkByAddress } from 'ui/utils/waves';
+import { NetworkName } from 'networks/types';
 import { AddModal } from '../ui/Address/AddModal';
 import { DeleteModal } from '../ui/Address/DeleteModal';
 import { EditModal } from '../ui/Address/EditModal';
@@ -19,6 +22,15 @@ interface AddressCardProps {
 function AddressCard({ address, name }: AddressCardProps) {
   const { t } = useTranslation();
 
+  const isEvm = isValidEthereumAddress(address);
+  const network = isEvm ? null : getNetworkByAddress(address);
+  const networkLabels: Record<NetworkName, string> = {
+    [NetworkName.Custom]: 'Custom',
+    [NetworkName.Mainnet]: 'Mainnet',
+    [NetworkName.Stagenet]: 'Stagenet',
+    [NetworkName.Testnet]: 'Testnet',
+  };
+
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCopyNotification, setShowCopyNotification] = useState(false);
@@ -27,7 +39,13 @@ function AddressCard({ address, name }: AddressCardProps) {
     <div className={styles.card}>
       <Avatar className={styles.cardAvatar} size={40} address={address} />
       <div className={styles.cardContent}>
-        <p className={styles.cardName}>{name}</p>
+        <div className={styles.cardNameRow}>
+          <span className={styles.cardName}>{name}</span>
+          <span className={styles.badge}>{isEvm ? 'Unit0' : 'Waves'}</span>
+          {!isEvm && network != null && (
+            <span className={styles.badge}>{networkLabels[network]}</span>
+          )}
+        </div>
         <Ellipsis className={styles.cardAddress} text={address} size={14} />
       </div>
       <MoreActions>

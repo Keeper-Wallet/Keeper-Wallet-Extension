@@ -9,10 +9,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { setAddresses } from 'store/actions/addresses';
-import {
-  fromEthereumToWavesAddress,
-  isEthereumAddress,
-} from 'ui/utils/ethereum';
 
 import { ImportKeystoreChooseFile } from './chooseFile';
 
@@ -83,12 +79,8 @@ function getFormattedAddresses(
         );
       }
 
-      return [
-        isEthereumAddress(keystoreAddress)
-          ? fromEthereumToWavesAddress(keystoreAddress)
-          : keystoreAddress,
-        keystoreName,
-      ];
+      // Preserve address as-is (supporting both Waves and EVM formats)
+      return [keystoreAddress, keystoreName];
     }),
   );
 }
@@ -121,7 +113,6 @@ export function ImportAddressBook() {
             setLoading(false);
             return;
           }
-
           const keystoreAddresses = await addressBook.decrypt(password);
 
           if (!keystoreAddresses) {

@@ -3,6 +3,8 @@ import { base58Decode } from '@keeper-wallet/waves-crypto';
 import { WavesDomainsClient } from '@waves-domains/client';
 import clsx from 'clsx';
 import { isAddressString } from 'messages/utils';
+import { BLOCKCHAIN_TYPES } from 'assets/constants';
+import { isValidEthereumAddress } from 'ui/utils/ethereum';
 import { NetworkName } from 'networks/types';
 import { usePopupSelector } from 'popup/store/react';
 import { type PreferencesAccount } from 'preferences/types';
@@ -219,14 +221,27 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
   const { t } = useTranslation();
 
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
-  const chainId = usePopupSelector(
-    state =>
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      state.selectedAccount?.networkCode!.charCodeAt(0),
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
   );
+  const chainId = usePopupSelector(state => {
+    const code = state.selectedAccount?.networkCode;
+    return code ? code.charCodeAt(0) : 87; // default to 'W' (Mainnet) for safety
+  });
   const accounts = usePopupSelector(state => state.accounts);
-  const addresses = usePopupSelector<Record<string, string>>(state =>
-    Object.entries(state.addresses).reduce((acc, [address, name]) => {
+  const addresses = usePopupSelector<Record<string, string>>(state => {
+    // For Unit0: include ONLY EVM addresses (no network distinction between testnet/mainnet)
+    if (currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0) {
+      return Object.entries(state.addresses).reduce((acc, [address, name]) => {
+        if (isValidEthereumAddress(address)) {
+          return { ...acc, [address]: name };
+        }
+        return acc;
+      }, {} as Record<string, string>);
+    }
+
+    // For Waves: include ONLY addresses matching current network byte
+    return Object.entries(state.addresses).reduce((acc, [address, name]) => {
       if (!isAddressString(address, chainId)) {
         return acc;
       }
@@ -234,8 +249,8 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
       return base58Decode(address)[1] === chainId
         ? { ...acc, [address]: name }
         : acc;
-    }, {}),
-  );
+    }, {} as Record<string, string>);
+  });
 
   const [value, setValue] = useState('');
   const [address, setAddress] = useState('');

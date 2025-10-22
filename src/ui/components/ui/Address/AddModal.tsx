@@ -1,4 +1,5 @@
 import { isAddressString, isAlias } from 'messages/utils';
+import { isValidEthereumAddress } from 'ui/utils/ethereum';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -104,7 +105,12 @@ export function AddModal({ showModal, setShowModal, address }: Props) {
                   return;
                 }
 
-                if (!isAddressString(addressValue)) {
+                if (
+                  !(
+                    isAddressString(addressValue) ||
+                    isValidEthereumAddress(addressValue)
+                  )
+                ) {
                   setAddressError(t('address.addressInvalidError'));
                   return;
                 }

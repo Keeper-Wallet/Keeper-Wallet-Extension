@@ -9,7 +9,9 @@ import {
   NETWORK_NAME_MAP,
 } from 'services/types';
 import { Button } from 'ui/components/ui/buttons/Button';
+import { Avatar } from 'ui/components/ui';
 import { Modal } from 'ui/components/ui/modal/Modal';
+import { isValidEthereumAddress } from 'ui/utils/ethereum';
 
 import * as styles from './chooseItems.styl';
 
@@ -149,6 +151,9 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
 }: Props<T>) {
   const { t } = useTranslation();
 
+  const isContacts = type === 'contacts';
+  const contacts = (isContacts ? (items as unknown as Contact[]) : []);
+
   // Flatten and group MultiWallet items by wallet ID
   const groupedAccounts =
     items[0] && 'coins' in items[0]
@@ -171,6 +176,11 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
     });
     return initialAccounts;
   });
+
+  // Selection state for contacts
+  const [selectedContacts, setSelectedContacts] = useState<Set<string>>(
+    () => new Set(isContacts ? contacts.map(c => c.address) : []),
+  );
 
   // Toggle wallet selection - affects all its accounts
   function toggleWalletSelected(walletId: string, isSelected: boolean) {
@@ -211,7 +221,10 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
       ) as T[];
     } else {
       // For contacts
-      return items as T[];
+      if (!isContacts) return items as T[];
+      return (items as unknown as Contact[]).filter(contact =>
+        selectedContacts.has(contact.address),
+      ) as unknown as T[];
     }
   };
 
@@ -273,17 +286,36 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
         )}
       </p>
 
-      {Object.keys(groupedAccounts).length > 0 && (
+      {(Object.keys(groupedAccounts).length > 0 || isContacts) && (
         <div className={styles.selectAllContainer}>
           <label className={styles.selectAllLabel}>
             <input
               type="checkbox"
               className={styles.checkbox}
-              checked={allSelected}
-              onChange={e => toggleAllWallets(e.target.checked)}
+              checked={
+                isContacts
+                  ? selectedContacts.size === contacts.length
+                  : allSelected
+              }
+              onChange={e => {
+                if (isContacts) {
+                  const selectAll = e.target.checked;
+                  setSelectedContacts(
+                    selectAll
+                      ? new Set(contacts.map(c => c.address))
+                      : new Set(),
+                  );
+                } else {
+                  toggleAllWallets(e.target.checked);
+                }
+              }}
             />
             <span className={clsx('body1')}>
-              {allSelected ? t('common.deselectAll') : t('common.selectAll')}
+              {(isContacts
+              ? selectedContacts.size === contacts.length
+              : allSelected)
+                ? t('common.deselectAll')
+                : t('common.selectAll')}
             </span>
           </label>
         </div>
@@ -323,12 +355,77 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
               </div>
             );
           })}
+
+        {isContacts && (
+          <div className={styles.accountList}>
+            {contacts
+              .slice()
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map(contact => (
+                <div
+                  key={contact.address}
+                  className={clsx(
+                    styles.accountListItem,
+                    selectedContacts.has(contact.address) &&
+                      styles.accountListItemSelected,
+                  )}
+                  onClick={() => {
+                    setSelectedContacts(prev => {
+                      const next = new Set(prev);
+                      if (next.has(contact.address)) next.delete(contact.address);
+                      else next.add(contact.address);
+                      return next;
+                    });
+                  }}
+                >
+                  <div className={styles.accountInfo}>
+                    <Avatar size={28} address={contact.address} />
+                    <div className={styles.accountInfoText}>
+                      <div className={styles.accountNameRow}>
+                        <div className={styles.accountName}>{contact.name}</div>
+                        <span className={styles.walletTypeLabel}>
+                          {isValidEthereumAddress(contact.address) ? 'Unit0' : 'Waves'}
+                        </span>
+                        {!isValidEthereumAddress(contact.address) && (
+                          <span className={styles.walletTypeLabel}>
+                            {networkLabels[contact.network]}
+                          </span>
+                        )}
+                      </div>
+                      <div className={styles.accountInfoNote}>
+                        {contact.address}
+                      </div>
+                    </div>
+                    <input
+                      checked={selectedContacts.has(contact.address)}
+                      className={`${styles.checkbox} ${styles.accountCheckbox}`}
+                      type="checkbox"
+                      onClick={e => e.stopPropagation()}
+                      onChange={event => {
+                        const checked = event.currentTarget.checked;
+                        setSelectedContacts(prev => {
+                          const next = new Set(prev);
+                          if (checked) next.add(contact.address);
+                          else next.delete(contact.address);
+                          return next;
+                        });
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+          </div>
+        )}
       </div>
 
       <div className={styles.buttons}>
         <Button
           data-testid="exportButton"
-          disabled={selectedWallets.size === 0}
+          disabled={
+            type === 'contacts'
+              ? selectedContacts.size === 0
+              : selectedWallets.size === 0
+          }
           type="submit"
           view="submit"
         >
