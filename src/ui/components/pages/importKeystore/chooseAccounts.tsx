@@ -220,14 +220,6 @@ export function ImportKeystoreChooseAccounts({
         </div>
       )}
 
-      {importableWalletsCount > 0 && getSelectedAccounts().length === 0 && (
-        <div className={styles.emptyState}>
-          <p className={clsx('body1', 'disabled500')}>
-            {t('importKeystore.selectAccountsToImport')}
-          </p>
-        </div>
-      )}
-
       <div className={styles.accounts}>
         {groupedAccounts
           .slice()
