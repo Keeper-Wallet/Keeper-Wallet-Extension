@@ -703,17 +703,21 @@ export class MultiWalletController extends EventEmitter {
 
     // Find wallets where the address matches any network address
     this.#multiwallets = multiWallets.filter(wallet => {
-      if (!wallet.coins?.waves?.networks) {
-        return true; // Keep non-waves wallets
-      }
+      const wavesNetworks = wallet.coins.waves?.networks;
+      const unit0Networks = wallet.coins.unit0?.networks;
 
-      const wavesNetworks = wallet.coins.waves.networks;
+      const matchesWaves = wavesNetworks
+        ? wavesNetworks.mainnet?.address === id ||
+          wavesNetworks.testnet?.address === id ||
+          wavesNetworks.stagenet?.address === id
+        : false;
 
-      // Check if address matches any network address
-      const hasMatchingAddress =
-        wavesNetworks.mainnet?.address === id ||
-        wavesNetworks.testnet?.address === id ||
-        wavesNetworks.stagenet?.address === id;
+      const matchesUnit0 = unit0Networks
+        ? unit0Networks.mainnet?.address === id ||
+          unit0Networks.testnet?.address === id
+        : false;
+
+      const hasMatchingAddress = matchesWaves || matchesUnit0;
 
       // Keep wallets that DON'T match the address (filter out matching ones)
       return !hasMatchingAddress;
