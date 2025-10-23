@@ -61,9 +61,10 @@ export function ImportSeedMultichain() {
         const accountMatch = accounts.find(acc => acc.name === found.name);
         setExistingAccount(accountMatch || null);
         setError(
-          `Account already exists${found.name ? `: ${found.name}` : ''}`,
+          t('importSeed.accountExistsError', {
+            name: found.name || '',
+          }),
         );
-        setShowValidationError(true);
         return;
       }
 
@@ -74,7 +75,7 @@ export function ImportSeedMultichain() {
     checkDuplicates();
   }, [addressWaves, addressEvm, accounts]);
 
-  const SEED_MIN_LENGTH = 24;
+  const ALLOWED_WORD_COUNTS = [12, 24] as const;
 
   async function handleSeedChange(value: string) {
     const normalizedSeed = value.trim().replace(/\s+/g, ' ');
@@ -91,8 +92,10 @@ export function ImportSeedMultichain() {
       setError(t('importSeed.requiredError'));
       return;
     }
-    if (normalizedSeed.length < SEED_MIN_LENGTH) {
-      setError(t('importSeed.seedLengthError', { minLength: SEED_MIN_LENGTH }));
+    // Validate by words count
+    const wordCount = normalizedSeed.split(/\s+/).filter(Boolean).length;
+    if (!ALLOWED_WORD_COUNTS.includes(wordCount as (typeof ALLOWED_WORD_COUNTS)[number])) {
+      setError(t('importSeed.seedWordsAllowedError'));
       return;
     }
     try {
@@ -106,7 +109,7 @@ export function ImportSeedMultichain() {
       const ethereum = getEthereumData(normalizedSeed);
 
       if (!ethereum.address) {
-        setError('Invalid seed');
+        setError(t('importSeed.invalidSeed'));
         return;
       }
 
@@ -116,7 +119,7 @@ export function ImportSeedMultichain() {
       addressWavesRef.current = mainnetAddress;
       addressEvmRef.current = ethereum.address;
     } catch (e) {
-      setError('Invalid seed');
+      setError(t('importSeed.invalidSeed'));
     }
   }
 
@@ -131,7 +134,7 @@ export function ImportSeedMultichain() {
 
     if (!addressWaves || !addressEvm || error) {
       setShowValidationError(true);
-      setError(error || 'Enter valid seed');
+      setError(error || t('importSeed.enterValidSeed'));
       return;
     }
 
@@ -152,12 +155,9 @@ export function ImportSeedMultichain() {
     <div className={styles.root}>
       <form onSubmit={handleImport}>
         <div>
-          <h2 className="title1 margin3 left">Welcome Back</h2>
+          <h2 className="title1 margin3 left">{t('importSeedMultichain.welcomeBack')}</h2>
         </div>
-        <div>
-          Enter your seed phrase to proceed. Usually it consists of either 12,
-          18 or 24 words
-        </div>
+        <div>{t('importSeedMultichain.hint')}</div>
         <Input
           autoFocus
           className={clsx('margin-main-top')}
@@ -174,13 +174,17 @@ export function ImportSeedMultichain() {
         <ErrorMessage
           className={styles.error}
           data-testid="validationError"
-          show={showValidationError && !!error}
+          show={!!error && showValidationError}
         >
           {error}
         </ErrorMessage>
 
-        <Button data-testid="continueBtn" type="submit" view="submit">
-          Import Account
+        <Button
+          data-testid="continueBtn"
+          type="submit"
+          view="submit"
+        >
+          {t('importSeed.importAccount')}
         </Button>
       </form>
     </div>

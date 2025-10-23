@@ -385,6 +385,10 @@
     "encodedSeedLengthError": "Encoded seed cannot be shorter than {{minLength}} characters",
     "importAccount": "Import Account",
     "invalidPrivateKeyLengthError": "Private key must consist of {{length}} bytes",
+    "invalidSeed": "Invalid seed",
+    "enterValidSeed": "Enter valid seed",
+    "seedWordCountError": "Seed phrase must contain exactly {{count}} words",
+    "seedWordsAllowedError": "Seed phrase must contain 12 or 24 words",
     "plainText": "Seed phrase",
     "plainTextPlaceholder": "Your seed is the 15 words you saved when creating your account",
     "privateKey": "Private key",
@@ -395,6 +399,10 @@
     "seedLengthError": "Seed cannot be shorter than {{minLength}} characters",
     "switchAccount": "Switch account",
     "title": "Import using seed"
+  },
+  "importSeedMultichain": {
+    "welcomeBack": "Welcome Back",
+    "hint": "Enter your seed phrase to proceed. Usually it consists of either 12 or 24 words"
   },
   "info": {
     "joinUs": "Join the Waves Community",
