@@ -275,7 +275,7 @@ export function ImportKeystore() {
               const importedWallets = await keystoreParser.decrypt(password);
 
               if (!importedWallets || importedWallets.length === 0) {
-                setError(t('importKeystore.errorNoAccounts'));
+                setError(t('importKeystore.errorDecrypt'));
                 setLoading(false);
                 return;
               }
@@ -334,16 +334,19 @@ export function ImportKeystore() {
           // Common parameters for both types of wallets
           const baseParams = {
             name: wallet.name,
-            ...(wallet.type === 'encodedSeed' 
+            ...(wallet.type === 'encodedSeed'
               ? { encodedSeed: wallet.encodedSeed as string }
               : wallet.type === 'privateKey'
               ? { privateKey: wallet.privateKey as string }
               : wallet.type === 'ledger'
               ? { ledgerId: wallet.ledgerId, address: wavesMainnetAddress }
               : wallet.type === 'wx'
-              ? { uuid: wallet.wxUuid, username: wallet.wxUsername, address: wavesMainnetAddress }
-              : { seed: wallet.seed as string }
-            ),
+              ? {
+                  uuid: wallet.wxUuid,
+                  username: wallet.wxUsername,
+                  address: wavesMainnetAddress,
+                }
+              : { seed: wallet.seed as string }),
             type: wallet.type,
             publicKey: wavesPublicKey,
             mainnetAddress: wavesMainnetAddress,
