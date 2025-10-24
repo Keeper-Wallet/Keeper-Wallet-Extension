@@ -169,7 +169,7 @@ export interface Unit0Transaction {
   block_number: number;
   timestamp: string;
   from: Unit0AddressInfo;
-  to: Unit0AddressInfo;
+  to: Unit0AddressInfo | null;
   value: string;
   fee: {
     type: string;
@@ -180,13 +180,19 @@ export interface Unit0Transaction {
   gas_price: string;
   status: string;
   method: string | null;
+  created_contract?: { hash: string } | null;
+  decoded_input?: {
+    method_call?: string;
+    method_id?: string;
+    parameters?: unknown[];
+  } | null;
   result: string;
   type: number;
   nonce: number;
   position: number;
   confirmations: number;
   transaction_types: string[];
-  token_transfers: any[] | null;
+  token_transfers: Unit0TokenTransfer[] | null;
   base_fee_per_gas: string;
   exchange_rate: string | null;
 }

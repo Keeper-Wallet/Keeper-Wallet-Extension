@@ -61,9 +61,17 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
       : [];
 
     // Convert both types to internal format
-    const nativeTransactions = unit0Txs.map((tx: Unit0Transaction) =>
-      this.convertUnit0ToTransaction(tx, address),
-    );
+    const nativeTransactions = unit0Txs
+      .map((tx: Unit0Transaction) => this.convertUnit0ToTransaction(tx, address))
+      .filter(tx => {
+        if (tx.type !== TRANSACTION_TYPE.ETHEREUM) return true;
+        const p = (tx as Unit0Transfer).payload as any;
+        // Hide native UNIT0 entries with zero amount (0.0000 UNIT0)
+        const isUnit0 = p?.tokenSymbol === 'UNIT0';
+        const amountStr = typeof p?.amount === 'string' ? p.amount : String(p?.amount ?? '');
+        const isZero = amountStr === '0';
+        return !(isUnit0 && isZero);
+      });
 
     const tokenTransactions = tokenTransfers.map(
       (transfer: Unit0TokenTransfer) =>
@@ -119,7 +127,9 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
     address: string,
   ): Unit0Transfer {
     const sender = unit0Tx.from?.hash;
-    const recipient = unit0Tx.to?.hash;
+    const toAddress = unit0Tx.to?.hash;
+    const createdContract = unit0Tx.created_contract?.hash;
+    const recipient = toAddress;
     const isOutgoing = sender?.toLowerCase() === address.toLowerCase();
     const isIncoming = recipient?.toLowerCase() === address.toLowerCase();
     const timestamp = new Date(unit0Tx.timestamp).getTime();
@@ -127,6 +137,48 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
     // For native coin transfers, asset is null (UNIT0 native token)
     const assetId = null;
 
+    const isContractCreation = !unit0Tx.to && !!unit0Tx.created_contract;
+    const isContractCall = Boolean(
+      unit0Tx.to?.is_contract || unit0Tx.method || unit0Tx.decoded_input,
+    );
+
+    // Contract creation or contract call -> map as invocation to avoid missing recipient
+    if (isContractCreation || isContractCall) {
+      const dApp = createdContract || toAddress || undefined;
+      const fnName =
+        unit0Tx.method ?? unit0Tx.decoded_input?.method_call ?? undefined;
+
+      return {
+        id: unit0Tx.hash,
+        sender,
+        type: TRANSACTION_TYPE.ETHEREUM,
+        fee: unit0Tx.fee?.value || '0',
+        payload: {
+          type: 'invocation' as const,
+          height: unit0Tx.block_number,
+          timestamp,
+          // for completeness
+          sender,
+          recipient: toAddress ?? '',
+          amount: unit0Tx.value || '0',
+          asset: assetId,
+          tokenSymbol: 'UNIT0',
+          tokenName: 'UNIT0',
+          tokenDecimals: '18',
+          fromName: unit0Tx.from?.name ?? undefined,
+          toName: unit0Tx.to?.name ?? undefined,
+          isIncoming,
+          isOutgoing,
+          position: unit0Tx.position,
+          nonce: unit0Tx.nonce,
+          // invocation-specific
+          dApp,
+          call: fnName ? { function: fnName } : undefined,
+        },
+      };
+    }
+
+    // Simple EOA -> EOA coin transfer
     return {
       id: unit0Tx.hash,
       sender,
@@ -137,7 +189,7 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
         height: unit0Tx.block_number,
         timestamp,
         sender,
-        recipient,
+        recipient: recipient ?? '',
         amount: unit0Tx.value || '0',
         asset: assetId,
         tokenSymbol: 'UNIT0',
@@ -167,6 +219,25 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
     const assetId =
       transfer.token.address || transfer.token.address_hash || null;
 
+    // Normalize NFT vs ERC-20 specifics
+    const tokenType = transfer.token.type;
+    const upperType = tokenType ? tokenType.toUpperCase() : undefined;
+    const isErc721 = upperType === 'ERC-721';
+    const isErc1155 = upperType === 'ERC-1155';
+
+    let amount = transfer.total.value;
+    let tokenDecimals = transfer.token.decimals;
+
+    if (isErc721) {
+      amount = '1';
+      tokenDecimals = '0';
+    } else if (isErc1155) {
+      // Keep actual amount for 1155 but decimals must be 0
+      tokenDecimals = '0';
+    }
+
+    const tokenId = isErc721 || isErc1155 ? transfer.total.token_id : undefined;
+
     return {
       id: `${transfer.transaction_hash}-${transfer.log_index || 0}`,
       sender,
@@ -178,11 +249,13 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
         timestamp,
         sender,
         recipient,
-        amount: transfer.total.value,
+        amount,
         asset: assetId,
         tokenSymbol: transfer.token.symbol,
         tokenName: transfer.token.name,
-        tokenDecimals: transfer.token.decimals,
+        tokenDecimals,
+        tokenId,
+        tokenType: (isErc721 && 'ERC-721') || (isErc1155 && 'ERC-1155') || undefined,
         fromName: transfer.from?.name ?? undefined,
         toName: transfer.to?.name ?? undefined,
         isIncoming,

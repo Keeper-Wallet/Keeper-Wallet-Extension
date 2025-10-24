@@ -41,9 +41,11 @@ export function AddressRecipient({
   name,
 }: Props) {
   const { t } = useTranslation();
-  const address = isEthereumAddress(recipient)
-    ? recipient
-    : processAliasOrAddress(recipient, chainId);
+  const normalizedRecipient =
+    typeof recipient === 'string' ? recipient : '';
+  const address = isEthereumAddress(normalizedRecipient)
+    ? normalizedRecipient
+    : processAliasOrAddress(normalizedRecipient, chainId);
 
   const accounts = usePopupSelector(state => state.accounts);
   const addresses = usePopupSelector(state => state.addresses);

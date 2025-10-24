@@ -18,6 +18,8 @@ export type Unit0TransferPayload = TransferPayload & {
   tokenSymbol?: string;
   tokenName?: string;
   tokenDecimals?: string;
+  tokenId?: string;
+  tokenType?: 'ERC-721' | 'ERC-1155';
   fromName?: string;
   toName?: string;
   isIncoming?: boolean;
