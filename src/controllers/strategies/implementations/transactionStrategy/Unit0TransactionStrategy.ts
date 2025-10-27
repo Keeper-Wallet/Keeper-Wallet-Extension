@@ -1,5 +1,6 @@
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { type Unit0Transfer } from 'balances/types';
+import { Unit0Api } from 'controllers/api/unit0Api';
 import { NetworkName } from 'networks/types';
 
 import {
@@ -16,8 +17,12 @@ import {
 
 export class Unit0TransactionStrategy implements ITransactionStrategy {
   readonly networkType = 'unit0' as const;
+  private unit0Api: Unit0Api;
+  private creatorCache: Map<string, string> = new Map(); // Cache token contract -> creator address
 
-  constructor() {}
+  constructor() {
+    this.unit0Api = new Unit0Api();
+  }
 
   private getBaseUrl(network: NetworkName): string {
     if (network === NetworkName.Testnet || network === NetworkName.Stagenet) {
@@ -62,41 +67,41 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
 
     // Convert both types to internal format
     const nativeTransactions = unit0Txs
-      .map((tx: Unit0Transaction) => this.convertUnit0ToTransaction(tx, address))
+      .map((tx: Unit0Transaction) =>
+        this.convertUnit0ToTransaction(tx, address),
+      )
       .filter(tx => {
         if (tx.type !== TRANSACTION_TYPE.ETHEREUM) return true;
         const p = (tx as Unit0Transfer).payload as any;
         // Hide native UNIT0 entries with zero amount (0.0000 UNIT0)
         const isUnit0 = p?.tokenSymbol === 'UNIT0';
-        const amountStr = typeof p?.amount === 'string' ? p.amount : String(p?.amount ?? '');
+        const amountStr =
+          typeof p?.amount === 'string' ? p.amount : String(p?.amount ?? '');
         const isZero = amountStr === '0';
         return !(isUnit0 && isZero);
       });
 
-    const tokenTransactions = tokenTransfers.map(
-      (transfer: Unit0TokenTransfer) =>
-        this.convertTokenTransferToTransaction(transfer, address),
+    const tokenTransactions = await Promise.all(
+      tokenTransfers.map((transfer: Unit0TokenTransfer) =>
+        this.convertTokenTransferToTransaction(transfer, address, network),
+      ),
     );
 
     // Merge and sort by timestamp → position → nonce (most recent first)
     const allTransactions = [...nativeTransactions, ...tokenTransactions].sort(
       (a, b) => {
         // First sort by timestamp (block time)
-        const aTime =
-          'timestamp' in a.payload ? a.payload.timestamp || 0 : 0;
-        const bTime =
-          'timestamp' in b.payload ? b.payload.timestamp || 0 : 0;
-        
+        const aTime = 'timestamp' in a.payload ? a.payload.timestamp || 0 : 0;
+        const bTime = 'timestamp' in b.payload ? b.payload.timestamp || 0 : 0;
+
         if (bTime !== aTime) {
           return bTime - aTime;
         }
 
         // If timestamps are equal, sort by position within block
-        const aPosition =
-          'position' in a.payload ? a.payload.position || 0 : 0;
-        const bPosition =
-          'position' in b.payload ? b.payload.position || 0 : 0;
-        
+        const aPosition = 'position' in a.payload ? a.payload.position || 0 : 0;
+        const bPosition = 'position' in b.payload ? b.payload.position || 0 : 0;
+
         if (bPosition !== aPosition) {
           return bPosition - aPosition;
         }
@@ -104,15 +109,14 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
         // If positions are equal, sort by nonce (transaction sequence)
         const aNonce = 'nonce' in a.payload ? a.payload.nonce || 0 : 0;
         const bNonce = 'nonce' in b.payload ? b.payload.nonce || 0 : 0;
-        
+
         return bNonce - aNonce;
       },
     );
 
     return {
       transactions: allTransactions as Unit0Transfer[],
-      hasMore:
-        unit0Txs.length === limit || tokenTransfers.length === limit,
+      hasMore: unit0Txs.length === limit || tokenTransfers.length === limit,
     };
   }
 
@@ -205,12 +209,49 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
     };
   }
 
-  private convertTokenTransferToTransaction(
+  private async convertTokenTransferToTransaction(
     transfer: Unit0TokenTransfer,
     address: string,
-  ): Unit0Transfer {
-    const sender = transfer.from?.hash;
+    network: NetworkName,
+  ): Promise<Unit0Transfer> {
+    // Check if this is a token minting transaction
+    const isTokenMinting = transfer.type === 'token_minting';
+
+    let sender = transfer.from?.hash;
     const recipient = transfer.to?.hash;
+    const tokenContractAddress =
+      transfer.token.address || transfer.token.address_hash;
+
+    // For token minting, we need to get the token creator as the sender
+    // The creator is the one who deployed the contract
+    if (isTokenMinting && tokenContractAddress) {
+      // Check cache first
+      if (!this.creatorCache.has(tokenContractAddress)) {
+        try {
+          const contractInfo = await this.unit0Api.fetchContractInfo(
+            tokenContractAddress,
+            network,
+          );
+          const creatorAddress = contractInfo?.creator_address_hash;
+          if (creatorAddress) {
+            this.creatorCache.set(tokenContractAddress, creatorAddress);
+            sender = creatorAddress;
+          }
+        } catch (error) {
+          console.warn(
+            `Failed to fetch creator for token ${tokenContractAddress}:`,
+            error,
+          );
+          // Keep original sender if fetch fails
+        }
+      } else {
+        const cachedCreator = this.creatorCache.get(tokenContractAddress);
+        if (cachedCreator) {
+          sender = cachedCreator;
+        }
+      }
+    }
+
     const isOutgoing = sender?.toLowerCase() === address.toLowerCase();
     const isIncoming = recipient?.toLowerCase() === address.toLowerCase();
     const timestamp = new Date(transfer.timestamp).getTime();
@@ -238,10 +279,18 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
 
     const tokenId = isErc721 || isErc1155 ? transfer.total.token_id : undefined;
 
+    // Determine transaction type based on minting status
+    // If it's a minting transaction and current user is the creator, show as Issue
+    // Otherwise show as incoming transfer
+    const txType =
+      isTokenMinting && isOutgoing
+        ? TRANSACTION_TYPE.ISSUE // User is minting their own NFT
+        : TRANSACTION_TYPE.ETHEREUM; // Regular transfer or receiving minted NFT
+
     return {
       id: `${transfer.transaction_hash}-${transfer.log_index || 0}`,
       sender,
-      type: TRANSACTION_TYPE.ETHEREUM,
+      type: txType,
       fee: '0', // Fee is in the native transaction
       payload: {
         type: 'transfer' as const,
@@ -255,7 +304,8 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
         tokenName: transfer.token.name,
         tokenDecimals,
         tokenId,
-        tokenType: (isErc721 && 'ERC-721') || (isErc1155 && 'ERC-1155') || undefined,
+        tokenType:
+          (isErc721 && 'ERC-721') || (isErc1155 && 'ERC-1155') || undefined,
         fromName: transfer.from?.name ?? undefined,
         toName: transfer.to?.name ?? undefined,
         isIncoming,
