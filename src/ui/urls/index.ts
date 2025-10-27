@@ -54,9 +54,11 @@ export function getNftsLink(networkCode: string, address: string): string {
 export function getTxDetailLink(networkCode: string, txId: string): string {
   // Handle Unit0 network codes
   if (networkCode === '88817') {
-    return `https://explorer-testnet.unit0.dev/tx/${txId}`;
+    const cleanId = txId.includes('-') ? txId.split('-')[0] : txId;
+    return `https://explorer-testnet.unit0.dev/tx/${cleanId}`;
   } else if (networkCode === '88811') {
-    return `https://explorer.unit0.dev/tx/${txId}`;
+    const cleanId = txId.includes('-') ? txId.split('-')[0] : txId;
+    return `https://explorer.unit0.dev/tx/${cleanId}`;
   }
   const explorer = explorerUrls.get(
     explorerUrls.has(networkCode) ? networkCode : 'custom',
