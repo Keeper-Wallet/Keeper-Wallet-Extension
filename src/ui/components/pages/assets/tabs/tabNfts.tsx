@@ -185,7 +185,11 @@ export function TabNfts() {
           nfts={creatorNfts}
           counters={creatorCounts}
           onClick={asset => {
-            navigate(`/nft-collection/${asset.creator}`);
+            if (currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0) {
+              navigate(`/nft-collection/${asset.id}`);
+            } else {
+              navigate(`/nft-collection/${asset.creator}`);
+            }
           }}
           renderMore={() =>
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain

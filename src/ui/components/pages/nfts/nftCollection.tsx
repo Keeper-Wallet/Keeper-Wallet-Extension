@@ -73,6 +73,10 @@ export function NftCollection() {
           currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
             ? null
             : params.creator,
+        collectionId:
+          currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+            ? params.creator
+            : undefined,
       })
     : PLACEHOLDERS;
 

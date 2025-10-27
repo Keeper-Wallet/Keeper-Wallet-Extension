@@ -64,12 +64,20 @@ export function sortAndFilterNfts<T extends Nft>(
   filters: {
     term?: string;
     creator?: string | null;
+    collectionId?: string;
   },
 ) {
-  const { creator, term } = filters;
+  const { creator, term, collectionId } = filters;
 
   if (creator) {
     nfts = nfts.filter(nft => nft.creator === creator);
+  }
+
+  // Filter by Unit0 collection (contract) address when provided
+  if (collectionId) {
+    nfts = nfts.filter(
+      nft => (nft as any).assetId === collectionId || nft.id === collectionId,
+    );
   }
 
   if (term) {
