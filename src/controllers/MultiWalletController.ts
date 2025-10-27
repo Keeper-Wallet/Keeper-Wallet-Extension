@@ -72,6 +72,7 @@ export class MultiWalletController extends EventEmitter {
   #identityApi: IdentityApi | null = null;
   #assetInfoController: AssetInfoController;
   #ledgerApi: LedgerApi;
+  #restorationPromise: Promise<void> | null = null; // Track restoration state
   getAccounts;
 
   constructor({
@@ -104,7 +105,11 @@ export class MultiWalletController extends EventEmitter {
     this.#multiwallets = []; // Initialize empty array
 
     if (this.#password) {
-      this.#restoreMultiWallets(this.#password).catch(console.error);
+      // Store the restoration promise so we can wait for it
+      this.#restorationPromise = this.#restoreMultiWallets(this.#password).catch(error => {
+        console.error('Failed to restore multi-wallets on init:', error);
+        this.#restorationPromise = null;
+      });
     }
   }
 
@@ -154,7 +159,9 @@ export class MultiWalletController extends EventEmitter {
 
     // Save changes to encrypted storage
     if (this.#password) {
-      this.#saveMultiWallets().catch(error => {
+      try {
+        await this.#saveMultiWallets();
+      } catch (error) {
         console.error(
           'Failed to save multi-wallets to encrypted storage:',
           error,
@@ -164,7 +171,7 @@ export class MultiWalletController extends EventEmitter {
           wallet => wallet.id !== multiWallet.id,
         );
         throw new Error('Failed to save wallet to encrypted storage');
-      });
+      }
     } else {
       // If not yet initialized with password, update the store state
       const state = this.store.getState();
@@ -193,12 +200,41 @@ export class MultiWalletController extends EventEmitter {
     address: string,
     network: NetworkName,
   ): Promise<WalletInstance> {
+    // Wait for restoration to complete if it's in progress
+    if (this.#restorationPromise) {
+      try {
+        await this.#restorationPromise;
+      } catch (error) {
+        console.error('Restoration failed, continuing anyway:', error);
+      }
+    }
+
     // Find the MultiWallet from stored wallets
     const multiWallet = this.findMultiWalletByAccount(address, network);
 
     if (!multiWallet) {
+      // Enhanced error message with debugging information
+      const walletsDebugInfo = this.#multiwallets.map(w => ({
+        id: w.id,
+        name: w.name,
+        type: w.type,
+        wavesMainnet: w.coins.waves?.networks?.mainnet?.address,
+        wavesTestnet: w.coins.waves?.networks?.testnet?.address,
+        unit0Mainnet: w.coins.unit0?.networks?.mainnet?.address,
+      }));
+      
+      console.error('Wallet not found. Debug info:', {
+        requestedAddress: address,
+        requestedNetwork: network,
+        totalWallets: this.#multiwallets.length,
+        availableWallets: walletsDebugInfo,
+      });
+      
       throw new Error(
-        `Wallet with address ${address} on network ${network} not found`,
+        `Wallet with address ${address} on network ${network} not found. ` +
+        `Total wallets loaded: ${this.#multiwallets.length}. ` +
+        `Please ensure the wallet is unlocked and properly restored. ` +
+        `If you just upgraded, try logging out and back in to migrate your wallets.`,
       );
     }
 
@@ -406,10 +442,16 @@ export class MultiWalletController extends EventEmitter {
       // Check Unit0 networks if they exist
       const unit0Networks = wallet.coins.unit0?.networks;
       if (unit0Networks) {
-        if (unit0Networks.mainnet?.address === address) {
+        if (
+          unit0Networks.mainnet?.address === address &&
+          network === NetworkName.Mainnet
+        ) {
           return true;
         }
-        if (unit0Networks.testnet?.address === address) {
+        if (
+          unit0Networks.testnet?.address === address &&
+          network === NetworkName.Testnet
+        ) {
           return true;
         }
       }
@@ -473,7 +515,11 @@ export class MultiWalletController extends EventEmitter {
     const state = this.store.getState();
     const { vault } = state.MultiWalletController;
 
-    if (!vault) return;
+    if (!vault) {
+      console.warn('No vault found in state - wallet system not initialized');
+      this.#restorationPromise = null;
+      return;
+    }
 
     try {
       // Decrypt the vault and populate the in-memory array
@@ -516,8 +562,12 @@ export class MultiWalletController extends EventEmitter {
       });
 
       this.emit('multiWalletsChanged', sanitizedWallets);
+      
+      // Clear the restoration promise on success
+      this.#restorationPromise = null;
     } catch (error) {
       console.error('Failed to restore multi-wallets:', error);
+      this.#restorationPromise = null;
       throw error;
     }
   }
@@ -543,7 +593,8 @@ export class MultiWalletController extends EventEmitter {
   }
 
   async unlock(password: string) {
-    await this.#restoreMultiWallets(password);
+    this.#restorationPromise = this.#restoreMultiWallets(password);
+    await this.#restorationPromise;
     await this.#setPassword(password);
   }
 

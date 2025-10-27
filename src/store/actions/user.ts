@@ -5,6 +5,7 @@ import { type PreferencesAccount } from '../../preferences/types';
 import { type MultiWallet, NETWORK_CODES } from '../../services/types';
 import Background, { WalletTypes } from '../../ui/services/Background';
 import { type CreateWalletInput } from '../../wallets/types';
+import { WalletFactory } from '../../controllers/multiwallet/factory/WalletFactory';
 import { ACTION } from './constants';
 import { selectAccount } from './localState';
 import { updateActiveState } from './notifications';
@@ -40,10 +41,6 @@ export function createAccount(
       customCodes[currentNetwork] || NETWORK_CONFIG[currentNetwork].networkCode;
 
     if (type === WalletTypes.Debug && account.type === 'debug') {
-      const { WalletFactory } = await import(
-        '../../controllers/multiwallet/factory/WalletFactory'
-      );
-
       const factory = new WalletFactory();
 
       const blockchains: Array<'waves' | 'unit0'> = ['waves'];
@@ -160,11 +157,6 @@ export function createWavesOnlyMultiWallet({
   type: string;
 }): AccountsThunkAction<Promise<void>> {
   return async dispatch => {
-    // Import factory system
-    const { WalletFactory } = await import(
-      '../../controllers/multiwallet/factory/WalletFactory'
-    );
-
     // Create Waves-only wallet using our factory
     const factory = new WalletFactory();
 
@@ -295,11 +287,6 @@ export function createMultiWalletWithFactory({
   seed: string;
 }): AccountsThunkAction<Promise<void>> {
   return async dispatch => {
-    // Import factory system
-    const { WalletFactory } = await import(
-      '../../controllers/multiwallet/factory/WalletFactory'
-    );
-
     // Create wallet using our factory
     const factory = new WalletFactory();
 
