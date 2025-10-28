@@ -1,3 +1,5 @@
+import { ethers } from 'ethers';
+
 import { NetworkName } from '../../networks/types';
 import {
   type Unit0BalanceResponse,
@@ -5,6 +7,48 @@ import {
   type Unit0TokenDetailsResponse,
   type Unit0TokenMetadata,
 } from '../strategies/interfaces/IUnit0Types';
+
+// ERC-721 ABI fragment for safeTransferFrom
+const ERC721_ABI = [
+  'function safeTransferFrom(address from, address to, uint256 tokenId)',
+];
+
+// ERC-1155 ABI fragment for safeTransferFrom
+const ERC1155_ABI = [
+  'function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data)',
+];
+
+export interface NftTransferParams {
+  /** NFT contract address */
+  contractAddress: string;
+  /** Sender's address */
+  from: string;
+  /** Recipient's address */
+  to: string;
+  /** Token ID to transfer */
+  tokenId: string;
+  /** Amount to transfer (only for ERC-1155, defaults to 1) */
+  amount?: string;
+  /** Token type: 'ERC-721' or 'ERC-1155' */
+  tokenType: 'ERC-721' | 'ERC-1155';
+}
+
+export interface NftTransactionData {
+  /** Transaction data (encoded function call) */
+  data: string;
+  /** Destination address (NFT contract) */
+  to: string;
+  /** Value in wei (always '0x0' for NFT transfers) */
+  value: string;
+  /** Sender address */
+  from: string;
+  /** Estimated gas limit */
+  gasLimit?: string;
+  /** Gas price */
+  gasPrice?: string;
+  /** Nonce */
+  nonce?: number;
+}
 
 export class Unit0Api {
   private getBaseUrl(network: NetworkName): string {
@@ -377,5 +421,155 @@ export class Unit0Api {
     }
 
     return result.result;
+  }
+
+  /**
+   * Build NFT transfer transaction data
+   * @param params - NFT transfer parameters
+   * @returns Encoded transaction data for NFT transfer
+   */
+  buildNftTransferData(params: NftTransferParams): string {
+    const { from, to, tokenId, amount, tokenType } = params;
+
+    if (tokenType === 'ERC-721') {
+      // ERC-721: safeTransferFrom(address from, address to, uint256 tokenId)
+      const iface = new ethers.Interface(ERC721_ABI);
+      return iface.encodeFunctionData('safeTransferFrom', [from, to, tokenId]);
+    } else if (tokenType === 'ERC-1155') {
+      // ERC-1155: safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data)
+      const iface = new ethers.Interface(ERC1155_ABI);
+      const transferAmount = amount || '1';
+      // Empty bytes data (0x) - no additional data needed for simple transfers
+      return iface.encodeFunctionData('safeTransferFrom', [
+        from,
+        to,
+        tokenId,
+        transferAmount,
+        '0x',
+      ]);
+    } else {
+      throw new Error(`Unsupported token type: ${tokenType}`);
+    }
+  }
+
+  /**
+   * Build complete NFT transfer transaction with gas estimation
+   * @param params - NFT transfer parameters
+   * @param network - The network
+   * @returns Transaction data ready for signing
+   */
+  async buildNftTransferTransaction(
+    params: NftTransferParams,
+    network: NetworkName = NetworkName.Mainnet,
+  ): Promise<NftTransactionData> {
+    const { contractAddress, from, to, tokenId, tokenType, amount } = params;
+
+    // Validate addresses
+    if (!ethers.isAddress(from)) {
+      throw new Error(`Invalid sender address: ${from}`);
+    }
+    if (!ethers.isAddress(to)) {
+      throw new Error(`Invalid recipient address: ${to}`);
+    }
+    if (!ethers.isAddress(contractAddress)) {
+      throw new Error(`Invalid contract address: ${contractAddress}`);
+    }
+
+    // Validate token ID
+    try {
+      BigInt(tokenId);
+    } catch {
+      throw new Error(`Invalid token ID: ${tokenId}`);
+    }
+
+    // Validate amount for ERC-1155
+    if (tokenType === 'ERC-1155' && amount) {
+      try {
+        const amountBigInt = BigInt(amount);
+        if (amountBigInt <= 0n) {
+          throw new Error('Amount must be greater than 0');
+        }
+      } catch {
+        throw new Error(`Invalid amount: ${amount}`);
+      }
+    }
+
+    // Build transaction data
+    const data = this.buildNftTransferData(params);
+
+    // Get current nonce
+    const nonce = await this.getTransactionCount(from, network);
+
+    // Get current gas price
+    const gasPrice = await this.getGasPrice(network);
+
+    // Estimate gas
+    const estimatedGas = await this.estimateGas(
+      {
+        from,
+        to: contractAddress,
+        value: '0x0',
+        data,
+        gasPrice,
+      },
+      network,
+    );
+
+    // Add 20% buffer to gas estimate for safety
+    const gasLimit = `0x${Math.floor(
+      parseInt(estimatedGas, 16) * 1.2,
+    ).toString(16)}`;
+
+    return {
+      data,
+      to: contractAddress,
+      value: '0x0',
+      from,
+      gasLimit,
+      gasPrice,
+      nonce,
+    };
+  }
+
+  /**
+   * Estimate gas for NFT transfer
+   * @param params - NFT transfer parameters
+   * @param network - The network
+   * @returns Estimated gas limit with 20% buffer
+   */
+  async estimateNftTransferGas(
+    params: NftTransferParams,
+    network: NetworkName = NetworkName.Mainnet,
+  ): Promise<{ gasLimit: string; gasPrice: string; totalCost: string }> {
+    const { contractAddress, from } = params;
+
+    const data = this.buildNftTransferData(params);
+    const gasPrice = await this.getGasPrice(network);
+
+    const estimatedGas = await this.estimateGas(
+      {
+        from,
+        to: contractAddress,
+        value: '0x0',
+        data,
+        gasPrice,
+      },
+      network,
+    );
+
+    // Add 20% buffer
+    const gasLimitWithBuffer = Math.floor(parseInt(estimatedGas, 16) * 1.2);
+    const gasLimit = `0x${gasLimitWithBuffer.toString(16)}`;
+
+    // Calculate total cost in wei
+    const totalCostWei =
+      BigInt(gasLimitWithBuffer) * BigInt(parseInt(gasPrice, 16));
+    const totalCost = `0x${totalCostWei.toString(16)}`;
+
+    return {
+      gasLimit,
+      gasPrice,
+      totalCost,
+    };
   }
 }

@@ -16,11 +16,22 @@ export function NftCover({
   const [isLoading, setLoading] = useState(true);
   const [errorsCount, setErrorsCount] = useState(0);
 
+  // Show default NFT background if there's no foreground URL
+  if (!nft?.foreground) {
+    return (
+      <img
+        src={new URL('./unknown.svg', import.meta.url).toString()}
+        className={clsx(styles.cover, className)}
+        alt="NFT"
+      />
+    );
+  }
+
   if (errorsCount > 1) {
     return (
       <div className={clsx(styles.noContent, className)}>
         <InfoIcon className={styles.noContentIcon} />
-        <span>Can’t preview this NFT</span>
+        <span>Can't preview this NFT</span>
       </div>
     );
   }
