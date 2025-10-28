@@ -88,7 +88,7 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
             ])
             .filter((item): item is string => item != null)
             .filter(
-              assetId => !assetExists(assetId) && isMaxAgeExceeded(assetId),
+              assetId => !assetExists(assetId) || isMaxAgeExceeded(assetId),
             ),
         );
 

@@ -7,7 +7,6 @@ import {
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
-import { type PreferencesAccount } from 'preferences/types';
 import { type MultiWallet } from 'services/types';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -32,8 +31,6 @@ export function ImportSeedMultichain() {
   const [addressEvm, setAddressEvm] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [showValidationError, setShowValidationError] = useState(false);
-  const [existingAccount, setExistingAccount] =
-    useState<PreferencesAccount | null>(null);
 
   const nameRef = useRef('');
   const addressWavesRef = useRef('');
@@ -41,7 +38,6 @@ export function ImportSeedMultichain() {
 
   useEffect(() => {
     if (!addressWaves || !addressEvm) {
-      setExistingAccount(null);
       return;
     }
 
@@ -57,9 +53,6 @@ export function ImportSeedMultichain() {
       );
 
       if (found) {
-        // Find matching account in accounts array for UI state
-        const accountMatch = accounts.find(acc => acc.name === found.name);
-        setExistingAccount(accountMatch || null);
         setError(
           t('importSeed.accountExistsError', {
             name: found.name || '',
@@ -68,7 +61,6 @@ export function ImportSeedMultichain() {
         return;
       }
 
-      setExistingAccount(null);
       setError(null);
     }
 
@@ -84,7 +76,6 @@ export function ImportSeedMultichain() {
     setShowValidationError(false);
     setAddressWaves('');
     setAddressEvm('');
-    setExistingAccount(null);
     nameRef.current = '';
     addressWavesRef.current = '';
     addressEvmRef.current = '';

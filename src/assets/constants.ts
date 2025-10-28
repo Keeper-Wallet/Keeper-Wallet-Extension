@@ -137,18 +137,6 @@ export const assetIds: Record<NetworkName, Record<string, string>> = {
     YFI: 'BLRxWVJWaVuR2CsCoTvTw2bDZ3sQLeTbCofcJv7dP5J4',
     ZEC: 'BrjUWjndUanm5VsJkbUip8VRYy6LWJePtxya3FNv4TQa',
   },
-  unit0MainNet: {
-    UNIT0: 'unit0',
-    'UNIT0-DOGE': '0x6D118c61A03d63CE6b4387EfdE9E3bA3323833b9',
-    'UNIT0-Memma': '0xF252401108d869656Fa682e67B04AC9e9F4a388e',
-    'UNIT0-MCSASHA': '0x6DFE63380149E04f4DD9BD7E8d892eEc28878556',
-    'UNIT0-ZNS': '0xFb2Cd41a8aeC89EFBb19575C6c48d872cE97A0A5',
-    'UNIT0-USDT-NEW': '0xb303d80db8415FD1d3C9FED68A52EEAc9a052671',
-  },
-  unit0Testnet: {
-    UNIT0: 'unit0',
-    UNIT0_TEST: '0xE860EA6CF834Ca574A364e6B1Dc10A27102CaF84',
-  },
   testnet: {
     WAVES: 'WAVES',
     UNIT0: 'unit0',

@@ -90,7 +90,7 @@ export function NftCard({
           <>
             <div className={styles.title}>
               {nft.creator === nft.displayCreator ? (
-                <Ellipsis text={nft.creator} size={6} />
+                <Ellipsis text={nft.name} size={6} />
               ) : (
                 nft.displayCreator
               )}

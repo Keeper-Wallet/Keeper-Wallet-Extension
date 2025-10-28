@@ -84,28 +84,6 @@ export class Unit0NftVendor implements NftVendor<Unit0NftInfo> {
         info?.mediaType === 'video' ? { backgroundColor: '#000' } : undefined,
       tokenType: asset.tokenType,
       vendor: NftVendorId.Unit0,
-      marketplaceUrl: this.getMarketplaceUrl(
-        info.assetId,
-        info.tokenId,
-        networkCode,
-      ),
     };
-  }
-
-  private getMarketplaceUrl(
-    contractAddress?: string,
-    tokenId?: string,
-    networkCode?: string,
-  ): string | undefined {
-    if (!contractAddress || !tokenId) {
-      return undefined;
-    }
-
-    // Unit0 explorer URL format
-    const baseUrl =
-      networkCode === '88817'
-        ? 'https://explorer-testnet.unit0.dev'
-        : 'https://explorer.unit0.dev';
-    return `${baseUrl}/token/${contractAddress}/instance/${tokenId}`;
   }
 }
