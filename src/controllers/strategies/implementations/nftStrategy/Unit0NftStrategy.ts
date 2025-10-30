@@ -26,10 +26,21 @@ export class Unit0NftStrategy implements INftStrategy {
     walletAddress: string,
     network: NetworkName,
   ): Promise<NftProcessResult> {
+    // Deduplicate NFT contracts by address to avoid processing same contract multiple times
+    const uniqueTokens = Array.from(
+      new Map(
+        nftTokens.map(token => [
+          (token?.token?.address_hash ?? token?.token?.address)?.toLowerCase(),
+          token,
+        ])
+      ).values()
+    );
+
+
     // Convert ERC-721 and ERC-1155 tokens to NFT format with enhanced metadata
     // Use collections endpoint for each NFT contract to get comprehensive data with amounts and token instances
     const nftData = await Promise.all(
-      nftTokens.map(async tokenData => {
+      uniqueTokens.map(async tokenData => {
         if (!tokenData || !tokenData.token) {
           return null;
         }
@@ -140,6 +151,7 @@ export class Unit0NftStrategy implements INftStrategy {
         decimals: 0,
       },
     }));
+    
     return {
       nftData: validNftData,
       assetsToStore,
