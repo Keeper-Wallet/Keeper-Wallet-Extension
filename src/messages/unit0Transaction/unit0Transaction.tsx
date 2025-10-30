@@ -23,14 +23,66 @@ export function Unit0TransactionCard({
   const { t } = useTranslation();
   const assets = usePopupSelector(state => state.assets);
 
-  // Check if this is an ERC-20 token transfer
+  // ERC-721 transfer: safeTransferFrom(address,address,uint256) - 0x42842e0e
+  const isERC721 = message.data.data && message.data.data.startsWith('0x42842e0e');
+  
+  // ERC-1155 transfer: safeTransferFrom(address,address,uint256,uint256,bytes) - 0xf242432a
+  const isERC1155 = message.data.data && message.data.data.startsWith('0xf242432a');
+  
+  // ERC-20 transfer: transfer(address,uint256) - 0xa9059cbb
   const isERC20 = message.data.data && message.data.data.startsWith('0xa9059cbb');
   
   let displayAmount = '';
   let displayAsset = 'Unit0';
+  let tokenId = '';
+  let tokenType = '';
+  let recipientAddress = '';
   
-  if (isERC20 && message.data.data) {
-    // ERC-20 transfer: decode the data field
+  if (isERC721 && message.data.data) {
+    // ERC-721 NFT transfer
+    // data format: 0x42842e0e (4 bytes) + from (32 bytes) + to (32 bytes) + tokenId (32 bytes)
+    try {
+      const tokenIdHex = message.data.data.slice(138); // Skip function selector + from + to
+      tokenId = BigInt('0x' + tokenIdHex).toString();
+      
+      displayAmount = `Token #${tokenId}`;
+      displayAsset = assets[message.data.to]?.displayName ?? 'ERC-721 NFT';
+      tokenType = 'ERC-721';
+      
+      // Extract recipient from data
+      const recipientHex = message.data.data.slice(74, 138);
+      recipientAddress = '0x' + recipientHex.slice(24); // Remove padding
+    } catch (err) {
+      console.warn('Failed to decode ERC-721 transfer:', err);
+      displayAmount = 'NFT';
+      displayAsset = 'ERC-721';
+      tokenType = 'ERC-721';
+    }
+  } else if (isERC1155 && message.data.data) {
+    // ERC-1155 NFT transfer
+    // data format: 0xf242432a (4 bytes) + from (32 bytes) + to (32 bytes) + id (32 bytes) + amount (32 bytes) + data offset/length
+    try {
+      const tokenIdHex = message.data.data.slice(138, 202);
+      const amountHex = message.data.data.slice(202, 266);
+      
+      tokenId = BigInt('0x' + tokenIdHex).toString();
+      const amount = BigInt('0x' + amountHex).toString();
+      
+      displayAmount = `${amount}x Token #${tokenId}`;
+      displayAsset = assets[message.data.to]?.displayName ?? 'ERC-1155 NFT';
+      tokenType = 'ERC-1155';
+      
+      // Extract recipient from data
+      const recipientHex = message.data.data.slice(74, 138);
+      recipientAddress = '0x' + recipientHex.slice(24); // Remove padding
+    } catch (err) {
+      console.warn('Failed to decode ERC-1155 transfer:', err);
+      displayAmount = 'NFT';
+      displayAsset = 'ERC-1155';
+      tokenType = 'ERC-1155';
+    }
+  } else if (isERC20 && message.data.data) {
+    // ERC-20 token transfer: decode the data field
     // data format: 0xa9059cbb (4 bytes) + recipient (32 bytes) + amount (32 bytes)
     try {
       const tokenAmount = message.data.data.slice(74); // Skip function selector + recipient
@@ -48,6 +100,11 @@ export function Unit0TransactionCard({
       
       displayAmount = amountInTokens.toFixed(8);
       displayAsset = tokenName;
+      tokenType = 'ERC-20';
+      
+      // Extract recipient from data
+      const recipientHex = message.data.data.slice(10, 74);
+      recipientAddress = '0x' + recipientHex.slice(24); // Remove padding
     } catch (err) {
       console.warn('Failed to decode ERC-20 transfer:', err);
       // Fallback to showing 0 Unit0
@@ -61,6 +118,7 @@ export function Unit0TransactionCard({
     );
     displayAmount = amountInTokens.toFixed(8);
     displayAsset = 'Unit0';
+    recipientAddress = message.data.to;
   }
 
   return (
@@ -72,23 +130,52 @@ export function Unit0TransactionCard({
 
         <div>
           <div className="basic500 body3 margin-min">
-            {t('transactions.transfer')}
+            {isERC721 || isERC1155 ? 'NFT Transfer' : t('transactions.transfer')}
+            {tokenType && (
+              <span style={{ marginLeft: '8px', fontSize: '0.9em', opacity: 0.7 }}>
+                ({tokenType})
+              </span>
+            )}
           </div>
 
           <h1 className="headline1">
-            <span>-{displayAmount} {displayAsset}</span>
+            <span>{displayAmount} {displayAsset}</span>
           </h1>
         </div>
       </div>
 
       <div className={transactionsStyles.cardContent}>
+        {(isERC721 || isERC1155) && (
+          <div className={transactionsStyles.txRow}>
+            <div className="tx-title tag1 basic500">
+              NFT Contract
+            </div>
+
+            <div className={transactionsStyles.txValue}>
+              <Ellipsis text={message.data.to} />
+            </div>
+          </div>
+        )}
+        
+        {tokenId && (
+          <div className={transactionsStyles.txRow}>
+            <div className="tx-title tag1 basic500">
+              Token ID
+            </div>
+
+            <div className={transactionsStyles.txValue}>
+              {tokenId}
+            </div>
+          </div>
+        )}
+        
         <div className={transactionsStyles.txRow}>
           <div className="tx-title tag1 basic500">
             {t('transactions.recipient')}
           </div>
 
           <div className={transactionsStyles.txValue}>
-            <Ellipsis text={message.data.to} />
+            <Ellipsis text={recipientAddress || message.data.to} />
           </div>
         </div>
       </div>
@@ -133,6 +220,7 @@ export function Unit0TransactionScreen({
               type: 'unit0Transaction',
               to: message.data.to,
               value: message.data.value,
+              data: message.data.data,
               gasLimit: message.data.gasLimit,
               gasPrice: message.data.gasPrice,
               nonce: message.data.nonce,
