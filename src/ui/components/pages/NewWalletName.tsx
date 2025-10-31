@@ -111,7 +111,7 @@ export function NewWalletName() {
               );
             } catch (error) {
               console.trace('Failed to create Waves-only MultiWallet:', error);
-              setError('Failed to create wallet. Please try again.');
+              setError(t('newAccountName.errorFailedToCreate'));
               setPending(false);
               return;
             }
@@ -153,7 +153,7 @@ export function NewWalletName() {
               );
             } catch (error) {
               console.error('Failed to create encoded seed wallet:', error);
-              setError('Failed to create wallet. Please try again.');
+              setError(t('newAccountName.errorFailedToCreate'));
               setPending(false);
               return;
             }
@@ -182,9 +182,9 @@ export function NewWalletName() {
 
         <div className="basic500 tag1 margin2">
           {isMultichainCreation
-            ? 'This will create accounts on Waves (Mainnet, Testnet, Stagenet) and Unit0 (Mainnet, Testnet). All accounts include Ethereum access with the same shared address.'
+            ? t('newAccountName.multichainDescription')
             : isWavesOnlyCreation
-            ? 'This will create the same account on Waves Mainnet, Testnet, and Stagenet.'
+            ? t('newAccountName.wavesOnlyDescription')
             : t('newAccountName.nameInfo')}
         </div>
 

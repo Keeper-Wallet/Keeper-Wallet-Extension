@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { downloadKeystore } from '../../../../keystore/utils';
 import { MultiWallet } from '../../../../services/types';
@@ -7,6 +8,7 @@ import { ExportKeystoreChooseItems } from './chooseItems';
 import { ExportPasswordModal } from './passwordModal';
 
 export function ExportAccounts() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [decryptedVault, setDecryptedVault] = useState<MultiWallet[] | null>(
     null,
@@ -36,7 +38,7 @@ export function ExportAccounts() {
   const handleExport = async (password: string) => {
     try {
       if (!decryptedVault || !accountsToExport) {
-        throw new Error('Vault data or selected accounts are missing');
+        throw new Error(t('exportKeystore.vaultDataMissing'));
       }
       // Pass the decrypted vault as the third parameter
       await downloadKeystore(accountsToExport, undefined, password);

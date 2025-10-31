@@ -279,7 +279,7 @@ export function Swap() {
           return;
         }
 
-        if (errMessage === 'Request is rejected on ledger') {
+        if (errMessage === t('swap.ledgerRequestRejected')) {
           setIsSwapInProgress(false);
           return;
         }

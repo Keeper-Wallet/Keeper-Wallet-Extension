@@ -24,31 +24,34 @@ export function Unit0TransactionCard({
   const assets = usePopupSelector(state => state.assets);
 
   // ERC-721 transfer: safeTransferFrom(address,address,uint256) - 0x42842e0e
-  const isERC721 = message.data.data && message.data.data.startsWith('0x42842e0e');
-  
+  const isERC721 =
+    message.data.data && message.data.data.startsWith('0x42842e0e');
+
   // ERC-1155 transfer: safeTransferFrom(address,address,uint256,uint256,bytes) - 0xf242432a
-  const isERC1155 = message.data.data && message.data.data.startsWith('0xf242432a');
-  
+  const isERC1155 =
+    message.data.data && message.data.data.startsWith('0xf242432a');
+
   // ERC-20 transfer: transfer(address,uint256) - 0xa9059cbb
-  const isERC20 = message.data.data && message.data.data.startsWith('0xa9059cbb');
-  
+  const isERC20 =
+    message.data.data && message.data.data.startsWith('0xa9059cbb');
+
   let displayAmount = '';
   let displayAsset = 'Unit0';
   let tokenId = '';
   let tokenType = '';
   let recipientAddress = '';
-  
+
   if (isERC721 && message.data.data) {
     // ERC-721 NFT transfer
     // data format: 0x42842e0e (4 bytes) + from (32 bytes) + to (32 bytes) + tokenId (32 bytes)
     try {
       const tokenIdHex = message.data.data.slice(138); // Skip function selector + from + to
       tokenId = BigInt('0x' + tokenIdHex).toString();
-      
+
       displayAmount = `Token #${tokenId}`;
       displayAsset = assets[message.data.to]?.displayName ?? 'ERC-721 NFT';
       tokenType = 'ERC-721';
-      
+
       // Extract recipient from data
       const recipientHex = message.data.data.slice(74, 138);
       recipientAddress = '0x' + recipientHex.slice(24); // Remove padding
@@ -64,14 +67,14 @@ export function Unit0TransactionCard({
     try {
       const tokenIdHex = message.data.data.slice(138, 202);
       const amountHex = message.data.data.slice(202, 266);
-      
+
       tokenId = BigInt('0x' + tokenIdHex).toString();
       const amount = BigInt('0x' + amountHex).toString();
-      
+
       displayAmount = `${amount}x Token #${tokenId}`;
       displayAsset = assets[message.data.to]?.displayName ?? 'ERC-1155 NFT';
       tokenType = 'ERC-1155';
-      
+
       // Extract recipient from data
       const recipientHex = message.data.data.slice(74, 138);
       recipientAddress = '0x' + recipientHex.slice(24); // Remove padding
@@ -87,21 +90,21 @@ export function Unit0TransactionCard({
     try {
       const tokenAmount = message.data.data.slice(74); // Skip function selector + recipient
       const amountInSmallestUnit = BigInt('0x' + tokenAmount);
-      
+
       // Get token info from assets
       const tokenAsset = assets[message.data.to];
       const decimals = tokenAsset?.precision ?? 18;
       const tokenName = tokenAsset?.displayName ?? 'Token';
-      
+
       // Convert to token units
       const amountInTokens = new BigNumber(amountInSmallestUnit.toString()).div(
         new BigNumber(10).pow(decimals),
       );
-      
+
       displayAmount = amountInTokens.toFixed(8);
       displayAsset = tokenName;
       tokenType = 'ERC-20';
-      
+
       // Extract recipient from data
       const recipientHex = message.data.data.slice(10, 74);
       recipientAddress = '0x' + recipientHex.slice(24); // Remove padding
@@ -130,16 +133,22 @@ export function Unit0TransactionCard({
 
         <div>
           <div className="basic500 body3 margin-min">
-            {isERC721 || isERC1155 ? 'NFT Transfer' : t('transactions.transfer')}
+            {isERC721 || isERC1155
+              ? 'NFT Transfer'
+              : t('transactions.transfer')}
             {tokenType && (
-              <span style={{ marginLeft: '8px', fontSize: '0.9em', opacity: 0.7 }}>
+              <span
+                style={{ marginLeft: '8px', fontSize: '0.9em', opacity: 0.7 }}
+              >
                 ({tokenType})
               </span>
             )}
           </div>
 
           <h1 className="headline1">
-            <span>{displayAmount} {displayAsset}</span>
+            <span>
+              {displayAmount} {displayAsset}
+            </span>
           </h1>
         </div>
       </div>
@@ -147,28 +156,22 @@ export function Unit0TransactionCard({
       <div className={transactionsStyles.cardContent}>
         {(isERC721 || isERC1155) && (
           <div className={transactionsStyles.txRow}>
-            <div className="tx-title tag1 basic500">
-              NFT Contract
-            </div>
+            <div className="tx-title tag1 basic500">NFT Contract</div>
 
             <div className={transactionsStyles.txValue}>
               <Ellipsis text={message.data.to} />
             </div>
           </div>
         )}
-        
+
         {tokenId && (
           <div className={transactionsStyles.txRow}>
-            <div className="tx-title tag1 basic500">
-              Token ID
-            </div>
+            <div className="tx-title tag1 basic500">Token ID</div>
 
-            <div className={transactionsStyles.txValue}>
-              {tokenId}
-            </div>
+            <div className={transactionsStyles.txValue}>{tokenId}</div>
           </div>
         )}
-        
+
         <div className={transactionsStyles.txRow}>
           <div className="tx-title tag1 basic500">
             {t('transactions.recipient')}
@@ -242,16 +245,18 @@ export function Unit0TransactionScreen({
             </div>
 
             <div className={transactionsStyles.txRow}>
-              <div className="tx-title tag1 basic500">Gas Price</div>
-
+              <div className="tx-title tag1 basic500">
+                {t('transactions.gasPrice')}
+              </div>
               <div className={transactionsStyles.txValue}>
                 {gasPriceInGwei} Gwei
               </div>
             </div>
 
             <div className={transactionsStyles.txRow}>
-              <div className="tx-title tag1 basic500">Gas Limit</div>
-
+              <div className="tx-title tag1 basic500">
+                {t('transactions.gasLimit')}
+              </div>
               <div className={transactionsStyles.txValue}>
                 {message.data.gasLimit}
               </div>
@@ -270,8 +275,8 @@ export function Unit0TransactionScreen({
 
               <div className={transactionsStyles.txValue}>
                 {message.data.chainId === 88811
-                  ? 'Mainnet (88811)'
-                  : 'Testnet (88817)'}
+                  ? t('transactions.chainIdMainnet')
+                  : t('transactions.chainIdTestnet')}
               </div>
             </div>
           </div>

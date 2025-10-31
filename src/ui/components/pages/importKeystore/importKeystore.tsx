@@ -54,7 +54,9 @@ async function decrypt<T>(
     );
     return JSON.parse(utf8Decode(decrypted));
   } catch (err) {
-    throw new Error('Failed to decrypt keystore content');
+    const error = new Error('Failed to decrypt keystore content');
+    (error as any).code = 'KEYSTORE_DECRYPT_FAILED';
+    throw error;
   }
 }
 
@@ -283,7 +285,11 @@ export function ImportKeystore() {
               setMultiwallets(importedWallets);
               setWalletType(keystoreParser.type);
             } catch (decryptErr) {
-              setError(t('importKeystore.errorDecrypt'));
+              if (decryptErr instanceof Error && (decryptErr as any).code === 'KEYSTORE_DECRYPT_FAILED') {
+                setError(t('newAccountName.errorFailedToDecryptKeystore'));
+              } else {
+                setError(t('importKeystore.errorDecrypt'));
+              }
             }
           } catch (err) {
             setError(t('importKeystore.errorUnexpected'));

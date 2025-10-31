@@ -136,7 +136,11 @@ export class MultiWalletController extends EventEmitter {
       wallet => wallet.id === multiWallet.id,
     );
     if (existingWallet) {
-      throw new Error(`Multi-wallet with ID ${multiWallet.id} already exists`);
+      // Use a key that can be translated in the UI
+      const error = new Error(`Multi-wallet with ID ${multiWallet.id} already exists`);
+      (error as any).code = 'WALLET_ALREADY_EXISTS';
+      (error as any).walletId = multiWallet.id;
+      throw error;
     }
 
     // Create wallet instances for signing operations
@@ -170,7 +174,9 @@ export class MultiWalletController extends EventEmitter {
         this.#multiwallets = this.#multiwallets.filter(
           wallet => wallet.id !== multiWallet.id,
         );
-        throw new Error('Failed to save wallet to encrypted storage');
+        const err = new Error('Failed to save wallet to encrypted storage');
+        (err as any).code = 'FAILED_TO_SAVE';
+        throw err;
       }
     } else {
       // If not yet initialized with password, update the store state

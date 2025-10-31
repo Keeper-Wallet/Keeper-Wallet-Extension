@@ -179,7 +179,13 @@ export function NftInfo() {
           type="submit"
           view="submit"
           onClick={() => {
-            navigate(`/send/${nft?.id}`);
+            if (nft?.id) {
+              navigate(`/send/${nft.id}`);
+            } else {
+              console.error(
+                '❌ [NftInfo] Cannot navigate - nft.id is undefined',
+              );
+            }
           }}
         >
           {t('nftInfo.sendBtn')}

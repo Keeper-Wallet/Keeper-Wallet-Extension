@@ -131,7 +131,7 @@ function flattenMultiWallets(
           type: wallet.type,
           blockchainType: 'unit0',
           walletId: wallet.id,
-          networkLabel: `Unit0 ${networkLabels[networkName]}`,
+          networkLabel: networkLabels[networkName], // Will be translated in the component
         });
       });
     }

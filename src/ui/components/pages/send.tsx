@@ -155,7 +155,7 @@ export function Send() {
           (async () => {
             try {
               if (!selectedAccount?.address) {
-                throw new Error('No account selected');
+                throw new Error(t('send.noAccountSelected'));
               }
 
               const unit0Api = new Unit0Api();
@@ -311,7 +311,10 @@ export function Send() {
                   .toFixed(6);
 
                 throw new Error(
-                  `Insufficient UNIT0 for gas fees. You need ${gasCostFormatted} UNIT0 but have ${balanceFormatted} UNIT0`,
+                  t('send.insufficientUnit0ForGas', {
+                    gasCost: gasCostFormatted,
+                    balance: balanceFormatted,
+                  }),
                 );
               }
 
@@ -341,7 +344,7 @@ export function Send() {
               setSubmitError(
                 err instanceof Error
                   ? err.message
-                  : 'Transaction failed. Please try again.',
+                  : t('send.transactionFailed'),
               );
             }
           })();

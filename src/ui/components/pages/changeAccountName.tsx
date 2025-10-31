@@ -58,7 +58,7 @@ export function ChangeAccountName() {
         setError(null);
         return true;
       } catch (validationError) {
-        setError('Validation error occurred');
+        setError(t('newAccountName.errorValidationFailed'));
         return false;
       } finally {
         setIsValidating(false);

@@ -31,7 +31,7 @@ export function useWalletValidation() {
       if (name.length > 32) {
         return {
           isValid: false,
-          error: 'Wallet name cannot exceed 32 characters',
+          error: t('newAccountName.errorNameTooLong'),
         };
       }
 
@@ -52,7 +52,7 @@ export function useWalletValidation() {
         console.error('Wallet name validation error:', error);
         return {
           isValid: false,
-          error: 'Validation error occurred',
+          error: t('newAccountName.errorValidationFailed'),
         };
       }
     },

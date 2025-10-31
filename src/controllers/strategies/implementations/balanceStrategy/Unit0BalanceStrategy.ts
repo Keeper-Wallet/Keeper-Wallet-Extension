@@ -110,10 +110,20 @@ export class Unit0BalanceStrategy implements IBalanceStrategy {
   ): Promise<BalancesItem> {
     // Separate ERC-20 tokens and NFTs using token strategy
     const erc20Tokens = this.tokenStrategy.filterTokensByType(tokens, 'ERC-20');
-    const nftTokens = tokens.filter(
+    let nftTokens = tokens.filter(
       token =>
         token.token?.type === 'ERC-721' || token.token?.type === 'ERC-1155',
     );
+
+    // Deduplicate NFT tokens by contract address to prevent processing same contract multiple times
+    const uniqueNftContracts = new Map<string, (typeof nftTokens)[0]>();
+    nftTokens.forEach(token => {
+      const contractAddress = token.token?.address_hash;
+      if (contractAddress && !uniqueNftContracts.has(contractAddress)) {
+        uniqueNftContracts.set(contractAddress, token);
+      }
+    });
+    nftTokens = Array.from(uniqueNftContracts.values());
 
     // Process NFTs using the dedicated NFT strategy
     const { nftData: validNftData, assetsToStore: nftAssetsToStore } =

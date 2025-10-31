@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Ellipsis } from 'ui/components/ui';
 
 import { InfoIcon } from '../icons/info';
@@ -13,6 +14,7 @@ export function NftCover({
   className?: string;
   nft: Nft | undefined;
 }) {
+  const { t } = useTranslation();
   const [isLoading, setLoading] = useState(true);
   const [errorsCount, setErrorsCount] = useState(0);
 
@@ -31,7 +33,7 @@ export function NftCover({
     return (
       <div className={clsx(styles.noContent, className)}>
         <InfoIcon className={styles.noContentIcon} />
-        <span>Can't preview this NFT</span>
+        <span>{t('nftCard.cannotPreview')}</span>
       </div>
     );
   }

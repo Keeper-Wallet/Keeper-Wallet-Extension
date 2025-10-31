@@ -26,7 +26,9 @@
     "wavesPublicKey": "Waves Public Key",
     "unit0PublicKey": "Unit0 Public Key",
     "wavesPrivateKey": "Waves Private Key",
-    "unit0PrivateKey": "Unit0 Private key"
+    "unit0PrivateKey": "Unit0 Private key",
+    "errorUnableToRetrievePrivateKey": "Error: Unable to retrieve private key",
+    "errorRetrievingPrivateKey": "Error retrieving private key"
   },
   "activeAccountCard": {
     "swapButton": "Swap"
@@ -207,6 +209,7 @@
     "chooseContactsTitle": "Export Contacts to file",
     "encryptAddressBook": "Encrypt the Address Book",
     "exportNotSupported": "This account cannot be exported",
+    "vaultDataMissing": "Vault data or selected accounts are missing",
     "warningModalTitle": "Attention",
     "warningModalDesc": "Ledger and email accounts cannot be exported",
     "warningModalConfirmButton": "I understand",
@@ -214,7 +217,8 @@
     "passwordLabel": "Password",
     "passwordVerifyDesc": "Please enter your Keeper password to confirm that it's really you",
     "passwordVerifyImportantNote": "<attention>Attention:</attention> this password will also be used to encrypt the resulting file. If you forget it, you won't be able to restore your accounts.",
-    "verifyBtn": "Enter"
+    "verifyBtn": "Enter",
+    "unit0NetworkLabel": "Unit0 {{network}}"
   },
   "forgotPassword": {
     "attention": "Attention!",
@@ -357,6 +361,7 @@
     "chooseFileTitle": "Import Keystore File",
     "errorDecrypt": "Could not decrypt the Keystore file with the given password",
     "errorFormat": "File format is not supported",
+    "errorInvalidFormat": "File format is not supported",
     "errorUnexpected": "Something went wrong",
     "keystoreLabel": "Keystore File",
     "noFileSelected": "No file selected",
@@ -374,7 +379,9 @@
     "userIdInputMaxValueError": "Account ID cannot be greater than {{ maxUserId }}",
     "selectAccountInstructions": "Choose your address",
     "title": "Import Ledger",
-    "tryAgainButton": "Try Again"
+    "tryAgainButton": "Try Again",
+    "defaultWalletName": "Ledger {{id}}",
+    "failedToGetSignature": "Failed to get signature from Ledger device"
   },
   "importSeed": {
     "accountExistsError": "Account already known as '{{ name }}'",
@@ -478,6 +485,14 @@
     "errorInUse": "Name already exist",
     "errorNameRequired": "Name is required",
     "errorRequired": "Required name",
+    "errorNameTooLong": "Wallet name cannot exceed 32 characters",
+    "errorValidationFailed": "Validation error occurred",
+    "errorWalletAlreadyExists": "Multi-wallet with ID {{id}} already exists",
+    "errorFailedToSave": "Failed to save wallet. Please try again.",
+    "errorFailedToCreate": "Failed to create wallet. Please try again.",
+    "errorFailedToDecryptKeystore": "Failed to decrypt keystore content",
+    "multichainDescription": "This will create accounts on Waves (Mainnet, Testnet, Stagenet) and Unit0 (Mainnet, Testnet). All accounts include Ethereum access with the same shared address.",
+    "wavesOnlyDescription": "This will create the same account on Waves Mainnet, Testnet, and Stagenet.",
     "nameInfo": "The account name will be known only to you",
     "switchAccount": "Switch account"
   },
@@ -491,6 +506,9 @@
   },
   "nftCollection": {
     "backToNftBtn": "Back to NFTs"
+  },
+  "nftCard": {
+    "cannotPreview": "Can't preview this NFT"
   },
   "nftInfo": {
     "backBtn": "Back",
@@ -548,6 +566,10 @@
     "attachmentInputLabel_plural": "Attachment ({{count}}/{{max}} bytes)",
     "attachmentMaxLengthError": "Attachment must not exceed 140 bytes",
     "insufficientFundsError": "Insufficient funds",
+    "insufficientUnit0ForGas": "Insufficient UNIT0 for gas fees. You need {{gasCost}} UNIT0 but have {{balance}} UNIT0",
+    "insufficientUnit0Total": "Insufficient UNIT0. Total needed: {{totalCost}} UNIT0 ({{amount}} UNIT0 + {{gasCost}} gas), but balance is {{balance}} UNIT0",
+    "noAccountSelected": "No account selected",
+    "transactionFailed": "Transaction failed. Please try again.",
     "recipientInputLabel": "Recipient",
     "recipientInvalidError": "Recipient value is invalid",
     "recipientRequiredError": "Recipient is required",
@@ -631,6 +653,7 @@
     "failMessage": "Swap did not succeed, please try again",
     "fromInputLabel": "From",
     "insufficientFundsError": "Insufficient funds",
+    "ledgerRequestRejected": "Request is rejected on ledger",
     "maxAmountExceeded": "Amount must not exceed {{ maxAmount }}",
     "minimumReceived": "Minimum Received",
     "minimumReceivedTooltip": "Minimum amount you will receive, taking slippage tolerance into account",
@@ -653,16 +676,23 @@
     "viewTransaction": "View transaction"
   },
   "transactions": {
-    "allowAccess": "Allow access",
     "allowAccessTitle": "Allow access",
+    "allowAccess": "Allow access",
     "amountPerTransaction": "This amount is equivalent to every 0.001 Waves in transaction fees",
     "arguments": "Arguments",
     "assetId": "Asset ID",
     "assetScriptTransaction": "Set Asset Script",
     "assetScriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user.",
     "assetScriptWarningHeader": "Warning: actions can block transactions with your asset",
+    "assetName": "Asset Name",
+    "assetType": "Asset Type",
     "attachment": "Attachment",
     "burn": "Burn",
+    "cancelLease": "Cancel Lease",
+    "cancelOrder": "Cancel Order",
+    "chainId": "Chain ID",
+    "chainIdMainnet": "Mainnet (88811)",
+    "chainIdTestnet": "Testnet (88817)",
     "clearSponsored": "Disable Sponsorship",
     "createAlias": "Create Alias",
     "dApp": "dApp",
@@ -675,9 +705,12 @@
     "dex": "DEX",
     "expires": "Expires",
     "fee": "Fee",
+    "gasLimit": "Gas Limit",
+    "gasPrice": "Gas Price",
     "hideTransactions": "Hide transactions",
     "issueType": "Type",
     "json": "JSON",
+    "keyDeletion": "Key Deletion",
     "lease": "Lease",
     "leaseCancel": "Lease Cancel",
     "massTransfer": "Mass Transfer",

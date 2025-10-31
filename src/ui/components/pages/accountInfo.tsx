@@ -203,7 +203,7 @@ export function AccountInfo() {
           );
 
           if (!seed) {
-            return 'Error: Unable to retrieve private key';
+            return t('accountInfo.errorUnableToRetrievePrivateKey');
           }
 
           const ethers = await import('ethers');
@@ -211,7 +211,7 @@ export function AccountInfo() {
           const derivedWallet = ethers.Wallet.fromPhrase(seed);
           return derivedWallet.privateKey;
         } catch (error) {
-          return 'Error retrieving private key';
+          return t('accountInfo.errorRetrievingPrivateKey');
         }
       },
       retry: () => getUnit0PrivateKey(copyCallback),

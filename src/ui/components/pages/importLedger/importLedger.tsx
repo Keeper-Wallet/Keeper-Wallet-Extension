@@ -324,7 +324,7 @@ export function ImportLedger() {
                   // Use MultiWallet system - following the same pattern as other wallet types
                   await dispatch(
                     createWavesOnlyMultiWallet({
-                      name: `Ledger ${selectedUser.id}`, // Default name, user can change later
+                      name: t('importLedger.defaultWalletName', { id: selectedUser.id }),
                       type: 'ledger',
                       ledgerId: selectedUser.id,
                       publicKey: selectedUser.publicKey,
@@ -335,9 +335,21 @@ export function ImportLedger() {
                   navigate('/');
                 } catch (error) {
                   console.error('Failed to create Ledger wallet:', error);
-                  setSelectAccountError(
-                    error instanceof Error ? error.message : 'Failed to create wallet'
-                  );
+                  // Check if it's a translatable error
+                  if (error instanceof Error) {
+                    const errorCode = (error as any).code;
+                    if (errorCode === 'WALLET_ALREADY_EXISTS') {
+                      setSelectAccountError(
+                        t('newAccountName.errorWalletAlreadyExists', { id: (error as any).walletId })
+                      );
+                    } else if (errorCode === 'FAILED_TO_SAVE') {
+                      setSelectAccountError(t('newAccountName.errorFailedToSave'));
+                    } else {
+                      setSelectAccountError(error.message);
+                    }
+                  } else {
+                    setSelectAccountError('Failed to create wallet');
+                  }
                 }
               }}
             >

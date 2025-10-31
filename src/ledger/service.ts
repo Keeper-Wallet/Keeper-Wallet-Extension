@@ -163,7 +163,9 @@ class LedgerService {
       }
 
       if (!signature) {
-        throw new Error('Failed to get signature from Ledger device');
+        const error = new Error('Failed to get signature from Ledger device');
+        (error as any).code = 'LEDGER_SIGNATURE_FAILED';
+        throw error;
       }
 
       await Background.ledgerSignResponse(request.id, null, signature);
