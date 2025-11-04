@@ -109,8 +109,7 @@ export class MultiWalletController extends EventEmitter {
       this.#restorationPromise = this.#restoreMultiWallets(
         this.#password,
       ).catch(error => {
-        this.#password,
-      ).catch(error => {
+        console.error('Failed to restore multiwallets:', error);
         this.#restorationPromise = null;
       });
     }
