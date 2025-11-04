@@ -423,6 +423,14 @@ export class PreferencesController extends EventEmitter {
                   wavesNetworks[network as keyof typeof wavesNetworks]
                     ?.networkCode,
                 coinType: 'waves',
+                // For Ledger wallets, include the ledger account ID
+                ...(wallet.type === 'ledger' && (wallet as any).ledgerId !== undefined
+                  ? { id: (wallet as any).ledgerId }
+                  : {}),
+                // For WX wallets, include uuid and username
+                ...(wallet.type === 'wx' && (wallet as any).wxUuid && (wallet as any).wxUsername
+                  ? { uuid: (wallet as any).wxUuid, username: (wallet as any).wxUsername }
+                  : {}),
               };
               break;
             }

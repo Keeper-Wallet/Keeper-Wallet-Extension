@@ -259,17 +259,48 @@ export function createWavesOnlyMultiWallet({
     }
 
     // Create account object directly from wallet data (bypass problematic legacy sync)
-    const selectedAccount = {
-      address: selectedAddress,
-      name: wallet.name,
-      network: 'mainnet' as const,
-      networkCode: 'W',
-      publicKey: wallet.coins.waves?.publicKey || '',
-      type: 'seed' as const,
-      id: wallet.id,
-    };
+    let selectedAccount: any;
 
-    dispatch(selectAccount(selectedAccount as unknown as PreferencesAccount));
+    if (wallet.type === 'ledger' && (wallet as any).ledgerId !== undefined) {
+      // Ledger account with proper discriminated union type
+      selectedAccount = {
+        address: selectedAddress,
+        name: wallet.name,
+        network: 'mainnet' as const,
+        networkCode: 'W',
+        publicKey: wallet.coins.waves?.publicKey || '',
+        type: 'ledger' as const,
+        id: (wallet as any).ledgerId, // id is part of the ledger type
+      };
+    } else if (
+      wallet.type === 'wx' &&
+      (wallet as any).wxUuid &&
+      (wallet as any).wxUsername
+    ) {
+      // WX account with uuid and username
+      selectedAccount = {
+        address: selectedAddress,
+        name: wallet.name,
+        network: 'mainnet' as const,
+        networkCode: 'W',
+        publicKey: wallet.coins.waves?.publicKey || '',
+        type: 'wx' as const,
+        uuid: wallet.wxUuid,
+        username: wallet.wxUsername,
+      };
+    } else {
+      // Other wallet types (seed, privateKey, encodedSeed, debug)
+      selectedAccount = {
+        address: selectedAddress,
+        name: wallet.name,
+        network: 'mainnet' as const,
+        networkCode: 'W',
+        publicKey: wallet.coins.waves?.publicKey || '',
+        type: wallet.type,
+      };
+    }
+
+    dispatch(selectAccount(selectedAccount as PreferencesAccount));
   };
 }
 
@@ -370,10 +401,6 @@ export function createMultiWalletWithFactory({
     }
 
     if (!selectedAccount) {
-      console.error(
-        'Available accounts:',
-        await Background.getLegacyFormatAccounts(),
-      );
       throw new Error(
         `No account found with address: ${selectedAddress} after 5 attempts`,
       );

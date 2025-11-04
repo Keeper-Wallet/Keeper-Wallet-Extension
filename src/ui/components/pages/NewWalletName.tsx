@@ -39,6 +39,7 @@ export function NewWalletName() {
   const isMultichainFromState = location.state?.multichain === true;
   const isPrivateKey = account.type === 'privateKey';
   const isEncodedSeed = account.type === 'encodedSeed';
+  const isLedger = account.type === 'ledger';
   const isWavesOnlyCreation = account.type === 'seed' && !isMultichainFromState;
   const isMultichainCreation =
     account.type === 'multichain' || isMultichainFromState;
@@ -157,6 +158,23 @@ export function NewWalletName() {
               setPending(false);
               return;
             }
+          } else if (isLedger) {
+            try {
+              await dispatch(
+                createWavesOnlyMultiWallet({
+                  name: accountName,
+                  type: 'ledger',
+                  ledgerId: account.id,
+                  publicKey: account.publicKey,
+                  address: account.address,
+                }),
+              );
+            } catch (error) {
+              console.error('Failed to create Ledger wallet:', error);
+              setError(t('newAccountName.errorFailedToCreate'));
+              setPending(false);
+              return;
+            }
           }
 
           navigate('/import-success');
@@ -181,11 +199,7 @@ export function NewWalletName() {
         </div>
 
         <div className="basic500 tag1 margin2">
-          {isMultichainCreation
-            ? t('newAccountName.multichainDescription')
-            : isWavesOnlyCreation
-            ? t('newAccountName.wavesOnlyDescription')
-            : t('newAccountName.nameInfo')}
+          {t('newAccountName.nameInfo')}
         </div>
 
         <div className={styles.footer}>

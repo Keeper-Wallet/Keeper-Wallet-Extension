@@ -4,7 +4,7 @@ import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { createWavesOnlyMultiWallet } from 'store/actions/user';
+import { newAccountSelect } from 'store/actions/localState';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { ErrorMessage } from 'ui/components/ui/error';
 import { Input } from 'ui/components/ui/input';
@@ -58,6 +58,8 @@ export function ImportLedger() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const connectionAttemptedRef = useRef(false);
+  const isMountedRef = useRef(true);
 
   const [getUsersError, setGetUsersError] = useState<
     string | React.ReactElement | null
@@ -126,46 +128,59 @@ export function ImportLedger() {
   const connectToLedger = useCallback(async () => {
     setConnectionError(null);
     setIsConnecting(true);
+    connectionAttemptedRef.current = true;
 
-    await ledgerService.connectUsb(networkCode);
+    try {
+      await ledgerService.connectUsb(networkCode);
 
-    if (ledgerService.status === LedgerServiceStatus.Ready) {
-      if (ledgerUsersPages[0] == null) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const users = await ledgerService.ledger!.getPaginationUsersData(
-          0,
-          USERS_PER_PAGE - 1,
-        );
+      if (ledgerService.status === LedgerServiceStatus.Ready) {
+        if (ledgerUsersPages[0] == null) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const users = await ledgerService.ledger!.getPaginationUsersData(
+            0,
+            USERS_PER_PAGE - 1,
+          );
 
-        setLedgerUsersPages({ 0: users });
+          setLedgerUsersPages({ 0: users });
+        }
+
+        setIsReady(true);
+        setIsConnecting(false);
+      } else {
+        switch (ledgerService.status) {
+          case LedgerServiceStatus.UsedBySomeOtherApp:
+            setConnectionError(t('ledgerErrors.usedBySomeOtherApp'));
+            break;
+          default:
+            setConnectionError(t('ledgerErrors.unknown'));
+            break;
+        }
+
+        setIsConnecting(false);
       }
-
-      setIsReady(true);
-      setIsConnecting(false);
-    } else {
-      switch (ledgerService.status) {
-        case LedgerServiceStatus.UsedBySomeOtherApp:
-          setConnectionError(t('ledgerErrors.usedBySomeOtherApp'));
-          break;
-        default:
-          setConnectionError(t('ledgerErrors.unknown'));
-          break;
-      }
-
+    } catch (error) {
+      console.error('Ledger connection failed:', error);
+      setConnectionError(t('ledgerErrors.unknown'));
       setIsConnecting(false);
     }
   }, [ledgerUsersPages, networkCode, t]);
 
   useEffect(() => {
-    if (isReady) {
+    // Only attempt connection once on mount
+    if (isReady || connectionAttemptedRef.current) {
       return;
     }
 
+    connectionAttemptedRef.current = true;
     connectToLedger();
-  }, [connectToLedger, isReady]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReady]); // Intentionally not including connectToLedger to prevent infinite loop
 
   useEffect(() => {
     return () => {
+      // Only disconnect when component actually unmounts
+      isMountedRef.current = false;
+      console.log('🔌 Component unmounting, disconnecting Ledger...');
       ledgerService.disconnect();
     };
   }, []);
@@ -312,7 +327,7 @@ export function ImportLedger() {
             <Button
               disabled={!selectedUser}
               view="submit"
-              onClick={async () => {
+              onClick={() => {
                 if (
                   accounts.some(acc => acc.address === selectedUser.address)
                 ) {
@@ -320,37 +335,18 @@ export function ImportLedger() {
                   return;
                 }
 
-                try {
-                  // Use MultiWallet system - following the same pattern as other wallet types
-                  await dispatch(
-                    createWavesOnlyMultiWallet({
-                      name: t('importLedger.defaultWalletName', { id: selectedUser.id }),
-                      type: 'ledger',
-                      ledgerId: selectedUser.id,
-                      publicKey: selectedUser.publicKey,
-                      address: selectedUser.address,
-                    }),
-                  );
+                dispatch(
+                  newAccountSelect({
+                    type: 'ledger',
+                    address: selectedUser.address,
+                    id: selectedUser.id,
+                    publicKey: selectedUser.publicKey,
+                    name: '',
+                    hasBackup: true,
+                  }),
+                );
 
-                  navigate('/');
-                } catch (error) {
-                  console.error('Failed to create Ledger wallet:', error);
-                  // Check if it's a translatable error
-                  if (error instanceof Error) {
-                    const errorCode = (error as any).code;
-                    if (errorCode === 'WALLET_ALREADY_EXISTS') {
-                      setSelectAccountError(
-                        t('newAccountName.errorWalletAlreadyExists', { id: (error as any).walletId })
-                      );
-                    } else if (errorCode === 'FAILED_TO_SAVE') {
-                      setSelectAccountError(t('newAccountName.errorFailedToSave'));
-                    } else {
-                      setSelectAccountError(error.message);
-                    }
-                  } else {
-                    setSelectAccountError('Failed to create wallet');
-                  }
-                }
+                navigate('/account-name');
               }}
             >
               {t('importLedger.continueButton')}
@@ -373,7 +369,10 @@ export function ImportLedger() {
             <Button
               disabled={isConnecting}
               view="submit"
-              onClick={connectToLedger}
+              onClick={() => {
+                connectionAttemptedRef.current = false;
+                connectToLedger();
+              }}
             >
               {t('importLedger.tryAgainButton')}
             </Button>
