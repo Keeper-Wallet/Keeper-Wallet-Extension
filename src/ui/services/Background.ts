@@ -388,6 +388,13 @@ class Background {
     return await this.background!.updateUsdPricesByAssetIds(assetIds);
   }
 
+  async updateUnit0UsdPricesByIds(ids: string[]) {
+    await this.initPromise;
+    this._connect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return await this.background!.updateUnit0UsdPricesByIds(ids);
+  }
+
   async setAddress(address: string, name: string): Promise<void> {
     await this.initPromise;
     this._connect();

@@ -13,6 +13,8 @@ import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
+import { Unit0Api } from './api/unit0Api';
+
 import { defaultAssetTickers } from '../assets/constants';
 import {
   type ExtensionStorage,
@@ -56,7 +58,9 @@ const SUSPICIOUS_LIST_URL =
 const SUSPICIOUS_PERIOD_IN_MINUTES = 60;
 const MAX_AGE = 60 * 60 * 1000;
 
-const DATA_SERVICE_URL = 'https://api.keeper-wallet.app';
+// const DATA_SERVICE_URL = 'https://api.keeper-wallet.app';
+
+const DATA_SERVICE_URL = 'http://127.0.0.1:8000';
 const SWAP_SERVICE_URL = 'https://swap-api.keeper-wallet.app';
 
 const INFO_PERIOD_IN_MINUTES = 60;
@@ -101,6 +105,7 @@ export class AssetInfoController {
   private getNode;
   private getNetwork;
   #remoteConfig;
+  private unit0Api: Unit0Api;
 
   constructor({
     extensionStorage,
@@ -145,6 +150,7 @@ export class AssetInfoController {
     this.#remoteConfig = remoteConfig;
     this.getNode = getNode;
     this.getNetwork = getNetwork;
+    this.unit0Api = new Unit0Api();
 
     if (initState.suspiciousAssets.length === 0) {
       this.updateSuspiciousAssets();
@@ -455,6 +461,46 @@ export class AssetInfoController {
         ...updatedUsdPrices,
       },
     });
+  }
+
+  /**
+   * Update USD prices for Unit0 tokens by their IDs
+   * @param ids - Array of Unit0 token IDs ("UNIT0" for native, contract addresses for ERC-20)
+   */
+  async updateUnit0UsdPricesByIds(ids: string[]) {
+    const network = this.getNetwork();
+
+    // Only fetch prices for Unit0 mainnet
+    if (ids.length === 0 || network !== NetworkName.Mainnet) {
+      return;
+    }
+
+    const { usdPrices } = this.store.getState();
+
+    try {
+      // Fetch prices from Unit0 price API
+      const unit0Prices = await this.unit0Api.fetchPricesByIds(ids);
+
+      // Convert Unit0 price format to the format used in the store
+      const updatedUsdPrices: Record<string, string> = {};
+
+      for (const [id, priceData] of Object.entries(unit0Prices)) {
+        // Normalize to lowercase for consistency (except "UNIT0" which stays uppercase)
+        const normalizedId = id === 'UNIT0' ? id : id.toLowerCase();
+        updatedUsdPrices[normalizedId] = priceData.price_usd.toString();
+      }
+
+      // Merge with existing prices
+      this.store.updateState({
+        usdPrices: {
+          ...usdPrices,
+          ...updatedUsdPrices,
+        },
+      });
+    } catch (error) {
+      console.error('Failed to fetch Unit0 prices:', error);
+      // Don't throw - allow the app to continue even if price fetch fails
+    }
   }
 
   async updateInfo() {

@@ -693,6 +693,10 @@ class BackgroundService extends EventEmitter {
         this.assetInfoController.updateUsdPricesByAssetIds.bind(
           this.assetInfoController,
         ),
+      updateUnit0UsdPricesByIds:
+        this.assetInfoController.updateUnit0UsdPricesByIds.bind(
+          this.assetInfoController,
+        ),
       toggleAssetFavorite: this.assetInfoController.toggleAssetFavorite.bind(
         this.assetInfoController,
       ),

@@ -50,6 +50,29 @@ export interface NftTransactionData {
   nonce?: number;
 }
 
+/**
+ * Unit0 token price data from the price API
+ */
+export interface Unit0PriceData {
+  /** Token price in USD */
+  price_usd: number;
+  /** Token symbol */
+  symbol: string;
+  /** Unix timestamp of last price update */
+  last_update: number;
+  /** Token decimal places (optional, may not be present for native tokens) */
+  decimals?: number;
+}
+
+/**
+ * Map of token addresses to their price data
+ * Keys are lowercase token addresses
+ */
+export type Unit0PricesMap = Record<string, Unit0PriceData>;
+
+// const DATA_SERVICE_URL = 'https://api.keeper-wallet.app';
+const DATA_SERVICE_URL = 'http://127.0.0.1:8000';
+
 export class Unit0Api {
   private getBaseUrl(network: NetworkName): string {
     if (network === NetworkName.Testnet) {
@@ -516,9 +539,9 @@ export class Unit0Api {
     );
 
     // Add 20% buffer to gas estimate for safety
-    const gasLimit = `0x${Math.floor(
-      parseInt(estimatedGas, 16) * 1.2,
-    ).toString(16)}`;
+    const gasLimit = `0x${Math.floor(parseInt(estimatedGas, 16) * 1.2).toString(
+      16,
+    )}`;
 
     return {
       data,
@@ -571,5 +594,35 @@ export class Unit0Api {
       gasPrice,
       totalCost,
     };
+  }
+
+  /**
+   * Fetch prices for multiple token IDs
+   * @param ids - Array of token IDs ("UNIT0" for native, contract addresses for ERC-20)
+   * @returns Map of IDs to price data (only includes tokens with available prices)
+   */
+  async fetchPricesByIds(ids: string[]): Promise<Unit0PricesMap> {
+    if (ids.length === 0) {
+      return {};
+    }
+
+    const response = await fetch(
+      new URL('/api/v1/unit0/rates', DATA_SERVICE_URL),
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch Unit0 prices: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    return response.json();
   }
 }

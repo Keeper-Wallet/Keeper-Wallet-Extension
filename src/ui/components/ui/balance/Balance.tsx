@@ -11,13 +11,13 @@ import * as styles from './Balance.module.css';
  * while keeping the correct 18-decimal precision for calculations
  */
 function formatBalanceDisplay(balance: Money, isShortFormat?: boolean): string {
-  // For Unit0 tokens (18 decimals), limit display to 8 decimals like Waves
-  if (balance.asset.id === 'unit0' || balance.asset.precision === 18) {
+  // For Unit0 tokens, limit display to 8 decimals like Waves
+  if (balance.asset.id === 'unit0' || balance.asset.id.startsWith('0x')) {
     const maxDisplayDecimals = 8;
     const tokens = balance.getTokens();
     return tokens.toFormat(maxDisplayDecimals, BigNumber.ROUND_MODE.ROUND_DOWN);
   }
-  
+
   // For all other assets, use default formatting
   return isShortFormat ? balance.toFormat() : balance.toTokens();
 }
@@ -60,6 +60,7 @@ export function Balance({
   const tokens = formatBalanceDisplay(balance, isShortFormat).split('.');
 
   const assetName = showAsset ? balance.asset.displayName : null;
+
 
   if (!split) {
     return (

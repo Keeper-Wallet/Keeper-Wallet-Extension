@@ -134,7 +134,13 @@ export function PopupHome() {
           // eslint-disable-next-line @typescript-eslint/no-shadow
           const asset = assets[id];
 
-          const usdPrice = usdPrices[id];
+          // Check both Waves and Unit0 prices
+          let usdPrice = usdPrices[id]; // Waves prices
+          if (!usdPrice && (id === 'unit0' || id.startsWith('0x'))) {
+            // For Unit0 tokens, check with proper normalization
+            const normalizedId = id === 'unit0' ? 'UNIT0' : id.toLowerCase();
+            usdPrice = usdPrices[normalizedId]; // Unit0 prices
+          }
 
           if (asset && usdPrice) {
             const tokens = new Money(
