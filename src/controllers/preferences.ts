@@ -511,7 +511,9 @@ export class PreferencesController extends EventEmitter {
     networkCode: string;
     publicKey: string;
     type: string;
+    isWavesOnly?: boolean;
     id: string;
+    lastUsed?: number;
   }> {
     const currentNetwork = this.getNetwork();
     const currentBlockchainType = this.getCurrentBlockchainType();
@@ -525,6 +527,7 @@ export class PreferencesController extends EventEmitter {
       type: string;
       isWavesOnly?: boolean;
       id: string;
+      lastUsed?: number;
     }> = [];
 
     // Convert each MultiWallet to legacy accounts for current network and blockchain
@@ -573,6 +576,7 @@ export class PreferencesController extends EventEmitter {
             publicKey: publicKey || '',
             type: wallet.type,
             id: wallet.id,
+            lastUsed: wallet.lastUsed || wallet.createdAt,
           });
         }
       }
@@ -598,6 +602,7 @@ export class PreferencesController extends EventEmitter {
     type: string;
     isWavesOnly?: boolean;
     id: string;
+    lastUsed?: number;
   }> {
     const multiWallets = this.getAccounts() as unknown as MultiWallet[];
     const legacyAccounts: Array<{
@@ -609,6 +614,7 @@ export class PreferencesController extends EventEmitter {
       type: string;
       isWavesOnly?: boolean;
       id: string;
+      lastUsed?: number;
     }> = [];
 
     // Define networks for each blockchain type
@@ -644,6 +650,7 @@ export class PreferencesController extends EventEmitter {
                 publicKey: publicKey || '',
                 type: wallet.type,
                 id: wallet.id,
+                lastUsed: wallet.lastUsed || wallet.createdAt,
               });
             }
           });
