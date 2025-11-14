@@ -18,6 +18,32 @@ Keeper Wallet is designed for convenience, so users can sign transactions with j
 
 [Waves protocol documentation](https://docs.waves.tech/en/)
 
+## Development and environment variables
+
+Keeper Wallet uses environment variables loaded via [`dotenv-flow`](https://github.com/kerimdzhanov/dotenv-flow) when running webpack.
+
+### DATA_SERVICE_ENV
+
+Controls which data service URL is used by the extension:
+
+- `prod` (default) - `https://api.keeper-wallet.app`
+- `local` - `http://127.0.0.1:8000`
+
+Examples:
+
+```bash
+npm run dev
+# uses value from .env (default: DATA_SERVICE_ENV=prod)
+
+DATA_SERVICE_ENV=local npm run dev
+# uses local data service at http://127.0.0.1:8000
+```
+
+```bash
+npm run build
+# production build, uses DATA_SERVICE_ENV from environment / .env / .env.prod
+```
+
 ## Keeper Wallet API
 
 On browser pages that operate under `http/https` (not local pages with `file://` protocol) with Keeper Wallet extension installed, `KeeperWallet` global object becomes available.

@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 
+import { getDataServiceUrl } from 'config/env';
 import { NetworkName } from '../../networks/types';
 import {
   type Unit0BalanceResponse,
@@ -71,7 +72,7 @@ export interface Unit0PriceData {
 export type Unit0PricesMap = Record<string, Unit0PriceData>;
 
 // const DATA_SERVICE_URL = 'https://api.keeper-wallet.app';
-const DATA_SERVICE_URL = 'http://127.0.0.1:8000';
+const DATA_SERVICE_URL = getDataServiceUrl();
 
 export class Unit0Api {
   private getBaseUrl(network: NetworkName): string {

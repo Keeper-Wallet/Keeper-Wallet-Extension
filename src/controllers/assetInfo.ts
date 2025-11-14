@@ -1,6 +1,6 @@
 import { isNotNull } from '_core/isNotNull';
 import { type AssetDetail, type AssetsRecord } from 'assets/types';
-
+import { getDataServiceUrl, getSwapServiceUrl } from 'config/env';
 import {
   type Unit0NftAsset,
   type Unit0TokenAsset,
@@ -60,8 +60,8 @@ const MAX_AGE = 60 * 60 * 1000;
 
 // const DATA_SERVICE_URL = 'https://api.keeper-wallet.app';
 
-const DATA_SERVICE_URL = 'http://127.0.0.1:8000';
-const SWAP_SERVICE_URL = 'https://swap-api.keeper-wallet.app';
+const DATA_SERVICE_URL = getDataServiceUrl();
+const SWAP_SERVICE_URL = getSwapServiceUrl();
 
 const INFO_PERIOD_IN_MINUTES = 60;
 const SWAPPABLE_ASSETS_UPDATE_PERIOD_IN_MINUTES = 240;
