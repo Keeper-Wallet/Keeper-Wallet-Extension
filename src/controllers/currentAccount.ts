@@ -22,6 +22,7 @@ export class CurrentAccountController {
   private isLocked;
   private getBlockchainType;
   private balanceContext: BalanceContext;
+  private isUpdatingBalance = false;
 
   constructor({
     extensionStorage,
@@ -106,6 +107,12 @@ export class CurrentAccountController {
   }
 
   async updateCurrentAccountBalance() {
+    if (this.isUpdatingBalance) {
+      return;
+    }
+
+    this.isUpdatingBalance = true;
+
     const currentNetwork = this.getNetwork();
     const currentBlockchainType = this.getBlockchainType();
     const accounts = this.getLegacyFormatAccounts().filter(
@@ -120,10 +127,8 @@ export class CurrentAccountController {
     const { address } = activeAccount;
 
     try {
-      // Update strategy context for current blockchain type
       this.balanceContext.setStrategy(currentBlockchainType);
 
-      // Fetch balance using the appropriate strategy (internally handles transactions)
       const balanceResult = await this.balanceContext.fetchBalance(
         address,
         currentNetwork,
@@ -133,7 +138,6 @@ export class CurrentAccountController {
         return;
       }
 
-      // Balance now includes transaction history internally
       const balance = balanceResult.balance;
 
       this.store.updateState({
@@ -141,6 +145,8 @@ export class CurrentAccountController {
       });
     } catch (error) {
       console.error('Error updating account balance:', error);
+    } finally {
+      this.isUpdatingBalance = false;
     }
   }
 

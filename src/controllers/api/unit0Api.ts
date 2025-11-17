@@ -75,6 +75,13 @@ export type Unit0PricesMap = Record<string, Unit0PriceData>;
 const DATA_SERVICE_URL = getDataServiceUrl();
 
 export class Unit0Api {
+  // In-flight request caches to prevent duplicate concurrent HTTP calls
+  private balanceRequests = new Map<string, Promise<Unit0BalanceResponse>>();
+  private tokenBalanceRequests = new Map<string, Promise<Unit0TokenBalance[]>>();
+
+  private getRequestKey(address: string, network: NetworkName): string {
+    return `${network}:${address.toLowerCase()}`;
+  }
   private getBaseUrl(network: NetworkName): string {
     if (network === NetworkName.Testnet) {
       return 'https://explorer-testnet.unit0.dev/api/v2/addresses/';
@@ -100,14 +107,30 @@ export class Unit0Api {
     address: string,
     network: NetworkName = NetworkName.Mainnet,
   ): Promise<Unit0BalanceResponse> {
-    const baseUrl = this.getBaseUrl(network);
-    const response = await fetch(`${baseUrl}${address}`);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch unit0 balance: ${response.status}`);
+    const key = this.getRequestKey(address, network);
+    const existingRequest = this.balanceRequests.get(key);
+    if (existingRequest) {
+      return existingRequest;
     }
 
-    return response.json();
+    const requestPromise = (async () => {
+      const baseUrl = this.getBaseUrl(network);
+      const response = await fetch(`${baseUrl}${address}`);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch unit0 balance: ${response.status}`);
+      }
+
+      return (await response.json()) as Unit0BalanceResponse;
+    })();
+
+    this.balanceRequests.set(key, requestPromise);
+
+    try {
+      return await requestPromise;
+    } finally {
+      this.balanceRequests.delete(key);
+    }
   }
 
   async fetchERC20Tokens(
@@ -161,14 +184,34 @@ export class Unit0Api {
     address: string,
     network: NetworkName = NetworkName.Mainnet,
   ): Promise<Unit0TokenBalance[]> {
-    // Fetch all token types and combine them
-    const [erc20Tokens, erc721Tokens, erc1155Tokens] = await Promise.all([
-      this.fetchERC20Tokens(address, network),
-      this.fetchERC721Tokens(address, network),
-      this.fetchERC1155Tokens(address, network),
-    ]);
+    const key = this.getRequestKey(address, network);
+    const existingRequest = this.tokenBalanceRequests.get(key);
+    if (existingRequest) {
+      return existingRequest;
+    }
 
-    return [...erc20Tokens, ...erc721Tokens, ...erc1155Tokens];
+    const requestPromise = (async () => {
+      // Fetch all token types and combine them
+      const [erc20Tokens, erc721Tokens, erc1155Tokens] = await Promise.all([
+        this.fetchERC20Tokens(address, network),
+        this.fetchERC721Tokens(address, network),
+        this.fetchERC1155Tokens(address, network),
+      ]);
+
+      return [
+        ...erc20Tokens,
+        ...erc721Tokens,
+        ...erc1155Tokens,
+      ] as Unit0TokenBalance[];
+    })();
+
+    this.tokenBalanceRequests.set(key, requestPromise);
+
+    try {
+      return await requestPromise;
+    } finally {
+      this.tokenBalanceRequests.delete(key);
+    }
   }
 
   async fetchNftInventory(

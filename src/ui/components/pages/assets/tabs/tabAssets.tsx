@@ -141,15 +141,23 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
     // New architecture: selectedAccount IS the current blockchain selection
     // Use currentBlockchainType to determine behavior, but selectedAccount already has the right address
 
+    const address = activeAccount.address;
+    if (!address) {
+      return undefined;
+    }
+
+    const balanceItem = balances[address];
+
+    // Do not reuse balances from a different network
+    if (!balanceItem || balanceItem.network !== currentNetwork) {
+      return undefined;
+    }
+
     if (currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0) {
-      // For Unit0, selectedAccount.address should be the Unit0 address for current network
-      const unit0Address = activeAccount.address;
-      const balanceData = unit0Address
-        ? balances[unit0Address]?.assets
-        : undefined;
+      // For Unit0, use only ERC-20 tokens and native Unit0 from the current-network balance
+      const balanceData = balanceItem.assets;
 
       if (balanceData) {
-        // Filter balance data to only include ERC-20 tokens and native Unit0
         const filteredAssets: Record<string, BalanceAssets[string]> = {};
         Object.entries(balanceData).forEach(([assetId, balance]) => {
           const asset = (assets as Record<string, AssetDetail>)[assetId];
@@ -162,9 +170,8 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
       return balanceData;
     }
 
-    // For Waves, selectedAccount.address should be the Waves address for current network
-    const wavesAddress = activeAccount.address;
-    return wavesAddress ? balances[wavesAddress] : undefined;
+    // For Waves, return the full balance item for the current network
+    return balanceItem;
   }, [activeAccount, currentBlockchainType, balances, currentNetwork, assets]);
 
   const issuerAddress = useMemo(() => {

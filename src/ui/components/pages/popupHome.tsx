@@ -83,6 +83,7 @@ export function PopupHome() {
   const currentBlockchainType = usePopupSelector(
     state => state.currentBlockchainType,
   );
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const notifications = usePopupSelector(
     state => state.localState.notifications,
   );
@@ -96,19 +97,31 @@ export function PopupHome() {
   const [asset, setAsset] = useState<AssetDetail | null>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    if (!balances[activeAccount?.address!]) {
+    const address = activeAccount?.address;
+    if (!address) {
+      return;
+    }
+
+    const balanceItem = balances[address];
+
+    // Request fresh balances when there is no balance yet
+    // or when the stored balance belongs to a different network
+    if (!balanceItem || balanceItem.network !== currentNetwork) {
       dispatch(getBalances());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch]);
+  }, [dispatch, activeAccount?.address, currentNetwork]);
 
   if (!activeAccount) {
     return <ImportPopup />;
   }
 
   const currentBalance = () => {
-    const availableBalance = balances[activeAccount.address]?.available;
+    const balanceItem = balances[activeAccount.address];
+    const availableBalance =
+      balanceItem?.network === currentNetwork
+        ? balanceItem.available
+        : undefined;
     if (
       currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0 &&
       unit0Asset &&
@@ -118,18 +131,27 @@ export function PopupHome() {
       const assetInstance = new Asset(unit0Asset as IAssetInfo);
       return new Money(availableBalance, assetInstance);
     } else {
-      return (
-        assets.WAVES &&
-        new Money(
-          balances[activeAccount.address]?.available || 0,
-          new Asset(assets.WAVES as IAssetInfo),
-        )
-      );
+      const wavesBalanceItem =
+        balanceItem?.network === currentNetwork ? balanceItem : undefined;
+
+      return assets.WAVES && wavesBalanceItem?.available
+        ? new Money(
+            wavesBalanceItem.available,
+            new Asset(assets.WAVES as IAssetInfo),
+          )
+        : assets.WAVES
+        ? new Money(0, new Asset(assets.WAVES as IAssetInfo))
+        : undefined;
     }
   };
-  const amountInUsd = balances[activeAccount.address]?.assets
-    ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      Object.entries(balances[activeAccount.address]!.assets!).reduce(
+  const activeBalanceItem = balances[activeAccount.address];
+  const networkSafeBalanceItem =
+    activeBalanceItem?.network === currentNetwork
+      ? activeBalanceItem
+      : undefined;
+
+  const amountInUsd = networkSafeBalanceItem?.assets
+    ? Object.entries(networkSafeBalanceItem.assets).reduce(
         (acc, [id, { balance = 0 } = {}]) => {
           // eslint-disable-next-line @typescript-eslint/no-shadow
           const asset = assets[id];
