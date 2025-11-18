@@ -1,5 +1,5 @@
 import { type BalancesItem } from 'balances/types';
-import { collectBalances } from 'balances/utils';
+import { collectBalances, getBalanceKey } from 'balances/utils';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
@@ -100,18 +100,30 @@ export class CurrentAccountController {
 
   getAccountBalance() {
     const selectedAccount = this.getSelectedAccount();
+
+    if (!selectedAccount) {
+      return undefined;
+    }
+
     const state = this.store.getState();
     const balances = collectBalances(state);
 
-    return selectedAccount && balances[selectedAccount.address];
+    const currentNetwork = this.getNetwork();
+    const currentBlockchainType = this.getBlockchainType();
+
+    const key = getBalanceKey(
+      currentBlockchainType,
+      currentNetwork,
+      selectedAccount.address,
+    );
+
+    return balances[key] ?? balances[selectedAccount.address];
   }
 
   async updateCurrentAccountBalance() {
     if (this.isUpdatingBalance) {
       return;
     }
-
-    this.isUpdatingBalance = true;
 
     const currentNetwork = this.getNetwork();
     const currentBlockchainType = this.getBlockchainType();
@@ -124,7 +136,14 @@ export class CurrentAccountController {
       return;
     }
 
+    this.isUpdatingBalance = true;
+
     const { address } = activeAccount;
+    const balanceKey = getBalanceKey(
+      currentBlockchainType,
+      currentNetwork,
+      address,
+    );
 
     try {
       this.balanceContext.setStrategy(currentBlockchainType);
@@ -141,7 +160,7 @@ export class CurrentAccountController {
       const balance = balanceResult.balance;
 
       this.store.updateState({
-        [`balance_${address}`]: balance,
+        [`balance_${balanceKey}`]: balance,
       });
     } catch (error) {
       console.error('Error updating account balance:', error);

@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { createMoneyFromBalance } from 'balances/utils';
+import { createMoneyFromBalance, getBalanceKey } from 'balances/utils';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { compareAccountsByLastUsed } from 'preferences/utils';
 import { useEffect, useState } from 'react';
@@ -131,20 +131,28 @@ export function OtherAccountsPage() {
             )}
           </p>
         ) : (
-          otherAccounts.map(account => (
-            <AccountCard
-              key={account.address}
-              account={account}
-              balance={balancesMoney[account.address]}
-              onClick={clickedAccount => {
-                dispatch(selectAccount(clickedAccount));
-                navigate('/', { replace: true });
-              }}
-              onInfoClick={clickedAccount => {
-                navigate(`/account-info/${clickedAccount.address}`);
-              }}
-            />
-          ))
+          otherAccounts.map(account => {
+            const balanceKey = getBalanceKey(
+              currentBlockchainType,
+              baseNetworkName,
+              account.address,
+            );
+
+            return (
+              <AccountCard
+                key={account.address}
+                account={account}
+                balance={balancesMoney[balanceKey]}
+                onClick={clickedAccount => {
+                  dispatch(selectAccount(clickedAccount));
+                  navigate('/', { replace: true });
+                }}
+                onInfoClick={clickedAccount => {
+                  navigate(`/account-info/${clickedAccount.address}`);
+                }}
+              />
+            );
+          })
         )}
 
         <div className={styles.addAccount}>

@@ -2,6 +2,7 @@ import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { BLOCKCHAIN_TYPES } from 'assets/constants';
+import { getBalanceKey } from 'balances/utils';
 import { Unit0Api } from 'controllers/api/unit0Api';
 import { NetworkName } from '../../../networks/types';
 import { isAddressString, isAlias } from 'messages/utils';
@@ -37,10 +38,21 @@ export function Send() {
     state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
   );
   const isUnit0 = currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0;
-  const accountBalance = usePopupSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    state => state.balances[state.selectedAccount?.address!],
-  );
+  const accountBalance = usePopupSelector(state => {
+    const selected = state.selectedAccount;
+
+    if (!selected?.address) {
+      return undefined;
+    }
+
+    const key = getBalanceKey(
+      state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+      state.currentNetwork,
+      selected.address,
+    );
+
+    return state.balances[key] ?? state.balances[selected.address];
+  });
   const assetBalances = accountBalance?.assets;
   const assets = usePopupSelector(state => state.assets);
 
@@ -336,6 +348,7 @@ export function Send() {
               // Success - navigate back
               navigate(-1);
             } catch (err) {
+              console.error('Unit0 transaction failed:', err);
               setIsSubmitting(false);
               if (err instanceof Error && /user denied/i.test(err.message)) {
                 return;

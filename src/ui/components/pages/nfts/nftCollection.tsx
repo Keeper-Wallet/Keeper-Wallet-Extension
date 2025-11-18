@@ -1,5 +1,6 @@
 import { BLOCKCHAIN_TYPES } from 'assets/constants';
 import { type AssetDetail } from 'assets/types';
+import { getBalanceKey } from 'balances/utils';
 import { NftList } from 'nfts/nftList';
 import { createNft } from 'nfts/nfts';
 import { DisplayMode, type Nft } from 'nfts/types';
@@ -40,7 +41,24 @@ export function NftCollection() {
     state => state.currentBlockchainType || 'waves',
   );
 
-  const myNfts = usePopupSelector(state => state.balances[userAddress]?.nfts);
+  const myNfts = usePopupSelector(state => {
+    const selected = state.selectedAccount;
+
+    if (!selected?.address) {
+      return undefined;
+    }
+
+    const key = getBalanceKey(
+      state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+      state.currentNetwork,
+      selected.address,
+    );
+
+    const balanceItem =
+      state.balances[key] ?? state.balances[selected.address];
+
+    return balanceItem?.nfts;
+  });
   const nfts = usePopupSelector(state => state.nfts);
   const [filters, setFilters] = useUiState('nftFilters');
   const [term, setTerm] = [

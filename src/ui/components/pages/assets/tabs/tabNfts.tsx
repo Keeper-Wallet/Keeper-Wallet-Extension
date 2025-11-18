@@ -3,6 +3,7 @@ import { NftList } from 'nfts/nftList';
 import { createNft } from 'nfts/nfts';
 import { DisplayMode, type Nft } from 'nfts/types';
 import { usePopupSelector } from 'popup/store/react';
+import { getBalanceKey } from 'balances/utils';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -88,8 +89,19 @@ export function TabNfts() {
   }, [activeAccount, currentBlockchainType, currentNetwork]);
 
   const myNfts = useMemo(() => {
-    const result = userAddress ? balances[userAddress]?.nfts : undefined;
-    return result;
+    if (!userAddress) {
+      return undefined;
+    }
+
+    const key = getBalanceKey(
+      currentBlockchainType,
+      currentNetwork,
+      userAddress,
+    );
+
+    const balanceItem = balances[key] ?? balances[userAddress];
+
+    return balanceItem?.nfts;
   }, [balances, userAddress, currentBlockchainType, currentNetwork]);
 
   const nfts = usePopupSelector(state => state.nfts);

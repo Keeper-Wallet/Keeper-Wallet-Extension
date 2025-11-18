@@ -4,7 +4,7 @@ import {
   verifySignature,
 } from '@keeper-wallet/waves-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { collectBalances } from 'balances/utils';
+import { collectBalances, getBalanceKey } from 'balances/utils';
 import EventEmitter from 'events';
 import { deepEqual } from 'fast-equals';
 import { getExtraFee } from 'fee/utils';
@@ -1358,10 +1358,25 @@ class BackgroundService extends EventEmitter {
 
     const state = this.extensionStorage.getState();
 
+    const balances = collectBalances(state);
+
+    const currentNetwork = this.networkController.getNetwork();
+    const currentBlockchainType =
+      this.networkController.getCurrentBlockchainType();
+
+    const balanceKey = getBalanceKey(
+      currentBlockchainType,
+      currentNetwork,
+      selectedAccount.address,
+    );
+
+    const accountBalance =
+      balances[balanceKey] ?? balances[selectedAccount.address] ?? 0;
+
     return {
       account: {
         ...selectedAccount,
-        balance: collectBalances(state)[selectedAccount.address] || 0,
+        balance: accountBalance,
       },
       initialized: state.initialized,
       locked: state.locked,

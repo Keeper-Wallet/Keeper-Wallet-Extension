@@ -2,7 +2,21 @@ import { Asset, Money } from '@waves/data-entities';
 import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
 import type { AssetsRecord } from '../assets/types';
+import { BLOCKCHAIN_TYPES } from '../assets/constants';
 import { type BalancesItem } from './types';
+
+export function getBalanceKey(
+  blockchainType: string | undefined,
+  network: string | undefined,
+  address: string,
+): string {
+  if (blockchainType === BLOCKCHAIN_TYPES.UNIT0 && network) {
+    return `unit0_${network}_${address}`;
+  }
+
+  // Waves and other blockchain types keep legacy behavior: key is just address
+  return address;
+}
 
 export function collectBalances(
   obj: Record<string, unknown>,
@@ -16,9 +30,11 @@ export function collectBalances(
           return null;
         }
 
-        const [, address] = match;
+        const [, suffix] = match;
 
-        return [address, value as BalancesItem] as const;
+        // suffix can be either a plain address (legacy) or a composite key
+        // produced by getBalanceKey (e.g. "unit0_mainnet_0x...")
+        return [suffix, value as BalancesItem] as const;
       })
       .filter((entry): entry is NonNullable<typeof entry> => entry != null),
   );

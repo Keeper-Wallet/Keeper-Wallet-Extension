@@ -37,6 +37,11 @@ export function UsdPricesProvider({ children }: { children: React.ReactNode }) {
     [observedAddresses],
   );
 
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType,
+  );
+
   const usdPrices = usePopupSelector(state => state.usdPrices);
   const usdPricesRef = useRef(usdPrices);
 
@@ -44,22 +49,49 @@ export function UsdPricesProvider({ children }: { children: React.ReactNode }) {
     usdPricesRef.current = usdPrices;
   }, [usdPrices]);
 
+  const effectiveAssetIdsToFetch = useMemo(() => {
+    if (currentNetwork !== NetworkName.Mainnet) {
+      return [] as string[];
+    }
+
+    if (assetIdsToFetch.length > 0) {
+      return assetIdsToFetch;
+    }
+
+    if (currentBlockchainType === 'waves') {
+      return ['WAVES'];
+    }
+
+    return [] as string[];
+  }, [assetIdsToFetch, currentNetwork, currentBlockchainType]);
+
+  const effectiveAddressesToFetch = useMemo(() => {
+    if (currentNetwork !== NetworkName.Mainnet) {
+      return [] as string[];
+    }
+
+    if (addressesToFetch.length > 0) {
+      return addressesToFetch;
+    }
+
+    if (currentBlockchainType === 'unit0') {
+      return ['unit0'];
+    }
+
+    return [] as string[];
+  }, [addressesToFetch, currentNetwork, currentBlockchainType]);
+
   useEffect(() => {
-    if (assetIdsToFetch.length === 0) {
+    if (effectiveAssetIdsToFetch.length === 0) {
       return;
     }
 
     let cancelled = false;
     let timeout: ReturnType<typeof setTimeout>;
 
-    async function update({ firstRun }: { firstRun?: true } = {}) {
+    async function update() {
       try {
-        if (
-          !firstRun ||
-          assetIdsToFetch.some(assetId => usdPricesRef.current[assetId] == null)
-        ) {
-          await Background.updateUsdPricesByAssetIds(assetIdsToFetch);
-        }
+        await Background.updateUsdPricesByAssetIds(effectiveAssetIdsToFetch);
       } finally {
         if (!cancelled) {
           timeout = setTimeout(update, USD_PRICES_UPDATE_INTERVAL);
@@ -67,35 +99,26 @@ export function UsdPricesProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    update({ firstRun: true });
+    update();
 
     return () => {
       cancelled = true;
       clearTimeout(timeout);
     };
-  }, [assetIdsToFetch]);
+  }, [effectiveAssetIdsToFetch]);
 
   // Unit0 price fetching effect
   useEffect(() => {
-    if (addressesToFetch.length === 0) {
+    if (effectiveAddressesToFetch.length === 0) {
       return;
     }
 
     let cancelled = false;
     let timeout: ReturnType<typeof setTimeout>;
 
-    async function update({ firstRun }: { firstRun?: true } = {}) {
+    async function update() {
       try {
-        if (
-          !firstRun ||
-          addressesToFetch.some(address => {
-            // Check if price exists for normalized address
-            const normalizedId = address === 'unit0' ? 'UNIT0' : address.toLowerCase();
-            return usdPricesRef.current[normalizedId] == null;
-          })
-        ) {
-          await Background.updateUnit0UsdPricesByIds(addressesToFetch);
-        }
+        await Background.updateUnit0UsdPricesByIds(effectiveAddressesToFetch);
       } finally {
         if (!cancelled) {
           timeout = setTimeout(update, USD_PRICES_UPDATE_INTERVAL);
@@ -103,13 +126,13 @@ export function UsdPricesProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    update({ firstRun: true });
+    update();
 
     return () => {
       cancelled = true;
       clearTimeout(timeout);
     };
-  }, [addressesToFetch]);
+  }, [effectiveAddressesToFetch]);
 
   const observe = useCallback((assetIds: string[]) => {
     setObservedAssetIds(ids => [...ids, assetIds]);

@@ -2,6 +2,7 @@ import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { type AssetDetail } from 'assets/types';
+import { getBalanceKey } from 'balances/utils';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -102,10 +103,14 @@ export function PopupHome() {
       return;
     }
 
-    const balanceItem = balances[address];
+    const balanceKey = getBalanceKey(
+      currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+      currentNetwork,
+      address,
+    );
 
-    // Request fresh balances when there is no balance yet
-    // or when the stored balance belongs to a different network
+    const balanceItem = balances[balanceKey] ?? balances[address];
+
     if (!balanceItem || balanceItem.network !== currentNetwork) {
       dispatch(getBalances());
     }
@@ -117,7 +122,15 @@ export function PopupHome() {
   }
 
   const currentBalance = () => {
-    const balanceItem = balances[activeAccount.address];
+    const balanceKey = getBalanceKey(
+      currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+      currentNetwork,
+      activeAccount.address,
+    );
+
+    const balanceItem =
+      balances[balanceKey] ?? balances[activeAccount.address];
+
     const availableBalance =
       balanceItem?.network === currentNetwork
         ? balanceItem.available
@@ -144,7 +157,14 @@ export function PopupHome() {
         : undefined;
     }
   };
-  const activeBalanceItem = balances[activeAccount.address];
+  const activeBalanceKey = getBalanceKey(
+    currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+    currentNetwork,
+    activeAccount.address,
+  );
+
+  const activeBalanceItem =
+    balances[activeBalanceKey] ?? balances[activeAccount.address];
   const networkSafeBalanceItem =
     activeBalanceItem?.network === currentNetwork
       ? activeBalanceItem
@@ -187,7 +207,7 @@ export function PopupHome() {
           wavesBalance={
             assets.WAVES &&
             new Money(
-              balances[activeAccount.address]?.available || 0,
+              activeBalanceItem?.available || 0,
               new Asset(assets.WAVES as IAssetInfo),
             )
           }

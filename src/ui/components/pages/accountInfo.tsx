@@ -1,5 +1,6 @@
 import { Asset, Money } from '@waves/data-entities';
 import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
+import { getBalanceKey } from 'balances/utils';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -66,7 +67,13 @@ export function AccountInfo() {
   let leaseBalance: Money | undefined;
 
   if (account) {
-    const balanceItem = balances[account.address];
+    const balanceKey = getBalanceKey(
+      currentBlockchainType || 'waves',
+      currentNetwork,
+      account.address,
+    );
+
+    const balanceItem = balances[balanceKey] ?? balances[account.address];
     if (balanceItem) {
       // Check if this balance has unit0 asset to determine blockchain type
       const hasUnit0Asset = balanceItem.assets?.unit0 !== undefined;

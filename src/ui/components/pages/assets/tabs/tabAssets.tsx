@@ -2,6 +2,7 @@ import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { AssetDetail, type AssetsRecord } from 'assets/types';
 import { type BalanceAssets } from 'balances/types';
+import { getBalanceKey } from 'balances/utils';
 import clsx from 'clsx';
 import { usePopupSelector } from 'popup/store/react';
 import { useMemo } from 'react';
@@ -146,7 +147,13 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
       return undefined;
     }
 
-    const balanceItem = balances[address];
+    const balanceKey = getBalanceKey(
+      currentBlockchainType,
+      currentNetwork,
+      address,
+    );
+
+    const balanceItem = balances[balanceKey] ?? balances[address];
 
     // Do not reuse balances from a different network
     if (!balanceItem || balanceItem.network !== currentNetwork) {

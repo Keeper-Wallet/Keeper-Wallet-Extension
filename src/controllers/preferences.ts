@@ -541,32 +541,46 @@ export class PreferencesController extends EventEmitter {
         const networks = blockchainData?.networks as
           | Record<string, WalletItem>
           | undefined;
-        const currentNetworkKey = currentNetwork as keyof typeof networks;
 
         // Check if the wallet has the current network
         // Type-safe network access for Waves networks
         let networkData;
         if (publicKey && networks) {
-          switch (currentNetworkKey) {
-            case 'mainnet':
-              networkData = networks.mainnet;
-              break;
-            case 'testnet':
-              networkData = networks.testnet;
-              break;
-            case 'stagenet':
-              networkData = networks.stagenet;
-              break;
-            case 'custom':
-              networkData = networks.custom;
-              break;
-            default:
-              networkData = null; // Unit0 networks don't exist on Waves
+          if (blockchainType === 'waves') {
+            switch (currentNetwork) {
+              case 'mainnet':
+                networkData = networks.mainnet;
+                break;
+              case 'testnet':
+                networkData = networks.testnet;
+                break;
+              case 'stagenet':
+                networkData = networks.stagenet;
+                break;
+              case 'custom':
+                networkData = networks.custom;
+                break;
+              default:
+                networkData = null; // Unit0 networks don't exist on Waves
+            }
+          } else if (blockchainType === 'unit0') {
+            // Unit0 uses "mainnet" and "testnet" keys in networks
+            switch (currentNetwork) {
+              case 'mainnet':
+                networkData = networks.mainnet;
+                break;
+              case 'testnet':
+              case 'stagenet':
+                // Stagenet is mapped to testnet for Unit0
+                networkData = networks.testnet;
+                break;
+              default:
+                networkData = null; // Unit0 does not support custom network
+            }
           }
         }
-        
-        if (networkData?.address) {
 
+        if (networkData?.address) {
           legacyAccounts.push({
             address: networkData.address as string,
             name: wallet.name,

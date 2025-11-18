@@ -1,5 +1,6 @@
 import { TRANSACTION_TYPE, type TransactionFromNode } from '@waves/ts-types';
 import clsx from 'clsx';
+import { getBalanceKey } from 'balances/utils';
 import { usePopupSelector } from 'popup/store/react';
 import { type CSSProperties, useEffect, useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -98,19 +99,48 @@ export function TabTxHistory() {
   const showSuspiciousAssets = usePopupSelector(
     state => !!state.uiState?.showSuspiciousAssets,
   );
-  const address = usePopupSelector(state => state.selectedAccount?.address);
-  const aliases = usePopupSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state => state.balances[address!]?.aliases || [],
-  );
   const currentBlockchainType = usePopupSelector(
     state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
   );
+  const address = usePopupSelector(state => state.selectedAccount?.address);
+
+  const aliases = usePopupSelector(state => {
+    const selected = state.selectedAccount;
+
+    if (!selected?.address) {
+      return [] as string[];
+    }
+
+    const key = getBalanceKey(
+      state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+      state.currentNetwork,
+      selected.address,
+    );
+
+    const balanceItem =
+      state.balances[key] ?? state.balances[selected.address];
+
+    return balanceItem?.aliases || [];
+  });
   const addressOrAlias = [address, ...aliases];
-  const txHistory = usePopupSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state => state.balances[address!]?.txHistory,
-  );
+  const txHistory = usePopupSelector(state => {
+    const selected = state.selectedAccount;
+
+    if (!selected?.address) {
+      return undefined;
+    }
+
+    const key = getBalanceKey(
+      state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+      state.currentNetwork,
+      selected.address,
+    );
+
+    const balanceItem =
+      state.balances[key] ?? state.balances[selected.address];
+
+    return balanceItem?.txHistory;
+  });
   const thisYear = new Date().getFullYear();
   const thisMonth = new Date().getMonth();
   const thisDate = new Date().getDate();
