@@ -10,12 +10,13 @@ import { type NftInfoController } from './NftInfoController';
 import { type PreferencesController } from './preferences';
 import { BalanceContext } from './strategies/contexts/BalanceContext';
 import { type VaultController } from './VaultController';
+import { type MultiWallet } from '../services/types';
 
 const PERIOD_IN_SECONDS = 10;
 
 export class CurrentAccountController {
   private store;
-  private getLegacyFormatAccounts;
+  private getAccounts;
   private getNetwork;
   private getNode;
   private getSelectedAccount;
@@ -28,7 +29,7 @@ export class CurrentAccountController {
     extensionStorage,
     assetInfoController,
     nftInfoController,
-    getLegacyFormatAccounts,
+    getAccounts,
     getNetwork,
     getNode,
     getSelectedAccount,
@@ -39,16 +40,22 @@ export class CurrentAccountController {
     assetInfoController: AssetInfoController;
     nftInfoController: NftInfoController;
     getAccounts: PreferencesController['getAccounts'];
-    getLegacyFormatAccounts: PreferencesController['getLegacyFormatAccounts'];
     getNetwork: NetworkController['getNetwork'];
     getNode: NetworkController['getNode'];
     getSelectedAccount: PreferencesController['getSelectedAccount'];
     isLocked: VaultController['isLocked'];
     getBlockchainType: NetworkController['getCurrentBlockchainType'];
   }) {
+    this.getAccounts = getAccounts;
+    this.getNetwork = getNetwork;
+    this.getNode = getNode;
+    this.getSelectedAccount = getSelectedAccount;
+    this.isLocked = isLocked;
+    this.getBlockchainType = getBlockchainType;
+
     const defaults: Partial<Record<string, BalancesItem>> = Object.fromEntries(
-      getLegacyFormatAccounts().map(acc => [
-        `balance_${acc.address}`,
+      this.getAddressesForCurrentNetworkAndBlockchain().map(address => [
+        `balance_${address}`,
         undefined,
       ]),
     );
@@ -68,13 +75,6 @@ export class CurrentAccountController {
     this.store = new ObservableStore(initState);
 
     extensionStorage.subscribe(this.store);
-
-    this.getLegacyFormatAccounts = getLegacyFormatAccounts;
-    this.getNetwork = getNetwork;
-    this.getNode = getNode;
-    this.getSelectedAccount = getSelectedAccount;
-    this.isLocked = isLocked;
-    this.getBlockchainType = getBlockchainType;
 
     // Initialize balance context (handles transactions internally)
     this.balanceContext = new BalanceContext(
@@ -127,12 +127,10 @@ export class CurrentAccountController {
 
     const currentNetwork = this.getNetwork();
     const currentBlockchainType = this.getBlockchainType();
-    const accounts = this.getLegacyFormatAccounts().filter(
-      ({ network }) => network === currentNetwork,
-    );
+    const addresses = this.getAddressesForCurrentNetworkAndBlockchain();
     const activeAccount = this.getSelectedAccount();
 
-    if (this.isLocked() || accounts.length < 1 || !activeAccount) {
+    if (this.isLocked() || addresses.length < 1 || !activeAccount) {
       return;
     }
 
@@ -171,9 +169,8 @@ export class CurrentAccountController {
 
   async updateOtherAccountsBalances() {
     const url = new URL('addresses/balance', this.getNode());
-    const addresses = this.getLegacyFormatAccounts().map(
-      account => account.address,
-    );
+
+    const addresses = this.getAddressesForCurrentNetworkAndBlockchain();
 
     while (addresses.length > 0) {
       const splicedAddresses = addresses.splice(0, 1000);
@@ -211,5 +208,55 @@ export class CurrentAccountController {
 
       this.store.updateState(balances);
     }
+  }
+
+  private getAddressesForCurrentNetworkAndBlockchain(): string[] {
+    const currentNetwork = this.getNetwork();
+    const currentBlockchainType = this.getBlockchainType();
+    const accounts = this.getAccounts() as unknown as MultiWallet[];
+
+    const addresses: string[] = [];
+
+    accounts.forEach(wallet => {
+      if (!wallet.coins) {
+        return;
+      }
+
+      if (currentBlockchainType === 'waves' && wallet.coins.waves?.networks) {
+        const wavesNetworks = wallet.coins.waves.networks;
+
+        if (currentNetwork === 'mainnet' && wavesNetworks.mainnet?.address) {
+          addresses.push(wavesNetworks.mainnet.address);
+        } else if (
+          currentNetwork === 'testnet' &&
+          wavesNetworks.testnet?.address
+        ) {
+          addresses.push(wavesNetworks.testnet.address);
+        } else if (
+          currentNetwork === 'stagenet' &&
+          wavesNetworks.stagenet?.address
+        ) {
+          addresses.push(wavesNetworks.stagenet.address);
+        } else if (currentNetwork === 'custom' && wavesNetworks.custom?.address) {
+          addresses.push(wavesNetworks.custom.address);
+        }
+      } else if (
+        currentBlockchainType === 'unit0' &&
+        wallet.coins.unit0?.networks
+      ) {
+        const unit0Networks = wallet.coins.unit0.networks;
+
+        if (currentNetwork === 'mainnet' && unit0Networks.mainnet?.address) {
+          addresses.push(unit0Networks.mainnet.address);
+        } else if (
+          (currentNetwork === 'testnet' || currentNetwork === 'stagenet') &&
+          unit0Networks.testnet?.address
+        ) {
+          addresses.push(unit0Networks.testnet.address);
+        }
+      }
+    });
+
+    return addresses;
   }
 }

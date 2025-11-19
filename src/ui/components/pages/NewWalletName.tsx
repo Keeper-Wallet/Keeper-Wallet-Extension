@@ -44,6 +44,7 @@ export function NewWalletName() {
   const isMultichainCreation =
     account.type === 'multichain' || isMultichainFromState;
 
+  console.log(isMultichainCreation, 'isMultichainCreation');
   const validateName = useCallback(
     async (name: string) => {
       if (!name) {

@@ -446,10 +446,6 @@ class BackgroundService extends EventEmitter {
       getAccounts: this.preferencesController.getAccounts.bind(
         this.preferencesController,
       ),
-      getLegacyFormatAccounts:
-        this.preferencesController.getLegacyFormatAccounts.bind(
-          this.preferencesController,
-        ),
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController,
       ),
@@ -859,17 +855,6 @@ class BackgroundService extends EventEmitter {
           `ledger:signResponse:${requestId}`,
           err ? new Error(err) : null,
           signature,
-        );
-      },
-      getLegacyFormatAccounts: async () => {
-        // First get accounts from the MultiWalletController
-        return this.preferencesController.getLegacyFormatAccounts();
-      },
-      getLegacyFormatAccountsByBlockchain: async (
-        blockchainType?: 'waves' | 'unit0',
-      ) => {
-        return this.preferencesController.getLegacyFormatAccountsByBlockchain(
-          blockchainType,
         );
       },
       syncAccountsFromMultiWallets: async () => {

@@ -7,7 +7,7 @@ import { type WalletAccount } from 'wallets/types';
 
 import { type ExtensionStorage } from '../storage/storage';
 import { type NetworkController } from './network';
-import { MultiWallet, WalletItem } from '../services/types';
+import { MultiWallet } from '../services/types';
 
 export class PreferencesController extends EventEmitter {
   store;
@@ -320,7 +320,7 @@ export class PreferencesController extends EventEmitter {
     const account = (accounts as unknown as MultiWallet[]).find(wallet => {
       const wavesNetworks = wallet.coins?.waves?.networks;
       if (!wavesNetworks) return false;
-      
+
       // Type-safe network access for Waves networks only
       let networkItem;
       switch (network) {
@@ -339,7 +339,7 @@ export class PreferencesController extends EventEmitter {
         default:
           return false; // Unit0 or other networks don't exist on Waves
       }
-      
+
       return networkItem?.address === address;
     });
 
@@ -356,7 +356,7 @@ export class PreferencesController extends EventEmitter {
       wallet => {
         const wavesNetworks = wallet.coins?.waves?.networks;
         if (!wavesNetworks) return wallet;
-        
+
         // Type-safe network access for Waves networks only
         let networkItem;
         switch (network) {
@@ -375,7 +375,7 @@ export class PreferencesController extends EventEmitter {
           default:
             return wallet; // Unit0 or other networks don't exist on Waves
         }
-        
+
         if (networkItem?.address === address) {
           return {
             ...wallet,
@@ -424,12 +424,18 @@ export class PreferencesController extends EventEmitter {
                     ?.networkCode,
                 coinType: 'waves',
                 // For Ledger wallets, include the ledger account ID
-                ...(wallet.type === 'ledger' && (wallet as any).ledgerId !== undefined
+                ...(wallet.type === 'ledger' &&
+                (wallet as any).ledgerId !== undefined
                   ? { id: (wallet as any).ledgerId }
                   : {}),
                 // For WX wallets, include uuid and username
-                ...(wallet.type === 'wx' && (wallet as any).wxUuid && (wallet as any).wxUsername
-                  ? { uuid: (wallet as any).wxUuid, username: (wallet as any).wxUsername }
+                ...(wallet.type === 'wx' &&
+                (wallet as any).wxUuid &&
+                (wallet as any).wxUsername
+                  ? {
+                      uuid: (wallet as any).wxUuid,
+                      username: (wallet as any).wxUsername,
+                    }
                   : {}),
               };
               break;
@@ -497,206 +503,4 @@ export class PreferencesController extends EventEmitter {
       selectedAccount: typedSelectedAccount, // This now contains either a legacy account or a reference to a MultiWallet account
     });
   }
-
-  /**
-   * Get legacy format accounts filtered by current network and blockchain type
-   * @param currentNetwork - Current active network name (mainnet, testnet, etc.)
-   * @param currentBlockchainType - Current blockchain type (waves, unit0, etc.)
-   * @returns Array of legacy format accounts for the current network and blockchain
-   */
-  getLegacyFormatAccounts(): Array<{
-    address: string;
-    name: string;
-    network: string;
-    networkCode: string;
-    publicKey: string;
-    type: string;
-    isWavesOnly?: boolean;
-    id: string;
-    lastUsed?: number;
-  }> {
-    const currentNetwork = this.getNetwork();
-    const currentBlockchainType = this.getCurrentBlockchainType();
-    const multiWallets = this.getAccounts() as unknown as MultiWallet[];
-    const legacyAccounts: Array<{
-      address: string;
-      name: string;
-      network: string;
-      networkCode: string;
-      publicKey: string;
-      type: string;
-      isWavesOnly?: boolean;
-      id: string;
-      lastUsed?: number;
-    }> = [];
-
-    // Convert each MultiWallet to legacy accounts for current network and blockchain
-    multiWallets.forEach(wallet => {
-      // Check if the wallet has the current blockchain type
-      const blockchainType = currentBlockchainType as 'waves' | 'unit0';
-
-      if (wallet.coins && blockchainType in wallet.coins) {
-        const blockchainData = wallet.coins[blockchainType];
-        const publicKey = blockchainData?.publicKey;
-        const networks = blockchainData?.networks as
-          | Record<string, WalletItem>
-          | undefined;
-
-        // Check if the wallet has the current network
-        // Type-safe network access for Waves networks
-        let networkData;
-        if (publicKey && networks) {
-          if (blockchainType === 'waves') {
-            switch (currentNetwork) {
-              case 'mainnet':
-                networkData = networks.mainnet;
-                break;
-              case 'testnet':
-                networkData = networks.testnet;
-                break;
-              case 'stagenet':
-                networkData = networks.stagenet;
-                break;
-              case 'custom':
-                networkData = networks.custom;
-                break;
-              default:
-                networkData = null; // Unit0 networks don't exist on Waves
-            }
-          } else if (blockchainType === 'unit0') {
-            // Unit0 uses "mainnet" and "testnet" keys in networks
-            switch (currentNetwork) {
-              case 'mainnet':
-                networkData = networks.mainnet;
-                break;
-              case 'testnet':
-              case 'stagenet':
-                // Stagenet is mapped to testnet for Unit0
-                networkData = networks.testnet;
-                break;
-              default:
-                networkData = null; // Unit0 does not support custom network
-            }
-          }
-        }
-
-        if (networkData?.address) {
-          legacyAccounts.push({
-            address: networkData.address as string,
-            name: wallet.name,
-            networkCode: networkData.networkCode,
-            network: currentNetwork,
-            isWavesOnly: !wallet.coins.unit0,
-            publicKey: publicKey || '',
-            type: wallet.type,
-            id: wallet.id,
-            lastUsed: wallet.lastUsed || wallet.createdAt,
-          });
-        }
-      }
-    });
-
-    return legacyAccounts;
-  }
-
-  /**
-   * Get legacy format accounts for ALL networks of a specific blockchain type
-   * This allows fetching all accounts regardless of the currently selected network
-   * @param blockchainType - Blockchain type ('waves' returns mainnet/testnet/stagenet/custom, 'unit0' returns unit0MainNet/unit0Testnet)
-   * @returns Array of legacy format accounts for all networks of the specified blockchain
-   */
-  getLegacyFormatAccountsByBlockchain(
-    blockchainType: 'waves' | 'unit0' = 'waves'
-  ): Array<{
-    address: string;
-    name: string;
-    network: string;
-    networkCode: string;
-    publicKey: string;
-    type: string;
-    isWavesOnly?: boolean;
-    id: string;
-    lastUsed?: number;
-  }> {
-    const multiWallets = this.getAccounts() as unknown as MultiWallet[];
-    const legacyAccounts: Array<{
-      address: string;
-      name: string;
-      network: string;
-      networkCode: string;
-      publicKey: string;
-      type: string;
-      isWavesOnly?: boolean;
-      id: string;
-      lastUsed?: number;
-    }> = [];
-
-    // Define networks for each blockchain type
-    const networksByBlockchain = {
-      waves: ['mainnet', 'testnet', 'stagenet', 'custom'] as const,
-      unit0: ['unit0MainNet', 'unit0Testnet'] as const,
-    };
-
-    const networksToQuery = networksByBlockchain[blockchainType];
-
-    // Convert each MultiWallet to legacy accounts for ALL networks of this blockchain
-    multiWallets.forEach(wallet => {
-      // Check if the wallet has the specified blockchain type
-      if (wallet.coins && blockchainType in wallet.coins) {
-        const blockchainData = wallet.coins[blockchainType];
-        const publicKey = blockchainData?.publicKey;
-        const networks = blockchainData?.networks as
-          | Record<string, WalletItem>
-          | undefined;
-
-        if (publicKey && networks) {
-          // Iterate through all networks for this blockchain
-          networksToQuery.forEach(networkName => {
-            const networkData = networks[networkName];
-            
-            if (networkData?.address) {
-              legacyAccounts.push({
-                address: networkData.address as string,
-                name: wallet.name,
-                networkCode: networkData.networkCode,
-                network: networkName,
-                isWavesOnly: !wallet.coins.unit0,
-                publicKey: publicKey || '',
-                type: wallet.type,
-                id: wallet.id,
-                lastUsed: wallet.lastUsed || wallet.createdAt,
-              });
-            }
-          });
-        }
-      }
-    });
-
-    return legacyAccounts;
-  }
-  //
-  // async removeWallet(id: string) {
-  //   const multiWallets = this.getAccounts() as unknown as MultiWallet[];
-  //
-  //   // Find wallets where the address matches any network address
-  //   const accounts = multiWallets.filter(wallet => {
-  //     if (!wallet.coins?.waves?.networks) {
-  //       return true; // Keep non-waves wallets
-  //     }
-  //
-  //     const wavesNetworks = wallet.coins.waves.networks;
-  //
-  //     // Check if address matches any network address
-  //     const hasMatchingAddress =
-  //       wavesNetworks.mainnet?.address === id ||
-  //       wavesNetworks.testnet?.address === id ||
-  //       wavesNetworks.stagenet?.address === id;
-  //
-  //     // Keep wallets that DON'T match the address (filter out matching ones)
-  //     return !hasMatchingAddress;
-  //   });
-  //
-  //   this.store.updateState({ accounts });
-  //   this.ensureSelectedAccountInCurrentNetwork();
-  // }
 }

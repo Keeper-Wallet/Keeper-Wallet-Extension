@@ -589,37 +589,6 @@ class Background {
     return this.background!.updateIdle();
   }
 
-  async getLegacyFormatAccounts() {
-    await this.initPromise;
-    this._connect();
-    if (this.background) {
-      return this.background.getLegacyFormatAccounts();
-    }
-    return [];
-  }
-
-  async getLegacyFormatAccountsByBlockchain(
-    blockchainType?: 'waves' | 'unit0',
-  ) {
-    await this.initPromise;
-    this._connect();
-    if (this.background) {
-      return this.background.getLegacyFormatAccountsByBlockchain(
-        blockchainType,
-      );
-    }
-    return [];
-  }
-
-  async syncAccountsFromMultiWallets() {
-    await this.initPromise;
-    this._connect();
-    if (this.background) {
-      return this.background.syncAccountsFromMultiWallets();
-    }
-    return Promise.resolve();
-  }
-
   async getDecryptedVault(password: string): Promise<MultiWallet[]> {
     await this.initPromise;
     this._connect();

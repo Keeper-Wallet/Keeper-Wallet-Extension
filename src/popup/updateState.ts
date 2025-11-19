@@ -240,60 +240,106 @@ export function createUpdateState(store: PopupStore) {
         stateChanges.currentBlockchainType !==
           currentState.currentBlockchainType)
     ) {
-      // Get legacy format accounts from background
-      // This gets accounts in the old format that components expect
-      Background.getLegacyFormatAccounts().then(legacyAccounts => {
-        // Get full MultiWallet data to enrich legacy accounts
-        Background.getMultiWallets()
-          .then(multiWallets => {
-            // Enrich legacy accounts with MultiWallet data
-            const enrichedAccounts = legacyAccounts.map(account => {
-              // Check if this is a multichain wallet
-              if (account.type === 'multichain') {
-                // Find the corresponding MultiWallet
-                const multiWallet = multiWallets.find(
-                  mw => mw.id === account.id,
-                );
-                if (multiWallet) {
-                  // Return the account with additional MultiWallet data
-                  return {
-                    ...account,
-                    // Add the coins data for accessing network-specific info
-                    coins: multiWallet.coins,
-                  };
-                }
+      const network =
+        stateChanges.currentNetwork || currentState.currentNetwork;
+      const currentBlockchainType =
+        stateChanges.currentBlockchainType ||
+        currentState.currentBlockchainType ||
+        'waves';
+
+      Background.getMultiWallets()
+        .then(multiWallets => {
+          const derivedAccounts = multiWallets.flatMap(wallet => {
+            const blockchainType = (currentBlockchainType ||
+              'waves') as 'waves' | 'unit0';
+            const blockchainData = wallet.coins[blockchainType as 'waves' | 'unit0'];
+
+            if (!blockchainData || !blockchainData.networks) {
+              return [];
+            }
+
+            let networkKey: string | null = null;
+
+            if (blockchainType === 'waves') {
+              switch (network) {
+                case 'mainnet':
+                  networkKey = 'mainnet';
+                  break;
+                case 'testnet':
+                  networkKey = 'testnet';
+                  break;
+                case 'stagenet':
+                  networkKey = 'stagenet';
+                  break;
+                case 'custom':
+                  networkKey = 'custom';
+                  break;
+                default:
+                  networkKey = null;
               }
-              return account;
-            });
+            } else {
+              switch (network) {
+                case 'mainnet':
+                  networkKey = 'mainnet';
+                  break;
+                case 'testnet':
+                case 'stagenet':
+                  // Unit0 does not have stagenet; map to testnet
+                  networkKey = 'testnet';
+                  break;
+                default:
+                  networkKey = null;
+              }
+            }
 
-            store.dispatch({
-              type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
-              payload: enrichedAccounts as unknown as PreferencesAccount[],
-            });
+            if (!networkKey) {
+              return [];
+            }
 
-            store.dispatch({
-              type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
-              payload: enrichedAccounts.filter(
-                account => account.network === network,
-              ) as unknown as PreferencesAccount[],
-            });
-          })
-          .catch(error => {
-            console.error('Error fetching MultiWallet data:', error);
-            // Fallback to just using legacy accounts without enrichment
-            store.dispatch({
-              type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
-              payload: legacyAccounts as unknown as PreferencesAccount[],
-            });
+            const networks = blockchainData.networks as Record<
+              string,
+              { address?: string; networkCode: string }
+            >;
 
-            store.dispatch({
-              type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
-              payload: legacyAccounts.filter(
-                account => account.network === network,
-              ) as unknown as PreferencesAccount[],
-            });
+            const networkData = networks[networkKey];
+
+            if (!networkData || !networkData.address) {
+              return [];
+            }
+
+            return [
+              {
+                address: networkData.address,
+                name: wallet.name,
+                network,
+                networkCode: networkData.networkCode,
+                publicKey: blockchainData.publicKey || '',
+                type: wallet.type,
+                isWavesOnly: !wallet.coins.unit0,
+                id: wallet.id,
+                lastUsed: wallet.lastUsed || wallet.createdAt,
+                walletId: wallet.id,
+                coinType: blockchainType,
+                coins: wallet.coins,
+              },
+            ];
           });
-      });
+
+          store.dispatch({
+            type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
+            payload: derivedAccounts as unknown as PreferencesAccount[],
+          });
+
+          store.dispatch({
+            type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
+            payload: derivedAccounts.filter(
+              account => account.network === network,
+            ) as unknown as PreferencesAccount[],
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching MultiWallet data:', error);
+        });
     }
 
     if (
