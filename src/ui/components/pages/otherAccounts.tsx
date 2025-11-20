@@ -85,8 +85,6 @@ export function OtherAccountsPage() {
 
   useEffect(() => {
     // Immediately update balances when network changes
-    background.updateOtherAccountsBalances();
-
     // Then start polling
     return startPolling(10000, () => background.updateOtherAccountsBalances());
   }, [currentNetwork]);

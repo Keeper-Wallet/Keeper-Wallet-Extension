@@ -283,8 +283,6 @@ export function createUpdateState(store: PopupStore) {
                   networkKey = 'mainnet';
                   break;
                 case 'testnet':
-                case 'stagenet':
-                  // Unit0 does not have stagenet; map to testnet
                   networkKey = 'testnet';
                   break;
                 default:

@@ -4,6 +4,8 @@ import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
 import { type ExtensionStorage } from '../storage/storage';
+import { NetworkName } from '../networks/types';
+import { Unit0Api } from './api/unit0Api';
 import { type AssetInfoController } from './assetInfo';
 import { type NetworkController } from './network';
 import { type NftInfoController } from './NftInfoController';
@@ -24,6 +26,7 @@ export class CurrentAccountController {
   private getBlockchainType;
   private balanceContext: BalanceContext;
   private isUpdatingBalance = false;
+  private isUpdatingOtherAccounts = false;
 
   constructor({
     extensionStorage,
@@ -168,52 +171,162 @@ export class CurrentAccountController {
   }
 
   async updateOtherAccountsBalances() {
-    const url = new URL('addresses/balance', this.getNode());
+    if (this.isUpdatingOtherAccounts) {
+      return;
+    }
 
-    const addresses = this.getAddressesForCurrentNetworkAndBlockchain();
+    this.isUpdatingOtherAccounts = true;
 
-    while (addresses.length > 0) {
-      const splicedAddresses = addresses.splice(0, 1000);
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          accept: 'application/json; large-significand-format=string',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          addresses: splicedAddresses,
-        }),
-      });
+    try {
+      const currentNetwork = this.getNetwork();
+      const currentBlockchainType = this.getBlockchainType();
 
-      const regularBalances = (await response.json()) as Array<{
-        id: string;
-        balance: string;
-      }>;
+      if (this.isLocked()) {
+        return;
+      }
 
-      const storeState = this.store.getState();
+      const addresses = this.getAddressesForCurrentNetworkAndBlockchain();
 
-      const balances = Object.fromEntries(
-        regularBalances.map(regularBalance => {
-          const balanceKey = `balance_${regularBalance.id}`;
-          const existingBalance = storeState[balanceKey];
+      if (addresses.length === 0) {
+        return;
+      }
 
-          const balance = {
-            ...existingBalance,
-            regular: regularBalance.balance,
-          };
+      // Unit0: use Blockscout-style explorer API balancemulti endpoint
+      if (currentBlockchainType === 'unit0') {
+        const unit0Api = new Unit0Api();
+        const updates: Record<string, BalancesItem> = {};
+        const storeState = this.store.getState();
 
-          return [balanceKey, balance];
-        }),
-      );
+        const remaining = [...addresses];
+        const MAX_ADDRESSES_PER_REQUEST = 20;
 
-      this.store.updateState(balances);
+        while (remaining.length > 0) {
+          const splicedAddresses = remaining.splice(
+            0,
+            MAX_ADDRESSES_PER_REQUEST,
+          );
+
+          try {
+            const multiBalances = await unit0Api.fetchBalancesMulti(
+              splicedAddresses,
+              currentNetwork as NetworkName,
+            );
+
+            // Build a lookup map by lowercased address from the explorer response
+            const byAddress = new Map<string, string>();
+            for (const entry of multiBalances) {
+              const addr = entry.address?.toLowerCase?.();
+              if (!addr) continue;
+              byAddress.set(addr, entry.balance);
+            }
+
+            for (const address of splicedAddresses) {
+              const normalizedAddress = address.toLowerCase();
+              const balanceValue = byAddress.get(normalizedAddress) ?? '0';
+
+              const balanceKeySuffix = getBalanceKey(
+                currentBlockchainType,
+                currentNetwork,
+                address,
+              );
+              const balanceKey = `balance_${balanceKeySuffix}`;
+              const existingBalance =
+                (storeState[balanceKey] as BalancesItem | undefined) ?? {};
+
+              const unit0AssetBalance = {
+                balance: balanceValue,
+                sponsorBalance: balanceValue,
+                minSponsoredAssetFee: null,
+              };
+
+              const mergedAssets = {
+                ...(existingBalance.assets || {}),
+                unit0: unit0AssetBalance,
+              };
+
+              updates[balanceKey] = {
+                ...existingBalance,
+                regular: balanceValue,
+                available: balanceValue,
+                network: currentNetwork as NetworkName,
+                assets: mergedAssets,
+              };
+            }
+          } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error(
+              'Error updating Unit0 other account balances:',
+              error,
+            );
+          }
+        }
+
+        if (Object.keys(updates).length > 0) {
+          this.store.updateState(updates);
+        }
+
+        return;
+      }
+
+      // Waves keep existing node-based batch behavior
+      const url = new URL('addresses/balance', this.getNode());
+
+      const remaining = [...addresses];
+
+      while (remaining.length > 0) {
+        const splicedAddresses = remaining.splice(0, 1000);
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            accept: 'application/json; large-significand-format=string',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            addresses: splicedAddresses,
+          }),
+        });
+
+        const regularBalances = (await response.json()) as Array<{
+          id: string;
+          balance: string;
+        }>;
+
+        const storeState = this.store.getState();
+
+        const balances = Object.fromEntries(
+          regularBalances.map(regularBalance => {
+            const balanceKey = `balance_${regularBalance.id}`;
+            const existingBalance = storeState[balanceKey];
+
+            const balance = {
+              ...existingBalance,
+              regular: regularBalance.balance,
+            };
+
+            return [balanceKey, balance];
+          }),
+        );
+
+        this.store.updateState(balances);
+      }
+    } catch (error) {
+      console.error('Error updating other account balances:', error);
+    } finally {
+      this.isUpdatingOtherAccounts = false;
     }
   }
 
   private getAddressesForCurrentNetworkAndBlockchain(): string[] {
     const currentNetwork = this.getNetwork();
     const currentBlockchainType = this.getBlockchainType();
-    const accounts = this.getAccounts() as unknown as MultiWallet[];
+    const accounts = (this.getAccounts() as unknown as MultiWallet[])
+      .slice()
+      .sort((walletA, walletB) => {
+        const aTime = (walletA.lastUsed ?? walletA.createdAt ?? 0) as number;
+        const bTime = (walletB.lastUsed ?? walletB.createdAt ?? 0) as number;
+
+        return bTime - aTime;
+      });
 
     const addresses: string[] = [];
 
@@ -237,7 +350,10 @@ export class CurrentAccountController {
           wavesNetworks.stagenet?.address
         ) {
           addresses.push(wavesNetworks.stagenet.address);
-        } else if (currentNetwork === 'custom' && wavesNetworks.custom?.address) {
+        } else if (
+          currentNetwork === 'custom' &&
+          wavesNetworks.custom?.address
+        ) {
           addresses.push(wavesNetworks.custom.address);
         }
       } else if (
@@ -249,7 +365,7 @@ export class CurrentAccountController {
         if (currentNetwork === 'mainnet' && unit0Networks.mainnet?.address) {
           addresses.push(unit0Networks.mainnet.address);
         } else if (
-          (currentNetwork === 'testnet' || currentNetwork === 'stagenet') &&
+          currentNetwork === 'testnet' &&
           unit0Networks.testnet?.address
         ) {
           addresses.push(unit0Networks.testnet.address);

@@ -89,6 +89,15 @@ export class Unit0Api {
     return 'https://explorer.unit0.dev/api/v2/addresses/';
   }
 
+  private getExplorerApiBaseUrl(network: NetworkName): string {
+    if (network === NetworkName.Testnet) {
+      return 'https://explorer-testnet.unit0.dev/api';
+    }
+
+    // Default to mainnet explorer API for all other networks
+    return 'https://explorer.unit0.dev/api';
+  }
+
   private getTokenBaseUrl(network: NetworkName): string {
     if (network === NetworkName.Testnet) {
       return 'https://explorer-testnet.unit0.dev/api/v2/tokens/';
@@ -131,6 +140,77 @@ export class Unit0Api {
     } finally {
       this.balanceRequests.delete(key);
     }
+  }
+
+   /**
+    * Fetch native balances for multiple addresses using the Blockscout-style explorer API.
+    *
+    * Uses the `?module=account&action=balancemulti` endpoint described in
+    * https://explorer.unit0.dev/api-docs. This endpoint accepts up to 20
+    * comma-separated addresses at once and returns an array of results.
+    */
+  async fetchBalancesMulti(
+    addresses: string[],
+    network: NetworkName = NetworkName.Mainnet,
+  ): Promise<
+    Array<{
+      address: string;
+      balance: string;
+      stale?: boolean;
+    }>
+  > {
+    if (addresses.length === 0) {
+      return [];
+    }
+
+    const baseUrl = this.getExplorerApiBaseUrl(network);
+    const url = new URL(baseUrl);
+
+    url.searchParams.set('module', 'account');
+    url.searchParams.set('action', 'balancemulti');
+    url.searchParams.set('address', addresses.join(','));
+
+    const response = await fetch(url.toString());
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch Unit0 multi balances: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    const json = (await response.json()) as {
+      status?: string;
+      message?: string;
+      result?: Array<{
+        account?: string;
+        address?: string;
+        addressHash?: string;
+        balance?: string;
+        stale?: boolean;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        [key: string]: any;
+      }>;
+    };
+
+    if (!Array.isArray(json.result)) {
+      throw new Error(
+        `Unexpected Unit0 multi-balance response format: ${JSON.stringify(json)}`,
+      );
+    }
+
+    return json.result
+      .filter(item => typeof item.balance === 'string')
+      .map(item => {
+        const addr =
+          (item.account || item.address || item.addressHash || '').toString();
+
+        return {
+          address: addr,
+          // Blockscout returns balance as string (wei-like integer)
+          balance: item.balance as string,
+          stale: item.stale,
+        };
+      });
   }
 
   async fetchERC20Tokens(
