@@ -26,6 +26,7 @@
 .importButtonsItem
   display: flex;
   padding: 14px 0;
+  overflow: visible;
 
   &:first-child
     padding-top: 0;
@@ -48,6 +49,7 @@
   gap: 8px;
   justify-content: left;
   padding: 0;
+  overflow: visible;
 }
 
 .importButton:disabled {
@@ -57,6 +59,19 @@
 .importButtonIcon {
   width: 25px;
   height: 28px;
+}
+
+.importButtonIconWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.importButtonWaveIcon {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  width: 14px;
+  height: 14px;
 }
 
 .importButtonNote {

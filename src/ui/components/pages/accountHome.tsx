@@ -154,16 +154,30 @@ export function AccountsHome() {
               navigate('/import-ledger');
             }}
           >
-            <svg
-              className={styles.importButtonIcon}
-              width="20"
-              height="21"
-              fill="#000"
-              stroke="#000"
-              viewBox="0 0 20 21"
-            >
-              <path d="M19.254 3.558v8.446H8.122V.912h8.54c1.417 0 2.596 1.213 2.592 2.645v.001ZM3.329.912h1.017v3.663H.668V3.563c0-1.483 1.225-2.65 2.661-2.65ZM.668 8.406h3.678v3.662H.668V8.406Zm15.93 11.092H15.58V15.84h3.678v1.007c0 1.483-1.225 2.651-2.662 2.651ZM8.121 15.84H11.8v3.663H8.122V15.84ZM.668 16.852V15.84h3.678v3.663H3.329a2.665 2.665 0 0 1-2.661-2.651Z" />
-            </svg>
+            <div className={styles.importButtonIconWrapper}>
+              <svg
+                className={styles.importButtonIcon}
+                width="20"
+                height="21"
+                fill="#000"
+                stroke="#000"
+                viewBox="0 0 20 21"
+              >
+                <path d="M19.254 3.558v8.446H8.122V.912h8.54c1.417 0 2.596 1.213 2.592 2.645v.001ZM3.329.912h1.017v3.663H.668V3.563c0-1.483 1.225-2.65 2.661-2.65ZM.668 8.406h3.678v3.662H.668V8.406Zm15.93 11.092H15.58V15.84h3.678v1.007c0 1.483-1.225 2.651-2.662 2.651ZM8.121 15.84H11.8v3.663H8.122V15.84ZM.668 16.852V15.84h3.678v3.663H3.329a2.665 2.665 0 0 1-2.661-2.651Z" />
+              </svg>
+              <svg
+                className={styles.importButtonWaveIcon}
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+              >
+                <rect x="0.5" y="0.5" width="13" height="13" rx="6.5" fill="white"/>
+                <rect x="0.5" y="0.5" width="13" height="13" rx="6.5" stroke="#E9E9EB"/>
+                <rect x="2.05005" y="7" width="7" height="7" transform="rotate(-45 2.05005 7)" fill="#1F5AF6"/>
+              </svg>
+            </div>
             <div>
               <div>{t('import.viaLedger')}</div>
               {!isLedgerSupported && (
@@ -238,6 +252,7 @@ export function AccountsHome() {
                 navigate('/import-email');
               }}
             >
+              <div className={styles.importButtonIconWrapper}>
               <svg
                 className={styles.importButtonIcon}
                 width="24"
@@ -304,6 +319,19 @@ export function AccountsHome() {
                   />
                 </g>
               </svg>
+              <svg
+                className={styles.importButtonWaveIcon}
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+              >
+                <rect x="0.5" y="0.5" width="13" height="13" rx="6.5" fill="white"/>
+                <rect x="0.5" y="0.5" width="13" height="13" rx="6.5" stroke="#E9E9EB"/>
+                <rect x="2.05005" y="7" width="7" height="7" transform="rotate(-45 2.05005 7)" fill="#1F5AF6"/>
+              </svg>
+            </div>
 
               {t('import.viaEmail')}
             </Button>
