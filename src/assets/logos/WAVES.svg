@@ -1,1 +1,11 @@
-<svg fill="none" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" fill="#05f" r="12"/><path d="m12 6 6 6-6 6-6-6z" fill="#fff"/></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="30px" version="1.1" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+ <!-- Generator: Sketch 48 (47235) - http://www.bohemiancoding.com/sketch -->
+ <title>waves_logo</title>
+ <desc>Created with Sketch.</desc>
+ <g id="wallet_assets" transform="translate(-100 -556)" fill="none" fill-rule="evenodd">
+  <g id="waves_logo" transform="translate(100 556)" fill="#05f">
+   <rect id="Rectangle-path" transform="translate(15.162 15.027) rotate(135) translate(-15.162 -15.027)" x="4.6892" y="4.5541" width="20.945" height="20.945"/>
+  </g>
+ </g>
+</svg>

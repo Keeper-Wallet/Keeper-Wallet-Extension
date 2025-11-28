@@ -15,7 +15,11 @@ import Browser from 'webextension-polyfill';
 
 import { Unit0Api } from './api/unit0Api';
 
-import { defaultAssetTickers } from '../assets/constants';
+import {
+  assetLogosByNetwork,
+  defaultAssetTickers,
+  unit0AssetLogosByNetwork,
+} from '../assets/constants';
 import {
   type ExtensionStorage,
   type StorageLocalState,
@@ -65,6 +69,41 @@ const SWAP_SERVICE_URL = getSwapServiceUrl();
 
 const INFO_PERIOD_IN_MINUTES = 60;
 const SWAPPABLE_ASSETS_UPDATE_PERIOD_IN_MINUTES = 240;
+
+async function fetchIconAsDataUrl(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok || response.status >= 400) {
+      return null;
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.startsWith('image/')) {
+      return null;
+    }
+
+    const blob = await response.blob();
+
+    return await new Promise<string | null>(resolve => {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          resolve(reader.result);
+        } else {
+          resolve(null);
+        }
+      };
+
+      reader.onerror = () => resolve(null);
+
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
+}
 
 function binarySearch<T>(sortedArray: T[], key: T) {
   let start = 0;
@@ -184,6 +223,61 @@ export class AssetInfoController {
           break;
       }
     });
+  }
+
+  private seedDefaultLogosFromConstants(network: NetworkName) {
+    const { assetLogos, assets } = this.store.getState();
+
+    const networkAssetLogos =
+      (assetLogosByNetwork[network] as Record<string, string> | undefined) ||
+      {};
+    const networkUnit0AssetLogos =
+      (unit0AssetLogosByNetwork[network] as Record<string, string> | undefined) ||
+      {};
+
+    const allDefaultLogos = {
+      ...(networkAssetLogos as Record<string, string>),
+      ...(networkUnit0AssetLogos as Record<string, string>),
+    };
+
+    const updatedAssetLogos: StorageLocalState['assetLogos'] = {
+      ...assetLogos,
+    };
+
+    // 1. Ensure existing user assets have logos (handling case sensitivity for Unit0)
+    const networkAssets = assets[network] || {};
+    Object.keys(networkAssets).forEach(assetId => {
+      if (updatedAssetLogos[assetId]) {
+        return;
+      }
+
+      // Try direct lookup
+      if (allDefaultLogos[assetId]) {
+        updatedAssetLogos[assetId] = allDefaultLogos[assetId];
+        return;
+      }
+
+      // Try case-insensitive lookup for Unit0 (0x...)
+      if (assetId.startsWith('0x')) {
+        const lowercasedId = assetId.toLowerCase();
+        if (allDefaultLogos[lowercasedId]) {
+          updatedAssetLogos[assetId] = allDefaultLogos[lowercasedId];
+        }
+      }
+    });
+
+    // 2. Populate all other default logos (mostly lowercase keys from constants)
+    Object.entries(allDefaultLogos).forEach(([assetId, logoUrl]) => {
+      if (!updatedAssetLogos[assetId]) {
+        updatedAssetLogos[assetId] = logoUrl;
+      }
+    });
+
+    if (Object.keys(updatedAssetLogos).length === Object.keys(assetLogos).length) {
+      return;
+    }
+
+    this.store.updateState({ assetLogos: updatedAssetLogos });
   }
 
   private async ensureUnit0AssetExists() {
@@ -421,9 +515,9 @@ export class AssetInfoController {
         if (suspiciousAssets) {
           Object.keys(assets[NetworkName.Mainnet]).forEach(
             assetId =>
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              (assets[NetworkName.Mainnet][assetId]!.isSuspicious =
-                binarySearch(suspiciousAssets, assetId) > -1),
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            (assets[NetworkName.Mainnet][assetId]!.isSuspicious =
+              binarySearch(suspiciousAssets, assetId) > -1),
           );
         }
 
@@ -506,33 +600,83 @@ export class AssetInfoController {
   async updateInfo() {
     const network = this.getNetwork();
 
-    if (network === NetworkName.Mainnet) {
-      const resp = await fetch(new URL('/api/v1/assets', DATA_SERVICE_URL));
+    try {
+      if (network === NetworkName.Mainnet) {
+        const [wavesResp, unit0Resp] = await Promise.all([
+          fetch(new URL('/api/v1/assets', DATA_SERVICE_URL)),
+          fetch(new URL('/api/v1/unit0/assets', DATA_SERVICE_URL)),
+        ]);
 
-      if (resp.ok) {
-        const assets = (await resp.json()) as Array<{
+        const assets: Array<{
           id: string;
           ticker: string;
           url: string;
-        }>;
+        }> = [];
 
-        this.store.updateState(
-          assets.reduce(
-            (acc, { id, ticker, url }) => ({
-              assetLogos: {
-                ...acc.assetLogos,
-                [id]: url,
-              },
-              assetTickers: { ...acc.assetTickers, [id]: ticker },
+        if (wavesResp.ok) {
+          const wavesAssets = (await wavesResp.json()) as Array<{
+            id: string;
+            ticker: string;
+            url: string;
+          }>;
+          assets.push(...wavesAssets);
+        }
+
+        if (unit0Resp.ok) {
+          const unit0Assets = (await unit0Resp.json()) as Array<{
+            id: string;
+            ticker: string;
+            url: string;
+          }>;
+          assets.push(...unit0Assets);
+        }
+
+        if (assets.length > 0) {
+          const { assetLogos, assetTickers } = this.store.getState();
+
+          const processedAssets = await Promise.all(
+            assets.map(async ({ id, ticker, url }) => {
+              let dataUrl: string | null = null;
+
+              if (url) {
+                dataUrl = await fetchIconAsDataUrl(url);
+              }
+
+              return {
+                id,
+                ticker,
+                dataUrl,
+              };
             }),
-            {} as {
-              assetLogos: StorageLocalState['assetLogos'];
-              assetTickers: StorageLocalState['assetTickers'];
-            },
-          ),
-        );
+          );
+
+          const updatedAssetLogos: StorageLocalState['assetLogos'] = {
+            ...assetLogos,
+          };
+          const updatedAssetTickers: StorageLocalState['assetTickers'] = {
+            ...assetTickers,
+          };
+
+          processedAssets.forEach(({ id, ticker, dataUrl }) => {
+            if (dataUrl) {
+              updatedAssetLogos[id] = dataUrl;
+            }
+
+            updatedAssetTickers[id] = ticker;
+          });
+
+          this.store.updateState({
+            assetLogos: updatedAssetLogos,
+            assetTickers: updatedAssetTickers,
+          });
+
+        }
       }
+    } catch {
+      // Ignore backend errors and fall back to static defaults
     }
+
+    this.seedDefaultLogosFromConstants(network);
   }
 
   async updateSwappableAssetIdsByVendor() {
@@ -580,16 +724,5 @@ export class AssetInfoController {
 
     // Update Redux store
     this.store.updateState({ assets });
-
-    // Also store logo if available
-    if ('icon_url' in metadata && metadata.icon_url) {
-      const currentState = this.store.getState();
-      const logos = { ...currentState.assetLogos };
-
-      // Store logo for contract address key
-      logos[contractAddress] = metadata.icon_url;
-
-      this.store.updateState({ assetLogos: logos });
-    }
   }
 }

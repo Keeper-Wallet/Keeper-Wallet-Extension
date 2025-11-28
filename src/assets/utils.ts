@@ -1,16 +1,16 @@
 import { NetworkName } from 'networks/types';
 import { usePopupSelector } from 'popup/store/react';
 
-import { assetIds, assetLogosByNetwork } from './constants';
+import { assetIds } from './constants';
 
 export function useAssetLogo(network: NetworkName, assetId: string) {
   const logos = usePopupSelector(state => state.assetLogos);
 
-  if (network !== NetworkName.Mainnet) {
-    return assetLogosByNetwork[network]?.[assetId];
+  if (!assetId) {
+    return undefined;
   }
 
-  return logos[assetId] || assetLogosByNetwork[network]?.[assetId];
+  return logos[assetId];
 }
 
 export function useAssetIdByTicker(network: NetworkName, ticker: string) {
