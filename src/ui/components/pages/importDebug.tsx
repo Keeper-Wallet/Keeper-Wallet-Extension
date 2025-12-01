@@ -1,14 +1,15 @@
 import { isAddressString } from 'messages/utils';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { createAccount } from 'store/actions/user';
 import * as styles from 'ui/components/pages/importDebug.module.css';
 import { Button, ErrorMessage, Input } from 'ui/components/ui';
-import { WalletTypes } from 'ui/services/Background';
+import Background, { WalletTypes } from 'ui/services/Background';
 
 import { NETWORK_CONFIG } from '../../../constants';
+import { type MultiWallet } from '../../../services/types';
 
 function isValidUnit0Address(address: string): boolean {
   return /^0x[a-fA-F0-9]{40}$/.test(address);
@@ -21,6 +22,13 @@ export function ImportDebug() {
   const accounts = usePopupSelector(state => state.accounts);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const customCodes = usePopupSelector(state => state.customCodes);
+  
+  // Get all wallets to check for duplicate addresses across all networks
+  const [allWallets, setAllWallets] = useState<MultiWallet[]>([]);
+  
+  useEffect(() => {
+    Background.getMultiWallets().then(setAllWallets);
+  }, []);
 
   const networkCode =
     customCodes[currentNetwork] || NETWORK_CONFIG[currentNetwork].networkCode;
@@ -52,12 +60,29 @@ export function ImportDebug() {
       });
     }
 
-    if (accounts.some(account => account.address === address)) {
+    // Check if address already exists in any wallet (across all networks)
+    const addressExistsInWallet = allWallets.some(wallet => {
+      // Check waves networks
+      const wavesNetworks = wallet.coins?.waves?.networks;
+      if (wavesNetworks) {
+        if (
+          wavesNetworks.mainnet?.address === address ||
+          wavesNetworks.testnet?.address === address ||
+          wavesNetworks.stagenet?.address === address ||
+          wavesNetworks.custom?.address === address
+        ) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    if (addressExistsInWallet) {
       return t('importDebug.alreadyExists');
     }
 
     return null;
-  }, [address, accounts, currentNetwork, networkCode, t]);
+  }, [address, allWallets, currentNetwork, networkCode, t]);
 
   const unit0AddressError = useMemo(() => {
     if (!unit0Address) {
@@ -68,12 +93,26 @@ export function ImportDebug() {
       return t('importDebug.invalidUnit0AddressError');
     }
 
-    if (accounts.some(account => account.address === unit0Address)) {
+    // Check if unit0 address already exists in any wallet
+    const addressExistsInWallet = allWallets.some(wallet => {
+      const unit0Networks = wallet.coins?.unit0?.networks;
+      if (unit0Networks) {
+        if (
+          unit0Networks.mainnet?.address === unit0Address ||
+          unit0Networks.testnet?.address === unit0Address
+        ) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    if (addressExistsInWallet) {
       return t('importDebug.alreadyExists');
     }
 
     return null;
-  }, [unit0Address, accounts, t]);
+  }, [unit0Address, allWallets, t]);
 
   const [showErrors, setShowErrors] = useState<boolean>(false);
 
