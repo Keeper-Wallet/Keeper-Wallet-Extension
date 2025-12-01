@@ -405,7 +405,7 @@
     "seedIsPublicOrPrivateKeyError": "An account with a seed phrase like that is vulnerable. May be you meant to <switchTab>use a private key</switchTab>?",
     "seedLengthError": "Seed cannot be shorter than {{minLength}} characters",
     "switchAccount": "Switch account",
-    "title": "Import using seed"
+    "title": "Import Waves account"
   },
   "importSeedMultichain": {
     "welcomeBack": "Welcome Back",
