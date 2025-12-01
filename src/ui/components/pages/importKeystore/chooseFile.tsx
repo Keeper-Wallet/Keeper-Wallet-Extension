@@ -28,7 +28,6 @@ export function ImportKeystoreChooseFile({
   const [keystoreFile, setKeystoreFile] = useState<File | null>(null);
   const [result, setResult] = useState('');
 
-  const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
 
   useEffect(() => {
@@ -50,16 +49,6 @@ export function ImportKeystoreChooseFile({
           return;
         }
 
-        try {
-          setShowPassword(
-            !Object.values(JSON.parse(reader.result)).every(
-              text => !!JSON.parse(decodeURIComponent(atob(text as string))),
-            ),
-          );
-        } catch {
-          setShowPassword(true);
-        }
-
         setResult(reader.result);
       };
 
@@ -74,7 +63,7 @@ export function ImportKeystoreChooseFile({
       className={styles.root}
       onSubmit={event => {
         event.preventDefault();
-        onSubmit(result, showPassword ? password : '');
+        onSubmit(result, password);
       }}
     >
       <h2 className="title1 margin3 left">{title}</h2>
@@ -106,34 +95,28 @@ export function ImportKeystoreChooseFile({
         </span>
       </label>
 
-      {showPassword && (
-        <>
-          <div className="tag1 basic500 input-title">
-            {t('importKeystore.passwordLabel')}
-          </div>
-          <Input
-            autoComplete="current-password"
-            data-testid="passwordInput"
-            placeholder={placeholder}
-            type="password"
-            value={password}
-            view="password"
-            wrapperClassName="margin1"
-            onChange={event => {
-              setPassword(event.currentTarget.value);
-            }}
-          />
-        </>
-      )}
+      <div className="tag1 basic500 input-title">
+        {t('importKeystore.passwordLabel')}
+      </div>
+      <Input
+        autoComplete="current-password"
+        data-testid="passwordInput"
+        placeholder={placeholder}
+        type="password"
+        value={password}
+        view="password"
+        wrapperClassName="margin1"
+        onChange={event => {
+          setPassword(event.currentTarget.value);
+        }}
+      />
 
       {error && <ErrorMessage show>{error}</ErrorMessage>}
 
       <Button
         className={styles.keystoreButton}
         data-testid="submitButton"
-        disabled={
-          loading || keystoreFile == null || (showPassword && !password)
-        }
+        disabled={loading || keystoreFile == null || !password}
         loading={loading}
         type="submit"
         view="submit"

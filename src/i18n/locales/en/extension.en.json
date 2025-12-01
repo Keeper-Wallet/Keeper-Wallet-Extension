@@ -347,7 +347,7 @@
   },
   "importKeystore": {
     "addressBookLabel": "Address Book file",
-    "alreadyExists": "Account already exists",
+    "alreadyExists": "Already exists",
     "addressBookPasswordPlaceholder": "Password used to create file",
     "browse": "Browse...",
     "chooseAccountsDesc": "Select which accounts you want to import",
