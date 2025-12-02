@@ -41,7 +41,6 @@ export interface MultiWalletAccount {
 
 interface MultiWalletControllerState {
   vault?: string;
-  multiWallets: MultiWallet[];
 }
 
 async function encryptVault(input: MultiWallet[], password: string) {
@@ -95,7 +94,7 @@ export class MultiWalletController extends EventEmitter {
     // Initialize store with extension storage
     this.store = new ObservableStore(
       extensionStorage.getInitState({
-        MultiWalletController: { vault: undefined, multiWallets: [] },
+        MultiWalletController: { vault: undefined },
       }),
     );
 
@@ -168,28 +167,59 @@ export class MultiWalletController extends EventEmitter {
         (err as any).code = 'FAILED_TO_SAVE';
         throw err;
       }
-    } else {
-      // If not yet initialized with password, update the store state
-      const state = this.store.getState();
-      this.store.updateState({
-        MultiWalletController: {
-          ...state.MultiWalletController,
-          multiWallets: this.#multiwallets,
-        },
+    }
+
+    // Emit sanitized wallets
+    const sanitizedForEvent = this.getMultiWallets();
+    this.emit('multiWalletsChanged', sanitizedForEvent);
+
+    // Return sanitized wallet
+    const sanitizedWallet = JSON.parse(
+      JSON.stringify(multiWallet),
+    ) as MultiWallet;
+    delete sanitizedWallet.seed;
+    delete sanitizedWallet.privateKey;
+    delete sanitizedWallet.encodedSeed;
+    if (sanitizedWallet.walletInstances) {
+      Object.values(sanitizedWallet.walletInstances).forEach(instance => {
+        if (instance && 'data' in instance && instance.data) {
+          delete (instance.data as any).seed;
+          delete (instance.data as any).privateKey;
+          delete (instance.data as any).encodedSeed;
+        }
       });
     }
 
-    this.emit('multiWalletsChanged', this.#multiwallets);
-
-    return multiWallet;
+    return sanitizedWallet;
   }
 
   /**
-   * Get all multi-wallets
+   * Get all multi-wallets (sanitized - without sensitive data)
    */
   getMultiWallets(): MultiWallet[] {
-    // Return a copy of the in-memory array to prevent direct modification
-    return [...this.#multiwallets];
+    // Return a deep copy with sensitive data removed
+    const sanitizedWallets = JSON.parse(
+      JSON.stringify(this.#multiwallets),
+    ) as MultiWallet[];
+
+    sanitizedWallets.forEach(wallet => {
+      delete wallet.seed;
+      delete wallet.privateKey;
+      delete wallet.encodedSeed;
+
+      // Also sanitize walletInstances which contain wallet data objects
+      if (wallet.walletInstances) {
+        Object.values(wallet.walletInstances).forEach(instance => {
+          if (instance && 'data' in instance && instance.data) {
+            delete (instance.data as any).seed;
+            delete (instance.data as any).privateKey;
+            delete (instance.data as any).encodedSeed;
+          }
+        });
+      }
+    });
+
+    return sanitizedWallets;
   }
 
   async getWalletForSigning(
@@ -523,14 +553,6 @@ export class MultiWalletController extends EventEmitter {
         }
       }
 
-      // Update the store state
-      this.store.updateState({
-        MultiWalletController: {
-          ...state.MultiWalletController,
-          multiWallets: decryptedWallets,
-        },
-      });
-
       // Create deep copy of wallets and remove sensitive data before emitting
       const sanitizedWallets = JSON.parse(
         JSON.stringify(decryptedWallets),
@@ -561,15 +583,6 @@ export class MultiWalletController extends EventEmitter {
     this.#setPassword(null);
     // Clear sensitive data from memory
     this.#multiwallets = [];
-
-    // Update store state
-    const state = this.store.getState();
-    this.store.updateState({
-      MultiWalletController: {
-        ...state.MultiWalletController,
-        multiWallets: [],
-      },
-    });
   }
 
   async unlock(password: string) {
@@ -591,7 +604,6 @@ export class MultiWalletController extends EventEmitter {
     this.store.updateState({
       MultiWalletController: {
         vault: undefined,
-        multiWallets: [],
       },
     });
     this.emit('multiWalletsChanged', []);
