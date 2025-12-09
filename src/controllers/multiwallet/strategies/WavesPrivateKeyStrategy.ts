@@ -23,17 +23,20 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
    * Create Waves addresses for specified networks
    * Uses private key to generate public key and addresses
    */
-  async createWavesAddresses(networks: NetworkName[]): Promise<WavesNetworkData> {
+  async createWavesAddresses(
+    networks: NetworkName[],
+    customCode?: string,
+  ): Promise<WavesNetworkData> {
     const privateKeyBytes = base58Decode(this.privateKey);
     const publicKey = await createPublicKey(privateKeyBytes);
     const publicKeyBase58 = base58Encode(publicKey);
 
-    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet);
+    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet)!;
     const mainnetAddress = base58Encode(
       createAddress(publicKey, mainnetCode.charCodeAt(0)),
     );
 
-    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet);
+    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet)!;
     const testnetAddress = base58Encode(
       createAddress(publicKey, testnetCode.charCodeAt(0)),
     );
@@ -47,7 +50,9 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
     };
 
     for (const network of networks) {
-      const networkCode = this.#getWavesNetworkCode(network);
+      const networkCode = this.#getWavesNetworkCode(network, customCode);
+      if (!networkCode) continue; // Skip if network code is not available
+      
       const address = base58Encode(
         createAddress(publicKey, networkCode.charCodeAt(0)),
       );
@@ -92,6 +97,8 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
         ].includes(network)
       ) {
         const networkCode = this.#getWavesNetworkCode(network);
+        if (!networkCode) continue; // Skip if network code is not available
+        
         const walletInstance = await PrivateKeyWallet.create({
           name: `${network}-wallet`,
           network,
@@ -192,7 +199,7 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
   /**
    * Get Waves network code from NetworkName
    */
-  #getWavesNetworkCode(network: NetworkName): string {
+  #getWavesNetworkCode(network: NetworkName, customCode?: string): string | undefined {
     switch (network) {
       case NetworkName.Mainnet:
         return NETWORK_CODES.waves.mainnet;
@@ -201,7 +208,7 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
       case NetworkName.Stagenet:
         return NETWORK_CODES.waves.stagenet;
       case NetworkName.Custom:
-        return NETWORK_CODES.waves.mainnet;
+        return customCode;
       default:
         return NETWORK_CODES.waves.mainnet;
     }

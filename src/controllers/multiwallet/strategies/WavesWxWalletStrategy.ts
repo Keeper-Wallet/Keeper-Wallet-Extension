@@ -28,6 +28,7 @@ export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
    */
   async createWavesAddresses(
     networks: NetworkName[],
+    customCode?: string,
   ): Promise<WavesNetworkData> {
     // Always generate mainnet and testnet addresses
     const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet);
@@ -43,7 +44,8 @@ export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
 
     // Add optional networks if requested
     for (const network of networks) {
-      const networkCode = this.#getWavesNetworkCode(network);
+      const networkCode = this.#getWavesNetworkCode(network, customCode);
+      if (!networkCode) continue; // Skip if network code is not available
 
       switch (network) {
         case NetworkName.Stagenet:
@@ -101,6 +103,8 @@ export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
         ].includes(network)
       ) {
         const networkCode = this.#getWavesNetworkCode(network);
+        if (!networkCode) continue; // Skip if network code is not available
+
         const walletInstance = new WxWallet(
           {
             address: this.address,
@@ -223,7 +227,7 @@ export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
   /**
    * Get Waves network code from NetworkName
    */
-  #getWavesNetworkCode(network: NetworkName): string {
+  #getWavesNetworkCode(network: NetworkName, customCode?: string): string | undefined {
     switch (network) {
       case NetworkName.Mainnet:
         return NETWORK_CODES.waves.mainnet;
@@ -232,7 +236,7 @@ export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
       case NetworkName.Stagenet:
         return NETWORK_CODES.waves.stagenet;
       case NetworkName.Custom:
-        return NETWORK_CODES.waves.mainnet;
+        return customCode;
       default:
         return NETWORK_CODES.waves.mainnet;
     }

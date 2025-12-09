@@ -6,12 +6,12 @@ import {
   type MultiWalletCreationResult,
   type ValidationResult,
 } from '../interfaces/types';
-import { SeedWalletStrategy } from '../strategies/SeedWalletStrategy';
 import { DebugMultiWalletStrategy } from '../strategies/DebugMultiWalletStrategy';
-import { WavesPrivateKeyStrategy } from '../strategies/WavesPrivateKeyStrategy';
+import { SeedWalletStrategy } from '../strategies/SeedWalletStrategy';
 import { WavesEncodedSeedStrategy } from '../strategies/WavesEncodedSeedStrategy';
-import { WavesWxWalletStrategy } from '../strategies/WavesWxWalletStrategy';
 import { WavesLedgerWalletStrategy } from '../strategies/WavesLedgerWalletStrategy';
+import { WavesPrivateKeyStrategy } from '../strategies/WavesPrivateKeyStrategy';
+import { WavesWxWalletStrategy } from '../strategies/WavesWxWalletStrategy';
 
 export class WalletFactory implements IWalletFactory {
   async createWallet(
@@ -193,7 +193,10 @@ export class WalletFactory implements IWalletFactory {
         if (!('address' in input) || !input.address) {
           throw new Error('Debug address is required for debug wallet');
         }
-        strategy = new DebugMultiWalletStrategy(input.address, input.unit0Address);
+        strategy = new DebugMultiWalletStrategy(
+          input.address,
+          input.unit0Address,
+        );
         break;
 
       default:
@@ -234,6 +237,7 @@ export class WalletFactory implements IWalletFactory {
       try {
         const wavesData = await strategy.createWavesAddresses(
           input.networks.waves,
+          input.customCode,
         );
         multiWallet.coins.waves = wavesData as typeof multiWallet.coins.waves;
       } catch (error) {

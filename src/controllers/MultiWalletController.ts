@@ -44,7 +44,12 @@ interface MultiWalletControllerState {
 }
 
 async function encryptVault(input: MultiWallet[], password: string) {
-  const json = JSON.stringify(input);
+  // Remove walletInstances before serialization (they are runtime-only)
+  const walletsToSerialize = input.map(wallet => {
+    const { walletInstances, ...walletData } = wallet;
+    return walletData;
+  });
+  const json = JSON.stringify(walletsToSerialize);
   const vault = await encryptSeed(utf8Encode(json), utf8Encode(password));
   return base64Encode(vault);
 }
@@ -146,9 +151,9 @@ export class MultiWalletController extends EventEmitter {
       throw error;
     }
 
-    const walletInstances = await this.#restoreWalletInstances(multiWallet);
-    if (walletInstances) {
-      multiWallet.walletInstances = walletInstances;
+    const restoredInstances = await this.#restoreWalletInstances(multiWallet);
+    if (restoredInstances) {
+      multiWallet.walletInstances = restoredInstances;
     }
 
     // Add the new multi-wallet to the in-memory array
@@ -173,53 +178,32 @@ export class MultiWalletController extends EventEmitter {
     const sanitizedForEvent = this.getMultiWallets();
     this.emit('multiWalletsChanged', sanitizedForEvent);
 
-    // Return sanitized wallet
-    const sanitizedWallet = JSON.parse(
-      JSON.stringify(multiWallet),
-    ) as MultiWallet;
-    delete sanitizedWallet.seed;
-    delete sanitizedWallet.privateKey;
-    delete sanitizedWallet.encodedSeed;
-    if (sanitizedWallet.walletInstances) {
-      Object.values(sanitizedWallet.walletInstances).forEach(instance => {
-        if (instance && 'data' in instance && instance.data) {
-          delete (instance.data as any).seed;
-          delete (instance.data as any).privateKey;
-          delete (instance.data as any).encodedSeed;
-        }
-      });
-    }
-
-    return sanitizedWallet;
+    // Return sanitized wallet (remove walletInstances and sensitive data)
+    const {
+      walletInstances: _,
+      seed,
+      privateKey,
+      encodedSeed,
+      ...sanitizedWallet
+    } = multiWallet;
+    return sanitizedWallet as MultiWallet;
   }
 
   /**
    * Get all multi-wallets (sanitized - without sensitive data)
    */
   getMultiWallets(): MultiWallet[] {
-    // Return a deep copy with sensitive data removed
-    const sanitizedWallets = JSON.parse(
-      JSON.stringify(this.#multiwallets),
-    ) as MultiWallet[];
-
-    sanitizedWallets.forEach(wallet => {
-      delete wallet.seed;
-      delete wallet.privateKey;
-      delete wallet.encodedSeed;
-
-      // Also sanitize walletInstances which contain wallet data objects
-      if (wallet.walletInstances) {
-        Object.values(wallet.walletInstances).forEach(instance => {
-          if (instance && 'data' in instance && instance.data) {
-            delete (instance.data as any).seed;
-            delete (instance.data as any).privateKey;
-            delete (instance.data as any).encodedSeed;
-          }
-        });
-      }
+    // Return wallets without walletInstances and sensitive data
+    return this.#multiwallets.map(wallet => {
+      const {
+        walletInstances,
+        seed,
+        privateKey,
+        encodedSeed,
+        ...sanitizedWallet
+      } = wallet;
+      return sanitizedWallet as MultiWallet;
     });
-
-    return sanitizedWallets;
   }
 
   async getWalletForSigning(
@@ -248,7 +232,7 @@ export class MultiWalletController extends EventEmitter {
     }
 
     // Return wallet instance if available
-    if (multiWallet.walletInstances && multiWallet.walletInstances[network]) {
+    if (multiWallet.walletInstances?.[network]) {
       return multiWallet.walletInstances[network];
     }
 
@@ -449,6 +433,12 @@ export class MultiWalletController extends EventEmitter {
         ) {
           return true;
         }
+        if (
+          wavesNetworks.custom?.address === address &&
+          network === NetworkName.Custom
+        ) {
+          return true;
+        }
       }
 
       // Check Unit0 networks if they exist
@@ -498,13 +488,16 @@ export class MultiWalletController extends EventEmitter {
       },
     });
 
-    // Create sanitized copy for emitting event
-    const sanitizedWallets = JSON.parse(
-      JSON.stringify(walletsToSave),
-    ) as MultiWallet[];
-    sanitizedWallets.forEach(wallet => {
-      delete wallet.seed;
-      delete wallet.privateKey;
+    // Create sanitized copy for emitting event (remove walletInstances and sensitive data)
+    const sanitizedWallets = walletsToSave.map(wallet => {
+      const {
+        walletInstances,
+        seed,
+        privateKey,
+        encodedSeed,
+        ...sanitizedWallet
+      } = wallet;
+      return sanitizedWallet as MultiWallet;
     });
 
     this.emit('multiWalletsChanged', sanitizedWallets);
@@ -539,6 +532,9 @@ export class MultiWalletController extends EventEmitter {
 
       // Recreate wallet instances for each restored wallet
       for (const wallet of this.#multiwallets) {
+        // Clear any old serialized walletInstances (they lost their methods during JSON serialization)
+        delete wallet.walletInstances;
+
         try {
           const walletInstances = await this.#restoreWalletInstances(wallet);
           if (walletInstances) {
@@ -553,15 +549,16 @@ export class MultiWalletController extends EventEmitter {
         }
       }
 
-      // Create deep copy of wallets and remove sensitive data before emitting
-      const sanitizedWallets = JSON.parse(
-        JSON.stringify(decryptedWallets),
-      ) as MultiWallet[];
-
-      // Remove seed from each wallet in the sanitized copy
-      sanitizedWallets.forEach(wallet => {
-        delete wallet.seed;
-        delete wallet.privateKey;
+      // Create sanitized copy for emitting event (remove walletInstances and sensitive data)
+      const sanitizedWallets = decryptedWallets.map(wallet => {
+        const {
+          walletInstances,
+          seed,
+          privateKey,
+          encodedSeed,
+          ...sanitizedWallet
+        } = wallet;
+        return sanitizedWallet as MultiWallet;
       });
 
       this.emit('multiWalletsChanged', sanitizedWallets);
@@ -715,13 +712,16 @@ export class MultiWalletController extends EventEmitter {
   /**
    * Returns decrypted vault contents
    * @param password - Password to decrypt the vault
-   * @returns Promise that resolves to an array of MultiWallet objects
+   * @returns Promise that resolves to an array of MultiWallet objects (without walletInstances)
    * @throws Error if password is invalid or vault doesn't exist
    */
   async getDecryptedVault(password: string): Promise<MultiWallet[]> {
-    // If we already have decrypted wallets in memory, return a copy
+    // If we already have decrypted wallets in memory, return a copy without walletInstances
     if (this.#multiwallets.length > 0 && this.#password === password) {
-      return JSON.parse(JSON.stringify(this.#multiwallets)) as MultiWallet[];
+      return this.#multiwallets.map(wallet => {
+        const { walletInstances, ...walletData } = wallet;
+        return walletData as MultiWallet;
+      });
     }
 
     const state = this.store.getState();

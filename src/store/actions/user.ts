@@ -44,14 +44,29 @@ export function createAccount(
       const factory = new WalletFactory();
 
       const blockchains: Array<'waves' | 'unit0'> = ['waves'];
+      const wavesNetworks: NetworkName[] = [
+        NetworkName.Mainnet,
+        NetworkName.Testnet,
+        NetworkName.Stagenet,
+      ];
+
+      // Check if custom network is configured
+      const { customNodes, customCodes } = getState();
+      // Add custom network only if BOTH node and code are configured
+      if (customNodes?.custom && customCodes?.custom) {
+        wavesNetworks.push(NetworkName.Custom);
+      }
+
       const networks: Partial<Record<'waves' | 'unit0', NetworkName[]>> = {
-        waves: [NetworkName.Mainnet, NetworkName.Testnet, NetworkName.Stagenet],
+        waves: wavesNetworks,
       };
 
       if (account.unit0Address) {
         blockchains.push('unit0');
         networks.unit0 = [NetworkName.Mainnet, NetworkName.Testnet];
       }
+
+      const customCode = customCodes?.custom;
 
       const input = {
         name: account.name,
@@ -60,6 +75,7 @@ export function createAccount(
         unit0Address: account.unit0Address,
         blockchains,
         networks,
+        customCode,
       };
 
       const result = await factory.createWallet(input);
@@ -154,9 +170,24 @@ export function createWavesOnlyMultiWallet({
   username?: string;
   type: string;
 }): AccountsThunkAction<Promise<void>> {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     // Create Waves-only wallet using our factory
     const factory = new WalletFactory();
+
+    // Check if custom network is configured
+    const { customNodes, customCodes } = getState();
+    const networks: NetworkName[] = [
+      NetworkName.Mainnet,
+      NetworkName.Testnet,
+      NetworkName.Stagenet,
+    ];
+
+    // Add custom network only if BOTH node and code are configured
+    if (customNodes?.custom && customCodes?.custom) {
+      networks.push(NetworkName.Custom);
+    }
+
+    const customCode = customCodes?.custom;
 
     // Create appropriate input based on type
     let result;
@@ -167,12 +198,9 @@ export function createWavesOnlyMultiWallet({
         privateKey,
         blockchains: ['waves'] as Array<'waves'>,
         networks: {
-          waves: [
-            NetworkName.Mainnet,
-            NetworkName.Testnet,
-            NetworkName.Stagenet,
-          ],
+          waves: networks,
         },
+        customCode,
       };
       result = await factory.createWallet(input);
     } else if (type === 'encodedSeed' && encodedSeed) {
@@ -182,12 +210,9 @@ export function createWavesOnlyMultiWallet({
         encodedSeed,
         blockchains: ['waves'] as Array<'waves'>,
         networks: {
-          waves: [
-            NetworkName.Mainnet,
-            NetworkName.Testnet,
-            NetworkName.Stagenet,
-          ],
+          waves: networks,
         },
+        customCode,
       };
       result = await factory.createWallet(input);
     } else if (
@@ -204,12 +229,9 @@ export function createWavesOnlyMultiWallet({
         address,
         blockchains: ['waves'] as Array<'waves'>,
         networks: {
-          waves: [
-            NetworkName.Mainnet,
-            NetworkName.Testnet,
-            NetworkName.Stagenet,
-          ],
+          waves: networks,
         },
+        customCode,
       };
       result = await factory.createWallet(input);
     } else {
@@ -229,12 +251,9 @@ export function createWavesOnlyMultiWallet({
           : { seed: seed || '' }),
         blockchains: ['waves'] as Array<'waves'>,
         networks: {
-          waves: [
-            NetworkName.Mainnet,
-            NetworkName.Testnet,
-            NetworkName.Stagenet,
-          ],
+          waves: networks,
         },
+        customCode,
       };
       result = await factory.createWallet(input);
     }
@@ -315,9 +334,24 @@ export function createMultiWalletWithFactory({
   name: string;
   seed: string;
 }): AccountsThunkAction<Promise<void>> {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     // Create wallet using our factory
     const factory = new WalletFactory();
+
+    // Check if custom network is configured
+    const { customNodes, customCodes } = getState();
+    const wavesNetworks: NetworkName[] = [
+      NetworkName.Mainnet,
+      NetworkName.Testnet,
+      NetworkName.Stagenet,
+    ];
+
+    // Add custom network only if BOTH node and code are configured
+    if (customNodes?.custom && customCodes?.custom) {
+      wavesNetworks.push(NetworkName.Custom);
+    }
+
+    const customCode = customCodes?.custom;
 
     const input = {
       name,
@@ -325,9 +359,10 @@ export function createMultiWalletWithFactory({
       seed,
       blockchains: ['waves', 'unit0'] as Array<'waves' | 'unit0'>,
       networks: {
-        waves: [NetworkName.Mainnet, NetworkName.Testnet, NetworkName.Stagenet],
+        waves: wavesNetworks,
         unit0: [NetworkName.Mainnet, NetworkName.Testnet],
       },
+      customCode,
     };
 
     const result = await factory.createWallet(input);
@@ -464,7 +499,10 @@ export function createFullMultiWallet({
     let networkCode = '';
     const wavesNetworks = wallet.coins.waves.networks;
 
-    if (currentNetwork === NetworkName.Mainnet && wavesNetworks.mainnet?.address) {
+    if (
+      currentNetwork === NetworkName.Mainnet &&
+      wavesNetworks.mainnet?.address
+    ) {
       selectedAddress = wavesNetworks.mainnet.address;
       networkCode = wavesNetworks.mainnet.networkCode;
       network = NetworkName.Mainnet;

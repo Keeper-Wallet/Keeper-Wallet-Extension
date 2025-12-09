@@ -1,3 +1,8 @@
+import {
+  base58Decode,
+  base58Encode,
+  createAddress,
+} from '@keeper-wallet/waves-crypto';
 import { IMultiWalletCreationStrategy } from '../interfaces/IMultiWalletCreationStrategy';
 import {
   WavesNetworkData,
@@ -23,36 +28,53 @@ export class WavesLedgerWalletStrategy implements IMultiWalletCreationStrategy {
 
   /**
    * Create Waves addresses for specified networks
-   * Uses provided public key and address from Ledger device
+   * Uses provided public key from Ledger device to generate network-specific addresses
+   * 
+   * IMPORTANT: Ledger generates network-specific addresses. The same public key
+   * produces different addresses on different networks. We use the Waves crypto
+   * library to generate the correct address for each network using the public key.
    */
   async createWavesAddresses(
     networks: NetworkName[],
+    customCode?: string,
   ): Promise<WavesNetworkData> {
+    // Decode the public key from base58
+    const publicKeyBytes = base58Decode(this.publicKey);
+
     // Always generate mainnet and testnet addresses (required)
-    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet);
-    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet);
+    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet)!;
+    const mainnetAddress = base58Encode(
+      createAddress(publicKeyBytes, mainnetCode.charCodeAt(0)),
+    );
+
+    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet)!;
+    const testnetAddress = base58Encode(
+      createAddress(publicKeyBytes, testnetCode.charCodeAt(0)),
+    );
 
     const networkData: WavesNetworkData = {
       publicKey: this.publicKey,
       networks: {
-        mainnet: { address: this.address, networkCode: mainnetCode },
-        testnet: { address: this.address, networkCode: testnetCode },
+        mainnet: { address: mainnetAddress, networkCode: mainnetCode },
+        testnet: { address: testnetAddress, networkCode: testnetCode },
       },
     };
 
     // Add optional networks if requested
     for (const network of networks) {
-      const networkCode = this.#getWavesNetworkCode(network);
+      const networkCode = this.#getWavesNetworkCode(network, customCode);
+      if (!networkCode) continue; // Skip if network code is not available
+
+      const address = base58Encode(
+        createAddress(publicKeyBytes, networkCode.charCodeAt(0)),
+      );
 
       switch (network) {
         case NetworkName.Stagenet:
-          networkData.networks.stagenet = {
-            address: this.address,
-            networkCode,
-          };
+          networkData.networks.stagenet = { address, networkCode };
           break;
         case NetworkName.Custom:
-          networkData.networks.custom = { address: this.address, networkCode };
+          networkData.networks.custom = { address, networkCode };
           break;
       }
     }
@@ -106,6 +128,8 @@ export class WavesLedgerWalletStrategy implements IMultiWalletCreationStrategy {
         ].includes(network)
       ) {
         const networkCode = this.#getWavesNetworkCode(network);
+        if (!networkCode) continue; // Skip if network code is not available
+
         const walletInstance = new LedgerWallet(
           {
             address: this.address,
@@ -214,7 +238,7 @@ export class WavesLedgerWalletStrategy implements IMultiWalletCreationStrategy {
   /**
    * Get Waves network code from NetworkName
    */
-  #getWavesNetworkCode(network: NetworkName): string {
+  #getWavesNetworkCode(network: NetworkName, customCode?: string): string | undefined {
     switch (network) {
       case NetworkName.Mainnet:
         return NETWORK_CODES.waves.mainnet;
@@ -223,7 +247,7 @@ export class WavesLedgerWalletStrategy implements IMultiWalletCreationStrategy {
       case NetworkName.Stagenet:
         return NETWORK_CODES.waves.stagenet;
       case NetworkName.Custom:
-        return NETWORK_CODES.waves.mainnet;
+        return customCode;
       default:
         return NETWORK_CODES.waves.mainnet;
     }

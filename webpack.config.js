@@ -141,7 +141,9 @@ async function makeConfig({
     plugins: [
       process.stdout.isTTY && new webpack.ProgressPlugin(),
       dev && hmr && new webpack.HotModuleReplacementPlugin(),
-      dev && hmr && new TinyBrowserHmrWebpackPlugin({ hostname: 'localhost' }),
+      dev &&
+        hmr &&
+        new TinyBrowserHmrWebpackPlugin({ hostname: 'localhost', port: 8001 }),
       dev &&
         hmr &&
         reactRefresh &&
@@ -164,7 +166,9 @@ async function makeConfig({
       new webpack.DefinePlugin({
         'process.env.NODE_DEBUG': 'undefined',
         'process.env.NODE_ENV': JSON.stringify(mode),
-        'process.env.DATA_SERVICE_ENV': JSON.stringify(process.env.DATA_SERVICE_ENV),
+        'process.env.DATA_SERVICE_ENV': JSON.stringify(
+          process.env.DATA_SERVICE_ENV,
+        ),
         __AMPLITUDE_API_KEY__: JSON.stringify(process.env.AMPLITUDE_API_KEY),
         __MIXPANEL_TOKEN__: JSON.stringify(process.env.MIXPANEL_TOKEN),
         __SENTRY_DSN__: JSON.stringify(process.env.SENTRY_DSN),

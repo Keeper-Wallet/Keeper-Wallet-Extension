@@ -12,6 +12,7 @@ export type CreateMultiWalletInput = {
   name: string;
   blockchains: BlockchainType[];
   networks: Partial<Record<BlockchainType, NetworkName[]>>;
+  customCode?: string | null; // Optional custom network code for custom network
 } & (
   | { type: 'seed'; seed: string; isSupportMultiBlockchain?: boolean }
   | { type: 'privateKey'; privateKey: string }

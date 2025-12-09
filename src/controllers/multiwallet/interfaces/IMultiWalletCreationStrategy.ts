@@ -19,9 +19,13 @@ export interface IMultiWalletCreationStrategy {
   /**
    * Create Waves addresses for specified networks
    * @param networks - Array of NetworkName values for Waves blockchain
+   * @param customCode - Optional custom network code for custom network
    * @returns Promise resolving to Waves network data structure
    */
-  createWavesAddresses(networks: NetworkName[]): Promise<WavesNetworkData>;
+  createWavesAddresses(
+    networks: NetworkName[],
+    customCode?: string,
+  ): Promise<WavesNetworkData>;
 
   /**
    * Create Unit0 addresses for specified networks

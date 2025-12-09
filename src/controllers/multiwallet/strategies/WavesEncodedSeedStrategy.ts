@@ -42,6 +42,7 @@ export class WavesEncodedSeedStrategy implements IMultiWalletCreationStrategy {
    */
   async createWavesAddresses(
     networks: NetworkName[],
+    customCode?: string,
   ): Promise<WavesNetworkData> {
     // Decode the encoded seed (base58 -> bytes)
     const decodedSeed = this.#decodeSeed(this.encodedSeed);
@@ -50,12 +51,12 @@ export class WavesEncodedSeedStrategy implements IMultiWalletCreationStrategy {
     const publicKeyBase58 = base58Encode(publicKey);
 
     // Always generate mainnet and testnet addresses
-    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet);
+    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet)!;
     const mainnetAddress = base58Encode(
       createAddress(publicKey, mainnetCode.charCodeAt(0)),
     );
 
-    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet);
+    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet)!;
     const testnetAddress = base58Encode(
       createAddress(publicKey, testnetCode.charCodeAt(0)),
     );
@@ -70,7 +71,9 @@ export class WavesEncodedSeedStrategy implements IMultiWalletCreationStrategy {
 
     // Add optional networks if requested
     for (const network of networks) {
-      const networkCode = this.#getWavesNetworkCode(network);
+      const networkCode = this.#getWavesNetworkCode(network, customCode);
+      if (!networkCode) continue; // Skip if network code is not available
+      
       const address = base58Encode(
         createAddress(publicKey, networkCode.charCodeAt(0)),
       );
@@ -119,6 +122,8 @@ export class WavesEncodedSeedStrategy implements IMultiWalletCreationStrategy {
         ].includes(network)
       ) {
         const networkCode = this.#getWavesNetworkCode(network);
+        if (!networkCode) continue; // Skip if network code is not available
+
         const walletInstance = await EncodedSeedWallet.create({
           encodedSeed: this.encodedSeed,
           name: `${network}-wallet`,
@@ -245,7 +250,7 @@ export class WavesEncodedSeedStrategy implements IMultiWalletCreationStrategy {
   /**
    * Get Waves network code from NetworkName
    */
-  #getWavesNetworkCode(network: NetworkName): string {
+  #getWavesNetworkCode(network: NetworkName, customCode?: string): string | undefined {
     switch (network) {
       case NetworkName.Mainnet:
         return NETWORK_CODES.waves.mainnet;
@@ -254,7 +259,7 @@ export class WavesEncodedSeedStrategy implements IMultiWalletCreationStrategy {
       case NetworkName.Stagenet:
         return NETWORK_CODES.waves.stagenet;
       case NetworkName.Custom:
-        return NETWORK_CODES.waves.mainnet;
+        return customCode;
       default:
         return NETWORK_CODES.waves.mainnet;
     }
