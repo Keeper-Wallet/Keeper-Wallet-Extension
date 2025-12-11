@@ -83,6 +83,7 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
    */
   async createWalletInstances(
     networks: NetworkName[],
+    customCode?: string,
   ): Promise<{ [key: string]: PrivateKeyWallet }> {
     const walletInstances: { [key: string]: PrivateKeyWallet } = {};
 
@@ -96,9 +97,9 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
           NetworkName.Custom,
         ].includes(network)
       ) {
-        const networkCode = this.#getWavesNetworkCode(network);
+        const networkCode = this.#getWavesNetworkCode(network, customCode);
         if (!networkCode) continue; // Skip if network code is not available
-        
+
         const walletInstance = await PrivateKeyWallet.create({
           name: `${network}-wallet`,
           network,

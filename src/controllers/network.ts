@@ -113,6 +113,10 @@ export class NetworkController {
     this.store.updateState({ customCodes });
   }
 
+
+
+
+
   getCustomCodes() {
     return this.store.getState().customCodes;
   }

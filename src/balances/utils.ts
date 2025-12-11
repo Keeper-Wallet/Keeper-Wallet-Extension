@@ -14,7 +14,12 @@ export function getBalanceKey(
     return `unit0_${network}_${address}`;
   }
 
-  // Waves and other blockchain types keep legacy behavior: key is just address
+  // Waves: include network in key to separate balances per network
+  if (blockchainType === BLOCKCHAIN_TYPES.WAVES && network) {
+    return `waves_${network}_${address}`;
+  }
+
+  // Fallback for legacy data: key is just address
   return address;
 }
 
@@ -32,8 +37,9 @@ export function collectBalances(
 
         const [, suffix] = match;
 
-        // suffix can be either a plain address (legacy) or a composite key
-        // produced by getBalanceKey (e.g. "unit0_mainnet_0x...")
+        // suffix can be either:
+        // - plain address (legacy)
+        // - composite key: "unit0_mainnet_0x..." or "waves_mainnet_3P..."
         return [suffix, value as BalancesItem] as const;
       })
       .filter((entry): entry is NonNullable<typeof entry> => entry != null),

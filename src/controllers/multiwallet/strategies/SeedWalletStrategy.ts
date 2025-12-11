@@ -118,6 +118,7 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
    */
   async createWalletInstances(
     networks: NetworkName[],
+    customCode?: string,
   ): Promise<{ [key: string]: SeedWallet }> {
     const walletInstances: { [key: string]: SeedWallet } = {};
 
@@ -131,9 +132,9 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
           NetworkName.Custom,
         ].includes(network)
       ) {
-        const networkCode = this.#getWavesNetworkCode(network);
+        const networkCode = this.#getWavesNetworkCode(network, customCode);
         if (!networkCode) continue; // Skip if network code is not available
-        
+
         const walletInstance = await SeedWallet.create({
           name: `${network}-wallet`,
           network,
@@ -165,7 +166,7 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
     // Create address data
     const wavesData = await this.createWavesAddresses(
       wavesNetworks,
-      input.customCode,
+      input.customCode ?? undefined,
     );
     const unit0Data = input.blockchains?.includes('unit0')
       ? await this.createUnit0Addresses(unit0Networks)

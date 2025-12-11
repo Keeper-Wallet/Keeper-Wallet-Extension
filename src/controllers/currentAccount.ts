@@ -56,11 +56,17 @@ export class CurrentAccountController {
     this.isLocked = isLocked;
     this.getBlockchainType = getBlockchainType;
 
+    const currentNetwork = this.getNetwork();
+    const currentBlockchainType = this.getBlockchainType();
     const defaults: Partial<Record<string, BalancesItem>> = Object.fromEntries(
-      this.getAddressesForCurrentNetworkAndBlockchain().map(address => [
-        `balance_${address}`,
-        undefined,
-      ]),
+      this.getAddressesForCurrentNetworkAndBlockchain().map(address => {
+        const balanceKeySuffix = getBalanceKey(
+          currentBlockchainType,
+          currentNetwork,
+          address,
+        );
+        return [`balance_${balanceKeySuffix}`, undefined];
+      }),
     );
 
     const initState = extensionStorage.getInitState(defaults);
@@ -295,12 +301,20 @@ export class CurrentAccountController {
 
         const balances = Object.fromEntries(
           regularBalances.map(regularBalance => {
-            const balanceKey = `balance_${regularBalance.id}`;
-            const existingBalance = storeState[balanceKey];
+            // Use proper balance key with network prefix
+            const balanceKeySuffix = getBalanceKey(
+              currentBlockchainType,
+              currentNetwork,
+              regularBalance.id,
+            );
+            const balanceKey = `balance_${balanceKeySuffix}`;
+            const existingBalance =
+              (storeState[balanceKey] as BalancesItem | undefined) ?? {};
 
-            const balance = {
+            const balance: BalancesItem = {
               ...existingBalance,
               regular: regularBalance.balance,
+              network: currentNetwork as NetworkName,
             };
 
             return [balanceKey, balance];
@@ -329,6 +343,7 @@ export class CurrentAccountController {
       });
 
     const addresses: string[] = [];
+    const seenAddresses = new Set<string>();
 
     accounts.forEach(wallet => {
       if (!wallet.coins) {
@@ -337,38 +352,50 @@ export class CurrentAccountController {
 
       if (currentBlockchainType === 'waves' && wallet.coins.waves?.networks) {
         const wavesNetworks = wallet.coins.waves.networks;
+        let address: string | undefined;
 
         if (currentNetwork === 'mainnet' && wavesNetworks.mainnet?.address) {
-          addresses.push(wavesNetworks.mainnet.address);
+          address = wavesNetworks.mainnet.address;
         } else if (
           currentNetwork === 'testnet' &&
           wavesNetworks.testnet?.address
         ) {
-          addresses.push(wavesNetworks.testnet.address);
+          address = wavesNetworks.testnet.address;
         } else if (
           currentNetwork === 'stagenet' &&
           wavesNetworks.stagenet?.address
         ) {
-          addresses.push(wavesNetworks.stagenet.address);
+          address = wavesNetworks.stagenet.address;
         } else if (
           currentNetwork === 'custom' &&
           wavesNetworks.custom?.address
         ) {
-          addresses.push(wavesNetworks.custom.address);
+          address = wavesNetworks.custom.address;
+        }
+
+        if (address && !seenAddresses.has(address)) {
+          seenAddresses.add(address);
+          addresses.push(address);
         }
       } else if (
         currentBlockchainType === 'unit0' &&
         wallet.coins.unit0?.networks
       ) {
         const unit0Networks = wallet.coins.unit0.networks;
+        let address: string | undefined;
 
         if (currentNetwork === 'mainnet' && unit0Networks.mainnet?.address) {
-          addresses.push(unit0Networks.mainnet.address);
+          address = unit0Networks.mainnet.address;
         } else if (
           currentNetwork === 'testnet' &&
           unit0Networks.testnet?.address
         ) {
-          addresses.push(unit0Networks.testnet.address);
+          address = unit0Networks.testnet.address;
+        }
+
+        if (address && !seenAddresses.has(address)) {
+          seenAddresses.add(address);
+          addresses.push(address);
         }
       }
     });

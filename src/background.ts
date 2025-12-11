@@ -27,7 +27,7 @@ import {
 } from 'messages/types';
 import { makeCustomDataBytes, makeTxBytes } from 'messages/utils';
 import { nanoid } from 'nanoid';
-import { type NetworkName } from 'networks/types';
+import { NetworkName } from 'networks/types';
 import { PERMISSIONS } from 'permissions/constants';
 import { type PermissionObject } from 'permissions/types';
 import { type IdleOptions, type PreferencesAccount } from 'preferences/types';
@@ -672,11 +672,25 @@ class BackgroundService extends EventEmitter {
       setCurrentBlockchainType: async (blockchainType: string) =>
         this.networkController.setCurrentBlockchainType(blockchainType),
 
-      setCustomNode: async (url: string | null, network: NetworkName) =>
-        this.networkController.setCustomNode(url, network),
+      setCustomNode: async (url: string | null, network: NetworkName) => {
+        await this.networkController.setCustomNode(url, network);
+
+        // If this is custom network and url is not null, update all accounts
+        if (network === NetworkName.Custom && url) {
+          await this.updateAccountsWithCustomNetwork();
+        }
+      },
       setCustomCode: async (code: string | null, network: NetworkName) => {
+        const oldCode = this.networkController.getCustomCodes()[network];
+        
         await this.walletController.updateNetworkCode(network, code);
         this.networkController.setCustomCode(code, network);
+        
+        // If custom network code changed, regenerate addresses
+        if (network === NetworkName.Custom && code && code !== oldCode) {
+          await this.regenerateCustomNetworkAddresses(code);
+        }
+        
         this.currentAccountController.restartPolling();
       },
       setCustomMatcher: async (url: string | null, network: NetworkName) =>
@@ -1299,7 +1313,10 @@ class BackgroundService extends EventEmitter {
           this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED)
         ) {
           const initialState = await this.getPublicState(origin, connectionId);
-          port?.postMessage({ event: 'updatePublicState', publicState: initialState });
+          port?.postMessage({
+            event: 'updatePublicState',
+            publicState: initialState,
+          });
         }
 
         // Subscribe to future updates
@@ -1425,6 +1442,58 @@ class BackgroundService extends EventEmitter {
       }),
       publish,
     );
+  }
+
+  /**
+   * Update all existing accounts with custom network addresses
+   * Called when user configures a custom node
+   */
+  async updateAccountsWithCustomNetwork() {
+    // Check if vault is locked
+    const { locked } = this.extensionStorage.getState(['locked']);
+    if (locked) {
+      return;
+    }
+
+    const { customCodes } = this.networkController.store.getState();
+    const networkCode = customCodes?.custom;
+
+    // Update wallets in MultiWalletController's internal array
+    const updated =
+      networkCode &&
+      (await this.multiWalletController.updateWalletsWithCustomNetwork(
+        networkCode,
+      ));
+
+    if (updated) {
+      // Emit event to sync accounts to preferences (with sanitized data)
+      const sanitizedAccounts = this.multiWalletController.getMultiWallets();
+      this.multiWalletController.emit('saveAccounts', sanitizedAccounts);
+    }
+  }
+
+  /**
+   * Regenerate custom network addresses when network code changes
+   * Called when user changes the custom network code in settings
+   */
+  async regenerateCustomNetworkAddresses(newNetworkCode: string) {
+    // Check if vault is locked
+    const { locked } = this.extensionStorage.getState(['locked']);
+    if (locked) {
+      return;
+    }
+
+    // Regenerate addresses in MultiWalletController's internal array
+    const updated =
+      await this.multiWalletController.regenerateCustomNetworkAddresses(
+        newNetworkCode,
+      );
+
+    if (updated) {
+      // Emit event to sync accounts to preferences (with sanitized data)
+      const sanitizedAccounts = this.multiWalletController.getMultiWallets();
+      this.multiWalletController.emit('saveAccounts', sanitizedAccounts);
+    }
   }
 
   ledgerSign(type: string, data: unknown) {

@@ -108,6 +108,7 @@ export class WavesEncodedSeedStrategy implements IMultiWalletCreationStrategy {
    */
   async createWalletInstances(
     networks: NetworkName[],
+    customCode?: string,
   ): Promise<{ [key: string]: EncodedSeedWallet }> {
     const walletInstances: { [key: string]: EncodedSeedWallet } = {};
 
@@ -121,7 +122,7 @@ export class WavesEncodedSeedStrategy implements IMultiWalletCreationStrategy {
           NetworkName.Custom,
         ].includes(network)
       ) {
-        const networkCode = this.#getWavesNetworkCode(network);
+        const networkCode = this.#getWavesNetworkCode(network, customCode);
         if (!networkCode) continue; // Skip if network code is not available
 
         const walletInstance = await EncodedSeedWallet.create({

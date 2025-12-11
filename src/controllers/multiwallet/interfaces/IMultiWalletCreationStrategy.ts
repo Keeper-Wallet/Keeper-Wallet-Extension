@@ -1,4 +1,5 @@
 import { type NetworkName } from '../../../networks/types';
+import type { WalletInstance } from '../../../services/types';
 import {
   type CreateMultiWalletInput,
   type Unit0NetworkData,
@@ -78,4 +79,15 @@ export interface IMultiWalletCreationStrategy {
    * @returns True if this strategy supports the blockchain
    */
   supportsBlockchain(blockchainType: string): boolean;
+
+  /**
+   * Create wallet instances for signing operations
+   * @param networks - Array of NetworkName values
+   * @param args - Additional arguments (customCode, identityApi, etc.)
+   * @returns Promise resolving to wallet instances map
+   */
+  createWalletInstances(
+    networks: NetworkName[],
+    ...args: unknown[]
+  ): Promise<{ [key: string]: WalletInstance }>;
 }

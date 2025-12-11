@@ -1,7 +1,9 @@
 import {
+  base58Decode,
   base58Encode,
   base64Decode,
   base64Encode,
+  createAddress,
   createPrivateKey,
   decryptSeed,
   encryptSeed,
@@ -25,14 +27,6 @@ import type { PreferencesController } from './preferences';
 import type { IdentityApi } from './IdentityController';
 import type { AssetInfoController } from './assetInfo';
 import type { LedgerApi } from '../wallets/ledger';
-
-// Type for strategy that can create wallet instances
-type WalletInstanceCreator = {
-  createWalletInstances(
-    networks: NetworkName[],
-    ...args: any[]
-  ): Promise<{ [key: string]: WalletInstance }>;
-};
 
 export interface MultiWalletAccount {
   network: NetworkName;
@@ -206,6 +200,59 @@ export class MultiWalletController extends EventEmitter {
     });
   }
 
+  /**
+   * Update wallets with custom network addresses
+   * Updates the internal #multiwallets array and saves to vault
+   */
+  async updateWalletsWithCustomNetwork(networkCode: string): Promise<boolean> {
+    let hasUpdates = false;
+
+    // Update #multiwallets directly to preserve sensitive data
+    for (const wallet of this.#multiwallets) {
+      // Skip if custom address already exists
+      if (wallet.coins?.waves?.networks?.custom) {
+        continue;
+      }
+
+      // Skip if no Waves coin data or public key
+      if (!wallet.coins?.waves?.publicKey) {
+        continue;
+      }
+
+      try {
+        // Use the public key to generate custom address
+        const publicKey = base58Decode(wallet.coins.waves.publicKey);
+        const customAddress = base58Encode(
+          createAddress(publicKey, networkCode.charCodeAt(0)),
+        );
+
+        // Update the wallet in place
+        if (!wallet.coins.waves.networks) {
+          wallet.coins.waves.networks = {} as any;
+        }
+
+        wallet.coins.waves.networks.custom = {
+          address: customAddress,
+          networkCode,
+        };
+
+        hasUpdates = true;
+      } catch (error) {
+        console.error(
+          `Failed to generate custom address for ${wallet.name}:`,
+          error,
+        );
+      }
+    }
+
+    // Save to vault if there were updates
+    if (hasUpdates) {
+      await this.#saveMultiWallets();
+    }
+
+    return hasUpdates;
+  }
+
   async getWalletForSigning(
     address: string,
     network: NetworkName,
@@ -268,6 +315,9 @@ export class MultiWalletController extends EventEmitter {
         return null;
       }
 
+      // Get custom network code from wallet data if available
+      const customCode = multiWallet.coins.waves?.networks?.custom?.networkCode;
+
       // For WX wallets, pass identityApi
       if (
         multiWallet.type === 'wx' &&
@@ -296,6 +346,15 @@ export class MultiWalletController extends EventEmitter {
         );
       }
 
+      // For seed-based wallets (seed, privateKey, encodedSeed), pass customCode
+      if (
+        strategy instanceof SeedWalletStrategy ||
+        strategy instanceof WavesPrivateKeyStrategy ||
+        strategy instanceof WavesEncodedSeedStrategy
+      ) {
+        return await strategy.createWalletInstances(networks, customCode);
+      }
+
       return await strategy.createWalletInstances(networks);
     } catch (error) {
       return null;
@@ -307,7 +366,7 @@ export class MultiWalletController extends EventEmitter {
    */
   #createStrategyFromMultiWallet(
     multiWallet: MultiWallet,
-  ): WalletInstanceCreator | null {
+  ): (SeedWalletStrategy | WavesPrivateKeyStrategy | WavesEncodedSeedStrategy | WavesWxWalletStrategy | WavesLedgerWalletStrategy | DebugMultiWalletStrategy) | null {
     try {
       switch (multiWallet.type) {
         case 'seed': {
@@ -741,10 +800,8 @@ export class MultiWalletController extends EventEmitter {
   }
 
   async removeWallet(id: string) {
-    const multiWallets = this.getAccounts() as unknown as MultiWallet[];
-
-    // Find wallets where the address matches any network address
-    this.#multiwallets = multiWallets.filter(wallet => {
+    // Filter directly from #multiwallets to preserve sensitive data
+    this.#multiwallets = this.#multiwallets.filter(wallet => {
       const wavesNetworks = wallet.coins.waves?.networks;
       const unit0Networks = wallet.coins.unit0?.networks;
 
@@ -764,7 +821,66 @@ export class MultiWalletController extends EventEmitter {
       // Keep wallets that DON'T match the address (filter out matching ones)
       return !hasMatchingAddress;
     });
-    this.updateVault(this.#multiwallets);
-    this.emit('saveAccounts', this.#multiwallets);
+    
+    await this.#saveMultiWallets();
+    this.emit('saveAccounts', this.getMultiWallets());
+  }
+
+  /**
+   * Regenerate custom network addresses for all wallets when network code changes
+   * This is called from NetworkController when custom network code is updated
+   */
+  async regenerateCustomNetworkAddresses(newNetworkCode: string) {
+    if (!this.#password) {
+      throw new Error('Wallet is locked. Cannot regenerate addresses.');
+    }
+
+    let hasUpdates = false;
+
+    // Update #multiwallets directly (same approach as updateWalletsWithCustomNetwork)
+    for (const wallet of this.#multiwallets) {
+      // Skip if wallet doesn't have Waves custom network
+      if (!wallet.coins?.waves?.networks?.custom) {
+        continue;
+      }
+
+      // Skip if no Waves public key
+      if (!wallet.coins?.waves?.publicKey) {
+        continue;
+      }
+
+      try {
+        // Use the public key to generate custom address (same as updateWalletsWithCustomNetwork)
+        const publicKey = base58Decode(wallet.coins.waves.publicKey);
+        const customAddress = base58Encode(
+          createAddress(publicKey, newNetworkCode.charCodeAt(0)),
+        );
+
+        // Update the wallet in place
+        wallet.coins.waves.networks.custom = {
+          address: customAddress,
+          networkCode: newNetworkCode,
+        };
+
+        // Remove old custom wallet instance - it will be recreated on demand
+        if (wallet.walletInstances?.[NetworkName.Custom]) {
+          delete wallet.walletInstances[NetworkName.Custom];
+        }
+
+        hasUpdates = true;
+      } catch (error) {
+        console.error(
+          `Failed to regenerate custom address for ${wallet.name}:`,
+          error,
+        );
+      }
+    }
+
+    // Save to vault if there were updates (same pattern as updateWalletsWithCustomNetwork)
+    if (hasUpdates) {
+      await this.#saveMultiWallets();
+    }
+
+    return hasUpdates;
   }
 }
