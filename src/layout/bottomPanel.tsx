@@ -231,7 +231,20 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                             : () => {
                                 setIsDropdownShown(false);
                                 if (option.network === NETWORK_TYPES.CUSTOM) {
-                                  setIsCustomNetworkModalShown(true);
+                                  // Only show modal if custom network is not configured yet
+                                  const hasCustomNode =
+                                    customNodes[NetworkName.Custom];
+                                  if (hasCustomNode) {
+                                    // Custom network already configured, just switch to it
+                                    // Custom network is always Waves blockchain
+                                    setNewNetwork(
+                                      NetworkName.Custom,
+                                      BLOCKCHAIN_TYPES.WAVES,
+                                    );
+                                  } else {
+                                    // Show modal to configure custom network
+                                    setIsCustomNetworkModalShown(true);
+                                  }
                                 } else {
                                   // Update network using both network and blockchain properties
                                   setNewNetwork(
