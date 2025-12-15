@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import type { IdentityUser } from 'controllers/IdentityController';
+import { NetworkName } from 'networks/types';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -33,7 +34,7 @@ export function ImportEmail() {
   );
 
   const handleConfirm = useCallback(
-    (userData: IdentityUser & { name: string }) => {
+    (userData: IdentityUser & { name: string; network: NetworkName }) => {
       dispatch(
         newAccountSelect({
           type: 'wx',
@@ -43,6 +44,7 @@ export function ImportEmail() {
           uuid: userData.uuid,
           username: userData.username,
           hasBackup: true,
+          wxNetwork: userData.network,
         }),
       );
 

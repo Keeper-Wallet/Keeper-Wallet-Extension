@@ -851,8 +851,8 @@ class BackgroundService extends EventEmitter {
         message: string,
       ) => this.remoteConfigController.shouldIgnoreError(context, message),
 
-      identitySignIn: async (username: string, password: string) =>
-        this.identityController.signIn(username, password),
+      identitySignIn: async (username: string, password: string, network?: NetworkName) =>
+        this.identityController.signIn(username, password, network),
       identityConfirmSignIn: async (code: string) =>
         this.identityController.confirmSignIn(code),
       identityUser: async () => this.identityController.getIdentityUser(),

@@ -525,11 +525,11 @@ class Background {
     return this.background!.identityClear();
   }
 
-  async identitySignIn(username: string, password: string) {
+  async identitySignIn(username: string, password: string, network?: NetworkName) {
     await this.initPromise;
     this._connect();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.background!.identitySignIn(username, password);
+    return this.background!.identitySignIn(username, password, network);
   }
 
   async identityConfirmSignIn(code: string) {

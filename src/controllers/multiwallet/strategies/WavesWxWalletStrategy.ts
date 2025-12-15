@@ -10,6 +10,7 @@ import { NetworkName } from '../../../networks/types';
 import { NETWORK_CODES } from '../../../services/types';
 import { WxWallet } from '../../../wallets/wx';
 import type { IdentityApi } from '../../../controllers/IdentityController';
+import { base58Decode, base58Encode, createAddress } from '@keeper-wallet/waves-crypto';
 
 /**
  * Wx (Waves Exchange) MultiWallet Creation Strategy
@@ -24,38 +25,41 @@ export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
 
   /**
    * Create Waves addresses for specified networks
-   * Uses provided public key and address from Wx account
+   * Uses provided public key to generate network-specific addresses
    */
   async createWavesAddresses(
     networks: NetworkName[],
     customCode?: string,
   ): Promise<WavesNetworkData> {
-    // Always generate mainnet and testnet addresses
-    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet);
-    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet);
+    // Decode the public key once
+    const publicKeyBytes = base58Decode(this.publicKey);
 
     const networkData: WavesNetworkData = {
       publicKey: this.publicKey,
-      networks: {
-        mainnet: { address: this.address, networkCode: mainnetCode },
-        testnet: { address: this.address, networkCode: testnetCode },
-      },
+      networks: {},
     };
 
-    // Add optional networks if requested
+    // Only create addresses for the requested networks
     for (const network of networks) {
       const networkCode = this.#getWavesNetworkCode(network, customCode);
       if (!networkCode) continue; // Skip if network code is not available
 
+      const address = base58Encode(
+        createAddress(publicKeyBytes, networkCode.charCodeAt(0)),
+      );
+
       switch (network) {
+        case NetworkName.Mainnet:
+          networkData.networks.mainnet = { address, networkCode };
+          break;
+        case NetworkName.Testnet:
+          networkData.networks.testnet = { address, networkCode };
+          break;
         case NetworkName.Stagenet:
-          networkData.networks.stagenet = {
-            address: this.address,
-            networkCode,
-          };
+          networkData.networks.stagenet = { address, networkCode };
           break;
         case NetworkName.Custom:
-          networkData.networks.custom = { address: this.address, networkCode };
+          networkData.networks.custom = { address, networkCode };
           break;
       }
     }

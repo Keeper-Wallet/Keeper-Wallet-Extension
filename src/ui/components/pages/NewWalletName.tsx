@@ -40,6 +40,7 @@ export function NewWalletName() {
   const isPrivateKey = account.type === 'privateKey';
   const isEncodedSeed = account.type === 'encodedSeed';
   const isLedger = account.type === 'ledger';
+  const isWx = account.type === 'wx';
   const isWavesOnlyCreation = account.type === 'seed' && !isMultichainFromState;
   const isMultichainCreation =
     account.type === 'multichain' || isMultichainFromState;
@@ -175,9 +176,42 @@ export function NewWalletName() {
               setPending(false);
               return;
             }
+          } else if (isWx) {
+            try {
+              if (!('uuid' in account) || !('username' in account) || !('publicKey' in account)) {
+                throw new Error('Missing required WX account data (uuid, username, or publicKey)');
+              }
+
+              // WX accounts are network-specific, only create for the selected network
+              const wxNetwork = 'wxNetwork' in account ? account.wxNetwork : NetworkName.Mainnet;
+
+              await dispatch(
+                createWavesOnlyMultiWallet({
+                  name: accountName,
+                  type: 'wx',
+                  uuid: account.uuid,
+                  username: account.username,
+                  address: account.address,
+                  publicKey: account.publicKey,
+                  wxNetwork,
+                }),
+              );
+            } catch (error) {
+              console.error('Failed to create WX wallet:', error);
+              setError(t('newAccountName.errorFailedToCreate'));
+              setPending(false);
+              return;
+            }
           }
 
-          navigate('/import-success');
+          // Pass wxNetwork info to import-success screen if it's a testnet WX account
+          const wxNetworkForSuccess = isWx && 'wxNetwork' in account ? account.wxNetwork : undefined;
+          navigate('/import-success', { 
+            state: { 
+              wxNetwork: wxNetworkForSuccess,
+              accountName: accountName
+            } 
+          });
         }}
       >
         <div className="margin1">

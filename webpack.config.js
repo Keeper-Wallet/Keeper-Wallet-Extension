@@ -143,7 +143,7 @@ async function makeConfig({
       dev && hmr && new webpack.HotModuleReplacementPlugin(),
       dev &&
         hmr &&
-        new TinyBrowserHmrWebpackPlugin({ hostname: 'localhost', port: 8001 }),
+        new TinyBrowserHmrWebpackPlugin({ hostname: 'localhost', port: 8002 }),
       dev &&
         hmr &&
         reactRefresh &&

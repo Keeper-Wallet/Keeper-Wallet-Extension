@@ -158,6 +158,7 @@ export function createWavesOnlyMultiWallet({
   uuid,
   username,
   type,
+  wxNetwork,
 }: {
   name: string;
   seed?: string;
@@ -169,6 +170,7 @@ export function createWavesOnlyMultiWallet({
   uuid?: string;
   username?: string;
   type: string;
+  wxNetwork?: NetworkName;
 }): AccountsThunkAction<Promise<void>> {
   return async (dispatch, getState) => {
     // Create Waves-only wallet using our factory
@@ -176,14 +178,18 @@ export function createWavesOnlyMultiWallet({
 
     // Check if custom network is configured
     const { customNodes, customCodes } = getState();
-    const networks: NetworkName[] = [
-      NetworkName.Mainnet,
-      NetworkName.Testnet,
-      NetworkName.Stagenet,
-    ];
+    
+    // For WX accounts, only create the selected network
+    const networks: NetworkName[] = type === 'wx' && wxNetwork
+      ? [wxNetwork]
+      : [
+          NetworkName.Mainnet,
+          NetworkName.Testnet,
+          NetworkName.Stagenet,
+        ];
 
-    // Add custom network only if BOTH node and code are configured
-    if (customNodes?.custom && customCodes?.custom) {
+    // Add custom network only if BOTH node and code are configured (and not WX)
+    if (type !== 'wx' && customNodes?.custom && customCodes?.custom) {
       networks.push(NetworkName.Custom);
     }
 
@@ -234,6 +240,21 @@ export function createWavesOnlyMultiWallet({
         customCode,
       };
       result = await factory.createWallet(input);
+    } else if (type === 'wx' && uuid && username && address && publicKey) {
+      const input = {
+        name,
+        type: 'wx' as const,
+        uuid,
+        username,
+        address,
+        publicKey,
+        blockchains: ['waves'] as Array<'waves'>,
+        networks: {
+          waves: networks,
+        },
+        customCode,
+      };
+      result = await factory.createWallet(input);
     } else {
       const input = {
         name,
@@ -247,7 +268,7 @@ export function createWavesOnlyMultiWallet({
           : type === 'ledger'
           ? { ledgerId: ledgerId || 0, address: address || '' }
           : type === 'wx'
-          ? { uuid: uuid, username: username, address: address || '' }
+          ? { uuid: uuid, username: username, address: address || '', publicKey: publicKey || '' }
           : { seed: seed || '' }),
         blockchains: ['waves'] as Array<'waves'>,
         networks: {
@@ -317,7 +338,12 @@ export function createWavesOnlyMultiWallet({
       };
     }
 
-    dispatch(selectAccount(selectedAccount as PreferencesAccount));
+    // Don't auto-select testnet WX accounts when global network is mainnet
+    // User needs to manually switch to testnet network first
+    const isTestnetWxAccount = wallet.type === 'wx' && wxNetwork === NetworkName.Testnet;
+    if (!isTestnetWxAccount) {
+      dispatch(selectAccount(selectedAccount as PreferencesAccount));
+    }
   };
 }
 

@@ -1,7 +1,7 @@
 import { useAccountsSelector } from 'accounts/store/react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import background from 'ui/services/Background';
 
 import { Button } from '../ui';
@@ -43,22 +43,38 @@ export function ImportSuccess({
   isKeystoreImport?: boolean;
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const account = useAccountsSelector(state => state.selectedAccount);
 
+  // Check if this is a testnet WX account
+  const wxNetwork = location.state?.wxNetwork;
+  const accountName = location.state?.accountName || account?.name;
+  const isTestnetWx = wxNetwork === 'testnet';
+
+  console.log(wxNetwork, '###');
   return (
     <div data-testid="importSuccessForm" className={styles.content}>
-      <div className={clsx(styles.successIcon, 'tx-approve-icon')} />
+      <div
+        className={clsx(
+          styles.successIcon,
+          isTestnetWx ? 'tx-info-icon' : 'tx-approve-icon',
+        )}
+      />
 
       <p className={clsx(styles.title, 'headline2')}>
-        {t(
-          isKeystoreImport ? 'import.readyToUseKeystore' : 'import.readyToUse',
-          { name: account?.name },
-        )}
+        {isTestnetWx
+          ? t('import.readyToUseTestnet', { name: accountName })
+          : t(
+              isKeystoreImport
+                ? 'import.readyToUseKeystore'
+                : 'import.readyToUse',
+              { name: accountName },
+            )}
       </p>
 
       <p className={clsx(styles.description, 'body1 basic500')}>
-        {t('import.readyHelpText')}
+        {isTestnetWx ? t('import.testnetHelpText') : t('import.readyHelpText')}
       </p>
 
       <div className={styles.footer}>

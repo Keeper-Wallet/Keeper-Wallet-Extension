@@ -237,7 +237,7 @@ export class WalletFactory implements IWalletFactory {
       try {
         const wavesData = await strategy.createWavesAddresses(
           input.networks.waves,
-          input.customCode,
+          input.customCode ?? undefined,
         );
         multiWallet.coins.waves = wavesData as typeof multiWallet.coins.waves;
       } catch (error) {
