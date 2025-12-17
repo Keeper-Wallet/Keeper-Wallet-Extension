@@ -366,7 +366,16 @@ export class MultiWalletController extends EventEmitter {
    */
   #createStrategyFromMultiWallet(
     multiWallet: MultiWallet,
-  ): (SeedWalletStrategy | WavesPrivateKeyStrategy | WavesEncodedSeedStrategy | WavesWxWalletStrategy | WavesLedgerWalletStrategy | DebugMultiWalletStrategy) | null {
+  ):
+    | (
+        | SeedWalletStrategy
+        | WavesPrivateKeyStrategy
+        | WavesEncodedSeedStrategy
+        | WavesWxWalletStrategy
+        | WavesLedgerWalletStrategy
+        | DebugMultiWalletStrategy
+      )
+    | null {
     try {
       switch (multiWallet.type) {
         case 'seed': {
@@ -619,7 +628,6 @@ export class MultiWalletController extends EventEmitter {
         } = wallet;
         return sanitizedWallet as MultiWallet;
       });
-
       this.emit('multiWalletsChanged', sanitizedWallets);
 
       // Clear the restoration promise on success
@@ -821,7 +829,7 @@ export class MultiWalletController extends EventEmitter {
       // Keep wallets that DON'T match the address (filter out matching ones)
       return !hasMatchingAddress;
     });
-    
+
     await this.#saveMultiWallets();
     this.emit('saveAccounts', this.getMultiWallets());
   }

@@ -498,15 +498,18 @@ export class PreferencesController extends EventEmitter {
 
     // Replace the problematic line with our selected account object
     const typedSelectedAccount = selectedAccount as PreferencesAccount;
-    
+
     // Ensure lastUsed is set in selectedAccount if it's from a MultiWallet
     if (typedSelectedAccount && typedSelectedAccount.walletId) {
-      const matchedWallet = accounts.find(acc => acc.coins && acc.id === typedSelectedAccount.walletId);
+      const matchedWallet = accounts.find(
+        acc => acc.coins && acc.id === typedSelectedAccount.walletId,
+      );
       if (matchedWallet) {
-        typedSelectedAccount.lastUsed = matchedWallet.lastUsed || matchedWallet.createdAt;
+        typedSelectedAccount.lastUsed =
+          matchedWallet.lastUsed || matchedWallet.createdAt;
       }
     }
-    
+
     this.store.updateState({
       accounts,
       selectedAccount: typedSelectedAccount, // This now contains either a legacy account or a reference to a MultiWallet account

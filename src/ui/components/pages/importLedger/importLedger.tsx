@@ -180,7 +180,6 @@ export function ImportLedger() {
     return () => {
       // Only disconnect when component actually unmounts
       isMountedRef.current = false;
-      console.log('🔌 Component unmounting, disconnecting Ledger...');
       ledgerService.disconnect();
     };
   }, []);

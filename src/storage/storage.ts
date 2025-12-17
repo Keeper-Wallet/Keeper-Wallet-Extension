@@ -23,7 +23,7 @@ import {
 import { MIGRATIONS } from './migrations';
 import { MultiWallet } from '../services/types';
 
-const CURRENT_MIGRATION_VERSION = 3;
+const CURRENT_MIGRATION_VERSION = 4;
 
 export async function backupStorage() {
   const { backup, WalletController } = await Browser.storage.local.get([

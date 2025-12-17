@@ -167,8 +167,20 @@ const flattenBalances: Migration = {
   },
 };
 
+// Migration 3: Vault migration from WalletController to MultiWalletController
+// Actual migration happens at unlock in VaultController based on migrationVersion
+const vaultMigration: Migration = {
+  migrate: async () => {
+    // Version bump only - actual vault migration happens at unlock
+  },
+  rollback: async () => {
+    // Version downgrade only - actual rollback happens at unlock
+  },
+};
+
 export const MIGRATIONS: Migration[] = [
   flatState,
   removeCurrentNetworkAccounts,
   flattenBalances,
+  vaultMigration,
 ];
