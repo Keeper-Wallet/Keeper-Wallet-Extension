@@ -81,7 +81,7 @@ export const currentNetwork = createSimpleReducer(
 
 export const currentBlockchainType = createSimpleReducer(
   BLOCKCHAIN_TYPES.WAVES, // Default value
-  ACTION.UPDATE_CURRENT_BLOCKCHAIN_TYPE
+  ACTION.UPDATE_CURRENT_BLOCKCHAIN_TYPE,
 );
 
 export const balances = createSimpleReducer({}, ACTION.UPDATE_BALANCES);

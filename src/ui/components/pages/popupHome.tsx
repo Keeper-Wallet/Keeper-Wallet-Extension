@@ -128,8 +128,7 @@ export function PopupHome() {
       activeAccount.address,
     );
 
-    const balanceItem =
-      balances[balanceKey] ?? balances[activeAccount.address];
+    const balanceItem = balances[balanceKey] ?? balances[activeAccount.address];
 
     const availableBalance =
       balanceItem?.network === currentNetwork

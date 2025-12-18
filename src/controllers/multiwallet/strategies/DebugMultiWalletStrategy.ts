@@ -1,10 +1,10 @@
 import { IMultiWalletCreationStrategy } from '../interfaces/IMultiWalletCreationStrategy';
-import { 
-  WavesNetworkData, 
-  Unit0NetworkData, 
-  WalletAuthData, 
+import {
+  WavesNetworkData,
+  Unit0NetworkData,
+  WalletAuthData,
   CreateMultiWalletInput,
-  ValidationResult 
+  ValidationResult,
 } from '../interfaces/types';
 import { NetworkName } from '../../../networks/types';
 import { NETWORK_CODES, type WalletItem } from '../../../services/types';
@@ -16,7 +16,7 @@ import { DebugWallet } from '../../../wallets/debug';
 export class DebugMultiWalletStrategy implements IMultiWalletCreationStrategy {
   constructor(
     private debugAddress: string,
-    private unit0DebugAddress?: string
+    private unit0DebugAddress?: string,
   ) {}
 
   /**
@@ -49,13 +49,19 @@ export class DebugMultiWalletStrategy implements IMultiWalletCreationStrategy {
     for (const network of networks) {
       const networkCode = this.#getWavesNetworkCode(network, customCode);
       if (!networkCode) continue; // Skip if network code is not available
-      
+
       switch (network) {
         case NetworkName.Stagenet:
-          networkData.networks.stagenet = { address: this.debugAddress, networkCode };
+          networkData.networks.stagenet = {
+            address: this.debugAddress,
+            networkCode,
+          };
           break;
         case NetworkName.Custom:
-          networkData.networks.custom = { address: this.debugAddress, networkCode };
+          networkData.networks.custom = {
+            address: this.debugAddress,
+            networkCode,
+          };
           break;
       }
     }
@@ -67,7 +73,9 @@ export class DebugMultiWalletStrategy implements IMultiWalletCreationStrategy {
    * Create Unit0 addresses for specified networks
    * Uses debug address for all networks
    */
-  async createUnit0Addresses(networks: NetworkName[]): Promise<Unit0NetworkData> {
+  async createUnit0Addresses(
+    networks: NetworkName[],
+  ): Promise<Unit0NetworkData> {
     if (!this.unit0DebugAddress) {
       throw new Error('Unit0 debug address is required for Unit0 support');
     }
@@ -104,17 +112,24 @@ export class DebugMultiWalletStrategy implements IMultiWalletCreationStrategy {
 
     // Create DebugWallet instances for each requested network
     for (const network of networks) {
-      if ([NetworkName.Mainnet, NetworkName.Testnet, NetworkName.Stagenet, NetworkName.Custom].includes(network)) {
+      if (
+        [
+          NetworkName.Mainnet,
+          NetworkName.Testnet,
+          NetworkName.Stagenet,
+          NetworkName.Custom,
+        ].includes(network)
+      ) {
         const networkCode = this.#getWavesNetworkCode(network);
         if (!networkCode) continue; // Skip if network code is not available
-        
+
         const walletInstance = new DebugWallet({
           address: this.debugAddress,
           name: `${network}-debug-wallet`,
           network,
           networkCode,
         });
-        
+
         walletInstances[network] = walletInstance;
       }
     }
@@ -159,7 +174,7 @@ export class DebugMultiWalletStrategy implements IMultiWalletCreationStrategy {
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -167,7 +182,9 @@ export class DebugMultiWalletStrategy implements IMultiWalletCreationStrategy {
    * Simple boolean check for strategy selection
    */
   canHandle(input: CreateMultiWalletInput): boolean {
-    return input.type === 'debug' && 'address' in input && Boolean(input.address);
+    return (
+      input.type === 'debug' && 'address' in input && Boolean(input.address)
+    );
   }
 
   /**
@@ -196,7 +213,10 @@ export class DebugMultiWalletStrategy implements IMultiWalletCreationStrategy {
   /**
    * Get Waves network code from NetworkName
    */
-  #getWavesNetworkCode(network: NetworkName, customCode?: string): string | undefined {
+  #getWavesNetworkCode(
+    network: NetworkName,
+    customCode?: string,
+  ): string | undefined {
     switch (network) {
       case NetworkName.Mainnet:
         return NETWORK_CODES.waves.mainnet;

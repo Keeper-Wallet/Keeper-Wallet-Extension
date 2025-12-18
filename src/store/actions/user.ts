@@ -178,15 +178,12 @@ export function createWavesOnlyMultiWallet({
 
     // Check if custom network is configured
     const { customNodes, customCodes } = getState();
-    
+
     // For WX accounts, only create the selected network
-    const networks: NetworkName[] = type === 'wx' && wxNetwork
-      ? [wxNetwork]
-      : [
-          NetworkName.Mainnet,
-          NetworkName.Testnet,
-          NetworkName.Stagenet,
-        ];
+    const networks: NetworkName[] =
+      type === 'wx' && wxNetwork
+        ? [wxNetwork]
+        : [NetworkName.Mainnet, NetworkName.Testnet, NetworkName.Stagenet];
 
     // Add custom network only if BOTH node and code are configured (and not WX)
     if (type !== 'wx' && customNodes?.custom && customCodes?.custom) {
@@ -268,7 +265,12 @@ export function createWavesOnlyMultiWallet({
           : type === 'ledger'
           ? { ledgerId: ledgerId || 0, address: address || '' }
           : type === 'wx'
-          ? { uuid: uuid, username: username, address: address || '', publicKey: publicKey || '' }
+          ? {
+              uuid: uuid,
+              username: username,
+              address: address || '',
+              publicKey: publicKey || '',
+            }
           : { seed: seed || '' }),
         blockchains: ['waves'] as Array<'waves'>,
         networks: {
@@ -340,7 +342,8 @@ export function createWavesOnlyMultiWallet({
 
     // Don't auto-select testnet WX accounts when global network is mainnet
     // User needs to manually switch to testnet network first
-    const isTestnetWxAccount = wallet.type === 'wx' && wxNetwork === NetworkName.Testnet;
+    const isTestnetWxAccount =
+      wallet.type === 'wx' && wxNetwork === NetworkName.Testnet;
     if (!isTestnetWxAccount) {
       dispatch(selectAccount(selectedAccount as PreferencesAccount));
     }

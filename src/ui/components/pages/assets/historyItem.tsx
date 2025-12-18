@@ -100,14 +100,17 @@ export function HistoryItem({ tx, className }: Props) {
       if (unit0Tx.payload && 'tokenName' in unit0Tx.payload) {
         // Unit0 token minting transaction
         const transferPayload = unit0Tx.payload as Unit0TransferPayload;
-        const tokenDecimals = transferPayload.tokenDecimals ? parseInt(transferPayload.tokenDecimals, 10) : 0;
-        const isNFT = transferPayload.tokenType === 'ERC-721' || 
-                      transferPayload.tokenType === 'ERC-1155' ||
-                      (tokenDecimals === 0 && transferPayload.amount === '1');
-        
+        const tokenDecimals = transferPayload.tokenDecimals
+          ? parseInt(transferPayload.tokenDecimals, 10)
+          : 0;
+        const isNFT =
+          transferPayload.tokenType === 'ERC-721' ||
+          transferPayload.tokenType === 'ERC-1155' ||
+          (tokenDecimals === 0 && transferPayload.amount === '1');
+
         tooltip = t('historyCard.issue');
         label = isNFT ? t('historyCard.issueNFT') : t('historyCard.issueToken');
-        
+
         info = (
           <Balance
             split
@@ -131,7 +134,11 @@ export function HistoryItem({ tx, className }: Props) {
           ? t('historyCard.issueToken')
           : t('historyCard.issueSmartToken');
         info = (
-          <Balance split showAsset balance={fromCoins(tx.quantity, tx.assetId)} />
+          <Balance
+            split
+            showAsset
+            balance={fromCoins(tx.quantity, tx.assetId)}
+          />
         );
         messageType = 'issue';
       }

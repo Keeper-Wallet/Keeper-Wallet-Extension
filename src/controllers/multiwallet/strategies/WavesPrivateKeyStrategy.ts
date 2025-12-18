@@ -5,12 +5,12 @@ import {
   base58Decode,
 } from '@keeper-wallet/waves-crypto';
 import { IMultiWalletCreationStrategy } from '../interfaces/IMultiWalletCreationStrategy';
-import { 
-  WavesNetworkData, 
-  Unit0NetworkData, 
-  WalletAuthData, 
+import {
+  WavesNetworkData,
+  Unit0NetworkData,
+  WalletAuthData,
   CreateMultiWalletInput,
-  ValidationResult 
+  ValidationResult,
 } from '../interfaces/types';
 import { NetworkName } from '../../../networks/types';
 import { NETWORK_CODES } from '../../../services/types';
@@ -52,7 +52,7 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
     for (const network of networks) {
       const networkCode = this.#getWavesNetworkCode(network, customCode);
       if (!networkCode) continue; // Skip if network code is not available
-      
+
       const address = base58Encode(
         createAddress(publicKey, networkCode.charCodeAt(0)),
       );
@@ -74,8 +74,12 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
    * Create Unit0 addresses for specified networks
    * Unit0 not supported for private key wallets
    */
-  async createUnit0Addresses(networks: NetworkName[]): Promise<Unit0NetworkData> {
-    throw new Error('Unit0 blockchain is not supported for private key wallets');
+  async createUnit0Addresses(
+    networks: NetworkName[],
+  ): Promise<Unit0NetworkData> {
+    throw new Error(
+      'Unit0 blockchain is not supported for private key wallets',
+    );
   }
 
   /**
@@ -136,15 +140,18 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
     } else {
       // Validate private key format
       const privateKey = input.privateKey.trim();
-      
+
       // Check for base58 format (Waves) or hex format (Ethereum)
-      const isBase58 = /^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]+$/.test(privateKey);
+      const isBase58 =
+        /^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]+$/.test(
+          privateKey,
+        );
       const isHex = /^(0x)?[0-9a-fA-F]{64}$/.test(privateKey);
-      
+
       if (!isBase58 && !isHex) {
         errors.push('Private key must be in base58 format (Waves)');
       }
-      
+
       if (privateKey.length < 32) {
         errors.push('Private key is too short');
       }
@@ -165,7 +172,7 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -173,7 +180,11 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
    * Simple boolean check for strategy selection
    */
   canHandle(input: CreateMultiWalletInput): boolean {
-    return input.type === 'privateKey' && 'privateKey' in input && Boolean(input.privateKey);
+    return (
+      input.type === 'privateKey' &&
+      'privateKey' in input &&
+      Boolean(input.privateKey)
+    );
   }
 
   /**
@@ -200,7 +211,10 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
   /**
    * Get Waves network code from NetworkName
    */
-  #getWavesNetworkCode(network: NetworkName, customCode?: string): string | undefined {
+  #getWavesNetworkCode(
+    network: NetworkName,
+    customCode?: string,
+  ): string | undefined {
     switch (network) {
       case NetworkName.Mainnet:
         return NETWORK_CODES.waves.mainnet;

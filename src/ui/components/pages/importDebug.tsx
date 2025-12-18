@@ -22,10 +22,10 @@ export function ImportDebug() {
   const accounts = usePopupSelector(state => state.accounts);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const customCodes = usePopupSelector(state => state.customCodes);
-  
+
   // Get all wallets to check for duplicate addresses across all networks
   const [allWallets, setAllWallets] = useState<MultiWallet[]>([]);
-  
+
   useEffect(() => {
     Background.getMultiWallets().then(setAllWallets);
   }, []);
@@ -182,7 +182,8 @@ export function ImportDebug() {
 
         <div className="margin4">
           <label className="input-title basic500 tag1" htmlFor="unit0Address">
-            {t('importDebug.unit0AddressInput')} <span className="basic500">({t('importDebug.optional')})</span>
+            {t('importDebug.unit0AddressInput')}{' '}
+            <span className="basic500">({t('importDebug.optional')})</span>
           </label>
           <Input
             id="unit0Address"

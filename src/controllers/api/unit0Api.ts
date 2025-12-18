@@ -77,7 +77,10 @@ const DATA_SERVICE_URL = getDataServiceUrl();
 export class Unit0Api {
   // In-flight request caches to prevent duplicate concurrent HTTP calls
   private balanceRequests = new Map<string, Promise<Unit0BalanceResponse>>();
-  private tokenBalanceRequests = new Map<string, Promise<Unit0TokenBalance[]>>();
+  private tokenBalanceRequests = new Map<
+    string,
+    Promise<Unit0TokenBalance[]>
+  >();
 
   private getRequestKey(address: string, network: NetworkName): string {
     return `${network}:${address.toLowerCase()}`;
@@ -142,13 +145,13 @@ export class Unit0Api {
     }
   }
 
-   /**
-    * Fetch native balances for multiple addresses using the Blockscout-style explorer API.
-    *
-    * Uses the `?module=account&action=balancemulti` endpoint described in
-    * https://explorer.unit0.dev/api-docs. This endpoint accepts up to 20
-    * comma-separated addresses at once and returns an array of results.
-    */
+  /**
+   * Fetch native balances for multiple addresses using the Blockscout-style explorer API.
+   *
+   * Uses the `?module=account&action=balancemulti` endpoint described in
+   * https://explorer.unit0.dev/api-docs. This endpoint accepts up to 20
+   * comma-separated addresses at once and returns an array of results.
+   */
   async fetchBalancesMulti(
     addresses: string[],
     network: NetworkName = NetworkName.Mainnet,
@@ -194,15 +197,21 @@ export class Unit0Api {
 
     if (!Array.isArray(json.result)) {
       throw new Error(
-        `Unexpected Unit0 multi-balance response format: ${JSON.stringify(json)}`,
+        `Unexpected Unit0 multi-balance response format: ${JSON.stringify(
+          json,
+        )}`,
       );
     }
 
     return json.result
       .filter(item => typeof item.balance === 'string')
       .map(item => {
-        const addr =
-          (item.account || item.address || item.addressHash || '').toString();
+        const addr = (
+          item.account ||
+          item.address ||
+          item.addressHash ||
+          ''
+        ).toString();
 
         return {
           address: addr,

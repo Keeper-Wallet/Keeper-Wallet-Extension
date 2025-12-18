@@ -61,7 +61,6 @@ export function Balance({
 
   const assetName = showAsset ? balance.asset.displayName : null;
 
-
   if (!split) {
     return (
       <>

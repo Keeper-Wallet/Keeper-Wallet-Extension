@@ -232,8 +232,9 @@ export class AssetInfoController {
       (assetLogosByNetwork[network] as Record<string, string> | undefined) ||
       {};
     const networkUnit0AssetLogos =
-      (unit0AssetLogosByNetwork[network] as Record<string, string> | undefined) ||
-      {};
+      (unit0AssetLogosByNetwork[network] as
+        | Record<string, string>
+        | undefined) || {};
 
     const allDefaultLogos = {
       ...(networkAssetLogos as Record<string, string>),
@@ -273,7 +274,9 @@ export class AssetInfoController {
       }
     });
 
-    if (Object.keys(updatedAssetLogos).length === Object.keys(assetLogos).length) {
+    if (
+      Object.keys(updatedAssetLogos).length === Object.keys(assetLogos).length
+    ) {
       return;
     }
 
@@ -515,9 +518,9 @@ export class AssetInfoController {
         if (suspiciousAssets) {
           Object.keys(assets[NetworkName.Mainnet]).forEach(
             assetId =>
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            (assets[NetworkName.Mainnet][assetId]!.isSuspicious =
-              binarySearch(suspiciousAssets, assetId) > -1),
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              (assets[NetworkName.Mainnet][assetId]!.isSuspicious =
+                binarySearch(suspiciousAssets, assetId) > -1),
           );
         }
 
@@ -669,7 +672,6 @@ export class AssetInfoController {
             assetLogos: updatedAssetLogos,
             assetTickers: updatedAssetTickers,
           });
-
         }
       }
     } catch {

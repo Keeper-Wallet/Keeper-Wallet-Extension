@@ -10,7 +10,11 @@ import { NetworkName } from '../../../networks/types';
 import { NETWORK_CODES } from '../../../services/types';
 import { WxWallet } from '../../../wallets/wx';
 import type { IdentityApi } from '../../../controllers/IdentityController';
-import { base58Decode, base58Encode, createAddress } from '@keeper-wallet/waves-crypto';
+import {
+  base58Decode,
+  base58Encode,
+  createAddress,
+} from '@keeper-wallet/waves-crypto';
 
 /**
  * Wx (Waves Exchange) MultiWallet Creation Strategy
@@ -89,9 +93,7 @@ export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
     identityApi?: IdentityApi,
   ): Promise<{ [key: string]: WxWallet }> {
     if (!identityApi) {
-      throw new Error(
-        'IdentityApi is required to create Wx wallet instances',
-      );
+      throw new Error('IdentityApi is required to create Wx wallet instances');
     }
 
     const walletInstances: { [key: string]: WxWallet } = {};
@@ -231,7 +233,10 @@ export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
   /**
    * Get Waves network code from NetworkName
    */
-  #getWavesNetworkCode(network: NetworkName, customCode?: string): string | undefined {
+  #getWavesNetworkCode(
+    network: NetworkName,
+    customCode?: string,
+  ): string | undefined {
     switch (network) {
       case NetworkName.Mainnet:
         return NETWORK_CODES.waves.mainnet;

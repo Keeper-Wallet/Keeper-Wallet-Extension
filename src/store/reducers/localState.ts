@@ -19,7 +19,13 @@ export type NewAccountState = {
       addressEvm?: string;
       accountType?: 'multichain';
     }
-  | { type: 'wx'; publicKey: string; uuid: string; username: string; wxNetwork?: import('../../../networks/types').NetworkName }
+  | {
+      type: 'wx';
+      publicKey: string;
+      uuid: string;
+      username: string;
+      wxNetwork?: import('../../../networks/types').NetworkName;
+    }
 );
 
 function newAccount(

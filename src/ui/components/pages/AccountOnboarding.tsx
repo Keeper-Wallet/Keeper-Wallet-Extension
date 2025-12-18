@@ -18,7 +18,9 @@ export function AccountOnboarding() {
     try {
       // Generate multichain account and seed phrase using factory system
       const { Mnemonic } = await import('ethers');
-      const mnemonic = Mnemonic.fromEntropy(crypto.getRandomValues(new Uint8Array(16)));
+      const mnemonic = Mnemonic.fromEntropy(
+        crypto.getRandomValues(new Uint8Array(16)),
+      );
       const phrase = mnemonic.phrase;
 
       // Set up complete multichain account state (matching original flow)
@@ -30,7 +32,7 @@ export function AccountOnboarding() {
           seed: phrase, // Include generated seed phrase for backup page
         }),
       );
-      
+
       // Navigate directly to backup page (matching original flow)
       navigate('/create-account/save-backup');
     } catch (error) {
@@ -58,9 +60,7 @@ export function AccountOnboarding() {
 
   return (
     <div data-testid="accountOnboarding" className={styles.root}>
-      <div className={styles.title}>
-        {t('onboarding.multichainAccounts')}
-      </div>
+      <div className={styles.title}>{t('onboarding.multichainAccounts')}</div>
 
       <p className={styles.description}>
         {t('onboarding.multichainDescription')}
@@ -78,10 +78,7 @@ export function AccountOnboarding() {
         {t('onboarding.wavesOnlyDescription')}
       </p>
 
-      <Button
-        view="simple"
-        onClick={handleWavesAccount}
-      >
+      <Button view="simple" onClick={handleWavesAccount}>
         {t('onboarding.createWavesAccount')}
       </Button>
     </div>

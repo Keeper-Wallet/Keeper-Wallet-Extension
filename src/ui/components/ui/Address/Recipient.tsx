@@ -41,8 +41,7 @@ export function AddressRecipient({
   name,
 }: Props) {
   const { t } = useTranslation();
-  const normalizedRecipient =
-    typeof recipient === 'string' ? recipient : '';
+  const normalizedRecipient = typeof recipient === 'string' ? recipient : '';
   const address = isEthereumAddress(normalizedRecipient)
     ? normalizedRecipient
     : processAliasOrAddress(normalizedRecipient, chainId);

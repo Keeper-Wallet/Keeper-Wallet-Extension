@@ -267,7 +267,11 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                         />
 
                         {/* Use "Custom Network" for custom networks, otherwise use display name */}
-                        {getNetworkDisplayName(option.blockchain, option.network, t)}
+                        {getNetworkDisplayName(
+                          option.blockchain,
+                          option.network,
+                          t,
+                        )}
                       </button>
                     );
                   })}

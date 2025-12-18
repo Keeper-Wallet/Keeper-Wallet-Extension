@@ -250,9 +250,11 @@ export function createUpdateState(store: PopupStore) {
       Background.getMultiWallets()
         .then(multiWallets => {
           const derivedAccounts = multiWallets.flatMap(wallet => {
-            const blockchainType = (currentBlockchainType ||
-              'waves') as 'waves' | 'unit0';
-            const blockchainData = wallet.coins[blockchainType as 'waves' | 'unit0'];
+            const blockchainType = (currentBlockchainType || 'waves') as
+              | 'waves'
+              | 'unit0';
+            const blockchainData =
+              wallet.coins[blockchainType as 'waves' | 'unit0'];
 
             if (!blockchainData || !blockchainData.networks) {
               return [];

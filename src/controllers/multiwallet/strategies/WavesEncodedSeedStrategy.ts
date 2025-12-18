@@ -73,7 +73,7 @@ export class WavesEncodedSeedStrategy implements IMultiWalletCreationStrategy {
     for (const network of networks) {
       const networkCode = this.#getWavesNetworkCode(network, customCode);
       if (!networkCode) continue; // Skip if network code is not available
-      
+
       const address = base58Encode(
         createAddress(publicKey, networkCode.charCodeAt(0)),
       );
@@ -251,7 +251,10 @@ export class WavesEncodedSeedStrategy implements IMultiWalletCreationStrategy {
   /**
    * Get Waves network code from NetworkName
    */
-  #getWavesNetworkCode(network: NetworkName, customCode?: string): string | undefined {
+  #getWavesNetworkCode(
+    network: NetworkName,
+    customCode?: string,
+  ): string | undefined {
     switch (network) {
       case NetworkName.Mainnet:
         return NETWORK_CODES.waves.mainnet;

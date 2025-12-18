@@ -85,7 +85,11 @@ export function ImportSeedMultichain() {
     }
     // Validate by words count
     const wordCount = normalizedSeed.split(/\s+/).filter(Boolean).length;
-    if (!ALLOWED_WORD_COUNTS.includes(wordCount as (typeof ALLOWED_WORD_COUNTS)[number])) {
+    if (
+      !ALLOWED_WORD_COUNTS.includes(
+        wordCount as (typeof ALLOWED_WORD_COUNTS)[number],
+      )
+    ) {
       setError(t('importSeed.seedWordsAllowedError'));
       return;
     }
@@ -146,7 +150,9 @@ export function ImportSeedMultichain() {
     <div className={styles.root}>
       <form onSubmit={handleImport}>
         <div>
-          <h2 className="title1 margin3 left">{t('importSeedMultichain.welcomeBack')}</h2>
+          <h2 className="title1 margin3 left">
+            {t('importSeedMultichain.welcomeBack')}
+          </h2>
         </div>
         <div>{t('importSeedMultichain.hint')}</div>
         <Input
@@ -170,11 +176,7 @@ export function ImportSeedMultichain() {
           {error}
         </ErrorMessage>
 
-        <Button
-          data-testid="continueBtn"
-          type="submit"
-          view="submit"
-        >
+        <Button data-testid="continueBtn" type="submit" view="submit">
           {t('importSeed.importAccount')}
         </Button>
       </form>

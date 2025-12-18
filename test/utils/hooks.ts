@@ -78,10 +78,11 @@ export const mochaHooks = () => ({
 
     // Navigate to chrome://extensions to find the extension ID
     await browser.navigateTo('chrome://extensions');
-    
+
     // Enable developer mode if not already enabled
     await browser.execute(() => {
-      const devModeToggle = document.querySelector('extensions-manager')
+      const devModeToggle = document
+        .querySelector('extensions-manager')
         ?.shadowRoot?.querySelector('extensions-toolbar')
         ?.shadowRoot?.querySelector('#devMode');
       if (devModeToggle && !(devModeToggle as HTMLInputElement).checked) {
@@ -94,11 +95,13 @@ export const mochaHooks = () => ({
     // Get extension ID from the extensions page
     const keeperExtensionId = await browser.execute(() => {
       const extensionsManager = document.querySelector('extensions-manager');
-      const itemsList = extensionsManager?.shadowRoot?.querySelector('extensions-item-list');
+      const itemsList = extensionsManager?.shadowRoot?.querySelector(
+        'extensions-item-list',
+      );
       const items = itemsList?.shadowRoot?.querySelectorAll('extensions-item');
-      
+
       if (!items) return undefined;
-      
+
       for (const item of Array.from(items)) {
         const nameEl = item.shadowRoot?.querySelector('#name');
         if (nameEl?.textContent?.toLowerCase().includes('keeper wallet')) {

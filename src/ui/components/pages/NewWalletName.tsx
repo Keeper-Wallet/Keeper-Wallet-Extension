@@ -178,12 +178,21 @@ export function NewWalletName() {
             }
           } else if (isWx) {
             try {
-              if (!('uuid' in account) || !('username' in account) || !('publicKey' in account)) {
-                throw new Error('Missing required WX account data (uuid, username, or publicKey)');
+              if (
+                !('uuid' in account) ||
+                !('username' in account) ||
+                !('publicKey' in account)
+              ) {
+                throw new Error(
+                  'Missing required WX account data (uuid, username, or publicKey)',
+                );
               }
 
               // WX accounts are network-specific, only create for the selected network
-              const wxNetwork = 'wxNetwork' in account ? account.wxNetwork : NetworkName.Mainnet;
+              const wxNetwork =
+                'wxNetwork' in account
+                  ? account.wxNetwork
+                  : NetworkName.Mainnet;
 
               await dispatch(
                 createWavesOnlyMultiWallet({
@@ -205,12 +214,13 @@ export function NewWalletName() {
           }
 
           // Pass wxNetwork info to import-success screen if it's a testnet WX account
-          const wxNetworkForSuccess = isWx && 'wxNetwork' in account ? account.wxNetwork : undefined;
-          navigate('/import-success', { 
-            state: { 
+          const wxNetworkForSuccess =
+            isWx && 'wxNetwork' in account ? account.wxNetwork : undefined;
+          navigate('/import-success', {
+            state: {
               wxNetwork: wxNetworkForSuccess,
-              accountName: accountName
-            } 
+              accountName: accountName,
+            },
           });
         }}
       >

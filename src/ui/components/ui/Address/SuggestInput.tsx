@@ -232,24 +232,30 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
   const addresses = usePopupSelector<Record<string, string>>(state => {
     // For Unit0: include ONLY EVM addresses (no network distinction between testnet/mainnet)
     if (currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0) {
-      return Object.entries(state.addresses).reduce((acc, [address, name]) => {
-        if (isValidEthereumAddress(address)) {
-          return { ...acc, [address]: name };
-        }
-        return acc;
-      }, {} as Record<string, string>);
+      return Object.entries(state.addresses).reduce(
+        (acc, [address, name]) => {
+          if (isValidEthereumAddress(address)) {
+            return { ...acc, [address]: name };
+          }
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
     }
 
     // For Waves: include ONLY addresses matching current network byte
-    return Object.entries(state.addresses).reduce((acc, [address, name]) => {
-      if (!isAddressString(address, chainId)) {
-        return acc;
-      }
+    return Object.entries(state.addresses).reduce(
+      (acc, [address, name]) => {
+        if (!isAddressString(address, chainId)) {
+          return acc;
+        }
 
-      return base58Decode(address)[1] === chainId
-        ? { ...acc, [address]: name }
-        : acc;
-    }, {} as Record<string, string>);
+        return base58Decode(address)[1] === chainId
+          ? { ...acc, [address]: name }
+          : acc;
+      },
+      {} as Record<string, string>,
+    );
   });
 
   const [value, setValue] = useState('');

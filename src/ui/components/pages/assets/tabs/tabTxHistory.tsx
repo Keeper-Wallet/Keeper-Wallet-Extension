@@ -117,8 +117,7 @@ export function TabTxHistory() {
       selected.address,
     );
 
-    const balanceItem =
-      state.balances[key] ?? state.balances[selected.address];
+    const balanceItem = state.balances[key] ?? state.balances[selected.address];
 
     return balanceItem?.aliases || [];
   });
@@ -136,8 +135,7 @@ export function TabTxHistory() {
       selected.address,
     );
 
-    const balanceItem =
-      state.balances[key] ?? state.balances[selected.address];
+    const balanceItem = state.balances[key] ?? state.balances[selected.address];
 
     return balanceItem?.txHistory;
   });

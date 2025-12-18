@@ -29,7 +29,7 @@ export class WavesLedgerWalletStrategy implements IMultiWalletCreationStrategy {
   /**
    * Create Waves addresses for specified networks
    * Uses provided public key from Ledger device to generate network-specific addresses
-   * 
+   *
    * IMPORTANT: Ledger generates network-specific addresses. The same public key
    * produces different addresses on different networks. We use the Waves crypto
    * library to generate the correct address for each network using the public key.
@@ -238,7 +238,10 @@ export class WavesLedgerWalletStrategy implements IMultiWalletCreationStrategy {
   /**
    * Get Waves network code from NetworkName
    */
-  #getWavesNetworkCode(network: NetworkName, customCode?: string): string | undefined {
+  #getWavesNetworkCode(
+    network: NetworkName,
+    customCode?: string,
+  ): string | undefined {
     switch (network) {
       case NetworkName.Mainnet:
         return NETWORK_CODES.waves.mainnet;

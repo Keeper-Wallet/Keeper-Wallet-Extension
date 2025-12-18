@@ -60,10 +60,7 @@ export function EditModal({
     }
 
     if (
-      !(
-        isAddressString(addressValue) ||
-        isValidEthereumAddress(addressValue)
-      )
+      !(isAddressString(addressValue) || isValidEthereumAddress(addressValue))
     ) {
       return t('address.addressInvalidError');
     }

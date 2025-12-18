@@ -40,7 +40,7 @@ export class SeedWallet extends Wallet<WalletPrivateDataOfType<'seed'>> {
       seed,
       ethereumAddress,
     };
-    
+
     return new this(walletData);
   }
 

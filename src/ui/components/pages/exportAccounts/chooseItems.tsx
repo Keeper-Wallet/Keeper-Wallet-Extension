@@ -152,7 +152,7 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
   const { t } = useTranslation();
 
   const isContacts = type === 'contacts';
-  const contacts = (isContacts ? (items as unknown as Contact[]) : []);
+  const contacts = isContacts ? (items as unknown as Contact[]) : [];
 
   // Flatten and group MultiWallet items by wallet ID
   const groupedAccounts =
@@ -311,9 +311,11 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
               }}
             />
             <span className={clsx('body1')}>
-              {(isContacts
-              ? selectedContacts.size === contacts.length
-              : allSelected)
+              {(
+                isContacts
+                  ? selectedContacts.size === contacts.length
+                  : allSelected
+              )
                 ? t('common.deselectAll')
                 : t('common.selectAll')}
             </span>
@@ -372,7 +374,8 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
                   onClick={() => {
                     setSelectedContacts(prev => {
                       const next = new Set(prev);
-                      if (next.has(contact.address)) next.delete(contact.address);
+                      if (next.has(contact.address))
+                        next.delete(contact.address);
                       else next.add(contact.address);
                       return next;
                     });
@@ -384,7 +387,9 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
                       <div className={styles.accountNameRow}>
                         <div className={styles.accountName}>{contact.name}</div>
                         <span className={styles.walletTypeLabel}>
-                          {isValidEthereumAddress(contact.address) ? 'Unit0' : 'Waves'}
+                          {isValidEthereumAddress(contact.address)
+                            ? 'Unit0'
+                            : 'Waves'}
                         </span>
                         {!isValidEthereumAddress(contact.address) && (
                           <span className={styles.walletTypeLabel}>

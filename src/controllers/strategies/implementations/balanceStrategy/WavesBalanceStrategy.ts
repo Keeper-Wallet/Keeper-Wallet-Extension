@@ -44,7 +44,9 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
         if (!asset || asset.lastUpdated === undefined) {
           return false;
         }
-        return this.assetInfoStrategy.isMaxAgeExceeded?.(asset.lastUpdated) || false;
+        return (
+          this.assetInfoStrategy.isMaxAgeExceeded?.(asset.lastUpdated) || false
+        );
       };
 
       // Determine which assets need sponsorship updates

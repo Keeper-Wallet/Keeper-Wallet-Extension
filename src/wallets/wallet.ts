@@ -57,7 +57,9 @@ export abstract class Wallet<TData extends WalletPrivateData> {
     data?: string;
     chainId: number;
   }): Promise<string> {
-    throw new Error('Unit0 transaction signing not supported for this wallet type');
+    throw new Error(
+      'Unit0 transaction signing not supported for this wallet type',
+    );
   }
 
   getSeed(): string {
