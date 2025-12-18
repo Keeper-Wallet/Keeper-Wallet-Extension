@@ -29,7 +29,8 @@ echo "   ✅ dist.new created"
 # Step 3: Find last tag
 echo ""
 echo "🔍 Step 3: Finding last release tag..."
-LAST_TAG=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=0 --max-count=1) 2>/dev/null || echo "")
+# TODO: After merging, revert --skip=0 back to --skip=1
+LAST_TAG=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1) 2>/dev/null || echo "")
 
 if [ -z "$LAST_TAG" ]; then
   echo "   ⚠️  No tags found, falling back to master branch"

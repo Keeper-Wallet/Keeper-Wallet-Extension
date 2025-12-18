@@ -10,6 +10,9 @@ import { TopMenu } from './helpers/TopMenu';
 import { Windows } from './helpers/Windows';
 import { DEFAULT_PASSWORD } from './utils/constants';
 
+// This test requires both dist/ (old version) and dist.new/ (new version) to exist.
+// Run using: ./scripts/test-migration-from-tag.sh
+// Or manually prepare both folders before running yarn test:update
 describe('Update extension', () => {
   before(async () => {
     await App.initVault();

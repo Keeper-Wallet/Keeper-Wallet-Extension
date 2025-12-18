@@ -49,7 +49,7 @@ async function decrypt<T>(
 ): Promise<T> {
   try {
     const decrypted = await decryptSeed(
-      base64Decode(atob(encryptedContent)),
+      base64Decode(encryptedContent),
       utf8Encode(password),
     );
     return JSON.parse(utf8Decode(decrypted));
@@ -83,7 +83,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
       };
     }
 
-    // TODO: Need to check for old accounts
+    // Old Keeper Wallet keystore format with profiles
     if ('profiles' in parsedJson && typeof parsedJson.profiles === 'string') {
       const { profiles } = parsedJson;
 
@@ -91,12 +91,13 @@ function parseKeystore(json: string): EncryptedKeystore | null {
         type: WalletTypes.Keystore,
         decrypt: async password => {
           try {
-            const decrypted = await decryptSeed(
-              base64Decode(atob(profiles)),
-              utf8Encode(password),
-            );
+            // The profiles field is double-encoded: btoa(base64Encode(encrypted))
+            const innerBase64 = atob(profiles);
+            const decoded = base64Decode(innerBase64);
+            const decrypted = await decryptSeed(decoded, utf8Encode(password));
+            const decryptedString = utf8Decode(decrypted);
 
-            const profilesData = JSON.parse(utf8Decode(decrypted)) as Record<
+            const profilesData = JSON.parse(decryptedString) as Record<
               string,
               { accounts: Array<PreferencesAccount & { seed: string }> }
             >;
@@ -109,7 +110,12 @@ function parseKeystore(json: string): EncryptedKeystore | null {
               }
 
               profile.accounts.forEach(account => {
-                if (!account.seed || account.type !== 'seed') {
+                // Old keystore format may not have type field - if there's a seed, treat as seed type
+                if (!account.seed) {
+                  return;
+                }
+                // If type is defined and not 'seed', skip
+                if (account.type && account.type !== 'seed') {
                   return;
                 }
                 const networkCode = account.networkCode || 'W';
@@ -117,7 +123,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
                 const multiwallet: MultiWallet = {
                   id: Date.now().toString(),
                   name: account.name,
-                  type: account.type,
+                  type: account.type || 'seed',
                   createdAt: Date.now(),
                   seed: account.seed,
                   coins: {
@@ -147,6 +153,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
 
             return multiwallets;
           } catch (err) {
+            console.error('Keystore decryption failed:', err);
             return null;
           }
         },
@@ -285,7 +292,10 @@ export function ImportKeystore() {
               setMultiwallets(importedWallets);
               setWalletType(keystoreParser.type);
             } catch (decryptErr) {
-              if (decryptErr instanceof Error && (decryptErr as any).code === 'KEYSTORE_DECRYPT_FAILED') {
+              if (
+                decryptErr instanceof Error &&
+                (decryptErr as any).code === 'KEYSTORE_DECRYPT_FAILED'
+              ) {
                 setError(t('newAccountName.errorFailedToDecryptKeystore'));
               } else {
                 setError(t('importKeystore.errorDecrypt'));
@@ -313,6 +323,7 @@ export function ImportKeystore() {
 
         for (const account of selectedAccounts.values()) {
           const wallet = account as unknown as MultiWallet;
+
           // Extract Waves data
           const wavesData = wallet.coins?.waves;
           const wavesNetworks = wavesData?.networks || {};
@@ -320,9 +331,7 @@ export function ImportKeystore() {
           const wavesMainnetAddress = wavesNetworks.mainnet?.address || '';
           const wavesTestnetAddress = wavesNetworks.testnet?.address || '';
           const wavesStagenetAddress = wavesNetworks.stagenet?.address || '';
-
-          // Skip if essential Waves data is missing
-          if (!wavesMainnetAddress || !wavesPublicKey) {
+          if (!wallet.seed && (!wavesMainnetAddress || !wavesPublicKey)) {
             continue;
           }
 
