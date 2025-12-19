@@ -1,14 +1,14 @@
-import { IMultiWalletCreationStrategy } from '../interfaces/IMultiWalletCreationStrategy';
-import {
-  WavesNetworkData,
-  Unit0NetworkData,
-  WalletAuthData,
-  CreateMultiWalletInput,
-  ValidationResult,
-} from '../interfaces/types';
 import { NetworkName } from '../../../networks/types';
 import { NETWORK_CODES, type WalletItem } from '../../../services/types';
 import { DebugWallet } from '../../../wallets/debug';
+import { type IMultiWalletCreationStrategy } from '../interfaces/IMultiWalletCreationStrategy';
+import {
+  type CreateMultiWalletInput,
+  type Unit0NetworkData,
+  type ValidationResult,
+  type WalletAuthData,
+  type WavesNetworkData,
+} from '../interfaces/types';
 
 /**
  * Debug-based MultiWallet Creation Strategy
@@ -27,14 +27,22 @@ export class DebugMultiWalletStrategy implements IMultiWalletCreationStrategy {
     networks: NetworkName[],
     customCode?: string,
   ): Promise<WavesNetworkData> {
+    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet);
+    if (!mainnetCode) {
+      throw new Error('Mainnet network code is required');
+    }
     const mainnetData: WalletItem = {
       address: this.debugAddress,
-      networkCode: this.#getWavesNetworkCode(NetworkName.Mainnet)!,
+      networkCode: mainnetCode,
     };
 
+    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet);
+    if (!testnetCode) {
+      throw new Error('Testnet network code is required');
+    }
     const testnetData: WalletItem = {
       address: this.debugAddress,
-      networkCode: this.#getWavesNetworkCode(NetworkName.Testnet)!,
+      networkCode: testnetCode,
     };
 
     const networkData: WavesNetworkData = {
@@ -48,21 +56,18 @@ export class DebugMultiWalletStrategy implements IMultiWalletCreationStrategy {
     // Add optional networks if requested
     for (const network of networks) {
       const networkCode = this.#getWavesNetworkCode(network, customCode);
-      if (!networkCode) continue; // Skip if network code is not available
+      if (!networkCode) continue;
 
-      switch (network) {
-        case NetworkName.Stagenet:
-          networkData.networks.stagenet = {
-            address: this.debugAddress,
-            networkCode,
-          };
-          break;
-        case NetworkName.Custom:
-          networkData.networks.custom = {
-            address: this.debugAddress,
-            networkCode,
-          };
-          break;
+      if (network === NetworkName.Stagenet) {
+        networkData.networks.stagenet = {
+          address: this.debugAddress,
+          networkCode,
+        };
+      } else if (network === NetworkName.Custom) {
+        networkData.networks.custom = {
+          address: this.debugAddress,
+          networkCode,
+        };
       }
     }
 
@@ -73,9 +78,7 @@ export class DebugMultiWalletStrategy implements IMultiWalletCreationStrategy {
    * Create Unit0 addresses for specified networks
    * Uses debug address for all networks
    */
-  async createUnit0Addresses(
-    networks: NetworkName[],
-  ): Promise<Unit0NetworkData> {
+  async createUnit0Addresses(): Promise<Unit0NetworkData> {
     if (!this.unit0DebugAddress) {
       throw new Error('Unit0 debug address is required for Unit0 support');
     }

@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import {
   base58Encode,
   createAddress,
@@ -6,19 +5,19 @@ import {
   createPublicKey,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
+import clsx from 'clsx';
+import { NetworkName } from 'networks/types';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
-import { type MultiWallet } from 'services/types';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { type MultiWallet } from 'services/types';
 import { newAccountSelect } from 'store/actions/localState';
 import { getEthereumData } from 'units/ed25519';
 
-import Background from '../../../services/Background';
-
 import { CHAIN_IDS } from '../../../../constants';
-import { NetworkName } from 'networks/types';
+import Background from '../../../services/Background';
 import { Button, ErrorMessage, Input } from '../../ui';
-import { useTranslation } from 'react-i18next';
 import * as styles from './import.module.css';
 
 export function ImportSeedMultichain() {
@@ -65,7 +64,7 @@ export function ImportSeedMultichain() {
     }
 
     checkDuplicates();
-  }, [addressWaves, addressEvm, accounts]);
+  }, [addressWaves, addressEvm, accounts, t]);
 
   const ALLOWED_WORD_COUNTS = [12, 24] as const;
 

@@ -2,7 +2,7 @@ import BigNumber from '@waves/bignumber';
 import { usePopupSelector } from 'popup/store/react';
 import { useMemo } from 'react';
 
-import { useUsdPrices, useUnit0UsdPrices } from '../../../../_core/usdPrices';
+import { useUnit0UsdPrices, useUsdPrices } from '../../../../_core/usdPrices';
 import { Loader } from '../loader';
 
 interface Props {

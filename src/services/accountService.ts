@@ -1,8 +1,9 @@
-import { ExtensionStorage } from '../storage/storage';
-import { type WalletAccount } from '../wallets/types';
-import type { NetworkName } from '../networks/types';
-import type { MultiWallet } from './types';
 import ObservableStore from 'obs-store';
+
+import type { NetworkName } from '../networks/types';
+import { type ExtensionStorage } from '../storage/storage';
+import { type WalletAccount } from '../wallets/types';
+import type { MultiWallet } from './types';
 
 /**
  * AccountService acts as the single source of truth for all wallet accounts

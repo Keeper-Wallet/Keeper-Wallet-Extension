@@ -1,10 +1,10 @@
 import { NetworkName } from '../networks/types';
-import { SeedWallet } from '../wallets/seed';
-import { PrivateKeyWallet } from '../wallets/privateKey';
-import { LedgerWallet } from '../wallets/ledger';
-import { WxWallet } from '../wallets/wx';
-import { DebugWallet } from '../wallets/debug';
-import { EncodedSeedWallet } from '../wallets/encodedSeed';
+import { type DebugWallet } from '../wallets/debug';
+import { type EncodedSeedWallet } from '../wallets/encodedSeed';
+import { type LedgerWallet } from '../wallets/ledger';
+import { type PrivateKeyWallet } from '../wallets/privateKey';
+import { type SeedWallet } from '../wallets/seed';
+import { type WxWallet } from '../wallets/wx';
 
 /**
  * MultiWallet represents a single wallet with addresses on multiple networks.
@@ -98,10 +98,9 @@ export interface EVMNetworkAddressData extends NetworkAddressData {
 /**
  * Helper type to access network data based on blockchain type
  */
-export type MultiWalletNetworkData<
-  T extends BlockchainType,
-  N extends NetworkType,
-> = T extends 'waves' ? NetworkAddressData : EVMNetworkAddressData;
+export type MultiWalletNetworkData<T extends BlockchainType> = T extends 'waves'
+  ? NetworkAddressData
+  : EVMNetworkAddressData;
 
 /**
  * Network code mapping constants

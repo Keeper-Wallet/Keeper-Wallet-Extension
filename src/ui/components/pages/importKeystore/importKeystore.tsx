@@ -18,6 +18,15 @@ import invariant from 'tiny-invariant';
 import { type PreferencesAccount } from '../../../../preferences/types';
 import { WalletTypes } from '../../../services/Background';
 import { ImportKeystoreChooseAccounts } from './chooseAccounts';
+
+class KeystoreDecryptError extends Error {
+  code = 'KEYSTORE_DECRYPT_FAILED';
+
+  constructor(message = 'Failed to decrypt keystore content') {
+    super(message);
+    this.name = 'KeystoreDecryptError';
+  }
+}
 import { ImportKeystoreChooseFile } from './chooseFile';
 
 type ExchangeKeystoreAccount = {
@@ -54,9 +63,7 @@ async function decrypt<T>(
     );
     return JSON.parse(utf8Decode(decrypted));
   } catch (err) {
-    const error = new Error('Failed to decrypt keystore content');
-    (error as any).code = 'KEYSTORE_DECRYPT_FAILED';
-    throw error;
+    throw new KeystoreDecryptError();
   }
 }
 
@@ -152,8 +159,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
             });
 
             return multiwallets;
-          } catch (err) {
-            console.error('Keystore decryption failed:', err);
+          } catch {
             return null;
           }
         },
@@ -292,10 +298,7 @@ export function ImportKeystore() {
               setMultiwallets(importedWallets);
               setWalletType(keystoreParser.type);
             } catch (decryptErr) {
-              if (
-                decryptErr instanceof Error &&
-                (decryptErr as any).code === 'KEYSTORE_DECRYPT_FAILED'
-              ) {
+              if (decryptErr instanceof KeystoreDecryptError) {
                 setError(t('newAccountName.errorFailedToDecryptKeystore'));
               } else {
                 setError(t('importKeystore.errorDecrypt'));

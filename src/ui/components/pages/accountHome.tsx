@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import background from 'ui/services/Background';
+
 import { usePopupSelector } from '../../../popup/store/react';
 import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { Button } from '../ui';
@@ -131,8 +132,8 @@ export function AccountsHome() {
               viewBox="0 0 25 25"
             >
               <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 d="M10.236 18.1194C11.4844 21.9837 16.1647 23.266 19.1788 20.5696C22.0276 18.0209 21.3906 13.4314 17.9485 11.7051L17.2869 11.3732V9.41114V7.44909H19.1435H21V5.6116V3.77412H19.1435H17.2869V2.88706V2H15.4944H13.7019V6.68659V11.3732L13.0403 11.7051C10.6788 12.8894 9.45253 15.6943 10.236 18.1194ZM13.9528 15.5972C14.6301 14.4977 16.4979 14.5435 17.0886 15.6742C17.7343 16.9098 16.8609 18.3473 15.4645 18.3473C14.0965 18.3473 13.2298 16.7706 13.9528 15.5972Z"
                 fill="#1F5AF6"
               />

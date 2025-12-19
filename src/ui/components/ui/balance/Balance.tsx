@@ -1,5 +1,5 @@
-import { type Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
+import { type Money } from '@waves/data-entities';
 import clsx from 'clsx';
 
 import { Loader } from '../loader';

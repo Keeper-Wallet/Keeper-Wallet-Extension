@@ -89,9 +89,11 @@ export function Swap() {
     Background.updateAssets(swappableAssetEntries.map(([assetId]) => assetId));
   }, [swappableAssetEntries, dispatch]);
 
-  const accountBalance = usePopupSelector(
-    state => state.balances[selectedAccount.address],
-  );
+  const accountBalance = usePopupSelector(state => {
+    // Balance keys are prefixed with coinType_network_address
+    const key = `waves_${currentNetwork}_${selectedAccount.address}`;
+    return state.balances[key] ?? state.balances[selectedAccount.address];
+  });
 
   const [performedSwapData, setPerformedSwapData] = useState<{
     fromMoney: Money;

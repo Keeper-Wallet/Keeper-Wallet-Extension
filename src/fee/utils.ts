@@ -1,5 +1,6 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import type { AssetDetail, AssetsRecord } from 'assets/types';
 import type { AssetBalance, BalancesItem } from 'balances/types';
@@ -21,7 +22,6 @@ import type {
   MessageTxUpdateAssetInfo,
 } from 'messages/types';
 import invariant from 'tiny-invariant';
-import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
 export async function getExtraFee(address: string, node: string) {
   const response = await fetch(

@@ -328,12 +328,18 @@ class Background {
   async setHideTestAccounts(statusOfShow: boolean): Promise<void> {
     await this.initPromise;
     this._connect();
-    return this.background!.setHideTestAccounts(statusOfShow);
+    if (!this.background) {
+      throw new Error('Background not initialized');
+    }
+    return this.background.setHideTestAccounts(statusOfShow);
   }
   async getHideTestAccounts(): Promise<boolean> {
     await this.initPromise;
     this._connect();
-    return this.background!.getHideTestAccounts();
+    if (!this.background) {
+      throw new Error('Background not initialized');
+    }
+    return this.background.getHideTestAccounts();
   }
 
   async setCurrentBlockchainType(blockchainType: string): Promise<void> {

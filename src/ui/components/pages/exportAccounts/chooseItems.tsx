@@ -3,13 +3,13 @@ import { NetworkName } from 'networks/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  BlockchainType,
-  MultiWallet,
-  NetworkType,
+  type BlockchainType,
+  type MultiWallet,
   NETWORK_NAME_MAP,
+  type NetworkType,
 } from 'services/types';
-import { Button } from 'ui/components/ui/buttons/Button';
 import { Avatar } from 'ui/components/ui';
+import { Button } from 'ui/components/ui/buttons/Button';
 import { Modal } from 'ui/components/ui/modal/Modal';
 import { isValidEthereumAddress } from 'ui/utils/ethereum';
 
@@ -169,7 +169,7 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
   const [, setSelectedAccounts] = useState<Set<string>>(() => {
     // Initialize with all accounts from selected wallets
     const initialAccounts = new Set<string>();
-    Object.entries(groupedAccounts).forEach(([_, networks]) => {
+    Object.values(groupedAccounts).forEach(networks => {
       networks.forEach(account => {
         initialAccounts.add(account.id);
       });
@@ -249,7 +249,7 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
 
       // Also select all accounts
       const allAccounts = new Set<string>();
-      Object.entries(groupedAccounts).forEach(([_, networks]) => {
+      Object.values(groupedAccounts).forEach(networks => {
         networks.forEach(account => {
           allAccounts.add(account.id);
         });

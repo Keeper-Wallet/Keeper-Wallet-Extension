@@ -1,9 +1,9 @@
+import { getBalanceKey } from 'balances/utils';
 import clsx from 'clsx';
 import { NftList } from 'nfts/nftList';
 import { createNft } from 'nfts/nfts';
 import { DisplayMode, type Nft } from 'nfts/types';
 import { usePopupSelector } from 'popup/store/react';
-import { getBalanceKey } from 'balances/utils';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -11,10 +11,10 @@ import * as styles from 'ui/components/pages/styles/assets.styl';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import { getNftsLink } from 'ui/urls';
 
-import { MAX_NFT_ITEMS } from '../../../../../constants';
-import { sortAndFilterNfts, useUiState } from './helpers';
 import { BLOCKCHAIN_TYPES } from '../../../../../assets/constants';
+import { MAX_NFT_ITEMS } from '../../../../../constants';
 import { type MultiWallet } from '../../../../../services/types';
+import { sortAndFilterNfts, useUiState } from './helpers';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
   key =>
@@ -48,16 +48,22 @@ export function TabNfts() {
       if (activeAccount.type === 'multichain' && multiAccount.coins?.unit0) {
         const network = currentNetwork?.toLowerCase() || 'mainnet';
         const unit0NetworkKey = network === 'stagenet' ? 'testnet' : network;
-        const unit0Address = (multiAccount.coins.unit0.networks as any)?.[
-          unit0NetworkKey
-        ]?.address;
-        const unit0NetworkCode = (multiAccount.coins.unit0.networks as any)?.[
-          unit0NetworkKey
-        ]?.networkCode;
+        const networks = multiAccount.coins.unit0.networks;
+
+        let unit0Address = '';
+        let unit0NetworkCode = '';
+
+        if (unit0NetworkKey === 'mainnet') {
+          unit0Address = networks.mainnet?.address || '';
+          unit0NetworkCode = networks.mainnet?.networkCode || '';
+        } else if (unit0NetworkKey === 'testnet') {
+          unit0Address = networks.testnet?.address || '';
+          unit0NetworkCode = networks.testnet?.networkCode || '';
+        }
 
         return {
-          userAddress: unit0Address || '',
-          networkCode: unit0NetworkCode || '',
+          userAddress: unit0Address,
+          networkCode: unit0NetworkCode,
         };
       } else {
         return {
@@ -70,15 +76,28 @@ export function TabNfts() {
     // Waves blockchain type
     if (activeAccount.type === 'multichain' && multiAccount.coins?.waves) {
       const network = currentNetwork?.toLowerCase() || 'mainnet';
-      const wavesAddress = (multiAccount.coins.waves.networks as any)?.[network]
-        ?.address;
-      const wavesNetworkCode = (multiAccount.coins.waves.networks as any)?.[
-        network
-      ]?.networkCode;
+      const networks = multiAccount.coins.waves.networks;
+
+      let wavesAddress = '';
+      let wavesNetworkCode = '';
+
+      if (network === 'mainnet') {
+        wavesAddress = networks.mainnet?.address || '';
+        wavesNetworkCode = networks.mainnet?.networkCode || '';
+      } else if (network === 'testnet') {
+        wavesAddress = networks.testnet?.address || '';
+        wavesNetworkCode = networks.testnet?.networkCode || '';
+      } else if (network === 'stagenet') {
+        wavesAddress = networks.stagenet?.address || '';
+        wavesNetworkCode = networks.stagenet?.networkCode || '';
+      } else if (network === 'custom') {
+        wavesAddress = networks.custom?.address || '';
+        wavesNetworkCode = networks.custom?.networkCode || '';
+      }
 
       return {
-        userAddress: wavesAddress || '',
-        networkCode: wavesNetworkCode || '',
+        userAddress: wavesAddress,
+        networkCode: wavesNetworkCode,
       };
     } else {
       return {

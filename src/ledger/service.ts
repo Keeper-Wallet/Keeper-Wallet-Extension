@@ -1,7 +1,6 @@
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { captureException } from '@sentry/browser';
 import WavesLedger from '@waves/ledger';
-
 import { type PreferencesAccount } from 'preferences/types';
 import invariant from 'tiny-invariant';
 import Background from 'ui/services/Background';
@@ -16,6 +15,15 @@ export enum LedgerServiceStatus {
 
 function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+class LedgerSignatureError extends Error {
+  code = 'LEDGER_SIGNATURE_FAILED';
+
+  constructor(message = 'Failed to get signature from Ledger device') {
+    super(message);
+    this.name = 'LedgerSignatureError';
+  }
 }
 
 class LedgerService {
@@ -241,9 +249,7 @@ class LedgerService {
       }
 
       if (!signature) {
-        const error = new Error('Failed to get signature from Ledger device');
-        (error as any).code = 'LEDGER_SIGNATURE_FAILED';
-        throw error;
+        throw new LedgerSignatureError();
       }
 
       await Background.ledgerSignResponse(request.id, null, signature);

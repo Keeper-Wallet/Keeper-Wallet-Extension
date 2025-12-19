@@ -49,121 +49,114 @@ Promise.all([
     .get('currentLocale')
     .then(({ currentLocale }) => i18next.changeLanguage(currentLocale)),
   i18nextInit(),
-])
-  .then(() => {
-    const rootEl = document.getElementById('app-content');
-    invariant(rootEl);
+]).then(() => {
+  const rootEl = document.getElementById('app-content');
+  invariant(rootEl);
 
-    createRoot(rootEl).render(
-      <StrictMode>
-        <Provider store={store}>
-          <RootWrapper>
-            <UsdPricesProvider>
-              <SignProvider>
-                <PopupRoot />
-              </SignProvider>
-            </UsdPricesProvider>
-          </RootWrapper>
-        </Provider>
-      </StrictMode>,
+  createRoot(rootEl).render(
+    <StrictMode>
+      <Provider store={store}>
+        <RootWrapper>
+          <UsdPricesProvider>
+            <SignProvider>
+              <PopupRoot />
+            </SignProvider>
+          </UsdPricesProvider>
+        </RootWrapper>
+      </Provider>
+    </StrictMode>,
+  );
+
+  const updateState = createUpdateState(store);
+
+  Browser.storage.onChanged.addListener(async (changes, area) => {
+    if (area !== 'local') {
+      return;
+    }
+
+    const stateChanges = Object.fromEntries(
+      Object.entries(changes).map(([key, v]) => [key, v.newValue]),
     );
 
-    const updateState = createUpdateState(store);
-
-    Browser.storage.onChanged.addListener(async (changes, area) => {
-      if (area !== 'local') {
-        return;
-      }
-
-      const stateChanges = Object.fromEntries(
-        Object.entries(changes).map(([key, v]) => [key, v.newValue]),
-      );
-
-      // we need to update assets when network changes
-      if ('currentNetwork' in changes) {
-        const { assets } = await Background.getState(['assets']);
-        stateChanges.assets = assets;
-      }
-
-      updateState(stateChanges);
-    });
-
-    function connect() {
-      const uiApi: UiApi = {
-        closePopupWindow: async () => {
-          const popup = Browser.extension
-            .getViews({ type: 'popup' })
-            .find(w => w.location.pathname === '/popup.html');
-
-          if (popup) {
-            popup.close();
-          }
-        },
-        ledgerSignRequest: async (request: LedgerSignRequest) => {
-          const { selectedAccount } = store.getState();
-          invariant(selectedAccount);
-          await ledgerService.queueSignRequest(selectedAccount, request);
-        },
-      };
-
-      let port: Browser.Runtime.Port | null = Browser.runtime.connect();
-
-      pipe(
-        fromWebExtensionPort(port),
-        handleMethodCallRequests(uiApi, result => port?.postMessage(result)),
-        onEnd(() => {
-          Background.setConnect(() => {
-            port = null;
-            Background.init(connect());
-          });
-        }),
-        publish,
-      );
-
-      return createIpcCallProxy<keyof BackgroundUiApi, BackgroundUiApi>(
-        request => port?.postMessage(request),
-        fromWebExtensionPort(port),
-      );
+    // we need to update assets when network changes
+    if ('currentNetwork' in changes) {
+      const { assets } = await Background.getState(['assets']);
+      stateChanges.assets = assets;
     }
 
-    const background = connect();
-
-    if (
-      location.pathname === '/notification.html' &&
-      !window.matchMedia('(display-mode: fullscreen)').matches
-    ) {
-      background.resizeNotificationWindow(
-        357 + window.outerWidth - window.innerWidth,
-        600 + window.outerHeight - window.innerHeight,
-      );
-    }
-
-    background.getState().then(state => {
-      setUser({ id: state.userId });
-      setTag('network', state.currentNetwork);
-      updateState(state);
-      store.dispatch(setLoading(false));
-
-      Background.init(background);
-
-      document.addEventListener('mousemove', () => Background.updateIdle());
-      document.addEventListener('keyup', () => Background.updateIdle());
-      document.addEventListener('mousedown', () => Background.updateIdle());
-      document.addEventListener('focus', () => Background.updateIdle());
-      window.addEventListener('beforeunload', () => background.identityClear());
-
-      if (Browser.extension.getViews({ type: 'popup' }).length > 0) {
-        Background.closeNotificationWindow();
-      }
-
-      if (!state.initialized) {
-        Background.showTab(
-          `${window.location.origin}/accounts.html`,
-          'accounts',
-        );
-      }
-    });
-  })
-  .catch(err => {
-    console.log(err, 'err');
+    updateState(stateChanges);
   });
+
+  function connect() {
+    const uiApi: UiApi = {
+      closePopupWindow: async () => {
+        const popup = Browser.extension
+          .getViews({ type: 'popup' })
+          .find(w => w.location.pathname === '/popup.html');
+
+        if (popup) {
+          popup.close();
+        }
+      },
+      ledgerSignRequest: async (request: LedgerSignRequest) => {
+        const { selectedAccount } = store.getState();
+        invariant(selectedAccount);
+        await ledgerService.queueSignRequest(selectedAccount, request);
+      },
+    };
+
+    let port: Browser.Runtime.Port | null = Browser.runtime.connect();
+
+    pipe(
+      fromWebExtensionPort(port),
+      handleMethodCallRequests(uiApi, result => port?.postMessage(result)),
+      onEnd(() => {
+        Background.setConnect(() => {
+          port = null;
+          Background.init(connect());
+        });
+      }),
+      publish,
+    );
+
+    return createIpcCallProxy<keyof BackgroundUiApi, BackgroundUiApi>(
+      request => port?.postMessage(request),
+      fromWebExtensionPort(port),
+    );
+  }
+
+  const background = connect();
+
+  if (
+    location.pathname === '/notification.html' &&
+    !window.matchMedia('(display-mode: fullscreen)').matches
+  ) {
+    background.resizeNotificationWindow(
+      357 + window.outerWidth - window.innerWidth,
+      600 + window.outerHeight - window.innerHeight,
+    );
+  }
+
+  background.getState().then(state => {
+    setUser({ id: state.userId });
+    setTag('network', state.currentNetwork);
+    updateState(state);
+    store.dispatch(setLoading(false));
+
+    Background.init(background);
+
+    document.addEventListener('mousemove', () => Background.updateIdle());
+    document.addEventListener('keyup', () => Background.updateIdle());
+    document.addEventListener('mousedown', () => Background.updateIdle());
+    document.addEventListener('focus', () => Background.updateIdle());
+    window.addEventListener('beforeunload', () => background.identityClear());
+
+    if (Browser.extension.getViews({ type: 'popup' }).length > 0) {
+      Background.closeNotificationWindow();
+    }
+
+    if (!state.initialized) {
+      Background.showTab(`${window.location.origin}/accounts.html`, 'accounts');
+    }
+  });
+});

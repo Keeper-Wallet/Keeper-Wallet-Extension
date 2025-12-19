@@ -1,11 +1,11 @@
 import { type AccountsThunkAction } from '../../accounts/store/types';
 import { NETWORK_CONFIG } from '../../constants';
+import { WalletFactory } from '../../controllers/multiwallet/factory/WalletFactory';
 import { NetworkName } from '../../networks/types';
 import { type PreferencesAccount } from '../../preferences/types';
 import { type MultiWallet, NETWORK_CODES } from '../../services/types';
 import Background, { WalletTypes } from '../../ui/services/Background';
 import { type CreateWalletInput } from '../../wallets/types';
-import { WalletFactory } from '../../controllers/multiwallet/factory/WalletFactory';
 import { ACTION } from './constants';
 import { selectAccount } from './localState';
 import { updateActiveState } from './notifications';
@@ -51,9 +51,9 @@ export function createAccount(
       ];
 
       // Check if custom network is configured
-      const { customNodes, customCodes } = getState();
+      const { customNodes, customCodes: stateCodes } = getState();
       // Add custom network only if BOTH node and code are configured
-      if (customNodes?.custom && customCodes?.custom) {
+      if (customNodes?.custom && stateCodes?.custom) {
         wavesNetworks.push(NetworkName.Custom);
       }
 
@@ -252,26 +252,11 @@ export function createWavesOnlyMultiWallet({
         customCode,
       };
       result = await factory.createWallet(input);
-    } else {
+    } else if (type === 'seed' && seed) {
       const input = {
         name,
-        type: type as any,
-        ...(type === 'seed'
-          ? { seed: seed || '' }
-          : type === 'privateKey'
-          ? { privateKey: privateKey || '' }
-          : type === 'encodedSeed'
-          ? { encodedSeed: encodedSeed || '' }
-          : type === 'ledger'
-          ? { ledgerId: ledgerId || 0, address: address || '' }
-          : type === 'wx'
-          ? {
-              uuid: uuid,
-              username: username,
-              address: address || '',
-              publicKey: publicKey || '',
-            }
-          : { seed: seed || '' }),
+        type: 'seed' as const,
+        seed,
         blockchains: ['waves'] as Array<'waves'>,
         networks: {
           waves: networks,
@@ -279,6 +264,8 @@ export function createWavesOnlyMultiWallet({
         customCode,
       };
       result = await factory.createWallet(input);
+    } else {
+      throw new Error(`Unsupported wallet type: ${type}`);
     }
 
     if (!result.success || !result.wallet) {
@@ -299,29 +286,25 @@ export function createWavesOnlyMultiWallet({
     }
 
     // Create account object directly from wallet data (bypass problematic legacy sync)
-    let selectedAccount: any;
+    let selectedAccount: PreferencesAccount;
 
-    if (wallet.type === 'ledger' && (wallet as any).ledgerId !== undefined) {
+    if (wallet.type === 'ledger' && wallet.ledgerId !== undefined) {
       // Ledger account with proper discriminated union type
       selectedAccount = {
         address: selectedAddress,
         name: wallet.name,
-        network: 'mainnet' as const,
+        network: NetworkName.Mainnet,
         networkCode: 'W',
         publicKey: wallet.coins.waves?.publicKey || '',
         type: 'ledger' as const,
-        id: (wallet as any).ledgerId, // id is part of the ledger type
+        id: wallet.ledgerId, // id is part of the ledger type
       };
-    } else if (
-      wallet.type === 'wx' &&
-      (wallet as any).wxUuid &&
-      (wallet as any).wxUsername
-    ) {
+    } else if (wallet.type === 'wx' && wallet.wxUuid && wallet.wxUsername) {
       // WX account with uuid and username
       selectedAccount = {
         address: selectedAddress,
         name: wallet.name,
-        network: 'mainnet' as const,
+        network: NetworkName.Mainnet,
         networkCode: 'W',
         publicKey: wallet.coins.waves?.publicKey || '',
         type: 'wx' as const,
@@ -333,10 +316,10 @@ export function createWavesOnlyMultiWallet({
       selectedAccount = {
         address: selectedAddress,
         name: wallet.name,
-        network: 'mainnet' as const,
+        network: NetworkName.Mainnet,
         networkCode: 'W',
         publicKey: wallet.coins.waves?.publicKey || '',
-        type: wallet.type,
+        type: wallet.type as 'seed' | 'privateKey' | 'encodedSeed' | 'debug',
       };
     }
 
@@ -410,19 +393,19 @@ export function createMultiWalletWithFactory({
 
     // Prefer Waves addresses from the newly created wallet
     if (wallet.coins.waves) {
-      const wavesNetworks = wallet.coins.waves.networks;
+      const walletNetworks = wallet.coins.waves.networks;
 
-      if (wavesNetworks.mainnet?.address) {
-        selectedAddress = wavesNetworks.mainnet.address;
-        networkCode = wavesNetworks.mainnet.networkCode;
+      if (walletNetworks.mainnet?.address) {
+        selectedAddress = walletNetworks.mainnet.address;
+        networkCode = walletNetworks.mainnet.networkCode;
         network = NetworkName.Mainnet;
-      } else if (wavesNetworks.testnet?.address) {
-        selectedAddress = wavesNetworks.testnet.address;
-        networkCode = wavesNetworks.testnet.networkCode;
+      } else if (walletNetworks.testnet?.address) {
+        selectedAddress = walletNetworks.testnet.address;
+        networkCode = walletNetworks.testnet.networkCode;
         network = NetworkName.Testnet;
-      } else if (wavesNetworks.stagenet?.address) {
-        selectedAddress = wavesNetworks.stagenet.address;
-        networkCode = wavesNetworks.stagenet.networkCode;
+      } else if (walletNetworks.stagenet?.address) {
+        selectedAddress = walletNetworks.stagenet.address;
+        networkCode = walletNetworks.stagenet.networkCode;
         network = NetworkName.Stagenet;
       }
 

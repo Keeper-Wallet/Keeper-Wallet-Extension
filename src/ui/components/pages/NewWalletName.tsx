@@ -111,8 +111,7 @@ export function NewWalletName() {
                   type: account.type,
                 }),
               );
-            } catch (error) {
-              console.trace('Failed to create Waves-only MultiWallet:', error);
+            } catch {
               setError(t('newAccountName.errorFailedToCreate'));
               setPending(false);
               return;
@@ -153,8 +152,7 @@ export function NewWalletName() {
                   type: account.type,
                 }),
               );
-            } catch (error) {
-              console.error('Failed to create encoded seed wallet:', error);
+            } catch {
               setError(t('newAccountName.errorFailedToCreate'));
               setPending(false);
               return;
@@ -170,8 +168,7 @@ export function NewWalletName() {
                   address: account.address,
                 }),
               );
-            } catch (error) {
-              console.error('Failed to create Ledger wallet:', error);
+            } catch {
               setError(t('newAccountName.errorFailedToCreate'));
               setPending(false);
               return;
@@ -205,8 +202,7 @@ export function NewWalletName() {
                   wxNetwork,
                 }),
               );
-            } catch (error) {
-              console.error('Failed to create WX wallet:', error);
+            } catch {
               setError(t('newAccountName.errorFailedToCreate'));
               setPending(false);
               return;
@@ -219,7 +215,7 @@ export function NewWalletName() {
           navigate('/import-success', {
             state: {
               wxNetwork: wxNetworkForSuccess,
-              accountName: accountName,
+              accountName,
             },
           });
         }}

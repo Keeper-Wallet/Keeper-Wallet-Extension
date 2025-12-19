@@ -14,12 +14,12 @@ import {
   isValidEthereumAddress,
 } from 'ui/utils/ethereum';
 
+import { BLOCKCHAIN_TYPES } from '../../../../assets/constants';
 import { Ellipsis } from '../../ui';
 import { Tooltip } from '../tooltip';
 import { AddModal } from './AddModal';
 import * as styles from './Recipient.module.css';
 import { AddressTooltip } from './Tooltip';
-import { BLOCKCHAIN_TYPES } from '../../../../assets/constants';
 
 export interface Props {
   className?: string;

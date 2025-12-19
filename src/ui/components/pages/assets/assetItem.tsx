@@ -3,13 +3,13 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import Background from 'ui/services/Background';
 
+import { BLOCKCHAIN_TYPES } from '../../../../assets/constants';
 import { usePopupSelector } from '../../../../popup/store/react';
 import { Balance, Loader } from '../../ui';
 import { Tooltip } from '../../ui/tooltip';
 import * as styles from './assetItem.module.css';
 import { AssetLogo } from './assetLogo';
 import { MoreActions } from './moreActions';
-import { BLOCKCHAIN_TYPES } from '../../../../assets/constants';
 
 interface Props {
   balance: Money | undefined;

@@ -16,7 +16,6 @@ import Browser from 'webextension-polyfill';
 import { NetworkName } from '../networks/types';
 import { type MultiWallet, type WalletItem } from '../services/types';
 import { type WalletPrivateData } from '../wallets/types';
-import { type PreferencesAccount } from '../preferences/types';
 
 /**
  * Network code mapping for address generation
@@ -399,49 +398,6 @@ function groupWalletsByIdentity(
 }
 
 /**
- * Sanitize MultiWallets for storage in accounts
- * Remove sensitive data (seed, privateKey, encodedSeed) and walletInstances
- */
-function sanitizeMultiWalletsForAccounts(
-  multiWallets: MultiWallet[],
-): MultiWallet[] {
-  return multiWallets.map(wallet => {
-    const { walletInstances, seed, privateKey, encodedSeed, ...sanitized } =
-      wallet;
-    return sanitized as MultiWallet;
-  });
-}
-
-/**
- * Migrate selectedAccount to include walletId and coinType
- */
-function migrateSelectedAccount(
-  multiWallets: MultiWallet[],
-  selectedAccount: PreferencesAccount | undefined,
-): PreferencesAccount | undefined {
-  if (!selectedAccount) return undefined;
-
-  // Find the MultiWallet that contains this account's address
-  const matchingWallet = multiWallets.find(wallet => {
-    const wavesNetworks = wallet.coins.waves?.networks;
-    if (!wavesNetworks) return false;
-
-    return (
-      wavesNetworks.mainnet?.address === selectedAccount.address ||
-      wavesNetworks.testnet?.address === selectedAccount.address ||
-      wavesNetworks.stagenet?.address === selectedAccount.address ||
-      wavesNetworks.custom?.address === selectedAccount.address
-    );
-  });
-
-  return {
-    ...selectedAccount,
-    walletId: matchingWallet?.id,
-    coinType: 'waves',
-  };
-}
-
-/**
  * Main vault migration function
  * Called during unlock when needsVaultMigration flag is set
  * Note: The flag is only set by setVaultMigrationFlag migration when
@@ -458,7 +414,11 @@ export async function migrateVault(password: string): Promise<string> {
     'customCodes',
   ]);
 
-  const oldVault = (storage.WalletController as { vault?: string })?.vault!;
+  const oldVault = (storage.WalletController as { vault?: string })?.vault;
+
+  if (!oldVault) {
+    throw new Error('No vault found in storage');
+  }
   // Get custom network code if configured
   const customCodes = storage.customCodes as
     | Record<NetworkName, string | null>
@@ -473,25 +433,21 @@ export async function migrateVault(password: string): Promise<string> {
   // Transform each group to a MultiWallet
   const multiWallets: MultiWallet[] = [];
 
-  for (const [key, wallets] of walletGroups) {
-    try {
-      // Use the first wallet in the group as the base
-      // (they all have the same seed/privateKey, just different networks)
-      const baseWallet = wallets[0];
+  for (const [, wallets] of walletGroups) {
+    // Use the first wallet in the group as the base
+    // (they all have the same seed/privateKey, just different networks)
+    const baseWallet = wallets[0];
 
-      // Use the name from the first wallet, or find one with a custom name
-      const walletWithName =
-        wallets.find(w => w.name && w.name !== w.address) || baseWallet;
+    // Use the name from the first wallet, or find one with a custom name
+    const walletWithName =
+      wallets.find(w => w.name && w.name !== w.address) || baseWallet;
 
-      const transformedWallet = await transformWallet(
-        { ...baseWallet, name: walletWithName.name },
-        customNetworkCode ?? undefined,
-      );
+    const transformedWallet = await transformWallet(
+      { ...baseWallet, name: walletWithName.name },
+      customNetworkCode ?? undefined,
+    );
 
-      multiWallets.push(transformedWallet);
-    } catch (error) {
-      throw error;
-    }
+    multiWallets.push(transformedWallet);
   }
 
   // Encrypt and save new vault

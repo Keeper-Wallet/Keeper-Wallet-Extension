@@ -6,7 +6,7 @@ import {
   signBytes,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
-import { Wallet as EthWallet, Transaction } from 'ethers';
+import { Transaction, Wallet as EthWallet } from 'ethers';
 import { type NetworkName } from 'networks/types';
 
 import { type WalletPrivateDataOfType } from './types';

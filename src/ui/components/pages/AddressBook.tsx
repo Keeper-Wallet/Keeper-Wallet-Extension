@@ -1,12 +1,12 @@
+import { NetworkName } from 'networks/types';
 import { usePopupSelector } from 'popup/store/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { icontains } from 'ui/components/pages/assets/helpers';
-
-import { Avatar, Button, Copy, Ellipsis, Modal, SearchInput } from '../ui';
 import { isValidEthereumAddress } from 'ui/utils/ethereum';
 import { getNetworkByAddress } from 'ui/utils/waves';
-import { NetworkName } from 'networks/types';
+
+import { Avatar, Button, Copy, Ellipsis, Modal, SearchInput } from '../ui';
 import { AddModal } from '../ui/Address/AddModal';
 import { DeleteModal } from '../ui/Address/DeleteModal';
 import { EditModal } from '../ui/Address/EditModal';

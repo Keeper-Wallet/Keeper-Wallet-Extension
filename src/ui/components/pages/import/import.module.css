@@ -29,10 +29,10 @@
 }
 
 .addressContainer span {
+  overflow: hidden;
   font-family: 'monospace';
   font-size: 10px;
   word-wrap: break-word;
-  overflow: hidden;
 }
 
 .error {

@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 
+import { type NetworkName } from '../../networks/types';
 import { ACTION } from '../actions/constants';
 import { type AppAction } from '../types';
 
@@ -24,7 +25,7 @@ export type NewAccountState = {
       publicKey: string;
       uuid: string;
       username: string;
-      wxNetwork?: import('../../../networks/types').NetworkName;
+      wxNetwork?: NetworkName;
     }
 );
 

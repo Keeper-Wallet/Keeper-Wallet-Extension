@@ -1,20 +1,21 @@
 import {
+  base58Decode,
   base58Encode,
   createAddress,
   createPublicKey,
-  base58Decode,
 } from '@keeper-wallet/waves-crypto';
-import { IMultiWalletCreationStrategy } from '../interfaces/IMultiWalletCreationStrategy';
-import {
-  WavesNetworkData,
-  Unit0NetworkData,
-  WalletAuthData,
-  CreateMultiWalletInput,
-  ValidationResult,
-} from '../interfaces/types';
+
 import { NetworkName } from '../../../networks/types';
 import { NETWORK_CODES } from '../../../services/types';
 import { PrivateKeyWallet } from '../../../wallets/privateKey';
+import { type IMultiWalletCreationStrategy } from '../interfaces/IMultiWalletCreationStrategy';
+import {
+  type CreateMultiWalletInput,
+  type Unit0NetworkData,
+  type ValidationResult,
+  type WalletAuthData,
+  type WavesNetworkData,
+} from '../interfaces/types';
 
 export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
   constructor(private privateKey: string) {}
@@ -31,12 +32,18 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
     const publicKey = await createPublicKey(privateKeyBytes);
     const publicKeyBase58 = base58Encode(publicKey);
 
-    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet)!;
+    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet);
+    if (!mainnetCode) {
+      throw new Error('Mainnet network code is required');
+    }
     const mainnetAddress = base58Encode(
       createAddress(publicKey, mainnetCode.charCodeAt(0)),
     );
 
-    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet)!;
+    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet);
+    if (!testnetCode) {
+      throw new Error('Testnet network code is required');
+    }
     const testnetAddress = base58Encode(
       createAddress(publicKey, testnetCode.charCodeAt(0)),
     );
@@ -51,19 +58,16 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
 
     for (const network of networks) {
       const networkCode = this.#getWavesNetworkCode(network, customCode);
-      if (!networkCode) continue; // Skip if network code is not available
+      if (!networkCode) continue;
 
       const address = base58Encode(
         createAddress(publicKey, networkCode.charCodeAt(0)),
       );
 
-      switch (network) {
-        case NetworkName.Stagenet:
-          networkData.networks.stagenet = { address, networkCode };
-          break;
-        case NetworkName.Custom:
-          networkData.networks.custom = { address, networkCode };
-          break;
+      if (network === NetworkName.Stagenet) {
+        networkData.networks.stagenet = { address, networkCode };
+      } else if (network === NetworkName.Custom) {
+        networkData.networks.custom = { address, networkCode };
       }
     }
 
@@ -74,9 +78,7 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
    * Create Unit0 addresses for specified networks
    * Unit0 not supported for private key wallets
    */
-  async createUnit0Addresses(
-    networks: NetworkName[],
-  ): Promise<Unit0NetworkData> {
+  async createUnit0Addresses(): Promise<Unit0NetworkData> {
     throw new Error(
       'Unit0 blockchain is not supported for private key wallets',
     );

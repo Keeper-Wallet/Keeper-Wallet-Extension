@@ -1,6 +1,6 @@
-import clsx from 'clsx';
 import { BLOCKCHAIN_TYPES } from 'assets/constants';
 import { getBalanceKey } from 'balances/utils';
+import clsx from 'clsx';
 import { MessageStatus } from 'messages/types';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect } from 'react';

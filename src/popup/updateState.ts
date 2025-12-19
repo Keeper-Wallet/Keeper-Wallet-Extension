@@ -6,10 +6,10 @@ import { type AssetsRecord } from '../assets/types';
 import { collectBalances } from '../balances/utils';
 import { type Message, MessageStatus } from '../messages/types';
 import { type NetworkName } from '../networks/types';
+import { type PreferencesAccount } from '../preferences/types';
 import { ACTION } from '../store/actions/constants';
-import { type PopupStore } from './store/types';
 import Background from '../ui/services/Background';
-import { PreferencesAccount } from '../preferences/types';
+import { type PopupStore } from './store/types';
 
 function getParam<S, D>(param: S, defaultParam: D) {
   if (param) {
@@ -242,104 +242,100 @@ export function createUpdateState(store: PopupStore) {
     ) {
       const network =
         stateChanges.currentNetwork || currentState.currentNetwork;
-      const currentBlockchainType =
+      const blockchainType =
         stateChanges.currentBlockchainType ||
         currentState.currentBlockchainType ||
         'waves';
 
-      Background.getMultiWallets()
-        .then(multiWallets => {
-          const derivedAccounts = multiWallets.flatMap(wallet => {
-            const blockchainType = (currentBlockchainType || 'waves') as
-              | 'waves'
-              | 'unit0';
-            const blockchainData =
-              wallet.coins[blockchainType as 'waves' | 'unit0'];
+      Background.getMultiWallets().then(multiWallets => {
+        const derivedAccounts = multiWallets.flatMap(wallet => {
+          const walletBlockchainType = (blockchainType || 'waves') as
+            | 'waves'
+            | 'unit0';
+          const blockchainData =
+            wallet.coins[walletBlockchainType as 'waves' | 'unit0'];
 
-            if (!blockchainData || !blockchainData.networks) {
-              return [];
+          if (!blockchainData || !blockchainData.networks) {
+            return [];
+          }
+
+          let networkKey: string | null = null;
+
+          if (walletBlockchainType === 'waves') {
+            switch (network) {
+              case 'mainnet':
+                networkKey = 'mainnet';
+                break;
+              case 'testnet':
+                networkKey = 'testnet';
+                break;
+              case 'stagenet':
+                networkKey = 'stagenet';
+                break;
+              case 'custom':
+                networkKey = 'custom';
+                break;
+              default:
+                networkKey = null;
             }
-
-            let networkKey: string | null = null;
-
-            if (blockchainType === 'waves') {
-              switch (network) {
-                case 'mainnet':
-                  networkKey = 'mainnet';
-                  break;
-                case 'testnet':
-                  networkKey = 'testnet';
-                  break;
-                case 'stagenet':
-                  networkKey = 'stagenet';
-                  break;
-                case 'custom':
-                  networkKey = 'custom';
-                  break;
-                default:
-                  networkKey = null;
-              }
-            } else {
-              switch (network) {
-                case 'mainnet':
-                  networkKey = 'mainnet';
-                  break;
-                case 'testnet':
-                  networkKey = 'testnet';
-                  break;
-                default:
-                  networkKey = null;
-              }
+          } else {
+            switch (network) {
+              case 'mainnet':
+                networkKey = 'mainnet';
+                break;
+              case 'testnet':
+                networkKey = 'testnet';
+                break;
+              default:
+                networkKey = null;
             }
+          }
 
-            if (!networkKey) {
-              return [];
-            }
+          if (!networkKey) {
+            return [];
+          }
 
-            const networks = blockchainData.networks as Record<
-              string,
-              { address?: string; networkCode: string }
-            >;
+          const networks = blockchainData.networks as Record<
+            string,
+            { address?: string; networkCode: string }
+          >;
 
-            const networkData = networks[networkKey];
+          const networkData = networks[networkKey];
 
-            if (!networkData || !networkData.address) {
-              return [];
-            }
+          if (!networkData || !networkData.address) {
+            return [];
+          }
 
-            return [
-              {
-                address: networkData.address,
-                name: wallet.name,
-                network,
-                networkCode: networkData.networkCode,
-                publicKey: blockchainData.publicKey || '',
-                type: wallet.type,
-                isWavesOnly: !wallet.coins.unit0,
-                id: wallet.id,
-                lastUsed: wallet.lastUsed || wallet.createdAt,
-                walletId: wallet.id,
-                coinType: blockchainType,
-                coins: wallet.coins,
-              },
-            ];
-          });
-
-          store.dispatch({
-            type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
-            payload: derivedAccounts as unknown as PreferencesAccount[],
-          });
-
-          store.dispatch({
-            type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
-            payload: derivedAccounts.filter(
-              account => account.network === network,
-            ) as unknown as PreferencesAccount[],
-          });
-        })
-        .catch(error => {
-          console.error('Error fetching MultiWallet data:', error);
+          return [
+            {
+              address: networkData.address,
+              name: wallet.name,
+              network,
+              networkCode: networkData.networkCode,
+              publicKey: blockchainData.publicKey || '',
+              type: wallet.type,
+              isWavesOnly: !wallet.coins.unit0,
+              id: wallet.id,
+              lastUsed: wallet.lastUsed || wallet.createdAt,
+              walletId: wallet.id,
+              coinType: walletBlockchainType,
+              coins: wallet.coins,
+            },
+          ];
         });
+
+        store.dispatch({
+          type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
+          payload: derivedAccounts as unknown as PreferencesAccount[],
+        });
+
+        store.dispatch({
+          type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
+          payload: derivedAccounts.filter(
+            account => account.network === network,
+          ) as unknown as PreferencesAccount[],
+        });
+      });
     }
 
     if (

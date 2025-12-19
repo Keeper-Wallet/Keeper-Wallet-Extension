@@ -74,7 +74,8 @@ export class NftInfoController {
 
       this.store.updateState({ nfts });
     } catch (error) {
-      console.warn('Failed to update NFT info:', error);
+      // Failed to update NFT info - silently ignore
+      void error;
     }
   }
 }

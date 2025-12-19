@@ -1,10 +1,11 @@
+import { type TFunction } from 'i18next';
+
 import {
   BLOCKCHAIN_TYPES,
   NETWORK_OPTIONS,
   NETWORK_TYPES,
 } from '../assets/constants';
 import { NetworkName } from './types';
-import { TFunction } from 'i18next';
 
 export interface NetworkOption {
   blockchain: string;
@@ -51,6 +52,9 @@ export const getAvailableNetworkOptions = (
   showTestAccounts: boolean = true,
   t?: TFunction,
 ): NetworkOption[] => {
+  // Parameters kept for API compatibility
+  void currentBlockchainType;
+  void currentNetwork;
   return NETWORK_OPTIONS.filter(option => {
     // Filter out test networks if showTestAccounts is false
     if (option.isTestnet && !showTestAccounts) {

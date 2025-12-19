@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import type { IdentityUser } from 'controllers/IdentityController';
-import { NetworkName } from 'networks/types';
+import { type NetworkName } from 'networks/types';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';

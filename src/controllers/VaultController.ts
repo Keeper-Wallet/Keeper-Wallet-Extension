@@ -4,7 +4,7 @@ import Browser from 'webextension-polyfill';
 import { type ExtensionStorage } from '../storage/storage';
 import { migrateVault } from '../storage/vaultMigration';
 import { type IdentityController } from './IdentityController';
-import { MultiWalletController } from './MultiWalletController';
+import { type MultiWalletController } from './MultiWalletController';
 import { type WalletController } from './wallet';
 
 export class VaultController {
@@ -79,17 +79,13 @@ export class VaultController {
       migrationVersion >= 4 && hasOldVault && !hasNewVault;
 
     if (migrationNeeded) {
-      try {
-        const encryptedVault = await migrateVault(password);
+      const encryptedVault = await migrateVault(password);
 
-        // Update MultiWalletController store with the new vault
-        // This is necessary because the store state is stale after migration
-        this.#wallet.store.updateState({
-          MultiWalletController: { vault: encryptedVault },
-        });
-      } catch (error) {
-        throw error;
-      }
+      // Update MultiWalletController store with the new vault
+      // This is necessary because the store state is stale after migration
+      this.#wallet.store.updateState({
+        MultiWalletController: { vault: encryptedVault },
+      });
     }
 
     await this.#wallet.unlock(password);
@@ -128,7 +124,7 @@ export class VaultController {
       delete (state as any).locked;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       delete (state as any).initialized;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       this.#wallet.store.putState({ MultiWalletController: state });
     }
   }

@@ -1,8 +1,8 @@
 import { Asset, Money } from '@waves/data-entities';
 import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
-import type { AssetsRecord } from '../assets/types';
 import { BLOCKCHAIN_TYPES } from '../assets/constants';
+import type { AssetsRecord } from '../assets/types';
 import { type BalancesItem } from './types';
 
 export function getBalanceKey(

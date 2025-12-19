@@ -5,13 +5,13 @@ import { usePopupSelector } from 'popup/store/react';
 import { type PreferencesAccount } from 'preferences/types';
 import { useTranslation } from 'react-i18next';
 
+import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
 import { Avatar } from '../ui/avatar/Avatar';
 import { Balance } from '../ui/balance/Balance';
 import { Copy } from '../ui/copy/Copy';
 import { Loader } from '../ui/loader';
 import { Tooltip } from '../ui/tooltip';
 import * as styles from './activeAccountCard.module.css';
-import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
 
 const UsdAmount = ({ amount }: { amount: BigNumber | null }) =>
   amount !== null ? (

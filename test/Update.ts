@@ -107,11 +107,21 @@ describe('Update extension', () => {
     expect(mainnetAccounts.sort()).toStrictEqual(
       ['test', 'test2', 'test3', 'test4'].sort(),
     );
-    console.log('Mainnet: All 4 accounts present:', mainnetAccounts);
 
     // Switch to Testnet directly via storage and verify all accounts
     await browser.execute(() => {
-      chrome.storage.local.set({ currentNetwork: 'testnet' });
+      interface ChromeWindow {
+        chrome: {
+          storage: {
+            local: {
+              set: (items: Record<string, unknown>) => void;
+            };
+          };
+        };
+      }
+      (window as unknown as ChromeWindow).chrome.storage.local.set({
+        currentNetwork: 'testnet',
+      });
     });
     await browser.refresh();
     await browser.pause(1000);
@@ -120,11 +130,21 @@ describe('Update extension', () => {
     expect(testnetAccounts.sort()).toStrictEqual(
       ['test', 'test2', 'test3', 'test4'].sort(),
     );
-    console.log('Testnet: All 4 accounts present:', testnetAccounts);
 
     // Switch to Stagenet directly via storage and verify all accounts
     await browser.execute(() => {
-      chrome.storage.local.set({ currentNetwork: 'stagenet' });
+      interface ChromeWindow {
+        chrome: {
+          storage: {
+            local: {
+              set: (items: Record<string, unknown>) => void;
+            };
+          };
+        };
+      }
+      (window as unknown as ChromeWindow).chrome.storage.local.set({
+        currentNetwork: 'stagenet',
+      });
     });
     await browser.refresh();
     await browser.pause(1000);
@@ -132,11 +152,6 @@ describe('Update extension', () => {
     const stagenetAccounts = await collectAllAccountNames();
     expect(stagenetAccounts.sort()).toStrictEqual(
       ['test', 'test2', 'test3', 'test4'].sort(),
-    );
-    console.log('Stagenet: All 4 accounts present:', stagenetAccounts);
-
-    console.log(
-      'Migration successful! All accounts have addresses on all networks',
     );
   });
 });

@@ -12,8 +12,8 @@ import { DucksNftVendor } from './vendors/ducks';
 import { DucksArtefactsNftVendor } from './vendors/ducksArtefacts';
 import { PuzzleNftVendor } from './vendors/puzzle';
 import { SignArtNftVendor } from './vendors/signArt';
-import { WavesDomainsNftVendor } from './vendors/wavesDomains';
 import { Unit0NftVendor } from './vendors/unit0';
+import { WavesDomainsNftVendor } from './vendors/wavesDomains';
 
 const vendors = {
   [NftVendorId.DucksArtefact]: new DucksArtefactsNftVendor(),

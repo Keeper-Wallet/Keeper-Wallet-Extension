@@ -39,12 +39,18 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
     const publicKeyBase58 = base58Encode(publicKey);
 
     // Always generate mainnet and testnet addresses
-    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet)!;
+    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet);
+    if (!mainnetCode) {
+      throw new Error('Mainnet network code is required');
+    }
     const mainnetAddress = base58Encode(
       createAddress(publicKey, mainnetCode.charCodeAt(0)),
     );
 
-    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet)!;
+    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet);
+    if (!testnetCode) {
+      throw new Error('Testnet network code is required');
+    }
     const testnetAddress = base58Encode(
       createAddress(publicKey, testnetCode.charCodeAt(0)),
     );
@@ -60,19 +66,16 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
     // Add optional networks if requested
     for (const network of networks) {
       const networkCode = this.#getWavesNetworkCode(network, customCode);
-      if (!networkCode) continue; // Skip if network code is not available
+      if (!networkCode) continue;
 
       const address = base58Encode(
         createAddress(publicKey, networkCode.charCodeAt(0)),
       );
 
-      switch (network) {
-        case NetworkName.Stagenet:
-          networkData.networks.stagenet = { address, networkCode };
-          break;
-        case NetworkName.Custom:
-          networkData.networks.custom = { address, networkCode };
-          break;
+      if (network === NetworkName.Stagenet) {
+        networkData.networks.stagenet = { address, networkCode };
+      } else if (network === NetworkName.Custom) {
+        networkData.networks.custom = { address, networkCode };
       }
     }
 
@@ -83,9 +86,7 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
    * Create Unit0 addresses for specified networks
    * Uses ethers.js for EVM-compatible address generation
    */
-  async createUnit0Addresses(
-    networks: NetworkName[],
-  ): Promise<Unit0NetworkData> {
+  async createUnit0Addresses(): Promise<Unit0NetworkData> {
     // Create HD wallet from seed phrase
     // Use default path to match MetaMask and Trust Wallet behavior
     const derivedWallet = Wallet.fromPhrase(this.seed);
@@ -158,10 +159,6 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
       NetworkName.Mainnet,
       NetworkName.Testnet,
     ];
-    const unit0Networks = input.networks?.unit0 || [
-      NetworkName.Mainnet,
-      NetworkName.Testnet,
-    ];
 
     // Create address data
     const wavesData = await this.createWavesAddresses(
@@ -169,7 +166,7 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
       input.customCode ?? undefined,
     );
     const unit0Data = input.blockchains?.includes('unit0')
-      ? await this.createUnit0Addresses(unit0Networks)
+      ? await this.createUnit0Addresses()
       : null;
 
     // Create wallet instances for signing

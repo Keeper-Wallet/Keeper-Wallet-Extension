@@ -1,16 +1,16 @@
 import { useDebouncedValue } from '_core/useDebouncedValue';
 import { base58Decode } from '@keeper-wallet/waves-crypto';
 import { WavesDomainsClient } from '@waves-domains/client';
+import { BLOCKCHAIN_TYPES } from 'assets/constants';
 import clsx from 'clsx';
 import { isAddressString } from 'messages/utils';
-import { BLOCKCHAIN_TYPES } from 'assets/constants';
-import { isValidEthereumAddress } from 'ui/utils/ethereum';
 import { NetworkName } from 'networks/types';
 import { usePopupSelector } from 'popup/store/react';
 import { type PreferencesAccount } from 'preferences/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { icontains } from 'ui/components/pages/assets/helpers';
+import { isValidEthereumAddress } from 'ui/utils/ethereum';
 
 import { Button, type InputProps, Modal, SearchInput } from '..';
 import { AddressTooltip } from '../Address/Tooltip';

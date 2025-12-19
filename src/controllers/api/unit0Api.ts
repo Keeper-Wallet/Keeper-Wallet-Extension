@@ -1,6 +1,6 @@
+import { getDataServiceUrl } from 'config/env';
 import { ethers } from 'ethers';
 
-import { getDataServiceUrl } from 'config/env';
 import { NetworkName } from '../../networks/types';
 import {
   type Unit0BalanceResponse,
@@ -8,6 +8,32 @@ import {
   type Unit0TokenDetailsResponse,
   type Unit0TokenMetadata,
 } from '../strategies/interfaces/IUnit0Types';
+
+interface TransactionReceipt {
+  blockHash: string;
+  blockNumber: string;
+  contractAddress: string | null;
+  cumulativeGasUsed: string;
+  from: string;
+  gasUsed: string;
+  logs: Array<{
+    address: string;
+    topics: string[];
+    data: string;
+    blockNumber: string;
+    transactionHash: string;
+    transactionIndex: string;
+    blockHash: string;
+    logIndex: string;
+    removed: boolean;
+  }>;
+  logsBloom: string;
+  status: string;
+  to: string;
+  transactionHash: string;
+  transactionIndex: string;
+  type: string;
+}
 
 // ERC-721 ABI fragment for safeTransferFrom
 const ERC721_ABI = [
@@ -404,7 +430,7 @@ export class Unit0Api {
   async getTransactionReceipt(
     txHash: string,
     network: NetworkName = NetworkName.Mainnet,
-  ): Promise<any> {
+  ): Promise<TransactionReceipt | null> {
     const rpcUrl = this.getRpcUrl(network);
 
     const response = await fetch(rpcUrl, {

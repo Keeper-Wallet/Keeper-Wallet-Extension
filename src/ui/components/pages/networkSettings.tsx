@@ -1,28 +1,29 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import clsx from 'clsx';
-import background from 'ui/services/Background';
-import { Button, Modal } from '../ui';
-import * as styles from './networkSettings.module.css';
-import { useTranslation } from 'react-i18next';
-import { usePopupSelector } from 'popup/store/react';
-import { useDispatch } from 'react-redux';
 import { BLOCKCHAIN_TYPES } from 'assets/constants';
-import { ACTION } from 'store/actions/constants';
-import { NetworkName } from 'networks/types';
+import clsx from 'clsx';
 import {
   getAvailableNetworkOptions,
   getNetworkDisplayName,
 } from 'networks/networkOptions';
+import { NetworkName } from 'networks/types';
+import { usePopupSelector } from 'popup/store/react';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { ACTION } from 'store/actions/constants';
+import background from 'ui/services/Background';
+
 import { useAccountsSelector } from '../../../accounts/store/react';
-import { PreferencesAccount } from '../../../preferences/types';
 import { NETWORK_CONFIG } from '../../../constants';
 import { CustomNetworkModal } from '../../../layout/customNetworkModal';
+import { type PreferencesAccount } from '../../../preferences/types';
 import {
   setCustomCode,
   setCustomMatcher,
   setCustomNode,
 } from '../../../store/actions/network';
+import { Button, Modal } from '../ui';
+import * as styles from './networkSettings.module.css';
 
 // Right arrow icon for the UI
 const RightArrowIcon = () => (
@@ -144,14 +145,13 @@ export function NetworkSettings() {
 
         // For MultiWallet accounts, get the full wallet data from background
         // Find the wallet that matches the selected account's walletId
-        const wallet = accounts.find(
-          wallet =>
-            (wallet as PreferencesAccount & { id: string }).id ===
+        const matchedWallet = accounts.find(
+          w =>
+            (w as PreferencesAccount & { id: string }).id ===
             selectedAccount.walletId,
         );
-        setIsWavesOnlyAccount(!!wallet?.isWavesOnly);
-      } catch (error) {
-        console.error('Error checking if account is Waves-only:', error);
+        setIsWavesOnlyAccount(!!matchedWallet?.isWavesOnly);
+      } catch {
         setIsWavesOnlyAccount(false);
       }
     };
@@ -195,25 +195,21 @@ export function NetworkSettings() {
         }
       }
     })();
-  }, []);
+  }, [selectedNetwork]);
 
   // Handle hide test accounts toggle change
   const handleHideTestAccountsChange = async (checked: boolean) => {
-    try {
-      setShowTestAccounts(checked);
+    setShowTestAccounts(checked);
 
-      // If turning off test networks, switch to mainnet if a test network is selected
-      if (
-        !checked &&
-        (selectedNetwork.includes('testnet') ||
-          selectedNetwork.includes('stagenet'))
-      ) {
-        // Extract the blockchain type from the current selection
-        const blockchain = selectedNetwork.split('-')[0];
-        setSelectedNetwork(`${blockchain}-mainnet`);
-      }
-    } catch (error) {
-      console.error('Failed to update hide test accounts preference:', error);
+    // If turning off test networks, switch to mainnet if a test network is selected
+    if (
+      !checked &&
+      (selectedNetwork.includes('testnet') ||
+        selectedNetwork.includes('stagenet'))
+    ) {
+      // Extract the blockchain type from the current selection
+      const blockchain = selectedNetwork.split('-')[0];
+      setSelectedNetwork(`${blockchain}-mainnet`);
     }
   };
 
@@ -302,13 +298,13 @@ export function NetworkSettings() {
           // Parse the currently selected network
           const {
             blockchain: selectedBlockchain,
-            networkType: selectedNetwork,
+            networkType: selectedNetworkType,
           } = parseSelectedNetwork();
 
           // Check if this option is selected
           const isOptionSelected =
             option.blockchain === selectedBlockchain &&
-            option.network === selectedNetwork;
+            option.network === selectedNetworkType;
 
           return (
             <div key={option.value}>

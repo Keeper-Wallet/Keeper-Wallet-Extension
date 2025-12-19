@@ -1,13 +1,13 @@
 import EventEmitter from 'events';
 import { type NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
-import { type IdleOptions, PreferencesAccount } from 'preferences/types';
+import { type IdleOptions, type PreferencesAccount } from 'preferences/types';
 import { compareAccountsByLastUsed } from 'preferences/utils';
 import { type WalletAccount } from 'wallets/types';
 
+import { type MultiWallet } from '../services/types';
 import { type ExtensionStorage } from '../storage/storage';
 import { type NetworkController } from './network';
-import { MultiWallet } from '../services/types';
 
 export class PreferencesController extends EventEmitter {
   store;
@@ -60,7 +60,7 @@ export class PreferencesController extends EventEmitter {
     this.store.updateState({ idleOptions: options });
   }
 
-  syncAccounts(wallets: (WalletAccount | MultiWallet)[]) {
+  syncAccounts(wallets: Array<WalletAccount | MultiWallet>) {
     const oldAccounts = this.store.getState()
       .accounts as unknown as MultiWallet[];
 
@@ -424,17 +424,14 @@ export class PreferencesController extends EventEmitter {
                     ?.networkCode,
                 coinType: 'waves',
                 // For Ledger wallets, include the ledger account ID
-                ...(wallet.type === 'ledger' &&
-                (wallet as any).ledgerId !== undefined
-                  ? { id: (wallet as any).ledgerId }
+                ...(wallet.type === 'ledger' && wallet.ledgerId !== undefined
+                  ? { id: wallet.ledgerId }
                   : {}),
                 // For WX wallets, include uuid and username
-                ...(wallet.type === 'wx' &&
-                (wallet as any).wxUuid &&
-                (wallet as any).wxUsername
+                ...(wallet.type === 'wx' && wallet.wxUuid && wallet.wxUsername
                   ? {
-                      uuid: (wallet as any).wxUuid,
-                      username: (wallet as any).wxUsername,
+                      uuid: wallet.wxUuid,
+                      username: wallet.wxUsername,
                     }
                   : {}),
               };

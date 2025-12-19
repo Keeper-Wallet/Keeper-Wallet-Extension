@@ -20,8 +20,8 @@ import {
   type IgnoreErrorsConfig,
   type NftConfig,
 } from '../constants';
+import { type MultiWallet } from '../services/types';
 import { MIGRATIONS } from './migrations';
-import { MultiWallet } from '../services/types';
 
 const CURRENT_MIGRATION_VERSION = 4;
 

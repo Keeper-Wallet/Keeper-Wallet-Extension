@@ -50,8 +50,6 @@ import {
   tap,
 } from 'wonka';
 
-import { MultiWalletController } from './controllers/MultiWalletController';
-
 import { fromWebExtensionEvent } from './_core/wonka';
 import { type IgnoreErrorsContext } from './constants';
 import { AddressBookController } from './controllers/AddressBookController';
@@ -60,6 +58,7 @@ import { CurrentAccountController } from './controllers/currentAccount';
 import { IdentityController } from './controllers/IdentityController';
 import { IdleController } from './controllers/idle';
 import { MessageController } from './controllers/message';
+import { MultiWalletController } from './controllers/MultiWalletController';
 import { NetworkController } from './controllers/network';
 import { NftInfoController } from './controllers/NftInfoController';
 import { NotificationsController } from './controllers/notifications';
@@ -75,6 +74,7 @@ import { UiStateController } from './controllers/uiState';
 import { VaultController } from './controllers/VaultController';
 import { WalletController } from './controllers/wallet';
 import { WindowManager } from './lib/windowManager';
+import { type MultiWallet } from './services/types';
 import {
   backupStorage,
   createExtensionStorage,
@@ -82,7 +82,6 @@ import {
   type StorageLocalState,
 } from './storage/storage';
 import { getTxVersions } from './wallets/getTxVersions';
-import { MultiWallet } from './services/types';
 
 const bgPromise = setupBackgroundService();
 

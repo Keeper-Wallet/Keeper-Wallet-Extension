@@ -219,5 +219,5 @@ export function useUnit0UsdPrices(addresses: string[]) {
     return Object.fromEntries(
       Object.entries(usdPrices).filter(([key]) => addressSet.has(key)),
     );
-  }, [addresses, usdPrices, isMainnet]);
+  }, [addresses, usdPrices]);
 }
