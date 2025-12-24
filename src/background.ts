@@ -50,8 +50,6 @@ import {
   tap,
 } from 'wonka';
 
-import { MultiWalletController } from './controllers/MultiWalletController';
-
 import { fromWebExtensionEvent } from './_core/wonka';
 import { type IgnoreErrorsContext } from './constants';
 import { AddressBookController } from './controllers/AddressBookController';
@@ -60,6 +58,7 @@ import { CurrentAccountController } from './controllers/currentAccount';
 import { IdentityController } from './controllers/IdentityController';
 import { IdleController } from './controllers/idle';
 import { MessageController } from './controllers/message';
+import { MultiWalletController } from './controllers/MultiWalletController';
 import { NetworkController } from './controllers/network';
 import { NftInfoController } from './controllers/NftInfoController';
 import { NotificationsController } from './controllers/notifications';
@@ -75,6 +74,7 @@ import { UiStateController } from './controllers/uiState';
 import { VaultController } from './controllers/VaultController';
 import { WalletController } from './controllers/wallet';
 import { WindowManager } from './lib/windowManager';
+import { type MultiWallet } from './services/types';
 import {
   backupStorage,
   createExtensionStorage,
@@ -82,7 +82,6 @@ import {
   type StorageLocalState,
 } from './storage/storage';
 import { getTxVersions } from './wallets/getTxVersions';
-import { MultiWallet } from './services/types';
 
 const bgPromise = setupBackgroundService();
 
@@ -385,6 +384,7 @@ class BackgroundService extends EventEmitter {
     this.vaultController = new VaultController({
       extensionStorage: this.extensionStorage,
       wallet: this.multiWalletController,
+      oldWallet: this.walletController,
       identity: this.identityController,
     });
 
@@ -535,7 +535,23 @@ class BackgroundService extends EventEmitter {
         address: string,
         name: string,
         network: NetworkName,
-      ) => this.preferencesController.addLabel(address, name, network),
+      ) => {
+        const wallets = this.multiWalletController.getMultiWallets();
+        const wallet = wallets.find(w => {
+          const wavesNetworks = w.coins?.waves?.networks;
+          if (!wavesNetworks) return false;
+
+          return Object.values(wavesNetworks).some(
+            net => net?.address === address,
+          );
+        });
+
+        if (wallet) {
+          await this.multiWalletController.updateWalletName(wallet.id, name);
+        } else {
+          await this.preferencesController.addLabel(address, name, network);
+        }
+      },
 
       // ui state
       setUiState: async (state: UiState) =>
@@ -682,15 +698,15 @@ class BackgroundService extends EventEmitter {
       },
       setCustomCode: async (code: string | null, network: NetworkName) => {
         const oldCode = this.networkController.getCustomCodes()[network];
-        
+
         await this.walletController.updateNetworkCode(network, code);
         this.networkController.setCustomCode(code, network);
-        
+
         // If custom network code changed, regenerate addresses
         if (network === NetworkName.Custom && code && code !== oldCode) {
           await this.regenerateCustomNetworkAddresses(code);
         }
-        
+
         this.currentAccountController.restartPolling();
       },
       setCustomMatcher: async (url: string | null, network: NetworkName) =>
@@ -851,8 +867,11 @@ class BackgroundService extends EventEmitter {
         message: string,
       ) => this.remoteConfigController.shouldIgnoreError(context, message),
 
-      identitySignIn: async (username: string, password: string, network?: NetworkName) =>
-        this.identityController.signIn(username, password, network),
+      identitySignIn: async (
+        username: string,
+        password: string,
+        network?: NetworkName,
+      ) => this.identityController.signIn(username, password, network),
       identityConfirmSignIn: async (code: string) =>
         this.identityController.confirmSignIn(code),
       identityUser: async () => this.identityController.getIdentityUser(),

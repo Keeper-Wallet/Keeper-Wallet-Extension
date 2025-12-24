@@ -333,7 +333,7 @@ export type AppAction =
       payload: { matcher: string | null; network: NetworkName };
       meta?: never;
     }
-    | {
+  | {
       type: typeof ACTION.UPDATE_CURRENT_BLOCKCHAIN_TYPE;
       payload: string; // or whatever type BLOCKCHAIN_TYPES.WAVES is
       meta?: never;

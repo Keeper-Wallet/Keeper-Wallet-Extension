@@ -20,10 +20,10 @@ import {
   type IgnoreErrorsConfig,
   type NftConfig,
 } from '../constants';
+import { type MultiWallet } from '../services/types';
 import { MIGRATIONS } from './migrations';
-import { MultiWallet } from '../services/types';
 
-const CURRENT_MIGRATION_VERSION = 3;
+const CURRENT_MIGRATION_VERSION = 4;
 
 export async function backupStorage() {
   const { backup, WalletController } = await Browser.storage.local.get([
@@ -71,6 +71,7 @@ export interface StorageLocalState {
   customMatchers: Record<NetworkName, string | null>;
   customNodes: Record<NetworkName, string | null>;
   data: TrashItem[];
+  hideTestAccounts: boolean;
   identityConfig: typeof DEFAULT_IDENTITY_CONFIG;
   idleOptions: IdleOptions;
   ignoreErrorsConfig: IgnoreErrorsConfig;

@@ -56,13 +56,13 @@ export const selectAccount: AppMiddleware = store => next => action => {
     store.getState().selectedAccount?.address !== action.payload?.address &&
     action.payload?.address
   ) {
-    const { currentNetwork } = store.getState();
-    Background.selectAccount(action.payload.address, currentNetwork).then(
-      () => {
-        store.dispatch(notificationSelect(true));
-        setTimeout(() => store.dispatch(notificationSelect(false)), 1000);
-      },
-    );
+    // Use the network from the account payload, not currentNetwork from Redux
+    // This ensures that when importing accounts on a specific network, they stay on that network
+    const network = action.payload.network || store.getState().currentNetwork;
+    Background.selectAccount(action.payload.address, network).then(() => {
+      store.dispatch(notificationSelect(true));
+      setTimeout(() => store.dispatch(notificationSelect(false)), 1000);
+    });
   }
 
   return next(action);

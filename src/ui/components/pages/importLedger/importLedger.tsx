@@ -130,37 +130,31 @@ export function ImportLedger() {
     setIsConnecting(true);
     connectionAttemptedRef.current = true;
 
-    try {
-      await ledgerService.connectUsb(networkCode);
+    await ledgerService.connectUsb(networkCode);
 
-      if (ledgerService.status === LedgerServiceStatus.Ready) {
-        if (ledgerUsersPages[0] == null) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const users = await ledgerService.ledger!.getPaginationUsersData(
-            0,
-            USERS_PER_PAGE - 1,
-          );
+    if (ledgerService.status === LedgerServiceStatus.Ready) {
+      if (ledgerUsersPages[0] == null) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const users = await ledgerService.ledger!.getPaginationUsersData(
+          0,
+          USERS_PER_PAGE - 1,
+        );
 
-          setLedgerUsersPages({ 0: users });
-        }
-
-        setIsReady(true);
-        setIsConnecting(false);
-      } else {
-        switch (ledgerService.status) {
-          case LedgerServiceStatus.UsedBySomeOtherApp:
-            setConnectionError(t('ledgerErrors.usedBySomeOtherApp'));
-            break;
-          default:
-            setConnectionError(t('ledgerErrors.unknown'));
-            break;
-        }
-
-        setIsConnecting(false);
+        setLedgerUsersPages({ 0: users });
       }
-    } catch (error) {
-      console.error('Ledger connection failed:', error);
-      setConnectionError(t('ledgerErrors.unknown'));
+
+      setIsReady(true);
+      setIsConnecting(false);
+    } else {
+      switch (ledgerService.status) {
+        case LedgerServiceStatus.UsedBySomeOtherApp:
+          setConnectionError(t('ledgerErrors.usedBySomeOtherApp'));
+          break;
+        default:
+          setConnectionError(t('ledgerErrors.unknown'));
+          break;
+      }
+
       setIsConnecting(false);
     }
   }, [ledgerUsersPages, networkCode, t]);
@@ -180,7 +174,6 @@ export function ImportLedger() {
     return () => {
       // Only disconnect when component actually unmounts
       isMountedRef.current = false;
-      console.log('🔌 Component unmounting, disconnecting Ledger...');
       ledgerService.disconnect();
     };
   }, []);

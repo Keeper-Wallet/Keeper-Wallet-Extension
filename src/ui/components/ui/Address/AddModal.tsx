@@ -1,9 +1,9 @@
 import { isAddressString, isAlias } from 'messages/utils';
-import { isValidEthereumAddress } from 'ui/utils/ethereum';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setAddress } from 'store/actions/addresses';
+import { isValidEthereumAddress } from 'ui/utils/ethereum';
 
 import { Button, ErrorMessage, Input, Modal } from '../';
 import * as styles from './AddModal.module.css';

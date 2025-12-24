@@ -26,8 +26,16 @@ export function SignInForm({ className, userData, signIn }: Props) {
   );
 
   const networkOptions = [
-    { id: NetworkName.Mainnet, text: t('importEmail.mainnet') || 'Mainnet', value: NetworkName.Mainnet },
-    { id: NetworkName.Testnet, text: t('importEmail.testnet') || 'Testnet', value: NetworkName.Testnet },
+    {
+      id: NetworkName.Mainnet,
+      text: t('importEmail.mainnet') || 'Mainnet',
+      value: NetworkName.Mainnet,
+    },
+    {
+      id: NetworkName.Testnet,
+      text: t('importEmail.testnet') || 'Testnet',
+      value: NetworkName.Testnet,
+    },
   ];
   const [errors, setErrors] = useState<Record<string, string | null>>({
     _form: null,

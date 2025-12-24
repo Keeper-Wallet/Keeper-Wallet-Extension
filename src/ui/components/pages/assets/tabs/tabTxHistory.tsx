@@ -1,6 +1,6 @@
 import { TRANSACTION_TYPE, type TransactionFromNode } from '@waves/ts-types';
-import clsx from 'clsx';
 import { getBalanceKey } from 'balances/utils';
+import clsx from 'clsx';
 import { usePopupSelector } from 'popup/store/react';
 import { type CSSProperties, useEffect, useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -117,8 +117,7 @@ export function TabTxHistory() {
       selected.address,
     );
 
-    const balanceItem =
-      state.balances[key] ?? state.balances[selected.address];
+    const balanceItem = state.balances[key] ?? state.balances[selected.address];
 
     return balanceItem?.aliases || [];
   });
@@ -136,8 +135,7 @@ export function TabTxHistory() {
       selected.address,
     );
 
-    const balanceItem =
-      state.balances[key] ?? state.balances[selected.address];
+    const balanceItem = state.balances[key] ?? state.balances[selected.address];
 
     return balanceItem?.txHistory;
   });
@@ -224,10 +222,10 @@ export function TabTxHistory() {
     if (currentBlockchainType === BLOCKCHAIN_TYPES.WAVES) {
       const tx = tranferItem as TransactionFromNode;
       return (
-        (!addressOrAlias.includes((tx as any).sender) &&
-          (addressOrAlias.includes((tx as any).recipient) ||
+        (!('sender' in tx && addressOrAlias.includes(tx.sender)) &&
+          (('recipient' in tx && addressOrAlias.includes(tx.recipient)) ||
             hasMassTransfers)) ||
-        hasInvokeTransfers((tx as any).stateChanges)
+        ('stateChanges' in tx && hasInvokeTransfers(tx.stateChanges))
       );
     }
     return ((tranferItem as Unit0Transfer).payload as Unit0TransferPayload)
@@ -251,7 +249,8 @@ export function TabTxHistory() {
     if (currentBlockchainType === BLOCKCHAIN_TYPES.WAVES) {
       return (
         (tranferItem.type === TRANSACTION_TYPE.TRANSFER &&
-          addressOrAlias.includes((tranferItem as any).sender)) ||
+          'sender' in tranferItem &&
+          addressOrAlias.includes(tranferItem.sender)) ||
         (tranferItem.type === TRANSACTION_TYPE.MASS_TRANSFER &&
           !hasMassTransfers) ||
         (tranferItem.type === TRANSACTION_TYPE.INVOKE_SCRIPT &&

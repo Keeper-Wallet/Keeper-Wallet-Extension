@@ -3,8 +3,8 @@ import type { StorageLocalState } from 'storage/storage';
 import { ACTION } from 'store/actions/constants';
 import type { AppAction } from 'store/types';
 
+import { type PreferencesAccount } from '../preferences/types';
 import type { AccountsStore } from './store/types';
-import { PreferencesAccount } from '../preferences/types';
 
 function getParam<S, D>(param: S, defaultParam: D) {
   if (param) {

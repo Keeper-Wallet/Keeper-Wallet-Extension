@@ -1,6 +1,6 @@
+import { getDataServiceUrl } from 'config/env';
 import { ethers } from 'ethers';
 
-import { getDataServiceUrl } from 'config/env';
 import { NetworkName } from '../../networks/types';
 import {
   type Unit0BalanceResponse,
@@ -8,6 +8,32 @@ import {
   type Unit0TokenDetailsResponse,
   type Unit0TokenMetadata,
 } from '../strategies/interfaces/IUnit0Types';
+
+interface TransactionReceipt {
+  blockHash: string;
+  blockNumber: string;
+  contractAddress: string | null;
+  cumulativeGasUsed: string;
+  from: string;
+  gasUsed: string;
+  logs: Array<{
+    address: string;
+    topics: string[];
+    data: string;
+    blockNumber: string;
+    transactionHash: string;
+    transactionIndex: string;
+    blockHash: string;
+    logIndex: string;
+    removed: boolean;
+  }>;
+  logsBloom: string;
+  status: string;
+  to: string;
+  transactionHash: string;
+  transactionIndex: string;
+  type: string;
+}
 
 // ERC-721 ABI fragment for safeTransferFrom
 const ERC721_ABI = [
@@ -77,7 +103,10 @@ const DATA_SERVICE_URL = getDataServiceUrl();
 export class Unit0Api {
   // In-flight request caches to prevent duplicate concurrent HTTP calls
   private balanceRequests = new Map<string, Promise<Unit0BalanceResponse>>();
-  private tokenBalanceRequests = new Map<string, Promise<Unit0TokenBalance[]>>();
+  private tokenBalanceRequests = new Map<
+    string,
+    Promise<Unit0TokenBalance[]>
+  >();
 
   private getRequestKey(address: string, network: NetworkName): string {
     return `${network}:${address.toLowerCase()}`;
@@ -142,13 +171,13 @@ export class Unit0Api {
     }
   }
 
-   /**
-    * Fetch native balances for multiple addresses using the Blockscout-style explorer API.
-    *
-    * Uses the `?module=account&action=balancemulti` endpoint described in
-    * https://explorer.unit0.dev/api-docs. This endpoint accepts up to 20
-    * comma-separated addresses at once and returns an array of results.
-    */
+  /**
+   * Fetch native balances for multiple addresses using the Blockscout-style explorer API.
+   *
+   * Uses the `?module=account&action=balancemulti` endpoint described in
+   * https://explorer.unit0.dev/api-docs. This endpoint accepts up to 20
+   * comma-separated addresses at once and returns an array of results.
+   */
   async fetchBalancesMulti(
     addresses: string[],
     network: NetworkName = NetworkName.Mainnet,
@@ -194,15 +223,21 @@ export class Unit0Api {
 
     if (!Array.isArray(json.result)) {
       throw new Error(
-        `Unexpected Unit0 multi-balance response format: ${JSON.stringify(json)}`,
+        `Unexpected Unit0 multi-balance response format: ${JSON.stringify(
+          json,
+        )}`,
       );
     }
 
     return json.result
       .filter(item => typeof item.balance === 'string')
       .map(item => {
-        const addr =
-          (item.account || item.address || item.addressHash || '').toString();
+        const addr = (
+          item.account ||
+          item.address ||
+          item.addressHash ||
+          ''
+        ).toString();
 
         return {
           address: addr,
@@ -395,7 +430,7 @@ export class Unit0Api {
   async getTransactionReceipt(
     txHash: string,
     network: NetworkName = NetworkName.Mainnet,
-  ): Promise<any> {
+  ): Promise<TransactionReceipt | null> {
     const rpcUrl = this.getRpcUrl(network);
 
     const response = await fetch(rpcUrl, {

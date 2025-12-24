@@ -17,16 +17,36 @@ import invariant from 'tiny-invariant';
 import { NetworkName } from '../networks/types';
 import { type MultiWallet, type WalletInstance } from '../services/types';
 import { type ExtensionStorage } from '../storage/storage';
-import { SeedWalletStrategy } from './multiwallet/strategies/SeedWalletStrategy';
-import { DebugMultiWalletStrategy } from './multiwallet/strategies/DebugMultiWalletStrategy';
-import { WavesPrivateKeyStrategy } from './multiwallet/strategies/WavesPrivateKeyStrategy';
-import { WavesEncodedSeedStrategy } from './multiwallet/strategies/WavesEncodedSeedStrategy';
-import { WavesWxWalletStrategy } from './multiwallet/strategies/WavesWxWalletStrategy';
-import { WavesLedgerWalletStrategy } from './multiwallet/strategies/WavesLedgerWalletStrategy';
-import type { PreferencesController } from './preferences';
-import type { IdentityApi } from './IdentityController';
-import type { AssetInfoController } from './assetInfo';
 import type { LedgerApi } from '../wallets/ledger';
+import type { AssetInfoController } from './assetInfo';
+import type { IdentityApi } from './IdentityController';
+import { DebugMultiWalletStrategy } from './multiwallet/strategies/DebugMultiWalletStrategy';
+import { SeedWalletStrategy } from './multiwallet/strategies/SeedWalletStrategy';
+import { WavesEncodedSeedStrategy } from './multiwallet/strategies/WavesEncodedSeedStrategy';
+import { WavesLedgerWalletStrategy } from './multiwallet/strategies/WavesLedgerWalletStrategy';
+import { WavesPrivateKeyStrategy } from './multiwallet/strategies/WavesPrivateKeyStrategy';
+import { WavesWxWalletStrategy } from './multiwallet/strategies/WavesWxWalletStrategy';
+import type { PreferencesController } from './preferences';
+
+class WalletAlreadyExistsError extends Error {
+  code = 'WALLET_ALREADY_EXISTS';
+  walletId: string;
+
+  constructor(walletId: string) {
+    super(`Multi-wallet with ID ${walletId} already exists`);
+    this.walletId = walletId;
+    this.name = 'WalletAlreadyExistsError';
+  }
+}
+
+class FailedToSaveError extends Error {
+  code = 'FAILED_TO_SAVE';
+
+  constructor(message = 'Failed to save wallet to encrypted storage') {
+    super(message);
+    this.name = 'FailedToSaveError';
+  }
+}
 
 export interface MultiWalletAccount {
   network: NetworkName;
@@ -106,8 +126,7 @@ export class MultiWalletController extends EventEmitter {
       // Store the restoration promise so we can wait for it
       this.#restorationPromise = this.#restoreMultiWallets(
         this.#password,
-      ).catch(error => {
-        console.error('Failed to restore multiwallets:', error);
+      ).catch(() => {
         this.#restorationPromise = null;
       });
     }
@@ -137,12 +156,7 @@ export class MultiWalletController extends EventEmitter {
     );
     if (existingWallet) {
       // Use a key that can be translated in the UI
-      const error = new Error(
-        `Multi-wallet with ID ${multiWallet.id} already exists`,
-      );
-      (error as any).code = 'WALLET_ALREADY_EXISTS';
-      (error as any).walletId = multiWallet.id;
-      throw error;
+      throw new WalletAlreadyExistsError(multiWallet.id);
     }
 
     const restoredInstances = await this.#restoreWalletInstances(multiWallet);
@@ -162,9 +176,7 @@ export class MultiWalletController extends EventEmitter {
         this.#multiwallets = this.#multiwallets.filter(
           wallet => wallet.id !== multiWallet.id,
         );
-        const err = new Error('Failed to save wallet to encrypted storage');
-        (err as any).code = 'FAILED_TO_SAVE';
-        throw err;
+        throw new FailedToSaveError();
       }
     }
 
@@ -201,6 +213,20 @@ export class MultiWalletController extends EventEmitter {
   }
 
   /**
+   * Update a wallet's name
+   */
+  async updateWalletName(walletId: string, newName: string): Promise<void> {
+    const wallet = this.#multiwallets.find(w => w.id === walletId);
+
+    if (!wallet) {
+      throw new Error(`Wallet with id ${walletId} not found`);
+    }
+
+    wallet.name = newName;
+    await this.#saveMultiWallets();
+  }
+
+  /**
    * Update wallets with custom network addresses
    * Updates the internal #multiwallets array and saves to vault
    */
@@ -219,6 +245,11 @@ export class MultiWalletController extends EventEmitter {
         continue;
       }
 
+      // Skip if networks object doesn't exist (corrupted or old data)
+      if (!wallet.coins.waves.networks) {
+        continue;
+      }
+
       try {
         // Use the public key to generate custom address
         const publicKey = base58Decode(wallet.coins.waves.publicKey);
@@ -227,21 +258,14 @@ export class MultiWalletController extends EventEmitter {
         );
 
         // Update the wallet in place
-        if (!wallet.coins.waves.networks) {
-          wallet.coins.waves.networks = {} as any;
-        }
-
         wallet.coins.waves.networks.custom = {
           address: customAddress,
           networkCode,
         };
 
         hasUpdates = true;
-      } catch (error) {
-        console.error(
-          `Failed to generate custom address for ${wallet.name}:`,
-          error,
-        );
+      } catch {
+        // Skip wallets that fail to generate custom address
       }
     }
 
@@ -261,8 +285,8 @@ export class MultiWalletController extends EventEmitter {
     if (this.#restorationPromise) {
       try {
         await this.#restorationPromise;
-      } catch (error) {
-        console.error('Restoration failed, continuing anyway:', error);
+      } catch {
+        // Restoration failed, continuing anyway
       }
     }
 
@@ -289,8 +313,8 @@ export class MultiWalletController extends EventEmitter {
         multiWallet.walletInstances = walletInstances;
         return walletInstances[network];
       }
-    } catch (error) {
-      console.error('Failed to create wallet instance on demand:', error);
+    } catch {
+      // Failed to create wallet instance on demand
     }
 
     throw new Error(
@@ -366,7 +390,16 @@ export class MultiWalletController extends EventEmitter {
    */
   #createStrategyFromMultiWallet(
     multiWallet: MultiWallet,
-  ): (SeedWalletStrategy | WavesPrivateKeyStrategy | WavesEncodedSeedStrategy | WavesWxWalletStrategy | WavesLedgerWalletStrategy | DebugMultiWalletStrategy) | null {
+  ):
+    | (
+        | SeedWalletStrategy
+        | WavesPrivateKeyStrategy
+        | WavesEncodedSeedStrategy
+        | WavesWxWalletStrategy
+        | WavesLedgerWalletStrategy
+        | DebugMultiWalletStrategy
+      )
+    | null {
     try {
       switch (multiWallet.type) {
         case 'seed': {
@@ -599,11 +632,7 @@ export class MultiWalletController extends EventEmitter {
           if (walletInstances) {
             wallet.walletInstances = walletInstances;
           }
-        } catch (error) {
-          console.warn(
-            `Failed to create wallet instances for wallet ${wallet.id}:`,
-            error,
-          );
+        } catch {
           // Continue with other wallets even if one fails
         }
       }
@@ -619,7 +648,6 @@ export class MultiWalletController extends EventEmitter {
         } = wallet;
         return sanitizedWallet as MultiWallet;
       });
-
       this.emit('multiWalletsChanged', sanitizedWallets);
 
       // Clear the restoration promise on success
@@ -749,7 +777,8 @@ export class MultiWalletController extends EventEmitter {
       return matchedWallet?.privateKey;
     }
     if (!matchedWallet?.seed) return;
-    const privateKey = await createPrivateKey(utf8Encode(matchedWallet.seed!));
+    // matchedWallet.seed is guaranteed to exist due to the check above
+    const privateKey = await createPrivateKey(utf8Encode(matchedWallet.seed));
     return base58Encode(privateKey);
   }
 
@@ -790,13 +819,9 @@ export class MultiWalletController extends EventEmitter {
       throw new Error('Vault does not exist');
     }
 
-    try {
-      // Use the existing decryptVault function to decrypt the vault
-      const decryptedWallets = await decryptVault(vault, password);
-      return decryptedWallets;
-    } catch (error) {
-      throw error;
-    }
+    // Use the existing decryptVault function to decrypt the vault
+    const decryptedWallets = await decryptVault(vault, password);
+    return decryptedWallets;
   }
 
   async removeWallet(id: string) {
@@ -821,7 +846,7 @@ export class MultiWalletController extends EventEmitter {
       // Keep wallets that DON'T match the address (filter out matching ones)
       return !hasMatchingAddress;
     });
-    
+
     await this.#saveMultiWallets();
     this.emit('saveAccounts', this.getMultiWallets());
   }
@@ -868,11 +893,8 @@ export class MultiWalletController extends EventEmitter {
         }
 
         hasUpdates = true;
-      } catch (error) {
-        console.error(
-          `Failed to regenerate custom address for ${wallet.name}:`,
-          error,
-        );
+      } catch {
+        // Silently skip wallets that fail to regenerate custom address
       }
     }
 

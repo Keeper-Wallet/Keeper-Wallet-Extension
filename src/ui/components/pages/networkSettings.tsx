@@ -1,28 +1,28 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import clsx from 'clsx';
-import background from 'ui/services/Background';
-import { Button, Modal } from '../ui';
-import * as styles from './networkSettings.module.css';
-import { useTranslation } from 'react-i18next';
-import { usePopupSelector } from 'popup/store/react';
-import { useDispatch } from 'react-redux';
 import { BLOCKCHAIN_TYPES } from 'assets/constants';
-import { ACTION } from 'store/actions/constants';
-import { NetworkName } from 'networks/types';
+import clsx from 'clsx';
 import {
   getAvailableNetworkOptions,
   getNetworkDisplayName,
 } from 'networks/networkOptions';
+import { NetworkName } from 'networks/types';
+import { usePopupSelector } from 'popup/store/react';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { ACTION } from 'store/actions/constants';
+import background from 'ui/services/Background';
+
 import { useAccountsSelector } from '../../../accounts/store/react';
-import { PreferencesAccount } from '../../../preferences/types';
 import { NETWORK_CONFIG } from '../../../constants';
 import { CustomNetworkModal } from '../../../layout/customNetworkModal';
+import { type PreferencesAccount } from '../../../preferences/types';
 import {
   setCustomCode,
   setCustomMatcher,
   setCustomNode,
 } from '../../../store/actions/network';
+import { Button, Modal } from '../ui';
+import * as styles from './networkSettings.module.css';
 
 // Right arrow icon for the UI
 const RightArrowIcon = () => (
@@ -111,7 +111,6 @@ const NetworkOptionItem = ({
 
 export function NetworkSettings() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const accounts = useAccountsSelector(state => state.accounts);
 
@@ -132,6 +131,9 @@ export function NetworkSettings() {
   const [isCustomNetworkModalShown, setIsCustomNetworkModalShown] =
     useState(false);
 
+  // Track if preferences have been loaded
+  const [isPreferencesLoaded, setIsPreferencesLoaded] = useState(false);
+
   // Check if the account is Waves-only when component mounts or selected account changes
   useEffect(() => {
     const checkIfWavesOnly = async () => {
@@ -144,14 +146,13 @@ export function NetworkSettings() {
 
         // For MultiWallet accounts, get the full wallet data from background
         // Find the wallet that matches the selected account's walletId
-        const wallet = accounts.find(
-          wallet =>
-            (wallet as PreferencesAccount & { id: string }).id ===
+        const matchedWallet = accounts.find(
+          w =>
+            (w as PreferencesAccount & { id: string }).id ===
             selectedAccount.walletId,
         );
-        setIsWavesOnlyAccount(!!wallet?.isWavesOnly);
-      } catch (error) {
-        console.error('Error checking if account is Waves-only:', error);
+        setIsWavesOnlyAccount(!!matchedWallet?.isWavesOnly);
+      } catch {
         setIsWavesOnlyAccount(false);
       }
     };
@@ -183,6 +184,7 @@ export function NetworkSettings() {
     (async () => {
       const hideTestAccountsPref = await background.getHideTestAccounts();
       setShowTestAccounts(!hideTestAccountsPref);
+      setIsPreferencesLoaded(true);
       // If test networks are hidden, ensure we're using mainnet
       if (hideTestAccountsPref) {
         if (
@@ -195,25 +197,22 @@ export function NetworkSettings() {
         }
       }
     })();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   // Handle hide test accounts toggle change
   const handleHideTestAccountsChange = async (checked: boolean) => {
-    try {
-      setShowTestAccounts(checked);
+    setShowTestAccounts(checked);
 
-      // If turning off test networks, switch to mainnet if a test network is selected
-      if (
-        !checked &&
-        (selectedNetwork.includes('testnet') ||
-          selectedNetwork.includes('stagenet'))
-      ) {
-        // Extract the blockchain type from the current selection
-        const blockchain = selectedNetwork.split('-')[0];
-        setSelectedNetwork(`${blockchain}-mainnet`);
-      }
-    } catch (error) {
-      console.error('Failed to update hide test accounts preference:', error);
+    // If turning off test networks, switch to mainnet if a test network is selected
+    if (
+      !checked &&
+      (selectedNetwork.includes('testnet') ||
+        selectedNetwork.includes('stagenet'))
+    ) {
+      // Extract the blockchain type from the current selection
+      const blockchain = selectedNetwork.split('-')[0];
+      setSelectedNetwork(`${blockchain}-mainnet`);
     }
   };
 
@@ -263,12 +262,10 @@ export function NetworkSettings() {
     await background.setNetwork(networkType as NetworkName);
     await background.setCurrentBlockchainType(blockchain);
     await background.setHideTestAccounts(!showTestAccounts);
-
-    navigate(-1);
   };
 
   return (
-    <div className={styles.networkTab}>
+    <div className={styles.networkTab} data-testid="networkSettings">
       <h2 className="title1 margin-main-big">
         {t('networksSettings.network')}
       </h2>
@@ -302,13 +299,13 @@ export function NetworkSettings() {
           // Parse the currently selected network
           const {
             blockchain: selectedBlockchain,
-            networkType: selectedNetwork,
+            networkType: selectedNetworkType,
           } = parseSelectedNetwork();
 
           // Check if this option is selected
           const isOptionSelected =
             option.blockchain === selectedBlockchain &&
-            option.network === selectedNetwork;
+            option.network === selectedNetworkType;
 
           return (
             <div key={option.value}>
@@ -359,7 +356,7 @@ export function NetworkSettings() {
           onClose={() => {
             setIsCustomNetworkModalShown(false);
           }}
-          onSave={({ matcher, networkCode, node }) => {
+          onSave={async ({ matcher, networkCode, node }) => {
             dispatch(
               setCustomCode({
                 code: networkCode,
@@ -389,6 +386,19 @@ export function NetworkSettings() {
             setSelectedNetwork(
               `${currentBlockchainType}-${NetworkName.Custom}`,
             );
+
+            // Actually switch to the custom network immediately
+            dispatch({
+              type: ACTION.UPDATE_CURRENT_NETWORK,
+              payload: NetworkName.Custom,
+            });
+
+            await background.setNetwork(NetworkName.Custom);
+
+            // Preserve the "Show test networks" setting only if preferences have been loaded
+            if (isPreferencesLoaded) {
+              await background.setHideTestAccounts(!showTestAccounts);
+            }
           }}
         />
       </Modal>

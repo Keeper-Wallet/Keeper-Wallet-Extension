@@ -3,9 +3,18 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Browser from 'webextension-polyfill';
 
+import { useAccountsSelector } from '../accounts/store/react';
+import { BLOCKCHAIN_TYPES, NETWORK_TYPES } from '../assets/constants';
 import { NETWORK_CONFIG } from '../constants';
+import {
+  getAvailableNetworkOptions,
+  getNetworkDisplayName,
+  isNetworkSelected,
+} from '../networks/networkOptions';
 import { NetworkName } from '../networks/types';
 import { usePopupDispatch, usePopupSelector } from '../popup/store/react';
+import { type PreferencesAccount } from '../preferences/types';
+import { ACTION } from '../store/actions/constants';
 import { setLoading } from '../store/actions/localState';
 import {
   setCustomCode,
@@ -15,18 +24,9 @@ import {
 } from '../store/actions/network';
 import { Modal } from '../ui/components/ui';
 import { Tooltip } from '../ui/components/ui/tooltip';
+import background from '../ui/services/Background';
 import * as styles from './bottomPanel.module.css';
 import { CustomNetworkModal } from './customNetworkModal';
-import { BLOCKCHAIN_TYPES, NETWORK_TYPES } from '../assets/constants';
-import {
-  getAvailableNetworkOptions,
-  getNetworkDisplayName,
-  isNetworkSelected,
-} from '../networks/networkOptions';
-import background from '../ui/services/Background';
-import { PreferencesAccount } from '../preferences/types';
-import { useAccountsSelector } from '../accounts/store/react';
-import { ACTION } from '../store/actions/constants';
 
 interface Props {
   allowChangingNetwork?: boolean;
@@ -65,25 +65,20 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
   // Check if the account is Waves-only when component mounts or selected account changes
   useEffect(() => {
     const checkIfWavesOnly = async () => {
-      try {
-        // Legacy accounts are Waves-only by default
-        if (!selectedAccount?.walletId) {
-          setIsWavesOnlyAccount(true);
-          return;
-        }
-
-        // For MultiWallet accounts, get the full wallet data from background
-        // Find the wallet that matches the selected account's walletId
-        const wallet = accounts.find(
-          wallet =>
-            (wallet as PreferencesAccount & { id: string }).id ===
-            selectedAccount.walletId,
-        );
-        setIsWavesOnlyAccount(!!wallet?.isWavesOnly);
-      } catch (error) {
-        console.error('Error checking if account is Waves-only:', error);
-        setIsWavesOnlyAccount(false);
+      // Legacy accounts are Waves-only by default
+      if (!selectedAccount?.walletId) {
+        setIsWavesOnlyAccount(true);
+        return;
       }
+
+      // For MultiWallet accounts, get the full wallet data from background
+      // Find the wallet that matches the selected account's walletId
+      const matchedWallet = accounts.find(
+        wallet =>
+          (wallet as PreferencesAccount & { id: string }).id ===
+          selectedAccount.walletId,
+      );
+      setIsWavesOnlyAccount(!!matchedWallet?.isWavesOnly);
     };
 
     checkIfWavesOnly();
@@ -267,7 +262,11 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
                         />
 
                         {/* Use "Custom Network" for custom networks, otherwise use display name */}
-                        {getNetworkDisplayName(option.blockchain, option.network, t)}
+                        {getNetworkDisplayName(
+                          option.blockchain,
+                          option.network,
+                          t,
+                        )}
                       </button>
                     );
                   })}

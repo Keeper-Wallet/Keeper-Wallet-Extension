@@ -7,7 +7,7 @@ import Background from 'ui/services/Background';
 
 import { CONFIG } from '../../appConfig';
 import { useWalletValidation } from '../../hooks/useWalletValidation';
-import { Button, Input } from '../ui';
+import { Button, ErrorMessage, Input } from '../ui';
 import * as styles from './styles/changeName.styl';
 
 export function ChangeAccountName() {
@@ -30,7 +30,7 @@ export function ChangeAccountName() {
   const { validateWalletName } = useWalletValidation();
 
   const validateName = useCallback(
-    async (name: string, excludeCurrentName = false) => {
+    async (name: string) => {
       if (!name || name.trim().length === 0) {
         setError(t('changeName.errorRequired'));
         return false;
@@ -39,12 +39,6 @@ export function ChangeAccountName() {
       if (name.length < CONFIG.NAME_MIN_LENGTH) {
         setError(t('changeName.errorRequired'));
         return false;
-      }
-
-      // Skip validation if it's the same as current name
-      if (excludeCurrentName && account && name === account.name) {
-        setError(null);
-        return true;
       }
 
       setIsValidating(true);
@@ -64,12 +58,12 @@ export function ChangeAccountName() {
         setIsValidating(false);
       }
     },
-    [validateWalletName, t, account],
+    [validateWalletName, t],
   );
 
   useEffect(() => {
     if (newName) {
-      validateName(newName, true);
+      validateName(newName);
     } else {
       setError(null);
     }
@@ -125,11 +119,9 @@ export function ChangeAccountName() {
             }}
           />
 
-          {error && (
-            <div className="error-message" data-testid="newAccountNameError">
-              {error}
-            </div>
-          )}
+          <ErrorMessage data-testid="newAccountNameError" show={!!error}>
+            {error}
+          </ErrorMessage>
         </div>
 
         <Button

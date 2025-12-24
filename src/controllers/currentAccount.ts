@@ -3,8 +3,9 @@ import { collectBalances, getBalanceKey } from 'balances/utils';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
+import { type NetworkName } from '../networks/types';
+import { type MultiWallet } from '../services/types';
 import { type ExtensionStorage } from '../storage/storage';
-import { NetworkName } from '../networks/types';
 import { Unit0Api } from './api/unit0Api';
 import { type AssetInfoController } from './assetInfo';
 import { type NetworkController } from './network';
@@ -12,7 +13,6 @@ import { type NftInfoController } from './NftInfoController';
 import { type PreferencesController } from './preferences';
 import { BalanceContext } from './strategies/contexts/BalanceContext';
 import { type VaultController } from './VaultController';
-import { type MultiWallet } from '../services/types';
 
 const PERIOD_IN_SECONDS = 10;
 
@@ -169,8 +169,6 @@ export class CurrentAccountController {
       this.store.updateState({
         [`balance_${balanceKey}`]: balance,
       });
-    } catch (error) {
-      console.error('Error updating account balance:', error);
     } finally {
       this.isUpdatingBalance = false;
     }
@@ -323,8 +321,6 @@ export class CurrentAccountController {
 
         this.store.updateState(balances);
       }
-    } catch (error) {
-      console.error('Error updating other account balances:', error);
     } finally {
       this.isUpdatingOtherAccounts = false;
     }

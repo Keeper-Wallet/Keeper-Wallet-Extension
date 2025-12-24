@@ -211,13 +211,13 @@ export function useUnit0UsdPrices(addresses: string[]) {
 
   return useMemo(() => {
     // Convert addresses to normalized format used in the store
-    const normalizedAddresses = addresses.map(address => 
-      address === 'unit0' ? 'UNIT0' : address.toLowerCase()
+    const normalizedAddresses = addresses.map(address =>
+      address === 'unit0' ? 'UNIT0' : address.toLowerCase(),
     );
     const addressSet = new Set(normalizedAddresses);
 
     return Object.fromEntries(
       Object.entries(usdPrices).filter(([key]) => addressSet.has(key)),
     );
-  }, [addresses, usdPrices, isMainnet]);
+  }, [addresses, usdPrices]);
 }

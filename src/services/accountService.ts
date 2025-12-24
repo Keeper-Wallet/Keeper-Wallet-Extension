@@ -1,8 +1,9 @@
-import { ExtensionStorage } from '../storage/storage';
-import { type WalletAccount } from '../wallets/types';
-import type { NetworkName } from '../networks/types';
-import type { MultiWallet } from './types';
 import ObservableStore from 'obs-store';
+
+import type { NetworkName } from '../networks/types';
+import { type ExtensionStorage } from '../storage/storage';
+import { type WalletAccount } from '../wallets/types';
+import type { MultiWallet } from './types';
 
 /**
  * AccountService acts as the single source of truth for all wallet accounts
@@ -24,7 +25,7 @@ export class AccountService {
       this.storage.getInitState({
         accounts: [],
         multiWallets: [],
-      })
+      }),
     );
 
     // Subscribe the store to storage updates
@@ -58,15 +59,14 @@ export class AccountService {
     const accounts = [...this.getAccounts(), account];
     this.store.updateState({ accounts });
   }
-  
+
   /**
    * Add multiple accounts at once
    * @param newAccounts Array of accounts to add
    */
   batchAddAccounts(newAccounts: WalletAccount[]): void {
-
     if (!newAccounts.length) return;
-    
+
     const accounts = [...this.getAccounts(), ...newAccounts];
     this.store.updateState({ accounts });
   }
@@ -80,7 +80,7 @@ export class AccountService {
     const index = accounts.findIndex(
       account =>
         account.address === updatedAccount.address &&
-        account.network === updatedAccount.network
+        account.network === updatedAccount.network,
     );
 
     if (index !== -1) {
@@ -115,7 +115,7 @@ export class AccountService {
   removeAccount(address: string, network: NetworkName): void {
     const accounts = this.getAccounts();
     const filteredAccounts = accounts.filter(
-      account => !(account.address === address && account.network === network)
+      account => !(account.address === address && account.network === network),
     );
 
     this.store.updateState({ accounts: filteredAccounts });

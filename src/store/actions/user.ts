@@ -1,11 +1,11 @@
 import { type AccountsThunkAction } from '../../accounts/store/types';
 import { NETWORK_CONFIG } from '../../constants';
+import { WalletFactory } from '../../controllers/multiwallet/factory/WalletFactory';
 import { NetworkName } from '../../networks/types';
 import { type PreferencesAccount } from '../../preferences/types';
 import { type MultiWallet, NETWORK_CODES } from '../../services/types';
 import Background, { WalletTypes } from '../../ui/services/Background';
 import { type CreateWalletInput } from '../../wallets/types';
-import { WalletFactory } from '../../controllers/multiwallet/factory/WalletFactory';
 import { ACTION } from './constants';
 import { selectAccount } from './localState';
 import { updateActiveState } from './notifications';
@@ -51,9 +51,9 @@ export function createAccount(
       ];
 
       // Check if custom network is configured
-      const { customNodes, customCodes } = getState();
+      const { customNodes, customCodes: stateCodes } = getState();
       // Add custom network only if BOTH node and code are configured
-      if (customNodes?.custom && customCodes?.custom) {
+      if (customNodes?.custom && stateCodes?.custom) {
         wavesNetworks.push(NetworkName.Custom);
       }
 
@@ -177,16 +177,13 @@ export function createWavesOnlyMultiWallet({
     const factory = new WalletFactory();
 
     // Check if custom network is configured
-    const { customNodes, customCodes } = getState();
-    
+    const { customNodes, customCodes, currentNetwork } = getState();
+
     // For WX accounts, only create the selected network
-    const networks: NetworkName[] = type === 'wx' && wxNetwork
-      ? [wxNetwork]
-      : [
-          NetworkName.Mainnet,
-          NetworkName.Testnet,
-          NetworkName.Stagenet,
-        ];
+    const networks: NetworkName[] =
+      type === 'wx' && wxNetwork
+        ? [wxNetwork]
+        : [NetworkName.Mainnet, NetworkName.Testnet, NetworkName.Stagenet];
 
     // Add custom network only if BOTH node and code are configured (and not WX)
     if (type !== 'wx' && customNodes?.custom && customCodes?.custom) {
@@ -255,21 +252,11 @@ export function createWavesOnlyMultiWallet({
         customCode,
       };
       result = await factory.createWallet(input);
-    } else {
+    } else if (type === 'seed' && seed) {
       const input = {
         name,
-        type: type as any,
-        ...(type === 'seed'
-          ? { seed: seed || '' }
-          : type === 'privateKey'
-          ? { privateKey: privateKey || '' }
-          : type === 'encodedSeed'
-          ? { encodedSeed: encodedSeed || '' }
-          : type === 'ledger'
-          ? { ledgerId: ledgerId || 0, address: address || '' }
-          : type === 'wx'
-          ? { uuid: uuid, username: username, address: address || '', publicKey: publicKey || '' }
-          : { seed: seed || '' }),
+        type: 'seed' as const,
+        seed,
         blockchains: ['waves'] as Array<'waves'>,
         networks: {
           waves: networks,
@@ -277,6 +264,8 @@ export function createWavesOnlyMultiWallet({
         customCode,
       };
       result = await factory.createWallet(input);
+    } else {
+      throw new Error(`Unsupported wallet type: ${type}`);
     }
 
     if (!result.success || !result.wallet) {
@@ -285,42 +274,78 @@ export function createWavesOnlyMultiWallet({
 
     const wallet = await Background.addMultiWallet(result.wallet);
 
-    // For Waves-only wallet, create account directly from wallet data (bypass legacy sync)
-    const selectedAddress =
-      wallet.coins.waves?.networks.mainnet?.address ||
-      wallet.coins.waves?.networks.testnet?.address ||
-      wallet.coins.waves?.networks.stagenet?.address ||
-      '';
+    // Determine which address to select based on current network
+    const wavesNetworks = wallet.coins.waves?.networks;
+    let selectedAddress = '';
+    let selectedNetwork: NetworkName = currentNetwork as NetworkName;
+    let selectedNetworkCode = '';
+
+    if (wavesNetworks) {
+      // Try to use address from current network first
+      if (currentNetwork === NetworkName.Mainnet && wavesNetworks.mainnet) {
+        selectedAddress = wavesNetworks.mainnet.address;
+        selectedNetworkCode = wavesNetworks.mainnet.networkCode;
+      } else if (
+        currentNetwork === NetworkName.Testnet &&
+        wavesNetworks.testnet
+      ) {
+        selectedAddress = wavesNetworks.testnet.address;
+        selectedNetworkCode = wavesNetworks.testnet.networkCode;
+      } else if (
+        currentNetwork === NetworkName.Stagenet &&
+        wavesNetworks.stagenet
+      ) {
+        selectedAddress = wavesNetworks.stagenet.address;
+        selectedNetworkCode = wavesNetworks.stagenet.networkCode;
+      } else if (
+        currentNetwork === NetworkName.Custom &&
+        wavesNetworks.custom
+      ) {
+        selectedAddress = wavesNetworks.custom.address;
+        selectedNetworkCode = wavesNetworks.custom.networkCode;
+      } else {
+        // Fallback to first available network
+        if (wavesNetworks.mainnet) {
+          selectedAddress = wavesNetworks.mainnet.address;
+          selectedNetworkCode = wavesNetworks.mainnet.networkCode;
+          selectedNetwork = NetworkName.Mainnet;
+        } else if (wavesNetworks.testnet) {
+          selectedAddress = wavesNetworks.testnet.address;
+          selectedNetworkCode = wavesNetworks.testnet.networkCode;
+          selectedNetwork = NetworkName.Testnet;
+        } else if (wavesNetworks.stagenet) {
+          selectedAddress = wavesNetworks.stagenet.address;
+          selectedNetworkCode = wavesNetworks.stagenet.networkCode;
+          selectedNetwork = NetworkName.Stagenet;
+        }
+      }
+    }
 
     if (!selectedAddress) {
       throw new Error('No address found in created Waves-only wallet');
     }
 
     // Create account object directly from wallet data (bypass problematic legacy sync)
-    let selectedAccount: any;
+    let selectedAccount: PreferencesAccount;
 
-    if (wallet.type === 'ledger' && (wallet as any).ledgerId !== undefined) {
+    if (wallet.type === 'ledger' && wallet.ledgerId !== undefined) {
       // Ledger account with proper discriminated union type
       selectedAccount = {
         address: selectedAddress,
         name: wallet.name,
-        network: 'mainnet' as const,
-        networkCode: 'W',
+        network: selectedNetwork,
+        networkCode: selectedNetworkCode,
         publicKey: wallet.coins.waves?.publicKey || '',
         type: 'ledger' as const,
-        id: (wallet as any).ledgerId, // id is part of the ledger type
+        id: wallet.ledgerId,
       };
-    } else if (
-      wallet.type === 'wx' &&
-      (wallet as any).wxUuid &&
-      (wallet as any).wxUsername
-    ) {
+    } else if (wallet.type === 'wx' && wallet.wxUuid && wallet.wxUsername) {
       // WX account with uuid and username
       selectedAccount = {
         address: selectedAddress,
         name: wallet.name,
-        network: 'mainnet' as const,
-        networkCode: 'W',
+        network: selectedNetwork,
+        networkCode: selectedNetworkCode,
         publicKey: wallet.coins.waves?.publicKey || '',
         type: 'wx' as const,
         uuid: wallet.wxUuid,
@@ -331,16 +356,17 @@ export function createWavesOnlyMultiWallet({
       selectedAccount = {
         address: selectedAddress,
         name: wallet.name,
-        network: 'mainnet' as const,
-        networkCode: 'W',
+        network: selectedNetwork,
+        networkCode: selectedNetworkCode,
         publicKey: wallet.coins.waves?.publicKey || '',
-        type: wallet.type,
+        type: wallet.type as 'seed' | 'privateKey' | 'encodedSeed' | 'debug',
       };
     }
 
     // Don't auto-select testnet WX accounts when global network is mainnet
     // User needs to manually switch to testnet network first
-    const isTestnetWxAccount = wallet.type === 'wx' && wxNetwork === NetworkName.Testnet;
+    const isTestnetWxAccount =
+      wallet.type === 'wx' && wxNetwork === NetworkName.Testnet;
     if (!isTestnetWxAccount) {
       dispatch(selectAccount(selectedAccount as PreferencesAccount));
     }
@@ -399,28 +425,63 @@ export function createMultiWalletWithFactory({
 
     const wallet = await Background.addMultiWallet(result.wallet);
 
+    // Get current network from state
+    const currentNetwork = getState().currentNetwork as NetworkName;
+
     let selectedAddress = '';
     let networkCode = '';
-    let network: NetworkName = NetworkName.Mainnet;
+    let network: NetworkName = currentNetwork;
     let publicKey = '';
     let coinType: PreferencesAccount['coinType'];
 
     // Prefer Waves addresses from the newly created wallet
     if (wallet.coins.waves) {
-      const wavesNetworks = wallet.coins.waves.networks;
+      const walletNetworks = wallet.coins.waves.networks;
 
-      if (wavesNetworks.mainnet?.address) {
-        selectedAddress = wavesNetworks.mainnet.address;
-        networkCode = wavesNetworks.mainnet.networkCode;
+      // Try to use address from current network first
+      if (
+        currentNetwork === NetworkName.Mainnet &&
+        walletNetworks.mainnet?.address
+      ) {
+        selectedAddress = walletNetworks.mainnet.address;
+        networkCode = walletNetworks.mainnet.networkCode;
         network = NetworkName.Mainnet;
-      } else if (wavesNetworks.testnet?.address) {
-        selectedAddress = wavesNetworks.testnet.address;
-        networkCode = wavesNetworks.testnet.networkCode;
+      } else if (
+        currentNetwork === NetworkName.Testnet &&
+        walletNetworks.testnet?.address
+      ) {
+        selectedAddress = walletNetworks.testnet.address;
+        networkCode = walletNetworks.testnet.networkCode;
         network = NetworkName.Testnet;
-      } else if (wavesNetworks.stagenet?.address) {
-        selectedAddress = wavesNetworks.stagenet.address;
-        networkCode = wavesNetworks.stagenet.networkCode;
+      } else if (
+        currentNetwork === NetworkName.Stagenet &&
+        walletNetworks.stagenet?.address
+      ) {
+        selectedAddress = walletNetworks.stagenet.address;
+        networkCode = walletNetworks.stagenet.networkCode;
         network = NetworkName.Stagenet;
+      } else if (
+        currentNetwork === NetworkName.Custom &&
+        walletNetworks.custom?.address
+      ) {
+        selectedAddress = walletNetworks.custom.address;
+        networkCode = walletNetworks.custom.networkCode;
+        network = NetworkName.Custom;
+      } else {
+        // Fallback to first available network
+        if (walletNetworks.mainnet?.address) {
+          selectedAddress = walletNetworks.mainnet.address;
+          networkCode = walletNetworks.mainnet.networkCode;
+          network = NetworkName.Mainnet;
+        } else if (walletNetworks.testnet?.address) {
+          selectedAddress = walletNetworks.testnet.address;
+          networkCode = walletNetworks.testnet.networkCode;
+          network = NetworkName.Testnet;
+        } else if (walletNetworks.stagenet?.address) {
+          selectedAddress = walletNetworks.stagenet.address;
+          networkCode = walletNetworks.stagenet.networkCode;
+          network = NetworkName.Stagenet;
+        }
       }
 
       publicKey = wallet.coins.waves.publicKey || '';

@@ -76,42 +76,38 @@ export function ImportSeed() {
 
   // Fetch ALL Waves accounts (mainnet, testnet, stagenet, custom) on mount
   useEffect(() => {
-    Background.getMultiWallets()
-      .then(multiWallets => {
-        const accounts: Array<{
-          address: string;
-          name: string;
-          network: string;
-        }> = [];
+    Background.getMultiWallets().then(multiWallets => {
+      const accounts: Array<{
+        address: string;
+        name: string;
+        network: string;
+      }> = [];
 
-        multiWallets.forEach(wallet => {
-          const waves = wallet.coins?.waves;
-          if (!waves) {
-            return;
-          }
+      multiWallets.forEach(wallet => {
+        const waves = wallet.coins?.waves;
+        if (!waves) {
+          return;
+        }
 
-          const { networks } = waves;
+        const { networks } = waves;
 
-          (['mainnet', 'testnet', 'stagenet', 'custom'] as const).forEach(
-            networkName => {
-              const networkData = networks[networkName];
+        (['mainnet', 'testnet', 'stagenet', 'custom'] as const).forEach(
+          networkName => {
+            const networkData = networks[networkName];
 
-              if (networkData?.address) {
-                accounts.push({
-                  address: networkData.address,
-                  name: wallet.name,
-                  network: networkName,
-                });
-              }
-            },
-          );
-        });
-
-        setWavesAccounts(accounts);
-      })
-      .catch((err: Error) => {
-        console.error('Failed to fetch Waves accounts:', err);
+            if (networkData?.address) {
+              accounts.push({
+                address: networkData.address,
+                name: wallet.name,
+                network: networkName,
+              });
+            }
+          },
+        );
       });
+
+      setWavesAccounts(accounts);
+    });
   }, []);
 
   const findExistingAccount = useCallback(

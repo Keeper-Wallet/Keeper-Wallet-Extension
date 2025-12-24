@@ -48,8 +48,7 @@ export function useWalletValidation() {
         }
 
         return { isValid: true };
-      } catch (error) {
-        console.error('Wallet name validation error:', error);
+      } catch {
         return {
           isValid: false,
           error: t('newAccountName.errorValidationFailed'),

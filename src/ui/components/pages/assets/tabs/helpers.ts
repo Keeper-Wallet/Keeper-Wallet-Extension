@@ -76,7 +76,9 @@ export function sortAndFilterNfts<T extends Nft>(
   // Filter by Unit0 collection (contract) address when provided
   if (collectionId) {
     nfts = nfts.filter(
-      nft => (nft as any).assetId === collectionId || nft.id === collectionId,
+      nft =>
+        ('assetId' in nft && nft.assetId === collectionId) ||
+        nft.id === collectionId,
     );
   }
 

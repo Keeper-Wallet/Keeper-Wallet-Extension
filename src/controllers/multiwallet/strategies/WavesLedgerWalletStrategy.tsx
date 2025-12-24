@@ -3,18 +3,19 @@ import {
   base58Encode,
   createAddress,
 } from '@keeper-wallet/waves-crypto';
-import { IMultiWalletCreationStrategy } from '../interfaces/IMultiWalletCreationStrategy';
-import {
-  WavesNetworkData,
-  Unit0NetworkData,
-  WalletAuthData,
-  CreateMultiWalletInput,
-  ValidationResult,
-} from '../interfaces/types';
+
+import type { AssetInfoController } from '../../../controllers/assetInfo';
 import { NetworkName } from '../../../networks/types';
 import { NETWORK_CODES } from '../../../services/types';
-import { LedgerWallet, type LedgerApi } from '../../../wallets/ledger';
-import type { AssetInfoController } from '../../../controllers/assetInfo';
+import { type LedgerApi, LedgerWallet } from '../../../wallets/ledger';
+import { type IMultiWalletCreationStrategy } from '../interfaces/IMultiWalletCreationStrategy';
+import {
+  type CreateMultiWalletInput,
+  type Unit0NetworkData,
+  type ValidationResult,
+  type WalletAuthData,
+  type WavesNetworkData,
+} from '../interfaces/types';
 
 /**
  * Ledger-based MultiWallet Creation Strategy
@@ -29,7 +30,7 @@ export class WavesLedgerWalletStrategy implements IMultiWalletCreationStrategy {
   /**
    * Create Waves addresses for specified networks
    * Uses provided public key from Ledger device to generate network-specific addresses
-   * 
+   *
    * IMPORTANT: Ledger generates network-specific addresses. The same public key
    * produces different addresses on different networks. We use the Waves crypto
    * library to generate the correct address for each network using the public key.
@@ -42,12 +43,18 @@ export class WavesLedgerWalletStrategy implements IMultiWalletCreationStrategy {
     const publicKeyBytes = base58Decode(this.publicKey);
 
     // Always generate mainnet and testnet addresses (required)
-    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet)!;
+    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet);
+    if (!mainnetCode) {
+      throw new Error('Mainnet network code is required');
+    }
     const mainnetAddress = base58Encode(
       createAddress(publicKeyBytes, mainnetCode.charCodeAt(0)),
     );
 
-    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet)!;
+    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet);
+    if (!testnetCode) {
+      throw new Error('Testnet network code is required');
+    }
     const testnetAddress = base58Encode(
       createAddress(publicKeyBytes, testnetCode.charCodeAt(0)),
     );
@@ -63,19 +70,16 @@ export class WavesLedgerWalletStrategy implements IMultiWalletCreationStrategy {
     // Add optional networks if requested
     for (const network of networks) {
       const networkCode = this.#getWavesNetworkCode(network, customCode);
-      if (!networkCode) continue; // Skip if network code is not available
+      if (!networkCode) continue;
 
       const address = base58Encode(
         createAddress(publicKeyBytes, networkCode.charCodeAt(0)),
       );
 
-      switch (network) {
-        case NetworkName.Stagenet:
-          networkData.networks.stagenet = { address, networkCode };
-          break;
-        case NetworkName.Custom:
-          networkData.networks.custom = { address, networkCode };
-          break;
+      if (network === NetworkName.Stagenet) {
+        networkData.networks.stagenet = { address, networkCode };
+      } else if (network === NetworkName.Custom) {
+        networkData.networks.custom = { address, networkCode };
       }
     }
 
@@ -86,9 +90,7 @@ export class WavesLedgerWalletStrategy implements IMultiWalletCreationStrategy {
    * Create Unit0 addresses for specified networks
    * Unit0 Ledger support not yet implemented
    */
-  async createUnit0Addresses(
-    networks: NetworkName[],
-  ): Promise<Unit0NetworkData> {
+  async createUnit0Addresses(): Promise<Unit0NetworkData> {
     throw new Error(
       'Unit0 blockchain support for Ledger devices is not yet implemented',
     );
@@ -238,7 +240,10 @@ export class WavesLedgerWalletStrategy implements IMultiWalletCreationStrategy {
   /**
    * Get Waves network code from NetworkName
    */
-  #getWavesNetworkCode(network: NetworkName, customCode?: string): string | undefined {
+  #getWavesNetworkCode(
+    network: NetworkName,
+    customCode?: string,
+  ): string | undefined {
     switch (network) {
       case NetworkName.Mainnet:
         return NETWORK_CODES.waves.mainnet;

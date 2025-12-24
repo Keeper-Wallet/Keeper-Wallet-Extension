@@ -1,16 +1,21 @@
-import { IMultiWalletCreationStrategy } from '../interfaces/IMultiWalletCreationStrategy';
 import {
-  WavesNetworkData,
-  Unit0NetworkData,
-  WalletAuthData,
-  CreateMultiWalletInput,
-  ValidationResult,
-} from '../interfaces/types';
+  base58Decode,
+  base58Encode,
+  createAddress,
+} from '@keeper-wallet/waves-crypto';
+
+import type { IdentityApi } from '../../../controllers/IdentityController';
 import { NetworkName } from '../../../networks/types';
 import { NETWORK_CODES } from '../../../services/types';
 import { WxWallet } from '../../../wallets/wx';
-import type { IdentityApi } from '../../../controllers/IdentityController';
-import { base58Decode, base58Encode, createAddress } from '@keeper-wallet/waves-crypto';
+import { type IMultiWalletCreationStrategy } from '../interfaces/IMultiWalletCreationStrategy';
+import {
+  type CreateMultiWalletInput,
+  type Unit0NetworkData,
+  type ValidationResult,
+  type WalletAuthData,
+  type WavesNetworkData,
+} from '../interfaces/types';
 
 /**
  * Wx (Waves Exchange) MultiWallet Creation Strategy
@@ -34,33 +39,44 @@ export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
     // Decode the public key once
     const publicKeyBytes = base58Decode(this.publicKey);
 
+    // Always generate mainnet and testnet addresses (required)
+    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet);
+    if (!mainnetCode) {
+      throw new Error('Mainnet network code is required');
+    }
+    const mainnetAddress = base58Encode(
+      createAddress(publicKeyBytes, mainnetCode.charCodeAt(0)),
+    );
+
+    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet);
+    if (!testnetCode) {
+      throw new Error('Testnet network code is required');
+    }
+    const testnetAddress = base58Encode(
+      createAddress(publicKeyBytes, testnetCode.charCodeAt(0)),
+    );
+
     const networkData: WavesNetworkData = {
       publicKey: this.publicKey,
-      networks: {},
+      networks: {
+        mainnet: { address: mainnetAddress, networkCode: mainnetCode },
+        testnet: { address: testnetAddress, networkCode: testnetCode },
+      },
     };
 
-    // Only create addresses for the requested networks
+    // Add optional networks if requested
     for (const network of networks) {
       const networkCode = this.#getWavesNetworkCode(network, customCode);
-      if (!networkCode) continue; // Skip if network code is not available
+      if (!networkCode) continue;
 
       const address = base58Encode(
         createAddress(publicKeyBytes, networkCode.charCodeAt(0)),
       );
 
-      switch (network) {
-        case NetworkName.Mainnet:
-          networkData.networks.mainnet = { address, networkCode };
-          break;
-        case NetworkName.Testnet:
-          networkData.networks.testnet = { address, networkCode };
-          break;
-        case NetworkName.Stagenet:
-          networkData.networks.stagenet = { address, networkCode };
-          break;
-        case NetworkName.Custom:
-          networkData.networks.custom = { address, networkCode };
-          break;
+      if (network === NetworkName.Stagenet) {
+        networkData.networks.stagenet = { address, networkCode };
+      } else if (network === NetworkName.Custom) {
+        networkData.networks.custom = { address, networkCode };
       }
     }
 
@@ -71,9 +87,7 @@ export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
    * Create Unit0 addresses for specified networks
    * Unit0 Wx support not implemented
    */
-  async createUnit0Addresses(
-    networks: NetworkName[],
-  ): Promise<Unit0NetworkData> {
+  async createUnit0Addresses(): Promise<Unit0NetworkData> {
     // Unit0 Wx support would require additional integration
     throw new Error(
       'Unit0 blockchain support for Wx wallets is not yet implemented',
@@ -89,9 +103,7 @@ export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
     identityApi?: IdentityApi,
   ): Promise<{ [key: string]: WxWallet }> {
     if (!identityApi) {
-      throw new Error(
-        'IdentityApi is required to create Wx wallet instances',
-      );
+      throw new Error('IdentityApi is required to create Wx wallet instances');
     }
 
     const walletInstances: { [key: string]: WxWallet } = {};
@@ -231,7 +243,10 @@ export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
   /**
    * Get Waves network code from NetworkName
    */
-  #getWavesNetworkCode(network: NetworkName, customCode?: string): string | undefined {
+  #getWavesNetworkCode(
+    network: NetworkName,
+    customCode?: string,
+  ): string | undefined {
     switch (network) {
       case NetworkName.Mainnet:
         return NETWORK_CODES.waves.mainnet;

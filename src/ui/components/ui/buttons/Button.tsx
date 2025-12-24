@@ -16,13 +16,13 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export function Button({
-                         children,
-                         className,
-                         loading,
-                         type = 'button',
-                         view,
-                         ...otherProps
-                       }: Props) {
+  children,
+  className,
+  loading,
+  type = 'button',
+  view,
+  ...otherProps
+}: Props) {
   return (
     <button
       className={clsx(className, styles.button, {
@@ -34,7 +34,7 @@ export function Button({
         [styles.submit]: view === 'submit',
         [styles.transparent]: view === 'transparent',
         [styles.warning]: view === 'warning',
-        [styles.simple]: view === 'simple'
+        [styles.simple]: view === 'simple',
       })}
       type={type}
       {...otherProps}

@@ -4,9 +4,9 @@ import { TxDetailTabs } from 'messages/_common/detailTabs';
 import { MessageFooter } from 'messages/_common/footer';
 import { MessageHeader } from 'messages/_common/header';
 import { MessageIcon } from 'messages/_common/icon';
+import { usePopupSelector } from 'popup/store/react';
 import { type PreferencesAccount } from 'preferences/types';
 import { useTranslation } from 'react-i18next';
-import { usePopupSelector } from 'popup/store/react';
 
 import * as transactionsStyles from '../../ui/components/pages/styles/transactions.module.css';
 import { Ellipsis } from '../../ui/components/ui/ellipsis/Ellipsis';
@@ -17,7 +17,6 @@ export function Unit0TransactionCard({
   message,
 }: {
   className?: string;
-  collapsed?: boolean;
   message: MessageOfType<'unit0Transaction'>;
 }) {
   const { t } = useTranslation();
@@ -46,7 +45,7 @@ export function Unit0TransactionCard({
     // data format: 0x42842e0e (4 bytes) + from (32 bytes) + to (32 bytes) + tokenId (32 bytes)
     try {
       const tokenIdHex = message.data.data.slice(138); // Skip function selector + from + to
-      tokenId = BigInt('0x' + tokenIdHex).toString();
+      tokenId = BigInt(`0x${tokenIdHex}`).toString();
 
       displayAmount = `Token #${tokenId}`;
       displayAsset = assets[message.data.to]?.displayName ?? 'ERC-721 NFT';
@@ -54,9 +53,8 @@ export function Unit0TransactionCard({
 
       // Extract recipient from data
       const recipientHex = message.data.data.slice(74, 138);
-      recipientAddress = '0x' + recipientHex.slice(24); // Remove padding
-    } catch (err) {
-      console.warn('Failed to decode ERC-721 transfer:', err);
+      recipientAddress = `0x${recipientHex.slice(24)}`; // Remove padding
+    } catch {
       displayAmount = 'NFT';
       displayAsset = 'ERC-721';
       tokenType = 'ERC-721';
@@ -68,8 +66,8 @@ export function Unit0TransactionCard({
       const tokenIdHex = message.data.data.slice(138, 202);
       const amountHex = message.data.data.slice(202, 266);
 
-      tokenId = BigInt('0x' + tokenIdHex).toString();
-      const amount = BigInt('0x' + amountHex).toString();
+      tokenId = BigInt(`0x${tokenIdHex}`).toString();
+      const amount = BigInt(`0x${amountHex}`).toString();
 
       displayAmount = `${amount}x Token #${tokenId}`;
       displayAsset = assets[message.data.to]?.displayName ?? 'ERC-1155 NFT';
@@ -77,9 +75,8 @@ export function Unit0TransactionCard({
 
       // Extract recipient from data
       const recipientHex = message.data.data.slice(74, 138);
-      recipientAddress = '0x' + recipientHex.slice(24); // Remove padding
-    } catch (err) {
-      console.warn('Failed to decode ERC-1155 transfer:', err);
+      recipientAddress = `0x${recipientHex.slice(24)}`; // Remove padding
+    } catch {
       displayAmount = 'NFT';
       displayAsset = 'ERC-1155';
       tokenType = 'ERC-1155';
@@ -89,7 +86,7 @@ export function Unit0TransactionCard({
     // data format: 0xa9059cbb (4 bytes) + recipient (32 bytes) + amount (32 bytes)
     try {
       const tokenAmount = message.data.data.slice(74); // Skip function selector + recipient
-      const amountInSmallestUnit = BigInt('0x' + tokenAmount);
+      const amountInSmallestUnit = BigInt(`0x${tokenAmount}`);
 
       // Get token info from assets
       const tokenAsset = assets[message.data.to];
@@ -107,10 +104,8 @@ export function Unit0TransactionCard({
 
       // Extract recipient from data
       const recipientHex = message.data.data.slice(10, 74);
-      recipientAddress = '0x' + recipientHex.slice(24); // Remove padding
-    } catch (err) {
-      console.warn('Failed to decode ERC-20 transfer:', err);
-      // Fallback to showing 0 Unit0
+      recipientAddress = `0x${recipientHex.slice(24)}`; // Remove padding
+    } catch {
       displayAmount = '0.00000000';
       displayAsset = 'Unit0';
     }

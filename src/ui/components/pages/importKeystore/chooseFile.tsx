@@ -40,7 +40,7 @@ export function ImportKeystoreChooseFile({
     try {
       const reader = new FileReader();
 
-      reader.onerror = error => {
+      reader.onerror = () => {
         setError(t('importKeystore.errorFormat'));
       };
       reader.onload = () => {

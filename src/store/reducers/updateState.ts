@@ -1,10 +1,10 @@
+import { BLOCKCHAIN_TYPES } from '../../assets/constants';
 import { type AssetsRecord } from '../../assets/types';
 import { type Message } from '../../messages/types';
 import { NetworkName } from '../../networks/types';
 import { type PreferencesAccount } from '../../preferences/types';
 import { ACTION } from '../actions/constants';
 import { type AppAction, type AppActionPayload } from '../types';
-import { BLOCKCHAIN_TYPES } from '../../assets/constants';
 
 export * from './localState';
 export * from './nftConfig';
@@ -81,7 +81,7 @@ export const currentNetwork = createSimpleReducer(
 
 export const currentBlockchainType = createSimpleReducer(
   BLOCKCHAIN_TYPES.WAVES, // Default value
-  ACTION.UPDATE_CURRENT_BLOCKCHAIN_TYPE
+  ACTION.UPDATE_CURRENT_BLOCKCHAIN_TYPE,
 );
 
 export const balances = createSimpleReducer({}, ACTION.UPDATE_BALANCES);

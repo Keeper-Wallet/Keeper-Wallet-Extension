@@ -3,13 +3,13 @@ import { NetworkName } from 'networks/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  BlockchainType,
-  MultiWallet,
-  NetworkType,
+  type BlockchainType,
+  type MultiWallet,
   NETWORK_NAME_MAP,
+  type NetworkType,
 } from 'services/types';
-import { Button } from 'ui/components/ui/buttons/Button';
 import { Avatar } from 'ui/components/ui';
+import { Button } from 'ui/components/ui/buttons/Button';
 import { Modal } from 'ui/components/ui/modal/Modal';
 import { isValidEthereumAddress } from 'ui/utils/ethereum';
 
@@ -152,7 +152,7 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
   const { t } = useTranslation();
 
   const isContacts = type === 'contacts';
-  const contacts = (isContacts ? (items as unknown as Contact[]) : []);
+  const contacts = isContacts ? (items as unknown as Contact[]) : [];
 
   // Flatten and group MultiWallet items by wallet ID
   const groupedAccounts =
@@ -169,7 +169,7 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
   const [, setSelectedAccounts] = useState<Set<string>>(() => {
     // Initialize with all accounts from selected wallets
     const initialAccounts = new Set<string>();
-    Object.entries(groupedAccounts).forEach(([_, networks]) => {
+    Object.values(groupedAccounts).forEach(networks => {
       networks.forEach(account => {
         initialAccounts.add(account.id);
       });
@@ -249,7 +249,7 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
 
       // Also select all accounts
       const allAccounts = new Set<string>();
-      Object.entries(groupedAccounts).forEach(([_, networks]) => {
+      Object.values(groupedAccounts).forEach(networks => {
         networks.forEach(account => {
           allAccounts.add(account.id);
         });
@@ -265,6 +265,7 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
   return (
     <form
       className={styles.root}
+      data-testid="chooseAccountsForm"
       onSubmit={event => {
         event.preventDefault();
         onSubmit(getSelectedItems());
@@ -311,9 +312,11 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
               }}
             />
             <span className={clsx('body1')}>
-              {(isContacts
-              ? selectedContacts.size === contacts.length
-              : allSelected)
+              {(
+                isContacts
+                  ? selectedContacts.size === contacts.length
+                  : allSelected
+              )
                 ? t('common.deselectAll')
                 : t('common.selectAll')}
             </span>
@@ -372,7 +375,8 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
                   onClick={() => {
                     setSelectedContacts(prev => {
                       const next = new Set(prev);
-                      if (next.has(contact.address)) next.delete(contact.address);
+                      if (next.has(contact.address))
+                        next.delete(contact.address);
                       else next.add(contact.address);
                       return next;
                     });
@@ -384,7 +388,9 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
                       <div className={styles.accountNameRow}>
                         <div className={styles.accountName}>{contact.name}</div>
                         <span className={styles.walletTypeLabel}>
-                          {isValidEthereumAddress(contact.address) ? 'Unit0' : 'Waves'}
+                          {isValidEthereumAddress(contact.address)
+                            ? 'Unit0'
+                            : 'Waves'}
                         </span>
                         {!isValidEthereumAddress(contact.address) && (
                           <span className={styles.walletTypeLabel}>

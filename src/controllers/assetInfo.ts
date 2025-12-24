@@ -1,6 +1,7 @@
 import { isNotNull } from '_core/isNotNull';
 import { type AssetDetail, type AssetsRecord } from 'assets/types';
 import { getDataServiceUrl, getSwapServiceUrl } from 'config/env';
+
 import {
   type Unit0NftAsset,
   type Unit0TokenAsset,
@@ -13,8 +14,6 @@ import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import Browser from 'webextension-polyfill';
 
-import { Unit0Api } from './api/unit0Api';
-
 import {
   assetLogosByNetwork,
   defaultAssetTickers,
@@ -24,6 +23,7 @@ import {
   type ExtensionStorage,
   type StorageLocalState,
 } from '../storage/storage';
+import { Unit0Api } from './api/unit0Api';
 import { type NetworkController } from './network';
 import { type RemoteConfigController } from './remoteConfig';
 
@@ -232,8 +232,9 @@ export class AssetInfoController {
       (assetLogosByNetwork[network] as Record<string, string> | undefined) ||
       {};
     const networkUnit0AssetLogos =
-      (unit0AssetLogosByNetwork[network] as Record<string, string> | undefined) ||
-      {};
+      (unit0AssetLogosByNetwork[network] as
+        | Record<string, string>
+        | undefined) || {};
 
     const allDefaultLogos = {
       ...(networkAssetLogos as Record<string, string>),
@@ -273,7 +274,9 @@ export class AssetInfoController {
       }
     });
 
-    if (Object.keys(updatedAssetLogos).length === Object.keys(assetLogos).length) {
+    if (
+      Object.keys(updatedAssetLogos).length === Object.keys(assetLogos).length
+    ) {
       return;
     }
 
@@ -515,9 +518,9 @@ export class AssetInfoController {
         if (suspiciousAssets) {
           Object.keys(assets[NetworkName.Mainnet]).forEach(
             assetId =>
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            (assets[NetworkName.Mainnet][assetId]!.isSuspicious =
-              binarySearch(suspiciousAssets, assetId) > -1),
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              (assets[NetworkName.Mainnet][assetId]!.isSuspicious =
+                binarySearch(suspiciousAssets, assetId) > -1),
           );
         }
 
@@ -591,9 +594,8 @@ export class AssetInfoController {
           ...updatedUsdPrices,
         },
       });
-    } catch (error) {
-      console.error('Failed to fetch Unit0 prices:', error);
-      // Don't throw - allow the app to continue even if price fetch fails
+    } catch {
+      // Price fetch failed
     }
   }
 
@@ -669,7 +671,6 @@ export class AssetInfoController {
             assetLogos: updatedAssetLogos,
             assetTickers: updatedAssetTickers,
           });
-
         }
       }
     } catch {

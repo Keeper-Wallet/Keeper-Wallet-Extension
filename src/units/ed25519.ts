@@ -106,9 +106,14 @@ export interface WavesAccountData extends AccountData {}
 export interface EthereumAccountData extends AccountData {}
 export interface Unit0AccountData extends AccountData {}
 
-export async function getWavesData(seed: string, chainId: number = 87): Promise<WavesAccountData> {
+export async function getWavesData(
+  seed: string,
+  chainId: number = 87,
+): Promise<WavesAccountData> {
   try {
-    const publicKeyBytes = await createPublicKey(createPrivateKeyMultichain(seed));
+    const publicKeyBytes = await createPublicKey(
+      createPrivateKeyMultichain(seed),
+    );
     const addressBytes = createAddress(publicKeyBytes, chainId);
     return {
       address: base58Encode(addressBytes),

@@ -56,7 +56,7 @@ const WAVES_TOKEN_SCALE = Math.pow(10, 8);
 type Account = { address: string; publicKey: string };
 
 describe('Publish', function () {
-  const nodeUrl = 'http://localhost:6869';
+  let nodeUrl: string;
   let chainId: number;
   let issuer: Account, user1: Account, user2: Account;
   let dAppTab: string;
@@ -66,6 +66,9 @@ describe('Publish', function () {
   let assetWithMaxValuesId: string;
 
   before(async function () {
+    // Use localhost for both test code and browser
+    nodeUrl = 'http://localhost:6869';
+
     chainId = await getNetworkByte(nodeUrl);
 
     const issuerPrivateKeyBytes = await createPrivateKey(
@@ -103,41 +106,68 @@ describe('Publish', function () {
     await App.initVault();
 
     const tabKeeper = await browser.getWindowHandle();
+
+    // After initVault, we're on the popup page showing EmptyHomeScreen
+    // First import accounts (they will be on Mainnet by design)
     const { waitForNewWindows } = await Windows.captureNewWindows();
     await EmptyHomeScreen.addButton.click();
     const [tabAccounts] = await waitForNewWindows(1);
 
-    await browser.switchToWindow(tabKeeper);
-    await browser.closeWindow();
-
     await browser.switchToWindow(tabAccounts);
     await browser.refresh();
-
-    await Network.switchTo('Custom');
-    if (await CustomNetworkModal.root.isDisplayed()) {
-      await CustomNetworkModal.addressInput.setValue(this.nodeUrl);
-      await CustomNetworkModal.saveButton.click();
-    }
 
     await AccountsHome.importAccount('user2', USER_2_SEED);
     await AccountsHome.importAccount('user1', USER_1_SEED);
     await AccountsHome.importAccount('issuer', ISSUER_SEED);
 
-    dAppTab = (await browser.createWindow('tab')).handle;
-    await browser.switchToWindow(dAppTab);
-    await browser.navigateTo(`https://${WHITELIST[3]}`);
-
-    await browser.switchToWindow(tabAccounts);
+    // Close accounts tab and switch back to keeper tab
     await browser.closeWindow();
+    await browser.switchToWindow(tabKeeper);
 
-    await browser.switchToWindow(dAppTab);
+    // Now enable test networks and switch to Custom
+    await browser.openKeeperPopup();
+    await browser.pause(500);
+    await Network.enableTestNetworks();
+
+    // After enableTestNetworks, we're on the network settings page
+    // Navigate back to home screen
+    await browser.openKeeperPopup();
+    await browser.pause(1000);
+
+    // Click on Custom network - this will open the modal since it's not configured yet
+    await Network.switchTo('Waves Custom');
+
+    // Wait for CustomNetworkModal to appear
+    await browser.pause(500);
+    const modalExists = await CustomNetworkModal.root.isExisting();
+
+    if (modalExists) {
+      // Configure the custom network
+      // Use Docker network name for browser to access private node
+      const browserNodeUrl = 'http://waves-private-node:6869';
+
+      // Clear the input first, then set value
+      await CustomNetworkModal.addressInput.clearValue();
+      await CustomNetworkModal.addressInput.setValue(browserNodeUrl);
+
+      await CustomNetworkModal.saveButton.click();
+
+      // Wait for modal to close and network to switch
+      await browser.pause(2000);
+    }
+
+    // Verify the network was switched
+    await Network.checkNetwork('Waves Custom');
+
+    // Navigate to dApp page
+    dAppTab = tabKeeper;
+    await browser.navigateTo(`https://${WHITELIST[3]}`);
   });
 
   after(async function () {
-    const tabKeeper = (await browser.createWindow('tab')).handle;
-    await App.closeBgTabs(tabKeeper);
+    // Switch to popup and reset
     await browser.openKeeperPopup();
-    await Network.switchTo('Mainnet');
+    await Network.switchTo('Waves Mainnet');
     await App.resetVault();
   });
 

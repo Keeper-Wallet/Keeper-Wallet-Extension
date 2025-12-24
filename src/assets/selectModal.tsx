@@ -1,5 +1,6 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { type BalanceAssets } from 'balances/types';
 import clsx from 'clsx';
 import ColorHash from 'color-hash';
@@ -13,7 +14,6 @@ import { Tooltip } from 'ui/components/ui/tooltip';
 import * as styles from './selectModal.module.css';
 import { type AssetDetail } from './types';
 import { useAssetLogo } from './utils';
-import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
 export interface AssetSelectModalOption extends AssetDetail {
   disabled?: boolean;

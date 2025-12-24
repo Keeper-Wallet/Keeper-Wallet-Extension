@@ -1,17 +1,25 @@
 export const NetworkSettingsScreen = {
   get root() {
-    return $("[class*='networkTab@settings']");
+    return $("[data-testid='networkSettings'],[class*='networkTab@settings']");
+  },
+
+  get showTestNetworksToggle() {
+    return this.root.$('input[type="checkbox"]');
+  },
+
+  get customNetworkOption() {
+    return this.root.findByText$('Waves Custom');
   },
 
   get nodeAddress() {
-    return this.root.$('#node_address');
+    return $('#node_address');
   },
 
   get matcherAddress() {
-    return this.root.$('#node_address');
+    return $('#matcher_address');
   },
 
-  get setDefaultButton() {
-    return this.root.$('#setDefault');
+  get modalCloseButton() {
+    return $('.modal-close');
   },
 };

@@ -30,7 +30,9 @@ const AccountsGroup = (wrapped: WebdriverIO.Element) => ({
 
 export const ChooseAccountsForm = {
   get root() {
-    return $("[class*='root@chooseItems'],[class*='root@chooseAccounts']");
+    return $(
+      "[data-testid='chooseAccountsForm'],[class*='root@chooseItems'],[class*='root@chooseAccounts']",
+    );
   },
 
   get importButton() {

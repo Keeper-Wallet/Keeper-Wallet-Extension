@@ -1,5 +1,5 @@
-import clsx from 'clsx';
 import { createMoneyFromBalance, getBalanceKey } from 'balances/utils';
+import clsx from 'clsx';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { compareAccountsByLastUsed } from 'preferences/utils';
 import { useEffect, useState } from 'react';
@@ -9,8 +9,8 @@ import { selectAccount } from 'store/actions/localState';
 import { SearchInput } from 'ui/components/ui/searchInput/searchInput';
 import background from 'ui/services/Background';
 
-import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
 import { startPolling } from '../../../_core/polling';
+import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
 import { AccountCard } from '../accounts/accountCard';
 import { Tooltip } from '../ui/tooltip';
 import * as styles from './otherAccounts.module.css';
@@ -53,7 +53,7 @@ export function OtherAccountsPage() {
 
   // Filter balances to only show those matching the current network and blockchain
   const filteredBalances = Object.fromEntries(
-    Object.entries(balances).filter(([_, balance]) => {
+    Object.entries(balances).filter(([, balance]) => {
       // If balance has no network info, keep it (legacy data)
       if (!balance?.network) return true;
 

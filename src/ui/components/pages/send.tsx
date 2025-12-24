@@ -4,7 +4,6 @@ import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { BLOCKCHAIN_TYPES } from 'assets/constants';
 import { getBalanceKey } from 'balances/utils';
 import { Unit0Api } from 'controllers/api/unit0Api';
-import { NetworkName } from '../../../networks/types';
 import { isAddressString, isAlias } from 'messages/utils';
 import { createNft } from 'nfts/nfts';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
@@ -15,6 +14,7 @@ import { getBalances } from 'store/actions/balances';
 import Background from 'ui/services/Background';
 
 import { AssetAmountInput } from '../../../assets/amountInput';
+import { NetworkName } from '../../../networks/types';
 import { ErrorMessage, Loader } from '../ui';
 import { Button } from '../ui';
 import { Input } from '../ui';
@@ -173,7 +173,12 @@ export function Send() {
               const unit0Api = new Unit0Api();
 
               // Prepare transaction data based on asset type
-              let txData: any;
+              let txData: {
+                from: string;
+                to: string;
+                value: string;
+                data?: string;
+              };
 
               if (isNft) {
                 const { ethers } = await import('ethers');
@@ -288,11 +293,7 @@ export function Send() {
                 );
                 // Convert hex result to decimal string
                 gasLimit = parseInt(estimatedGas, 16).toString();
-              } catch (estimateError) {
-                console.warn(
-                  'Gas estimation failed, using default:',
-                  estimateError,
-                );
+              } catch {
                 // Fallback: 21000 for native, ~65000 for ERC-20, ~150000 for NFT
                 gasLimit = isNft ? '150000' : txData.data ? '65000' : '21000';
               }
@@ -310,7 +311,7 @@ export function Send() {
                     );
 
               // Get current UNIT0 balance (already in wei from assetBalances)
-              const unit0Balance = assetBalances?.['unit0']?.balance ?? '0';
+              const unit0Balance = assetBalances?.unit0?.balance ?? '0';
               const balanceInWei = new BigNumber(unit0Balance);
 
               // Check if balance is sufficient
@@ -348,7 +349,6 @@ export function Send() {
               // Success - navigate back
               navigate(-1);
             } catch (err) {
-              console.error('Unit0 transaction failed:', err);
               setIsSubmitting(false);
               if (err instanceof Error && /user denied/i.test(err.message)) {
                 return;
@@ -490,11 +490,7 @@ export function Send() {
                             if (new BigNumber(maxSendable).lte(0)) {
                               maxSendable = '0';
                             }
-                          } catch (err) {
-                            console.warn(
-                              'Failed to estimate gas, using balance minus default fee:',
-                              err,
-                            );
+                          } catch {
                             // Fallback: subtract ~0.001 UNIT0 for gas
                             maxSendable = new BigNumber(balance.toTokens())
                               .sub(0.001)

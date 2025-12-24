@@ -181,10 +181,6 @@ export function NftInfo() {
           onClick={() => {
             if (nft?.id) {
               navigate(`/send/${nft.id}`);
-            } else {
-              console.error(
-                '❌ [NftInfo] Cannot navigate - nft.id is undefined',
-              );
             }
           }}
         >

@@ -72,15 +72,18 @@ export function AssetAmountInput({
             data-testid="amountInput"
             mapToRadix={['.', ',']}
             mask={Number}
-            maxLength={23}
             placeholder="0.0"
             radix="."
             scale={balance.asset.precision}
-            thousandsSeparator={' '}
+            thousandsSeparator=" "
             value={maskedValue}
             onAccept={(_, mask) => {
               onChange(mask.unmaskedValue, mask.value);
             }}
+            {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ...({} as any)
+            }
           />
         </div>
 

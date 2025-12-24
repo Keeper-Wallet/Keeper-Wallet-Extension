@@ -309,10 +309,10 @@ export class IdentityController implements IdentityApi {
 
     // Use provided network or fall back to current network
     const targetNetwork = network || this.getNetwork();
-    
+
     // Store the sign-in network - getConfig() will use this to get the correct API endpoint
     this.signInNetwork = targetNetwork;
-    
+
     // Use the target network's user pool for this sign-in
     const config = this.getIdentityConfig(targetNetwork);
     const userPool = new CognitoUserPool({
@@ -363,11 +363,11 @@ export class IdentityController implements IdentityApi {
             this.signInNetwork = undefined;
             resolve({ challengeName: 'CUSTOM_CHALLENGE' });
           },
-          mfaRequired: (challengeName) => {
+          mfaRequired: challengeName => {
             // Keep signInNetwork set for MFA confirmation
             resolve({ challengeName });
           },
-          mfaSetup: (challengeName) => {
+          mfaSetup: challengeName => {
             // Keep signInNetwork set for MFA setup
             resolve({ challengeName });
           },
@@ -375,11 +375,11 @@ export class IdentityController implements IdentityApi {
             this.signInNetwork = undefined;
             resolve({ challengeName: 'NEW_PASSWORD_REQUIRED' });
           },
-          totpRequired: (challengeName) => {
+          totpRequired: challengeName => {
             // Keep signInNetwork set for TOTP confirmation
             resolve({ challengeName });
           },
-          selectMFAType: (challengeName) => {
+          selectMFAType: challengeName => {
             // Keep signInNetwork set for MFA type selection
             resolve({ challengeName });
           },
@@ -417,7 +417,7 @@ export class IdentityController implements IdentityApi {
               this.identity.username = this.userData!.username;
               this.user = undefined;
               this.userData = undefined;
-              
+
               // Clear sign-in network tracking after successful MFA
               this.signInNetwork = undefined;
 

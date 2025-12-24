@@ -1,6 +1,7 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
-import { AssetDetail, type AssetsRecord } from 'assets/types';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
+import { type AssetDetail, type AssetsRecord } from 'assets/types';
 import { type BalanceAssets } from 'balances/types';
 import { getBalanceKey } from 'balances/utils';
 import clsx from 'clsx';
@@ -15,11 +16,10 @@ import { icontains } from 'ui/components/pages/assets/helpers';
 import * as styles from 'ui/components/pages/styles/assets.styl';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import { Tooltip } from 'ui/components/ui/tooltip';
-import { type MultiWallet } from '../../../../../services/types';
 
-import { CARD_FULL_HEIGHT, sortAssetEntries, useUiState } from './helpers';
 import { BLOCKCHAIN_TYPES } from '../../../../../assets/constants';
-import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
+import { type MultiWallet } from '../../../../../services/types';
+import { CARD_FULL_HEIGHT, sortAssetEntries, useUiState } from './helpers';
 
 const Row = ({
   data,
@@ -124,7 +124,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
     currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
       ? Object.fromEntries(
           Object.entries(assetsByAddress).filter(
-            ([_, asset]) => asset?.type === 'ERC-20' || asset?.id === 'unit0',
+            ([, asset]) => asset?.type === 'ERC-20' || asset?.id === 'unit0',
           ),
         )
       : allAssets;
@@ -191,10 +191,13 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
       if (activeAccount.type === 'multichain' && multiAccount.coins?.unit0) {
         const network = currentNetwork?.toLowerCase() || 'mainnet';
         const unit0NetworkKey = network === 'stagenet' ? 'testnet' : network;
-        return (
-          (multiAccount.coins.unit0.networks as any)?.[unit0NetworkKey]
-            ?.address || null
-        );
+        const networks = multiAccount.coins.unit0.networks;
+        if (unit0NetworkKey === 'mainnet') {
+          return networks.mainnet?.address || null;
+        } else if (unit0NetworkKey === 'testnet') {
+          return networks.testnet?.address || null;
+        }
+        return null;
       } else {
         return activeAccount.address || null;
       }
@@ -203,9 +206,17 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
     // Waves blockchain type
     if (activeAccount.type === 'multichain' && multiAccount.coins?.waves) {
       const network = currentNetwork?.toLowerCase() || 'mainnet';
-      return (
-        (multiAccount.coins.waves.networks as any)?.[network]?.address || null
-      );
+      const networks = multiAccount.coins.waves.networks;
+      if (network === 'mainnet') {
+        return networks.mainnet?.address || null;
+      } else if (network === 'testnet') {
+        return networks.testnet?.address || null;
+      } else if (network === 'stagenet') {
+        return networks.stagenet?.address || null;
+      } else if (network === 'custom') {
+        return networks.custom?.address || null;
+      }
+      return null;
     } else {
       return activeAccount.address || null;
     }

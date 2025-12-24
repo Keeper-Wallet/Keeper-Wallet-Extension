@@ -52,7 +52,6 @@ export function ImportSuccess({
   const accountName = location.state?.accountName || account?.name;
   const isTestnetWx = wxNetwork === 'testnet';
 
-  console.log(wxNetwork, '###');
   return (
     <div data-testid="importSuccessForm" className={styles.content}>
       <div

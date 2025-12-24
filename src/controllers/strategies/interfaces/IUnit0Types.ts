@@ -149,19 +149,29 @@ export interface Unit0TokenDetailsResponse {
   volume_24h: string | null;
 }
 
+interface AddressTag {
+  label: string;
+  display_name: string;
+}
+
+interface AddressMetadata {
+  reputation?: number;
+  [key: string]: unknown;
+}
+
 export interface Unit0AddressInfo {
   ens_domain_name: string | null;
   hash: string;
-  implementations: any[];
+  implementations: Array<{ address: string; name: string }>;
   is_contract: boolean;
   is_scam: boolean;
   is_verified: boolean;
-  metadata: any;
+  metadata: AddressMetadata | null;
   name: string | null;
-  private_tags: any[];
+  private_tags: AddressTag[];
   proxy_type: string | null;
-  public_tags: any[];
-  watchlist_names: any[];
+  public_tags: AddressTag[];
+  watchlist_names: AddressTag[];
 }
 
 export interface Unit0Transaction {
@@ -197,9 +207,16 @@ export interface Unit0Transaction {
   exchange_rate: string | null;
 }
 
+interface NextPageParams {
+  block_number?: number;
+  index?: number;
+  items_count?: number;
+  [key: string]: unknown;
+}
+
 export interface Unit0TransactionResponse {
   items: Unit0Transaction[];
-  next_page_params: any;
+  next_page_params: NextPageParams | null;
 }
 
 export interface Unit0TokenTransfer {
@@ -228,5 +245,5 @@ export interface Unit0TokenTransfer {
 
 export interface Unit0TokenTransferResponse {
   items: Unit0TokenTransfer[];
-  next_page_params: any;
+  next_page_params: NextPageParams | null;
 }

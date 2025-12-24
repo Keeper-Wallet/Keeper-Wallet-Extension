@@ -32,10 +32,9 @@ export class Unit0NftStrategy implements INftStrategy {
         nftTokens.map(token => [
           (token?.token?.address_hash ?? token?.token?.address)?.toLowerCase(),
           token,
-        ])
-      ).values()
+        ]),
+      ).values(),
     );
-
 
     // Convert ERC-721 and ERC-1155 tokens to NFT format with enhanced metadata
     // Use collections endpoint for each NFT contract to get comprehensive data with amounts and token instances
@@ -151,7 +150,7 @@ export class Unit0NftStrategy implements INftStrategy {
         decimals: 0,
       },
     }));
-    
+
     return {
       nftData: validNftData,
       assetsToStore,

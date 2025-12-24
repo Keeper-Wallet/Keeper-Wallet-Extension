@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 
 import { NETWORK_CONFIG } from '../../../constants';
 import { NetworkName } from '../../../networks/types';
+import { newAccountSelect } from '../../../store/actions/localState';
 import { Button } from '../ui';
 import { generateNewWalletItems } from './NewWallet';
 import * as styles from './styles/accountOnboarding.styl';
-import { newAccountSelect } from '../../../store/actions/localState';
 
 export function AccountOnboarding() {
   const { t } = useTranslation();
@@ -15,27 +15,25 @@ export function AccountOnboarding() {
   const dispatch = useAccountsDispatch();
 
   const handleMultichainAccount = async () => {
-    try {
-      // Generate multichain account and seed phrase using factory system
-      const { Mnemonic } = await import('ethers');
-      const mnemonic = Mnemonic.fromEntropy(crypto.getRandomValues(new Uint8Array(16)));
-      const phrase = mnemonic.phrase;
+    // Generate multichain account and seed phrase using factory system
+    const { Mnemonic } = await import('ethers');
+    const mnemonic = Mnemonic.fromEntropy(
+      crypto.getRandomValues(new Uint8Array(16)),
+    );
+    const phrase = mnemonic.phrase;
 
-      // Set up complete multichain account state (matching original flow)
-      dispatch(
-        newAccountSelect({
-          type: 'multichain',
-          name: '',
-          address: '', // Will be populated by factory
-          seed: phrase, // Include generated seed phrase for backup page
-        }),
-      );
-      
-      // Navigate directly to backup page (matching original flow)
-      navigate('/create-account/save-backup');
-    } catch (error) {
-      console.error('Failed to create multichain account:', error);
-    }
+    // Set up complete multichain account state (matching original flow)
+    dispatch(
+      newAccountSelect({
+        type: 'multichain',
+        name: '',
+        address: '', // Will be populated by factory
+        seed: phrase, // Include generated seed phrase for backup page
+      }),
+    );
+
+    // Navigate directly to backup page (matching original flow)
+    navigate('/create-account/save-backup');
   };
 
   const handleWavesAccount = async () => {
@@ -58,9 +56,7 @@ export function AccountOnboarding() {
 
   return (
     <div data-testid="accountOnboarding" className={styles.root}>
-      <div className={styles.title}>
-        {t('onboarding.multichainAccounts')}
-      </div>
+      <div className={styles.title}>{t('onboarding.multichainAccounts')}</div>
 
       <p className={styles.description}>
         {t('onboarding.multichainDescription')}
@@ -78,10 +74,7 @@ export function AccountOnboarding() {
         {t('onboarding.wavesOnlyDescription')}
       </p>
 
-      <Button
-        view="simple"
-        onClick={handleWavesAccount}
-      >
+      <Button view="simple" onClick={handleWavesAccount}>
         {t('onboarding.createWavesAccount')}
       </Button>
     </div>

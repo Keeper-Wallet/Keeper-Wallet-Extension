@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 
+import { type NetworkName } from '../../networks/types';
 import { ACTION } from '../actions/constants';
 import { type AppAction } from '../types';
 
@@ -19,7 +20,13 @@ export type NewAccountState = {
       addressEvm?: string;
       accountType?: 'multichain';
     }
-  | { type: 'wx'; publicKey: string; uuid: string; username: string; wxNetwork?: import('../../../networks/types').NetworkName }
+  | {
+      type: 'wx';
+      publicKey: string;
+      uuid: string;
+      username: string;
+      wxNetwork?: NetworkName;
+    }
 );
 
 function newAccount(

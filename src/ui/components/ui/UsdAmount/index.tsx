@@ -2,7 +2,7 @@ import BigNumber from '@waves/bignumber';
 import { usePopupSelector } from 'popup/store/react';
 import { useMemo } from 'react';
 
-import { useUsdPrices, useUnit0UsdPrices } from '../../../../_core/usdPrices';
+import { useUnit0UsdPrices, useUsdPrices } from '../../../../_core/usdPrices';
 import { Loader } from '../loader';
 
 interface Props {
@@ -17,17 +17,21 @@ export function UsdAmount({ id, tokens, className }: Props) {
 
   // Determine token type
   const isUnit0Token = id === 'unit0' || id.startsWith('0x');
-  
+
   // Fetch prices from appropriate provider
-  const wavesUsdPrices = useUsdPrices(useMemo(() => isUnit0Token ? [] : [id], [id, isUnit0Token]));
-  const unit0UsdPrices = useUnit0UsdPrices(useMemo(() => isUnit0Token ? [id] : [], [id, isUnit0Token]));
+  const wavesUsdPrices = useUsdPrices(
+    useMemo(() => (isUnit0Token ? [] : [id]), [id, isUnit0Token]),
+  );
+  const unit0UsdPrices = useUnit0UsdPrices(
+    useMemo(() => (isUnit0Token ? [id] : []), [id, isUnit0Token]),
+  );
 
   if (!isMainnet) {
     return null;
   }
 
   // Get price from appropriate source
-  const usdPrice = isUnit0Token 
+  const usdPrice = isUnit0Token
     ? Object.values(unit0UsdPrices)[0]
     : wavesUsdPrices[id];
 

@@ -35,7 +35,7 @@ function parseAddressBook(json: string): EncryptedAddressBook | null {
       try {
         if (password) {
           const decrypted = await decryptSeed(
-            base64Decode(atob(addresses)),
+            base64Decode(addresses),
             utf8Encode(password),
           );
 

@@ -1,5 +1,5 @@
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { type Unit0Transfer } from 'balances/types';
+import { type Unit0PayloadUnion, type Unit0Transfer } from 'balances/types';
 import { Unit0Api } from 'controllers/api/unit0Api';
 import { NetworkName } from 'networks/types';
 
@@ -9,9 +9,9 @@ import {
   type TransactionFilter,
 } from '../../interfaces/ITransactionStrategy';
 import {
-  type Unit0Transaction,
   type Unit0TokenTransfer,
   type Unit0TokenTransferResponse,
+  type Unit0Transaction,
   type Unit0TransactionResponse,
 } from '../../interfaces/IUnit0Types';
 
@@ -72,11 +72,13 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
       )
       .filter(tx => {
         if (tx.type !== TRANSACTION_TYPE.ETHEREUM) return true;
-        const p = (tx as Unit0Transfer).payload as any;
+        const p = (tx as Unit0Transfer).payload as Unit0PayloadUnion;
         // Hide native UNIT0 entries with zero amount (0.0000 UNIT0)
-        const isUnit0 = p?.tokenSymbol === 'UNIT0';
+        const isUnit0 = 'tokenSymbol' in p && p.tokenSymbol === 'UNIT0';
         const amountStr =
-          typeof p?.amount === 'string' ? p.amount : String(p?.amount ?? '');
+          'amount' in p && typeof p.amount === 'string'
+            ? p.amount
+            : String('amount' in p ? p.amount ?? '' : '');
         const isZero = amountStr === '0';
         return !(isUnit0 && isZero);
       });
@@ -237,11 +239,7 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
             this.creatorCache.set(tokenContractAddress, creatorAddress);
             sender = creatorAddress;
           }
-        } catch (error) {
-          console.warn(
-            `Failed to fetch creator for token ${tokenContractAddress}:`,
-            error,
-          );
+        } catch {
           // Keep original sender if fetch fails
         }
       } else {

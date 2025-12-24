@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { downloadKeystore } from '../../../../keystore/utils';
+import { type MultiWallet } from '../../../../services/types';
 import { isExportable } from '../../pages/exportAccounts/chooseItems';
 import { ExportPasswordModal } from '../../pages/exportAccounts/passwordModal';
 import * as styles from './ExportButton.module.css';
-import { MultiWallet } from '../../../../services/types';
 
 interface Props {
   className?: string;

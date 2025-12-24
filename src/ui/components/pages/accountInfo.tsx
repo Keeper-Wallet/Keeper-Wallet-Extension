@@ -194,7 +194,6 @@ export function AccountInfo() {
       ?.networks?.[unit0NetworkKey]?.address;
 
     if (!unit0Address) {
-      console.error('Unit0 address not found for this network');
       return;
     }
 

@@ -51,7 +51,11 @@ export function Login({
   }, [onConfirm]);
 
   const signIn = useCallback(
-    async (username: string, password: string, network: NetworkName): Promise<void> => {
+    async (
+      username: string,
+      password: string,
+      network: NetworkName,
+    ): Promise<void> => {
       userRef.current = { username, password };
       networkRef.current = network;
 
@@ -89,7 +93,11 @@ export function Login({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (e: any) {
         if (e && e.code === 'NotAuthorizedException' && userRef.current) {
-          await signIn(userRef.current.username, userRef.current.password, networkRef.current);
+          await signIn(
+            userRef.current.username,
+            userRef.current.password,
+            networkRef.current,
+          );
         } else {
           throw e;
         }

@@ -1,4 +1,5 @@
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import clsx from 'clsx';
 import { TxDetailTabs } from 'messages/_common/detailTabs';
 import { MessageFooter } from 'messages/_common/footer';
@@ -14,7 +15,6 @@ import { Balance } from 'ui/components/ui/balance/Balance';
 
 import * as transactionsStyles from '../../ui/components/pages/styles/transactions.module.css';
 import { type MessageOfType, type MessageTxReissue } from '../types';
-import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
 export function ReissueCard({
   className,

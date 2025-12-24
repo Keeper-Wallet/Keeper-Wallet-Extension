@@ -1,9 +1,9 @@
 import { isAddressString, isAlias } from 'messages/utils';
-import { isValidEthereumAddress } from 'ui/utils/ethereum';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { removeAddress, setAddress } from 'store/actions/addresses';
+import { isValidEthereumAddress } from 'ui/utils/ethereum';
 
 import { Button, ErrorMessage, Input, Modal } from '..';
 import * as styles from './EditModal.module.css';
@@ -60,10 +60,7 @@ export function EditModal({
     }
 
     if (
-      !(
-        isAddressString(addressValue) ||
-        isValidEthereumAddress(addressValue)
-      )
+      !(isAddressString(addressValue) || isValidEthereumAddress(addressValue))
     ) {
       return t('address.addressInvalidError');
     }

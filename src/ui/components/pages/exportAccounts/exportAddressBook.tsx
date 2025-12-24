@@ -1,9 +1,9 @@
+import { NetworkName } from 'networks/types';
 import { usePopupSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getNetworkByAddress } from 'ui/utils/waves';
 import { isValidEthereumAddress } from 'ui/utils/ethereum';
-import { NetworkName } from 'networks/types';
+import { getNetworkByAddress } from 'ui/utils/waves';
 
 import { downloadKeystore } from '../../../../keystore/utils';
 import { ExportKeystoreChooseItems } from './chooseItems';

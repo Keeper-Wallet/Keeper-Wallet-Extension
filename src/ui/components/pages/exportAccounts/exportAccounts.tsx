@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+
 import { downloadKeystore } from '../../../../keystore/utils';
-import { MultiWallet } from '../../../../services/types';
+import { type MultiWallet } from '../../../../services/types';
 import background from '../../../services/Background';
 import { ExportKeystoreChooseItems } from './chooseItems';
 import { ExportPasswordModal } from './passwordModal';
@@ -25,28 +26,20 @@ export function ExportAccounts() {
   };
 
   const handlePasswordSubmit = async (password: string) => {
-    try {
-      // Get decrypted vault data
-      const vault = await background.getDecryptedVault(password);
-      setDecryptedVault(vault);
-      setShowPasswordModal(false);
-    } catch (e) {
-      console.error('Vault decryption failed:', e);
-    }
+    // Get decrypted vault data
+    const vault = await background.getDecryptedVault(password);
+    setDecryptedVault(vault);
+    setShowPasswordModal(false);
   };
 
   const handleExport = async (password: string) => {
-    try {
-      if (!decryptedVault || !accountsToExport) {
-        throw new Error(t('exportKeystore.vaultDataMissing'));
-      }
-      // Pass the decrypted vault as the third parameter
-      await downloadKeystore(accountsToExport, undefined, password);
-
-      navigate(-2);
-    } catch (e) {
-      console.error('Export failed:', e);
+    if (!decryptedVault || !accountsToExport) {
+      throw new Error(t('exportKeystore.vaultDataMissing'));
     }
+    // Pass the decrypted vault as the third parameter
+    await downloadKeystore(accountsToExport, undefined, password);
+
+    navigate(-2);
   };
 
   return (

@@ -1,5 +1,5 @@
-import { type Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
+import { type Money } from '@waves/data-entities';
 import clsx from 'clsx';
 
 import { Loader } from '../loader';
@@ -60,7 +60,6 @@ export function Balance({
   const tokens = formatBalanceDisplay(balance, isShortFormat).split('.');
 
   const assetName = showAsset ? balance.asset.displayName : null;
-
 
   if (!split) {
     return (

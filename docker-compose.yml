@@ -12,6 +12,9 @@ services:
       - '4442:4442'
       - '4443:4443'
       - '4444:4444'
+    environment:
+      - SE_SESSION_REQUEST_TIMEOUT=300
+      - SE_SESSION_RETRY_INTERVAL=5
     healthcheck:
       test: curl --fail http://localhost:4444/wd/hub/status
       interval: 3s
@@ -30,6 +33,13 @@ services:
       - SE_EVENT_BUS_HOST=hub
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_SESSION_TIMEOUT=300
+      - SE_NODE_MAX_SESSIONS=1
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=false
+      - SE_SCREEN_WIDTH=1920
+      - SE_SCREEN_HEIGHT=1080
+      - SE_VNC_NO_PASSWORD=1
+      - JAVA_OPTS=-Xmx512m
   chrome-video:
     depends_on:
       - chrome

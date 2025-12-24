@@ -125,12 +125,16 @@ export function SwapForm({
     state => state.swappableAssetIdsByVendor,
   );
   const usdPrices = usePopupSelector(state => state.usdPrices);
-  const accountBalance = usePopupSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    state => state.balances[state.selectedAccount?.address!],
-  );
-
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
+
+  // Parent component ensures balance is loaded before rendering
+  const accountBalance = usePopupSelector(state => {
+    const address = state.selectedAccount?.address;
+    if (!address) return undefined;
+    // Balance keys are prefixed with coinType_network_address
+    const key = `waves_${currentNetwork}_${address}`;
+    return state.balances[key] ?? state.balances[address];
+  }) as BalancesItem;
   const wavesFee = new Money(
     wavesFeeCoins,
     new Asset(assets.WAVES as IAssetInfo),
@@ -154,38 +158,27 @@ export function SwapForm({
     return defaultOption?.money.asset.id || 'WAVES';
   });
 
-  // Early return if assets are not loaded yet
+  // Get asset info - parent component ensures these exist
   const fromAssetInfo = assets[fromAssetId];
   const toAssetInfo = assets[toAssetId];
-  const feeAssetInfo = assets[feeAssetId];
 
-  if (!fromAssetInfo || !toAssetInfo || !feeAssetInfo) {
-    return (
-      <div className="flex items-center justify-center p-4">
-        <Loader />
-        {/*<span className="ml-2">Loading assets...</span>*/}
-      </div>
-    );
-  }
-
+  // Parent component ensures assets are loaded before rendering
   const fromAsset = useMemo(
-    () => new Asset(fromAssetInfo as IAssetInfo),
+    () => (fromAssetInfo ? new Asset(fromAssetInfo as IAssetInfo) : undefined),
     [fromAssetInfo],
-  );
+  ) as Asset;
 
   const toAsset = useMemo(
-    () => new Asset(toAssetInfo as IAssetInfo),
+    () => (toAssetInfo ? new Asset(toAssetInfo as IAssetInfo) : undefined),
     [toAssetInfo],
-  );
+  ) as Asset;
 
   const feeAsset = new Asset(assets[feeAssetId] as IAssetInfo);
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const fromAssetBalance = getAssetBalance(fromAsset, accountBalance!);
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const toAssetBalance = getAssetBalance(toAsset, accountBalance!);
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const feeAssetBalance = getAssetBalance(feeAsset, accountBalance!);
+  // Parent component ensures assets and balance are loaded
+  const fromAssetBalance = getAssetBalance(fromAsset, accountBalance);
+  const toAssetBalance = getAssetBalance(toAsset, accountBalance);
+  const feeAssetBalance = getAssetBalance(feeAsset, accountBalance);
 
   const [fromAmountValue, setFromAmountValue] = useState('');
   const [fromAmountValueMasked, setFromAmountValueMasked] = useState('');
@@ -245,10 +238,12 @@ export function SwapForm({
 
   const isValidAssetPairSelected = useMemo(
     () =>
+      fromAsset &&
+      toAsset &&
       Object.values(swappableAssetIdsByVendor).some(
         ids => ids.includes(fromAsset.id) && ids.includes(toAsset.id),
       ),
-    [swappableAssetIdsByVendor, fromAsset.id, toAsset.id],
+    [swappableAssetIdsByVendor, fromAsset, toAsset],
   );
 
   const swapParams = useMemo(() => {
@@ -272,16 +267,16 @@ export function SwapForm({
     return {
       address: accountAddress,
       amountCoins: fromAmount.toCoins(),
-      fromAssetId: fromAsset.id,
+      fromAssetId: fromAsset?.id || '',
       slippageTolerance,
-      toAssetId: toAsset.id,
+      toAssetId: toAsset?.id || '',
     };
   }, [
     accountAddress,
     fromAmountValue,
     fromAsset,
     slippageTolerance,
-    toAsset.id,
+    toAsset,
     isValidAssetPairSelected,
   ]);
 
@@ -306,7 +301,7 @@ export function SwapForm({
   }, [debouncedSwapParams, swapClient]);
 
   useEffect(() => {
-    if (!swapParams) {
+    if (!swapParams || !toAsset) {
       return;
     }
 

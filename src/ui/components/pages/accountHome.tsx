@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import background from 'ui/services/Background';
+
 import { usePopupSelector } from '../../../popup/store/react';
 import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { Button } from '../ui';
@@ -131,8 +132,8 @@ export function AccountsHome() {
               viewBox="0 0 25 25"
             >
               <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 d="M10.236 18.1194C11.4844 21.9837 16.1647 23.266 19.1788 20.5696C22.0276 18.0209 21.3906 13.4314 17.9485 11.7051L17.2869 11.3732V9.41114V7.44909H19.1435H21V5.6116V3.77412H19.1435H17.2869V2.88706V2H15.4944H13.7019V6.68659V11.3732L13.0403 11.7051C10.6788 12.8894 9.45253 15.6943 10.236 18.1194ZM13.9528 15.5972C14.6301 14.4977 16.4979 14.5435 17.0886 15.6742C17.7343 16.9098 16.8609 18.3473 15.4645 18.3473C14.0965 18.3473 13.2298 16.7706 13.9528 15.5972Z"
                 fill="#1F5AF6"
               />
@@ -173,9 +174,30 @@ export function AccountsHome() {
                 viewBox="0 0 14 14"
                 fill="none"
               >
-                <rect x="0.5" y="0.5" width="13" height="13" rx="6.5" fill="white"/>
-                <rect x="0.5" y="0.5" width="13" height="13" rx="6.5" stroke="#E9E9EB"/>
-                <rect x="2.05005" y="7" width="7" height="7" transform="rotate(-45 2.05005 7)" fill="#1F5AF6"/>
+                <rect
+                  x="0.5"
+                  y="0.5"
+                  width="13"
+                  height="13"
+                  rx="6.5"
+                  fill="white"
+                />
+                <rect
+                  x="0.5"
+                  y="0.5"
+                  width="13"
+                  height="13"
+                  rx="6.5"
+                  stroke="#E9E9EB"
+                />
+                <rect
+                  x="2.05005"
+                  y="7"
+                  width="7"
+                  height="7"
+                  transform="rotate(-45 2.05005 7)"
+                  fill="#1F5AF6"
+                />
               </svg>
             </div>
             <div>
@@ -253,85 +275,106 @@ export function AccountsHome() {
               }}
             >
               <div className={styles.importButtonIconWrapper}>
-              <svg
-                className={styles.importButtonIcon}
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <path
-                  d="M2.31339 6.43799L0.813385 8.43799V9.43799L4.31339 11.938H19.3134L22.8134 9.43799L21.8134 6.93799L13.3134 1.43799H10.3134L2.31339 6.43799Z"
-                  fill="black"
-                />
-                <path
-                  d="M11.8136 1.52887C9.72248 1.52887 0.798004 7.10463 0.798004 9.78817V21.3233C0.798004 21.9389 1.2677 22.438 1.84711 22.438H21.78C22.3594 22.438 22.8291 21.9389 22.8291 21.3233V9.52091C22.8291 7.10463 13.2073 1.52887 11.8136 1.52887Z"
-                  stroke="black"
-                  strokeWidth="1.15"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M0.797958 9.91443L9.81334 15.71M22.8291 9.91443L14.3133 15.438"
-                  stroke="black"
-                  strokeWidth="1.15"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M22.3134 21.938L11.8133 14.088L1.81339 21.938"
-                  stroke="black"
-                  strokeWidth="1.225"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M12.0706 14.5092L11.8134 14.3549L11.5561 14.5092L9.33405 15.8425L3.13223 11.5093V4.08799C3.13223 3.729 3.42325 3.43799 3.78223 3.43799H19.7714C20.1304 3.43799 20.4214 3.729 20.4214 4.08799V11.511L14.2911 15.8415L12.0706 14.5092Z"
-                  fill="white"
-                  stroke="black"
-                />
-                <mask
-                  id="mask0_512_14205"
-                  style={{ maskType: 'alpha' }}
-                  maskUnits="userSpaceOnUse"
-                  x="2"
-                  y="2"
-                  width="19"
-                  height="14"
+                <svg
+                  className={styles.importButtonIcon}
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
                 >
                   <path
-                    d="M2.79164 4.22892C2.70695 3.5431 3.24194 2.93799 3.93297 2.93799H19.624C20.3139 2.93799 20.8485 3.5411 20.7657 4.22595L19.9178 11.2427L14.27 15.2491L11.841 13.7825L9.36338 15.2491L3.65771 11.2427L2.79164 4.22892Z"
+                    d="M2.31339 6.43799L0.813385 8.43799V9.43799L4.31339 11.938H19.3134L22.8134 9.43799L21.8134 6.93799L13.3134 1.43799H10.3134L2.31339 6.43799Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M11.8136 1.52887C9.72248 1.52887 0.798004 7.10463 0.798004 9.78817V21.3233C0.798004 21.9389 1.2677 22.438 1.84711 22.438H21.78C22.3594 22.438 22.8291 21.9389 22.8291 21.3233V9.52091C22.8291 7.10463 13.2073 1.52887 11.8136 1.52887Z"
+                    stroke="black"
+                    strokeWidth="1.15"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M0.797958 9.91443L9.81334 15.71M22.8291 9.91443L14.3133 15.438"
+                    stroke="black"
+                    strokeWidth="1.15"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M22.3134 21.938L11.8133 14.088L1.81339 21.938"
+                    stroke="black"
+                    strokeWidth="1.225"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12.0706 14.5092L11.8134 14.3549L11.5561 14.5092L9.33405 15.8425L3.13223 11.5093V4.08799C3.13223 3.729 3.42325 3.43799 3.78223 3.43799H19.7714C20.1304 3.43799 20.4214 3.729 20.4214 4.08799V11.511L14.2911 15.8415L12.0706 14.5092Z"
+                    fill="white"
+                    stroke="black"
+                  />
+                  <mask
+                    id="mask0_512_14205"
+                    style={{ maskType: 'alpha' }}
+                    maskUnits="userSpaceOnUse"
+                    x="2"
+                    y="2"
+                    width="19"
+                    height="14"
+                  >
+                    <path
+                      d="M2.79164 4.22892C2.70695 3.5431 3.24194 2.93799 3.93297 2.93799H19.624C20.3139 2.93799 20.8485 3.5411 20.7657 4.22595L19.9178 11.2427L14.27 15.2491L11.841 13.7825L9.36338 15.2491L3.65771 11.2427L2.79164 4.22892Z"
+                      fill="white"
+                    />
+                  </mask>
+                  <g mask="url(#mask0_512_14205)">
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M11.8135 11.9834L16.8135 16.9834H6.81351L11.8135 11.9834Z"
+                      fill="#5A81EA"
+                    />
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M11.8135 11.9834L16.8135 6.98343H6.81351L11.8135 11.9834Z"
+                      fill="#E14B51"
+                    />
+                  </g>
+                </svg>
+                <svg
+                  className={styles.importButtonWaveIcon}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                >
+                  <rect
+                    x="0.5"
+                    y="0.5"
+                    width="13"
+                    height="13"
+                    rx="6.5"
                     fill="white"
                   />
-                </mask>
-                <g mask="url(#mask0_512_14205)">
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M11.8135 11.9834L16.8135 16.9834H6.81351L11.8135 11.9834Z"
-                    fill="#5A81EA"
+                  <rect
+                    x="0.5"
+                    y="0.5"
+                    width="13"
+                    height="13"
+                    rx="6.5"
+                    stroke="#E9E9EB"
                   />
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M11.8135 11.9834L16.8135 6.98343H6.81351L11.8135 11.9834Z"
-                    fill="#E14B51"
+                  <rect
+                    x="2.05005"
+                    y="7"
+                    width="7"
+                    height="7"
+                    transform="rotate(-45 2.05005 7)"
+                    fill="#1F5AF6"
                   />
-                </g>
-              </svg>
-              <svg
-                className={styles.importButtonWaveIcon}
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-              >
-                <rect x="0.5" y="0.5" width="13" height="13" rx="6.5" fill="white"/>
-                <rect x="0.5" y="0.5" width="13" height="13" rx="6.5" stroke="#E9E9EB"/>
-                <rect x="2.05005" y="7" width="7" height="7" transform="rotate(-45 2.05005 7)" fill="#1F5AF6"/>
-              </svg>
-            </div>
+                </svg>
+              </div>
 
               {t('import.viaEmail')}
             </Button>

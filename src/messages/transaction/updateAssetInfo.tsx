@@ -1,4 +1,5 @@
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import clsx from 'clsx';
 import { TxDetailTabs } from 'messages/_common/detailTabs';
 import { MessageFooter } from 'messages/_common/footer';
@@ -12,7 +13,6 @@ import { useTranslation } from 'react-i18next';
 import * as transactionsStyles from '../../ui/components/pages/styles/transactions.module.css';
 import { Balance, DateFormat } from '../../ui/components/ui';
 import { type MessageOfType, type MessageTxUpdateAssetInfo } from '../types';
-import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
 export function UpdateAssetInfoCard({ className }: { className?: string }) {
   const { t } = useTranslation();
