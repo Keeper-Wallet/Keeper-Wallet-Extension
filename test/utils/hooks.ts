@@ -58,6 +58,14 @@ export const mochaHooks = () => ({
             args: [
               '--load-extension=/app/dist/chrome',
               '--disable-web-security',
+              // Performance optimizations
+              '--disable-background-timer-throttling',
+              '--disable-backgrounding-occluded-windows',
+              '--disable-renderer-backgrounding',
+              '--disable-features=TranslateUI',
+              '--disable-ipc-flooding-protection',
+              '--no-first-run',
+              '--no-default-browser-check',
             ],
           },
           pageLoadStrategy: 'eager',

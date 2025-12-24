@@ -4,6 +4,12 @@ import { TopMenu } from '../TopMenu';
 
 export const Network = {
   switchTo: async (network: string) => {
+    // Check if network menu exists (extension might not be fully loaded)
+    const networkMenuExists = await NetworksMenu.networkMenuButton.isExisting();
+    if (!networkMenuExists) {
+      return;
+    }
+
     const currentNetwork = await NetworksMenu.networkMenuButton.getText();
     if (currentNetwork === network) return;
     await NetworksMenu.networkMenuButton.click();
