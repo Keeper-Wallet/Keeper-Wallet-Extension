@@ -1,3 +1,4 @@
+import { AccountOnboardingScreen } from '../AccountOnboardingScreen';
 import { ChooseAccountsForm } from '../ChooseAccountsForm';
 import { ImportFormScreen } from '../ImportFormScreen';
 import { ImportKeystoreFileScreen } from '../ImportKeystoreFileScreen';
@@ -8,6 +9,9 @@ import { NewWalletNameScreen } from '../NewWalletNameScreen';
 export const AccountsHome = {
   importAccount: async (name: string, seed: string) => {
     await ImportFormScreen.importViaSeedButton.click();
+
+    // Handle the ImportChoose screen (reuses AccountOnboarding UI) - choose Waves-only import
+    await AccountOnboardingScreen.createWavesAccountButton.click();
 
     await ImportViaSeedScreen.seedInput.setValue(seed);
     await ImportViaSeedScreen.importAccountButton.click();

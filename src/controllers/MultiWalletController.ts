@@ -213,6 +213,20 @@ export class MultiWalletController extends EventEmitter {
   }
 
   /**
+   * Update a wallet's name
+   */
+  async updateWalletName(walletId: string, newName: string): Promise<void> {
+    const wallet = this.#multiwallets.find(w => w.id === walletId);
+
+    if (!wallet) {
+      throw new Error(`Wallet with id ${walletId} not found`);
+    }
+
+    wallet.name = newName;
+    await this.#saveMultiWallets();
+  }
+
+  /**
    * Update wallets with custom network addresses
    * Updates the internal #multiwallets array and saves to vault
    */

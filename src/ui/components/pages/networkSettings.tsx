@@ -9,7 +9,6 @@ import { usePopupSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { ACTION } from 'store/actions/constants';
 import background from 'ui/services/Background';
 
@@ -112,7 +111,6 @@ const NetworkOptionItem = ({
 
 export function NetworkSettings() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const accounts = useAccountsSelector(state => state.accounts);
 
@@ -132,6 +130,9 @@ export function NetworkSettings() {
   // State to track if the current account is Waves-only
   const [isCustomNetworkModalShown, setIsCustomNetworkModalShown] =
     useState(false);
+
+  // Track if preferences have been loaded
+  const [isPreferencesLoaded, setIsPreferencesLoaded] = useState(false);
 
   // Check if the account is Waves-only when component mounts or selected account changes
   useEffect(() => {
@@ -183,6 +184,7 @@ export function NetworkSettings() {
     (async () => {
       const hideTestAccountsPref = await background.getHideTestAccounts();
       setShowTestAccounts(!hideTestAccountsPref);
+      setIsPreferencesLoaded(true);
       // If test networks are hidden, ensure we're using mainnet
       if (hideTestAccountsPref) {
         if (
@@ -195,7 +197,8 @@ export function NetworkSettings() {
         }
       }
     })();
-  }, [selectedNetwork]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   // Handle hide test accounts toggle change
   const handleHideTestAccountsChange = async (checked: boolean) => {
@@ -259,12 +262,10 @@ export function NetworkSettings() {
     await background.setNetwork(networkType as NetworkName);
     await background.setCurrentBlockchainType(blockchain);
     await background.setHideTestAccounts(!showTestAccounts);
-
-    navigate(-1);
   };
 
   return (
-    <div className={styles.networkTab}>
+    <div className={styles.networkTab} data-testid="networkSettings">
       <h2 className="title1 margin-main-big">
         {t('networksSettings.network')}
       </h2>
@@ -355,7 +356,7 @@ export function NetworkSettings() {
           onClose={() => {
             setIsCustomNetworkModalShown(false);
           }}
-          onSave={({ matcher, networkCode, node }) => {
+          onSave={async ({ matcher, networkCode, node }) => {
             dispatch(
               setCustomCode({
                 code: networkCode,
@@ -385,6 +386,19 @@ export function NetworkSettings() {
             setSelectedNetwork(
               `${currentBlockchainType}-${NetworkName.Custom}`,
             );
+
+            // Actually switch to the custom network immediately
+            dispatch({
+              type: ACTION.UPDATE_CURRENT_NETWORK,
+              payload: NetworkName.Custom,
+            });
+
+            await background.setNetwork(NetworkName.Custom);
+
+            // Preserve the "Show test networks" setting only if preferences have been loaded
+            if (isPreferencesLoaded) {
+              await background.setHideTestAccounts(!showTestAccounts);
+            }
           }}
         />
       </Modal>

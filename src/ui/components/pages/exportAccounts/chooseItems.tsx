@@ -265,6 +265,7 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
   return (
     <form
       className={styles.root}
+      data-testid="chooseAccountsForm"
       onSubmit={event => {
         event.preventDefault();
         onSubmit(getSelectedItems());

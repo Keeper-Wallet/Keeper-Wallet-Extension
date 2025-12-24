@@ -6,7 +6,6 @@ import { type MultiWallet } from 'services/types';
 import { Button } from 'ui/components/ui';
 
 import { type MultiWalletAccount } from '../../../../controllers/MultiWalletController';
-import { type PreferencesAccount } from '../../../../preferences/types';
 import * as styles from './chooseAccounts.styl';
 
 interface Props {
@@ -38,23 +37,71 @@ export function ImportKeystoreChooseAccounts({
     () => new Set(groupedAccounts.map(wallet => wallet.id)),
   );
 
-  // Simple check for existing accounts
-  const existingAddresses = new Set(
-    allNetworksAccounts.map(acc => {
-      return (
-        acc.coins?.waves.networks.mainnet.address ||
-        (acc as unknown as PreferencesAccount).address
-      );
-    }),
-  );
-
-  // TODO : Track network-specific addresses by wallet ID for better detection
+  // Build a comprehensive set of existing addresses from all networks
+  const existingAddresses = new Set<string>();
   const existingNetworkAddresses: Record<string, Set<string>> = {};
-  (allNetworksAccounts as unknown as PreferencesAccount[]).forEach(acc => {
-    if (!existingNetworkAddresses[acc.network]) {
-      existingNetworkAddresses[acc.network] = new Set();
+  const existingWalletNames = new Set<string>();
+
+  allNetworksAccounts.forEach(wallet => {
+    existingWalletNames.add(wallet.name);
+
+    // Extract addresses from Waves networks
+    if (wallet.coins?.waves?.networks) {
+      const wavesNetworks = wallet.coins.waves.networks;
+
+      if (wavesNetworks.mainnet?.address) {
+        existingAddresses.add(wavesNetworks.mainnet.address);
+        if (!existingNetworkAddresses.mainnet) {
+          existingNetworkAddresses.mainnet = new Set();
+        }
+        existingNetworkAddresses.mainnet.add(wavesNetworks.mainnet.address);
+      }
+
+      if (wavesNetworks.testnet?.address) {
+        existingAddresses.add(wavesNetworks.testnet.address);
+        if (!existingNetworkAddresses.testnet) {
+          existingNetworkAddresses.testnet = new Set();
+        }
+        existingNetworkAddresses.testnet.add(wavesNetworks.testnet.address);
+      }
+
+      if (wavesNetworks.stagenet?.address) {
+        existingAddresses.add(wavesNetworks.stagenet.address);
+        if (!existingNetworkAddresses.stagenet) {
+          existingNetworkAddresses.stagenet = new Set();
+        }
+        existingNetworkAddresses.stagenet.add(wavesNetworks.stagenet.address);
+      }
+
+      if (wavesNetworks.custom?.address) {
+        existingAddresses.add(wavesNetworks.custom.address);
+        if (!existingNetworkAddresses.custom) {
+          existingNetworkAddresses.custom = new Set();
+        }
+        existingNetworkAddresses.custom.add(wavesNetworks.custom.address);
+      }
     }
-    existingNetworkAddresses[acc.network].add(acc.address);
+
+    // Extract addresses from Unit0 networks
+    if (wallet.coins?.unit0?.networks) {
+      const unit0Networks = wallet.coins.unit0.networks;
+
+      if (unit0Networks.mainnet?.address) {
+        existingAddresses.add(unit0Networks.mainnet.address);
+        if (!existingNetworkAddresses.mainnet) {
+          existingNetworkAddresses.mainnet = new Set();
+        }
+        existingNetworkAddresses.mainnet.add(unit0Networks.mainnet.address);
+      }
+
+      if (unit0Networks.testnet?.address) {
+        existingAddresses.add(unit0Networks.testnet.address);
+        if (!existingNetworkAddresses.testnet) {
+          existingNetworkAddresses.testnet = new Set();
+        }
+        existingNetworkAddresses.testnet.add(unit0Networks.testnet.address);
+      }
+    }
   });
 
   // Function to check if an account exists in its specific network
@@ -68,6 +115,23 @@ export function ImportKeystoreChooseAccounts({
     return (
       existingNetworkAddresses[account.network]?.has(account.address) || false
     );
+  };
+
+  // Function to generate unique wallet name
+  const getUniqueWalletName = (originalName: string): string => {
+    if (!existingWalletNames.has(originalName)) {
+      return originalName;
+    }
+
+    let counter = 1;
+    let newName = `${originalName} (${counter})`;
+
+    while (existingWalletNames.has(newName)) {
+      counter++;
+      newName = `${originalName} (${counter})`;
+    }
+
+    return newName;
   };
 
   // Calculate importable wallets directly without useEffect
@@ -178,7 +242,11 @@ export function ImportKeystoreChooseAccounts({
 
       // Only include accounts from selected wallets and that don't exist
       if (selectedWallets.has(walletId)) {
-        selectedAccounts.push(account);
+        const uniqueName = getUniqueWalletName(account.name);
+        selectedAccounts.push({
+          ...account,
+          name: uniqueName,
+        });
       }
     });
 
@@ -281,15 +349,27 @@ export function ImportKeystoreChooseAccounts({
             // A wallet is importable only if NONE of its addresses exist
             const isImportable = !hasExistingAccounts;
 
+            // Get unique name for display
+            const displayName = isImportable
+              ? getUniqueWalletName(wallet.name)
+              : wallet.name;
+
             return (
-              <div key={wallet.id} className={styles.accountsGroup}>
+              <div
+                key={wallet.id}
+                className={styles.accountsGroup}
+                data-testid="accountsGroup"
+              >
                 <header className={styles.accountsGroupHeader}>
                   <i
                     className={clsx(styles.accountsGroupIcon, 'accountIcon')}
                   />
 
-                  <h2 className={styles.accountsGroupLabel}>
-                    {wallet.name}
+                  <h2
+                    className={styles.accountsGroupLabel}
+                    data-testid="accountsGroupLabel"
+                  >
+                    {displayName}
                     <span className={styles.walletTypeLabel}>
                       {wallet.type}
                     </span>

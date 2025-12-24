@@ -104,6 +104,10 @@ export function NewWalletName() {
             try {
               // Use the new MultiWallet approach for Waves-only creation
               // This creates a nested structure with all three Waves networks
+              // Type guard to ensure we have a seed account
+              if (account.type !== 'seed' || !account.seed) {
+                throw new Error('Seed is required for Waves-only creation');
+              }
               await dispatch(
                 createWavesOnlyMultiWallet({
                   name: accountName,
@@ -111,7 +115,7 @@ export function NewWalletName() {
                   type: account.type,
                 }),
               );
-            } catch {
+            } catch (err) {
               setError(t('newAccountName.errorFailedToCreate'));
               setPending(false);
               return;

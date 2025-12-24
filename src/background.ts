@@ -535,7 +535,23 @@ class BackgroundService extends EventEmitter {
         address: string,
         name: string,
         network: NetworkName,
-      ) => this.preferencesController.addLabel(address, name, network),
+      ) => {
+        const wallets = this.multiWalletController.getMultiWallets();
+        const wallet = wallets.find(w => {
+          const wavesNetworks = w.coins?.waves?.networks;
+          if (!wavesNetworks) return false;
+
+          return Object.values(wavesNetworks).some(
+            net => net?.address === address,
+          );
+        });
+
+        if (wallet) {
+          await this.multiWalletController.updateWalletName(wallet.id, name);
+        } else {
+          await this.preferencesController.addLabel(address, name, network);
+        }
+      },
 
       // ui state
       setUiState: async (state: UiState) =>

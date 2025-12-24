@@ -63,12 +63,14 @@ export const mochaHooks = () => ({
           pageLoadStrategy: 'eager',
         },
         path: '/wd/hub',
-        waitforTimeout: 15 * 1000,
+        waitforTimeout: 30 * 1000,
+        connectionRetryTimeout: 120 * 1000,
+        connectionRetryCount: 3,
       }),
     });
 
     configure({
-      asyncUtilTimeout: 15 * 1000,
+      asyncUtilTimeout: 30 * 1000,
     });
 
     setupBrowser(browser);

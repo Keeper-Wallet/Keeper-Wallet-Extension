@@ -71,6 +71,7 @@ export interface StorageLocalState {
   customMatchers: Record<NetworkName, string | null>;
   customNodes: Record<NetworkName, string | null>;
   data: TrashItem[];
+  hideTestAccounts: boolean;
   identityConfig: typeof DEFAULT_IDENTITY_CONFIG;
   idleOptions: IdleOptions;
   ignoreErrorsConfig: IgnoreErrorsConfig;
