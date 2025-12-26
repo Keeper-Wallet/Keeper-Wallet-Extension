@@ -79,6 +79,24 @@ async function encryptNewVault(
 }
 
 /**
+ * Decrypt the new MultiWalletController vault
+ */
+async function decryptNewVault(
+  vault: string,
+  password: string,
+): Promise<MultiWallet[]> {
+  try {
+    const decryptedData = await decryptSeed(
+      base64Decode(vault),
+      utf8Encode(password),
+    );
+    return JSON.parse(utf8Decode(decryptedData)) as MultiWallet[];
+  } catch {
+    throw new Error('Invalid password');
+  }
+}
+
+/**
  * Generate a unique wallet ID
  */
 function generateWalletId(): string {
@@ -277,11 +295,9 @@ async function transformWallet(
 
     case 'wx': {
       // WX wallets are special - they only work on ONE network (mainnet OR testnet)
-      // We keep only the network they were created on
+      // Store the primary network so we can rollback correctly
       const networkKey =
         oldWallet.network === NetworkName.Mainnet ? 'mainnet' : 'testnet';
-      const otherNetworkKey =
-        oldWallet.network === NetworkName.Mainnet ? 'testnet' : 'mainnet';
 
       // Generate addresses for all networks from public key
       const allNetworks = generateNetworkAddressesFromPublicKey(
@@ -290,7 +306,7 @@ async function transformWallet(
       );
 
       // WX wallets only have the network they were created on
-      // But we still store all network addresses for consistency
+      // Store only the primary network (not all networks)
       return {
         ...baseWallet,
         type: 'wx',
@@ -301,15 +317,9 @@ async function transformWallet(
             publicKey: oldWallet.publicKey,
             networks: {
               [networkKey]: allNetworks[networkKey],
-              // Include other networks but they won't be usable for signing
-              [otherNetworkKey]: allNetworks[otherNetworkKey],
-              stagenet: allNetworks.stagenet,
-              ...(allNetworks.custom ? { custom: allNetworks.custom } : {}),
             } as {
-              mainnet: WalletItem;
-              testnet: WalletItem;
-              stagenet: WalletItem;
-              custom?: WalletItem;
+              mainnet?: WalletItem;
+              testnet?: WalletItem;
             },
           },
         },
@@ -409,12 +419,15 @@ export async function migrateVault(password: string): Promise<string> {
   // Get old vault data
   const storage = await Browser.storage.local.get([
     'WalletController',
+    'MultiWalletController',
     'accounts',
     'selectedAccount',
     'customCodes',
   ]);
 
   const oldVault = (storage.WalletController as { vault?: string })?.vault;
+  const existingNewVault = (storage.MultiWalletController as { vault?: string })
+    ?.vault;
 
   if (!oldVault) {
     throw new Error('No vault found in storage');
@@ -431,7 +444,7 @@ export async function migrateVault(password: string): Promise<string> {
   // Group wallets by identity (same seed/privateKey = same MultiWallet)
   const walletGroups = groupWalletsByIdentity(oldWallets);
   // Transform each group to a MultiWallet
-  const multiWallets: MultiWallet[] = [];
+  const multiWalletsFromOld: MultiWallet[] = [];
 
   for (const [, wallets] of walletGroups) {
     // Use the first wallet in the group as the base
@@ -447,11 +460,47 @@ export async function migrateVault(password: string): Promise<string> {
       customNetworkCode ?? undefined,
     );
 
-    multiWallets.push(transformedWallet);
+    multiWalletsFromOld.push(transformedWallet);
+  }
+
+  // If MultiWalletController vault exists, decrypt it and merge
+  let finalWallets = multiWalletsFromOld;
+  
+  if (existingNewVault) {
+    try {
+      const existingMultiWallets = await decryptNewVault(
+        existingNewVault,
+        password,
+      );
+
+      // Merge: keep existing wallets + add new ones from old vault
+      // Use a Map to track unique wallets by their identity
+      const walletMap = new Map<string, MultiWallet>();
+
+      // First, add all existing multi wallets
+      for (const wallet of existingMultiWallets) {
+        const key = getWalletIdentityKey(wallet);
+        walletMap.set(key, wallet);
+      }
+
+      // Then, add wallets from old vault (only if not already present)
+      for (const wallet of multiWalletsFromOld) {
+        const key = getWalletIdentityKey(wallet);
+        if (!walletMap.has(key)) {
+          walletMap.set(key, wallet);
+        }
+      }
+
+      finalWallets = Array.from(walletMap.values());
+    } catch (error) {
+      // If we can't decrypt existing vault, just use the new wallets
+      console.error('Failed to decrypt existing MultiWalletController vault:', error);
+      finalWallets = multiWalletsFromOld;
+    }
   }
 
   // Encrypt and save new vault
-  const encryptedVault = await encryptNewVault(multiWallets, password);
+  const encryptedVault = await encryptNewVault(finalWallets, password);
 
   // Save only the vault to storage
   // accounts and selectedAccount will be populated by MultiWalletController.unlock()
@@ -465,4 +514,27 @@ export async function migrateVault(password: string): Promise<string> {
 
   // Return the encrypted vault so VaultController can update the store
   return encryptedVault;
+}
+
+/**
+ * Get a unique identity key for a wallet to detect duplicates
+ */
+function getWalletIdentityKey(wallet: MultiWallet): string {
+  switch (wallet.type) {
+    case 'seed':
+      return `seed:${wallet.seed}`;
+    case 'privateKey':
+      return `privateKey:${wallet.privateKey}`;
+    case 'encodedSeed':
+      return `encodedSeed:${wallet.encodedSeed}`;
+    case 'ledger':
+      return `ledger:${wallet.ledgerId}:${wallet.coins.waves.publicKey}`;
+    case 'wx':
+      return `wx:${wallet.wxUuid}`;
+    case 'debug':
+    default:
+      // Use public key + first network address as identity
+      const firstNetwork = Object.values(wallet.coins.waves.networks)[0];
+      return `debug:${wallet.coins.waves.publicKey}:${firstNetwork?.address}`;
+  }
 }

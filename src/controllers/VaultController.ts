@@ -74,9 +74,10 @@ export class VaultController {
       this.#wallet.store.getState().MultiWalletController?.vault,
     );
 
-    // Forward migration: version >= 4 AND old vault exists AND new vault doesn't
-    const migrationNeeded =
-      migrationVersion >= 4 && hasOldVault && !hasNewVault;
+    // Forward migration: version >= 4 AND old vault exists
+    // Always migrate if old vault exists, even if new vault exists
+    // This ensures we pick up new accounts added in master
+    const migrationNeeded = migrationVersion >= 4 && hasOldVault;
 
     if (migrationNeeded) {
       const encryptedVault = await migrateVault(password);
