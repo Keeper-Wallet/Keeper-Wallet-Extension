@@ -140,6 +140,12 @@ async function setupBackgroundService() {
     createExtensionStorage(),
   ]);
 
+  // Initialize MultiWalletController in state to prevent it from being cleared
+  // This preserves the vault during rollback from multi-accounts to master
+  extensionStorage.getInitState({
+    MultiWalletController: { vault: undefined },
+  });
+
   const initLangCode = acceptLanguages.find(code =>
     SUPPORTED_LANGUAGES.find(lang => lang.id === code.toLowerCase()),
   );

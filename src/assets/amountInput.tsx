@@ -81,6 +81,8 @@ export function AssetAmountInput({
             onAccept={(_, mask) => {
               onChange(mask.unmaskedValue, mask.value);
             }}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
           />
         </div>
 

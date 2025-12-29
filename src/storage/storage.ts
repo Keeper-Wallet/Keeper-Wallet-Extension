@@ -237,7 +237,13 @@ export async function createExtensionStorage() {
       }
     } else if (version > CURRENT_MIGRATION_VERSION) {
       for (let i = version; i > CURRENT_MIGRATION_VERSION; i--) {
-        await MIGRATIONS[i - 1].rollback();
+        // Check if migration exists before calling rollback
+        // This prevents crashes when downgrading from a newer version
+        // that has migrations not present in this version
+        const migration = MIGRATIONS[i - 1];
+        if (migration && typeof migration.rollback === 'function') {
+          await migration.rollback();
+        }
       }
     }
 
