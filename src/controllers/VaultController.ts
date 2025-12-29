@@ -70,9 +70,6 @@ export class VaultController {
     const hasOldVault = Boolean(
       this.#oldWallet.store.getState().WalletController?.vault,
     );
-    const hasNewVault = Boolean(
-      this.#wallet.store.getState().MultiWalletController?.vault,
-    );
 
     // Forward migration: version >= 4 AND old vault exists
     // Always migrate if old vault exists, even if new vault exists

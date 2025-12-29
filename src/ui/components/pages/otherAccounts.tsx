@@ -39,11 +39,12 @@ export function OtherAccountsPage() {
       account =>
         account.address !== activeAccount?.address &&
         (!term ||
-          account.name.toLowerCase().indexOf(term.toLowerCase()) !== -1 ||
+          account.name?.toLowerCase().indexOf(term.toLowerCase()) !== -1 ||
           account.address === term ||
           account.publicKey === term ||
           (account.type === 'wx' &&
-            account.username.toLowerCase().indexOf(term.toLowerCase()) !== -1)),
+            account.username?.toLowerCase().indexOf(term.toLowerCase()) !==
+              -1)),
     )
     .sort(compareAccountsByLastUsed);
 

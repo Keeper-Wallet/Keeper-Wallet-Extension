@@ -465,7 +465,7 @@ export async function migrateVault(password: string): Promise<string> {
 
   // If MultiWalletController vault exists, decrypt it and merge
   let finalWallets = multiWalletsFromOld;
-  
+
   if (existingNewVault) {
     try {
       const existingMultiWallets = await decryptNewVault(
@@ -494,7 +494,11 @@ export async function migrateVault(password: string): Promise<string> {
       finalWallets = Array.from(walletMap.values());
     } catch (error) {
       // If we can't decrypt existing vault, just use the new wallets
-      console.error('Failed to decrypt existing MultiWalletController vault:', error);
+      // eslint-disable-next-line no-console
+      console.error(
+        'Failed to decrypt existing MultiWalletController vault:',
+        error,
+      );
       finalWallets = multiWalletsFromOld;
     }
   }
@@ -532,9 +536,10 @@ function getWalletIdentityKey(wallet: MultiWallet): string {
     case 'wx':
       return `wx:${wallet.wxUuid}`;
     case 'debug':
-    default:
+    default: {
       // Use public key + first network address as identity
       const firstNetwork = Object.values(wallet.coins.waves.networks)[0];
       return `debug:${wallet.coins.waves.publicKey}:${firstNetwork?.address}`;
+    }
   }
 }

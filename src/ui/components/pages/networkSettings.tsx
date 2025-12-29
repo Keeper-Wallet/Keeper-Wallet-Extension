@@ -9,6 +9,7 @@ import { usePopupSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { ACTION } from 'store/actions/constants';
 import background from 'ui/services/Background';
 
@@ -112,6 +113,7 @@ const NetworkOptionItem = ({
 export function NetworkSettings() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const accounts = useAccountsSelector(state => state.accounts);
 
   // Get current blockchain type and network from Redux
@@ -262,6 +264,9 @@ export function NetworkSettings() {
     await background.setNetwork(networkType as NetworkName);
     await background.setCurrentBlockchainType(blockchain);
     await background.setHideTestAccounts(!showTestAccounts);
+
+    // Navigate back to previous page
+    navigate(-1);
   };
 
   return (
