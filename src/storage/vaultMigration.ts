@@ -427,7 +427,7 @@ function deduplicateWalletsByPublicKey(wallets: MultiWallet[]): MultiWallet[] {
   // For each public key, keep only the highest priority wallet
   const deduplicated: MultiWallet[] = [];
 
-  for (const [publicKey, duplicates] of walletsByPublicKey) {
+  for (const duplicates of walletsByPublicKey.values()) {
     if (duplicates.length === 1) {
       deduplicated.push(duplicates[0]);
       continue;
@@ -452,11 +452,7 @@ function deduplicateWalletsByPublicKey(wallets: MultiWallet[]): MultiWallet[] {
 
     // Keep the highest priority wallet
     const winner = sorted[0];
-    console.log(
-      `[Deduplication] Public key ${publicKey.slice(0, 8)}... has ${duplicates.length} duplicates. Keeping type="${winner.type}", removing:`,
-      sorted.slice(1).map(w => `type="${w.type}"`).join(', ')
-    );
-    
+
     deduplicated.push(winner);
   }
 
@@ -520,10 +516,8 @@ export async function migrateVault(password: string): Promise<string> {
   }
 
   // Deduplicate wallets by public key (keep highest priority: seed > encodedSeed > privateKey)
-  const deduplicatedWallets = deduplicateWalletsByPublicKey(multiWalletsFromOld);
-  console.log(
-    `[Migration] Deduplicated ${multiWalletsFromOld.length} wallets to ${deduplicatedWallets.length} unique wallets`
-  );
+  const deduplicatedWallets =
+    deduplicateWalletsByPublicKey(multiWalletsFromOld);
 
   // If MultiWalletController vault exists, decrypt it and merge
   let finalWallets = deduplicatedWallets;
@@ -554,19 +548,11 @@ export async function migrateVault(password: string): Promise<string> {
       }
 
       const mergedWallets = Array.from(walletMap.values());
-      
+
       // Deduplicate again after merge (in case existing vault had duplicates)
       finalWallets = deduplicateWalletsByPublicKey(mergedWallets);
-      console.log(
-        `[Migration] After merge: ${mergedWallets.length} wallets, deduplicated to ${finalWallets.length}`
-      );
     } catch (error) {
       // If we can't decrypt existing vault, just use the new wallets
-      // eslint-disable-next-line no-console
-      console.error(
-        'Failed to decrypt existing MultiWalletController vault:',
-        error,
-      );
       finalWallets = deduplicatedWallets;
     }
   }

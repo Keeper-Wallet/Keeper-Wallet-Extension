@@ -34,8 +34,8 @@ export type CreateMultiWalletInput = {
 export interface WavesNetworkData {
   publicKey: string;
   networks: {
-    mainnet: WalletItem;
-    testnet: WalletItem;
+    mainnet?: WalletItem;
+    testnet?: WalletItem;
     stagenet?: WalletItem;
     custom?: WalletItem;
   };

@@ -31,6 +31,7 @@ export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
   /**
    * Create Waves addresses for specified networks
    * Uses provided public key to generate network-specific addresses
+   * For WX wallets, only creates addresses for the specified networks
    */
   async createWavesAddresses(
     networks: NetworkName[],
@@ -39,32 +40,12 @@ export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
     // Decode the public key once
     const publicKeyBytes = base58Decode(this.publicKey);
 
-    // Always generate mainnet and testnet addresses (required)
-    const mainnetCode = this.#getWavesNetworkCode(NetworkName.Mainnet);
-    if (!mainnetCode) {
-      throw new Error('Mainnet network code is required');
-    }
-    const mainnetAddress = base58Encode(
-      createAddress(publicKeyBytes, mainnetCode.charCodeAt(0)),
-    );
-
-    const testnetCode = this.#getWavesNetworkCode(NetworkName.Testnet);
-    if (!testnetCode) {
-      throw new Error('Testnet network code is required');
-    }
-    const testnetAddress = base58Encode(
-      createAddress(publicKeyBytes, testnetCode.charCodeAt(0)),
-    );
-
     const networkData: WavesNetworkData = {
       publicKey: this.publicKey,
-      networks: {
-        mainnet: { address: mainnetAddress, networkCode: mainnetCode },
-        testnet: { address: testnetAddress, networkCode: testnetCode },
-      },
+      networks: {},
     };
 
-    // Add optional networks if requested
+    // Create addresses only for requested networks
     for (const network of networks) {
       const networkCode = this.#getWavesNetworkCode(network, customCode);
       if (!networkCode) continue;
@@ -73,7 +54,11 @@ export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
         createAddress(publicKeyBytes, networkCode.charCodeAt(0)),
       );
 
-      if (network === NetworkName.Stagenet) {
+      if (network === NetworkName.Mainnet) {
+        networkData.networks.mainnet = { address, networkCode };
+      } else if (network === NetworkName.Testnet) {
+        networkData.networks.testnet = { address, networkCode };
+      } else if (network === NetworkName.Stagenet) {
         networkData.networks.stagenet = { address, networkCode };
       } else if (network === NetworkName.Custom) {
         networkData.networks.custom = { address, networkCode };
