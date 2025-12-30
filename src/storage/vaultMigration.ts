@@ -408,6 +408,62 @@ function groupWalletsByIdentity(
 }
 
 /**
+ * Deduplicate wallets by public key, keeping the highest priority wallet type
+ * Priority: seed > encodedSeed > privateKey
+ */
+function deduplicateWalletsByPublicKey(wallets: MultiWallet[]): MultiWallet[] {
+  const walletsByPublicKey = new Map<string, MultiWallet[]>();
+
+  // Group wallets by public key
+  for (const wallet of wallets) {
+    const publicKey = wallet.coins.waves?.publicKey;
+    if (!publicKey) continue;
+
+    const existing = walletsByPublicKey.get(publicKey) || [];
+    existing.push(wallet);
+    walletsByPublicKey.set(publicKey, existing);
+  }
+
+  // For each public key, keep only the highest priority wallet
+  const deduplicated: MultiWallet[] = [];
+
+  for (const [publicKey, duplicates] of walletsByPublicKey) {
+    if (duplicates.length === 1) {
+      deduplicated.push(duplicates[0]);
+      continue;
+    }
+
+    // Define priority order
+    const typePriority: Record<string, number> = {
+      seed: 1,
+      encodedSeed: 2,
+      privateKey: 3,
+      ledger: 4,
+      wx: 5,
+      debug: 6,
+    };
+
+    // Sort by priority (lower number = higher priority)
+    const sorted = duplicates.sort((a, b) => {
+      const priorityA = typePriority[a.type] || 999;
+      const priorityB = typePriority[b.type] || 999;
+      return priorityA - priorityB;
+    });
+
+    // Keep the highest priority wallet
+    const winner = sorted[0];
+    console.log(
+      `[Deduplication] Public key ${publicKey.slice(0, 8)}... has ${duplicates.length} duplicates. Keeping type="${winner.type}", removing:`,
+      sorted.slice(1).map(w => `type="${w.type}"`).join(', ')
+    );
+    
+    deduplicated.push(winner);
+  }
+
+  return deduplicated;
+}
+
+/**
  * Main vault migration function
  * Called during unlock when needsVaultMigration flag is set
  * Note: The flag is only set by setVaultMigrationFlag migration when
@@ -463,8 +519,14 @@ export async function migrateVault(password: string): Promise<string> {
     multiWalletsFromOld.push(transformedWallet);
   }
 
+  // Deduplicate wallets by public key (keep highest priority: seed > encodedSeed > privateKey)
+  const deduplicatedWallets = deduplicateWalletsByPublicKey(multiWalletsFromOld);
+  console.log(
+    `[Migration] Deduplicated ${multiWalletsFromOld.length} wallets to ${deduplicatedWallets.length} unique wallets`
+  );
+
   // If MultiWalletController vault exists, decrypt it and merge
-  let finalWallets = multiWalletsFromOld;
+  let finalWallets = deduplicatedWallets;
 
   if (existingNewVault) {
     try {
@@ -484,14 +546,20 @@ export async function migrateVault(password: string): Promise<string> {
       }
 
       // Then, add wallets from old vault (only if not already present)
-      for (const wallet of multiWalletsFromOld) {
+      for (const wallet of deduplicatedWallets) {
         const key = getWalletIdentityKey(wallet);
         if (!walletMap.has(key)) {
           walletMap.set(key, wallet);
         }
       }
 
-      finalWallets = Array.from(walletMap.values());
+      const mergedWallets = Array.from(walletMap.values());
+      
+      // Deduplicate again after merge (in case existing vault had duplicates)
+      finalWallets = deduplicateWalletsByPublicKey(mergedWallets);
+      console.log(
+        `[Migration] After merge: ${mergedWallets.length} wallets, deduplicated to ${finalWallets.length}`
+      );
     } catch (error) {
       // If we can't decrypt existing vault, just use the new wallets
       // eslint-disable-next-line no-console
@@ -499,7 +567,7 @@ export async function migrateVault(password: string): Promise<string> {
         'Failed to decrypt existing MultiWalletController vault:',
         error,
       );
-      finalWallets = multiWalletsFromOld;
+      finalWallets = deduplicatedWallets;
     }
   }
 
