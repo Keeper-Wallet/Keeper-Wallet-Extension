@@ -470,6 +470,8 @@ export class AssetInfoController {
       new Set(
         assetIds
           .filter(isNotNull)
+          // Filter out WAVES since it's the native token and doesn't have an asset ID
+          // The API will return an error if we try to fetch it
           .filter(id => id !== 'WAVES')
           .filter(assetId => {
             const asset = assets[network][assetId];
@@ -488,19 +490,46 @@ export class AssetInfoController {
     const { maxAssetsPerRequest } = this.#remoteConfig.getAssetsConfig();
 
     for (let i = 0; i < assetIdsToFetch.length; i += maxAssetsPerRequest) {
-      const assetInfos = await this.#fetchAssetsBatch(
-        this.getNode(),
-        assetIdsToFetch.slice(i, i + maxAssetsPerRequest),
-      );
+      const batchIds = assetIdsToFetch.slice(i, i + maxAssetsPerRequest);
+      try {
+        const assetInfos = await this.#fetchAssetsBatch(
+          this.getNode(),
+          batchIds,
+        );
 
-      assetInfos.forEach(assetInfo => {
-        assets[network][assetInfo.assetId] = {
-          ...assets[network][assetInfo.assetId],
-          ...this.toAssetDetails(assetInfo),
-        };
-      });
+        assetInfos.forEach(assetInfo => {
+          assets[network][assetInfo.assetId] = {
+            ...assets[network][assetInfo.assetId],
+            ...this.toAssetDetails(assetInfo),
+          };
+        });
 
-      this.store.updateState({ assets });
+        this.store.updateState({ assets });
+      } catch (error) {
+        // Add placeholder data for failed assets to prevent infinite loading
+        batchIds.forEach(assetId => {
+          if (!assets[network][assetId]) {
+            assets[network][assetId] = {
+              id: assetId,
+              name: `${assetId.slice(0, 8)}...`,
+              displayName: `${assetId.slice(0, 8)}...`,
+              ticker: assetId.slice(0, 4),
+              precision: 8,
+              description: 'Failed to load asset details',
+              height: 0,
+              timestamp: new Date().toJSON(),
+              sender: '',
+              issuer: '',
+              quantity: '0',
+              reissuable: false,
+              lastUpdated: new Date().getTime(),
+              isSuspicious: false,
+            };
+          }
+        });
+
+        this.store.updateState({ assets });
+      }
     }
   }
 
