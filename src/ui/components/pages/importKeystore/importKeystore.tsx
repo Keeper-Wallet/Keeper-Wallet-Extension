@@ -1,5 +1,10 @@
 import {
+  base58Decode,
+  base58Encode,
   base64Decode,
+  createAddress,
+  createPrivateKey,
+  createPublicKey,
   decryptSeed,
   utf8Decode,
   utf8Encode,
@@ -18,6 +23,88 @@ import invariant from 'tiny-invariant';
 import { type PreferencesAccount } from '../../../../preferences/types';
 import { WalletTypes } from '../../../services/Background';
 import { ImportKeystoreChooseAccounts } from './chooseAccounts';
+
+/**
+ * Helper function to generate publicKey and addresses from seed
+ */
+async function generateDataFromSeed(seed: string): Promise<{
+  publicKey: string;
+  mainnetAddress: string;
+  testnetAddress: string;
+  stagenetAddress: string;
+}> {
+  const privateKey = await createPrivateKey(utf8Encode(seed));
+  const publicKeyBytes = await createPublicKey(privateKey);
+  const publicKey = base58Encode(publicKeyBytes);
+
+  return {
+    publicKey,
+    mainnetAddress: base58Encode(
+      createAddress(publicKeyBytes, 'W'.charCodeAt(0)),
+    ),
+    testnetAddress: base58Encode(
+      createAddress(publicKeyBytes, 'T'.charCodeAt(0)),
+    ),
+    stagenetAddress: base58Encode(
+      createAddress(publicKeyBytes, 'S'.charCodeAt(0)),
+    ),
+  };
+}
+
+/**
+ * Helper function to generate publicKey and addresses from encodedSeed
+ */
+async function generateDataFromEncodedSeed(encodedSeed: string): Promise<{
+  publicKey: string;
+  mainnetAddress: string;
+  testnetAddress: string;
+  stagenetAddress: string;
+}> {
+  const decodedSeed = base58Decode(encodedSeed.replace(/^base58:/, ''));
+  const privateKey = await createPrivateKey(decodedSeed);
+  const publicKeyBytes = await createPublicKey(privateKey);
+  const publicKey = base58Encode(publicKeyBytes);
+
+  return {
+    publicKey,
+    mainnetAddress: base58Encode(
+      createAddress(publicKeyBytes, 'W'.charCodeAt(0)),
+    ),
+    testnetAddress: base58Encode(
+      createAddress(publicKeyBytes, 'T'.charCodeAt(0)),
+    ),
+    stagenetAddress: base58Encode(
+      createAddress(publicKeyBytes, 'S'.charCodeAt(0)),
+    ),
+  };
+}
+
+/**
+ * Helper function to generate publicKey and addresses from privateKey
+ */
+async function generateDataFromPrivateKey(privateKey: string): Promise<{
+  publicKey: string;
+  mainnetAddress: string;
+  testnetAddress: string;
+  stagenetAddress: string;
+}> {
+  const privateKeyBytes = base58Decode(privateKey);
+  const publicKeyBytes = await createPublicKey(privateKeyBytes);
+  const publicKeyBase58 = base58Encode(publicKeyBytes);
+
+  return {
+    publicKey: publicKeyBase58,
+    mainnetAddress: base58Encode(
+      createAddress(publicKeyBytes, 'W'.charCodeAt(0)),
+    ),
+    testnetAddress: base58Encode(
+      createAddress(publicKeyBytes, 'T'.charCodeAt(0)),
+    ),
+    stagenetAddress: base58Encode(
+      createAddress(publicKeyBytes, 'S'.charCodeAt(0)),
+    ),
+  };
+}
 
 class KeystoreDecryptError extends Error {
   code = 'KEYSTORE_DECRYPT_FAILED';
@@ -106,59 +193,110 @@ function parseKeystore(json: string): EncryptedKeystore | null {
 
             const profilesData = JSON.parse(decryptedString) as Record<
               string,
-              { accounts: Array<PreferencesAccount & { seed: string }> }
+              {
+                accounts: Array<
+                  PreferencesAccount & {
+                    seed?: string;
+                    encodedSeed?: string;
+                    privateKey?: string;
+                  }
+                >;
+              }
             >;
 
             const multiwallets: MultiWallet[] = [];
 
-            Object.values(profilesData).forEach(profile => {
+            // Process all profiles
+            for (const profile of Object.values(profilesData)) {
               if (!profile.accounts || !Array.isArray(profile.accounts)) {
-                return;
+                continue;
               }
 
-              profile.accounts.forEach(account => {
-                // Old keystore format may not have type field - if there's a seed, treat as seed type
-                if (!account.seed) {
-                  return;
-                }
-                // If type is defined and not 'seed', skip
-                if (account.type && account.type !== 'seed') {
-                  return;
-                }
-                const networkCode = account.networkCode || 'W';
+              // Process accounts with proper async handling
+              const accountPromises = profile.accounts.map(async account => {
+                try {
+                  let publicKey: string;
+                  let mainnetAddress: string;
+                  let testnetAddress: string;
+                  let stagenetAddress: string;
 
-                const multiwallet: MultiWallet = {
-                  id: Date.now().toString(),
-                  name: account.name,
-                  type: account.type || 'seed',
-                  createdAt: Date.now(),
-                  seed: account.seed,
-                  coins: {
-                    waves: {
-                      publicKey: account.publicKey || '',
-                      networks: {
-                        mainnet: {
-                          address: networkCode === 'W' ? account.address : '',
-                          networkCode: 'W',
-                        },
-                        testnet: {
-                          address: networkCode === 'T' ? account.address : '',
-                          networkCode: 'T',
-                        },
-                        stagenet: {
-                          address: networkCode === 'S' ? account.address : '',
-                          networkCode: 'S',
+                  // Generate data based on account type
+                  if (account.seed) {
+                    const data = await generateDataFromSeed(account.seed);
+                    publicKey = data.publicKey;
+                    mainnetAddress = data.mainnetAddress;
+                    testnetAddress = data.testnetAddress;
+                    stagenetAddress = data.stagenetAddress;
+                  } else if (account.encodedSeed) {
+                    const data = await generateDataFromEncodedSeed(
+                      account.encodedSeed,
+                    );
+                    publicKey = data.publicKey;
+                    mainnetAddress = data.mainnetAddress;
+                    testnetAddress = data.testnetAddress;
+                    stagenetAddress = data.stagenetAddress;
+                  } else if (account.privateKey) {
+                    const data = await generateDataFromPrivateKey(
+                      account.privateKey,
+                    );
+                    publicKey = data.publicKey;
+                    mainnetAddress = data.mainnetAddress;
+                    testnetAddress = data.testnetAddress;
+                    stagenetAddress = data.stagenetAddress;
+                  } else {
+                    return null;
+                  }
+
+                  const accountType = account.type || 'seed';
+
+                  const multiwallet: MultiWallet = {
+                    id: crypto.randomUUID(),
+                    name: account.name,
+                    type: accountType,
+                    createdAt: Date.now(),
+                    ...(account.seed && { seed: account.seed }),
+                    ...(account.encodedSeed && {
+                      encodedSeed: account.encodedSeed,
+                    }),
+                    ...(account.privateKey && {
+                      privateKey: account.privateKey,
+                    }),
+                    coins: {
+                      waves: {
+                        publicKey,
+                        networks: {
+                          mainnet: {
+                            address: mainnetAddress,
+                            networkCode: 'W',
+                          },
+                          testnet: {
+                            address: testnetAddress,
+                            networkCode: 'T',
+                          },
+                          stagenet: {
+                            address: stagenetAddress,
+                            networkCode: 'S',
+                          },
                         },
                       },
                     },
-                  },
-                };
+                  };
 
-                multiwallets.push(multiwallet);
+                  return multiwallet;
+                } catch (error) {
+                  return null;
+                }
               });
-            });
 
-            return multiwallets;
+              const processedAccounts = await Promise.all(accountPromises);
+              multiwallets.push(
+                ...processedAccounts.filter(
+                  (wallet): wallet is MultiWallet => wallet !== null,
+                ),
+              );
+            }
+
+            return multiwallets.length > 0 ? multiwallets : null;
           } catch {
             return null;
           }
