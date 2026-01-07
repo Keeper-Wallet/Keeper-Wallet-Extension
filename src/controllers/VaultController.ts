@@ -26,7 +26,11 @@ export class VaultController {
     identity: IdentityController;
   }) {
     this.store = new ObservableStore(
-      extensionStorage.getInitState({ locked: false, initialized: false }),
+      extensionStorage.getInitState({
+        locked: false,
+        initialized: false,
+        vaultMigrationCompleted: false,
+      }),
     );
 
     extensionStorage.subscribe(this.store);
@@ -62,7 +66,10 @@ export class VaultController {
   }
 
   async unlock(password: string) {
-    // Get migration version from storage (persists through extensionStorage.clear())
+    // Get migration version and vault migration flag from store
+    const state = this.store.getState();
+    const vaultMigrationCompleted = state.vaultMigrationCompleted || false;
+
     const { migrationVersion = 0 } =
       await Browser.storage.local.get('migrationVersion');
 
@@ -71,10 +78,11 @@ export class VaultController {
       this.#oldWallet.store.getState().WalletController?.vault,
     );
 
-    // Forward migration: version >= 4 AND old vault exists
-    // Always migrate if old vault exists, even if new vault exists
-    // This ensures we pick up new accounts added in master
-    const migrationNeeded = migrationVersion >= 4 && hasOldVault;
+    // Forward migration: version >= 4 AND old vault exists AND migration not completed yet
+    // Migration should only run once - when transitioning from old to new vault system
+    // Use vaultMigrationCompleted flag to track if migration has been done
+    const migrationNeeded =
+      migrationVersion >= 4 && hasOldVault && !vaultMigrationCompleted;
 
     if (migrationNeeded) {
       const encryptedVault = await migrateVault(password);
@@ -84,6 +92,9 @@ export class VaultController {
       this.#wallet.store.updateState({
         MultiWalletController: { vault: encryptedVault },
       });
+
+      // Mark vault migration as completed to prevent re-migration
+      this.store.updateState({ vaultMigrationCompleted: true });
     }
 
     await this.#wallet.unlock(password);

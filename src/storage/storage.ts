@@ -96,6 +96,7 @@ export interface StorageLocalState {
   uiState: UiState;
   usdPrices: Record<string, string>;
   userId: string | undefined;
+  vaultMigrationCompleted: boolean;
   WalletController: {
     vault: string | undefined;
   };

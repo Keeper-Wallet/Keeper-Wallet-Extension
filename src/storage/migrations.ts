@@ -175,6 +175,7 @@ const vaultMigration: Migration = {
   },
   rollback: async () => {
     // Version downgrade only - actual rollback happens at unlock
+    await Browser.storage.local.remove('vaultMigrationCompleted');
   },
 };
 
