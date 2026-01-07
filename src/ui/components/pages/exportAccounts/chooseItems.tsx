@@ -57,13 +57,10 @@ interface Props<T> {
 
 export function isExportable(item: MultiWallet | Contact) {
   if ('type' in item) {
-    // For MultiWallet, check if it has a seed or privateKey
-    return (
-      ['seed', 'encodedSeed', 'privateKey', 'debug'].includes(item.type) &&
-      (('seed' in item && !!item.seed) ||
-        ('privateKey' in item && !!item.privateKey) ||
-        ('encodedSeed' in item && !!item.encodedSeed))
-    );
+    // For MultiWallet, check if it's an exportable type
+    // Types that can be exported: seed, encodedSeed, privateKey, debug
+    // Types that cannot be exported: ledger, wx
+    return ['seed', 'encodedSeed', 'privateKey', 'debug'].includes(item.type);
   }
   // For Contact, always exportable
   return true;
