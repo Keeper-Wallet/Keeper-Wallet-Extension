@@ -60,8 +60,9 @@ export function isExportable(item: MultiWallet | Contact) {
     // For MultiWallet, check if it has a seed or privateKey
     return (
       ['seed', 'encodedSeed', 'privateKey', 'debug'].includes(item.type) &&
-      (('seed' in item && item.seed) ||
-        ('privateKey' in item && item.privateKey))
+      (('seed' in item && !!item.seed) ||
+        ('privateKey' in item && !!item.privateKey) ||
+        ('encodedSeed' in item && !!item.encodedSeed))
     );
   }
   // For Contact, always exportable
@@ -228,7 +229,7 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
     }
   };
 
-  // Check if any wallets aren't exportable
+  // Check if there are non-exportable wallets (ledger or wx accounts)
   const hasNonExportableWallets = items.some(item => !isExportable(item));
   const [showWarningModal, setShowWarningModal] = useState(
     hasNonExportableWallets,
