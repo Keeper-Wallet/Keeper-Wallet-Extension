@@ -529,8 +529,15 @@ class BackgroundService extends EventEmitter {
       // preferences
       setCurrentLocale: async (key: string) =>
         this.preferencesController.setCurrentLocale(key),
-      selectAccount: async (address: string, network: NetworkName) =>
-        this.preferencesController.selectAccount(address, network),
+      selectAccount: async (address: string, network: NetworkName) => {
+        this.preferencesController.selectAccount(address, network);
+
+        // Also update lastUsed in MultiWalletController
+        const wallet = this.#findWalletByAddress(address);
+        if (wallet) {
+          await this.multiWalletController.updateWalletLastUsed(wallet.id);
+        }
+      },
       editWalletName: async (
         address: string,
         name: string,
@@ -1513,6 +1520,35 @@ class BackgroundService extends EventEmitter {
       const sanitizedAccounts = this.multiWalletController.getMultiWallets();
       this.multiWalletController.emit('saveAccounts', sanitizedAccounts);
     }
+  }
+
+  /**
+   * Find a wallet by address across all networks and blockchains
+   */
+  #findWalletByAddress(address: string) {
+    const wallets = this.multiWalletController.getMultiWallets();
+    return wallets.find(w => {
+      const wavesNetworks = w.coins?.waves?.networks;
+      const unit0Networks = w.coins?.unit0?.networks;
+
+      if (wavesNetworks) {
+        if (
+          Object.values(wavesNetworks).some(net => net?.address === address)
+        ) {
+          return true;
+        }
+      }
+
+      if (unit0Networks) {
+        if (
+          Object.values(unit0Networks).some(net => net?.address === address)
+        ) {
+          return true;
+        }
+      }
+
+      return false;
+    });
   }
 
   ledgerSign(type: string, data: unknown) {

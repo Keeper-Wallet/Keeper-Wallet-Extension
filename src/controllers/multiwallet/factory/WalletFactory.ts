@@ -218,11 +218,13 @@ export class WalletFactory implements IWalletFactory {
     input: CreateMultiWalletInput,
     strategy: IMultiWalletCreationStrategy,
   ): MultiWallet {
+    const now = Date.now();
     return {
       id: crypto.randomUUID(),
       name: input.name,
       type: strategy.getWalletType(),
-      createdAt: Date.now(),
+      createdAt: now,
+      lastUsed: now,
       coins: {} as MultiWallet['coins'],
       ...strategy.getAuthData(),
     };

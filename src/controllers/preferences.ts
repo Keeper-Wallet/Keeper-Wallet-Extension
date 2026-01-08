@@ -476,23 +476,6 @@ export class PreferencesController extends EventEmitter {
       }
     }
 
-    // Update last used time for previous account
-    const { selectedAccount: previousAccount } = this.store.getState();
-    if (previousAccount) {
-      accounts.forEach(acc => {
-        if (
-          !acc.coins &&
-          (acc as unknown as PreferencesAccount).address ===
-            previousAccount.address
-        ) {
-          (acc as unknown as PreferencesAccount).lastUsed = Date.now();
-        } else if (acc.coins && acc.id === previousAccount.walletId) {
-          // Update lastUsed time for MultiWallet
-          acc.lastUsed = Date.now();
-        }
-      });
-    }
-
     // Replace the problematic line with our selected account object
     const typedSelectedAccount = selectedAccount as PreferencesAccount;
 

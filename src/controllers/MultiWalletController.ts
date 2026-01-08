@@ -227,6 +227,20 @@ export class MultiWalletController extends EventEmitter {
   }
 
   /**
+   * Update a wallet's lastUsed timestamp
+   */
+  async updateWalletLastUsed(walletId: string): Promise<void> {
+    const wallet = this.#multiwallets.find(w => w.id === walletId);
+
+    if (!wallet) {
+      throw new Error(`Wallet with id ${walletId} not found`);
+    }
+
+    wallet.lastUsed = Date.now();
+    await this.#saveMultiWallets();
+  }
+
+  /**
    * Update wallets with custom network addresses
    * Updates the internal #multiwallets array and saves to vault
    */
