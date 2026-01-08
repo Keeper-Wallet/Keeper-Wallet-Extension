@@ -126,11 +126,36 @@ export function Send() {
 
   const [amountValue, setAmountValue] = useState(isNft ? '1' : '');
   const [amountValueMasked, setAmountValueMasked] = useState('');
+
+  // Calculate estimated WAVES transfer fee using the same logic as message controller
+  // Base fee: 10_0000 wavelets (0.001 WAVES) for WAVES transfers
+  // Note: This doesn't include extraFee for scripted accounts, which is fetched dynamically
+  const estimatedWavesFee = useMemo(() => {
+    if (isUnit0 || !asset || asset.id !== 'WAVES') {
+      return null;
+    }
+
+    // Base transfer fee: 10_0000 wavelets (same as in fee/utils.ts minSponsoredFee)
+    const feeInWavelets = new BigNumber(10_0000);
+
+    return new Money(feeInWavelets, new Asset(asset as IAssetInfo));
+  }, [isUnit0, asset]);
+
   const amountError = isNft
     ? null // Skip amount validation for NFTs
     : !currentBalance || !amountValue || Number(amountValue) === 0
     ? t('send.amountRequiredError')
     : !currentBalance.getTokens().gte(amountValue)
+    ? t('send.insufficientFundsError')
+    : // For WAVES native currency, check if balance covers amount + fee
+    estimatedWavesFee &&
+      !currentBalance
+        .getTokens()
+        .gte(
+          new BigNumber(amountValue)
+            .add(estimatedWavesFee.getTokens())
+            .toFixed(),
+        )
     ? t('send.insufficientFundsError')
     : null;
   const showAmountError = isTriedToSubmit && amountError != null && !isNft;
@@ -451,50 +476,68 @@ export function Send() {
                           navigate(`/send/${assetId}`, { replace: true });
                         }}
                         onBalanceClick={async () => {
-                          // For Unit0 native currency, subtract estimated gas
-                          // For tokens and WAVES, use full balance
+                          // For native currencies (Unit0 and WAVES), subtract estimated gas
+                          // For tokens, use full balance
                           const isUnit0Native = isUnit0 && asset.id === 'unit0';
+                          const isWavesNative =
+                            !isUnit0 && asset.id === 'WAVES';
 
-                          if (!isUnit0Native) {
-                            // Tokens and WAVES: use full balance (original behavior)
+                          if (!isUnit0Native && !isWavesNative) {
+                            // Tokens: use full balance
                             setAmountValue(balance.toTokens());
                             setAmountValueMasked(balance.toTokens());
                             return;
                           }
 
-                          // Unit0 native: subtract estimated gas
+                          // Native currencies: subtract estimated gas
                           let maxSendable = balance.toTokens();
 
-                          try {
-                            const unit0Api = new Unit0Api();
-                            const gasPrice =
-                              await unit0Api.getGasPrice(currentNetwork);
+                          if (isUnit0Native) {
+                            try {
+                              const unit0Api = new Unit0Api();
+                              const gasPrice =
+                                await unit0Api.getGasPrice(currentNetwork);
 
-                            // Standard transfer gas limit: 21000
-                            const gasLimit = '21000';
+                              // Standard transfer gas limit: 21000
+                              const gasLimit = '21000';
 
-                            // Calculate gas cost in wei, then convert to tokens
-                            const gasCostWei = new BigNumber(gasPrice).mul(
-                              gasLimit,
-                            );
-                            const gasCostTokens = gasCostWei
-                              .div(new BigNumber(10).pow(18))
-                              .toFixed();
+                              // Calculate gas cost in wei, then convert to tokens
+                              const gasCostWei = new BigNumber(gasPrice).mul(
+                                gasLimit,
+                              );
+                              const gasCostTokens = gasCostWei
+                                .div(new BigNumber(10).pow(18))
+                                .toFixed();
 
-                            // Subtract gas from balance
+                              // Subtract gas from balance
+                              maxSendable = new BigNumber(balance.toTokens())
+                                .sub(gasCostTokens)
+                                .toFixed(asset.precision);
+
+                              // Ensure non-negative
+                              if (new BigNumber(maxSendable).lte(0)) {
+                                maxSendable = '0';
+                              }
+                            } catch {
+                              // Fallback: subtract ~0.001 UNIT0 for gas
+                              maxSendable = new BigNumber(balance.toTokens())
+                                .sub(0.001)
+                                .toFixed(asset.precision);
+                            }
+                          } else if (isWavesNative) {
+                            // WAVES: subtract estimated transaction fee
+                            // Use the same fee calculation as validation
+                            const feeTokens =
+                              estimatedWavesFee?.getTokens() ||
+                              new BigNumber(0);
                             maxSendable = new BigNumber(balance.toTokens())
-                              .sub(gasCostTokens)
+                              .sub(feeTokens)
                               .toFixed(asset.precision);
 
                             // Ensure non-negative
                             if (new BigNumber(maxSendable).lte(0)) {
                               maxSendable = '0';
                             }
-                          } catch {
-                            // Fallback: subtract ~0.001 UNIT0 for gas
-                            maxSendable = new BigNumber(balance.toTokens())
-                              .sub(0.001)
-                              .toFixed(asset.precision);
                           }
 
                           setAmountValue(maxSendable);
