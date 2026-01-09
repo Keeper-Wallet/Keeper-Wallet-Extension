@@ -368,6 +368,7 @@
     "errorFormat": "File format is not supported",
     "errorInvalidFormat": "File format is not supported",
     "errorUnexpected": "Something went wrong",
+    "importNotSupported": "This account cannot be imported",
     "keystoreLabel": "Keystore File",
     "noFileSelected": "No file selected",
     "passwordLabel": "Password",

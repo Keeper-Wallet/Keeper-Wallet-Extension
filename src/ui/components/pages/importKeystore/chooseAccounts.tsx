@@ -22,6 +22,13 @@ type AccountsForCompare = {
   isUnit0?: boolean;
 };
 
+// Check if wallet type can be imported
+function isImportableType(wallet: MultiWallet): boolean {
+  // Types that can be imported: seed, encodedSeed, privateKey, debug
+  // Types that cannot be imported: ledger, wx
+  return ['seed', 'encodedSeed', 'privateKey', 'debug'].includes(wallet.type);
+}
+
 export function ImportKeystoreChooseAccounts({
   allNetworksAccounts,
   accounts,
@@ -134,8 +141,13 @@ export function ImportKeystoreChooseAccounts({
     return newName;
   };
 
-  // Calculate importable wallets directly without useEffect
+  // Calculate importable wallets (only for counting and selection logic)
   const importableWallets = groupedAccounts.filter(wallet => {
+    // Check if wallet type is importable
+    if (!isImportableType(wallet)) {
+      return false;
+    }
+
     const allWalletAccounts = [] as AccountsForCompare[];
 
     // Collect all accounts from all networks in this wallet
@@ -346,8 +358,11 @@ export function ImportKeystoreChooseAccounts({
               accountExistsInNetwork(account as MultiWalletAccount),
             );
 
-            // A wallet is importable only if NONE of its addresses exist
-            const isImportable = !hasExistingAccounts;
+            // Check if wallet type is importable
+            const isTypeImportable = isImportableType(wallet);
+
+            // A wallet is importable only if type is importable AND NONE of its addresses exist
+            const isImportable = isTypeImportable && !hasExistingAccounts;
 
             // Get unique name for display
             const displayName = isImportable
@@ -392,7 +407,9 @@ export function ImportKeystoreChooseAccounts({
                     <span
                       className={clsx(styles.existingAccountBadge, 'body3')}
                     >
-                      {t('importKeystore.alreadyExists')}
+                      {!isTypeImportable
+                        ? t('importKeystore.importNotSupported')
+                        : t('importKeystore.alreadyExists')}
                     </span>
                   )}
                 </header>

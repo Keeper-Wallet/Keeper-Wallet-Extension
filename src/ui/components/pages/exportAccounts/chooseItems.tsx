@@ -60,7 +60,10 @@ export function isExportable(item: MultiWallet | Contact) {
     // For MultiWallet, check if it's an exportable type
     // Types that can be exported: seed, encodedSeed, privateKey, debug
     // Types that cannot be exported: ledger, wx
-    return ['seed', 'encodedSeed', 'privateKey', 'debug'].includes(item.type);
+    const exportable = ['seed', 'encodedSeed', 'privateKey', 'debug'].includes(
+      item.type,
+    );
+    return exportable;
   }
   // For Contact, always exportable
   return true;
@@ -158,10 +161,18 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
       ? flattenMultiWallets(items as MultiWallet[])
       : {};
 
-  // Selection state for wallets
-  const [selectedWallets, setSelectedWallets] = useState<Set<string>>(
-    () => new Set(Object.keys(groupedAccounts)),
-  );
+  // Selection state for wallets - only include exportable wallets initially
+  const [selectedWallets, setSelectedWallets] = useState<Set<string>>(() => {
+    const exportableWalletIds = Object.keys(groupedAccounts).filter(
+      walletId => {
+        const originalWallet = (items as MultiWallet[]).find(
+          w => w.id === walletId,
+        );
+        return originalWallet ? isExportable(originalWallet) : true;
+      },
+    );
+    return new Set(exportableWalletIds);
+  });
 
   // Selection state for individual accounts
   const [, setSelectedAccounts] = useState<Set<string>>(() => {
@@ -329,6 +340,14 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
             // Get wallet info from the first network item
             const walletInfo = networks[0];
 
+            // Find the original wallet to check if it's exportable
+            const originalWallet = (items as MultiWallet[]).find(
+              w => w.id === walletId,
+            );
+            const isWalletExportable = originalWallet
+              ? isExportable(originalWallet)
+              : true;
+
             return (
               <div key={walletId} className={styles.accountsGroup}>
                 <header className={styles.accountsGroupHeader}>
@@ -341,17 +360,25 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
                       {walletInfo.type}
                     </span>
                   </h2>
-                  <input
-                    checked={selectedWallets.has(walletId)}
-                    className={styles.checkbox}
-                    type="checkbox"
-                    onChange={event => {
-                      toggleWalletSelected(
-                        walletId,
-                        event.currentTarget.checked,
-                      );
-                    }}
-                  />
+                  {isWalletExportable ? (
+                    <input
+                      checked={selectedWallets.has(walletId)}
+                      className={styles.checkbox}
+                      type="checkbox"
+                      onChange={event => {
+                        toggleWalletSelected(
+                          walletId,
+                          event.currentTarget.checked,
+                        );
+                      }}
+                    />
+                  ) : (
+                    <span
+                      className={clsx(styles.existingAccountBadge, 'body3')}
+                    >
+                      {t('exportKeystore.exportNotSupported')}
+                    </span>
+                  )}
                 </header>
               </div>
             );

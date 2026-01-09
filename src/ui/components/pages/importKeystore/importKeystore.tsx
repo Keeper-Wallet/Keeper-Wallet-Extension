@@ -168,10 +168,23 @@ function parseKeystore(json: string): EncryptedKeystore | null {
       return {
         type: WalletTypes.Keystore,
         decrypt: async password => {
+          // Try new format first (single base64 encoding)
           try {
             return await decrypt<MultiWallet[]>(accounts, password);
           } catch (err) {
-            return null;
+            // Try old format (double encoding: btoa(base64Encode(encrypted)))
+            try {
+              const innerBase64 = atob(accounts);
+              const decoded = base64Decode(innerBase64);
+              const decrypted = await decryptSeed(
+                decoded,
+                utf8Encode(password),
+              );
+              const result = JSON.parse(utf8Decode(decrypted)) as MultiWallet[];
+              return result;
+            } catch (oldErr) {
+              throw new KeystoreDecryptError();
+            }
           }
         },
       };
