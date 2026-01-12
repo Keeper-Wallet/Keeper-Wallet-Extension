@@ -48,6 +48,7 @@ export function ImportKeystoreChooseAccounts({
   const existingAddresses = new Set<string>();
   const existingNetworkAddresses: Record<string, Set<string>> = {};
   const existingWalletNames = new Set<string>();
+  const addressToWalletName: Record<string, string> = {};
 
   allNetworksAccounts.forEach(wallet => {
     existingWalletNames.add(wallet.name);
@@ -58,6 +59,7 @@ export function ImportKeystoreChooseAccounts({
 
       if (wavesNetworks.mainnet?.address) {
         existingAddresses.add(wavesNetworks.mainnet.address);
+        addressToWalletName[wavesNetworks.mainnet.address] = wallet.name;
         if (!existingNetworkAddresses.mainnet) {
           existingNetworkAddresses.mainnet = new Set();
         }
@@ -66,6 +68,7 @@ export function ImportKeystoreChooseAccounts({
 
       if (wavesNetworks.testnet?.address) {
         existingAddresses.add(wavesNetworks.testnet.address);
+        addressToWalletName[wavesNetworks.testnet.address] = wallet.name;
         if (!existingNetworkAddresses.testnet) {
           existingNetworkAddresses.testnet = new Set();
         }
@@ -74,6 +77,7 @@ export function ImportKeystoreChooseAccounts({
 
       if (wavesNetworks.stagenet?.address) {
         existingAddresses.add(wavesNetworks.stagenet.address);
+        addressToWalletName[wavesNetworks.stagenet.address] = wallet.name;
         if (!existingNetworkAddresses.stagenet) {
           existingNetworkAddresses.stagenet = new Set();
         }
@@ -82,6 +86,7 @@ export function ImportKeystoreChooseAccounts({
 
       if (wavesNetworks.custom?.address) {
         existingAddresses.add(wavesNetworks.custom.address);
+        addressToWalletName[wavesNetworks.custom.address] = wallet.name;
         if (!existingNetworkAddresses.custom) {
           existingNetworkAddresses.custom = new Set();
         }
@@ -95,6 +100,7 @@ export function ImportKeystoreChooseAccounts({
 
       if (unit0Networks.mainnet?.address) {
         existingAddresses.add(unit0Networks.mainnet.address);
+        addressToWalletName[unit0Networks.mainnet.address] = wallet.name;
         if (!existingNetworkAddresses.mainnet) {
           existingNetworkAddresses.mainnet = new Set();
         }
@@ -103,6 +109,7 @@ export function ImportKeystoreChooseAccounts({
 
       if (unit0Networks.testnet?.address) {
         existingAddresses.add(unit0Networks.testnet.address);
+        addressToWalletName[unit0Networks.testnet.address] = wallet.name;
         if (!existingNetworkAddresses.testnet) {
           existingNetworkAddresses.testnet = new Set();
         }
@@ -122,6 +129,18 @@ export function ImportKeystoreChooseAccounts({
     return (
       existingNetworkAddresses[account.network]?.has(account.address) || false
     );
+  };
+
+  // Function to get the existing wallet name for an address
+  const getExistingWalletName = (
+    allWalletAccounts: AccountsForCompare[],
+  ): string | null => {
+    for (const account of allWalletAccounts) {
+      if (addressToWalletName[account.address]) {
+        return addressToWalletName[account.address];
+      }
+    }
+    return null;
   };
 
   // Function to generate unique wallet name
@@ -369,6 +388,11 @@ export function ImportKeystoreChooseAccounts({
               ? getUniqueWalletName(wallet.name)
               : wallet.name;
 
+            // Get the existing wallet name if this wallet already exists
+            const existingWalletName = hasExistingAccounts
+              ? getExistingWalletName(allWalletAccounts as AccountsForCompare[])
+              : null;
+
             return (
               <div
                 key={wallet.id}
@@ -380,15 +404,35 @@ export function ImportKeystoreChooseAccounts({
                     className={clsx(styles.accountsGroupIcon, 'accountIcon')}
                   />
 
-                  <h2
-                    className={styles.accountsGroupLabel}
-                    data-testid="accountsGroupLabel"
-                  >
-                    {displayName}
-                    <span className={styles.walletTypeLabel}>
-                      {wallet.type}
-                    </span>
-                  </h2>
+                  <div className={styles.accountInfoText}>
+                    <div
+                      className={styles.accountName}
+                      data-testid="accountName"
+                    >
+                      {displayName}
+                      <span className={styles.walletTypeLabel}>
+                        {wallet.type}
+                      </span>
+                    </div>
+                    {!isImportable && (
+                      <div
+                        className={clsx(
+                          styles.accountInfoNote,
+                          'body3',
+                          'disabled500',
+                        )}
+                      >
+                        {!isTypeImportable
+                          ? t('importKeystore.importNotSupported')
+                          : t(
+                              'importKeystore.chooseAccountsExistingAccountNote',
+                              {
+                                existingName: existingWalletName || wallet.name,
+                              },
+                            )}
+                      </div>
+                    )}
+                  </div>
 
                   {isImportable && (
                     <input
@@ -402,15 +446,6 @@ export function ImportKeystoreChooseAccounts({
                         );
                       }}
                     />
-                  )}
-                  {!isImportable && (
-                    <span
-                      className={clsx(styles.existingAccountBadge, 'body3')}
-                    >
-                      {!isTypeImportable
-                        ? t('importKeystore.importNotSupported')
-                        : t('importKeystore.alreadyExists')}
-                    </span>
                   )}
                 </header>
               </div>

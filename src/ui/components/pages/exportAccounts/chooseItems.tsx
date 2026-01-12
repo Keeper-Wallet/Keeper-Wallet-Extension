@@ -246,22 +246,40 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
   // Count selected accounts
   const selectedAccountsCount = selectedWallets.size;
 
-  // Track if all wallets are selected
-  const allWalletsCount = Object.keys(groupedAccounts).length;
-  const allSelected = selectedWallets.size === allWalletsCount;
+  // Track if all exportable wallets are selected
+  const exportableWalletsCount = Object.keys(groupedAccounts).filter(
+    walletId => {
+      const originalWallet = (items as MultiWallet[]).find(
+        w => w.id === walletId,
+      );
+      return originalWallet ? isExportable(originalWallet) : true;
+    },
+  ).length;
+  const allSelected = selectedWallets.size === exportableWalletsCount;
 
   // Function to toggle all wallets selection
   const toggleAllWallets = (selectAll: boolean) => {
     if (selectAll) {
-      // Select all wallets
-      setSelectedWallets(new Set(Object.keys(groupedAccounts)));
+      // Select only exportable wallets
+      const exportableWalletIds = Object.keys(groupedAccounts).filter(
+        walletId => {
+          const originalWallet = (items as MultiWallet[]).find(
+            w => w.id === walletId,
+          );
+          return originalWallet ? isExportable(originalWallet) : true;
+        },
+      );
+      setSelectedWallets(new Set(exportableWalletIds));
 
-      // Also select all accounts
+      // Also select all accounts from exportable wallets only
       const allAccounts = new Set<string>();
-      Object.values(groupedAccounts).forEach(networks => {
-        networks.forEach(account => {
-          allAccounts.add(account.id);
-        });
+      exportableWalletIds.forEach(walletId => {
+        const networks = groupedAccounts[walletId];
+        if (networks) {
+          networks.forEach(account => {
+            allAccounts.add(account.id);
+          });
+        }
       });
       setSelectedAccounts(allAccounts);
     } else {
@@ -354,12 +372,19 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
                   <i
                     className={clsx(styles.accountsGroupIcon, 'accountIcon')}
                   />
-                  <h2 className={styles.accountsGroupLabel}>
-                    {walletInfo.name}
-                    <span className={styles.walletTypeLabel}>
-                      {walletInfo.type}
-                    </span>
-                  </h2>
+                  <div className={styles.accountInfoText}>
+                    <div className={styles.accountName}>
+                      {walletInfo.name}
+                      <span className={styles.walletTypeLabel}>
+                        {walletInfo.type}
+                      </span>
+                    </div>
+                    {!isWalletExportable && (
+                      <div className={styles.accountInfoNote}>
+                        {t('exportKeystore.exportNotSupported')}
+                      </div>
+                    )}
+                  </div>
                   {isWalletExportable ? (
                     <input
                       checked={selectedWallets.has(walletId)}
@@ -372,13 +397,7 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
                         );
                       }}
                     />
-                  ) : (
-                    <span
-                      className={clsx(styles.existingAccountBadge, 'body3')}
-                    >
-                      {t('exportKeystore.exportNotSupported')}
-                    </span>
-                  )}
+                  ) : null}
                 </header>
               </div>
             );
