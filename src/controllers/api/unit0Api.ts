@@ -134,7 +134,7 @@ export class Unit0Api {
     return 'https://explorer.unit0.dev/api/v2/tokens/';
   }
 
-  private getRpcUrl(network: NetworkName): string {
+  getRpcUrl(network: NetworkName): string {
     if (network === NetworkName.Testnet) {
       return 'https://rpc-testnet.unit0.dev';
     }

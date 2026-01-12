@@ -53,6 +53,7 @@ import {
 import { fromWebExtensionEvent } from './_core/wonka';
 import { type IgnoreErrorsContext } from './constants';
 import { AddressBookController } from './controllers/AddressBookController';
+import { Unit0Api } from './controllers/api/unit0Api';
 import { AssetInfoController } from './controllers/assetInfo';
 import { CurrentAccountController } from './controllers/currentAccount';
 import { IdentityController } from './controllers/IdentityController';
@@ -227,6 +228,7 @@ class BackgroundService extends EventEmitter {
   statisticsController;
   trash;
   uiStateController;
+  unit0Api;
   vaultController;
   walletController;
 
@@ -240,6 +242,9 @@ class BackgroundService extends EventEmitter {
     super();
 
     this.extensionStorage = extensionStorage;
+
+    // Unit0 API
+    this.unit0Api = new Unit0Api();
 
     // Controllers
     this.trash = new TrashController({
@@ -1424,9 +1429,17 @@ class BackgroundService extends EventEmitter {
           uid: message.ext_uuid,
         })),
       network: {
-        code: this.networkController.getNetworkCode(),
-        matcher: this.networkController.getMatcher(),
-        server: this.networkController.getNode(),
+        // Use account's network code instead of selected network code
+        code: selectedAccount.networkCode,
+        // For Unit0 accounts, use Unit0 RPC; for Waves accounts, use Waves node/matcher
+        matcher:
+          selectedAccount.coinType === 'unit0'
+            ? ''
+            : this.networkController.getMatcher(),
+        server:
+          selectedAccount.coinType === 'unit0'
+            ? this.unit0Api.getRpcUrl(currentNetwork)
+            : this.networkController.getNode(),
       },
       txVersion: getTxVersions(selectedAccount ? selectedAccount.type : 'seed'),
       version: Browser.runtime.getManifest().version,
