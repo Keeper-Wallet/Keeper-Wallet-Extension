@@ -131,4 +131,22 @@ export class SeedWallet extends Wallet<WalletPrivateDataOfType<'seed'>> {
 
     return signedTx;
   }
+
+  /**
+   * Sign Unit0 (Ethereum) custom data/message using seed phrase
+   * This is equivalent to eth_sign or personal_sign in MetaMask
+   */
+  async signUnit0CustomData(message: string | Uint8Array): Promise<string> {
+    // Derive Ethereum wallet from seed phrase
+    const derivedWallet = EthWallet.fromPhrase(this.getSeed());
+
+    // Convert message to string if it's Uint8Array
+    const messageString =
+      typeof message === 'string' ? message : new TextDecoder().decode(message);
+
+    // Sign message (this uses eth_sign / personal_sign)
+    const signature = await derivedWallet.signMessage(messageString);
+
+    return signature;
+  }
 }

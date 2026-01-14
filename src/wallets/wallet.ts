@@ -64,6 +64,17 @@ export abstract class Wallet<TData extends WalletPrivateData> {
     );
   }
 
+  /**
+   * Sign Unit0 (Ethereum) custom data/message
+   * Override this method in wallet implementations that support Unit0
+   */
+  async signUnit0CustomData(message: string | Uint8Array): Promise<string> {
+    void message;
+    throw new Error(
+      'Unit0 custom data signing not supported for this wallet type',
+    );
+  }
+
   getSeed(): string {
     throw new Error('Cannot get seed');
   }

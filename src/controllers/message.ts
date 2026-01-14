@@ -146,6 +146,16 @@ export class MessageController extends EventEmitter {
     this.#updateBadge();
   }
 
+  /**
+   * Validates that the account supports Waves-specific operations.
+   * Throws NETWORK_INCOMPATIBLE error if the account is Unit0.
+   */
+  #validateWavesOnlyOperation(account: { coinType?: string }) {
+    if (account.coinType === 'unit0') {
+      throw ERRORS.NETWORK_INCOMPATIBLE();
+    }
+  }
+
   async newMessage<T extends MessageInput['type']>(
     messageInput: MessageInputOfType<T>,
   ) {
@@ -236,6 +246,9 @@ export class MessageController extends EventEmitter {
 
       switch (message.type) {
         case 'auth': {
+          // Unit0 accounts cannot use Waves auth
+          this.#validateWavesOnlyOperation(message.account);
+
           const { data, host, name, prefix, version } = message.data.data;
 
           const signature = await wallet.signAuth(
@@ -269,6 +282,9 @@ export class MessageController extends EventEmitter {
           message.status = MessageStatus.Signed;
           break;
         case 'cancelOrder': {
+          // Unit0 accounts cannot use DEX orders
+          this.#validateWavesOnlyOperation(message.account);
+
           const cancelOrder = {
             orderId: message.data.data.id,
             sender: message.data.data.senderPublicKey,
@@ -299,21 +315,56 @@ export class MessageController extends EventEmitter {
           break;
         }
         case 'customData': {
+          // Unit0 accounts cannot use signCustomData yet
+          // TODO: Enable this in the future when Unit0 custom data signing is fully supported
+          this.#validateWavesOnlyOperation(message.account);
+
           const { data } = message;
 
-          const signature = await wallet.signCustomData(
-            makeCustomDataBytes(data),
-          );
+          // Check if this is a Unit0 account by looking at the message account
+          // const isUnit0 = message.account.coinType === 'unit0';
+
+          let signature: Uint8Array | string;
+
+          // Future Unit0 support - currently disabled
+          /*
+          if (isUnit0) {
+            // Use Unit0/EVM signing for Unit0 accounts
+            // For EVM, we need to sign the raw message, not the Waves-formatted bytes
+            let messageToSign: string;
+            
+            if (data.version === 1) {
+              // Version 1: binary data in base64
+              const binaryData = base64Decode(data.binary.replace(/^base64:/, ''));
+              // Convert bytes to string for EVM signing
+              messageToSign = new TextDecoder().decode(binaryData);
+            } else {
+              // Version 2: structured data - convert to JSON string
+              messageToSign = JSON.stringify(data.data);
+            }
+            
+            signature = await wallet.signUnit0CustomData(messageToSign);
+            // signature is already in hex format (0x...)
+          } else {
+          */
+          // Use Waves signing for Waves accounts
+          signature = await wallet.signCustomData(makeCustomDataBytes(data));
+          // Convert to base58 for Waves
+          signature = base58Encode(signature);
+          // }
 
           message.result = {
             ...data,
-            signature: base58Encode(signature),
+            signature,
           };
 
           message.status = MessageStatus.Signed;
           break;
         }
         case 'order': {
+          // Unit0 accounts cannot use DEX orders
+          this.#validateWavesOnlyOperation(message.account);
+
           const signature = await wallet.signOrder(
             makeOrderBytes(message.data),
             message.data.version,
@@ -340,6 +391,9 @@ export class MessageController extends EventEmitter {
           break;
         }
         case 'request': {
+          // Unit0 accounts cannot use Waves signRequest
+          this.#validateWavesOnlyOperation(message.account);
+
           const signature = await wallet.signRequest(
             makeRequestBytes({
               senderPublicKey: message.data.data.senderPublicKey,
@@ -709,6 +763,9 @@ export class MessageController extends EventEmitter {
     account: PreferencesAccount,
     messageInputTx: MessageInputTx,
   ): Promise<MessageTx> {
+    // Unit0 accounts cannot sign Waves transactions
+    this.#validateWavesOnlyOperation(account);
+
     if (
       'fee' in messageInputTx.data &&
       !this.#isMoneyLikeValuePositive(messageInputTx.data.fee)
@@ -1810,6 +1867,9 @@ export class MessageController extends EventEmitter {
           timestamp: Date.now(),
         };
       case 'cancelOrder': {
+        // Unit0 accounts cannot use DEX orders
+        this.#validateWavesOnlyOperation(messageInput.account);
+
         const data = {
           senderPublicKey: messageInput.account.publicKey,
           ...messageInput.data.data,
@@ -1835,6 +1895,10 @@ export class MessageController extends EventEmitter {
         };
       }
       case 'customData': {
+        // Unit0 accounts cannot use signCustomData yet
+        // TODO: Enable this in the future when Unit0 custom data signing is fully supported
+        this.#validateWavesOnlyOperation(messageInput.account);
+
         try {
           const data = {
             ...messageInput.data,
@@ -1859,6 +1923,9 @@ export class MessageController extends EventEmitter {
         }
       }
       case 'order': {
+        // Unit0 accounts cannot use DEX orders
+        this.#validateWavesOnlyOperation(messageInput.account);
+
         if (!this.#isMoneyLikeValuePositive(messageInput.data.data.amount)) {
           throw ERRORS.REQUEST_ERROR('amount is not valid', messageInput.data);
         }
@@ -1963,6 +2030,9 @@ export class MessageController extends EventEmitter {
         };
       }
       case 'request': {
+        // Unit0 accounts cannot use Waves signRequest
+        this.#validateWavesOnlyOperation(messageInput.account);
+
         const data = {
           timestamp: Date.now(),
           senderPublicKey: messageInput.account.publicKey,
@@ -2067,6 +2137,9 @@ export class MessageController extends EventEmitter {
         };
       }
       case 'wavesAuth': {
+        // Unit0 accounts cannot use Waves auth
+        this.#validateWavesOnlyOperation(messageInput.account);
+
         try {
           const data = {
             ...messageInput.data,

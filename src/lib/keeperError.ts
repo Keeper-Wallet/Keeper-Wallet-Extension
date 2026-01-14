@@ -11,6 +11,7 @@ const ERRORS_DATA = {
   17: { msg: 'Invalid idle type', name: 'UNKNOWN_IDLE' },
   18: { msg: "Can't sent notification", name: 'NOTIFICATION_ERROR' },
   19: { msg: 'Incorrect notification data', name: 'NOTIFICATION_DATA_ERROR' },
+  20: { msg: 'Unsupported network', name: 'NETWORK_INCOMPATIBLE' },
 } as const;
 
 type ErrorName = (typeof ERRORS_DATA)[keyof typeof ERRORS_DATA]['name'];
