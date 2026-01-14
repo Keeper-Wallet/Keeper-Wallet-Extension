@@ -320,6 +320,13 @@ export function createUpdateState(store: PopupStore) {
               walletId: wallet.id,
               coinType: walletBlockchainType,
               coins: wallet.coins,
+              // For WX wallets, include uuid and username
+              ...(wallet.type === 'wx' && wallet.wxUuid && wallet.wxUsername
+                ? {
+                    uuid: wallet.wxUuid,
+                    username: wallet.wxUsername,
+                  }
+                : {}),
             },
           ];
         });

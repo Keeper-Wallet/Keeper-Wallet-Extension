@@ -407,7 +407,7 @@ export function ImportKeystoreChooseAccounts({
                   <div className={styles.accountInfoText}>
                     <div
                       className={styles.accountName}
-                      data-testid="accountName"
+                      data-testid="accountsGroupLabel"
                     >
                       {displayName}
                       <span className={styles.walletTypeLabel}>
