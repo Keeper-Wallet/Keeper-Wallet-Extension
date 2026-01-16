@@ -603,29 +603,37 @@ export class AssetInfoController {
 
     const { usdPrices } = this.store.getState();
 
+    // Initialize all requested tokens with "0" price
+    const updatedUsdPrices: Record<string, string> = {};
+
+    // Set default "0" for all requested IDs
+    for (const id of ids) {
+      const normalizedId =
+        id === 'UNIT0' || id === 'unit0' ? 'UNIT0' : id.toLowerCase();
+      updatedUsdPrices[normalizedId] = '0';
+    }
+
     try {
       // Fetch prices from Unit0 price API
       const unit0Prices = await this.unit0Api.fetchPricesByIds(ids);
 
-      // Convert Unit0 price format to the format used in the store
-      const updatedUsdPrices: Record<string, string> = {};
-
+      // Update with actual prices from API (overwrite "0" defaults)
       for (const [id, priceData] of Object.entries(unit0Prices)) {
         // Normalize to lowercase for consistency (except "UNIT0" which stays uppercase)
         const normalizedId = id === 'UNIT0' ? id : id.toLowerCase();
         updatedUsdPrices[normalizedId] = priceData.price_usd.toString();
       }
-
-      // Merge with existing prices
-      this.store.updateState({
-        usdPrices: {
-          ...usdPrices,
-          ...updatedUsdPrices,
-        },
-      });
     } catch {
-      // Price fetch failed
+      // Price fetch failed - keep "0" defaults
     }
+
+    // Merge with existing prices
+    this.store.updateState({
+      usdPrices: {
+        ...usdPrices,
+        ...updatedUsdPrices,
+      },
+    });
   }
 
   async updateInfo() {
