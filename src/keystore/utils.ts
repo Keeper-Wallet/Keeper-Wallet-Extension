@@ -19,13 +19,22 @@ async function encryptProfiles(
         case 'multichain':
         case 'privateKey':
         case 'encodedSeed':
+          return acc as unknown as MultiWallet[];
         case 'ledger':
         case 'wx':
-          return acc as unknown as MultiWallet[];
-        default:
+        case 'debug':
           throw new Error(
-            `Trying to export unsupported account type: ${acc.type}`,
+            `Cannot export ${acc.type} account type - not supported`,
           );
+        default: {
+          // TypeScript exhaustiveness check - this should never happen
+          const unsupportedType: never = acc;
+          throw new Error(
+            `Trying to export unsupported account type: ${
+              (unsupportedType as PreferencesAccount).type
+            }`,
+          );
+        }
       }
     }),
   );
