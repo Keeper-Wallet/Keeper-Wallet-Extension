@@ -37,6 +37,7 @@ async function makeConfig({
     target,
     devtool: dev ? 'cheap-module-source-map' : 'source-map',
     stats: 'errors-warnings',
+    performance: false,
     entry: Object.fromEntries(
       Object.entries(entry).map(([key, value]) => [
         key,
@@ -46,12 +47,7 @@ async function makeConfig({
         ].filter(Boolean),
       ]),
     ),
-    cache: {
-      type: 'filesystem',
-      buildDependencies: {
-        config: [__filename],
-      },
-    },
+    cache: dev ? { type: 'memory' } : false,
     resolve: {
       modules: [path.resolve(__dirname, 'src'), 'node_modules'],
       extensions: ['.ts', '.tsx', '.js'],
