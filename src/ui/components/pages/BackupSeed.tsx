@@ -41,7 +41,7 @@ export function BackUpSeed() {
         {newAccount.seed}
       </div>
 
-      <div className={`basic500 tag1 margin1 center ${styles.bottomText}`}>
+      <div className={`basic500 tag1 margin1 ${styles.bottomText}`}>
         {t('backupSeed.confirmBackupInfo')}
       </div>
 
@@ -49,6 +49,7 @@ export function BackUpSeed() {
         id="continue"
         className="margin-main-big"
         type="submit"
+        view="submit"
         onClick={() => {
           navigate('/create-account/confirm-backup');
         }}

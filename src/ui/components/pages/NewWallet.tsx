@@ -6,6 +6,7 @@ import {
   generateRandomSeed,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
+import clsx from 'clsx';
 import { type PopupState } from 'popup/store/types';
 import { Component } from 'react';
 import { type WithTranslation, withTranslation } from 'react-i18next';
@@ -13,6 +14,7 @@ import { connect } from 'react-redux';
 import { type NewAccountState } from 'store/reducers/localState';
 
 import { newAccountSelect } from '../../../store/actions/localState';
+import wavesIcon from '../../assets/img/waves.svg';
 import { type WithNavigate, withNavigate } from '../../router';
 import { AvatarList, Button } from '../ui';
 import * as styles from './styles/newwallet.styl';
@@ -86,7 +88,9 @@ class NewWalletComponent extends Component<Props, State> {
     return (
       <div className={styles.content}>
         <div>
-          <h2 className="title1 margin3 left">{t('newWallet.createNew')}</h2>
+          <h2 className={clsx(styles.title, 'title1  left')}>
+            {t('newWallet.createNew')}
+          </h2>
         </div>
 
         <div className="margin3">
@@ -108,6 +112,13 @@ class NewWalletComponent extends Component<Props, State> {
         </div>
 
         <div className={`${styles.greyLine} grey-line`}>
+          <img
+            src={wavesIcon}
+            width={12}
+            height={12}
+            alt="Waves"
+            className={styles.wavesIcon}
+          />
           {this.props.account.address}
         </div>
 

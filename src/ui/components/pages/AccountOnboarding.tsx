@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { NETWORK_CONFIG } from '../../../constants';
 import { NetworkName } from '../../../networks/types';
 import { newAccountSelect } from '../../../store/actions/localState';
+import multiAccountsCreate from '../../assets/img/multi-accounts-create.svg';
+import shadeBg from '../../assets/img/shade-bg.svg';
 import { Button } from '../ui';
 import { generateNewWalletItems } from './NewWallet';
 import * as styles from './styles/accountOnboarding.styl';
@@ -56,6 +58,21 @@ export function AccountOnboarding() {
 
   return (
     <div data-testid="accountOnboarding" className={styles.root}>
+      <div className={styles.iconContainer}>
+        <img
+          className={styles.shadeBg}
+          src={shadeBg}
+          alt=""
+          aria-hidden="true"
+        />
+        <img
+          className={styles.topIcon}
+          src={multiAccountsCreate}
+          alt=""
+          width={216}
+          height={137}
+        />
+      </div>
       <div className={styles.title}>{t('onboarding.multichainAccounts')}</div>
 
       <p className={styles.description}>
@@ -66,6 +83,7 @@ export function AccountOnboarding() {
         data-testid="createMultichainAccountBtn"
         view="submit"
         onClick={handleMultichainAccount}
+        className={styles.multichainButton}
       >
         {t('onboarding.createMultichainAccount')}
       </Button>

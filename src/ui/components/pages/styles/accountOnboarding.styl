@@ -1,7 +1,24 @@
 .root
   display: flex
   flex-direction: column
-  padding: 40px 24px
+  padding: 0 48px
+
+.iconContainer
+  position: relative
+  margin: 0 auto
+
+.shadeBg
+  position: absolute
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
+  z-index: 0
+  pointer-events: none
+
+.topIcon
+  position: relative
+  z-index: 1
+  margin: 0 auto
 
 .title
   font-family: Roboto;
@@ -17,4 +34,7 @@
   font-style: normal;
   font-weight: 400;
   line-height: 14px;
-  padding: 20px 0;
+  padding: 8px 0 12px 0;
+
+.multichainButton
+  margin-bottom: 32px;

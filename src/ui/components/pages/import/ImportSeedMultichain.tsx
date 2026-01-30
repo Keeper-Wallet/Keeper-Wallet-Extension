@@ -147,13 +147,15 @@ export function ImportSeedMultichain() {
 
   return (
     <div className={styles.root}>
-      <form onSubmit={handleImport}>
-        <div>
-          <h2 className="title1 margin3 left">
-            {t('importSeedMultichain.welcomeBack')}
-          </h2>
-        </div>
-        <div>{t('importSeedMultichain.hint')}</div>
+      <div>
+        <h2 className={styles.chooseTypeTitle}>
+          {t('importSeedMultichain.importAccount')}
+        </h2>
+      </div>
+      <div className={styles.seedPhaseHint}>
+        {t('importSeedMultichain.hint')}
+      </div>
+      <form onSubmit={handleImport} className={styles.formContainer}>
         <Input
           autoFocus
           className={clsx('margin-main-top')}
@@ -175,7 +177,12 @@ export function ImportSeedMultichain() {
           {error}
         </ErrorMessage>
 
-        <Button data-testid="continueBtn" type="submit" view="submit">
+        <Button
+          className={styles.importButton}
+          data-testid="continueBtn"
+          type="submit"
+          view="submit"
+        >
           {t('importSeed.importAccount')}
         </Button>
       </form>

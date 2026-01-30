@@ -6,6 +6,7 @@ import {
   createPublicKey,
   utf8Encode,
 } from '@keeper-wallet/waves-crypto';
+import clsx from 'clsx';
 import { isAddressString, isBase58 } from 'messages/utils';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useCallback, useEffect, useState } from 'react';
@@ -29,7 +30,7 @@ import {
   Tabs,
 } from '../../ui';
 import { InlineButton } from '../../ui/buttons/inlineButton';
-import * as styles from '../importSeed.module.css';
+import * as styles from './import.module.css';
 
 const SEED_MIN_LENGTH = 24;
 const ENCODED_SEED_MIN_LENGTH = 16;
@@ -303,12 +304,16 @@ export function ImportSeed() {
   const existingAccount = findExistingAccount(address);
 
   return (
-    <div className={styles.content}>
+    <div className={styles.root}>
       <div>
-        <h2 className="title1 margin3 left">{t('importSeed.title')}</h2>
+        <h2 className={styles.chooseTypeTitle}>{t('importSeed.title')}</h2>
       </div>
+      {activeTab === SEED_TAB_INDEX && (
+        <div className={styles.seedPhaseHint}>{t('importSeed.hint')}</div>
+      )}
 
       <form
+        className={clsx(styles.formContainer, styles.paddingTop24)}
         onSubmit={async event => {
           event.preventDefault();
 
@@ -443,7 +448,12 @@ export function ImportSeed() {
           {validationError}
         </ErrorMessage>
 
-        <Button data-testid="continueBtn" type="submit" view="submit">
+        <Button
+          className={styles.importButton}
+          data-testid="continueBtn"
+          type="submit"
+          view="submit"
+        >
           {t(
             existingAccount && showValidationError
               ? 'importSeed.switchAccount'

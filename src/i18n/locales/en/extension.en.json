@@ -411,11 +411,13 @@
     "seedIsPublicOrPrivateKeyError": "An account with a seed phrase like that is vulnerable. May be you meant to <switchTab>use a private key</switchTab>?",
     "seedLengthError": "Seed cannot be shorter than {{minLength}} characters",
     "switchAccount": "Switch account",
-    "title": "Import Waves account"
+    "title": "Import Waves account",
+    "hint": "Enter your seed phrase to proceed. Usually it consists of 15 words"
   },
   "importSeedMultichain": {
     "welcomeBack": "Welcome Back",
-    "hint": "Enter your seed phrase to proceed. Usually it consists of either 12 or 24 words"
+    "hint": "Enter your seed phrase to proceed. Usually it consists of either 12 or 24 words",
+    "importAccount": "Import account"
   },
   "info": {
     "joinUs": "Join the Waves Community",

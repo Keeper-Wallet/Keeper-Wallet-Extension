@@ -30,9 +30,10 @@ import { CustomNetworkModal } from './customNetworkModal';
 
 interface Props {
   allowChangingNetwork?: boolean;
+  hideNetwork?: boolean;
 }
 
-export function BottomPanel({ allowChangingNetwork }: Props) {
+export function BottomPanel({ allowChangingNetwork, hideNetwork }: Props) {
   const { t } = useTranslation();
   const dispatch = usePopupDispatch();
 
@@ -143,14 +144,22 @@ export function BottomPanel({ allowChangingNetwork }: Props) {
   );
 
   return (
-    <div className={styles.root}>
+    <div
+      className={clsx(styles.root, {
+        [styles.withoutShadow]: hideNetwork,
+      })}
+    >
       <Tooltip
-        className={styles.networkTooltipContent}
+        className={clsx(styles.networkTooltipContent, {
+          [styles.hidden]: hideNetwork,
+        })}
         content={t('bottom.network.disabled')}
       >
         {props => (
           <div
-            className={styles.network}
+            className={clsx(styles.network, {
+              [styles.hidden]: hideNetwork,
+            })}
             {...(allowChangingNetwork ? undefined : props)}
           >
             <button

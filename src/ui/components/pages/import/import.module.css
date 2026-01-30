@@ -1,18 +1,33 @@
 .root {
-  padding: 40px 60px;
+  padding: 48px 48px 31px 48px;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .chooseTypeTitle {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
   font-size: 24px;
-  font-weight: 500;
+  font-weight: 400;
   text-align: left;
+}
+.formContainer {
+  position: relative;
+  height: 100%;
+}
+.paddingTop24 {
+  padding-top: 24px;
+}
+
+.seedPhaseHint {
+  color: var(--color-basic500);
+  font-size: 11px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 14px;
 }
 
 .separatorBtns {
-  margin-top: 16px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -37,4 +52,8 @@
 
 .error {
   margin-bottom: 16px;
+}
+.importButton {
+  position: absolute;
+  bottom: 0;
 }
