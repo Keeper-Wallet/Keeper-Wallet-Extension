@@ -57,3 +57,12 @@
   position: absolute;
   bottom: 0;
 }
+
+.errorButton {
+  color: var(--color-submit400);
+  cursor: pointer;
+}
+
+.errorButton:hover {
+  color: var(--color-submit300);
+}
