@@ -20,7 +20,10 @@ import {
 } from 'store/actions/user';
 import invariant from 'tiny-invariant';
 
+import { BLOCKCHAIN_TYPES } from '../../../../assets/constants';
+import { NetworkName } from '../../../../networks/types';
 import { type PreferencesAccount } from '../../../../preferences/types';
+import Background from '../../../services/Background';
 import { WalletTypes } from '../../../services/Background';
 import { ImportKeystoreChooseAccounts } from './chooseAccounts';
 
@@ -474,6 +477,11 @@ export function ImportKeystore() {
       }}
       onSubmit={async selectedAccounts => {
         invariant(walletType);
+
+        // Switch to Waves mainnet before importing accounts
+        // This ensures selectAccount can find the account in the correct network
+        await Background.setNetwork(NetworkName.Mainnet);
+        await Background.setCurrentBlockchainType(BLOCKCHAIN_TYPES.WAVES);
 
         for (const account of selectedAccounts.values()) {
           const wallet = account as unknown as MultiWallet;
