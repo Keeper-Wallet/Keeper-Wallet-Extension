@@ -550,12 +550,25 @@ class BackgroundService extends EventEmitter {
       ) => {
         const wallets = this.multiWalletController.getMultiWallets();
         const wallet = wallets.find(w => {
+          // Check Waves networks
           const wavesNetworks = w.coins?.waves?.networks;
-          if (!wavesNetworks) return false;
+          if (wavesNetworks) {
+            const hasWavesAddress = Object.values(wavesNetworks).some(
+              net => net?.address === address,
+            );
+            if (hasWavesAddress) return true;
+          }
 
-          return Object.values(wavesNetworks).some(
-            net => net?.address === address,
-          );
+          // Check Unit0 networks
+          const unit0Networks = w.coins?.unit0?.networks;
+          if (unit0Networks) {
+            const hasUnit0Address = Object.values(unit0Networks).some(
+              net => net?.address === address,
+            );
+            if (hasUnit0Address) return true;
+          }
+
+          return false;
         });
 
         if (wallet) {
