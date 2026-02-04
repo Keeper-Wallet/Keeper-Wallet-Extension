@@ -155,9 +155,41 @@ export class CurrentAccountController {
     try {
       this.balanceContext.setStrategy(currentBlockchainType);
 
+      // Get existing balance to merge with
+      const existingBalance = this.store.getState()[`balance_${balanceKey}`] as
+        | BalancesItem
+        | undefined;
+
+      // Callback for incremental updates (Unit0 streaming)
+      const onUpdate = (partialBalance: BalancesItem) => {
+        // Merge new assets with existing ones (don't remove old assets)
+        const mergedAssets = {
+          ...(existingBalance?.assets || {}),
+          ...partialBalance.assets,
+        };
+
+        // Merge NFTs by id (don't remove old NFTs)
+        const existingNftsMap = new Map(
+          (existingBalance?.nfts || []).map(nft => [nft.id, nft]),
+        );
+        (partialBalance.nfts || []).forEach(nft => {
+          existingNftsMap.set(nft.id, nft);
+        });
+        const mergedNfts = Array.from(existingNftsMap.values());
+
+        this.store.updateState({
+          [`balance_${balanceKey}`]: {
+            ...partialBalance,
+            assets: mergedAssets,
+            nfts: mergedNfts,
+          },
+        });
+      };
+
       const balanceResult = await this.balanceContext.fetchBalance(
         address,
         currentNetwork,
+        onUpdate,
       );
 
       if (!balanceResult.success) {
@@ -166,8 +198,31 @@ export class CurrentAccountController {
 
       const balance = balanceResult.balance;
 
+      // Get CURRENT balance from store (it was updated by onUpdate callbacks)
+      const currentBalance = this.store.getState()[`balance_${balanceKey}`] as
+        | BalancesItem
+        | undefined;
+
+      // Final update - merge with current assets and NFTs
+      const finalAssets = {
+        ...(currentBalance?.assets || {}),
+        ...balance.assets,
+      };
+
+      const currentNftsMap = new Map(
+        (currentBalance?.nfts || []).map(nft => [nft.id, nft]),
+      );
+      (balance.nfts || []).forEach(nft => {
+        currentNftsMap.set(nft.id, nft);
+      });
+      const finalNfts = Array.from(currentNftsMap.values());
+
       this.store.updateState({
-        [`balance_${balanceKey}`]: balance,
+        [`balance_${balanceKey}`]: {
+          ...balance,
+          assets: finalAssets,
+          nfts: finalNfts,
+        },
       });
     } finally {
       this.isUpdatingBalance = false;

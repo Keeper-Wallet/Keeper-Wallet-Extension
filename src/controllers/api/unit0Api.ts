@@ -5,8 +5,6 @@ import { NetworkName } from '../../networks/types';
 import {
   type Unit0BalanceResponse,
   type Unit0TokenBalance,
-  type Unit0TokenDetailsResponse,
-  type Unit0TokenMetadata,
 } from '../strategies/interfaces/IUnit0Types';
 
 interface TransactionReceipt {
@@ -58,6 +56,17 @@ export interface NftTransferParams {
   amount?: string;
   /** Token type: 'ERC-721' or 'ERC-1155' */
   tokenType: 'ERC-721' | 'ERC-1155';
+}
+
+/**
+ * Pagination parameters returned by Blockscout API
+ */
+interface PaginationParams {
+  id?: number;
+  type?: string;
+  value?: string;
+  fiat_value?: string | null;
+  items_count?: number;
 }
 
 export interface NftTransactionData {
@@ -125,13 +134,6 @@ export class Unit0Api {
 
     // Default to mainnet explorer API for all other networks
     return 'https://explorer.unit0.dev/api';
-  }
-
-  private getTokenBaseUrl(network: NetworkName): string {
-    if (network === NetworkName.Testnet) {
-      return 'https://explorer-testnet.unit0.dev/api/v2/tokens/';
-    }
-    return 'https://explorer.unit0.dev/api/v2/tokens/';
   }
 
   getRpcUrl(network: NetworkName): string {
@@ -248,19 +250,125 @@ export class Unit0Api {
       });
   }
 
+  async *fetchERC20TokensStream(
+    address: string,
+    network: NetworkName = NetworkName.Mainnet,
+  ): AsyncGenerator<Unit0TokenBalance[]> {
+    const baseUrl = this.getBaseUrl(network);
+    let nextPageParams: PaginationParams | null = null;
+
+    do {
+      let url = `${baseUrl}${address}/tokens?type=ERC-20`;
+
+      if (nextPageParams) {
+        if (nextPageParams.id) url += `&id=${nextPageParams.id}`;
+        if (nextPageParams.value) url += `&value=${nextPageParams.value}`;
+        if (nextPageParams.fiat_value !== undefined)
+          url += `&fiat_value=${nextPageParams.fiat_value}`;
+        if (nextPageParams.items_count)
+          url += `&items_count=${nextPageParams.items_count}`;
+      }
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch ERC-20 tokens: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (Array.isArray(data.items)) {
+        yield data.items;
+      }
+
+      nextPageParams = data.next_page_params;
+
+      if (nextPageParams !== null) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    } while (nextPageParams !== null);
+  }
+
   async fetchERC20Tokens(
     address: string,
     network: NetworkName = NetworkName.Mainnet,
   ): Promise<Unit0TokenBalance[]> {
     const baseUrl = this.getBaseUrl(network);
+    let allTokens: Unit0TokenBalance[] = [];
+    let nextPageParams: PaginationParams | null = null;
 
-    const response = await fetch(`${baseUrl}${address}/tokens?type=ERC-20`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch ERC-20 tokens: ${response.status}`);
-    }
+    do {
+      // Build URL
+      let url = `${baseUrl}${address}/tokens?type=ERC-20`;
 
-    const data = await response.json();
-    return Array.isArray(data.items) ? data.items : [];
+      if (nextPageParams) {
+        // Add all pagination params from next_page_params
+        if (nextPageParams.id) url += `&id=${nextPageParams.id}`;
+        if (nextPageParams.value) url += `&value=${nextPageParams.value}`;
+        if (nextPageParams.fiat_value !== undefined)
+          url += `&fiat_value=${nextPageParams.fiat_value}`;
+        if (nextPageParams.items_count)
+          url += `&items_count=${nextPageParams.items_count}`;
+      }
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch ERC-20 tokens: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (Array.isArray(data.items)) {
+        allTokens = allTokens.concat(data.items);
+      }
+
+      nextPageParams = data.next_page_params;
+
+      if (nextPageParams !== null) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    } while (nextPageParams !== null);
+
+    return allTokens;
+  }
+
+  async *fetchERC721TokensStream(
+    address: string,
+    network: NetworkName = NetworkName.Mainnet,
+  ): AsyncGenerator<Unit0TokenBalance[]> {
+    const baseUrl = this.getBaseUrl(network);
+    let nextPageParams: PaginationParams | null = null;
+
+    do {
+      // Build URL
+      let url = `${baseUrl}${address}/tokens?type=ERC-721`;
+
+      if (nextPageParams) {
+        if (nextPageParams.id) url += `&id=${nextPageParams.id}`;
+        if (nextPageParams.value) url += `&value=${nextPageParams.value}`;
+        if (nextPageParams.fiat_value !== undefined)
+          url += `&fiat_value=${nextPageParams.fiat_value}`;
+        if (nextPageParams.items_count)
+          url += `&items_count=${nextPageParams.items_count}`;
+      }
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch ERC-721 tokens: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Yield current page immediately
+      if (Array.isArray(data.items)) {
+        yield data.items;
+      }
+
+      nextPageParams = data.next_page_params;
+
+      if (nextPageParams !== null) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    } while (nextPageParams !== null);
   }
 
   async fetchERC721Tokens(
@@ -268,15 +376,82 @@ export class Unit0Api {
     network: NetworkName = NetworkName.Mainnet,
   ): Promise<Unit0TokenBalance[]> {
     const baseUrl = this.getBaseUrl(network);
+    let allTokens: Unit0TokenBalance[] = [];
+    let nextPageParams: PaginationParams | null = null;
 
-    const response = await fetch(`${baseUrl}${address}/tokens?type=ERC-721`);
+    do {
+      // Build URL
+      let url = `${baseUrl}${address}/tokens?type=ERC-721`;
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch ERC-721 tokens: ${response.status}`);
-    }
+      if (nextPageParams) {
+        // Add all pagination params from next_page_params
+        if (nextPageParams.id) url += `&id=${nextPageParams.id}`;
+        if (nextPageParams.value) url += `&value=${nextPageParams.value}`;
+        if (nextPageParams.fiat_value !== undefined)
+          url += `&fiat_value=${nextPageParams.fiat_value}`;
+        if (nextPageParams.items_count)
+          url += `&items_count=${nextPageParams.items_count}`;
+      }
 
-    const data = await response.json();
-    return Array.isArray(data.items) ? data.items : [];
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch ERC-721 tokens: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (Array.isArray(data.items)) {
+        allTokens = allTokens.concat(data.items);
+      }
+
+      nextPageParams = data.next_page_params;
+
+      if (nextPageParams !== null) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    } while (nextPageParams !== null);
+
+    return allTokens;
+  }
+
+  async *fetchERC1155TokensStream(
+    address: string,
+    network: NetworkName = NetworkName.Mainnet,
+  ): AsyncGenerator<Unit0TokenBalance[]> {
+    const baseUrl = this.getBaseUrl(network);
+    let nextPageParams: PaginationParams | null = null;
+
+    do {
+      // Build URL
+      let url = `${baseUrl}${address}/tokens?type=ERC-1155`;
+
+      if (nextPageParams) {
+        if (nextPageParams.id) url += `&id=${nextPageParams.id}`;
+        if (nextPageParams.value) url += `&value=${nextPageParams.value}`;
+        if (nextPageParams.fiat_value !== undefined)
+          url += `&fiat_value=${nextPageParams.fiat_value}`;
+        if (nextPageParams.items_count)
+          url += `&items_count=${nextPageParams.items_count}`;
+      }
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch ERC-1155 tokens: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Yield current page immediately
+      if (Array.isArray(data.items)) {
+        yield data.items;
+      }
+
+      nextPageParams = data.next_page_params;
+
+      if (nextPageParams !== null) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    } while (nextPageParams !== null);
   }
 
   async fetchERC1155Tokens(
@@ -284,15 +459,41 @@ export class Unit0Api {
     network: NetworkName = NetworkName.Mainnet,
   ): Promise<Unit0TokenBalance[]> {
     const baseUrl = this.getBaseUrl(network);
+    let allTokens: Unit0TokenBalance[] = [];
+    let nextPageParams: PaginationParams | null = null;
 
-    const response = await fetch(`${baseUrl}${address}/tokens?type=ERC-1155`);
+    do {
+      // Build URL
+      let url = `${baseUrl}${address}/tokens?type=ERC-1155`;
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch ERC-1155 tokens: ${response.status}`);
-    }
+      if (nextPageParams) {
+        // Add all pagination params from next_page_params
+        if (nextPageParams.id) url += `&id=${nextPageParams.id}`;
+        if (nextPageParams.value) url += `&value=${nextPageParams.value}`;
+        if (nextPageParams.fiat_value !== undefined)
+          url += `&fiat_value=${nextPageParams.fiat_value}`;
+        if (nextPageParams.items_count)
+          url += `&items_count=${nextPageParams.items_count}`;
+      }
 
-    const data = await response.json();
-    return Array.isArray(data.items) ? data.items : [];
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch ERC-1155 tokens: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (Array.isArray(data.items)) {
+        allTokens = allTokens.concat(data.items);
+      }
+
+      nextPageParams = data.next_page_params;
+      if (nextPageParams !== null) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    } while (nextPageParams !== null);
+
+    return allTokens;
   }
 
   async fetchTokenBalances(
@@ -352,33 +553,6 @@ export class Unit0Api {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();
-  }
-
-  async fetchTokenMetadata(
-    contractAddress: string,
-    network: NetworkName = NetworkName.Mainnet,
-  ): Promise<Unit0TokenMetadata | null> {
-    const baseUrl = this.getTokenBaseUrl(network);
-    const response = await fetch(`${baseUrl}${contractAddress}`);
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const tokenDetails: Unit0TokenDetailsResponse = await response.json();
-
-    return {
-      address: (tokenDetails.address ?? tokenDetails.hash) as string,
-      name: tokenDetails.name,
-      symbol: tokenDetails.symbol,
-      decimals: Number(tokenDetails.decimals) || 18,
-      icon_url: tokenDetails.icon_url,
-      total_supply: tokenDetails.total_supply,
-      holders_count: tokenDetails.holders_count,
-      circulating_market_cap: tokenDetails.circulating_market_cap,
-      exchange_rate: tokenDetails.exchange_rate,
-      volume_24h: tokenDetails.volume_24h,
-    };
   }
 
   /**

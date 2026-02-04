@@ -23,6 +23,11 @@ import { Unit0NftStrategy } from '../nftStrategy/Unit0NftStrategy';
 import { Unit0TokenStrategy } from '../tokenStrategy/Unit0TokenStrategy';
 
 /**
+ * Callback for incremental balance updates
+ */
+export type BalanceUpdateCallback = (balance: BalancesItem) => void;
+
+/**
  * Unit0 Balance Strategy Implementation
  * Handles balance fetching for Unit0 blockchain
  */
@@ -43,12 +48,14 @@ export class Unit0BalanceStrategy implements IBalanceStrategy {
     address: string,
     network: NetworkName,
     transactions?: TransactionFromNode[] | Unit0Transfer[],
+    onUpdate?: BalanceUpdateCallback,
   ): Promise<BalanceFetchResult> {
     try {
       const balance = await this.fetchUnit0Balance(
         address,
         network,
         transactions as Unit0Transfer[],
+        onUpdate,
       );
 
       return {
@@ -77,17 +84,78 @@ export class Unit0BalanceStrategy implements IBalanceStrategy {
     address: string,
     network: NetworkName,
     transactions?: Unit0Transfer[],
+    onUpdate?: BalanceUpdateCallback,
   ): Promise<BalancesItem> {
     try {
-      // Fetch balance and tokens separately using strategies
+      // Fetch native balance first
       const balance = await this.unit0Api.fetchBalance(address, network);
-      const tokens = await this.tokenStrategy.fetchTokens(address, network);
+
+      // Collect all tokens using streams for incremental updates
+      let allTokens: Unit0TokenBalance[] = [];
+
+      // Process ERC-20 tokens with streaming
+      for await (const pageTokens of this.unit0Api.fetchERC20TokensStream(
+        address,
+        network,
+      )) {
+        allTokens = allTokens.concat(pageTokens);
+
+        // Build and emit partial balance after each page
+        if (onUpdate) {
+          const partialBalance = await this.buildUnit0Balance(
+            address,
+            network,
+            balance,
+            allTokens,
+            transactions || [],
+          );
+          onUpdate(partialBalance);
+        }
+      }
+
+      // Process ERC-721 tokens
+      for await (const pageTokens of this.unit0Api.fetchERC721TokensStream(
+        address,
+        network,
+      )) {
+        allTokens = allTokens.concat(pageTokens);
+
+        if (onUpdate) {
+          const partialBalance = await this.buildUnit0Balance(
+            address,
+            network,
+            balance,
+            allTokens,
+            transactions || [],
+          );
+          onUpdate(partialBalance);
+        }
+      }
+
+      // Process ERC-1155 tokens
+      for await (const pageTokens of this.unit0Api.fetchERC1155TokensStream(
+        address,
+        network,
+      )) {
+        allTokens = allTokens.concat(pageTokens);
+
+        if (onUpdate) {
+          const partialBalance = await this.buildUnit0Balance(
+            address,
+            network,
+            balance,
+            allTokens,
+            transactions || [],
+          );
+          onUpdate(partialBalance);
+        }
+      }
 
       return this.buildUnit0Balance(
         address,
         network,
         balance,
-        tokens,
+        allTokens,
         transactions || [],
       );
     } catch (error) {
@@ -145,7 +213,7 @@ export class Unit0BalanceStrategy implements IBalanceStrategy {
 
     // Process ERC-20 tokens using token strategy
     const { processedTokens, assetsToStore: tokenAssetsToStore } =
-      await this.tokenStrategy.processTokens(erc20Tokens, network);
+      await this.tokenStrategy.processTokens(erc20Tokens);
 
     // Prepare all assets for storage (ERC-20 tokens + NFTs)
     const assetsToStore: Unit0Assets[] = [];

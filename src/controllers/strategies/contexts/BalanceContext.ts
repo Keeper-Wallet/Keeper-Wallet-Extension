@@ -9,6 +9,7 @@ import { Unit0BalanceStrategy } from '../implementations/balanceStrategy/Unit0Ba
 import { WavesBalanceStrategy } from '../implementations/balanceStrategy/WavesBalanceStrategy';
 import {
   type BalanceFetchResult,
+  type BalanceUpdateCallback,
   type IBalanceStrategy,
 } from '../interfaces/IBalanceStrategy';
 import { TransactionContext } from './TransactionContext';
@@ -75,11 +76,13 @@ export class BalanceContext {
    * Fetch balance using the current strategy
    * @param address - The wallet address
    * @param network - The network name
+   * @param onUpdate - Optional callback for incremental balance updates
    * @returns Promise resolving to balance fetch result
    */
   async fetchBalance(
     address: string,
     network: NetworkName,
+    onUpdate?: BalanceUpdateCallback,
   ): Promise<BalanceFetchResult> {
     const txHistoryResult = await this.transactionContext.fetchTransactions(
       address,
@@ -90,6 +93,7 @@ export class BalanceContext {
       address,
       network,
       txHistoryResult.transactions,
+      onUpdate,
     );
   }
 }

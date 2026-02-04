@@ -36,8 +36,23 @@ export class Unit0NftStrategy implements INftStrategy {
       ).values(),
     );
 
+    // Fetch all NFT collections ONCE for the wallet
+    const collectionsResponse: INftInventory =
+      await this.unit0Api.fetchNftInventory(
+        '', // Not used - API returns all collections for the wallet
+        walletAddress,
+        network,
+      );
+
+    // Create a map of collections by address for quick lookup
+    const collectionsMap = new Map(
+      (collectionsResponse?.items || []).map(item => [
+        item.token?.address_hash?.toLowerCase(),
+        item,
+      ]),
+    );
+
     // Convert ERC-721 and ERC-1155 tokens to NFT format with enhanced metadata
-    // Use collections endpoint for each NFT contract to get comprehensive data with amounts and token instances
     const nftData = await Promise.all(
       uniqueTokens.map(async tokenData => {
         if (!tokenData || !tokenData.token) {
@@ -46,32 +61,22 @@ export class Unit0NftStrategy implements INftStrategy {
 
         const token = tokenData.token;
         const address = token.address_hash ?? token.address;
+        const addressLower = address?.toLowerCase();
 
-        let collectionData;
+        // Get collection data from the map
+        const collectionData = collectionsMap.get(addressLower);
+
+        if (!collectionData?.token_instances) {
+          return null;
+        }
+
+        // Fetch contract info for creator address
         const contractInfo = await this.unit0Api.fetchContractInfo(
           address as string,
           network,
         );
 
-        const collectionsResponse: INftInventory =
-          await this.unit0Api.fetchNftInventory(
-            address as string, // Use the NFT contract address
-            walletAddress, // User wallet address
-            network,
-          );
-
-        if (
-          collectionsResponse?.items &&
-          collectionsResponse.items.length > 0
-        ) {
-          collectionData = collectionsResponse.items.find(
-            item =>
-              item.token?.address_hash?.toLowerCase() ===
-              address?.toLowerCase(),
-          );
-        }
-
-        return collectionData?.token_instances.map(tokenInstance => {
+        return collectionData.token_instances.map(tokenInstance => {
           const creatorValue = contractInfo?.creator_address_hash || address;
           return {
             id: address,

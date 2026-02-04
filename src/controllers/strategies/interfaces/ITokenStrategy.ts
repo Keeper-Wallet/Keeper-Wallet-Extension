@@ -45,13 +45,9 @@ export interface ITokenStrategy {
   /**
    * Process tokens into structured format with metadata
    * @param tokens - Raw token balance data
-   * @param network - The network name
    * @returns Promise resolving to processed tokens and storage assets
    */
-  processTokens(
-    tokens: Unit0TokenBalance[],
-    network: NetworkName,
-  ): Promise<TokenProcessResult>;
+  processTokens(tokens: Unit0TokenBalance[]): Promise<TokenProcessResult>;
 
   /**
    * Filter tokens by type (ERC-20, ERC-721, ERC-1155)

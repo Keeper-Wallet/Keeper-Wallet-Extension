@@ -31,29 +31,40 @@ export class Unit0TokenStrategy implements ITokenStrategy {
 
   async processTokens(
     tokens: Unit0TokenBalance[],
-    network: NetworkName,
   ): Promise<TokenProcessResult> {
     // Filter to get only ERC-20 tokens
     const erc20Tokens = this.filterTokensByType(tokens, 'ERC-20');
 
-    // Process tokens with metadata
-    const tokenMetadataPromises = erc20Tokens.map(async token => {
-      const address = token.token?.address_hash ?? token.token?.address;
-      const tokenBalance = token.value || '0';
+    // Process tokens - use metadata from token object directly (already available from API)
+    const processedTokens: ProcessedToken[] = erc20Tokens
+      .map(token => {
+        const address = token.token?.address_hash ?? token.token?.address;
+        const tokenBalance = token.value || '0';
 
-      if (!address) return null;
+        if (!address) return null;
 
-      const metadata = await this.unit0Api.fetchTokenMetadata(address, network);
+        // Use metadata directly from token object - no need for extra API call
+        const metadata = {
+          address,
+          name: token.token?.name || '',
+          symbol: token.token?.symbol || '',
+          decimals: Number(token.token?.decimals) || 18,
+          icon_url: token.token?.icon_url || null,
+          total_supply: token.token?.total_supply || null,
+          holders_count: token.token?.holders_count || null,
+          circulating_market_cap: token.token?.circulating_market_cap || null,
+          exchange_rate: token.token?.exchange_rate || null,
+          volume_24h: token.token?.volume_24h || null,
+          type: 'ERC-20',
+        };
 
-      return {
-        address,
-        balance: tokenBalance,
-        metadata: { ...metadata, type: 'ERC-20' },
-      };
-    });
-
-    const tokenResults = await Promise.all(tokenMetadataPromises);
-    const processedTokens = tokenResults.filter(Boolean) as ProcessedToken[];
+        return {
+          address,
+          balance: tokenBalance,
+          metadata,
+        };
+      })
+      .filter(Boolean) as ProcessedToken[];
 
     // Prepare assets for storage
     const assetsToStore: Unit0TokenAsset[] = processedTokens

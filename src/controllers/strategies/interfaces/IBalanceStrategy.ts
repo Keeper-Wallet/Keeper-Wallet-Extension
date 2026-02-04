@@ -12,6 +12,11 @@ export interface BalanceFetchResult {
 }
 
 /**
+ * Callback for incremental balance updates during fetching
+ */
+export type BalanceUpdateCallback = (balance: BalancesItem) => void;
+
+/**
  * Balance Strategy Interface
  * Defines the contract for blockchain-specific balance fetching strategies
  */
@@ -21,12 +26,14 @@ export interface IBalanceStrategy {
    * @param address - The wallet address
    * @param network - The network name
    * @param transactions - Optional pre-fetched transactions to avoid duplicate API calls
+   * @param onUpdate - Optional callback for incremental balance updates (streaming)
    * @returns Promise resolving to balance fetch result
    */
   fetchBalance(
     address: string,
     network: NetworkName,
     transactions?: TransactionFromNode[] | Unit0Transfer[],
+    onUpdate?: BalanceUpdateCallback,
   ): Promise<BalanceFetchResult>;
 
   /**

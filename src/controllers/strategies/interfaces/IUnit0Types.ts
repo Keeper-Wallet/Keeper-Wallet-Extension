@@ -16,8 +16,14 @@ export interface Unit0TokenBalance {
     address_hash?: string;
     name?: string;
     symbol?: string;
-    decimals?: number;
+    decimals?: number | string;
     type?: string;
+    icon_url?: string | null;
+    total_supply?: string | null;
+    holders_count?: string | null;
+    circulating_market_cap?: string | null;
+    exchange_rate?: string | null;
+    volume_24h?: string | null;
   };
   value?: string;
 }

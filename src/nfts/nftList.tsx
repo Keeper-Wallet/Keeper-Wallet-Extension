@@ -41,7 +41,10 @@ const Row = ({
   // Keep first row's top as-is, add 6px offset starting from second row
   const modifiedStyle = {
     ...style,
-    top: typeof style.top === 'number' ? style.top + (index > 0 ? 6 : 0) : style.top,
+    top:
+      typeof style.top === 'number'
+        ? style.top + (index > 0 ? 6 : 0)
+        : style.top,
   };
 
   return (
