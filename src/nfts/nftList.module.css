@@ -2,12 +2,15 @@
   flex-grow: 1;
   margin-left: 14px;
 }
+.container {
+    margin-top: 6px;
+}
 
 .nftRow {
   flex-basis: 50%;
-  margin-right: 8px;
+  margin-right: 14px;
   display: flex;
-  gap: 8px;
+  gap: 14px;
 }
 
 .nftRow.noScroll {

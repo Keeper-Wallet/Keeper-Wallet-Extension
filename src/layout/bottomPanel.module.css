@@ -44,8 +44,8 @@
 .dropdown {
   position: absolute;
   z-index: 10;
-  bottom: 6px;
-  left: 6px;
+  bottom: 10px;
+  left: 7px;
   padding: 2px 8px;
   border-radius: 5px;
   box-shadow: 0 2px 6px 0 #9ba6b266;
