@@ -28,14 +28,89 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
     address: string,
     network: NetworkName,
     transactions?: TransactionFromNode[],
+    onUpdate?: (balance: BalancesItem) => void,
   ): Promise<BalanceFetchResult> {
     try {
-      const [wavesBalance, myAssets, myNfts, aliases] = await Promise.all([
+      // Fetch balance, assets, and aliases first (fast)
+      const [wavesBalance, myAssets, aliases] = await Promise.all([
         this.fetchWavesBalance(address),
         this.fetchAssetsBalance(address),
-        this.fetchNfts(address),
         this.fetchAliases(address),
       ]);
+
+      // If onUpdate callback exists, show assets immediately before fetching NFTs
+      if (onUpdate) {
+        const initialBalance = this.buildWavesBalance(
+          address,
+          network,
+          wavesBalance,
+          myAssets,
+          [], // No NFTs yet
+          aliases,
+          transactions || [],
+        );
+
+        // Update asset metadata BEFORE showing assets so they display correctly
+        const assets = this.assetInfoStrategy.getAssets?.() || {};
+        const assetExists = (assetId: string) => !!assets[assetId];
+        const isMaxAgeExceeded = (assetId: string) => {
+          const asset = assets[assetId];
+          if (!asset || asset.lastUpdated === undefined) {
+            return false;
+          }
+          return (
+            this.assetInfoStrategy.isMaxAgeExceeded?.(asset.lastUpdated) ||
+            false
+          );
+        };
+
+        const isSponsorshipUpdated = (balanceAsset: {
+          assetId: string;
+          minSponsoredAssetFee: string | null;
+        }) =>
+          balanceAsset.minSponsoredAssetFee !==
+          assets[balanceAsset.assetId]?.minSponsoredFee;
+
+        const fetchAssetIds = (
+          myAssets.balances.filter(
+            info =>
+              !assetExists(info.assetId) ||
+              isSponsorshipUpdated(info) ||
+              isMaxAgeExceeded(info.assetId),
+          ) as Array<{ assetId: string }>
+        ).map(info => info.assetId);
+
+        await this.assetInfoStrategy.updateAssets?.(fetchAssetIds, {
+          ignoreCache: true,
+        });
+
+        onUpdate(initialBalance);
+      }
+
+      // Fetch NFTs with streaming support
+      let allNfts: NftAssetDetail[] = [];
+
+      if (onUpdate) {
+        // Stream NFTs with incremental updates
+        for await (const pageNfts of this.fetchNftsStream(address)) {
+          allNfts = allNfts.concat(pageNfts);
+
+          // Build partial balance and emit update
+          const partialBalance = this.buildWavesBalance(
+            address,
+            network,
+            wavesBalance,
+            myAssets,
+            allNfts,
+            aliases,
+            transactions || [],
+          );
+          onUpdate(partialBalance);
+        }
+      } else {
+        // Fetch all NFTs at once (no streaming)
+        allNfts = await this.fetchNfts(address);
+      }
 
       const assets = this.assetInfoStrategy.getAssets?.() || {};
       const assetExists = (assetId: string) => !!assets[assetId];
@@ -67,7 +142,7 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
         ) as Array<{ assetId: string }>
       )
         .concat(
-          myNfts.filter(
+          allNfts.filter(
             info =>
               !assetExists(info.assetId) || isMaxAgeExceeded(info.assetId),
           ),
@@ -99,53 +174,19 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
           this.assetInfoStrategy.updateAssets?.(fetchAssetIds, {
             ignoreCache: true,
           }),
-          this.assetInfoStrategy.updateNfts(myNfts),
+          this.assetInfoStrategy.updateNfts(allNfts),
         ].filter(Boolean),
       );
 
-      const wavesAssetBalance: AssetBalance = {
-        minSponsoredAssetFee: '100000',
-        sponsorBalance: wavesBalance.available,
-        balance: wavesBalance.available,
-      };
-
-      const balance: BalancesItem = {
-        aliases: aliases || [],
-        available: wavesBalance.available,
-        regular: wavesBalance.regular,
-        leasedOut: new BigNumber(wavesBalance.regular)
-          .sub(wavesBalance.available)
-          .toString(),
+      const balance = this.buildWavesBalance(
+        address,
         network,
-        txHistory: transactions || [],
-        assets: Object.fromEntries([
-          ['WAVES', wavesAssetBalance],
-          ...myAssets.balances.map(info => {
-            const assetBalance: AssetBalance = {
-              minSponsoredAssetFee: info.minSponsoredAssetFee,
-              sponsorBalance: info.sponsorBalance,
-              balance: info.balance,
-            };
-            return [info.assetId, assetBalance];
-          }),
-        ]),
-        nfts: myNfts.map(nft => ({
-          id: nft.assetId,
-          name: nft.name,
-          precision: nft.decimals,
-          description: nft.description,
-          height: nft.issueHeight,
-          timestamp: new Date(nft.issueTimestamp).toJSON() as unknown as Date,
-          sender: nft.issuer,
-          quantity: nft.quantity,
-          reissuable: nft.reissuable,
-          hasScript: nft.scripted,
-          displayName: nft.name,
-          minSponsoredFee: nft.minSponsoredAssetFee ?? undefined,
-          originTransactionId: nft.originTransactionId,
-          issuer: nft.issuer,
-        })),
-      };
+        wavesBalance,
+        myAssets,
+        allNfts,
+        aliases,
+        transactions || [],
+      );
 
       return {
         balance,
@@ -175,6 +216,74 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
 
   canHandle(blockchainType: string): boolean {
     return blockchainType === 'waves';
+  }
+
+  private buildWavesBalance(
+    address: string,
+    network: NetworkName,
+    wavesBalance: {
+      address: string;
+      regular: string;
+      generating: string;
+      available: string;
+      effective: string;
+    },
+    myAssets: {
+      address: string;
+      balances: Array<{
+        assetId: string;
+        balance: string;
+        minSponsoredAssetFee: string | null;
+        sponsorBalance: string;
+      }>;
+    },
+    myNfts: NftAssetDetail[],
+    aliases: string[],
+    transactions: TransactionFromNode[],
+  ): BalancesItem {
+    const wavesAssetBalance: AssetBalance = {
+      minSponsoredAssetFee: '100000',
+      sponsorBalance: wavesBalance.available,
+      balance: wavesBalance.available,
+    };
+
+    return {
+      aliases: aliases || [],
+      available: wavesBalance.available,
+      regular: wavesBalance.regular,
+      leasedOut: new BigNumber(wavesBalance.regular)
+        .sub(wavesBalance.available)
+        .toString(),
+      network,
+      txHistory: transactions,
+      assets: Object.fromEntries([
+        ['WAVES', wavesAssetBalance],
+        ...myAssets.balances.map(info => {
+          const assetBalance: AssetBalance = {
+            minSponsoredAssetFee: info.minSponsoredAssetFee,
+            sponsorBalance: info.sponsorBalance,
+            balance: info.balance,
+          };
+          return [info.assetId, assetBalance];
+        }),
+      ]),
+      nfts: myNfts.map(nft => ({
+        id: nft.assetId,
+        name: nft.name,
+        precision: nft.decimals,
+        description: nft.description,
+        height: nft.issueHeight,
+        timestamp: new Date(nft.issueTimestamp).toJSON() as unknown as Date,
+        sender: nft.issuer,
+        quantity: nft.quantity,
+        reissuable: nft.reissuable,
+        hasScript: nft.scripted,
+        displayName: nft.name,
+        minSponsoredFee: nft.minSponsoredAssetFee ?? undefined,
+        originTransactionId: nft.originTransactionId,
+        issuer: nft.issuer,
+      })),
+    };
   }
 
   private async fetchWavesBalance(address: string) {
@@ -217,21 +326,105 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
     };
   }
 
+  /**
+   * Fetch NFTs with pagination support
+   */
   private async fetchNfts(address: string): Promise<NftAssetDetail[]> {
-    const url = new URL(
-      `assets/nft/${address}/limit/${MAX_NFT_ITEMS}`,
-      this.getNode(),
-    );
-    const response = await fetch(url, {
-      headers: { accept: 'application/json; large-significand-format=string' },
-    });
+    const allNfts: NftAssetDetail[] = [];
+    let after: string | null = null;
 
-    if (!response.ok) {
-      throw response;
-    }
+    do {
+      const url = new URL(
+        `assets/nft/${address}/limit/${MAX_NFT_ITEMS}`,
+        this.getNode(),
+      );
 
-    const nfts = (await response.json()) as NftAssetDetail[];
-    return Array.isArray(nfts) ? nfts : [];
+      if (after) {
+        url.searchParams.set('after', after);
+      }
+
+      const response = await fetch(url, {
+        headers: {
+          accept: 'application/json; large-significand-format=string',
+        },
+      });
+
+      if (!response.ok) {
+        throw response;
+      }
+
+      const nfts = (await response.json()) as NftAssetDetail[];
+
+      if (!Array.isArray(nfts) || nfts.length === 0) {
+        break;
+      }
+
+      allNfts.push(...nfts);
+
+      // If we got less than MAX_NFT_ITEMS, we've reached the end
+      if (nfts.length < MAX_NFT_ITEMS) {
+        break;
+      }
+
+      // Set 'after' to the last NFT's assetId for next page
+      after = nfts[nfts.length - 1].assetId;
+
+      // Add delay between requests to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      // eslint-disable-next-line no-constant-condition
+    } while (true);
+
+    return allNfts;
+  }
+
+  /**
+   * Stream NFTs with pagination - yields each page as it loads
+   */
+  private async *fetchNftsStream(
+    address: string,
+  ): AsyncGenerator<NftAssetDetail[]> {
+    let after: string | null = null;
+
+    do {
+      const url = new URL(
+        `assets/nft/${address}/limit/${MAX_NFT_ITEMS}`,
+        this.getNode(),
+      );
+
+      if (after) {
+        url.searchParams.set('after', after);
+      }
+
+      const response = await fetch(url, {
+        headers: {
+          accept: 'application/json; large-significand-format=string',
+        },
+      });
+
+      if (!response.ok) {
+        throw response;
+      }
+
+      const nfts = (await response.json()) as NftAssetDetail[];
+
+      if (!Array.isArray(nfts) || nfts.length === 0) {
+        break;
+      }
+
+      // Yield current page immediately
+      yield nfts;
+
+      // If we got less than MAX_NFT_ITEMS, we've reached the end
+      if (nfts.length < MAX_NFT_ITEMS) {
+        break;
+      }
+
+      // Set 'after' to the last NFT's assetId for next page
+      after = nfts[nfts.length - 1].assetId;
+
+      // Add delay between requests to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 5000));
+    } while (true);
   }
 
   private async fetchAliases(address: string): Promise<string[]> {

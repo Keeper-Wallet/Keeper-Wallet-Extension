@@ -5,14 +5,12 @@ import { createNft } from 'nfts/nfts';
 import { DisplayMode, type Nft } from 'nfts/types';
 import { usePopupSelector } from 'popup/store/react';
 import { useMemo } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import * as styles from 'ui/components/pages/styles/assets.styl';
 import { SearchInput, TabPanel } from 'ui/components/ui';
-import { getNftsLink } from 'ui/urls';
 
 import { BLOCKCHAIN_TYPES } from '../../../../../assets/constants';
-import { MAX_NFT_ITEMS } from '../../../../../constants';
 import { type MultiWallet } from '../../../../../services/types';
 import { sortAndFilterNfts, useUiState } from './helpers';
 
@@ -36,9 +34,9 @@ export function TabNfts() {
   const balances = usePopupSelector(state => state.balances);
 
   // Get the correct address based on blockchain type and account type
-  const { userAddress, networkCode } = useMemo(() => {
+  const userAddress = useMemo(() => {
     if (!activeAccount) {
-      return { userAddress: '', networkCode: '' };
+      return '';
     }
 
     const multiAccount = activeAccount as unknown as MultiWallet;
@@ -50,27 +48,13 @@ export function TabNfts() {
         const unit0NetworkKey = network === 'stagenet' ? 'testnet' : network;
         const networks = multiAccount.coins.unit0.networks;
 
-        let unit0Address = '';
-        let unit0NetworkCode = '';
-
         if (unit0NetworkKey === 'mainnet') {
-          unit0Address = networks.mainnet?.address || '';
-          unit0NetworkCode = networks.mainnet?.networkCode || '';
+          return networks.mainnet?.address || '';
         } else if (unit0NetworkKey === 'testnet') {
-          unit0Address = networks.testnet?.address || '';
-          unit0NetworkCode = networks.testnet?.networkCode || '';
+          return networks.testnet?.address || '';
         }
-
-        return {
-          userAddress: unit0Address,
-          networkCode: unit0NetworkCode,
-        };
-      } else {
-        return {
-          userAddress: activeAccount.address || '',
-          networkCode: activeAccount.networkCode || '',
-        };
       }
+      return activeAccount.address || '';
     }
 
     // Waves blockchain type
@@ -78,33 +62,18 @@ export function TabNfts() {
       const network = currentNetwork?.toLowerCase() || 'mainnet';
       const networks = multiAccount.coins.waves.networks;
 
-      let wavesAddress = '';
-      let wavesNetworkCode = '';
-
       if (network === 'mainnet') {
-        wavesAddress = networks.mainnet?.address || '';
-        wavesNetworkCode = networks.mainnet?.networkCode || '';
+        return networks.mainnet?.address || '';
       } else if (network === 'testnet') {
-        wavesAddress = networks.testnet?.address || '';
-        wavesNetworkCode = networks.testnet?.networkCode || '';
+        return networks.testnet?.address || '';
       } else if (network === 'stagenet') {
-        wavesAddress = networks.stagenet?.address || '';
-        wavesNetworkCode = networks.stagenet?.networkCode || '';
+        return networks.stagenet?.address || '';
       } else if (network === 'custom') {
-        wavesAddress = networks.custom?.address || '';
-        wavesNetworkCode = networks.custom?.networkCode || '';
+        return networks.custom?.address || '';
       }
-
-      return {
-        userAddress: wavesAddress,
-        networkCode: wavesNetworkCode,
-      };
-    } else {
-      return {
-        userAddress: activeAccount.address || '',
-        networkCode: activeAccount.networkCode || '',
-      };
     }
+
+    return activeAccount.address || '';
   }, [activeAccount, currentBlockchainType, currentNetwork]);
 
   const myNfts = useMemo(() => {
@@ -189,19 +158,7 @@ export function TabNfts() {
         <div className={clsx('basic500 center margin-min-top', styles.tabInfo)}>
           {term ? (
             <>
-              <div className="margin-min">
-                {
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-                  myNfts?.length! > MAX_NFT_ITEMS - 1 ? (
-                    <Trans
-                      i18nKey="assets.notFoundMaxNFTs"
-                      values={{ count: MAX_NFT_ITEMS }}
-                    />
-                  ) : (
-                    t('assets.notFoundNFTs')
-                  )
-                }
-              </div>
+              <div className="margin-min">{t('assets.notFoundNFTs')}</div>
               <p className="blue link" onClick={() => setFilters(null)}>
                 {t('assets.resetFilters')}
               </p>
@@ -222,35 +179,6 @@ export function TabNfts() {
               navigate(`/nft-collection/${asset.creator}`);
             }
           }}
-          renderMore={() =>
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-            myNfts?.length! > MAX_NFT_ITEMS - 1 && (
-              <div className={clsx(styles.nftListMore, 'basic500')}>
-                <div className="margin-min">
-                  {term ? (
-                    <Trans
-                      t={t}
-                      i18nKey="assets.maxFiltersNFTs"
-                      values={{ count: MAX_NFT_ITEMS }}
-                    />
-                  ) : (
-                    t('assets.maxNFTs', {
-                      count: MAX_NFT_ITEMS,
-                    })
-                  )}
-                </div>
-                <a
-                  className="blue link"
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  href={getNftsLink(networkCode!, userAddress)}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  {t('assets.showExplorerNFTs')}
-                </a>
-              </div>
-            )
-          }
         />
       )}
     </TabPanel>

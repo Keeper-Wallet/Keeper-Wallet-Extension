@@ -155,27 +155,46 @@ export class CurrentAccountController {
     try {
       this.balanceContext.setStrategy(currentBlockchainType);
 
-      // Get existing balance to merge with
-      const existingBalance = this.store.getState()[`balance_${balanceKey}`] as
-        | BalancesItem
-        | undefined;
+      // Track if this is the first update in this fetch cycle
+      let isFirstUpdate = true;
 
-      // Callback for incremental updates (Unit0 streaming)
+      // Callback for incremental updates (streaming for both Unit0 and Waves)
       const onUpdate = (partialBalance: BalancesItem) => {
+        // Get CURRENT balance from store (it was updated by previous onUpdate calls)
+        const currentBalance = this.store.getState()[
+          `balance_${balanceKey}`
+        ] as BalancesItem | undefined;
+
         // Merge new assets with existing ones (don't remove old assets)
         const mergedAssets = {
-          ...(existingBalance?.assets || {}),
+          ...(currentBalance?.assets || {}),
           ...partialBalance.assets,
         };
 
-        // Merge NFTs by id (don't remove old NFTs)
-        const existingNftsMap = new Map(
-          (existingBalance?.nfts || []).map(nft => [nft.id, nft]),
-        );
-        (partialBalance.nfts || []).forEach(nft => {
-          existingNftsMap.set(nft.id, nft);
-        });
-        const mergedNfts = Array.from(existingNftsMap.values());
+        // For NFTs:
+        // - On first update with 0 NFTs: keep existing NFTs from previous fetch (don't clear)
+        // - On first update with NFTs: replace with new NFTs
+        // - On subsequent updates: merge NFTs by id (accumulate pages)
+        let mergedNfts: typeof partialBalance.nfts;
+        if (isFirstUpdate) {
+          isFirstUpdate = false;
+          // If first update has 0 NFTs, keep existing NFTs from previous fetch
+          if (!partialBalance.nfts || partialBalance.nfts.length === 0) {
+            mergedNfts = currentBalance?.nfts || [];
+          } else {
+            // First update has NFTs, use them (replace old ones)
+            mergedNfts = partialBalance.nfts;
+          }
+        } else {
+          // Subsequent updates: merge NFTs by id
+          const existingNftsMap = new Map(
+            (currentBalance?.nfts || []).map(nft => [nft.id, nft]),
+          );
+          (partialBalance.nfts || []).forEach(nft => {
+            existingNftsMap.set(nft.id, nft);
+          });
+          mergedNfts = Array.from(existingNftsMap.values());
+        }
 
         this.store.updateState({
           [`balance_${balanceKey}`]: {

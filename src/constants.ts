@@ -2,7 +2,7 @@ import { NetworkName } from 'networks/types';
 
 export const MAX_TX_HISTORY_ITEMS = 100;
 export const UNIT0_MAX_TX_HISTORY_ITEMS = 50;
-export const MAX_NFT_ITEMS = 1000;
+export const MAX_NFT_ITEMS = 2;
 
 export const STATUS = {
   ERROR: -1,
