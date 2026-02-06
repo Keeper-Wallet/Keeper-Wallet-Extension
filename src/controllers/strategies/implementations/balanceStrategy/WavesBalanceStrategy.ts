@@ -370,7 +370,7 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
       after = nfts[nfts.length - 1].assetId;
 
       // Add delay between requests to avoid rate limiting
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 500));
       // eslint-disable-next-line no-constant-condition
     } while (true);
 
@@ -423,7 +423,7 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
       after = nfts[nfts.length - 1].assetId;
 
       // Add delay between requests to avoid rate limiting
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 500));
     } while (true);
   }
 
