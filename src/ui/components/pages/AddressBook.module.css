@@ -102,9 +102,9 @@
 
 .cardAvatar {
   margin-right: 14px;
-    img {
-        border-radius: 0;
-    }
+  img {
+    border-radius: 0;
+  }
 }
 
 .cardName {

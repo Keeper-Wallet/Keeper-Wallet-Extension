@@ -1,9 +1,24 @@
 const explorerUrls = new Map([
   ['W', 'wavesexplorer.com'],
-  ['T', 'testnet.wavesexplorer.com'],
-  ['S', 'stagenet.wavesexplorer.com'],
-  ['custom', 'wavesexplorer.com/custom'],
+  ['T', 'wavesexplorer.com'],
+  ['S', 'wavesexplorer.com'],
+  ['custom', 'wavesexplorer.com'],
 ]);
+
+function buildExplorerUrl(networkCode: string, path: string): string {
+  const code = explorerUrls.has(networkCode) ? networkCode : 'custom';
+  const baseUrl = explorerUrls.get(code);
+  const url = new URL(`https://${baseUrl}${path}`);
+
+  if (code === 'T') {
+    url.searchParams.set('network', 'testnet');
+  } else if (code === 'S') {
+    url.searchParams.set('network', 'stagenet');
+  }
+  // custom uses mainnet (no query params)
+
+  return url.toString();
+}
 
 export function getAccountLink(
   networkCode: string,
@@ -18,10 +33,7 @@ export function getAccountLink(
     return `https://explorer.unit0.dev/address/${address}`;
   }
 
-  const explorer = explorerUrls.get(
-    explorerUrls.has(networkCode) ? networkCode : 'custom',
-  );
-  return `https://${explorer}/address/${address}`;
+  return buildExplorerUrl(networkCode, `/addresses/${address}`);
 }
 
 export function getCollectionLink(
@@ -37,10 +49,7 @@ export function getCollectionLink(
     return `https://explorer.unit0.dev/token/${address}`;
   }
 
-  const explorer = explorerUrls.get(
-    explorerUrls.has(networkCode) ? networkCode : 'custom',
-  );
-  return `https://${explorer}/address/${address}`;
+  return buildExplorerUrl(networkCode, `/addresses/${address}`);
 }
 
 export function getTxHistoryLink(networkCode: string, address: string): string {
@@ -60,10 +69,8 @@ export function getTxDetailLink(networkCode: string, txId: string): string {
     const cleanId = txId.includes('-') ? txId.split('-')[0] : txId;
     return `https://explorer.unit0.dev/tx/${cleanId}`;
   }
-  const explorer = explorerUrls.get(
-    explorerUrls.has(networkCode) ? networkCode : 'custom',
-  );
-  return `https://${explorer}/tx/${txId}`;
+
+  return buildExplorerUrl(networkCode, `/tx/${txId}`);
 }
 
 export function getAssetDetailLink(
@@ -80,8 +87,5 @@ export function getAssetDetailLink(
     return `https://explorer.unit0.dev/token/${assetId}/instance/${tokenId}`;
   }
 
-  const explorer = explorerUrls.get(
-    explorerUrls.has(networkCode) ? networkCode : 'custom',
-  );
-  return `https://${explorer}/assets/${assetId}`;
+  return buildExplorerUrl(networkCode, `/assets/${assetId}`);
 }

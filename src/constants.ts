@@ -26,7 +26,7 @@ export const NETWORK_CONFIG: Record<
     name: NetworkName.Testnet,
     networkCode: 'T',
     nodeBaseUrl: 'https://nodes-testnet.wavesnodes.com/',
-    explorerUrl: 'https://testnet.wavesexplorer.com',
+    explorerUrl: 'https://wavesexplorer.com',
   },
   [NetworkName.Mainnet]: {
     matcherBaseUrl: 'https://matcher.wx.network/',
@@ -40,7 +40,7 @@ export const NETWORK_CONFIG: Record<
     name: NetworkName.Stagenet,
     networkCode: 'S',
     nodeBaseUrl: 'https://nodes-stagenet.wavesnodes.com/',
-    explorerUrl: 'https://stagenet.wavesexplorer.com',
+    explorerUrl: 'https://wavesexplorer.com',
   },
   [NetworkName.Custom]: {
     matcherBaseUrl: '',
