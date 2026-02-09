@@ -372,15 +372,14 @@ export function ExportKeystoreChooseItems<T extends MultiWallet | Contact>({
             return (
               <div key={walletId} className={styles.accountsGroup}>
                 <header className={styles.accountsGroupHeader}>
-                  <i
-                    className={clsx(styles.accountsGroupIcon, 'accountIcon')}
-                  />
                   <div className={styles.accountInfoText}>
                     <div
                       className={styles.accountName}
                       data-testid="accountsGroupLabel"
                     >
-                      {walletInfo.name}
+                      <span className={styles.displayName}>
+                        {walletInfo.name}
+                      </span>
                       <span className={styles.walletTypeLabel}>
                         {walletInfo.type}
                       </span>

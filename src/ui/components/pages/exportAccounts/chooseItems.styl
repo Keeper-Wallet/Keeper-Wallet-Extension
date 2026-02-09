@@ -1,7 +1,7 @@
 .root
   display: flex;
   flex-direction: column;
-  padding: 20px 0 0;
+  padding: 24px 0 0;
   height: calc(100% - 48px);
   overflow: hidden;
 
@@ -39,8 +39,20 @@
   display: flex;
   align-items: center;
   border-bottom: 1px solid #edf0f4;
-  padding: 10px 41px;
+  padding: 14px;
+  margin: 14px 48px;
   background: #fff;
+
+.displayName
+  overflow: hidden;
+  word-break: break-word;
+  display: inline-block;
+  text-overflow: ellipsis;
+  max-width: 140px;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
 
 .accountsGroupIcon
   margin: 0 8px 2px 0;
@@ -61,8 +73,7 @@
   width: 100px
 
 .walletTypeLabel
-  margin-left: 8px;
-  padding: 2px 6px;
+  padding: 2px 4px;
   background-color: #f0f2f5;
   border-radius: 4px;
   color: #5e6c84;
@@ -70,7 +81,8 @@
   font-weight: 500;
   text-transform: uppercase;
   display: inline-block;
-  vertical-align: middle;
+  margin-left: 8px;
+  vertical-align: bottom;
 
 .networkList
   padding: 8px 35px 8px 60px;
@@ -92,7 +104,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 12px 35px;
+  padding: 12px 48px;
 
 .accountListItem
   display: flex;
@@ -111,8 +123,8 @@
   flex-direction: column;
   gap: 2px;
   min-width: 0; // allow children to shrink for ellipsis
-  margin-left: 12px;
   margin-right:auto;
+  margin-left: 14px;
 
 .accountName
   font-size: 12px;
