@@ -15,8 +15,9 @@ jobs:
           node-version-file: .nvmrc
       - run: yarn install --frozen-lockfile
       - run: yarn run build
+      - run: yarn test:unit
       - run: docker compose up --wait
-      - run: yarn test
+      - run: yarn test:e2e
       - if: ${{ always() }}
         run: docker compose down
       - if: ${{ failure() }}
