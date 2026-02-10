@@ -2,6 +2,7 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./src",
+    "esModuleInterop": true,
     "jsx": "react-jsx",
     "lib": ["esnext", "dom"],
     "module": "esnext",
