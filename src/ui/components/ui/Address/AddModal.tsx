@@ -148,7 +148,6 @@ export function AddModal({ showModal, setShowModal, address }: Props) {
                 value={address || addressValue}
                 disabled={!!address}
                 addressError={addressError}
-                showMirrorAddress
               />
               <Button
                 type="submit"

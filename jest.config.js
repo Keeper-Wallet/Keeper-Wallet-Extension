@@ -9,6 +9,7 @@ export default {
       {
         tsconfig: {
           esModuleInterop: true,
+          baseUrl: './src',
         },
       },
     ],

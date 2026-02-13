@@ -150,7 +150,6 @@ export function EditModal({
                 }}
                 value={addressValue}
                 addressError={addressError}
-                showMirrorAddress
               />
               <Button
                 type="submit"
