@@ -9,3 +9,6 @@
 # Test coverage
 /coverage
 /.nyc_output
+
+# macOS
+.DS_Store

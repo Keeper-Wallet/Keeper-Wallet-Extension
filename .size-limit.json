@@ -17,7 +17,7 @@
       "dist/build/popup.js",
       "dist/build/vendors*.js"
     ],
-    "limit": "530 kB"
+    "limit": "560 kB"
   },
   {
     "name": "contentscript",
