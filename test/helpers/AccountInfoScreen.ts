@@ -1,4 +1,6 @@
-import { type ChainablePromiseElement } from 'webdriverio';
+import '@wdio/globals';
+
+import type { ChainablePromiseElement } from 'webdriverio';
 
 const PasswordModal = (
   wrapped: ChainablePromiseElement<WebdriverIO.Element>,

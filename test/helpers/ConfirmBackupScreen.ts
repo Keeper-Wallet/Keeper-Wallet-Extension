@@ -1,4 +1,6 @@
-import { type ChainablePromiseElement } from 'webdriverio';
+import '@wdio/globals';
+
+import type { ChainablePromiseElement } from 'webdriverio';
 
 const PillsContainer = (
   wrapped: ChainablePromiseElement<WebdriverIO.Element>,

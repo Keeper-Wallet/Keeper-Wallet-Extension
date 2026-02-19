@@ -4,7 +4,6 @@ import {
   type WebdriverIOQueries,
   type WebdriverIOQueriesChainable,
 } from '@testing-library/webdriverio';
-import { expect } from 'expect-webdriverio';
 import type * as mocha from 'mocha';
 import { remote } from 'webdriverio';
 
@@ -16,22 +15,19 @@ declare global {
 
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace WebdriverIO {
-    interface Browser
-      extends WebdriverIOQueries,
-        WebdriverIOQueriesChainable<Browser> {
+    interface Browser extends WebdriverIOQueries, WebdriverIOQueriesChainable {
       openKeeperPopup: () => Promise<void>;
       openKeeperExtensionPage: () => Promise<void>;
     }
 
-    interface Element
-      extends WebdriverIOQueries,
-        WebdriverIOQueriesChainable<Element> {}
+    interface Element extends WebdriverIOQueries, WebdriverIOQueriesChainable {}
   }
 }
 
 declare module 'webdriverio' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ChainablePromiseElement<T extends WebdriverIO.Element | undefined>
-    extends WebdriverIOQueriesChainable<T> {}
+    extends WebdriverIOQueriesChainable {}
 }
 
 declare module 'mocha' {
@@ -44,6 +40,9 @@ export const mochaHooks = () => ({
   async beforeAll(this: mocha.Context) {
     this.nodeUrl = 'http://waves-private-node:6869';
 
+    // Динамический импорт expect-webdriverio для обхода top-level await
+    const { expect } = await import('expect-webdriverio');
+
     Object.defineProperty(global, 'expect', {
       configurable: true,
       value: expect,
@@ -52,6 +51,9 @@ export const mochaHooks = () => ({
       configurable: true,
       value: await remote({
         logLevel: 'warn',
+        hostname: '127.0.0.1',
+        port: 4444,
+        path: '/wd/hub',
         capabilities: {
           browserName: 'chrome',
           'goog:chromeOptions': {
@@ -70,7 +72,6 @@ export const mochaHooks = () => ({
           },
           pageLoadStrategy: 'eager',
         },
-        path: '/wd/hub',
         waitforTimeout: 30 * 1000,
         connectionRetryTimeout: 120 * 1000,
         connectionRetryCount: 3,
@@ -84,7 +85,7 @@ export const mochaHooks = () => ({
     setupBrowser(browser);
 
     global.$ = browser.$.bind(browser);
-    global.$$ = browser.$$.bind(browser);
+    global.$ = browser.$.bind(browser);
 
     // Navigate to chrome://extensions to find the extension ID
     await browser.navigateTo('chrome://extensions');

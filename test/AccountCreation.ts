@@ -411,13 +411,15 @@ describe('Account creation', function () {
 
       // Updated: The new UI shows wallets instead of individual accounts grouped by network
       async function extractParsedWalletsFromDOM() {
-        const accountsGroups = await ChooseAccountsForm.accountsGroups;
+        const accountsGroups = await ChooseAccountsForm.accountsGroups();
         return await Promise.all(
-          accountsGroups.map(async group => {
-            return {
-              name: await group.label.getText(),
-            };
-          }),
+          accountsGroups.map(
+            async (group: { label: { getText: () => Promise<string> } }) => {
+              return {
+                name: await group.label.getText(),
+              };
+            },
+          ),
         );
       }
 
@@ -434,7 +436,9 @@ describe('Account creation', function () {
         const wallets = await extractParsedWalletsFromDOM();
         expect(wallets.length).toBeGreaterThan(0);
         // Verify at least one wallet is shown (the keystore contains test wallets)
-        expect(wallets.some(w => w.name.includes('test'))).toBe(true);
+        expect(
+          wallets.some((w: { name: string }) => w.name.includes('test')),
+        ).toBe(true);
       });
 
       it('can decrypt the correct exchange keystore file', async () => {
@@ -450,7 +454,9 @@ describe('Account creation', function () {
         const wallets = await extractParsedWalletsFromDOM();
         expect(wallets.length).toBeGreaterThan(0);
         // Verify at least one wallet is shown
-        expect(wallets.some(w => w.name.includes('test'))).toBe(true);
+        expect(
+          wallets.some((w: { name: string }) => w.name.includes('test')),
+        ).toBe(true);
       });
 
       it('shows an error if the file format is not recognized');
@@ -479,7 +485,7 @@ describe('Account creation', function () {
           );
           await ImportKeystoreFileScreen.continueButton.click();
 
-          const wallets = await ChooseAccountsForm.accountsGroups;
+          const wallets = await ChooseAccountsForm.accountsGroups();
           expect(wallets.length).toBeGreaterThan(0);
 
           await ChooseAccountsForm.importButton.click();
@@ -513,7 +519,7 @@ describe('Account creation', function () {
           );
           await ImportKeystoreFileScreen.continueButton.click();
 
-          const wallets = await ChooseAccountsForm.accountsGroups;
+          const wallets = await ChooseAccountsForm.accountsGroups();
           expect(wallets.length).toBeGreaterThan(0);
 
           await ChooseAccountsForm.importButton.click();
@@ -569,13 +575,16 @@ describe('Account creation', function () {
           );
           await ImportKeystoreFileScreen.continueButton.click();
 
-          const wallets = await ChooseAccountsForm.accountsGroups;
+          const wallets = await ChooseAccountsForm.accountsGroups();
           const walletNames = await Promise.all(
-            wallets.map(async w => await w.label.getText()),
+            wallets.map(
+              async (w: { label: { getText: () => Promise<string> } }) =>
+                await w.label.getText(),
+            ),
           );
-          expect(walletNames.some(name => name.includes('test2 (1)'))).toBe(
-            true,
-          );
+          expect(
+            walletNames.some((name: string) => name.includes('test2 (1)')),
+          ).toBe(true);
 
           await ChooseAccountsForm.importButton.click();
           await ImportSuccessScreen.addAnotherAccountButton.click();
@@ -613,13 +622,16 @@ describe('Account creation', function () {
           );
           await ImportKeystoreFileScreen.continueButton.click();
 
-          const wallets = await ChooseAccountsForm.accountsGroups;
+          const wallets = await ChooseAccountsForm.accountsGroups();
           const walletNames = await Promise.all(
-            wallets.map(async w => await w.label.getText()),
+            wallets.map(
+              async (w: { label: { getText: () => Promise<string> } }) =>
+                await w.label.getText(),
+            ),
           );
-          expect(walletNames.some(name => name.includes('test2 (2)'))).toBe(
-            true,
-          );
+          expect(
+            walletNames.some((name: string) => name.includes('test2 (2)')),
+          ).toBe(true);
 
           await ChooseAccountsForm.importButton.click();
           await ImportSuccessScreen.addAnotherAccountButton.click();

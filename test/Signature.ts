@@ -3446,8 +3446,8 @@ describe('Signature', function () {
 
     async function checkPackageAmounts(amounts: string[]) {
       const actualAmounts = await Promise.all(
-        await PackageTransactionScreen.packageAmounts.map(
-          async it => await it.getText(),
+        (await PackageTransactionScreen.packageAmounts).map(
+          async (it: WebdriverIO.Element) => await it.getText(),
         ),
       );
       expect(actualAmounts).toStrictEqual(amounts);
@@ -3455,8 +3455,8 @@ describe('Signature', function () {
 
     async function checkPackageFees(fees: string[]) {
       const actualFees = await Promise.all(
-        await PackageTransactionScreen.packageFees.map(
-          async it => await it.getText(),
+        (await PackageTransactionScreen.packageFees).map(
+          async (it: WebdriverIO.Element) => await it.getText(),
         ),
       );
       expect(actualFees).toStrictEqual(fees);
@@ -3565,8 +3565,8 @@ describe('Signature', function () {
       ]);
 
       const actualPayments = await Promise.all(
-        await invokeScript.invokeScriptPaymentItems.map(async it =>
-          it.getText(),
+        (await invokeScript.invokeScriptPaymentItems).map(
+          async (it: WebdriverIO.Element) => it.getText(),
         ),
       );
       expect(actualPayments).toStrictEqual([
