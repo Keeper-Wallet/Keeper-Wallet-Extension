@@ -35,7 +35,7 @@ export function Unit0TransactionCard({
     message.data.data && message.data.data.startsWith('0xa9059cbb');
 
   let displayAmount = '';
-  let displayAsset = 'Unit0';
+  let displayAsset;
   let tokenId = '';
   let tokenType = '';
   let recipientAddress = '';

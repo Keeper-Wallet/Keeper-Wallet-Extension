@@ -27,7 +27,7 @@ const HARDENED_OFFSET = 0x80000000;
 const WAVES_COIN_PATH = `m/44'/5741564'/0'/0'/0'`;
 
 function replaceDerive(val: string): string {
-  return val.replace("'", '');
+  return val.replace(/'/g, '');
 }
 
 function getMasterKey(seed: Uint8Array): Keys {
