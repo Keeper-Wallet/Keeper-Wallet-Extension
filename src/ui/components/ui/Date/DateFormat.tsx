@@ -12,7 +12,7 @@ const DEFAULT_OPTIONS: Intl.DateTimeFormatOptions = {
 
 interface Props {
   className?: string;
-  date: number | Date;
+  date: number | Date | string;
   options?: Intl.DateTimeFormatOptions;
   showRaw?: boolean;
 }

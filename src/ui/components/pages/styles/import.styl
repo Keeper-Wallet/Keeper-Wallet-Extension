@@ -2,7 +2,7 @@
 
 .root
   overflow: auto;
-  padding: 0 60px;
+  padding: 0 48px;
 
 .importIcon
   display: block;
@@ -15,7 +15,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 20px 0;
+  margin: 12px 0;
 
   &:before,
   &:after
@@ -25,10 +25,8 @@
 
 .importButtonsItem
   display: flex;
-  padding: 14px 0;
-
-  &:first-child
-    padding-top: 0;
+  padding: 13.5px 0;
+  overflow: visible;
 
   &:not(:last-child)
     border-bottom: 1px solid $accent50;
@@ -48,6 +46,7 @@
   gap: 8px;
   justify-content: left;
   padding: 0;
+  overflow: visible;
 }
 
 .importButton:disabled {
@@ -57,6 +56,19 @@
 .importButtonIcon {
   width: 25px;
   height: 28px;
+}
+
+.importButtonIconWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.importButtonWaveIcon {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  width: 14px;
+  height: 14px;
 }
 
 .importButtonNote {

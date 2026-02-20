@@ -6,7 +6,7 @@
 
 .content {
   position: relative;
-  padding: 24px;
+  padding: 24px 24px 14px 24px;
   display: flex;
   flex-direction: column;
   width: 284px;
@@ -25,11 +25,11 @@
 }
 
 .cancelButton {
-  margin: 0 40px 14px;
+  margin: 0 42px 14px;
   width: auto;
 }
 
 .button {
-  margin: 0 40px;
+  margin: 0 42px;
   width: auto;
 }

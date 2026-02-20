@@ -5,16 +5,6 @@
   "description": "Keeper Wallet is your entry point to the Waves blockchain and Waves-powered web services",
   "version": null,
   "author": "support@waves.tech",
-  "commands": {
-    "_execute_browser_action": {
-      "suggested_key": {
-        "windows": "Alt+Shift+K",
-        "mac": "Alt+Shift+K",
-        "chromeos": "Alt+Shift+K",
-        "linux": "Alt+Shift+K"
-      }
-    }
-  },
   "icons": {
     "16": "icons/icon_16.png",
     "24": "icons/icon_24.png",

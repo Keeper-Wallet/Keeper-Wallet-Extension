@@ -1,6 +1,6 @@
 export const TransferTransactionScreen = {
   get root() {
-    return $("[class*='transaction@']");
+    return $("[class*='transactionCard']");
   },
 
   get transferAmount() {
@@ -16,6 +16,6 @@ export const TransferTransactionScreen = {
   },
 
   get rejectButton() {
-    return this.root.findByTestId$('rejectButton');
+    return browser.findByTestId$('rejectButton');
   },
 };

@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 
+import { type NetworkName } from '../../networks/types';
 import { ACTION } from '../actions/constants';
 import { type AppAction } from '../types';
 
@@ -12,7 +13,20 @@ export type NewAccountState = {
   | { type: 'ledger'; id: number; publicKey: string }
   | { type: 'privateKey'; privateKey: string }
   | { type: 'seed'; seed: string }
-  | { type: 'wx'; publicKey: string; uuid: string; username: string }
+  | {
+      type: 'multichain';
+      seed: string;
+      ethereumAddress?: string;
+      addressEvm?: string;
+      accountType?: 'multichain';
+    }
+  | {
+      type: 'wx';
+      publicKey: string;
+      uuid: string;
+      username: string;
+      wxNetwork?: NetworkName;
+    }
 );
 
 function newAccount(

@@ -18,7 +18,17 @@
     "debugNoBackupPhrase": "This account is for debugging, so there's no backup phrase, private key or public key to copy",
     "privKey": "Private key",
     "pubKey": "Public key",
-    "viewInExplorer": "View in Explorer"
+    "viewInExplorer": "View in Explorer",
+    "publicInfo": "Public info",
+    "privateInfo": "Private info",
+    "wavesAddress": "Your Waves address",
+    "unit0Address": "Your Unit0 address",
+    "wavesPublicKey": "Waves Public Key",
+    "unit0PublicKey": "Unit0 Public Key",
+    "wavesPrivateKey": "Waves Private Key",
+    "unit0PrivateKey": "Unit0 Private key",
+    "errorUnableToRetrievePrivateKey": "Error: Unable to retrieve private key",
+    "errorRetrievingPrivateKey": "Error retrieving private key"
   },
   "activeAccountCard": {
     "swapButton": "Swap"
@@ -113,6 +123,7 @@
   },
   "backupSeed": {
     "backupCarefully": "Please carefully write down these 15 words or copy them",
+    "backupCarefullyMultichain": "Please carefully write down these 12 words or copy them",
     "cancel": "Cancel creation",
     "confirmBackupInfo": "You will confirm this phrase on the next screen",
     "continue": "Continue",
@@ -128,6 +139,10 @@
     "mainnet": "Mainnet",
     "testnet": "Testnet",
     "stagenet": "Stagenet"
+  },
+  "common": {
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All"
   },
   "changeName": {
     "currentName": "Current account name",
@@ -194,6 +209,7 @@
     "chooseContactsTitle": "Export Contacts to file",
     "encryptAddressBook": "Encrypt the Address Book",
     "exportNotSupported": "This account cannot be exported",
+    "vaultDataMissing": "Vault data or selected accounts are missing",
     "warningModalTitle": "Attention",
     "warningModalDesc": "Ledger and email accounts cannot be exported",
     "warningModalConfirmButton": "I understand",
@@ -201,7 +217,8 @@
     "passwordLabel": "Password",
     "passwordVerifyDesc": "Please enter your Keeper password to confirm that it's really you",
     "passwordVerifyImportantNote": "<attention>Attention:</attention> this password will also be used to encrypt the resulting file. If you forget it, you won't be able to restore your accounts.",
-    "verifyBtn": "Enter"
+    "verifyBtn": "Enter",
+    "unit0NetworkLabel": "Unit0 {{network}}"
   },
   "forgotPassword": {
     "attention": "Attention!",
@@ -282,28 +299,39 @@
     "notSupportedByBrowser": "Not supported by your browser",
     "additionSuccess": "Your account '{{ name }}' has been successfully added!",
     "readyToUse": "Your account '{{ name }}' is ready to use",
+    "readyToUseTestnet": "Your account '{{ name }}' is ready to use",
     "readyToUseKeystore": "Your accounts are ready to use",
     "readyHelpText": "You can now close this tab and continue using the extension or add more accounts.",
+    "testnetHelpText": "You need to activate testnet from settings and switch to testnet account to use it.",
     "readyToUseAddressBook": "Your Address Book is ready to use",
     "readyAddressBookText": "You can now close this tab and continue using the extension.",
     "viaKeystore": "Keystore File",
     "viaLedger": "Ledger",
     "viaSeed": "Seed Phrase or Private Key",
     "viaDebug": "Debug",
-    "viaEmail": "Email Account"
+    "viaEmail": "Email Account",
+    "chooseAccount": "Choose account type",
+    "importMultiChain": "Import multichain account",
+    "importWaves": "Import Waves account"
   },
   "importDebug": {
     "title": "Import Debug Account",
     "nameInput": "Name",
     "addressInput": "Address",
+    "unit0AddressInput": "Unit0 Address",
+    "optional": "optional",
     "continueBtn": "Continue",
     "requiredError": "Cannot be blank",
     "alreadyExists": "Account already exists",
-    "invalidAddressError": "Should be valid {{ networkName }} address"
+    "invalidAddressError": "Should be valid {{ networkName }} address",
+    "invalidUnit0AddressError": "Should be valid Unit0 address"
   },
   "importEmail": {
     "importEmailTitle": "Import Email Account",
     "importEmailDesc": "Connect an email account created on Waves.Exchange",
+    "networkLabel": "Select Network",
+    "mainnet": "Mainnet",
+    "testnet": "Testnet",
     "passwordLabel": "Password",
     "passwordRequired": "Enter password",
     "loginRequired": "Confirm Email Account",
@@ -324,6 +352,7 @@
   },
   "importKeystore": {
     "addressBookLabel": "Address Book file",
+    "alreadyExists": "Already exists",
     "addressBookPasswordPlaceholder": "Password used to create file",
     "browse": "Browse...",
     "chooseAccountsDesc": "Select which accounts you want to import",
@@ -337,7 +366,9 @@
     "chooseFileTitle": "Import Keystore File",
     "errorDecrypt": "Could not decrypt the Keystore file with the given password",
     "errorFormat": "File format is not supported",
+    "errorInvalidFormat": "File format is not supported",
     "errorUnexpected": "Something went wrong",
+    "importNotSupported": "This account cannot be imported",
     "keystoreLabel": "Keystore File",
     "noFileSelected": "No file selected",
     "passwordLabel": "Password",
@@ -354,7 +385,9 @@
     "userIdInputMaxValueError": "Account ID cannot be greater than {{ maxUserId }}",
     "selectAccountInstructions": "Choose your address",
     "title": "Import Ledger",
-    "tryAgainButton": "Try Again"
+    "tryAgainButton": "Try Again",
+    "defaultWalletName": "Ledger {{id}}",
+    "failedToGetSignature": "Failed to get signature from Ledger device"
   },
   "importSeed": {
     "accountExistsError": "Account already known as '{{ name }}'",
@@ -365,6 +398,10 @@
     "encodedSeedLengthError": "Encoded seed cannot be shorter than {{minLength}} characters",
     "importAccount": "Import Account",
     "invalidPrivateKeyLengthError": "Private key must consist of {{length}} bytes",
+    "invalidSeed": "Invalid seed",
+    "enterValidSeed": "Enter valid seed",
+    "seedWordCountError": "Seed phrase must contain exactly {{count}} words",
+    "seedWordsAllowedError": "Seed phrase must contain 12 or 24 words",
     "plainText": "Seed phrase",
     "plainTextPlaceholder": "Your seed is the 15 words you saved when creating your account",
     "privateKey": "Private key",
@@ -374,7 +411,13 @@
     "seedIsPublicOrPrivateKeyError": "An account with a seed phrase like that is vulnerable. May be you meant to <switchTab>use a private key</switchTab>?",
     "seedLengthError": "Seed cannot be shorter than {{minLength}} characters",
     "switchAccount": "Switch account",
-    "title": "Import using seed"
+    "title": "Import Waves account",
+    "hint": "Enter your seed phrase to proceed. Usually it consists of 15 words"
+  },
+  "importSeedMultichain": {
+    "welcomeBack": "Welcome Back",
+    "hint": "Enter your seed phrase to proceed. Usually it consists of either 12 or 24 words",
+    "importAccount": "Import account"
   },
   "info": {
     "joinUs": "Join the Waves Community",
@@ -408,7 +451,9 @@
   },
   "networkSettings": {
     "cancel": "Cancel",
+    "confirm": "Confirm",
     "customNetwork": "network",
+    "wavesCustom": "Waves Custom",
     "matcherError": "Incorrect matcher address",
     "nodeError": "Incorrect node address",
     "nodeUrlEmpty": "URL is required",
@@ -423,7 +468,8 @@
     "save": "Save",
     "savedModal": "Saved!",
     "setDefault": "Set Default",
-    "setDefaultModal": "Save default!"
+    "setDefaultModal": "Save default!",
+    "toggleLabel": "Show testnet networks"
   },
   "newAccount": {
     "acceptTerms": "I have read and agree with the",
@@ -446,6 +492,14 @@
     "errorInUse": "Name already exist",
     "errorNameRequired": "Name is required",
     "errorRequired": "Required name",
+    "errorNameTooLong": "Wallet name cannot exceed 32 characters",
+    "errorValidationFailed": "Validation error occurred",
+    "errorWalletAlreadyExists": "Multi-wallet with ID {{id}} already exists",
+    "errorFailedToSave": "Failed to save wallet. Please try again.",
+    "errorFailedToCreate": "Failed to create wallet. Please try again.",
+    "errorFailedToDecryptKeystore": "Failed to decrypt keystore content",
+    "multichainDescription": "This will create accounts on Waves (Mainnet, Testnet, Stagenet) and Unit0 (Mainnet, Testnet). All accounts include Ethereum access with the same shared address.",
+    "wavesOnlyDescription": "This will create the same account on Waves Mainnet, Testnet, and Stagenet.",
     "nameInfo": "The account name will be known only to you",
     "switchAccount": "Switch account"
   },
@@ -459,6 +513,9 @@
   },
   "nftCollection": {
     "backToNftBtn": "Back to NFTs"
+  },
+  "nftCard": {
+    "cannotPreview": "Can't preview this NFT"
   },
   "nftInfo": {
     "backBtn": "Back",
@@ -516,6 +573,10 @@
     "attachmentInputLabel_plural": "Attachment ({{count}}/{{max}} bytes)",
     "attachmentMaxLengthError": "Attachment must not exceed 140 bytes",
     "insufficientFundsError": "Insufficient funds",
+    "insufficientUnit0ForGas": "Insufficient UNIT0 for gas fees. You need {{gasCost}} UNIT0 but have {{balance}} UNIT0",
+    "insufficientUnit0Total": "Insufficient UNIT0. Total needed: {{totalCost}} UNIT0 ({{amount}} UNIT0 + {{gasCost}} gas), but balance is {{balance}} UNIT0",
+    "noAccountSelected": "No account selected",
+    "transactionFailed": "Transaction failed. Please try again.",
     "recipientInputLabel": "Recipient",
     "recipientInvalidError": "Recipient value is invalid",
     "recipientRequiredError": "Recipient is required",
@@ -599,6 +660,7 @@
     "failMessage": "Swap did not succeed, please try again",
     "fromInputLabel": "From",
     "insufficientFundsError": "Insufficient funds",
+    "ledgerRequestRejected": "Request is rejected on ledger",
     "maxAmountExceeded": "Amount must not exceed {{ maxAmount }}",
     "minimumReceived": "Minimum Received",
     "minimumReceivedTooltip": "Minimum amount you will receive, taking slippage tolerance into account",
@@ -621,16 +683,23 @@
     "viewTransaction": "View transaction"
   },
   "transactions": {
-    "allowAccess": "Allow access",
     "allowAccessTitle": "Allow access",
+    "allowAccess": "Allow access",
     "amountPerTransaction": "This amount is equivalent to every 0.001 Waves in transaction fees",
     "arguments": "Arguments",
     "assetId": "Asset ID",
     "assetScriptTransaction": "Set Asset Script",
     "assetScriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user.",
     "assetScriptWarningHeader": "Warning: actions can block transactions with your asset",
+    "assetName": "Asset Name",
+    "assetType": "Asset Type",
     "attachment": "Attachment",
     "burn": "Burn",
+    "cancelLease": "Cancel Lease",
+    "cancelOrder": "Cancel Order",
+    "chainId": "Chain ID",
+    "chainIdMainnet": "Mainnet (88811)",
+    "chainIdTestnet": "Testnet (88817)",
     "clearSponsored": "Disable Sponsorship",
     "createAlias": "Create Alias",
     "dApp": "dApp",
@@ -643,9 +712,12 @@
     "dex": "DEX",
     "expires": "Expires",
     "fee": "Fee",
+    "gasLimit": "Gas Limit",
+    "gasPrice": "Gas Price",
     "hideTransactions": "Hide transactions",
     "issueType": "Type",
     "json": "JSON",
+    "keyDeletion": "Key Deletion",
     "lease": "Lease",
     "leaseCancel": "Lease Cancel",
     "massTransfer": "Mass Transfer",
@@ -716,5 +788,12 @@
     "getStarted": "Get Started",
     "info": "Keeper Wallet — is the safest way to interact with third-party web resources with Waves-integrated functionality or DApps.",
     "info2": "Using Keeper Wallet, you can sign transactions and remain safe from malicious sites."
+  },
+  "onboarding": {
+    "multichainAccounts": "Multichain accounts",
+    "multichainDescription": "Now you have the ability to work not only in the Waves network, but also in the Unit0 network with Ethereum token support",
+    "createMultichainAccount": "Create a new multichain account",
+    "wavesOnlyDescription": "Or continue working in the native Waves network with an account that supports only Waves network and products",
+    "createWavesAccount": "Create a new Waves account"
   }
 }

@@ -1,6 +1,8 @@
+import { NetworkName } from 'networks/types';
 import { usePopupSelector } from 'popup/store/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { isValidEthereumAddress } from 'ui/utils/ethereum';
 import { getNetworkByAddress } from 'ui/utils/waves';
 
 import { downloadKeystore } from '../../../../keystore/utils';
@@ -26,7 +28,9 @@ export function ExportAddressBook() {
           .map(([address, name]) => ({
             name,
             address,
-            network: getNetworkByAddress(address),
+            network: isValidEthereumAddress(address)
+              ? NetworkName.Custom
+              : getNetworkByAddress(address),
           }))}
         type="contacts"
         onSubmit={async contacts => {

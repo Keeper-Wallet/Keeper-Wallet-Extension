@@ -6,7 +6,9 @@ import { type AssetsRecord } from '../assets/types';
 import { collectBalances } from '../balances/utils';
 import { type Message, MessageStatus } from '../messages/types';
 import { type NetworkName } from '../networks/types';
+import { type PreferencesAccount } from '../preferences/types';
 import { ACTION } from '../store/actions/constants';
+import Background from '../ui/services/Background';
 import { type PopupStore } from './store/types';
 
 function getParam<S, D>(param: S, defaultParam: D) {
@@ -99,6 +101,19 @@ export function createUpdateState(store: PopupStore) {
       store.dispatch({
         type: ACTION.UPDATE_CURRENT_NETWORK,
         payload: currentNetwork,
+      });
+    }
+    const currentBlockchainType = getParam(
+      stateChanges.currentBlockchainType,
+      '',
+    );
+    if (
+      currentBlockchainType &&
+      currentBlockchainType !== currentState.currentBlockchainType
+    ) {
+      store.dispatch({
+        type: ACTION.UPDATE_CURRENT_BLOCKCHAIN_TYPE,
+        payload: currentBlockchainType,
       });
     }
 
@@ -212,25 +227,121 @@ export function createUpdateState(store: PopupStore) {
     if (accounts && !deepEqual(accounts, currentState.allNetworksAccounts)) {
       store.dispatch({
         type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
-        payload: accounts,
+        payload: accounts as unknown as PreferencesAccount[],
       });
     }
 
     if (
-      (stateChanges.accounts != null &&
+      (stateChanges.accounts !== null &&
         !deepEqual(stateChanges.accounts, currentState.allNetworksAccounts)) ||
-      (stateChanges.currentNetwork != null &&
-        stateChanges.currentNetwork !== currentState.currentNetwork)
+      (stateChanges.currentNetwork !== null &&
+        stateChanges.currentNetwork !== currentState.currentNetwork) ||
+      (stateChanges.currentBlockchainType !== null &&
+        stateChanges.currentBlockchainType !==
+          currentState.currentBlockchainType)
     ) {
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      const accounts =
-        stateChanges.accounts || currentState.allNetworksAccounts;
       const network =
         stateChanges.currentNetwork || currentState.currentNetwork;
+      const blockchainType =
+        stateChanges.currentBlockchainType ||
+        currentState.currentBlockchainType ||
+        'waves';
 
-      store.dispatch({
-        type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
-        payload: accounts.filter(account => account.network === network),
+      Background.getMultiWallets().then(multiWallets => {
+        const derivedAccounts = multiWallets.flatMap(wallet => {
+          const walletBlockchainType = (blockchainType || 'waves') as
+            | 'waves'
+            | 'unit0';
+          const blockchainData =
+            wallet.coins[walletBlockchainType as 'waves' | 'unit0'];
+
+          if (!blockchainData || !blockchainData.networks) {
+            return [];
+          }
+
+          let networkKey: string | null = null;
+
+          if (walletBlockchainType === 'waves') {
+            switch (network) {
+              case 'mainnet':
+                networkKey = 'mainnet';
+                break;
+              case 'testnet':
+                networkKey = 'testnet';
+                break;
+              case 'stagenet':
+                networkKey = 'stagenet';
+                break;
+              case 'custom':
+                networkKey = 'custom';
+                break;
+              default:
+                networkKey = null;
+            }
+          } else {
+            switch (network) {
+              case 'mainnet':
+                networkKey = 'mainnet';
+                break;
+              case 'testnet':
+                networkKey = 'testnet';
+                break;
+              default:
+                networkKey = null;
+            }
+          }
+
+          if (!networkKey) {
+            return [];
+          }
+
+          const networks = blockchainData.networks as Record<
+            string,
+            { address?: string; networkCode: string }
+          >;
+
+          const networkData = networks[networkKey];
+
+          if (!networkData || !networkData.address) {
+            return [];
+          }
+
+          return [
+            {
+              address: networkData.address,
+              name: wallet.name,
+              network,
+              networkCode: networkData.networkCode,
+              publicKey: blockchainData.publicKey || '',
+              type: wallet.type,
+              isWavesOnly: !wallet.coins.unit0,
+              id: wallet.id,
+              lastUsed: wallet.lastUsed || wallet.createdAt,
+              walletId: wallet.id,
+              coinType: walletBlockchainType,
+              coins: wallet.coins,
+              // For WX wallets, include uuid and username
+              ...(wallet.type === 'wx' && wallet.wxUuid && wallet.wxUsername
+                ? {
+                    uuid: wallet.wxUuid,
+                    username: wallet.wxUsername,
+                  }
+                : {}),
+            },
+          ];
+        });
+
+        store.dispatch({
+          type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
+          payload: derivedAccounts as unknown as PreferencesAccount[],
+        });
+
+        store.dispatch({
+          type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
+          payload: derivedAccounts.filter(
+            account => account.network === network,
+          ) as unknown as PreferencesAccount[],
+        });
       });
     }
 

@@ -22,6 +22,10 @@ import {
 } from './transactionPackage/transactionPackage';
 import { type Message, type MessageOfType } from './types';
 import {
+  Unit0TransactionCard,
+  Unit0TransactionScreen,
+} from './unit0Transaction/unit0Transaction';
+import {
   WavesAuthCard,
   WavesAuthFinal,
   WavesAuthScreen,
@@ -83,6 +87,11 @@ const messageConfigs = {
   transactionPackage: {
     card: TransactionPackageCard,
     screen: TransactionPackageScreen,
+    final: MessageFinal,
+  },
+  unit0Transaction: {
+    card: Unit0TransactionCard,
+    screen: Unit0TransactionScreen,
     final: MessageFinal,
   },
   wavesAuth: {

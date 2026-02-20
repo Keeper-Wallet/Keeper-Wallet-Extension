@@ -1,3 +1,5 @@
+import { BLOCKCHAIN_TYPES } from 'assets/constants';
+import { getBalanceKey } from 'balances/utils';
 import clsx from 'clsx';
 import { MessageStatus } from 'messages/types';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
@@ -22,11 +24,21 @@ export function ActiveMessagePage() {
   const dispatch = usePopupDispatch();
 
   const activeMessage = usePopupSelector(state => state.activePopup?.msg);
+  const balance = usePopupSelector(state => {
+    const selected = state.selectedAccount;
 
-  const balance = usePopupSelector(
-    state =>
-      state.selectedAccount && state.balances[state.selectedAccount.address],
-  );
+    if (!selected?.address) {
+      return undefined;
+    }
+
+    const key = getBalanceKey(
+      state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+      state.currentNetwork,
+      selected.address,
+    );
+
+    return state.balances[key] ?? state.balances[selected.address];
+  });
 
   const otherMessagesCount = usePopupSelector(
     state =>
@@ -69,12 +81,27 @@ export function ActiveMessagePage() {
     );
   }
 
-  const explorerUrls = new Map([
-    ['W', 'wavesexplorer.com'],
-    ['T', 'testnet.wavesexplorer.com'],
-    ['S', 'stagenet.wavesexplorer.com'],
-    ['custom', 'wavesexplorer.com/custom'],
-  ]);
+  const buildTxUrl = (networkCode: string, txId: string): string => {
+    const explorerUrls = new Map([
+      ['W', 'wavesexplorer.com'],
+      ['T', 'wavesexplorer.com'],
+      ['S', 'wavesexplorer.com'],
+      ['custom', 'wavesexplorer.com'],
+    ]);
+
+    const code = explorerUrls.has(networkCode) ? networkCode : 'custom';
+    const baseUrl = explorerUrls.get(code);
+    const url = new URL(`https://${baseUrl}/tx/${txId}`);
+
+    if (code === 'T') {
+      url.searchParams.set('network', 'testnet');
+    } else if (code === 'S') {
+      url.searchParams.set('network', 'stagenet');
+    }
+    // custom uses mainnet (no query params)
+
+    return url.toString();
+  };
 
   const isApproved =
     activeMessage.status === MessageStatus.Signed ||
@@ -132,11 +159,10 @@ export function ActiveMessagePage() {
             <div className="center margin-main-big-top">
               <a
                 className="link black"
-                href={`https://${explorerUrls.get(
-                  explorerUrls.has(selectedAccount.networkCode)
-                    ? selectedAccount.networkCode
-                    : 'custom',
-                )}/tx/${activeMessage.data.id}`}
+                href={buildTxUrl(
+                  selectedAccount.networkCode,
+                  activeMessage.data.id,
+                )}
                 rel="noopener noreferrer"
                 target="_blank"
               >

@@ -4,6 +4,7 @@ import { base58Encode } from '@keeper-wallet/waves-crypto';
 import { captureException } from '@sentry/browser';
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { type AssetDetail } from 'assets/types';
 import { useAssetIdByTicker } from 'assets/utils';
@@ -88,9 +89,11 @@ export function Swap() {
     Background.updateAssets(swappableAssetEntries.map(([assetId]) => assetId));
   }, [swappableAssetEntries, dispatch]);
 
-  const accountBalance = usePopupSelector(
-    state => state.balances[selectedAccount.address],
-  );
+  const accountBalance = usePopupSelector(state => {
+    // Balance keys are prefixed with coinType_network_address
+    const key = `waves_${currentNetwork}_${selectedAccount.address}`;
+    return state.balances[key] ?? state.balances[selectedAccount.address];
+  });
 
   const [performedSwapData, setPerformedSwapData] = useState<{
     fromMoney: Money;
@@ -114,12 +117,18 @@ export function Swap() {
       setSwapErrorMessage(null);
       setIsSwapInProgress(true);
 
-      const wavesFee = new Money(wavesFeeCoins, new Asset(assets.WAVES));
+      const wavesFee = new Money(
+        wavesFeeCoins,
+        new Asset(assets.WAVES as IAssetInfo),
+      );
       const feeAsset = assets[feeAssetId];
       invariant(feeAsset);
 
       try {
-        const fee = convertFeeToAsset(wavesFee, new Asset(feeAsset)).toCoins();
+        const fee = convertFeeToAsset(
+          wavesFee,
+          new Asset(feeAsset as IAssetInfo),
+        ).toCoins();
 
         const fullSwapTx = {
           ...tx,
@@ -164,7 +173,7 @@ export function Swap() {
         invariant(fromAsset);
 
         setPerformedSwapData({
-          fromMoney: new Money(fromCoins, new Asset(fromAsset)),
+          fromMoney: new Money(fromCoins, new Asset(fromAsset as IAssetInfo)),
           transactionId: broadcastedTx.id,
         });
       } catch (err) {
@@ -272,7 +281,7 @@ export function Swap() {
           return;
         }
 
-        if (errMessage === 'Request is rejected on ledger') {
+        if (errMessage === t('swap.ledgerRequestRejected')) {
           setIsSwapInProgress(false);
           return;
         }

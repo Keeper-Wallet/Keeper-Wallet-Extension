@@ -91,9 +91,6 @@ const publicStateUpdates = make<PublicState>(observer => {
 
 globalThis.KeeperWallet = {
   auth: proxy.auth,
-  decryptMessage: proxy.decryptMessage,
-  encryptMessage: proxy.encryptMessage,
-  getKEK: proxy.getKEK,
   notification: proxy.notification,
   publicState: proxy.publicState,
   resourceIsApproved: proxy.resourceIsApproved,

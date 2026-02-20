@@ -38,8 +38,17 @@ const Row = ({
   const rightNft = rows[rightIndex];
   const rightCount = (rightNft?.creator && counts[rightNft.creator]) || 0;
 
+  // Keep first row's top as-is, add 6px offset starting from second row
+  const modifiedStyle = {
+    ...style,
+    top:
+      typeof style.top === 'number'
+        ? style.top + (index > 0 ? 6 : 0)
+        : style.top,
+  };
+
   return (
-    <div style={style}>
+    <div style={modifiedStyle}>
       <div className={clsx(styles.nftRow, len === 1 && styles.noScroll)}>
         <NftCard
           key={leftIndex}

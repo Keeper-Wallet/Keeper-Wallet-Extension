@@ -119,7 +119,16 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/nft/:assetId',
+        path: '/nft/multi/:assetId/:tokenId',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <NftInfo />
+          </>
+        ),
+      },
+      {
+        path: '/nft/wave/:assetId',
         element: (
           <>
             <Menu hasBack hasLogo />

@@ -1,51 +1,79 @@
 import { useAccountsDispatch, useAccountsSelector } from 'accounts/store/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { newAccountName, selectAccount } from 'store/actions/localState';
-import { createAccount } from 'store/actions/user';
-import { CONFIG } from 'ui/appConfig';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { selectAccount } from 'store/actions/localState';
+import {
+  createMultiWalletWithFactory,
+  createWavesOnlyMultiWallet,
+} from 'store/actions/user';
 import { Button, ErrorMessage, Input } from 'ui/components/ui';
-import { WalletTypes } from 'ui/services/Background';
 
+import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
+import { NetworkName } from '../../../networks/types';
+import { useWalletValidation } from '../../hooks/useWalletValidation';
+import Background from '../../services/Background';
 import * as styles from './newWalletName.module.css';
 
 export function NewWalletName() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAccountsDispatch();
+  const location = useLocation();
 
   const account = useAccountsSelector(state => state.localState.newAccount);
   const accounts = useAccountsSelector(state => state.accounts);
+
   const [accountName, setAccountName] = useState('');
   const [pending, setPending] = useState<boolean>(false);
   const [error, setError] = useState<string | null>('');
+
+  // NEW: Use validation service instead of manual checks
+  const { validateWalletName } = useWalletValidation();
 
   const existingAccount = accounts.find(
     ({ address }) => address === account.address,
   );
 
+  // Check if we're creating a Waves-only account or multichain account
+  const isMultichainFromState = location.state?.multichain === true;
+  const isPrivateKey = account.type === 'privateKey';
+  const isEncodedSeed = account.type === 'encodedSeed';
+  const isLedger = account.type === 'ledger';
+  const isWx = account.type === 'wx';
+  const isWavesOnlyCreation = account.type === 'seed' && !isMultichainFromState;
+  const isMultichainCreation =
+    account.type === 'multichain' || isMultichainFromState;
+
+  const validateName = useCallback(
+    async (name: string) => {
+      if (!name) {
+        setError(null);
+        return;
+      }
+
+      const validation = await validateWalletName(name);
+      if (!validation.isValid) {
+        setError(validation.error || 'Invalid name');
+      } else {
+        setError(null);
+      }
+    },
+    [validateWalletName],
+  );
+
   useEffect(() => {
-    dispatch(newAccountName(accountName));
-
-    setError(null);
-
-    if (accountName.length < CONFIG.NAME_MIN_LENGTH) {
-      setError(t('newAccountName.errorRequired'));
-    }
-
-    if (accounts.find(({ name }) => name === accountName)) {
-      setError(t('newAccountName.errorInUse'));
-    }
-
     if (existingAccount) {
       setError(
         t('newAccountName.errorAlreadyExists', {
           name: existingAccount.name,
         }),
       );
+      return;
     }
-  }, [accountName, accounts, existingAccount, dispatch, t]);
+
+    validateName(accountName);
+  }, [accountName, existingAccount, t, validateName]);
 
   return (
     <div data-testid="newWalletNameForm" className={styles.content}>
@@ -57,6 +85,12 @@ export function NewWalletName() {
 
           setPending(true);
 
+          // This ensures selectAccount can find the account in the correct network
+          await Background.setNetwork(NetworkName.Mainnet);
+          await Background.setCurrentBlockchainType(BLOCKCHAIN_TYPES.WAVES);
+          // Wait for Redux state propagation
+          await new Promise(resolve => setTimeout(resolve, 100));
+
           if (existingAccount) {
             dispatch(selectAccount(existingAccount));
             navigate('/import-success');
@@ -66,20 +100,128 @@ export function NewWalletName() {
           if (error) {
             return;
           }
+          if (isWavesOnlyCreation) {
+            try {
+              // Use the new MultiWallet approach for Waves-only creation
+              // This creates a nested structure with all three Waves networks
+              // Type guard to ensure we have a seed account
+              if (account.type !== 'seed' || !account.seed) {
+                throw new Error('Seed is required for Waves-only creation');
+              }
+              await dispatch(
+                createWavesOnlyMultiWallet({
+                  name: accountName,
+                  seed: account.seed,
+                  type: account.type,
+                }),
+              );
+            } catch (err) {
+              setError(t('newAccountName.errorFailedToCreate'));
+              setPending(false);
+              return;
+            }
+          } else if (isMultichainCreation) {
+            // Use our new factory-based action for multichain accounts
+            // Generate new seed if coming from URL parameter (no existing seed)
+            const seedToUse: string =
+              'seed' in account && account.seed && account.seed.trim()
+                ? account.seed
+                : await import('ethers').then(
+                    ({ Mnemonic }) =>
+                      Mnemonic.fromEntropy(
+                        crypto.getRandomValues(new Uint8Array(16)),
+                      ).phrase,
+                  );
 
-          const accountTypeToWalletType = {
-            seed: WalletTypes.Seed,
-            encodedSeed: WalletTypes.EncodedSeed,
-            privateKey: WalletTypes.PrivateKey,
-            wx: WalletTypes.Wx,
-            ledger: WalletTypes.Ledger,
-          };
+            await dispatch(
+              createMultiWalletWithFactory({
+                name: accountName,
+                seed: seedToUse,
+              }),
+            );
+          } else if (isPrivateKey) {
+            await dispatch(
+              createWavesOnlyMultiWallet({
+                name: accountName,
+                privateKey: account.privateKey,
+                type: account.type,
+              }),
+            );
+          } else if (isEncodedSeed) {
+            try {
+              await dispatch(
+                createWavesOnlyMultiWallet({
+                  name: accountName,
+                  encodedSeed: account.encodedSeed,
+                  type: account.type,
+                }),
+              );
+            } catch {
+              setError(t('newAccountName.errorFailedToCreate'));
+              setPending(false);
+              return;
+            }
+          } else if (isLedger) {
+            try {
+              await dispatch(
+                createWavesOnlyMultiWallet({
+                  name: accountName,
+                  type: 'ledger',
+                  ledgerId: account.id,
+                  publicKey: account.publicKey,
+                  address: account.address,
+                }),
+              );
+            } catch {
+              setError(t('newAccountName.errorFailedToCreate'));
+              setPending(false);
+              return;
+            }
+          } else if (isWx) {
+            try {
+              if (
+                !('uuid' in account) ||
+                !('username' in account) ||
+                !('publicKey' in account)
+              ) {
+                throw new Error(
+                  'Missing required WX account data (uuid, username, or publicKey)',
+                );
+              }
 
-          await dispatch(
-            createAccount(account, accountTypeToWalletType[account.type]),
-          );
+              // WX accounts are network-specific, only create for the selected network
+              const wxNetwork =
+                'wxNetwork' in account
+                  ? account.wxNetwork
+                  : NetworkName.Mainnet;
 
-          navigate('/import-success');
+              await dispatch(
+                createWavesOnlyMultiWallet({
+                  name: accountName,
+                  type: 'wx',
+                  uuid: account.uuid,
+                  username: account.username,
+                  address: account.address,
+                  publicKey: account.publicKey,
+                  wxNetwork,
+                }),
+              );
+            } catch {
+              setError(t('newAccountName.errorFailedToCreate'));
+              setPending(false);
+              return;
+            }
+          }
+
+          // Pass wxNetwork info to import-success screen if it's a testnet WX account
+          const wxNetworkForSuccess =
+            isWx && 'wxNetwork' in account ? account.wxNetwork : undefined;
+          navigate('/import-success', {
+            state: {
+              wxNetwork: wxNetworkForSuccess,
+              accountName,
+            },
+          });
         }}
       >
         <div className="margin1">
@@ -105,14 +247,6 @@ export function NewWalletName() {
         </div>
 
         <div className={styles.footer}>
-          <div className="tag1 basic500 input-title">
-            {t('newAccountName.accountAddress')}
-          </div>
-
-          <div className={`${styles.greyLine} grey-line`}>
-            {account.address}
-          </div>
-
           {existingAccount ? (
             <>
               <Button className="margin2" type="submit">
@@ -132,6 +266,7 @@ export function NewWalletName() {
           ) : (
             <Button
               data-testid="continueBtn"
+              className={styles.continueBtn}
               id="continue"
               type="submit"
               view="submit"

@@ -1,4 +1,5 @@
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import clsx from 'clsx';
 import { TxDetailTabs } from 'messages/_common/detailTabs';
 import { MessageFooter } from 'messages/_common/footer';
@@ -59,7 +60,12 @@ export function SponsorshipCard({
                 <span data-testid="sponsorshipAsset">{asset.displayName}</span>
               ) : (
                 <Balance
-                  balance={new Money(tx.minSponsoredAssetFee, new Asset(asset))}
+                  balance={
+                    new Money(
+                      tx.minSponsoredAssetFee,
+                      new Asset(asset as IAssetInfo),
+                    )
+                  }
                   data-testid="sponsorshipAmount"
                   showAsset
                   showUsdAmount

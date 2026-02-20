@@ -4,7 +4,6 @@ import {
   type WebdriverIOQueries,
   type WebdriverIOQueriesChainable,
 } from '@testing-library/webdriverio';
-import { expect } from 'expect-webdriverio';
 import type * as mocha from 'mocha';
 import { remote } from 'webdriverio';
 
@@ -16,22 +15,19 @@ declare global {
 
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace WebdriverIO {
-    interface Browser
-      extends WebdriverIOQueries,
-        WebdriverIOQueriesChainable<Browser> {
+    interface Browser extends WebdriverIOQueries, WebdriverIOQueriesChainable {
       openKeeperPopup: () => Promise<void>;
       openKeeperExtensionPage: () => Promise<void>;
     }
 
-    interface Element
-      extends WebdriverIOQueries,
-        WebdriverIOQueriesChainable<Element> {}
+    interface Element extends WebdriverIOQueries, WebdriverIOQueriesChainable {}
   }
 }
 
 declare module 'webdriverio' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ChainablePromiseElement<T extends WebdriverIO.Element | undefined>
-    extends WebdriverIOQueriesChainable<T> {}
+    extends WebdriverIOQueriesChainable {}
 }
 
 declare module 'mocha' {
@@ -44,6 +40,9 @@ export const mochaHooks = () => ({
   async beforeAll(this: mocha.Context) {
     this.nodeUrl = 'http://waves-private-node:6869';
 
+    // Динамический импорт expect-webdriverio для обхода top-level await
+    const { expect } = await import('expect-webdriverio');
+
     Object.defineProperty(global, 'expect', {
       configurable: true,
       value: expect,
@@ -52,43 +51,76 @@ export const mochaHooks = () => ({
       configurable: true,
       value: await remote({
         logLevel: 'warn',
+        hostname: '127.0.0.1',
+        port: 4444,
+        path: '/wd/hub',
         capabilities: {
           browserName: 'chrome',
           'goog:chromeOptions': {
             args: [
               '--load-extension=/app/dist/chrome',
               '--disable-web-security',
+              // Performance optimizations
+              '--disable-background-timer-throttling',
+              '--disable-backgrounding-occluded-windows',
+              '--disable-renderer-backgrounding',
+              '--disable-features=TranslateUI',
+              '--disable-ipc-flooding-protection',
+              '--no-first-run',
+              '--no-default-browser-check',
             ],
           },
           pageLoadStrategy: 'eager',
         },
-        path: '/wd/hub',
-        waitforTimeout: 15 * 1000,
+        waitforTimeout: 30 * 1000,
+        connectionRetryTimeout: 120 * 1000,
+        connectionRetryCount: 3,
       }),
     });
 
     configure({
-      asyncUtilTimeout: 15 * 1000,
+      asyncUtilTimeout: 30 * 1000,
     });
 
     setupBrowser(browser);
 
     global.$ = browser.$.bind(browser);
-    global.$$ = browser.$$.bind(browser);
+    global.$ = browser.$.bind(browser);
 
-    await browser.navigateTo('chrome://system');
+    // Navigate to chrome://extensions to find the extension ID
+    await browser.navigateTo('chrome://extensions');
 
-    let keeperExtensionId: string | undefined;
-
-    const extensionsValue = await $('#div-extensions-value').getText();
-    for (const ext of extensionsValue.split('\n')) {
-      const [id, name] = ext.split(' : ');
-
-      if (name.toLowerCase() === 'keeper wallet') {
-        keeperExtensionId = id;
-        break;
+    // Enable developer mode if not already enabled
+    await browser.execute(() => {
+      const devModeToggle = document
+        .querySelector('extensions-manager')
+        ?.shadowRoot?.querySelector('extensions-toolbar')
+        ?.shadowRoot?.querySelector('#devMode');
+      if (devModeToggle && !(devModeToggle as HTMLInputElement).checked) {
+        (devModeToggle as HTMLElement).click();
       }
-    }
+    });
+
+    await browser.pause(500);
+
+    // Get extension ID from the extensions page
+    const keeperExtensionId = await browser.execute(() => {
+      const extensionsManager = document.querySelector('extensions-manager');
+      const itemsList = extensionsManager?.shadowRoot?.querySelector(
+        'extensions-item-list',
+      );
+      const items = itemsList?.shadowRoot?.querySelectorAll('extensions-item');
+
+      if (!items) return undefined;
+
+      for (const item of Array.from(items)) {
+        const nameEl = item.shadowRoot?.querySelector('#name');
+        if (nameEl?.textContent?.toLowerCase().includes('keeper wallet')) {
+          return item.getAttribute('id');
+        }
+      }
+      return undefined;
+    });
 
     if (!keeperExtensionId) {
       throw new Error('Could not find Keeper Wallet extension id');

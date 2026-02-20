@@ -4,6 +4,7 @@ import type {
   CodeDelivery,
   IdentityUser,
 } from '../../../../controllers/IdentityController';
+import { NetworkName } from '../../../../networks/types';
 import background from '../../../services/Background';
 import { CodeConfirmation } from './codeConfirmation';
 import { SignInForm } from './signInForm';
@@ -18,7 +19,7 @@ export interface UserData {
 type LoginProps = {
   className?: string;
   userData?: UserData;
-  onConfirm(user: IdentityUser & { name: string }): void;
+  onConfirm(user: IdentityUser & { name: string; network: NetworkName }): void;
   onSubmit?(userData: UserData): void;
 };
 
@@ -31,6 +32,7 @@ export function Login({
   const [loginState, setLoginState] = useState<LoginStateType>('sign-in');
   const [codeDelivery, setCodeDelivery] = useState<CodeDelivery>();
   const userRef = useRef<UserData | undefined>(userData);
+  const networkRef = useRef<NetworkName>(NetworkName.Mainnet);
 
   useEffect(() => {
     background.identityClear();
@@ -43,21 +45,29 @@ export function Login({
       onConfirm({
         name: `${name[0]}*******@${domain}`,
         ...identityUser,
+        network: networkRef.current,
       });
     });
   }, [onConfirm]);
 
   const signIn = useCallback(
-    async (username: string, password: string): Promise<void> => {
+    async (
+      username: string,
+      password: string,
+      network: NetworkName,
+    ): Promise<void> => {
       userRef.current = { username, password };
+      networkRef.current = network;
 
       if (typeof onSubmit === 'function') {
         onSubmit(userRef.current);
       }
 
+      // Pass the network directly to identitySignIn without changing global state
       const { challengeName } = await background.identitySignIn(
         username,
         password,
+        network,
       );
 
       switch (challengeName) {
@@ -83,7 +93,11 @@ export function Login({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (e: any) {
         if (e && e.code === 'NotAuthorizedException' && userRef.current) {
-          await signIn(userRef.current.username, userRef.current.password);
+          await signIn(
+            userRef.current.username,
+            userRef.current.password,
+            networkRef.current,
+          );
         } else {
           throw e;
         }

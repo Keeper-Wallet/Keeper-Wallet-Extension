@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { downloadKeystore } from '../../../../keystore/utils';
+import { type MultiWallet } from '../../../../services/types';
 import { isExportable } from '../../pages/exportAccounts/chooseItems';
 import { ExportPasswordModal } from '../../pages/exportAccounts/passwordModal';
 import * as styles from './ExportButton.module.css';
@@ -41,7 +42,7 @@ export const ExportButton = ({ className }: Props) => {
           }}
           onSubmit={async (password, encrypted) => {
             await downloadKeystore(
-              accounts.filter(isExportable),
+              accounts.filter(isExportable) as unknown as MultiWallet[],
               addresses,
               password,
               encrypted,

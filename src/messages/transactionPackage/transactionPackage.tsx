@@ -1,5 +1,6 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { type AssetsRecord } from 'assets/types';
 import clsx from 'clsx';
@@ -38,24 +39,39 @@ function getBalanceChanges(tx: MessageTx, assets: AssetsRecord) {
     case TRANSACTION_TYPE.TRANSFER: {
       const asset = assets[tx.assetId ?? 'WAVES'];
       invariant(asset);
-      return [new Money(new BigNumber(0).sub(tx.amount), new Asset(asset))];
+      return [
+        new Money(
+          new BigNumber(0).sub(tx.amount),
+          new Asset(asset as IAssetInfo),
+        ),
+      ];
     }
     case TRANSACTION_TYPE.REISSUE: {
       const asset = assets[tx.assetId ?? 'WAVES'];
       invariant(asset);
-      return [new Money(tx.quantity, new Asset(asset))];
+      return [new Money(tx.quantity, new Asset(asset as IAssetInfo))];
     }
     case TRANSACTION_TYPE.BURN: {
       const asset = assets[tx.assetId ?? 'WAVES'];
       invariant(asset);
-      return [new Money(new BigNumber(0).sub(tx.amount), new Asset(asset))];
+      return [
+        new Money(
+          new BigNumber(0).sub(tx.amount),
+          new Asset(asset as IAssetInfo),
+        ),
+      ];
     }
     case TRANSACTION_TYPE.LEASE:
       return [
-        new Money(new BigNumber(0).sub(tx.amount), new Asset(assets.WAVES)),
+        new Money(
+          new BigNumber(0).sub(tx.amount),
+          new Asset(assets.WAVES as IAssetInfo),
+        ),
       ];
     case TRANSACTION_TYPE.CANCEL_LEASE:
-      return [new Money(tx.lease.amount, new Asset(assets.WAVES))];
+      return [
+        new Money(tx.lease.amount, new Asset(assets.WAVES as IAssetInfo)),
+      ];
     case TRANSACTION_TYPE.MASS_TRANSFER: {
       const asset = assets[tx.assetId ?? 'WAVES'];
       invariant(asset);
@@ -65,7 +81,7 @@ function getBalanceChanges(tx: MessageTx, assets: AssetsRecord) {
           new BigNumber(0).sub(
             BigNumber.sum(...tx.transfers.map(t => t.amount)),
           ),
-          new Asset(asset),
+          new Asset(asset as IAssetInfo),
         ),
       ];
     }
@@ -73,7 +89,10 @@ function getBalanceChanges(tx: MessageTx, assets: AssetsRecord) {
       return tx.payment.map(p => {
         const asset = assets[p.assetId ?? 'WAVES'];
         invariant(asset);
-        return new Money(new BigNumber(0).sub(p.amount), new Asset(asset));
+        return new Money(
+          new BigNumber(0).sub(p.amount),
+          new Asset(asset as IAssetInfo),
+        );
       });
     default:
       return [];
@@ -98,7 +117,7 @@ export function TransactionPackageCard({
       const asset = assets[assetId];
       invariant(asset);
 
-      const assetInstance = new Asset(asset);
+      const assetInstance = new Asset(asset as IAssetInfo);
 
       acc[assetId] = (acc[assetId] ?? new Money(0, assetInstance)).add(
         new Money(tx.fee, assetInstance),

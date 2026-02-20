@@ -1,5 +1,6 @@
 import { captureException, withScope } from '@sentry/browser';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import clsx from 'clsx';
 import { NetworkName } from 'networks/types';
 import { usePopupSelector } from 'popup/store/react';
@@ -38,10 +39,25 @@ type TxStatus =
 
 const explorerBaseUrlsByNetwork = {
   [NetworkName.Mainnet]: 'wavesexplorer.com',
-  [NetworkName.Testnet]: 'testnet.wavesexplorer.com',
-  [NetworkName.Stagenet]: 'stagenet.wavesexplorer.com',
+  [NetworkName.Testnet]: 'wavesexplorer.com',
+  [NetworkName.Stagenet]: 'wavesexplorer.com',
   [NetworkName.Custom]: undefined,
 };
+
+function buildSwapTxUrl(network: NetworkName, txId: string): string {
+  const baseUrl = explorerBaseUrlsByNetwork[network];
+  if (!baseUrl) return '';
+
+  const url = new URL(`https://${baseUrl}/tx/${txId}`);
+
+  if (network === NetworkName.Testnet) {
+    url.searchParams.set('network', 'testnet');
+  } else if (network === NetworkName.Stagenet) {
+    url.searchParams.set('network', 'stagenet');
+  }
+
+  return url.toString();
+}
 
 export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
   const { t } = useTranslation();
@@ -103,8 +119,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
             setReceivedMoney(
               new Money(
                 transfer.amount,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                new Asset(assets[transfer.asset || 'WAVES']!),
+                new Asset(assets[transfer.asset || 'WAVES'] as IAssetInfo),
               ),
             );
             setSwapStatus(SwapStatus.Succeeded);
@@ -158,7 +173,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAccount?.address, nodeBaseUrl, transactionId]);
 
-  const explorerBaseUrl = explorerBaseUrlsByNetwork[currentNetwork];
+  const explorerBaseUrl = explorerBaseUrlsByNetwork[currentNetwork as never];
 
   return (
     <SwapLayout>
@@ -222,7 +237,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
               <div className="center margin-main-big-top">
                 <a
                   className="link black"
-                  href={`https://${explorerBaseUrl}/tx/${transactionId}`}
+                  href={buildSwapTxUrl(currentNetwork, transactionId)}
                   rel="noopener noreferrer"
                   target="_blank"
                 >

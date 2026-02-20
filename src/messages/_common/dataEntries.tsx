@@ -32,7 +32,9 @@ export function DataEntries({ entries }: Props) {
             </td>
 
             <td data-testid="dataRowValue" title={String(entry.value)}>
-              {entry.type == null ? 'Key Deletion' : String(entry.value)}
+              {entry.type == null
+                ? t('transactions.keyDeletion')
+                : String(entry.value)}
             </td>
           </tr>
         ))}

@@ -1,4 +1,4 @@
-import { Asset, Money } from '@waves/data-entities';
+import { createMoneyFromBalance, getBalanceKey } from 'balances/utils';
 import clsx from 'clsx';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { compareAccountsByLastUsed } from 'preferences/utils';
@@ -10,6 +10,7 @@ import { SearchInput } from 'ui/components/ui/searchInput/searchInput';
 import background from 'ui/services/Background';
 
 import { startPolling } from '../../../_core/polling';
+import { BLOCKCHAIN_TYPES } from '../../../assets/constants';
 import { AccountCard } from '../accounts/accountCard';
 import { Tooltip } from '../ui/tooltip';
 import * as styles from './otherAccounts.module.css';
@@ -26,6 +27,10 @@ export function OtherAccountsPage() {
   );
   const assets = usePopupSelector(state => state.assets);
   const balances = usePopupSelector(state => state.balances);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+  );
 
   const [term, setTerm] = useState<string>('');
 
@@ -34,22 +39,43 @@ export function OtherAccountsPage() {
       account =>
         account.address !== activeAccount?.address &&
         (!term ||
-          account.name.toLowerCase().indexOf(term.toLowerCase()) !== -1 ||
+          account.name?.toLowerCase().indexOf(term.toLowerCase()) !== -1 ||
           account.address === term ||
           account.publicKey === term ||
           (account.type === 'wx' &&
-            account.username.toLowerCase().indexOf(term.toLowerCase()) !== -1)),
+            account.username?.toLowerCase().indexOf(term.toLowerCase()) !==
+              -1)),
     )
     .sort(compareAccountsByLastUsed);
 
-  const wavesAsset = new Asset(assets.WAVES);
+  // currentNetwork is now always 'mainnet', 'testnet', 'stagenet', or 'custom'
+  // Both Waves and Unit0 use the same network names
+  const baseNetworkName = currentNetwork;
+
+  // Filter balances to only show those matching the current network and blockchain
+  const filteredBalances = Object.fromEntries(
+    Object.entries(balances).filter(([, balance]) => {
+      // If balance has no network info, keep it (legacy data)
+      if (!balance?.network) return true;
+
+      // Determine if this balance is Unit0 or Waves
+      const isUnit0Balance = balance.assets?.unit0 !== undefined;
+      const isCurrentlyUnit0 = currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0;
+
+      // Blockchain type must match
+      if (isUnit0Balance !== isCurrentlyUnit0) {
+        return false;
+      }
+
+      // Network name must match (mainnet/testnet/stagenet/custom)
+      return balance.network === baseNetworkName;
+    }),
+  );
 
   const balancesMoney = Object.fromEntries(
-    Object.entries(balances).map(([key, balance]) => [
+    Object.entries(filteredBalances).map(([key, balance]) => [
       key,
-      typeof balance?.regular !== 'undefined'
-        ? new Money(balance.regular, wavesAsset)
-        : undefined,
+      createMoneyFromBalance(balance, assets),
     ]),
   );
 
@@ -58,10 +84,11 @@ export function OtherAccountsPage() {
     navigate('/', { replace: true });
   };
 
-  useEffect(
-    () => startPolling(10000, () => background.updateOtherAccountsBalances()),
-    [],
-  );
+  useEffect(() => {
+    // Immediately update balances when network changes
+    // Then start polling
+    return startPolling(10000, () => background.updateOtherAccountsBalances());
+  }, [currentNetwork]);
 
   return (
     <div className={styles.root} data-testid="otherAccountsPage">
@@ -103,20 +130,28 @@ export function OtherAccountsPage() {
             )}
           </p>
         ) : (
-          otherAccounts.map(account => (
-            <AccountCard
-              key={account.address}
-              account={account}
-              balance={balancesMoney[account.address]}
-              onClick={clickedAccount => {
-                dispatch(selectAccount(clickedAccount));
-                navigate('/', { replace: true });
-              }}
-              onInfoClick={clickedAccount => {
-                navigate(`/account-info/${clickedAccount.address}`);
-              }}
-            />
-          ))
+          otherAccounts.map(account => {
+            const balanceKey = getBalanceKey(
+              currentBlockchainType,
+              baseNetworkName,
+              account.address,
+            );
+
+            return (
+              <AccountCard
+                key={account.address}
+                account={account}
+                balance={balancesMoney[balanceKey]}
+                onClick={clickedAccount => {
+                  dispatch(selectAccount(clickedAccount));
+                  navigate('/', { replace: true });
+                }}
+                onInfoClick={clickedAccount => {
+                  navigate(`/account-info/${clickedAccount.address}`);
+                }}
+              />
+            );
+          })
         )}
 
         <div className={styles.addAccount}>

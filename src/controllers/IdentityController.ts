@@ -214,6 +214,7 @@ export class IdentityController implements IdentityApi {
   protected getSelectedAccount;
   protected getIdentityConfig;
   private network: NetworkName | undefined;
+  private signInNetwork: NetworkName | undefined; // Track the network used for sign-in
   // identity properties
   private readonly seed = generateRandomSeed();
   private userPool: CognitoUserPool | undefined = undefined;
@@ -271,8 +272,9 @@ export class IdentityController implements IdentityApi {
   }
 
   getConfig(): IdentityConfig {
+    // Use signInNetwork if available (during sign-in flow), otherwise use current network
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.getIdentityConfig(this.network!);
+    return this.getIdentityConfig(this.signInNetwork || this.network!);
   }
 
   configure() {
@@ -302,19 +304,30 @@ export class IdentityController implements IdentityApi {
     };
   }
 
-  async signIn(username: string, password: string) {
+  async signIn(username: string, password: string, network?: NetworkName) {
     this.clearSession();
+
+    // Use provided network or fall back to current network
+    const targetNetwork = network || this.getNetwork();
+
+    // Store the sign-in network - getConfig() will use this to get the correct API endpoint
+    this.signInNetwork = targetNetwork;
+
+    // Use the target network's user pool for this sign-in
+    const config = this.getIdentityConfig(targetNetwork);
+    const userPool = new CognitoUserPool({
+      UserPoolId: config.cognito.userPoolId,
+      ClientId: config.cognito.clientId,
+      Storage: this.store,
+      endpoint: config.cognito.endpoint,
+    });
 
     const { publicKey } = await this.getKeyPair();
 
     return new Promise<{ challengeName?: ChallengeName }>((resolve, reject) => {
-      if (!this.userPool) {
-        return reject(new Error('No UserPool'));
-      }
-
       this.user = new CognitoUser({
         Username: username,
-        Pool: this.userPool,
+        Pool: userPool,
         Storage: this.store,
       });
 
@@ -337,29 +350,37 @@ export class IdentityController implements IdentityApi {
             this.identity.username = this.userData!.username;
             this.user = undefined;
             this.userData = undefined;
+            this.signInNetwork = undefined;
 
             resolve({});
           },
 
           onFailure: err => {
+            this.signInNetwork = undefined;
             reject(err);
           },
-          customChallenge() {
+          customChallenge: () => {
+            this.signInNetwork = undefined;
             resolve({ challengeName: 'CUSTOM_CHALLENGE' });
           },
-          mfaRequired(challengeName) {
+          mfaRequired: challengeName => {
+            // Keep signInNetwork set for MFA confirmation
             resolve({ challengeName });
           },
-          mfaSetup(challengeName) {
+          mfaSetup: challengeName => {
+            // Keep signInNetwork set for MFA setup
             resolve({ challengeName });
           },
-          newPasswordRequired() {
+          newPasswordRequired: () => {
+            this.signInNetwork = undefined;
             resolve({ challengeName: 'NEW_PASSWORD_REQUIRED' });
           },
-          totpRequired(challengeName) {
+          totpRequired: challengeName => {
+            // Keep signInNetwork set for TOTP confirmation
             resolve({ challengeName });
           },
-          selectMFAType(challengeName) {
+          selectMFAType: challengeName => {
+            // Keep signInNetwork set for MFA type selection
             resolve({ challengeName });
           },
         },
@@ -397,10 +418,15 @@ export class IdentityController implements IdentityApi {
               this.user = undefined;
               this.userData = undefined;
 
+              // Clear sign-in network tracking after successful MFA
+              this.signInNetwork = undefined;
+
               resolve();
             }
           },
           onFailure: err => {
+            // Clear sign-in network tracking on MFA failure
+            this.signInNetwork = undefined;
             reject(err);
           },
         },
@@ -544,6 +570,7 @@ export class IdentityController implements IdentityApi {
     this.user = undefined;
     this.userData = undefined;
     this.identity = undefined;
+    this.signInNetwork = undefined;
     this.store.clear();
   }
 

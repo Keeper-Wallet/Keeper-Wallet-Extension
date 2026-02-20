@@ -89,6 +89,9 @@ describe('Signature', function () {
 
   before(async function () {
     await App.initVault();
+    await browser.openKeeperPopup();
+    await Network.enableTestNetworks();
+    await browser.openKeeperPopup();
     await Network.switchToAndCheck('Testnet');
 
     const tabKeeper = await browser.getWindowHandle();
@@ -108,6 +111,13 @@ describe('Signature', function () {
       'waves private node seed with waves tokens',
     );
 
+    const tabKeeperTemp = (await browser.createWindow('tab')).handle;
+    await browser.switchToWindow(tabKeeperTemp);
+    await browser.openKeeperPopup();
+    await Network.switchToAndCheck('Testnet');
+    await browser.closeWindow();
+
+    await browser.switchToWindow(tabAccounts);
     tabOrigin = tabAccounts;
     await browser.navigateTo(`https://${WHITELIST[3]}`);
   });
@@ -302,7 +312,7 @@ describe('Signature', function () {
       expect(result.network).toMatchObject({
         code: 'T',
         server: 'https://nodes-testnet.wavesnodes.com/',
-        matcher: 'https://matcher-testnet.waves.exchange/',
+        matcher: 'https://matcher-testnet.wx.network/',
       });
       expect(result.txVersion).toMatchObject({
         '3': [3, 2],
@@ -3436,8 +3446,8 @@ describe('Signature', function () {
 
     async function checkPackageAmounts(amounts: string[]) {
       const actualAmounts = await Promise.all(
-        await PackageTransactionScreen.packageAmounts.map(
-          async it => await it.getText(),
+        (await PackageTransactionScreen.packageAmounts).map(
+          async (it: WebdriverIO.Element) => await it.getText(),
         ),
       );
       expect(actualAmounts).toStrictEqual(amounts);
@@ -3445,8 +3455,8 @@ describe('Signature', function () {
 
     async function checkPackageFees(fees: string[]) {
       const actualFees = await Promise.all(
-        await PackageTransactionScreen.packageFees.map(
-          async it => await it.getText(),
+        (await PackageTransactionScreen.packageFees).map(
+          async (it: WebdriverIO.Element) => await it.getText(),
         ),
       );
       expect(actualFees).toStrictEqual(fees);
@@ -3555,8 +3565,8 @@ describe('Signature', function () {
       ]);
 
       const actualPayments = await Promise.all(
-        await invokeScript.invokeScriptPaymentItems.map(async it =>
-          it.getText(),
+        (await invokeScript.invokeScriptPaymentItems).map(
+          async (it: WebdriverIO.Element) => it.getText(),
         ),
       );
       expect(actualPayments).toStrictEqual([

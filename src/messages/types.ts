@@ -240,6 +240,16 @@ interface MessageInputWavesAuth {
   timestamp: number;
 }
 
+export interface MessageInputUnit0Transaction {
+  to: string;
+  value: string;
+  gasLimit: string;
+  gasPrice: string;
+  nonce: number;
+  data?: string;
+  chainId: number;
+}
+
 export type MessageInput = {
   account: PreferencesAccount;
   connectionId?: string;
@@ -278,6 +288,11 @@ export type MessageInput = {
       type: 'transactionPackage';
       data: MessageInputTx[];
       title?: string | null;
+    }
+  | {
+      type: 'unit0Transaction';
+      broadcast: boolean;
+      data: MessageInputUnit0Transaction & { successPath?: string };
     }
   | {
       type: 'wavesAuth';
@@ -584,6 +599,14 @@ export type Message = {
         input: MessageInputOfType<'transactionPackage'>;
         origin?: string;
         result?: string[];
+      }
+    | {
+        type: 'unit0Transaction';
+        broadcast: boolean;
+        data: MessageInputUnit0Transaction;
+        origin?: string;
+        result?: string;
+        successPath?: string | null;
       }
     | {
         type: 'wavesAuth';

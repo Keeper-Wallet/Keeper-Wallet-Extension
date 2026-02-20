@@ -1,5 +1,6 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { type BalanceAssets } from 'balances/types';
 import clsx from 'clsx';
 import ColorHash from 'color-hash';
@@ -36,6 +37,7 @@ function AssetSelectItem({
 }: ItemProps) {
   const logoSrc = useAssetLogo(network, asset.id);
 
+  const displayName = asset.name || asset.displayName;
   const listItemEl = (
     <li
       className={className}
@@ -53,12 +55,12 @@ function AssetSelectItem({
               backgroundColor: new ColorHash().hex(asset.id),
             }}
           >
-            {asset.displayName[0].toUpperCase()}
+            {displayName?.[0]?.toUpperCase()}
           </div>
         )}
       </div>
 
-      <div className={styles.listItemName}>{asset.displayName}</div>
+      <div className={styles.listItemName}>{displayName}</div>
       <div className={styles.listItemBalance}>{balance.toFormat()}</div>
     </li>
   );
@@ -108,7 +110,7 @@ export function AssetSelectModal({
         .map(asset => {
           const balance = new Money(
             new BigNumber(assetBalances[asset.id]?.balance ?? 0),
-            new Asset(asset),
+            new Asset(asset as IAssetInfo),
           );
 
           return {

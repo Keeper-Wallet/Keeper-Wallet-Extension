@@ -1,0 +1,68 @@
+.root {
+  padding: 48px 48px 31px 48px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chooseTypeTitle {
+  margin-bottom: 24px;
+  font-size: 24px;
+  font-weight: 400;
+  text-align: left;
+}
+.formContainer {
+  position: relative;
+  height: 100%;
+}
+.paddingTop24 {
+  padding-top: 24px;
+}
+
+.seedPhaseHint {
+  color: var(--color-basic500);
+  font-size: 11px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 14px;
+}
+
+.separatorBtns {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.separatorBtns button:not(:last-child) {
+  margin-bottom: 12px;
+}
+
+.addressContainer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.addressContainer span {
+  overflow: hidden;
+  font-family: 'monospace';
+  font-size: 10px;
+  word-wrap: break-word;
+}
+
+.error {
+  margin-bottom: 16px;
+}
+.importButton {
+  position: absolute;
+  bottom: 0;
+}
+
+.errorButton {
+  color: var(--color-submit400);
+  cursor: pointer;
+}
+
+.errorButton:hover {
+  color: var(--color-submit300);
+}

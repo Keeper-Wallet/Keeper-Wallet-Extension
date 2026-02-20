@@ -5,3 +5,7 @@
 /dist
 /node_modules
 /test/videos
+
+# Test coverage
+/coverage
+/.nyc_output

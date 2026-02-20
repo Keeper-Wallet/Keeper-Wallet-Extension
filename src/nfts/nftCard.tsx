@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Ellipsis } from 'ui/components/ui';
 
 import { InfoIcon } from '../icons/info';
@@ -13,14 +14,26 @@ export function NftCover({
   className?: string;
   nft: Nft | undefined;
 }) {
+  const { t } = useTranslation();
   const [isLoading, setLoading] = useState(true);
   const [errorsCount, setErrorsCount] = useState(0);
+
+  // Show default NFT background if there's no foreground URL
+  if (!nft?.foreground) {
+    return (
+      <img
+        src={new URL('./unknown.svg', import.meta.url).toString()}
+        className={clsx(styles.cover, className)}
+        alt="NFT"
+      />
+    );
+  }
 
   if (errorsCount > 1) {
     return (
       <div className={clsx(styles.noContent, className)}>
         <InfoIcon className={styles.noContentIcon} />
-        <span>Can’t preview this NFT</span>
+        <span>{t('nftCard.cannotPreview')}</span>
       </div>
     );
   }
@@ -77,6 +90,9 @@ export function NftCard({
       onClick={() => !isPlaceholder && onClick(nft)}
     >
       <NftCover nft={nft} />
+      {nft.tokenType && (
+        <div className={styles.tokenTypeBadge}>{nft.tokenType}</div>
+      )}
       <figcaption
         className={clsx(styles.footer, isPlaceholder && 'skeleton-glow')}
       >
@@ -87,7 +103,7 @@ export function NftCard({
           <>
             <div className={styles.title}>
               {nft.creator === nft.displayCreator ? (
-                <Ellipsis text={nft.creator} size={6} />
+                <Ellipsis text={nft.name} size={6} />
               ) : (
                 nft.displayCreator
               )}

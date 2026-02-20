@@ -58,6 +58,6 @@ const platformValues = {
 
 export default (buffer, platformName) => ({
   ...JSON.parse(buffer.toString('utf-8')),
-  version: process.env.KEEPER_VERSION,
+  version: process.env.KEEPER_VERSION || '1.0.0',
   ...platformValues[platformName],
 });

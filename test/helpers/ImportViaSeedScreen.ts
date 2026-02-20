@@ -1,14 +1,18 @@
 export const ImportViaSeedScreen = {
   get root() {
-    return $("[class*='content@importSeed']");
+    return $("[data-testid='seedInput']")
+      .parentElement()
+      .parentElement()
+      .parentElement()
+      .parentElement();
   },
 
   get seedInput() {
-    return this.root.$("[class*='input@Input']");
+    return $("[data-testid='seedInput']");
   },
 
   get importAccountButton() {
-    return this.root.findByText$('Import Account');
+    return $('[data-testid="continueBtn"]');
   },
 
   get switchAccountButton() {
@@ -16,7 +20,7 @@ export const ImportViaSeedScreen = {
   },
 
   get errorMessage() {
-    return this.root.findByTestId$('validationError');
+    return $("[data-testid='validationError']");
   },
 
   get address() {

@@ -23,14 +23,18 @@ const AccountsGroup = (wrapped: WebdriverIO.Element) => ({
     return wrapped.findByTestId$('accountsGroupLabel');
   },
 
-  get accounts() {
-    return wrapped.findAllByTestId$('accountCard').map(it => Account(it));
+  async accounts() {
+    return (await wrapped.findAllByTestId$('accountCard')).map(
+      (it: WebdriverIO.Element) => Account(it),
+    );
   },
 });
 
 export const ChooseAccountsForm = {
   get root() {
-    return $("[class*='root@chooseItems'],[class*='root@chooseAccounts']");
+    return $(
+      "[data-testid='chooseAccountsForm'],[class*='root@chooseItems'],[class*='root@chooseAccounts']",
+    );
   },
 
   get importButton() {
@@ -41,14 +45,16 @@ export const ChooseAccountsForm = {
     return this.root.findByTestId$('exportButton');
   },
 
-  get accountsGroups() {
-    return this.root
-      .findAllByTestId$('accountsGroup')
-      .map(it => AccountsGroup(it));
+  async accountsGroups() {
+    return (await this.root.findAllByTestId$('accountsGroup')).map(
+      (it: WebdriverIO.Element) => AccountsGroup(it),
+    );
   },
 
-  get accounts() {
-    return this.root.findAllByTestId$('accountCard').map(it => Account(it));
+  async accounts() {
+    return (await this.root.findAllByTestId$('accountCard')).map(
+      (it: WebdriverIO.Element) => Account(it),
+    );
   },
 
   get skipButton() {

@@ -1,0 +1,179 @@
+.networkTab {
+  margin: 64px 60px 0 60px;
+}
+
+.header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.backButton {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.title {
+  flex-grow: 1;
+  margin-right: 24px; /* Offset for back button to center title */
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.networkList {
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.networkOption {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 44px;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.networkOption:hover {
+  background-color: #f5f5f5;
+}
+
+.networkOption.selected .networkName {
+  color: #999999;
+}
+
+.networkName {
+  color: #333;
+  font-size: 16px;
+}
+
+.selectionIndicator {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 18px;
+  height: 44px;
+}
+
+/* This will be used with the selected-network class */
+:global(.selected-network) {
+  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 13L9 17L19 7' stroke='%234CAF50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.divider {
+  height: 1px;
+  background-color: #e0e0e0;
+}
+
+.rightArrow {
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
+  height: 100%;
+  color: #9e9e9e;
+}
+
+.confirmButton:hover {
+  background-color: #1a4fd8;
+}
+
+.confirmButton:disabled {
+  background-color: #b0bec5;
+  cursor: default;
+}
+
+/* Display options section */
+.displayOptionsSection {
+  margin: 20px 0;
+  padding: 0 0 16px 0;
+}
+
+.sectionTitle {
+  margin-bottom: 16px;
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Toggle Switch Styles */
+.toggleContainer {
+  padding: 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toggleLabelContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.toggleLabel {
+  margin-bottom: 4px;
+  color: #333;
+  font-size: 14px;
+}
+
+.toggleDescription {
+  max-width: 280px;
+  color: #757575;
+  font-size: 12px;
+}
+
+/* The switch - the box around the slider */
+.toggleSwitch {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+/* Hide default HTML checkbox */
+.toggleSwitch input {
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+/* The slider */
+.toggleSlider {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 24px;
+  background-color: #ccc;
+  cursor: pointer;
+  transition: 0.4s;
+}
+
+.toggleSlider:before {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: white;
+  transition: 0.4s;
+}
+
+input:checked + .toggleSlider {
+  background-color: #2196f3;
+}
+
+input:focus + .toggleSlider {
+  box-shadow: 0 0 1px #2196f3;
+}
+
+input:checked + .toggleSlider:before {
+  transform: translateX(24px);
+}

@@ -25,8 +25,8 @@ export function ErrorPage() {
 
   useEffect(() => {
     if (isRouteErrorResponse(error)) {
-      if (error.status !== 404 && error.error) {
-        captureException(error.error);
+      if (error.status !== 404 && error.data) {
+        captureException(error.data);
       }
     } else {
       captureException(error);

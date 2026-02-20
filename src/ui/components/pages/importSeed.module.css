@@ -1,10 +1,9 @@
 .content {
   position: relative;
   flex: 1;
-  padding: 0 60px;
+  padding: 48px 48px 31px 48px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
 }
 
 .greyLine {

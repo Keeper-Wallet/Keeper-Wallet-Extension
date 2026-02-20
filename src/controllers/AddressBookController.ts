@@ -1,8 +1,4 @@
 import ObservableStore from 'obs-store';
-import {
-  fromEthereumToWavesAddress,
-  isEthereumAddress,
-} from 'ui/utils/ethereum';
 
 import { type ExtensionStorage } from '../storage/storage';
 
@@ -33,17 +29,8 @@ export class AddressBookController {
   }
 
   migrate() {
+    // Preserve addresses as saved (supports both Waves and EVM formats)
     const { addresses } = this.store.getState();
-    this.store.updateState({
-      addresses: Object.entries(addresses).reduce(
-        (acc, [address, name]) => ({
-          ...acc,
-          [isEthereumAddress(address)
-            ? fromEthereumToWavesAddress(address)
-            : address]: name,
-        }),
-        {},
-      ),
-    });
+    this.store.updateState({ addresses });
   }
 }

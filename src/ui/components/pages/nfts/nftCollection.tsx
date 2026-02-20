@@ -1,4 +1,6 @@
+import { BLOCKCHAIN_TYPES } from 'assets/constants';
 import { type AssetDetail } from 'assets/types';
+import { getBalanceKey } from 'balances/utils';
 import { NftList } from 'nfts/nftList';
 import { createNft } from 'nfts/nfts';
 import { DisplayMode, type Nft } from 'nfts/types';
@@ -35,10 +37,28 @@ export function NftCollection() {
   const networkCode = usePopupSelector(
     state => state.selectedAccount?.networkCode,
   );
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || 'waves',
+  );
 
-  const myNfts = usePopupSelector(state => state.balances[userAddress]?.nfts);
+  const myNfts = usePopupSelector(state => {
+    const selected = state.selectedAccount;
+
+    if (!selected?.address) {
+      return undefined;
+    }
+
+    const key = getBalanceKey(
+      state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+      state.currentNetwork,
+      selected.address,
+    );
+
+    const balanceItem = state.balances[key] ?? state.balances[selected.address];
+
+    return balanceItem?.nfts;
+  });
   const nfts = usePopupSelector(state => state.nfts);
-
   const [filters, setFilters] = useUiState('nftFilters');
   const [term, setTerm] = [
     filters?.term,
@@ -49,23 +69,44 @@ export function NftCollection() {
 
   const nftConfig = usePopupSelector(state => state.nftConfig);
 
-  const getNftDetails = (asset: AssetDetail) =>
-    createNft({
+  const getNftDetails = (asset: AssetDetail) => {
+    const nftId =
+      currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+        ? `${asset.id}_${asset.rank}`
+        : asset.id;
+
+    return createNft({
       asset,
       config: nftConfig,
-      info: nfts?.[asset.id],
+      info: nfts?.[nftId],
       userAddress,
     });
+  };
 
   const creatorNfts = myNfts
     ? sortAndFilterNfts(myNfts.map(getNftDetails), {
         term,
-        creator: params.creator,
+        creator:
+          currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+            ? null
+            : params.creator,
+        collectionId:
+          currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+            ? params.creator
+            : undefined,
       })
     : PLACEHOLDERS;
 
   const creatorNft = creatorNfts.at(0);
 
+  const navigateNftInfoPage = (nft: Nft) => {
+    const nagiationUrl =
+      currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+        ? `/nft/multi/${nft.id}/${nft.tokenId}`
+        : `/nft/wave/${nft.id}`;
+
+    navigate(nagiationUrl);
+  };
   return (
     <div className={styles.root}>
       <div className={styles.header}>
@@ -85,9 +126,14 @@ export function NftCollection() {
                 className="link"
                 target="_blank"
                 href={
-                  creatorNft?.creatorUrl ??
-                  (networkCode &&
-                    getAccountLink(networkCode, creatorNft?.creator))
+                  // For Unit0 NFTs, open token page instead of creator page
+                  creatorNft?.creator?.startsWith('0x')
+                    ? networkCode === '88817'
+                      ? `https://explorer-testnet.unit0.dev/token/${creatorNft.id}`
+                      : `https://explorer.unit0.dev/token/${creatorNft.id}`
+                    : creatorNft?.creatorUrl ??
+                      (networkCode &&
+                        getAccountLink(networkCode, creatorNft?.creator))
                 }
                 {...props}
               >
@@ -133,9 +179,7 @@ export function NftCollection() {
           <NftList
             mode={DisplayMode.Name}
             nfts={creatorNfts}
-            onClick={nft => {
-              navigate(`/nft/${nft.id}`);
-            }}
+            onClick={navigateNftInfoPage}
           />
         )}
 

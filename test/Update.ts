@@ -1,10 +1,8 @@
 import { rename, rm } from 'node:fs/promises';
 
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
-import { ExtensionPage } from './helpers/ExtensionPage';
 import { AccountsHome } from './helpers/flows/AccountsHome';
 import { App } from './helpers/flows/App';
-import { Network } from './helpers/flows/Network';
 import { HomeScreen } from './helpers/HomeScreen';
 import { LoginScreen } from './helpers/LoginScreen';
 import { OtherAccountsScreen } from './helpers/OtherAccountsScreen';
@@ -12,6 +10,9 @@ import { TopMenu } from './helpers/TopMenu';
 import { Windows } from './helpers/Windows';
 import { DEFAULT_PASSWORD } from './utils/constants';
 
+// This test requires both dist/ (old version) and dist.new/ (new version) to exist.
+// Run using: ./scripts/test-migration-from-tag.sh
+// Or manually prepare both folders before running yarn test:update
 describe('Update extension', () => {
   before(async () => {
     await App.initVault();
@@ -44,35 +45,113 @@ describe('Update extension', () => {
   }
 
   it('accounts persist on update', async () => {
-    await browser.openKeeperExtensionPage();
+    // Swap the extension files
     await rm('dist', { recursive: true, force: true });
     await rename('dist.new', 'dist');
 
-    await ExtensionPage.devModeToggle.click();
-    await browser.pause(100);
-    await ExtensionPage.updateButton.click();
-    browser.waitUntil(async () => {
-      return (
-        (await ExtensionPage.enableToggle.getAttribute('aria-pressed')) ===
-        'false'
-      );
-    }, {});
-    await browser.waitUntil(async () => {
-      return (
-        (await ExtensionPage.enableToggle.getAttribute('aria-pressed')) ===
-        'true'
-      );
-    }, {});
+    // Navigate to chrome://extensions page
+    await browser.openKeeperExtensionPage();
 
+    // Click the reload button for the extension using shadow DOM
+    await browser.execute(() => {
+      const manager = document.querySelector('extensions-manager');
+      const itemsList = manager?.shadowRoot?.querySelector(
+        'extensions-item-list',
+      );
+      const items = itemsList?.shadowRoot?.querySelectorAll('extensions-item');
+
+      if (!items) return;
+
+      for (const item of Array.from(items)) {
+        const nameEl = item.shadowRoot?.querySelector('#name');
+        if (nameEl?.textContent?.toLowerCase().includes('keeper wallet')) {
+          // Find and click the reload button
+          const reloadButton = item.shadowRoot?.querySelector(
+            '#dev-reload-button',
+          ) as HTMLElement;
+          if (reloadButton) {
+            reloadButton.click();
+          }
+          break;
+        }
+      }
+    });
+
+    // Wait for extension to reload
+    await browser.pause(3000);
+
+    // Navigate back to popup
     await browser.openKeeperPopup();
+
+    // Wait for login screen to appear
+    await browser.waitUntil(
+      async () => {
+        const loginExists = await browser.execute(() => {
+          return !!document.querySelector("[class*='content@login']");
+        });
+        return loginExists;
+      },
+      {
+        timeout: 10000,
+        timeoutMsg: 'Login screen did not appear after extension reload',
+      },
+    );
+
     await LoginScreen.passwordInput.setValue(DEFAULT_PASSWORD);
     await LoginScreen.enterButton.click();
 
-    expect(await collectAllAccountNames()).toStrictEqual(['test2']);
-    await Network.switchToAndCheck('Testnet');
-    expect(await collectAllAccountNames()).toStrictEqual(['test', 'test3']);
+    // After migration, all accounts should be accessible on all networks
 
-    await Network.switchToAndCheck('Stagenet');
-    expect(await collectAllAccountNames()).toStrictEqual(['test4']);
+    // Verify all 4 accounts on Mainnet
+    const mainnetAccounts = await collectAllAccountNames();
+    expect(mainnetAccounts.sort()).toStrictEqual(
+      ['test', 'test2', 'test3', 'test4'].sort(),
+    );
+
+    // Switch to Testnet directly via storage and verify all accounts
+    await browser.execute(() => {
+      interface ChromeWindow {
+        chrome: {
+          storage: {
+            local: {
+              set: (items: Record<string, unknown>) => void;
+            };
+          };
+        };
+      }
+      (window as unknown as ChromeWindow).chrome.storage.local.set({
+        currentNetwork: 'testnet',
+      });
+    });
+    await browser.refresh();
+    await browser.pause(1000);
+
+    const testnetAccounts = await collectAllAccountNames();
+    expect(testnetAccounts.sort()).toStrictEqual(
+      ['test', 'test2', 'test3', 'test4'].sort(),
+    );
+
+    // Switch to Stagenet directly via storage and verify all accounts
+    await browser.execute(() => {
+      interface ChromeWindow {
+        chrome: {
+          storage: {
+            local: {
+              set: (items: Record<string, unknown>) => void;
+            };
+          };
+        };
+      }
+      (window as unknown as ChromeWindow).chrome.storage.local.set({
+        currentNetwork: 'stagenet',
+      });
+    });
+    await browser.refresh();
+    await browser.pause(1000);
+
+    const stagenetAccounts = await collectAllAccountNames();
+    expect(stagenetAccounts.sort()).toStrictEqual(
+      ['test', 'test2', 'test3', 'test4'].sort(),
+    );
   });
 });

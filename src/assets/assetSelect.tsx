@@ -30,6 +30,7 @@ export function AssetSelect({
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const asset = options.find(o => o.id === value)!;
 
+  const displayName = asset.name || asset.displayName;
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -54,11 +55,11 @@ export function AssetSelect({
               backgroundColor: new ColorHash().hex(value),
             }}
           >
-            {asset.displayName[0].toUpperCase()}
+            {displayName[0].toUpperCase()}
           </div>
         )}
 
-        {asset.displayName}
+        {displayName}
       </button>
 
       <Modal animation={Modal.ANIMATION.FLASH} showModal={showModal}>

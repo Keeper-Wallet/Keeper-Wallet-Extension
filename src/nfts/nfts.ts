@@ -12,6 +12,7 @@ import { DucksNftVendor } from './vendors/ducks';
 import { DucksArtefactsNftVendor } from './vendors/ducksArtefacts';
 import { PuzzleNftVendor } from './vendors/puzzle';
 import { SignArtNftVendor } from './vendors/signArt';
+import { Unit0NftVendor } from './vendors/unit0';
 import { WavesDomainsNftVendor } from './vendors/wavesDomains';
 
 const vendors = {
@@ -21,6 +22,7 @@ const vendors = {
   [NftVendorId.SignArt]: new SignArtNftVendor(),
   [NftVendorId.WavesDomains]: new WavesDomainsNftVendor(),
   [NftVendorId.Puzzle]: new PuzzleNftVendor(),
+  [NftVendorId.Unit0]: new Unit0NftVendor(),
 };
 
 export type NftInfo = (typeof vendors)[keyof typeof vendors] extends NftVendor<
@@ -32,7 +34,9 @@ export type NftInfo = (typeof vendors)[keyof typeof vendors] extends NftVendor<
 export async function fetchNftInfo(nodeUrl: string, nfts: NftAssetDetail[]) {
   const allNfts = await Promise.all(
     Object.values(vendors).map(vendor =>
-      vendor.fetchInfo({ nodeUrl, nfts: nfts.filter(vendor.is) }),
+      vendor instanceof Unit0NftVendor
+        ? []
+        : vendor.fetchInfo({ nodeUrl, nfts: nfts.filter(vendor.is) }),
     ),
   );
 
@@ -50,24 +54,29 @@ export function createNft({
   info: NftInfo | undefined;
   userAddress: string;
 }): Nft {
-  return Object.values(vendors).reduce<Nft>(
-    (result, vendor) =>
-      info?.vendor === vendor.id
-        ? vendor.create({
-            asset,
-            config,
-            info: info as never,
-          })
-        : result,
-    {
-      creator: asset.issuer,
-      description: asset.description,
-      displayCreator: asset.issuer === userAddress ? 'My NFTs' : asset.issuer,
-      displayName: asset.displayName,
-      foreground: new URL('./unknown.svg', import.meta.url).toString(),
-      id: asset.id,
-      name: asset.name,
-      vendor: NftVendorId.Unknown,
-    },
-  );
+  // If info exists, find the matching vendor and create NFT
+
+  if (info) {
+    for (const vendor of Object.values(vendors)) {
+      if (info.vendor === vendor.id) {
+        return vendor.create({
+          asset,
+          config,
+          info: info as never,
+        });
+      }
+    }
+  }
+
+  // Return default NFT if no vendor matches or info is undefined
+  return {
+    creator: asset.issuer,
+    description: asset.description,
+    displayCreator: asset.issuer === userAddress ? 'My NFTs' : asset.issuer,
+    displayName: asset.displayName,
+    foreground: new URL('./unknown.svg', import.meta.url).toString(),
+    id: asset.id,
+    name: asset.name,
+    vendor: NftVendorId.Unknown,
+  };
 }

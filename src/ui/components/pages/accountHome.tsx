@@ -5,11 +5,9 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import background from 'ui/services/Background';
 
-import { NETWORK_CONFIG } from '../../../constants';
 import { usePopupSelector } from '../../../popup/store/react';
 import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { Button } from '../ui';
-import { generateNewWalletItems } from './NewWallet';
 import * as styles from './styles/import.styl';
 
 export function ImportPopup() {
@@ -52,7 +50,7 @@ export function ImportPopup() {
 export function AccountsHome() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const customCodes = usePopupSelector(state => state.customCodes);
+  // const customCodes = usePopupSelector(state => state.customCodes);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
 
   const [isLedgerSupported, setIsLedgerSupported] = useState(false);
@@ -80,13 +78,8 @@ export function AccountsHome() {
       <Button
         data-testid="createNewAccountBtn"
         view="submit"
-        onClick={async () => {
-          const networkCode =
-            customCodes[currentNetwork] ||
-            NETWORK_CONFIG[currentNetwork].networkCode;
-
-          await generateNewWalletItems(networkCode);
-          navigate('/create-account');
+        onClick={() => {
+          navigate('/account-onboarding');
         }}
       >
         {t('import.createNew')}
@@ -129,7 +122,7 @@ export function AccountsHome() {
             data-testid="importSeed"
             view="transparent"
             onClick={() => {
-              navigate('/import-seed');
+              navigate('/import-choose');
             }}
           >
             <svg
@@ -138,13 +131,15 @@ export function AccountsHome() {
               height="25"
               viewBox="0 0 25 25"
             >
-              <rect
-                x="12.6011"
-                y="0.437988"
-                width="16.9706"
-                height="16.9706"
-                transform="rotate(45 12.6011 0.437988)"
-                fill="#0055FF"
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M10.236 18.1194C11.4844 21.9837 16.1647 23.266 19.1788 20.5696C22.0276 18.0209 21.3906 13.4314 17.9485 11.7051L17.2869 11.3732V9.41114V7.44909H19.1435H21V5.6116V3.77412H19.1435H17.2869V2.88706V2H15.4944H13.7019V6.68659V11.3732L13.0403 11.7051C10.6788 12.8894 9.45253 15.6943 10.236 18.1194ZM13.9528 15.5972C14.6301 14.4977 16.4979 14.5435 17.0886 15.6742C17.7343 16.9098 16.8609 18.3473 15.4645 18.3473C14.0965 18.3473 13.2298 16.7706 13.9528 15.5972Z"
+                fill="#1F5AF6"
+              />
+              <path
+                d="M5.69379 11L3.81931 9.49356C4.41517 8.79828 5.03586 8.13305 5.68138 7.49785C5.93793 7.24034 6.09931 7.07725 6.16552 7.00858C5.95862 6.97425 5.3669 6.83262 4.39034 6.58369C3.6869 6.40343 3.22345 6.27039 3 6.18455L3.73241 3.91846C4.81655 4.37339 5.78483 4.87554 6.63724 5.42489C6.43862 4.02575 6.33931 2.88412 6.33931 2H8.54897C8.54897 2.62661 8.43724 3.77682 8.21379 5.45064C8.37931 5.38197 8.73517 5.21459 9.28138 4.9485C10.0262 4.59657 10.7131 4.29614 11.3421 4.04721L12 6.37768C11.0814 6.59227 10.0179 6.80258 8.80966 7.00858L10.2993 8.74678C10.5972 9.09871 10.8331 9.38627 11.0069 9.60944L9.10759 10.9099L7.43172 8.03863C6.9269 8.96567 6.34759 9.95279 5.69379 11Z"
+                fill="#1F5AF6"
               />
             </svg>
             {t('import.viaSeed')}
@@ -160,16 +155,51 @@ export function AccountsHome() {
               navigate('/import-ledger');
             }}
           >
-            <svg
-              className={styles.importButtonIcon}
-              width="20"
-              height="21"
-              fill="#000"
-              stroke="#000"
-              viewBox="0 0 20 21"
-            >
-              <path d="M19.254 3.558v8.446H8.122V.912h8.54c1.417 0 2.596 1.213 2.592 2.645v.001ZM3.329.912h1.017v3.663H.668V3.563c0-1.483 1.225-2.65 2.661-2.65ZM.668 8.406h3.678v3.662H.668V8.406Zm15.93 11.092H15.58V15.84h3.678v1.007c0 1.483-1.225 2.651-2.662 2.651ZM8.121 15.84H11.8v3.663H8.122V15.84ZM.668 16.852V15.84h3.678v3.663H3.329a2.665 2.665 0 0 1-2.661-2.651Z" />
-            </svg>
+            <div className={styles.importButtonIconWrapper}>
+              <svg
+                className={styles.importButtonIcon}
+                width="20"
+                height="21"
+                fill="#000"
+                stroke="#000"
+                viewBox="0 0 20 21"
+              >
+                <path d="M19.254 3.558v8.446H8.122V.912h8.54c1.417 0 2.596 1.213 2.592 2.645v.001ZM3.329.912h1.017v3.663H.668V3.563c0-1.483 1.225-2.65 2.661-2.65ZM.668 8.406h3.678v3.662H.668V8.406Zm15.93 11.092H15.58V15.84h3.678v1.007c0 1.483-1.225 2.651-2.662 2.651ZM8.121 15.84H11.8v3.663H8.122V15.84ZM.668 16.852V15.84h3.678v3.663H3.329a2.665 2.665 0 0 1-2.661-2.651Z" />
+              </svg>
+              <svg
+                className={styles.importButtonWaveIcon}
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+              >
+                <rect
+                  x="0.5"
+                  y="0.5"
+                  width="13"
+                  height="13"
+                  rx="6.5"
+                  fill="white"
+                />
+                <rect
+                  x="0.5"
+                  y="0.5"
+                  width="13"
+                  height="13"
+                  rx="6.5"
+                  stroke="#E9E9EB"
+                />
+                <rect
+                  x="2.05005"
+                  y="7"
+                  width="7"
+                  height="7"
+                  transform="rotate(-45 2.05005 7)"
+                  fill="#1F5AF6"
+                />
+              </svg>
+            </div>
             <div>
               <div>{t('import.viaLedger')}</div>
               {!isLedgerSupported && (
@@ -244,72 +274,107 @@ export function AccountsHome() {
                 navigate('/import-email');
               }}
             >
-              <svg
-                className={styles.importButtonIcon}
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <path
-                  d="M2.31339 6.43799L0.813385 8.43799V9.43799L4.31339 11.938H19.3134L22.8134 9.43799L21.8134 6.93799L13.3134 1.43799H10.3134L2.31339 6.43799Z"
-                  fill="black"
-                />
-                <path
-                  d="M11.8136 1.52887C9.72248 1.52887 0.798004 7.10463 0.798004 9.78817V21.3233C0.798004 21.9389 1.2677 22.438 1.84711 22.438H21.78C22.3594 22.438 22.8291 21.9389 22.8291 21.3233V9.52091C22.8291 7.10463 13.2073 1.52887 11.8136 1.52887Z"
-                  stroke="black"
-                  strokeWidth="1.15"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M0.797958 9.91443L9.81334 15.71M22.8291 9.91443L14.3133 15.438"
-                  stroke="black"
-                  strokeWidth="1.15"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M22.3134 21.938L11.8133 14.088L1.81339 21.938"
-                  stroke="black"
-                  strokeWidth="1.225"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M12.0706 14.5092L11.8134 14.3549L11.5561 14.5092L9.33405 15.8425L3.13223 11.5093V4.08799C3.13223 3.729 3.42325 3.43799 3.78223 3.43799H19.7714C20.1304 3.43799 20.4214 3.729 20.4214 4.08799V11.511L14.2911 15.8415L12.0706 14.5092Z"
-                  fill="white"
-                  stroke="black"
-                />
-                <mask
-                  id="mask0_512_14205"
-                  style={{ maskType: 'alpha' }}
-                  maskUnits="userSpaceOnUse"
-                  x="2"
-                  y="2"
-                  width="19"
-                  height="14"
+              <div className={styles.importButtonIconWrapper}>
+                <svg
+                  className={styles.importButtonIcon}
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
                 >
                   <path
-                    d="M2.79164 4.22892C2.70695 3.5431 3.24194 2.93799 3.93297 2.93799H19.624C20.3139 2.93799 20.8485 3.5411 20.7657 4.22595L19.9178 11.2427L14.27 15.2491L11.841 13.7825L9.36338 15.2491L3.65771 11.2427L2.79164 4.22892Z"
+                    d="M2.31339 6.43799L0.813385 8.43799V9.43799L4.31339 11.938H19.3134L22.8134 9.43799L21.8134 6.93799L13.3134 1.43799H10.3134L2.31339 6.43799Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M11.8136 1.52887C9.72248 1.52887 0.798004 7.10463 0.798004 9.78817V21.3233C0.798004 21.9389 1.2677 22.438 1.84711 22.438H21.78C22.3594 22.438 22.8291 21.9389 22.8291 21.3233V9.52091C22.8291 7.10463 13.2073 1.52887 11.8136 1.52887Z"
+                    stroke="black"
+                    strokeWidth="1.15"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M0.797958 9.91443L9.81334 15.71M22.8291 9.91443L14.3133 15.438"
+                    stroke="black"
+                    strokeWidth="1.15"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M22.3134 21.938L11.8133 14.088L1.81339 21.938"
+                    stroke="black"
+                    strokeWidth="1.225"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12.0706 14.5092L11.8134 14.3549L11.5561 14.5092L9.33405 15.8425L3.13223 11.5093V4.08799C3.13223 3.729 3.42325 3.43799 3.78223 3.43799H19.7714C20.1304 3.43799 20.4214 3.729 20.4214 4.08799V11.511L14.2911 15.8415L12.0706 14.5092Z"
+                    fill="white"
+                    stroke="black"
+                  />
+                  <mask
+                    id="mask0_512_14205"
+                    style={{ maskType: 'alpha' }}
+                    maskUnits="userSpaceOnUse"
+                    x="2"
+                    y="2"
+                    width="19"
+                    height="14"
+                  >
+                    <path
+                      d="M2.79164 4.22892C2.70695 3.5431 3.24194 2.93799 3.93297 2.93799H19.624C20.3139 2.93799 20.8485 3.5411 20.7657 4.22595L19.9178 11.2427L14.27 15.2491L11.841 13.7825L9.36338 15.2491L3.65771 11.2427L2.79164 4.22892Z"
+                      fill="white"
+                    />
+                  </mask>
+                  <g mask="url(#mask0_512_14205)">
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M11.8135 11.9834L16.8135 16.9834H6.81351L11.8135 11.9834Z"
+                      fill="#5A81EA"
+                    />
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M11.8135 11.9834L16.8135 6.98343H6.81351L11.8135 11.9834Z"
+                      fill="#E14B51"
+                    />
+                  </g>
+                </svg>
+                <svg
+                  className={styles.importButtonWaveIcon}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                >
+                  <rect
+                    x="0.5"
+                    y="0.5"
+                    width="13"
+                    height="13"
+                    rx="6.5"
                     fill="white"
                   />
-                </mask>
-                <g mask="url(#mask0_512_14205)">
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M11.8135 11.9834L16.8135 16.9834H6.81351L11.8135 11.9834Z"
-                    fill="#5A81EA"
+                  <rect
+                    x="0.5"
+                    y="0.5"
+                    width="13"
+                    height="13"
+                    rx="6.5"
+                    stroke="#E9E9EB"
                   />
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M11.8135 11.9834L16.8135 6.98343H6.81351L11.8135 11.9834Z"
-                    fill="#E14B51"
+                  <rect
+                    x="2.05005"
+                    y="7"
+                    width="7"
+                    height="7"
+                    transform="rotate(-45 2.05005 7)"
+                    fill="#1F5AF6"
                   />
-                </g>
-              </svg>
+                </svg>
+              </div>
 
               {t('import.viaEmail')}
             </Button>

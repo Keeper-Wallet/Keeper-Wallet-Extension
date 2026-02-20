@@ -1,7 +1,8 @@
 import { TRANSACTION_TYPE, type TransactionFromNode } from '@waves/ts-types';
+import { getBalanceKey } from 'balances/utils';
 import clsx from 'clsx';
 import { usePopupSelector } from 'popup/store/react';
-import { type CSSProperties, useEffect, useRef } from 'react';
+import { type CSSProperties, useEffect, useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { VariableSizeList } from 'react-window';
@@ -13,9 +14,18 @@ import { SearchInput, Select, TabPanel } from 'ui/components/ui';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { getTxHistoryLink } from 'ui/urls';
 
-import { MAX_TX_HISTORY_ITEMS } from '../../../../../constants';
+import { BLOCKCHAIN_TYPES } from '../../../../../assets/constants';
+import {
+  type Unit0Transfer,
+  type Unit0TransferPayload,
+} from '../../../../../balances/types';
+import {
+  MAX_TX_HISTORY_ITEMS,
+  UNIT0_MAX_TX_HISTORY_ITEMS,
+} from '../../../../../constants';
 import {
   buildTxTypeOptions,
+  buildUnit0TxTypeOptions,
   CARD_FULL_HEIGHT,
   FULL_GROUP_HEIGHT,
   useUiState,
@@ -31,14 +41,15 @@ const Row = ({
     hasMore: boolean | undefined;
     hasFilters: string | number | boolean | undefined;
     historyLink: string;
+    MaxItems: number;
   };
   index: number;
   style: CSSProperties;
 }) => {
   const { t } = useTranslation();
-  const { historyWithGroups, hasMore, hasFilters, historyLink } = data;
+  const { historyWithGroups, hasMore, hasFilters, historyLink, MaxItems } =
+    data;
   const historyOrGroup = historyWithGroups[index];
-
   return (
     <div style={style}>
       {'groupName' in historyOrGroup ? (
@@ -54,9 +65,9 @@ const Row = ({
           <div className="margin-min">
             {hasFilters
               ? t('assets.maxFiltersHistory', {
-                  count: MAX_TX_HISTORY_ITEMS - 1,
+                  count: MaxItems - 1,
                 })
-              : t('assets.maxHistory', { count: MAX_TX_HISTORY_ITEMS - 1 })}
+              : t('assets.maxHistory', { count: MaxItems - 1 })}
           </div>
           <a
             className="blue link"
@@ -88,20 +99,55 @@ export function TabTxHistory() {
   const showSuspiciousAssets = usePopupSelector(
     state => !!state.uiState?.showSuspiciousAssets,
   );
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+  );
   const address = usePopupSelector(state => state.selectedAccount?.address);
-  const aliases = usePopupSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state => state.balances[address!]?.aliases || [],
-  );
-  const addressOrAlias = [address, ...aliases];
-  const txHistory = usePopupSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    state => state.balances[address!]?.txHistory,
-  );
 
+  const aliases = usePopupSelector(state => {
+    const selected = state.selectedAccount;
+
+    if (!selected?.address) {
+      return [] as string[];
+    }
+
+    const key = getBalanceKey(
+      state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+      state.currentNetwork,
+      selected.address,
+    );
+
+    const balanceItem = state.balances[key] ?? state.balances[selected.address];
+
+    return balanceItem?.aliases || [];
+  });
+  const addressOrAlias = [address, ...aliases];
+  const txHistory = usePopupSelector(state => {
+    const selected = state.selectedAccount;
+
+    if (!selected?.address) {
+      return undefined;
+    }
+
+    const key = getBalanceKey(
+      state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+      state.currentNetwork,
+      selected.address,
+    );
+
+    const balanceItem = state.balances[key] ?? state.balances[selected.address];
+
+    return balanceItem?.txHistory;
+  });
   const thisYear = new Date().getFullYear();
   const thisMonth = new Date().getMonth();
   const thisDate = new Date().getDate();
+
+  const MaxItems = useMemo(() => {
+    return currentBlockchainType === BLOCKCHAIN_TYPES.WAVES
+      ? MAX_TX_HISTORY_ITEMS
+      : UNIT0_MAX_TX_HISTORY_ITEMS;
+  }, [currentBlockchainType]);
 
   const [filters, setFilters] = useUiState('txHistoryFilters');
   const [term, setTerm] = [
@@ -169,9 +215,61 @@ export function TabTxHistory() {
       false,
     );
 
+  const isOnlyInComing = (
+    tranferItem: TransactionFromNode | Unit0Transfer,
+    hasMassTransfers: boolean,
+  ) => {
+    if (currentBlockchainType === BLOCKCHAIN_TYPES.WAVES) {
+      const tx = tranferItem as TransactionFromNode;
+      return (
+        (!('sender' in tx && addressOrAlias.includes(tx.sender)) &&
+          (('recipient' in tx && addressOrAlias.includes(tx.recipient)) ||
+            hasMassTransfers)) ||
+        ('stateChanges' in tx && hasInvokeTransfers(tx.stateChanges))
+      );
+    }
+    return ((tranferItem as Unit0Transfer).payload as Unit0TransferPayload)
+      ?.isIncoming;
+  };
+
+  const typeFilter = (tranferItem: TransactionFromNode | Unit0Transfer) => {
+    if (currentBlockchainType === BLOCKCHAIN_TYPES.WAVES) {
+      return tranferItem.type === type;
+    }
+    // For Unit0, check payload.type for TRANSFER, but if type is 0 (all), return true
+    if (type === 0) return true;
+    return (tranferItem as Unit0Transfer).payload?.type === type;
+  };
+
+  const isOnlyOutgoing = (
+    tranferItem: TransactionFromNode | Unit0Transfer,
+    hasMassTransfers: boolean,
+    hasInvokePayments: boolean,
+  ) => {
+    if (currentBlockchainType === BLOCKCHAIN_TYPES.WAVES) {
+      return (
+        (tranferItem.type === TRANSACTION_TYPE.TRANSFER &&
+          'sender' in tranferItem &&
+          addressOrAlias.includes(tranferItem.sender)) ||
+        (tranferItem.type === TRANSACTION_TYPE.MASS_TRANSFER &&
+          !hasMassTransfers) ||
+        (tranferItem.type === TRANSACTION_TYPE.INVOKE_SCRIPT &&
+          hasInvokePayments)
+      );
+    }
+    return ((tranferItem as Unit0Transfer).payload as Unit0TransferPayload)
+      ?.isOutgoing;
+  };
+  const typeOptions = () => {
+    if (currentBlockchainType === BLOCKCHAIN_TYPES.WAVES) {
+      return buildTxTypeOptions(t);
+    }
+    return buildUnit0TxTypeOptions(t);
+  };
+
   const historyWithGroups = txHistory
-    ? txHistory
-        .slice(0, MAX_TX_HISTORY_ITEMS - 1)
+    ? (txHistory as TransactionFromNode[])
+        .slice(0, MaxItems - 1)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .filter((tx: any) => {
           const hasMassTransfers = (tx.transfers ?? []).reduce(
@@ -190,40 +288,80 @@ export function TabTxHistory() {
             false,
           );
 
+          // Check if this is a Unit0 transaction
+          const isUnit0 = currentBlockchainType !== BLOCKCHAIN_TYPES.WAVES;
+          const unit0Payload = isUnit0
+            ? ((tx as Unit0Transfer).payload as Unit0TransferPayload)
+            : null;
+
+          // Unit0-specific term matching
+          const unit0TermMatch =
+            isUnit0 && term
+              ? tx.id === term ||
+                unit0Payload?.asset === term ||
+                icontains(
+                  assets[unit0Payload?.asset || '']?.displayName ?? '',
+                  term,
+                ) ||
+                unit0Payload?.sender === term ||
+                unit0Payload?.recipient === term ||
+                icontains(unit0Payload?.tokenSymbol ?? '', term) ||
+                icontains(unit0Payload?.tokenName ?? '', term) ||
+                icontains(unit0Payload?.fromName ?? '', term) ||
+                icontains(unit0Payload?.toName ?? '', term) ||
+                unit0Payload?.dApp === term ||
+                icontains(unit0Payload?.call?.function ?? '', term)
+              : false;
+
+          // Waves-specific term matching (existing logic)
+          const wavesTermMatch =
+            !isUnit0 && term
+              ? tx.id === term ||
+                tx.assetId === term ||
+                icontains(assets[tx.assetId]?.displayName ?? '', term) ||
+                tx.sender === term ||
+                tx.recipient === term ||
+                icontains(tx.alias ?? '', term) ||
+                tx.dApp === term ||
+                hasInvokePaymentsAsset ||
+                icontains(tx.call?.function ?? '', term) ||
+                hasInvokeStateChanges(tx.stateChanges)
+              : false;
+
           return (
-            (!showSuspiciousAssets || !assets[tx.assetId]?.isSuspicious) &&
-            (!term ||
-              tx.id === term ||
-              tx.assetId === term ||
-              icontains(assets[tx.assetId]?.displayName ?? '', term) ||
-              tx.sender === term ||
-              tx.recipient === term ||
-              icontains(tx.alias ?? '', term) ||
-              tx.dApp === term ||
-              hasInvokePaymentsAsset ||
-              icontains(tx.call?.function ?? '', term) ||
-              hasInvokeStateChanges(tx.stateChanges)) &&
-            (!type || tx.type === type) &&
-            (!onlyIn ||
-              (!addressOrAlias.includes(tx.sender) &&
-                (addressOrAlias.includes(tx.recipient) || hasMassTransfers)) ||
-              hasInvokeTransfers(tx.stateChanges)) &&
+            (!showSuspiciousAssets ||
+              !assets[isUnit0 ? unit0Payload?.asset : tx.assetId]
+                ?.isSuspicious) &&
+            (!term || (isUnit0 ? unit0TermMatch : wavesTermMatch)) &&
+            (!type || typeFilter(tx)) &&
+            (!onlyIn || isOnlyInComing(tx, hasMassTransfers)) &&
             (!onlyOut ||
-              (tx.type === TRANSACTION_TYPE.TRANSFER &&
-                addressOrAlias.includes(tx.sender)) ||
-              (tx.type === TRANSACTION_TYPE.MASS_TRANSFER &&
-                !hasMassTransfers) ||
-              (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT && hasInvokePayments))
+              isOnlyOutgoing(tx, hasMassTransfers, hasInvokePayments))
           );
         })
         .reduce<Array<TransactionFromNode | { groupName: string }>>(
           (result, tx, index, prevItems) => {
-            const d = new Date(tx.timestamp);
+            // Handle different timestamp locations for Unit0 vs Waves
+            const timestamp =
+              tx.timestamp ||
+              ((tx as unknown as Unit0Transfer).payload as Unit0TransferPayload)
+                ?.timestamp;
+            const d = new Date(timestamp as number);
+
+            const prevItem = prevItems[index - 1];
+            const prevTimestamp = prevItem
+              ? (
+                  (prevItem.timestamp ||
+                    (prevItem as unknown as Unit0Transfer)
+                      .payload) as Unit0TransferPayload
+                )?.timestamp
+              : null;
 
             if (
-              tx.timestamp &&
-              (!prevItems[index - 1] ||
-                new Date(prevItems[index - 1].timestamp).toDateString() !==
+              timestamp &&
+              (!prevItem ||
+                !prevTimestamp ||
+                new Date(prevTimestamp as number).toDateString() !==
                   d.toDateString())
             ) {
               const [Y, M, D] = [d.getFullYear(), d.getMonth(), d.getDate()];
@@ -273,7 +411,7 @@ export function TabTxHistory() {
               className={styles.filterTxSelect}
               forwardRef={ref}
               selected={type}
-              selectList={buildTxTypeOptions(t)}
+              selectList={typeOptions()}
               theme="underlined"
               onSelectItem={(_id, value) => {
                 listRef.current && listRef.current.resetAfterIndex(0);
@@ -343,7 +481,7 @@ export function TabTxHistory() {
                 <Trans
                   t={t}
                   i18nKey="assets.notFoundHistory"
-                  values={{ count: MAX_TX_HISTORY_ITEMS - 1 }}
+                  values={{ count: MaxItems - 1 }}
                 />
               </div>
               <p className="blue link" onClick={() => setFilters(null)}>
@@ -361,8 +499,7 @@ export function TabTxHistory() {
               invariant(width != null);
               invariant(height != null);
 
-              const hasMore =
-                txHistory && txHistory.length === MAX_TX_HISTORY_ITEMS;
+              const hasMore = txHistory && txHistory.length === MaxItems;
               return (
                 <>
                   <VariableSizeList
@@ -385,14 +522,27 @@ export function TabTxHistory() {
                       hasFilters: term || type || onlyIn || onlyOut,
                       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                       historyLink: getTxHistoryLink(networkCode!, address!),
+                      MaxItems,
                     }}
                     // eslint-disable-next-line @typescript-eslint/no-shadow
                     itemKey={(index, { historyWithGroups }) =>
                       'groupName' in historyWithGroups[index]
-                        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          `g:${(historyWithGroups[index] as any).groupName}`
-                        : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          `a:${(historyWithGroups[index] as any).id}`
+                        ? `g:${
+                            (historyWithGroups[index] as { groupName: string })
+                              .groupName
+                          }`
+                        : // Create unique key by combining transaction ID + asset + index for Unit0 multi-asset transactions
+                          `a:${
+                            (historyWithGroups[index] as TransactionFromNode).id
+                          }:${
+                            (
+                              (
+                                historyWithGroups[
+                                  index
+                                ] as unknown as Unit0Transfer
+                              ).payload as Unit0TransferPayload
+                            )?.asset || 'native'
+                          }:${index}`
                     }
                   >
                     {Row}

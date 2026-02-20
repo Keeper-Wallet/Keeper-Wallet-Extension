@@ -14,6 +14,7 @@ import {
   isValidEthereumAddress,
 } from 'ui/utils/ethereum';
 
+import { BLOCKCHAIN_TYPES } from '../../../../assets/constants';
 import { Ellipsis } from '../../ui';
 import { Tooltip } from '../tooltip';
 import { AddModal } from './AddModal';
@@ -27,6 +28,7 @@ export interface Props {
   showAliasWarning?: boolean;
   showMirrorAddress?: boolean;
   testid?: string;
+  name?: string;
 }
 
 export function AddressRecipient({
@@ -36,16 +38,21 @@ export function AddressRecipient({
   showAliasWarning = true,
   showMirrorAddress,
   testid,
+  name,
 }: Props) {
   const { t } = useTranslation();
-  const address = isEthereumAddress(recipient)
-    ? recipient
-    : processAliasOrAddress(recipient, chainId);
+  const normalizedRecipient = typeof recipient === 'string' ? recipient : '';
+  const address = isEthereumAddress(normalizedRecipient)
+    ? normalizedRecipient
+    : processAliasOrAddress(normalizedRecipient, chainId);
 
   const accounts = usePopupSelector(state => state.accounts);
   const addresses = usePopupSelector(state => state.addresses);
 
-  const name =
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+  );
+  const accountName =
     accounts.find(account => account.address === address)?.name ||
     addresses[address];
 
@@ -79,12 +86,16 @@ export function AddressRecipient({
       </div>
     );
   }
+  const tooltipContent =
+    currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+      ? name || address
+      : name || mirrorAddress;
 
   return (
     <>
-      {name ? (
+      {accountName || name ? (
         <div className={clsx(styles.content, className)} data-testid={testid}>
-          <div className={styles.name}>{name}</div>
+          <div className={styles.name}>{accountName || name}</div>
           <AddressTooltip address={address} />
         </div>
       ) : (
@@ -92,10 +103,9 @@ export function AddressRecipient({
           {showMirrorAddress ? (
             <Tooltip
               className={clsx(styles.mirrorAddress, {
-                [styles.ethereum]: type === 'ethereum',
                 [styles.waves]: type === 'waves',
               })}
-              content={mirrorAddress}
+              content={tooltipContent}
               placement="auto-end"
             >
               {props => (
@@ -104,7 +114,6 @@ export function AddressRecipient({
                     text={address}
                     size={12}
                     className={clsx(styles.recipient, {
-                      [styles.ethereum]: type === 'ethereum',
                       [styles.waves]: type === 'waves',
                     })}
                   />
@@ -112,7 +121,7 @@ export function AddressRecipient({
               )}
             </Tooltip>
           ) : (
-            <Tooltip content={address} placement="auto-end">
+            <Tooltip content={name || address} placement="auto-end">
               {props => (
                 <div className={styles.recipientWrapper} {...props}>
                   <Ellipsis

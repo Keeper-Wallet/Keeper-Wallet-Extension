@@ -1,7 +1,7 @@
 .root
   display: flex;
   flex-direction: column;
-  padding: 20px 0 0;
+  padding: 24px 0 0;
   height: calc(100% - 48px);
   overflow: hidden;
 
@@ -11,6 +11,17 @@
 .centered
   margin-right: 48px;
   margin-left: 48px;
+
+.selectAllContainer
+  margin: 0 48px 12px;
+  display: flex;
+  align-items: center;
+  
+.selectAllLabel
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 8px;
 
 .accounts
   flex: 1 1 0;
@@ -28,8 +39,20 @@
   display: flex;
   align-items: center;
   border-bottom: 1px solid #edf0f4;
-  padding: 10px 50px;
+  padding: 14px;
+  margin: 14px 48px;
   background: #fff;
+
+.displayName
+  overflow: hidden;
+  word-break: break-word;
+  display: inline-block;
+  text-overflow: ellipsis;
+  max-width: 140px;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
 
 .accountsGroupIcon
   margin: 0 8px 2px 0;
@@ -40,40 +63,101 @@
   font-size: 12px;
   font-weight: 300;
 
+.existingAccountBadge
+  margin-left: auto
+  padding: 4px 8px
+  background-color: #f5f5f5
+  border-radius: 4px
+  color: #9ba6b2
+  font-size: 12px
+  width: 100px
+
+.walletTypeLabel
+  padding: 2px 4px;
+  background-color: #f0f2f5;
+  border-radius: 4px;
+  color: #5e6c84;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-left: 8px;
+  vertical-align: bottom;
+
+.networkList
+  padding: 8px 35px 8px 60px;
+  background-color: #f8f9fb;
+
+.networkItem
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  border-bottom: 1px solid #edf0f4;
+  font-size: 12px;
+  color: #4e5c6e;
+
+.networkItem:last-child
+  border-bottom: none;
+
 .accountList
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   padding: 12px 48px;
 
 .accountListItem
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(155, 166, 178, 0.4);
-  background: #FFFFFF;
-  padding: 11px 16px 11px 14px;
-  min-height: 64px;
+  padding: 10px 16px 10px 14px;
+  background: #fff;
+  border: 1px solid #edf0f4;
+  border-radius: 8px;
 
 .accountInfo
   display: flex;
   align-items: center;
-  gap: 14px;
+  width: 100%;
 
 .accountInfoText
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0; // allow children to shrink for ellipsis
+  margin-right:auto;
+  margin-left: 14px;
 
 .accountName
   font-size: 12px;
   line-height: 14px;
-  word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+
+.accountNameRow
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
 .accountInfoNote
   color: var(--color-disabled500);
   margin-right: 24px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 11px;
+
+.accountCheckbox
+  margin-left: auto;
+
+.accountListItem:hover
+  border-color: #e2e6ec;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+
+.accountListItemSelected
+  border-color: #d9dee6;
+  background: #fafbfc;
 
 .buttons
   border-top: 1px solid #edf0f4;

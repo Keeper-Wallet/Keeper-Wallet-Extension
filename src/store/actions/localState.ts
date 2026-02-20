@@ -22,10 +22,8 @@ const notificationDelete = createMVAction(ACTION.NOTIFICATION_DELETE);
 export function deleteAccount(
   address: string,
 ): PopupThunkAction<Promise<void>> {
-  return async (dispatch, getState) => {
-    const { currentNetwork } = getState();
-
-    await Background.removeWallet(address, currentNetwork);
+  return async dispatch => {
+    await Background.removeWallet(address);
 
     dispatch(notificationDelete(true));
     await new Promise(resolve => setTimeout(resolve, 1000));

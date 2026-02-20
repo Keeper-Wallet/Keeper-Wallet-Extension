@@ -10,6 +10,7 @@ import {
 import { captureException } from '@sentry/browser';
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { binary } from '@waves/marshall';
 import { waves } from '@waves/protobuf-serialization';
 import {
@@ -61,15 +62,18 @@ import { PERMISSIONS } from '../permissions/constants';
 import type { PreferencesAccount } from '../preferences/types';
 import type { ExtensionStorage } from '../storage/storage';
 import { getTxVersions } from '../wallets/getTxVersions';
+import { Unit0Api } from './api/unit0Api';
 import type { AssetInfoController } from './assetInfo';
 import type { CurrentAccountController } from './currentAccount';
+import type { MultiWalletController } from './MultiWalletController';
 import type { NetworkController } from './network';
 import type { PermissionsController } from './permissions';
 import type { RemoteConfigController } from './remoteConfig';
-import type { WalletController } from './wallet';
 
 function moneyLikeToMoney(amount: MoneyLike, assets: AssetsRecord) {
-  const asset = new Asset(assets[amount.assetId ?? 'WAVES'] ?? assets.WAVES);
+  const assetsToCreate = (assets[amount.assetId ?? 'WAVES'] ??
+    assets.WAVES) as unknown as IAssetInfo;
+  const asset = new Asset(assetsToCreate);
 
   if (amount.tokens != null || amount.coins != null) {
     let result = new Money(0, asset);
@@ -95,7 +99,8 @@ export class MessageController extends EventEmitter {
   setPermission;
   private getAccountBalance;
   private remoteConfigController;
-  private walletController;
+  private multiWalletController;
+  private unit0Api;
 
   constructor({
     extensionStorage,
@@ -104,7 +109,7 @@ export class MessageController extends EventEmitter {
     setPermission,
     getAccountBalance,
     remoteConfigController,
-    walletController,
+    multiWalletController,
   }: {
     extensionStorage: ExtensionStorage;
     assetInfoController: AssetInfoController;
@@ -112,7 +117,7 @@ export class MessageController extends EventEmitter {
     setPermission: PermissionsController['setPermission'];
     getAccountBalance: CurrentAccountController['getAccountBalance'];
     remoteConfigController: RemoteConfigController;
-    walletController: WalletController;
+    multiWalletController: MultiWalletController;
   }) {
     super();
 
@@ -124,7 +129,8 @@ export class MessageController extends EventEmitter {
     this.assetInfoController = assetInfoController;
     this.networkController = networkController;
     this.remoteConfigController = remoteConfigController;
-    this.walletController = walletController;
+    this.multiWalletController = multiWalletController;
+    this.unit0Api = new Unit0Api();
 
     // permissions
     this.setPermission = setPermission;
@@ -138,6 +144,16 @@ export class MessageController extends EventEmitter {
     });
 
     this.#updateBadge();
+  }
+
+  /**
+   * Validates that the account supports Waves-specific operations.
+   * Throws NETWORK_INCOMPATIBLE error if the account is Unit0.
+   */
+  #validateWavesOnlyOperation(account: { coinType?: string }) {
+    if (account.coinType === 'unit0') {
+      throw ERRORS.NETWORK_INCOMPATIBLE();
+    }
   }
 
   async newMessage<T extends MessageInput['type']>(
@@ -221,10 +237,18 @@ export class MessageController extends EventEmitter {
 
     try {
       const { address, network, publicKey } = message.account;
-      const wallet = this.walletController.getWallet(address, network);
+
+      // Get wallet instance (SeedWallet with signing methods) from factory-created wallets
+      const wallet = await this.multiWalletController.getWalletForSigning(
+        address,
+        network,
+      );
 
       switch (message.type) {
         case 'auth': {
+          // Unit0 accounts cannot use Waves auth
+          this.#validateWavesOnlyOperation(message.account);
+
           const { data, host, name, prefix, version } = message.data.data;
 
           const signature = await wallet.signAuth(
@@ -258,6 +282,9 @@ export class MessageController extends EventEmitter {
           message.status = MessageStatus.Signed;
           break;
         case 'cancelOrder': {
+          // Unit0 accounts cannot use DEX orders
+          this.#validateWavesOnlyOperation(message.account);
+
           const cancelOrder = {
             orderId: message.data.data.id,
             sender: message.data.data.senderPublicKey,
@@ -288,21 +315,56 @@ export class MessageController extends EventEmitter {
           break;
         }
         case 'customData': {
+          // Unit0 accounts cannot use signCustomData yet
+          // TODO: Enable this in the future when Unit0 custom data signing is fully supported
+          this.#validateWavesOnlyOperation(message.account);
+
           const { data } = message;
 
-          const signature = await wallet.signCustomData(
-            makeCustomDataBytes(data),
-          );
+          // Check if this is a Unit0 account by looking at the message account
+          // const isUnit0 = message.account.coinType === 'unit0';
+
+          let signature: Uint8Array | string;
+
+          // Future Unit0 support - currently disabled
+          /*
+          if (isUnit0) {
+            // Use Unit0/EVM signing for Unit0 accounts
+            // For EVM, we need to sign the raw message, not the Waves-formatted bytes
+            let messageToSign: string;
+            
+            if (data.version === 1) {
+              // Version 1: binary data in base64
+              const binaryData = base64Decode(data.binary.replace(/^base64:/, ''));
+              // Convert bytes to string for EVM signing
+              messageToSign = new TextDecoder().decode(binaryData);
+            } else {
+              // Version 2: structured data - convert to JSON string
+              messageToSign = JSON.stringify(data.data);
+            }
+            
+            signature = await wallet.signUnit0CustomData(messageToSign);
+            // signature is already in hex format (0x...)
+          } else {
+          */
+          // Use Waves signing for Waves accounts
+          signature = await wallet.signCustomData(makeCustomDataBytes(data));
+          // Convert to base58 for Waves
+          signature = base58Encode(signature);
+          // }
 
           message.result = {
             ...data,
-            signature: base58Encode(signature),
+            signature,
           };
 
           message.status = MessageStatus.Signed;
           break;
         }
         case 'order': {
+          // Unit0 accounts cannot use DEX orders
+          this.#validateWavesOnlyOperation(message.account);
+
           const signature = await wallet.signOrder(
             makeOrderBytes(message.data),
             message.data.version,
@@ -329,6 +391,9 @@ export class MessageController extends EventEmitter {
           break;
         }
         case 'request': {
+          // Unit0 accounts cannot use Waves signRequest
+          this.#validateWavesOnlyOperation(message.account);
+
           const signature = await wallet.signRequest(
             makeRequestBytes({
               senderPublicKey: message.data.data.senderPublicKey,
@@ -402,6 +467,46 @@ export class MessageController extends EventEmitter {
           };
 
           message.status = MessageStatus.Signed;
+          break;
+        }
+        case 'unit0Transaction': {
+          // Sign Unit0 (Ethereum) transaction
+          const signedTx = await wallet.signUnit0Transaction({
+            to: message.data.to,
+            value: message.data.value,
+            gasLimit: message.data.gasLimit,
+            gasPrice: message.data.gasPrice,
+            nonce: message.data.nonce,
+            data: message.data.data,
+            chainId: message.data.chainId,
+          });
+
+          if (message.broadcast) {
+            // Broadcast to Unit0 blockchain
+            const txHash = await this.unit0Api.sendRawTransaction(
+              signedTx,
+              message.account.network,
+            );
+
+            message.result = JSON.stringify({
+              txHash,
+              signedTransaction: signedTx,
+            });
+            message.status = MessageStatus.Published;
+          } else {
+            // Just return signed transaction
+            message.result = signedTx;
+            message.status = MessageStatus.Signed;
+          }
+
+          if (message.successPath) {
+            const url = new URL(message.successPath);
+            const resultData = message.broadcast
+              ? JSON.parse(message.result)
+              : { txHash: '' };
+            url.searchParams.append('txHash', resultData.txHash || '');
+            this.emit('Open new tab', url.href);
+          }
           break;
         }
       }
@@ -658,6 +763,9 @@ export class MessageController extends EventEmitter {
     account: PreferencesAccount,
     messageInputTx: MessageInputTx,
   ): Promise<MessageTx> {
+    // Unit0 accounts cannot sign Waves transactions
+    this.#validateWavesOnlyOperation(account);
+
     if (
       'fee' in messageInputTx.data &&
       !this.#isMoneyLikeValuePositive(messageInputTx.data.fee)
@@ -1759,6 +1867,9 @@ export class MessageController extends EventEmitter {
           timestamp: Date.now(),
         };
       case 'cancelOrder': {
+        // Unit0 accounts cannot use DEX orders
+        this.#validateWavesOnlyOperation(messageInput.account);
+
         const data = {
           senderPublicKey: messageInput.account.publicKey,
           ...messageInput.data.data,
@@ -1784,6 +1895,10 @@ export class MessageController extends EventEmitter {
         };
       }
       case 'customData': {
+        // Unit0 accounts cannot use signCustomData yet
+        // TODO: Enable this in the future when Unit0 custom data signing is fully supported
+        this.#validateWavesOnlyOperation(messageInput.account);
+
         try {
           const data = {
             ...messageInput.data,
@@ -1808,6 +1923,9 @@ export class MessageController extends EventEmitter {
         }
       }
       case 'order': {
+        // Unit0 accounts cannot use DEX orders
+        this.#validateWavesOnlyOperation(messageInput.account);
+
         if (!this.#isMoneyLikeValuePositive(messageInput.data.data.amount)) {
           throw ERRORS.REQUEST_ERROR('amount is not valid', messageInput.data);
         }
@@ -1912,6 +2030,9 @@ export class MessageController extends EventEmitter {
         };
       }
       case 'request': {
+        // Unit0 accounts cannot use Waves signRequest
+        this.#validateWavesOnlyOperation(messageInput.account);
+
         const data = {
           timestamp: Date.now(),
           senderPublicKey: messageInput.account.publicKey,
@@ -1991,7 +2112,34 @@ export class MessageController extends EventEmitter {
           timestamp: Date.now(),
         };
       }
+      case 'unit0Transaction': {
+        let successPath: string | null = null;
+
+        try {
+          successPath = messageInput.data.successPath
+            ? new URL(
+                messageInput.data.successPath,
+                `https://${messageInput.origin}`,
+              ).href
+            : null;
+        } catch {
+          // ignore
+        }
+
+        return {
+          ...messageInput,
+          data: messageInput.data,
+          ext_uuid: messageInput.options && messageInput.options.uid,
+          id: nanoid(),
+          status: MessageStatus.UnApproved,
+          successPath,
+          timestamp: Date.now(),
+        };
+      }
       case 'wavesAuth': {
+        // Unit0 accounts cannot use Waves auth
+        this.#validateWavesOnlyOperation(messageInput.account);
+
         try {
           const data = {
             ...messageInput.data,

@@ -1,5 +1,6 @@
 import waitForExpect from 'wait-for-expect';
 
+import { AccountOnboardingScreen } from './helpers/AccountOnboardingScreen';
 import { EmptyHomeScreen } from './helpers/EmptyHomeScreen';
 import { App } from './helpers/flows/App';
 import { PopupHome } from './helpers/flows/PopupHome';
@@ -88,6 +89,8 @@ describe('Tabs manipulation', function () {
 
     async function importAccountUntilSuccess(name: string, seed: string) {
       await ImportFormScreen.importViaSeedButton.click();
+      await AccountOnboardingScreen.createWavesAccountButton.click();
+      await ImportViaSeedScreen.seedInput.waitForDisplayed();
       await ImportViaSeedScreen.seedInput.setValue(seed);
       await ImportViaSeedScreen.importAccountButton.click();
 
