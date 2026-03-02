@@ -4,12 +4,13 @@ export default {
   moduleDirectories: ['node_modules', '<rootDir>/src'],
   testMatch: ['<rootDir>/src/**/*.test.ts'],
   transform: {
-    '^.+\\.ts$': [
+    '^.+\\.tsx?$': [
       'ts-jest',
       {
         tsconfig: {
           esModuleInterop: true,
           baseUrl: './src',
+          jsx: 'react-jsx',
         },
       },
     ],
