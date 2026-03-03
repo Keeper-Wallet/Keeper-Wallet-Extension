@@ -1,5 +1,6 @@
 import BigNumber from '@waves/bignumber';
 import clsx from 'clsx';
+import { ethers } from 'ethers';
 import { TxDetailTabs } from 'messages/_common/detailTabs';
 import { MessageFooter } from 'messages/_common/footer';
 import { MessageHeader } from 'messages/_common/header';
@@ -11,6 +12,11 @@ import { useTranslation } from 'react-i18next';
 import * as transactionsStyles from '../../ui/components/pages/styles/transactions.module.css';
 import { Ellipsis } from '../../ui/components/ui/ellipsis/Ellipsis';
 import { type MessageOfType } from '../types';
+import { abiERC20, abiERC721, abiERC1155 } from './abis';
+
+const erc20Iface = new ethers.Interface(abiERC20);
+const erc721Iface = new ethers.Interface(abiERC721);
+const erc1155Iface = new ethers.Interface(abiERC1155);
 
 export function Unit0TransactionCard({
   className,
@@ -41,52 +47,45 @@ export function Unit0TransactionCard({
   let recipientAddress = '';
 
   if (isERC721 && message.data.data) {
-    // ERC-721 NFT transfer
-    // data format: 0x42842e0e (4 bytes) + from (32 bytes) + to (32 bytes) + tokenId (32 bytes)
     try {
-      const tokenIdHex = message.data.data.slice(138); // Skip function selector + from + to
-      tokenId = BigInt(`0x${tokenIdHex}`).toString();
+      const d = erc721Iface.decodeFunctionData(
+        'safeTransferFrom',
+        message.data.data,
+      );
+      recipientAddress = d[1] as string;
+      tokenId = (d[2] as bigint).toString();
 
       displayAmount = `Token #${tokenId}`;
       displayAsset = assets[message.data.to]?.displayName ?? 'ERC-721 NFT';
       tokenType = 'ERC-721';
-
-      // Extract recipient from data
-      const recipientHex = message.data.data.slice(74, 138);
-      recipientAddress = `0x${recipientHex.slice(24)}`; // Remove padding
     } catch {
       displayAmount = 'NFT';
       displayAsset = 'ERC-721';
       tokenType = 'ERC-721';
     }
   } else if (isERC1155 && message.data.data) {
-    // ERC-1155 NFT transfer
-    // data format: 0xf242432a (4 bytes) + from (32 bytes) + to (32 bytes) + id (32 bytes) + amount (32 bytes) + data offset/length
     try {
-      const tokenIdHex = message.data.data.slice(138, 202);
-      const amountHex = message.data.data.slice(202, 266);
-
-      tokenId = BigInt(`0x${tokenIdHex}`).toString();
-      const amount = BigInt(`0x${amountHex}`).toString();
+      const d = erc1155Iface.decodeFunctionData(
+        'safeTransferFrom',
+        message.data.data,
+      );
+      recipientAddress = d[1] as string;
+      tokenId = (d[2] as bigint).toString();
+      const amount = (d[3] as bigint).toString();
 
       displayAmount = `${amount}x Token #${tokenId}`;
       displayAsset = assets[message.data.to]?.displayName ?? 'ERC-1155 NFT';
       tokenType = 'ERC-1155';
-
-      // Extract recipient from data
-      const recipientHex = message.data.data.slice(74, 138);
-      recipientAddress = `0x${recipientHex.slice(24)}`; // Remove padding
     } catch {
       displayAmount = 'NFT';
       displayAsset = 'ERC-1155';
       tokenType = 'ERC-1155';
     }
   } else if (isERC20 && message.data.data) {
-    // ERC-20 token transfer: decode the data field
-    // data format: 0xa9059cbb (4 bytes) + recipient (32 bytes) + amount (32 bytes)
     try {
-      const tokenAmount = message.data.data.slice(74); // Skip function selector + recipient
-      const amountInSmallestUnit = BigInt(`0x${tokenAmount}`);
+      const d = erc20Iface.decodeFunctionData('transfer', message.data.data);
+      recipientAddress = d[0] as string;
+      const amountInSmallestUnit = BigInt(d[1].toString());
 
       // Get token info from assets
       const tokenAsset = assets[message.data.to];
@@ -101,10 +100,6 @@ export function Unit0TransactionCard({
       displayAmount = amountInTokens.toFixed(8);
       displayAsset = tokenName;
       tokenType = 'ERC-20';
-
-      // Extract recipient from data
-      const recipientHex = message.data.data.slice(10, 74);
-      recipientAddress = `0x${recipientHex.slice(24)}`; // Remove padding
     } catch {
       displayAmount = '0.00000000';
       displayAsset = 'Unit0';

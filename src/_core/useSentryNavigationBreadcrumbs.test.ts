@@ -1,8 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-import { renderHook } from '@testing-library/react';
 import { addBreadcrumb } from '@sentry/browser';
+import { renderHook } from '@testing-library/react';
 import type { Location } from 'react-router-dom';
 
 import { useSentryNavigationBreadcrumbs } from './useSentryNavigationBreadcrumbs';
@@ -23,9 +23,7 @@ describe('useSentryNavigationBreadcrumbs', () => {
   });
 
   it('adds a breadcrumb with null "from" on initial render', () => {
-    renderHook(() =>
-      useSentryNavigationBreadcrumbs(makeLocation('/home')),
-    );
+    renderHook(() => useSentryNavigationBreadcrumbs(makeLocation('/home')));
 
     expect(mockAddBreadcrumb).toHaveBeenCalledTimes(1);
     expect(mockAddBreadcrumb).toHaveBeenCalledWith({

@@ -1,14 +1,14 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react';
 import { renderHook } from '@testing-library/react';
+import React from 'react';
 
 import { NetworkName } from '../networks/types';
 import {
   UsdPricesProvider,
-  useUsdPrices,
   useUnit0UsdPrices,
+  useUsdPrices,
 } from './usdPrices';
 
 const mockUsePopupSelector = jest.fn();
@@ -60,10 +60,9 @@ describe('useUsdPrices', () => {
   });
 
   it('returns prices filtered by the requested asset IDs', () => {
-    const { result } = renderHook(
-      () => useUsdPrices(['WAVES', 'ABOT']),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useUsdPrices(['WAVES', 'ABOT']), {
+      wrapper,
+    });
 
     expect(result.current).toEqual({ WAVES: 2.5, ABOT: 1.0 });
   });
@@ -76,10 +75,9 @@ describe('useUsdPrices', () => {
   });
 
   it('returns empty object when no asset IDs match', () => {
-    const { result } = renderHook(
-      () => useUsdPrices(['unknownAsset']),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useUsdPrices(['unknownAsset']), {
+      wrapper,
+    });
 
     expect(result.current).toEqual({});
   });
@@ -112,10 +110,9 @@ describe('useUnit0UsdPrices', () => {
   });
 
   it('returns prices for the UNIT0 native address', () => {
-    const { result } = renderHook(
-      () => useUnit0UsdPrices(['unit0']),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useUnit0UsdPrices(['unit0']), {
+      wrapper,
+    });
 
     expect(result.current).toEqual({ UNIT0: 0.01 });
   });
@@ -131,7 +128,9 @@ describe('useUnit0UsdPrices', () => {
       { wrapper },
     );
 
-    expect(result.current).toEqual({ '0xb303d80db8415fd1d3c9fed68a52eeac9a052671': 3.0 });
+    expect(result.current).toEqual({
+      '0xb303d80db8415fd1d3c9fed68a52eeac9a052671': 3.0,
+    });
   });
 
   it('normalizes the unit0 native address to uppercase UNIT0', () => {
@@ -140,20 +139,18 @@ describe('useUnit0UsdPrices', () => {
       usdPrices: { UNIT0: 0.01 },
     });
 
-    const { result } = renderHook(
-      () => useUnit0UsdPrices(['unit0']),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useUnit0UsdPrices(['unit0']), {
+      wrapper,
+    });
 
     expect(result.current).toHaveProperty('UNIT0');
     expect(result.current).not.toHaveProperty('unit0');
   });
 
   it('returns empty object when no addresses match', () => {
-    const { result } = renderHook(
-      () => useUnit0UsdPrices(['0xunknown']),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useUnit0UsdPrices(['0xunknown']), {
+      wrapper,
+    });
 
     expect(result.current).toEqual({});
   });
