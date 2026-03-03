@@ -58,6 +58,8 @@ export function ImportLedger() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const connectionAttemptedRef = useRef(false);
+  const isMountedRef = useRef(true);
 
   const [getUsersError, setGetUsersError] = useState<
     string | React.ReactElement | null
@@ -126,6 +128,7 @@ export function ImportLedger() {
   const connectToLedger = useCallback(async () => {
     setConnectionError(null);
     setIsConnecting(true);
+    connectionAttemptedRef.current = true;
 
     await ledgerService.connectUsb(networkCode);
 
@@ -157,15 +160,20 @@ export function ImportLedger() {
   }, [ledgerUsersPages, networkCode, t]);
 
   useEffect(() => {
-    if (isReady) {
+    // Only attempt connection once on mount
+    if (isReady || connectionAttemptedRef.current) {
       return;
     }
 
+    connectionAttemptedRef.current = true;
     connectToLedger();
-  }, [connectToLedger, isReady]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReady]); // Intentionally not including connectToLedger to prevent infinite loop
 
   useEffect(() => {
     return () => {
+      // Only disconnect when component actually unmounts
+      isMountedRef.current = false;
       ledgerService.disconnect();
     };
   }, []);
@@ -354,7 +362,10 @@ export function ImportLedger() {
             <Button
               disabled={isConnecting}
               view="submit"
-              onClick={connectToLedger}
+              onClick={() => {
+                connectionAttemptedRef.current = false;
+                connectToLedger();
+              }}
             >
               {t('importLedger.tryAgainButton')}
             </Button>

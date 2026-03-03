@@ -1,7 +1,7 @@
 .historyCard {
   position: relative;
   z-index: 1;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   padding: 8px;
   display: flex;
   flex-wrap: wrap;

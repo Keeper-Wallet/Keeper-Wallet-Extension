@@ -1,12 +1,11 @@
 .assetCard {
   position: relative;
   z-index: 1;
-  margin: 0 14px 8px 14px;
-  padding: 8px 14px;
+  margin: 0 14px;
+  padding: 12px 14px;
   padding-right: 0;
   display: flex;
-  width: 325px;
-  height: 64px;
+  height: 62px;
   overflow: hidden;
   border-radius: 4px;
   box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
@@ -25,10 +24,10 @@
 }
 
 .assetTitle {
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   display: flex;
   gap: 4px;
-  line-height: 17px;
+  line-height: 16px;
 }
 
 .assetName {
@@ -37,8 +36,10 @@
 }
 
 .assetStatusIcon {
-  min-width: 18px;
-  min-height: 18px;
+  min-width: 14px;
+  width: 14px;
+  min-height: 14px;
+  height: 14px;
 }
 
 .swapBtn,
@@ -53,8 +54,9 @@
 .favIcon,
 .sendIcon,
 .infoIcon {
-  width: 28px;
-  height: 28px;
+  margin: 0 4px;
+  width: 20px;
+  height: 20px;
 }
 
 .favIcon {
@@ -73,6 +75,7 @@
   fill: var(--color-basic500);
 }
 
+.sendIcon:hover,
 .favIcon:hover {
   stroke: var(--color-basic500);
 }

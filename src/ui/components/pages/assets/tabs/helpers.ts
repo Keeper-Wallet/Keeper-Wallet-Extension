@@ -34,7 +34,11 @@ export function sortAssetEntries<T>(
   assetEntries: Array<[string, T]>,
   assets: AssetsRecord,
   showSuspiciousAssets: boolean | undefined,
+  currentBlockchainType?: string,
 ): Array<[string, T]> {
+  // Determine native token based on blockchain type
+  const nativeTokenId = currentBlockchainType === 'unit0' ? 'unit0' : 'WAVES';
+
   return assetEntries
     .filter(
       ([assetId]) => showSuspiciousAssets || !assets[assetId]?.isSuspicious,
@@ -44,8 +48,8 @@ export function sortAssetEntries<T>(
       const b = assets[bAssetId];
 
       return (
-        (aAssetId === 'WAVES' && -1) ||
-        (bAssetId === 'WAVES' && 1) ||
+        (aAssetId === nativeTokenId && -1) ||
+        (bAssetId === nativeTokenId && 1) ||
         (a && b
           ? +!!b.isFavorite - +!!a.isFavorite ||
             +!!a.isSuspicious - +!!b.isSuspicious ||
@@ -60,12 +64,22 @@ export function sortAndFilterNfts<T extends Nft>(
   filters: {
     term?: string;
     creator?: string | null;
+    collectionId?: string;
   },
 ) {
-  const { creator, term } = filters;
+  const { creator, term, collectionId } = filters;
 
   if (creator) {
     nfts = nfts.filter(nft => nft.creator === creator);
+  }
+
+  // Filter by Unit0 collection (contract) address when provided
+  if (collectionId) {
+    nfts = nfts.filter(
+      nft =>
+        ('assetId' in nft && nft.assetId === collectionId) ||
+        nft.id === collectionId,
+    );
   }
 
   if (term) {
@@ -100,6 +114,21 @@ export const MONTH = [
   'Oct',
   'Nov',
   'Dec',
+];
+
+export const buildUnit0TxTypeOptions = (
+  t: TFunction<'translation', undefined>,
+) => [
+  {
+    id: 0,
+    value: 0,
+    text: t('historyFilters.all'),
+  },
+  {
+    id: TRANSACTION_TYPE.TRANSFER,
+    value: TRANSACTION_TYPE.TRANSFER,
+    text: t('historyFilters.transfer'),
+  },
 ];
 
 export const buildTxTypeOptions = (t: TFunction<'translation', undefined>) => [

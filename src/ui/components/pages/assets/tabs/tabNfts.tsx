@@ -1,16 +1,17 @@
+import { getBalanceKey } from 'balances/utils';
 import clsx from 'clsx';
 import { NftList } from 'nfts/nftList';
 import { createNft } from 'nfts/nfts';
 import { DisplayMode, type Nft } from 'nfts/types';
 import { usePopupSelector } from 'popup/store/react';
 import { useMemo } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import * as styles from 'ui/components/pages/styles/assets.styl';
 import { SearchInput, TabPanel } from 'ui/components/ui';
-import { getNftsLink } from 'ui/urls';
 
-import { MAX_NFT_ITEMS } from '../../../../../constants';
+import { BLOCKCHAIN_TYPES } from '../../../../../assets/constants';
+import { type MultiWallet } from '../../../../../services/types';
 import { sortAndFilterNfts, useUiState } from './helpers';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
@@ -25,16 +26,72 @@ export function TabNfts() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const userAddress = usePopupSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    state => state.selectedAccount?.address!,
+  const activeAccount = usePopupSelector(state => state.selectedAccount);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
   );
+  const balances = usePopupSelector(state => state.balances);
 
-  const networkCode = usePopupSelector(
-    state => state.selectedAccount?.networkCode,
-  );
+  // Get the correct address based on blockchain type and account type
+  const userAddress = useMemo(() => {
+    if (!activeAccount) {
+      return '';
+    }
 
-  const myNfts = usePopupSelector(state => state.balances[userAddress]?.nfts);
+    const multiAccount = activeAccount as unknown as MultiWallet;
+
+    // For Unit0 blockchain type, use Unit0/Ethereum address
+    if (currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0) {
+      if (activeAccount.type === 'multichain' && multiAccount.coins?.unit0) {
+        const network = currentNetwork?.toLowerCase() || 'mainnet';
+        const unit0NetworkKey = network === 'stagenet' ? 'testnet' : network;
+        const networks = multiAccount.coins.unit0.networks;
+
+        if (unit0NetworkKey === 'mainnet') {
+          return networks.mainnet?.address || '';
+        } else if (unit0NetworkKey === 'testnet') {
+          return networks.testnet?.address || '';
+        }
+      }
+      return activeAccount.address || '';
+    }
+
+    // Waves blockchain type
+    if (activeAccount.type === 'multichain' && multiAccount.coins?.waves) {
+      const network = currentNetwork?.toLowerCase() || 'mainnet';
+      const networks = multiAccount.coins.waves.networks;
+
+      if (network === 'mainnet') {
+        return networks.mainnet?.address || '';
+      } else if (network === 'testnet') {
+        return networks.testnet?.address || '';
+      } else if (network === 'stagenet') {
+        return networks.stagenet?.address || '';
+      } else if (network === 'custom') {
+        return networks.custom?.address || '';
+      }
+    }
+
+    return activeAccount.address || '';
+  }, [activeAccount, currentBlockchainType, currentNetwork]);
+
+  const myNfts = useMemo(() => {
+    if (!userAddress) {
+      return undefined;
+    }
+
+    const key = getBalanceKey(
+      currentBlockchainType,
+      currentNetwork,
+      userAddress,
+    );
+
+    const balanceItem = balances[key] ?? balances[userAddress];
+
+    return balanceItem?.nfts;
+  }, [balances, userAddress, currentBlockchainType, currentNetwork]);
+
   const nfts = usePopupSelector(state => state.nfts);
 
   const [filters, setFilters] = useUiState('nftFilters');
@@ -45,8 +102,8 @@ export function TabNfts() {
 
   const nftConfig = usePopupSelector(state => state.nftConfig);
 
-  const sortedNfts = useMemo(
-    () =>
+  const sortedNfts = useMemo(() => {
+    const result =
       myNfts && nfts
         ? sortAndFilterNfts(
             myNfts.map(nft =>
@@ -59,9 +116,10 @@ export function TabNfts() {
             ),
             { term },
           )
-        : PLACEHOLDERS,
-    [myNfts, nftConfig, nfts, term, userAddress],
-  );
+        : PLACEHOLDERS;
+
+    return result;
+  }, [myNfts, nftConfig, nfts, term, userAddress]);
 
   const [creatorNfts, creatorCounts] = useMemo(
     () =>
@@ -100,19 +158,7 @@ export function TabNfts() {
         <div className={clsx('basic500 center margin-min-top', styles.tabInfo)}>
           {term ? (
             <>
-              <div className="margin-min">
-                {
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-                  myNfts?.length! > MAX_NFT_ITEMS - 1 ? (
-                    <Trans
-                      i18nKey="assets.notFoundMaxNFTs"
-                      values={{ count: MAX_NFT_ITEMS }}
-                    />
-                  ) : (
-                    t('assets.notFoundNFTs')
-                  )
-                }
-              </div>
+              <div className="margin-min">{t('assets.notFoundNFTs')}</div>
               <p className="blue link" onClick={() => setFilters(null)}>
                 {t('assets.resetFilters')}
               </p>
@@ -127,37 +173,12 @@ export function TabNfts() {
           nfts={creatorNfts}
           counters={creatorCounts}
           onClick={asset => {
-            navigate(`/nft-collection/${asset.creator}`);
+            if (currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0) {
+              navigate(`/nft-collection/${asset.id}`);
+            } else {
+              navigate(`/nft-collection/${asset.creator}`);
+            }
           }}
-          renderMore={() =>
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-            myNfts?.length! > MAX_NFT_ITEMS - 1 && (
-              <div className={clsx(styles.nftListMore, 'basic500')}>
-                <div className="margin-min">
-                  {term ? (
-                    <Trans
-                      t={t}
-                      i18nKey="assets.maxFiltersNFTs"
-                      values={{ count: MAX_NFT_ITEMS }}
-                    />
-                  ) : (
-                    t('assets.maxNFTs', {
-                      count: MAX_NFT_ITEMS,
-                    })
-                  )}
-                </div>
-                <a
-                  className="blue link"
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  href={getNftsLink(networkCode!, userAddress)}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  {t('assets.showExplorerNFTs')}
-                </a>
-              </div>
-            )
-          }
         />
       )}
     </TabPanel>

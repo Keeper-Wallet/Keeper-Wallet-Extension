@@ -276,6 +276,8 @@
     "readyAddressBookText": "Вы можете закрыть эту вкладку и продолжить пользоваться расширением.",
     "readyHelpText": "Теперь вы можете закрыть эту вкладку и продолжить использовать расширение или добавить новые аккаунты.",
     "readyToUse": "Ваш аккаунт '{{ name }}' готов к использованию",
+    "readyToUseTestnet": "Ваш аккаунт '{{ name }}' готов к использованию",
+    "testnetHelpText": "Вам необходимо активировать testnet в настройках и переключиться на testnet аккаунт для его использования.",
     "readyToUseAddressBook": "Ваши контакты готовы к использованию",
     "readyToUseKeystore": "Ваши аккаунты готовы к использованию",
     "viaEmail": "Email-аккаунт",
@@ -286,6 +288,9 @@
   "importEmail": {
     "importEmailTitle": "Импорт Email-аккаунта",
     "importEmailDesc": "Подключите Email-аккаунт, созданный на Waves.Exchange",
+    "networkLabel": "Выберите сеть",
+    "mainnet": "Основная сеть",
+    "testnet": "Тестовая сеть",
     "passwordLabel": "Пароль",
     "passwordRequired": "Введите пароль",
     "loginRequired": "Подтвердите Email-аккаунт",

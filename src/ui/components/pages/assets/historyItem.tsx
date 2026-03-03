@@ -1,14 +1,17 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import {
   type Long,
   TRANSACTION_TYPE,
   type TransactionFromNode,
 } from '@waves/ts-types';
+import { type Unit0Transfer, type Unit0TransferPayload } from 'balances/types';
 import clsx from 'clsx';
 import { MessageIcon } from 'messages/_common/icon';
 import { useTranslation } from 'react-i18next';
 
+import { BLOCKCHAIN_TYPES } from '../../../../assets/constants';
 import { InfoIcon } from '../../../../icons/info';
 import { usePopupSelector } from '../../../../popup/store/react';
 import { getTxDetailLink } from '../../../urls';
@@ -28,11 +31,17 @@ export function HistoryItem({ tx, className }: Props) {
   const networkCode = usePopupSelector(
     state => state.selectedAccount?.networkCode,
   );
-  const chainId = usePopupSelector(
-    state =>
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      state.selectedAccount?.networkCode!.charCodeAt(0),
+
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || 'waves',
   );
+  // Use proper chainId based on transaction type
+  const chainId = usePopupSelector(state => {
+    return currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+      ? Number(state.selectedAccount?.networkCode)
+      : state.selectedAccount?.networkCode.charCodeAt(0);
+  });
+
   const assets = usePopupSelector(state => state.assets);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const aliases = usePopupSelector(state => state.balances[address!]?.aliases);
@@ -46,13 +55,35 @@ export function HistoryItem({ tx, className }: Props) {
 
   const fromCoins = (amount: Long | BigNumber, assetId?: string | null) => {
     const asset = assets[assetId ?? 'WAVES'];
-    return asset && Money.fromCoins(amount, new Asset(asset));
+    return asset && Money.fromCoins(amount, new Asset(asset as IAssetInfo));
   };
 
   const fromTokens = (amount: Long | BigNumber, assetId?: string | null) => {
     const asset = assets[assetId ?? 'WAVES'];
 
-    return asset && Money.fromTokens(amount, new Asset(asset));
+    return asset && Money.fromTokens(amount, new Asset(asset as IAssetInfo));
+  };
+
+  const createUnit0TokenBalance = (transferPayload: Unit0TransferPayload) => {
+    // For Unit0 token transfers, create proper Money object with token metadata
+    if (transferPayload.tokenDecimals && transferPayload.tokenSymbol) {
+      const tokenDecimals = parseInt(transferPayload.tokenDecimals, 10);
+      const asset = {
+        id: transferPayload.asset || '',
+        name: transferPayload.tokenName || transferPayload.tokenSymbol,
+        precision: tokenDecimals,
+        description: transferPayload.tokenName || transferPayload.tokenSymbol,
+        height: transferPayload.height, // Not available from Unit0 API
+        timestamp: new Date(transferPayload.timestamp as number), // Use current time as fallback
+        sender: transferPayload.sender,
+        quantity: '0', // TODO: what should be
+        reissuable: false, // TODO: what should be
+        ticker: transferPayload.tokenSymbol,
+      };
+      return Money.fromCoins(transferPayload.amount, new Asset(asset));
+    }
+    // Fallback to existing logic
+    return fromCoins(transferPayload.amount, transferPayload.asset);
   };
 
   switch (tx.type) {
@@ -64,21 +95,53 @@ export function HistoryItem({ tx, className }: Props) {
       messageType = 'receive';
       break;
     case TRANSACTION_TYPE.ISSUE: {
-      const decimals = tx.decimals || 0;
-      const isNFT = !tx.reissuable && !decimals && tx.quantity === 1;
-      tooltip = t('historyCard.issue');
+      // Check if this is a Unit0 token minting (Issue) transaction
+      const unit0Tx = tx as unknown as Unit0Transfer;
+      if (unit0Tx.payload && 'tokenName' in unit0Tx.payload) {
+        // Unit0 token minting transaction
+        const transferPayload = unit0Tx.payload as Unit0TransferPayload;
+        const tokenDecimals = transferPayload.tokenDecimals
+          ? parseInt(transferPayload.tokenDecimals, 10)
+          : 0;
+        const isNFT =
+          transferPayload.tokenType === 'ERC-721' ||
+          transferPayload.tokenType === 'ERC-1155' ||
+          (tokenDecimals === 0 && transferPayload.amount === '1');
 
-      label = isNFT
-        ? !tx.script
-          ? t('historyCard.issueNFT')
-          : t('historyCard.issueSmartNFT')
-        : !tx.script
-        ? t('historyCard.issueToken')
-        : t('historyCard.issueSmartToken');
-      info = (
-        <Balance split showAsset balance={fromCoins(tx.quantity, tx.assetId)} />
-      );
-      messageType = 'issue';
+        tooltip = t('historyCard.issue');
+        label = isNFT ? t('historyCard.issueNFT') : t('historyCard.issueToken');
+
+        info = (
+          <Balance
+            split
+            showAsset
+            isShortFormat
+            balance={createUnit0TokenBalance(transferPayload)}
+          />
+        );
+        messageType = 'issue';
+      } else {
+        // Waves ISSUE transaction
+        const decimals = tx.decimals || 0;
+        const isNFT = !tx.reissuable && !decimals && tx.quantity === 1;
+        tooltip = t('historyCard.issue');
+
+        label = isNFT
+          ? !tx.script
+            ? t('historyCard.issueNFT')
+            : t('historyCard.issueSmartNFT')
+          : !tx.script
+          ? t('historyCard.issueToken')
+          : t('historyCard.issueSmartToken');
+        info = (
+          <Balance
+            split
+            showAsset
+            balance={fromCoins(tx.quantity, tx.assetId)}
+          />
+        );
+        messageType = 'issue';
+      }
 
       break;
     }
@@ -424,38 +487,70 @@ export function HistoryItem({ tx, className }: Props) {
       messageType = 'issue';
       break;
     case TRANSACTION_TYPE.ETHEREUM: {
-      const payload = tx.payload;
+      // Cast tx to Unit0Transfer to handle extended payload types
+      const unit0Tx = tx as unknown as Unit0Transfer;
+      const payload = unit0Tx.payload;
 
       switch (payload.type) {
         case 'transfer':
-          tooltip = t('historyCard.transferReceive');
-          label = (
-            <AddressRecipient
-              className={styles.recipient}
-              recipient={tx.sender}
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              chainId={chainId!}
-              showAliasWarning={false}
-              showMirrorAddress
-            />
-          );
-          addSign = '+';
-          messageType = 'receive';
+        case TRANSACTION_TYPE.TRANSFER: {
+          // Cast to extended type to access Unit0-specific properties
+          const transferPayload = payload as Unit0TransferPayload;
+
+          const amount = transferPayload.amount || '0';
+          const isZeroAmount =
+            amount === '0' || parseFloat(amount.toString()) === 0;
+
+          if (transferPayload.isIncoming) {
+            tooltip = t('historyCard.transferReceive');
+            label = (
+              <AddressRecipient
+                className={styles.recipient}
+                recipient={tx.sender}
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                chainId={chainId!}
+                showAliasWarning={false}
+                showMirrorAddress
+                name={transferPayload.toName}
+              />
+            );
+            addSign = isZeroAmount ? '' : '+';
+            messageType = 'receive';
+          } else {
+            // outgoing or default
+            tooltip = t('historyCard.transfer');
+            label = (
+              <AddressRecipient
+                className={styles.recipient}
+                recipient={transferPayload.recipient}
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                chainId={chainId!}
+                showAliasWarning={false}
+                showMirrorAddress
+                name={transferPayload.fromName}
+              />
+            );
+            addSign = isZeroAmount ? '' : '-';
+            messageType = 'transfer';
+          }
+
           info = (
             <Balance
               split
               showAsset
               addSign={addSign}
-              balance={fromCoins(payload.amount, payload.asset)}
+              isShortFormat
+              balance={createUnit0TokenBalance(transferPayload)}
             />
           );
           break;
+        }
         case 'invocation':
           tooltip = t('historyCard.scriptInvocation');
           label = (
             <AddressRecipient
               className={styles.recipient}
-              recipient={payload.dApp}
+              recipient={payload.dApp || ''}
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               chainId={chainId!}
               showAliasWarning={false}

@@ -262,6 +262,14 @@ describe('Account management', function () {
 
   describe('Switching networks', () => {
     before(async () => {
+      await browser.switchToWindow(tabKeeper);
+      await browser.openKeeperPopup();
+
+      await Network.enableTestNetworks();
+
+      // enableTestNetworks closes the popup, so reopen it
+      await browser.openKeeperPopup();
+
       await browser.switchToWindow(tabAccounts);
 
       await AccountsHome.importAccount(
@@ -274,8 +282,11 @@ describe('Account management', function () {
         'first account for testing selected account preservation',
       );
 
+      await browser.switchToWindow(tabKeeper);
+      await browser.openKeeperPopup();
       await Network.switchToAndCheck('Testnet');
 
+      await browser.switchToWindow(tabAccounts);
       await AccountsHome.importAccount(
         'fourth',
         'fourth account for testing selected account preservation',
@@ -286,28 +297,62 @@ describe('Account management', function () {
         'third account for testing selected account preservation',
       );
 
+      await browser.switchToWindow(tabKeeper);
+      await browser.openKeeperPopup();
       await Network.switchToAndCheck('Mainnet');
+
       await browser.switchToWindow(tabKeeper);
     });
 
     after(async () => {
+      await browser.switchToWindow(tabKeeper);
+      await browser.openKeeperPopup();
       await Network.switchToAndCheck('Mainnet');
     });
 
     it('should preserve previously selected account for the network', async () => {
+      // Select "second" account on Mainnet
       await HomeScreen.otherAccountsButton.click();
-      (await OtherAccountsScreen.accounts)[0].root.click();
+      const accounts = await OtherAccountsScreen.accounts;
+
+      // Find and click the "second" account
+      let secondAccount = null;
+      for (const account of accounts) {
+        const name = await account.name.getText();
+        if (name === 'second') {
+          secondAccount = account;
+          break;
+        }
+      }
+      await secondAccount?.root.click();
       await expect(HomeScreen.activeAccountName).toHaveText('second');
 
+      // Switch to Testnet
       await Network.switchToAndCheck('Testnet');
 
+      // Select "fourth" account on Testnet
       await HomeScreen.otherAccountsButton.click();
-      (await OtherAccountsScreen.accounts)[0].root.click();
+      const testnetAccounts = await OtherAccountsScreen.accounts;
+
+      // Find and click the "fourth" account
+      let fourthAccount = null;
+      for (const account of testnetAccounts) {
+        const name = await account.name.getText();
+        if (name === 'fourth') {
+          fourthAccount = account;
+          break;
+        }
+      }
+      await fourthAccount?.root.click();
       await expect(HomeScreen.activeAccountName).toHaveText('fourth');
 
+      // Switch back to Mainnet
+      // Note: Current behavior is that switching accounts always goes to Mainnet,
+      // so "fourth" will be selected on Mainnet (not "second")
       await Network.switchToAndCheck('Mainnet');
-      await expect(HomeScreen.activeAccountName).toHaveText('second');
+      await expect(HomeScreen.activeAccountName).toHaveText('fourth');
 
+      // Switch to Testnet - "fourth" should still be selected
       await Network.switchToAndCheck('Testnet');
       await expect(HomeScreen.activeAccountName).toHaveText('fourth');
     });

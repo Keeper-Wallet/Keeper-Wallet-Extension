@@ -58,17 +58,27 @@ export const mochaHooks = () => ({
             args: [
               '--load-extension=/app/dist/chrome',
               '--disable-web-security',
+              // Performance optimizations
+              '--disable-background-timer-throttling',
+              '--disable-backgrounding-occluded-windows',
+              '--disable-renderer-backgrounding',
+              '--disable-features=TranslateUI',
+              '--disable-ipc-flooding-protection',
+              '--no-first-run',
+              '--no-default-browser-check',
             ],
           },
           pageLoadStrategy: 'eager',
         },
         path: '/wd/hub',
-        waitforTimeout: 15 * 1000,
+        waitforTimeout: 30 * 1000,
+        connectionRetryTimeout: 120 * 1000,
+        connectionRetryCount: 3,
       }),
     });
 
     configure({
-      asyncUtilTimeout: 15 * 1000,
+      asyncUtilTimeout: 30 * 1000,
     });
 
     setupBrowser(browser);
@@ -76,19 +86,40 @@ export const mochaHooks = () => ({
     global.$ = browser.$.bind(browser);
     global.$$ = browser.$$.bind(browser);
 
-    await browser.navigateTo('chrome://system');
+    // Navigate to chrome://extensions to find the extension ID
+    await browser.navigateTo('chrome://extensions');
 
-    let keeperExtensionId: string | undefined;
-
-    const extensionsValue = await $('#div-extensions-value').getText();
-    for (const ext of extensionsValue.split('\n')) {
-      const [id, name] = ext.split(' : ');
-
-      if (name.toLowerCase() === 'keeper wallet') {
-        keeperExtensionId = id;
-        break;
+    // Enable developer mode if not already enabled
+    await browser.execute(() => {
+      const devModeToggle = document
+        .querySelector('extensions-manager')
+        ?.shadowRoot?.querySelector('extensions-toolbar')
+        ?.shadowRoot?.querySelector('#devMode');
+      if (devModeToggle && !(devModeToggle as HTMLInputElement).checked) {
+        (devModeToggle as HTMLElement).click();
       }
-    }
+    });
+
+    await browser.pause(500);
+
+    // Get extension ID from the extensions page
+    const keeperExtensionId = await browser.execute(() => {
+      const extensionsManager = document.querySelector('extensions-manager');
+      const itemsList = extensionsManager?.shadowRoot?.querySelector(
+        'extensions-item-list',
+      );
+      const items = itemsList?.shadowRoot?.querySelectorAll('extensions-item');
+
+      if (!items) return undefined;
+
+      for (const item of Array.from(items)) {
+        const nameEl = item.shadowRoot?.querySelector('#name');
+        if (nameEl?.textContent?.toLowerCase().includes('keeper wallet')) {
+          return item.getAttribute('id');
+        }
+      }
+      return undefined;
+    });
 
     if (!keeperExtensionId) {
       throw new Error('Could not find Keeper Wallet extension id');

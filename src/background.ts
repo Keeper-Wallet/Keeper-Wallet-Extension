@@ -4,7 +4,7 @@ import {
   verifySignature,
 } from '@keeper-wallet/waves-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { collectBalances } from 'balances/utils';
+import { collectBalances, getBalanceKey } from 'balances/utils';
 import EventEmitter from 'events';
 import { deepEqual } from 'fast-equals';
 import { getExtraFee } from 'fee/utils';
@@ -27,7 +27,7 @@ import {
 } from 'messages/types';
 import { makeCustomDataBytes, makeTxBytes } from 'messages/utils';
 import { nanoid } from 'nanoid';
-import { type NetworkName } from 'networks/types';
+import { NetworkName } from 'networks/types';
 import { PERMISSIONS } from 'permissions/constants';
 import { type PermissionObject } from 'permissions/types';
 import { type IdleOptions, type PreferencesAccount } from 'preferences/types';
@@ -53,11 +53,13 @@ import {
 import { fromWebExtensionEvent } from './_core/wonka';
 import { type IgnoreErrorsContext } from './constants';
 import { AddressBookController } from './controllers/AddressBookController';
+import { Unit0Api } from './controllers/api/unit0Api';
 import { AssetInfoController } from './controllers/assetInfo';
 import { CurrentAccountController } from './controllers/currentAccount';
 import { IdentityController } from './controllers/IdentityController';
 import { IdleController } from './controllers/idle';
 import { MessageController } from './controllers/message';
+import { MultiWalletController } from './controllers/MultiWalletController';
 import { NetworkController } from './controllers/network';
 import { NftInfoController } from './controllers/NftInfoController';
 import { NotificationsController } from './controllers/notifications';
@@ -73,6 +75,7 @@ import { UiStateController } from './controllers/uiState';
 import { VaultController } from './controllers/VaultController';
 import { WalletController } from './controllers/wallet';
 import { WindowManager } from './lib/windowManager';
+import { type MultiWallet } from './services/types';
 import {
   backupStorage,
   createExtensionStorage,
@@ -215,6 +218,7 @@ class BackgroundService extends EventEmitter {
   identityController;
   idleController;
   messageController;
+  multiWalletController;
   networkController;
   nftInfoController;
   notificationsController;
@@ -224,6 +228,7 @@ class BackgroundService extends EventEmitter {
   statisticsController;
   trash;
   uiStateController;
+  unit0Api;
   vaultController;
   walletController;
 
@@ -237,6 +242,9 @@ class BackgroundService extends EventEmitter {
     super();
 
     this.extensionStorage = extensionStorage;
+
+    // Unit0 API
+    this.unit0Api = new Unit0Api();
 
     // Controllers
     this.trash = new TrashController({
@@ -269,6 +277,51 @@ class BackgroundService extends EventEmitter {
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController,
       ),
+      getCurrentBlockchainType:
+        this.networkController.getCurrentBlockchainType.bind(
+          this.networkController,
+        ),
+    });
+
+    // AssetInfo. Provides information about assets
+    this.assetInfoController = new AssetInfoController({
+      extensionStorage: this.extensionStorage,
+      getNetwork: this.networkController.getNetwork.bind(
+        this.networkController,
+      ),
+      getNode: this.networkController.getNode.bind(this.networkController),
+      remoteConfig: this.remoteConfigController,
+    });
+
+    // MultiWallet. Manages wallet groups across networks
+    this.multiWalletController = new MultiWalletController({
+      extensionStorage: this.extensionStorage,
+      getAccounts: this.preferencesController.getAccounts.bind(
+        this.preferencesController,
+      ),
+      assetInfoController: this.assetInfoController,
+      ledgerApi: {
+        signOrder: data =>
+          this.ledgerSign('order', {
+            ...data,
+            dataBuffer: Array.from(data.dataBuffer),
+          }),
+        signRequest: data =>
+          this.ledgerSign('request', {
+            ...data,
+            dataBuffer: Array.from(data.dataBuffer),
+          }),
+        signSomeData: data =>
+          this.ledgerSign('someData', {
+            ...data,
+            dataBuffer: Array.from(data.dataBuffer),
+          }),
+        signTransaction: data =>
+          this.ledgerSign('transaction', {
+            ...data,
+            dataBuffer: Array.from(data.dataBuffer),
+          }),
+      },
     });
 
     // On network change
@@ -295,6 +348,9 @@ class BackgroundService extends EventEmitter {
         this.remoteConfigController,
       ),
     });
+
+    // Provide IdentityApi to MultiWalletController for WX wallet support
+    this.multiWalletController.setIdentityApi(this.identityController);
 
     // Wallet. Wallet creation, app locking, signing method
     this.walletController = new WalletController({
@@ -332,14 +388,16 @@ class BackgroundService extends EventEmitter {
 
     this.vaultController = new VaultController({
       extensionStorage: this.extensionStorage,
-      wallet: this.walletController,
+      wallet: this.multiWalletController,
+      oldWallet: this.walletController,
       identity: this.identityController,
     });
 
+    // In background.ts
     this.vaultController.store.subscribe(state => {
       if (!state.locked || !state.initialized) {
-        const accounts = this.walletController.getAccounts();
-        this.preferencesController.syncAccounts(accounts);
+        const multiWallets = this.multiWalletController.getMultiWallets();
+        this.preferencesController.syncAccounts(multiWallets);
       }
     });
 
@@ -349,7 +407,22 @@ class BackgroundService extends EventEmitter {
       this.currentAccountController.updateCurrentAccountBalance();
     });
 
-    this.walletController
+    // Listen for MultiWallet changes
+    this.multiWalletController.on('multiWalletsChanged', multiWallets => {
+      // Update preferences with processed accounts
+      this.preferencesController.syncAccounts(multiWallets);
+
+      if (this.currentAccountController) {
+        this.currentAccountController.updateCurrentAccountBalance();
+      }
+    });
+    // Listen for MultiWallet changes
+    this.multiWalletController.on('saveAccounts', multiWallets => {
+      // Update preferences with processed accounts
+      this.preferencesController.saveAccounts(multiWallets);
+    });
+
+    this.multiWalletController
       .on('addWallet', wallet => {
         if (wallet.getAccount().type === 'wx') {
           // persist current session to storage
@@ -366,16 +439,6 @@ class BackgroundService extends EventEmitter {
       this.currentAccountController.updateCurrentAccountBalance(),
     );
 
-    // AssetInfo. Provides information about assets
-    this.assetInfoController = new AssetInfoController({
-      extensionStorage: this.extensionStorage,
-      getNetwork: this.networkController.getNetwork.bind(
-        this.networkController,
-      ),
-      getNode: this.networkController.getNode.bind(this.networkController),
-      remoteConfig: this.remoteConfigController,
-    });
-
     this.nftInfoController = new NftInfoController({
       extensionStorage: this.extensionStorage,
       getNetwork: this.networkController.getNetwork.bind(
@@ -387,19 +450,22 @@ class BackgroundService extends EventEmitter {
     // Balance. Polls balances for accounts
     this.currentAccountController = new CurrentAccountController({
       extensionStorage: this.extensionStorage,
+      assetInfoController: this.assetInfoController,
+      nftInfoController: this.nftInfoController,
+      getAccounts: this.preferencesController.getAccounts.bind(
+        this.preferencesController,
+      ),
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController,
       ),
       getNode: this.networkController.getNode.bind(this.networkController),
-      getAccounts: this.preferencesController.getAccounts.bind(
-        this.preferencesController,
-      ),
       getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
         this.preferencesController,
       ),
       isLocked: this.vaultController.isLocked.bind(this.vaultController),
-      assetInfoController: this.assetInfoController,
-      nftInfoController: this.nftInfoController,
+      getBlockchainType: this.networkController.getCurrentBlockchainType.bind(
+        this.networkController,
+      ),
     });
 
     this.addressBookController = new AddressBookController({
@@ -420,7 +486,7 @@ class BackgroundService extends EventEmitter {
         this.currentAccountController,
       ),
       remoteConfigController: this.remoteConfigController,
-      walletController: this.walletController,
+      multiWalletController: this.multiWalletController,
     });
 
     // Notifications
@@ -468,13 +534,49 @@ class BackgroundService extends EventEmitter {
       // preferences
       setCurrentLocale: async (key: string) =>
         this.preferencesController.setCurrentLocale(key),
-      selectAccount: async (address: string, network: NetworkName) =>
-        this.preferencesController.selectAccount(address, network),
+      selectAccount: async (address: string, network: NetworkName) => {
+        this.preferencesController.selectAccount(address, network);
+
+        // Also update lastUsed in MultiWalletController
+        const wallet = this.#findWalletByAddress(address);
+        if (wallet) {
+          await this.multiWalletController.updateWalletLastUsed(wallet.id);
+        }
+      },
       editWalletName: async (
         address: string,
         name: string,
         network: NetworkName,
-      ) => this.preferencesController.addLabel(address, name, network),
+      ) => {
+        const wallets = this.multiWalletController.getMultiWallets();
+        const wallet = wallets.find(w => {
+          // Check Waves networks
+          const wavesNetworks = w.coins?.waves?.networks;
+          if (wavesNetworks) {
+            const hasWavesAddress = Object.values(wavesNetworks).some(
+              net => net?.address === address,
+            );
+            if (hasWavesAddress) return true;
+          }
+
+          // Check Unit0 networks
+          const unit0Networks = w.coins?.unit0?.networks;
+          if (unit0Networks) {
+            const hasUnit0Address = Object.values(unit0Networks).some(
+              net => net?.address === address,
+            );
+            if (hasUnit0Address) return true;
+          }
+
+          return false;
+        });
+
+        if (wallet) {
+          await this.multiWalletController.updateWalletName(wallet.id, name);
+        } else {
+          await this.preferencesController.addLabel(address, name, network);
+        }
+      },
 
       // ui state
       setUiState: async (state: UiState) =>
@@ -486,8 +588,29 @@ class BackgroundService extends EventEmitter {
         this.walletController,
       ),
 
-      removeWallet: this.walletController.removeWallet.bind(
-        this.walletController,
+      removeWallet: this.multiWalletController.removeWallet.bind(
+        this.multiWalletController,
+      ),
+
+      // TODO: need to use for future multi-wallet actions
+      addMultiWallet: async (multiWallet: MultiWallet) => {
+        return Promise.resolve(
+          this.multiWalletController.addMultiWallet(multiWallet),
+        );
+      },
+      getMultiWallets: async () => {
+        return Promise.resolve(this.multiWalletController.getMultiWallets());
+      },
+      findMultiWalletByAccount: async (
+        address: string,
+        network: NetworkName,
+      ) => {
+        return Promise.resolve(
+          this.multiWalletController.findMultiWalletByAccount(address, network),
+        );
+      },
+      getDecryptedVault: this.multiWalletController.getDecryptedVault.bind(
+        this.multiWalletController,
       ),
 
       lock: async () => this.vaultController.lock(),
@@ -509,17 +632,18 @@ class BackgroundService extends EventEmitter {
         this.walletController,
       ),
 
-      getAccountSeed: this.walletController.getAccountSeed.bind(
-        this.walletController,
+      getAccountSeed: this.multiWalletController.getAccountSeed.bind(
+        this.multiWalletController,
       ),
 
       getAccountEncodedSeed: this.walletController.getAccountEncodedSeed.bind(
         this.walletController,
       ),
 
-      getAccountPrivateKey: this.walletController.getAccountPrivateKey.bind(
-        this.walletController,
-      ),
+      getAccountPrivateKey:
+        this.multiWalletController.getAccountPrivateKey.bind(
+          this.multiWalletController,
+        ),
 
       // messages
       getMessageById: async (id: string) =>
@@ -580,11 +704,34 @@ class BackgroundService extends EventEmitter {
       // network
       setNetwork: async (network: NetworkName) =>
         this.networkController.setNetwork(network),
-      setCustomNode: async (url: string | null, network: NetworkName) =>
-        this.networkController.setCustomNode(url, network),
+
+      setHideTestAccounts: async (statusOfShow: boolean) =>
+        this.networkController.setHideTestAccounts(statusOfShow),
+      getHideTestAccounts: async () =>
+        this.networkController.getHideTestAccounts(),
+
+      setCurrentBlockchainType: async (blockchainType: string) =>
+        this.networkController.setCurrentBlockchainType(blockchainType),
+
+      setCustomNode: async (url: string | null, network: NetworkName) => {
+        await this.networkController.setCustomNode(url, network);
+
+        // If this is custom network and url is not null, update all accounts
+        if (network === NetworkName.Custom && url) {
+          await this.updateAccountsWithCustomNetwork();
+        }
+      },
       setCustomCode: async (code: string | null, network: NetworkName) => {
+        const oldCode = this.networkController.getCustomCodes()[network];
+
         await this.walletController.updateNetworkCode(network, code);
         this.networkController.setCustomCode(code, network);
+
+        // If custom network code changed, regenerate addresses
+        if (network === NetworkName.Custom && code && code !== oldCode) {
+          await this.regenerateCustomNetworkAddresses(code);
+        }
+
         this.currentAccountController.restartPolling();
       },
       setCustomMatcher: async (url: string | null, network: NetworkName) =>
@@ -599,6 +746,10 @@ class BackgroundService extends EventEmitter {
       ),
       updateUsdPricesByAssetIds:
         this.assetInfoController.updateUsdPricesByAssetIds.bind(
+          this.assetInfoController,
+        ),
+      updateUnit0UsdPricesByIds:
+        this.assetInfoController.updateUnit0UsdPricesByIds.bind(
           this.assetInfoController,
         ),
       toggleAssetFavorite: this.assetInfoController.toggleAssetFavorite.bind(
@@ -699,14 +850,40 @@ class BackgroundService extends EventEmitter {
         await this.messageController.getMessageResult(message.id);
       },
       signTransaction: async (account: PreferencesAccount, tx: MessageTx) => {
-        const signature = await this.walletController
-          .getWallet(account.address, account.network)
-          .signTx(makeTxBytes(tx), tx);
+        const wallet = await this.multiWalletController.getWalletForSigning(
+          account.address,
+          account.network,
+        );
+        const signature = await wallet.signTx(makeTxBytes(tx), tx);
 
         return base58Encode(signature);
       },
       broadcastTransaction: (tx: MessageTx) =>
         this.networkController.broadcastTransaction(tx),
+
+      signAndPublishUnit0Transaction: async (
+        data: MessageInputOfType<'unit0Transaction'>['data'],
+        options?: MessageInputOfType<'unit0Transaction'>['options'],
+      ) => {
+        const { selectedAccount } = this.extensionStorage.getState([
+          'selectedAccount',
+        ]);
+
+        if (!selectedAccount) {
+          throw ERRORS.EMPTY_KEEPER();
+        }
+
+        const message = await this.messageController.newMessage({
+          account: selectedAccount,
+          broadcast: true,
+          data,
+          options,
+          type: 'unit0Transaction',
+        });
+
+        // Wait for user approval via Unit0TransactionScreen
+        await this.messageController.getMessageResult(message.id);
+      },
       getExtraFee: (address: string, network: NetworkName) =>
         getExtraFee(address, this.networkController.getNode(network)),
 
@@ -715,8 +892,11 @@ class BackgroundService extends EventEmitter {
         message: string,
       ) => this.remoteConfigController.shouldIgnoreError(context, message),
 
-      identitySignIn: async (username: string, password: string) =>
-        this.identityController.signIn(username, password),
+      identitySignIn: async (
+        username: string,
+        password: string,
+        network?: NetworkName,
+      ) => this.identityController.signIn(username, password, network),
       identityConfirmSignIn: async (code: string) =>
         this.identityController.confirmSignIn(code),
       identityUser: async () => this.identityController.getIdentityUser(),
@@ -738,6 +918,11 @@ class BackgroundService extends EventEmitter {
           err ? new Error(err) : null,
           signature,
         );
+      },
+      syncAccountsFromMultiWallets: async () => {
+        const multiWallets = this.multiWalletController.getMultiWallets();
+        this.preferencesController.syncAccounts(multiWallets);
+        return Promise.resolve();
       },
     };
   }
@@ -1165,87 +1350,24 @@ class BackgroundService extends EventEmitter {
           PERMISSIONS.REJECTED,
         );
       },
-
-      getKEK: async (publicKey: string, prefix: string) => {
-        const { selectedAccount } = await this.validatePermission(
-          origin,
-          connectionId,
-        );
-
-        if (!prefix || typeof prefix !== 'string') {
-          throw ERRORS.INVALID_FORMAT(undefined, 'prefix is invalid');
-        }
-
-        if (!publicKey || typeof publicKey !== 'string') {
-          throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
-        }
-
-        const wallet = this.walletController.getWallet(
-          selectedAccount.address,
-          selectedAccount.network,
-        );
-
-        const sharedKey = await wallet.createSharedKey(publicKey, prefix);
-
-        return base58Encode(sharedKey);
-      },
-
-      encryptMessage: async (
-        message: string,
-        publicKey: string,
-        prefix: string,
-      ) => {
-        const { selectedAccount } = await this.validatePermission(
-          origin,
-          connectionId,
-        );
-
-        if (!message || typeof message !== 'string') {
-          throw ERRORS.INVALID_FORMAT(undefined, 'message is invalid');
-        }
-
-        if (!publicKey || typeof publicKey !== 'string') {
-          throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
-        }
-
-        const wallet = this.walletController.getWallet(
-          selectedAccount.address,
-          selectedAccount.network,
-        );
-
-        return wallet.encryptMessage(message, publicKey, prefix);
-      },
-
-      decryptMessage: async (
-        message: string,
-        publicKey: string,
-        prefix: string,
-      ) => {
-        const { selectedAccount } = await this.validatePermission(
-          origin,
-          connectionId,
-        );
-
-        if (!message || typeof message !== 'string') {
-          throw ERRORS.INVALID_FORMAT(undefined, 'message is invalid');
-        }
-
-        if (!publicKey || typeof publicKey !== 'string') {
-          throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
-        }
-
-        const wallet = this.walletController.getWallet(
-          selectedAccount.address,
-          selectedAccount.network,
-        );
-
-        return wallet.decryptMessage(message, publicKey, prefix);
-      },
       subscribeToPublicState: async () => {
+        // Send initial state immediately
+        if (
+          this.preferencesController.getSelectedAccount() != null &&
+          this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED)
+        ) {
+          const initialState = await this.getPublicState(origin, connectionId);
+          port?.postMessage({
+            event: 'updatePublicState',
+            publicState: initialState,
+          });
+        }
+
+        // Subscribe to future updates
         pipe(
           publicStateUpdates,
           subscribe(publicState => {
-            port.postMessage({ event: 'updatePublicState', publicState });
+            port?.postMessage({ event: 'updatePublicState', publicState });
           }),
         );
       },
@@ -1286,10 +1408,25 @@ class BackgroundService extends EventEmitter {
 
     const state = this.extensionStorage.getState();
 
+    const balances = collectBalances(state);
+
+    const currentNetwork = this.networkController.getNetwork();
+    const currentBlockchainType =
+      this.networkController.getCurrentBlockchainType();
+
+    const balanceKey = getBalanceKey(
+      currentBlockchainType,
+      currentNetwork,
+      selectedAccount.address,
+    );
+
+    const accountBalance =
+      balances[balanceKey] ?? balances[selectedAccount.address] ?? 0;
+
     return {
       account: {
         ...selectedAccount,
-        balance: collectBalances(state)[selectedAccount.address] || 0,
+        balance: accountBalance,
       },
       initialized: state.initialized,
       locked: state.locked,
@@ -1305,9 +1442,17 @@ class BackgroundService extends EventEmitter {
           uid: message.ext_uuid,
         })),
       network: {
-        code: this.networkController.getNetworkCode(),
-        matcher: this.networkController.getMatcher(),
-        server: this.networkController.getNode(),
+        // Use account's network code instead of selected network code
+        code: selectedAccount.networkCode,
+        // For Unit0 accounts, use Unit0 RPC; for Waves accounts, use Waves node/matcher
+        matcher:
+          selectedAccount.coinType === 'unit0'
+            ? ''
+            : this.networkController.getMatcher(),
+        server:
+          selectedAccount.coinType === 'unit0'
+            ? this.unit0Api.getRpcUrl(currentNetwork)
+            : this.networkController.getNode(),
       },
       txVersion: getTxVersions(selectedAccount ? selectedAccount.type : 'seed'),
       version: Browser.runtime.getManifest().version,
@@ -1349,6 +1494,87 @@ class BackgroundService extends EventEmitter {
       }),
       publish,
     );
+  }
+
+  /**
+   * Update all existing accounts with custom network addresses
+   * Called when user configures a custom node
+   */
+  async updateAccountsWithCustomNetwork() {
+    // Check if vault is locked
+    const { locked } = this.extensionStorage.getState(['locked']);
+    if (locked) {
+      return;
+    }
+
+    const { customCodes } = this.networkController.store.getState();
+    const networkCode = customCodes?.custom;
+
+    // Update wallets in MultiWalletController's internal array
+    const updated =
+      networkCode &&
+      (await this.multiWalletController.updateWalletsWithCustomNetwork(
+        networkCode,
+      ));
+
+    if (updated) {
+      // Emit event to sync accounts to preferences (with sanitized data)
+      const sanitizedAccounts = this.multiWalletController.getMultiWallets();
+      this.multiWalletController.emit('saveAccounts', sanitizedAccounts);
+    }
+  }
+
+  /**
+   * Regenerate custom network addresses when network code changes
+   * Called when user changes the custom network code in settings
+   */
+  async regenerateCustomNetworkAddresses(newNetworkCode: string) {
+    // Check if vault is locked
+    const { locked } = this.extensionStorage.getState(['locked']);
+    if (locked) {
+      return;
+    }
+
+    // Regenerate addresses in MultiWalletController's internal array
+    const updated =
+      await this.multiWalletController.regenerateCustomNetworkAddresses(
+        newNetworkCode,
+      );
+
+    if (updated) {
+      // Emit event to sync accounts to preferences (with sanitized data)
+      const sanitizedAccounts = this.multiWalletController.getMultiWallets();
+      this.multiWalletController.emit('saveAccounts', sanitizedAccounts);
+    }
+  }
+
+  /**
+   * Find a wallet by address across all networks and blockchains
+   */
+  #findWalletByAddress(address: string) {
+    const wallets = this.multiWalletController.getMultiWallets();
+    return wallets.find(w => {
+      const wavesNetworks = w.coins?.waves?.networks;
+      const unit0Networks = w.coins?.unit0?.networks;
+
+      if (wavesNetworks) {
+        if (
+          Object.values(wavesNetworks).some(net => net?.address === address)
+        ) {
+          return true;
+        }
+      }
+
+      if (unit0Networks) {
+        if (
+          Object.values(unit0Networks).some(net => net?.address === address)
+        ) {
+          return true;
+        }
+      }
+
+      return false;
+    });
   }
 
   ledgerSign(type: string, data: unknown) {

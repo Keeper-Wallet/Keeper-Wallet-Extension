@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import Background from 'ui/services/Background';
 
+import { BLOCKCHAIN_TYPES } from '../../../../assets/constants';
 import { usePopupSelector } from '../../../../popup/store/react';
 import { Balance, Loader } from '../../ui';
 import { Tooltip } from '../../ui/tooltip';
@@ -29,9 +30,15 @@ export function AssetItem({
   onSendClick,
   onSwapClick,
 }: Props) {
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+  );
+  const isUnit0Assets = currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0;
   const { t } = useTranslation();
   const assets = usePopupSelector(state => state.assets);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
+
+  // Assets are stored flat at root level, not nested by network
   const asset = assets[assetId];
 
   const displayName = asset?.displayName;
@@ -99,7 +106,7 @@ export function AssetItem({
 
       {!isLoading && (
         <MoreActions>
-          {assetId !== 'WAVES' && (
+          {assetId !== 'WAVES' && !isUnit0Assets && (
             <Tooltip content={t('assetInfo.infoTooltip')}>
               {props => (
                 <button
@@ -149,7 +156,6 @@ export function AssetItem({
               </button>
             )}
           </Tooltip>
-
           <Tooltip content={t('assetInfo.sendAssetTooltip')}>
             {props => (
               <button
@@ -171,7 +177,7 @@ export function AssetItem({
             )}
           </Tooltip>
 
-          {currentNetwork === 'mainnet' && isSwappable && (
+          {currentNetwork === 'mainnet' && isSwappable && !isUnit0Assets && (
             <Tooltip content={t('assetInfo.swapAssetTooltip')}>
               {props => (
                 <button

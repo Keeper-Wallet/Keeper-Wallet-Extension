@@ -3,26 +3,40 @@ import { NetworkName } from 'networks/types';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { usePopupSelector } from '../../../../popup/store/react';
-import { Button, ErrorMessage, Input } from '../../ui';
+import { Button, ErrorMessage, Input, Select } from '../../ui';
 import * as styles from './importEmail.module.css';
 
 const baseByNetwork: Partial<Record<NetworkName, string>> = {
-  [NetworkName.Mainnet]: 'https://waves.exchange',
-  [NetworkName.Testnet]: 'https://testnet.waves.exchange',
+  [NetworkName.Mainnet]: 'https://wx.network',
+  [NetworkName.Testnet]: 'https://testnet.wx.network',
 };
 
 interface Props {
   className?: string;
   userData: { username: string; password: string } | undefined;
-  signIn: (username: string, password: string) => void;
+  signIn: (username: string, password: string, network: NetworkName) => void;
 }
 
 export function SignInForm({ className, userData, signIn }: Props) {
   const { t } = useTranslation();
-  const networkId = usePopupSelector(state => state.currentNetwork);
 
   const [pending, setPending] = useState<boolean>(false);
+  const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>(
+    NetworkName.Mainnet,
+  );
+
+  const networkOptions = [
+    {
+      id: NetworkName.Mainnet,
+      text: t('importEmail.mainnet') || 'Mainnet',
+      value: NetworkName.Mainnet,
+    },
+    {
+      id: NetworkName.Testnet,
+      text: t('importEmail.testnet') || 'Testnet',
+      value: NetworkName.Testnet,
+    },
+  ];
   const [errors, setErrors] = useState<Record<string, string | null>>({
     _form: null,
     emailRequired: null,
@@ -82,7 +96,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
       setPending(true);
 
       try {
-        await signIn(email, password);
+        await signIn(email, password, selectedNetwork);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         let errMessage = err?.message;
@@ -109,11 +123,21 @@ export function SignInForm({ className, userData, signIn }: Props) {
         setPending(false);
       }
     },
-    [email, password, signIn, t],
+    [email, password, selectedNetwork, signIn, t],
   );
 
   return (
     <form className={className} onSubmit={handleSubmit}>
+      <div className="margin1">
+        <Select
+          description={t('importEmail.networkLabel') || 'Network'}
+          selectList={networkOptions}
+          selected={selectedNetwork}
+          onSelectItem={(id, value) => setSelectedNetwork(value)}
+          fill
+        />
+      </div>
+
       <div className="margin1">
         <div className="tag1 basic500 input-title">
           {t('importEmail.emailLabel')}
@@ -179,7 +203,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
         <a
           rel="noopener noreferrer"
           className="margin1 link blue"
-          href={`${baseByNetwork[networkId]}/sign-in/email`}
+          href={`${baseByNetwork[selectedNetwork]}/sign-in/email`}
           target="_blank"
         >
           {t('importEmail.forgotPassword')}
@@ -192,7 +216,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
             <a
               rel="noopener noreferrer"
               className="link blue"
-              href={`${baseByNetwork[networkId]}/sign-up/email`}
+              href={`${baseByNetwork[selectedNetwork]}/sign-up/email`}
               target="_blank"
             >
               {t('importEmail.signUp')}

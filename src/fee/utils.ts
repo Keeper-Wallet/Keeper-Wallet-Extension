@@ -1,5 +1,6 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import type { AssetDetail, AssetsRecord } from 'assets/types';
 import type { AssetBalance, BalancesItem } from 'balances/types';
@@ -71,7 +72,10 @@ export function getFeeOptions({
   txType: MessageTx['type'];
   usdPrices: Partial<Record<string, string>>;
 }) {
-  const feeInWaves = convertFeeToAsset(initialFee, new Asset(assets.WAVES));
+  const feeInWaves = convertFeeToAsset(
+    initialFee,
+    new Asset(assets.WAVES as IAssetInfo),
+  );
 
   if (
     txType !== TRANSACTION_TYPE.TRANSFER &&
@@ -92,7 +96,7 @@ export function getFeeOptions({
     .map(
       ({ asset, assetBalance }): FeeOption => ({
         assetBalance,
-        money: convertFeeToAsset(initialFee, new Asset(asset)),
+        money: convertFeeToAsset(initialFee, new Asset(asset as IAssetInfo)),
       }),
     )
     .filter(
@@ -161,13 +165,13 @@ export function getSpendingAmountsForSponsorableTx({
     case TRANSACTION_TYPE.TRANSFER: {
       const asset = assets[messageTx.assetId ?? 'WAVES'];
       invariant(asset);
-      return [new Money(messageTx.amount, new Asset(asset))];
+      return [new Money(messageTx.amount, new Asset(asset as IAssetInfo))];
     }
     case TRANSACTION_TYPE.INVOKE_SCRIPT:
       return messageTx.payment.map(({ amount, assetId }) => {
         const asset = assets[assetId ?? 'WAVES'];
         invariant(asset);
-        return new Money(amount, new Asset(asset));
+        return new Money(amount, new Asset(asset as IAssetInfo));
       });
     default:
       return [];

@@ -1,0 +1,13 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="12"
+  height="12"
+  viewBox="0 0 12 12"
+  fill="none"
+>
+  <circle cx="6" cy="6" r="6" fill="black" />
+  <path
+    d="M4.93359 6.00195H7.4668V8.53516H2.40039V3.46875H4.93359V6.00195ZM10 6.00195H7.4668V3.46875H10V6.00195Z"
+    fill="#9FE0C1"
+  />
+</svg>

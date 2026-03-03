@@ -1,5 +1,9 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
+import { BLOCKCHAIN_TYPES } from 'assets/constants';
+import { getBalanceKey } from 'balances/utils';
+import { Unit0Api } from 'controllers/api/unit0Api';
 import { isAddressString, isAlias } from 'messages/utils';
 import { createNft } from 'nfts/nfts';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
@@ -10,10 +14,11 @@ import { getBalances } from 'store/actions/balances';
 import Background from 'ui/services/Background';
 
 import { AssetAmountInput } from '../../../assets/amountInput';
+import { NetworkName } from '../../../networks/types';
 import { ErrorMessage, Loader } from '../ui';
+import { Button } from '../ui';
+import { Input } from '../ui';
 import { AddressSuggestInput } from '../ui/Address/SuggestInput';
-import { Button } from '../ui/buttons/Button';
-import { Input } from '../ui/input';
 import * as styles from './send.module.css';
 
 export function Send() {
@@ -22,26 +27,46 @@ export function Send() {
 
   const { t } = useTranslation();
   const dispatch = usePopupDispatch();
+  const selectedAccount = usePopupSelector(state => state.selectedAccount);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const chainId = usePopupSelector(
     state =>
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       state.selectedAccount?.networkCode!.charCodeAt(0),
   );
-  const accountBalance = usePopupSelector(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    state => state.balances[state.selectedAccount?.address!],
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
   );
+  const isUnit0 = currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0;
+  const accountBalance = usePopupSelector(state => {
+    const selected = state.selectedAccount;
+
+    if (!selected?.address) {
+      return undefined;
+    }
+
+    const key = getBalanceKey(
+      state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+      state.currentNetwork,
+      selected.address,
+    );
+
+    return state.balances[key] ?? state.balances[selected.address];
+  });
   const assetBalances = accountBalance?.assets;
   const assets = usePopupSelector(state => state.assets);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const asset = usePopupSelector(state => state.assets[params.assetId!]);
 
+  // Detect NFTs: Unit0 NFTs have type field, Waves NFTs use precision/quantity/reissuable
   const isNft =
     asset &&
-    asset.precision === 0 &&
-    new BigNumber(asset.quantity).eq(1) &&
-    !asset.reissuable;
+    (asset.type === 'ERC-721' ||
+      asset.type === 'ERC-1155' ||
+      (asset.precision === 0 &&
+        new BigNumber(asset.quantity).eq(1) &&
+        !asset.reissuable));
 
   const userAddress = usePopupSelector(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
@@ -79,37 +104,73 @@ export function Send() {
     ? Money.fromCoins(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         !isNft ? assetBalances![asset.id]?.balance ?? 0 : 1,
-        new Asset(asset),
+        new Asset(asset as IAssetInfo),
       )
     : null;
 
   const [isTriedToSubmit, setIsTriedToSubmit] = useState(false);
 
   const [recipientValue, setRecipientValue] = useState('');
+
+  // Validate recipient based on blockchain type
+  const isValidRecipient = isUnit0
+    ? /^0x[a-fA-F0-9]{40}$/.test(recipientValue) // Ethereum address format
+    : isAddressString(recipientValue, chainId) || isAlias(recipientValue); // Waves address
+
   const recipientError = !recipientValue
     ? t('send.recipientRequiredError')
-    : !(isAddressString(recipientValue, chainId) || isAlias(recipientValue))
+    : !isValidRecipient
     ? t('send.recipientInvalidError')
     : null;
   const showRecipientError = isTriedToSubmit && recipientError != null;
 
   const [amountValue, setAmountValue] = useState(isNft ? '1' : '');
   const [amountValueMasked, setAmountValueMasked] = useState('');
-  const amountError =
-    !currentBalance || !amountValue || Number(amountValue) === 0
-      ? t('send.amountRequiredError')
-      : !currentBalance.getTokens().gte(amountValue)
-      ? t('send.insufficientFundsError')
-      : null;
-  const showAmountError = isTriedToSubmit && amountError != null;
+
+  // Calculate estimated WAVES transfer fee using the same logic as message controller
+  // Base fee: 10_0000 wavelets (0.001 WAVES) for WAVES transfers
+  // Note: This doesn't include extraFee for scripted accounts, which is fetched dynamically
+  const estimatedWavesFee = useMemo(() => {
+    if (isUnit0 || !asset || asset.id !== 'WAVES') {
+      return null;
+    }
+
+    // Base transfer fee: 10_0000 wavelets (same as in fee/utils.ts minSponsoredFee)
+    const feeInWavelets = new BigNumber(10_0000);
+
+    return new Money(feeInWavelets, new Asset(asset as IAssetInfo));
+  }, [isUnit0, asset]);
+
+  const amountError = isNft
+    ? null // Skip amount validation for NFTs
+    : !currentBalance || !amountValue || Number(amountValue) === 0
+    ? t('send.amountRequiredError')
+    : !currentBalance.getTokens().gte(amountValue)
+    ? t('send.insufficientFundsError')
+    : // For WAVES native currency, check if balance covers amount + fee
+    estimatedWavesFee &&
+      !currentBalance
+        .getTokens()
+        .gte(
+          new BigNumber(amountValue)
+            .add(estimatedWavesFee.getTokens())
+            .toFixed(),
+        )
+    ? t('send.insufficientFundsError')
+    : null;
+  const showAmountError = isTriedToSubmit && amountError != null && !isNft;
 
   const [attachmentValue, setAttachmentValue] = useState('');
   const attachmentByteCount = new TextEncoder().encode(attachmentValue).length;
-  const attachmentError =
-    attachmentByteCount > 140 ? t('send.attachmentMaxLengthError') : null;
+  const attachmentError = isUnit0
+    ? null // Unit0 doesn't support attachments
+    : attachmentByteCount > 140
+    ? t('send.attachmentMaxLengthError')
+    : null;
   const showAttachmentError = isTriedToSubmit && attachmentError != null;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   return (
     <form
@@ -118,12 +179,215 @@ export function Send() {
         event.preventDefault();
 
         setIsTriedToSubmit(true);
+        setSubmitError(null); // Clear previous submit errors
 
         if (recipientError || amountError || attachmentError) {
           return;
         }
 
         setIsSubmitting(true);
+
+        if (isUnit0) {
+          // Unit0 (Ethereum) transaction sending
+          (async () => {
+            try {
+              if (!selectedAccount?.address) {
+                throw new Error(t('send.noAccountSelected'));
+              }
+
+              const unit0Api = new Unit0Api();
+
+              // Prepare transaction data based on asset type
+              let txData: {
+                from: string;
+                to: string;
+                value: string;
+                data?: string;
+              };
+
+              if (isNft) {
+                const { ethers } = await import('ethers');
+
+                // Determine NFT type and get token ID from asset
+                const tokenType = asset.type || 'ERC-721';
+                const tokenId = asset.tokenId || asset.id.split('_')[1] || '0';
+                const contractAddress = asset.id.split('_')[0]; // Contract address is before underscore
+                if (tokenType === 'ERC-721') {
+                  // ERC-721: safeTransferFrom(address from, address to, uint256 tokenId)
+                  const iface = new ethers.Interface([
+                    'function safeTransferFrom(address from, address to, uint256 tokenId)',
+                  ]);
+
+                  const encodedData = iface.encodeFunctionData(
+                    'safeTransferFrom',
+                    [selectedAccount.address, recipientValue, tokenId],
+                  );
+
+                  txData = {
+                    from: selectedAccount.address,
+                    to: contractAddress,
+                    value: '0x0',
+                    data: encodedData,
+                  };
+                } else if (tokenType === 'ERC-1155') {
+                  // ERC-1155: safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data)
+                  const iface = new ethers.Interface([
+                    'function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data)',
+                  ]);
+
+                  const encodedData = iface.encodeFunctionData(
+                    'safeTransferFrom',
+                    [
+                      selectedAccount.address,
+                      recipientValue,
+                      tokenId,
+                      '1', // Amount (1 for single NFT)
+                      '0x', // Empty bytes
+                    ],
+                  );
+
+                  txData = {
+                    from: selectedAccount.address,
+                    to: contractAddress,
+                    value: '0x0',
+                    data: encodedData,
+                  };
+                } else {
+                  throw new Error(`Unsupported NFT type: ${tokenType}`);
+                }
+              } else {
+                // Check if this is an ERC-20 token or native UNIT0
+                const isERC20Token = asset && asset.id !== 'unit0';
+                const tokenDecimals = asset?.precision ?? 18;
+
+                // Convert amount from tokens to smallest unit (wei for native, token units for ERC-20)
+                const amountInSmallestUnit = new BigNumber(amountValue)
+                  .mul(new BigNumber(10).pow(tokenDecimals))
+                  .toFixed(0);
+
+                if (isERC20Token) {
+                  // ERC-20 token transfer
+                  // Encode transfer(address to, uint256 amount) function call
+                  const { ethers } = await import('ethers');
+
+                  // Create interface for ERC-20 transfer function
+                  const iface = new ethers.Interface([
+                    'function transfer(address to, uint256 amount)',
+                  ]);
+
+                  // Encode the function call
+                  const encodedData = iface.encodeFunctionData('transfer', [
+                    recipientValue,
+                    amountInSmallestUnit,
+                  ]);
+
+                  txData = {
+                    from: selectedAccount.address,
+                    to: asset.id, // Send to token contract, not recipient!
+                    value: '0x0', // No native UNIT0 value for token transfers
+                    data: encodedData,
+                  };
+                } else {
+                  // Native UNIT0 transfer
+                  const valueHex = `0x${BigInt(amountInSmallestUnit).toString(
+                    16,
+                  )}`;
+                  txData = {
+                    from: selectedAccount.address,
+                    to: recipientValue,
+                    value: valueHex,
+                  };
+                }
+              }
+
+              // Get nonce and gas price from blockchain
+              const [nonce, gasPrice] = await Promise.all([
+                unit0Api.getTransactionCount(
+                  selectedAccount.address,
+                  currentNetwork,
+                ),
+                unit0Api.getGasPrice(currentNetwork),
+              ]);
+
+              // Estimate gas limit for this transaction
+              let gasLimit: string;
+              try {
+                const estimatedGas = await unit0Api.estimateGas(
+                  { ...txData, gasPrice },
+                  currentNetwork,
+                );
+                // Convert hex result to decimal string
+                gasLimit = parseInt(estimatedGas, 16).toString();
+              } catch {
+                // Fallback: 21000 for native, ~65000 for ERC-20, ~150000 for NFT
+                gasLimit = isNft ? '150000' : txData.data ? '65000' : '21000';
+              }
+
+              // Validate sufficient UNIT0 balance for gas
+              const gasCost = new BigNumber(gasPrice).mul(gasLimit);
+              // For NFTs and tokens, only gas cost matters. For native transfers, add the transfer amount
+              const totalCost =
+                txData.data || isNft
+                  ? gasCost
+                  : gasCost.add(
+                      txData.value === '0x0'
+                        ? '0'
+                        : txData.value.replace('0x', ''),
+                    );
+
+              // Get current UNIT0 balance (already in wei from assetBalances)
+              const unit0Balance = assetBalances?.unit0?.balance ?? '0';
+              const balanceInWei = new BigNumber(unit0Balance);
+
+              // Check if balance is sufficient
+              if (balanceInWei.lt(totalCost)) {
+                const gasCostFormatted = gasCost
+                  .div(new BigNumber(10).pow(18))
+                  .toFixed(6);
+                const balanceFormatted = balanceInWei
+                  .div(new BigNumber(10).pow(18))
+                  .toFixed(6);
+
+                throw new Error(
+                  t('send.insufficientUnit0ForGas', {
+                    gasCost: gasCostFormatted,
+                    balance: balanceFormatted,
+                  }),
+                );
+              }
+
+              // Determine chainId based on network
+              // Unit0 chain IDs: Mainnet 88811, Testnet 88817
+              const unit0ChainId =
+                currentNetwork === NetworkName.Mainnet ? 88811 : 88817;
+
+              await Background.signAndPublishUnit0Transaction({
+                to: txData.to,
+                value: txData.value,
+                gasLimit,
+                gasPrice,
+                nonce,
+                data: txData.data,
+                chainId: unit0ChainId,
+              });
+
+              // Success - navigate back
+              navigate(-1);
+            } catch (err) {
+              setIsSubmitting(false);
+              if (err instanceof Error && /user denied/i.test(err.message)) {
+                return;
+              }
+              // Display error to user
+              setSubmitError(
+                err instanceof Error
+                  ? err.message
+                  : t('send.transactionFailed'),
+              );
+            }
+          })();
+          return;
+        }
 
         Background.signAndPublishTransaction({
           type: 4,
@@ -185,7 +449,7 @@ export function Send() {
                   const balance = new Money(
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     new BigNumber(assetBalances![asset.id]?.balance ?? 0),
-                    new Asset(asset),
+                    new Asset(asset as IAssetInfo),
                   );
 
                   return (
@@ -211,9 +475,73 @@ export function Send() {
                         onAssetChange={assetId => {
                           navigate(`/send/${assetId}`, { replace: true });
                         }}
-                        onBalanceClick={() => {
-                          setAmountValue(balance.toTokens());
-                          setAmountValueMasked(balance.toTokens());
+                        onBalanceClick={async () => {
+                          // For native currencies (Unit0 and WAVES), subtract estimated gas
+                          // For tokens, use full balance
+                          const isUnit0Native = isUnit0 && asset.id === 'unit0';
+                          const isWavesNative =
+                            !isUnit0 && asset.id === 'WAVES';
+
+                          if (!isUnit0Native && !isWavesNative) {
+                            // Tokens: use full balance
+                            setAmountValue(balance.toTokens());
+                            setAmountValueMasked(balance.toTokens());
+                            return;
+                          }
+
+                          // Native currencies: subtract estimated gas
+                          let maxSendable = balance.toTokens();
+
+                          if (isUnit0Native) {
+                            try {
+                              const unit0Api = new Unit0Api();
+                              const gasPrice =
+                                await unit0Api.getGasPrice(currentNetwork);
+
+                              // Standard transfer gas limit: 21000
+                              const gasLimit = '21000';
+
+                              // Calculate gas cost in wei, then convert to tokens
+                              const gasCostWei = new BigNumber(gasPrice).mul(
+                                gasLimit,
+                              );
+                              const gasCostTokens = gasCostWei
+                                .div(new BigNumber(10).pow(18))
+                                .toFixed();
+
+                              // Subtract gas from balance
+                              maxSendable = new BigNumber(balance.toTokens())
+                                .sub(gasCostTokens)
+                                .toFixed(asset.precision);
+
+                              // Ensure non-negative
+                              if (new BigNumber(maxSendable).lte(0)) {
+                                maxSendable = '0';
+                              }
+                            } catch {
+                              // Fallback: subtract ~0.001 UNIT0 for gas
+                              maxSendable = new BigNumber(balance.toTokens())
+                                .sub(0.001)
+                                .toFixed(asset.precision);
+                            }
+                          } else if (isWavesNative) {
+                            // WAVES: subtract estimated transaction fee
+                            // Use the same fee calculation as validation
+                            const feeTokens =
+                              estimatedWavesFee?.getTokens() ||
+                              new BigNumber(0);
+                            maxSendable = new BigNumber(balance.toTokens())
+                              .sub(feeTokens)
+                              .toFixed(asset.precision);
+
+                            // Ensure non-negative
+                            if (new BigNumber(maxSendable).lte(0)) {
+                              maxSendable = '0';
+                            }
+                          }
+
+                          setAmountValue(maxSendable);
+                          setAmountValueMasked(maxSendable);
                         }}
                         onChange={(newValue, newMaskedValue) => {
                           setAmountValue(newValue);
@@ -222,6 +550,12 @@ export function Send() {
                       />
                       <ErrorMessage show={showAmountError}>
                         {amountError}
+                      </ErrorMessage>
+                      <ErrorMessage
+                        show={!!submitError}
+                        data-testid="submitError"
+                      >
+                        {submitError}
                       </ErrorMessage>
                     </>
                   );

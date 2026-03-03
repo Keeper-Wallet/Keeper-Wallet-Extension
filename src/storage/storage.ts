@@ -20,9 +20,10 @@ import {
   type IgnoreErrorsConfig,
   type NftConfig,
 } from '../constants';
+import { type MultiWallet } from '../services/types';
 import { MIGRATIONS } from './migrations';
 
-const CURRENT_MIGRATION_VERSION = 3;
+const CURRENT_MIGRATION_VERSION = 5;
 
 export async function backupStorage() {
   const { backup, WalletController } = await Browser.storage.local.get([
@@ -44,10 +45,15 @@ export async function backupStorage() {
 }
 
 export interface StorageLocalState {
-  accounts: PreferencesAccount[];
+  accounts: MultiWallet[];
   addresses: Record<string, string>;
   assetLogos: Record<string, string>;
-  assets: Record<NetworkName, AssetsRecord>;
+  assets: {
+    [NetworkName.Mainnet]: AssetsRecord;
+    [NetworkName.Testnet]: AssetsRecord;
+    [NetworkName.Stagenet]: AssetsRecord;
+    [NetworkName.Custom]: AssetsRecord;
+  };
   swappableAssetIdsByVendor: Record<string, string[]>;
   assetsConfig: AssetsConfig;
   assetTickers: Record<string, string>;
@@ -60,10 +66,12 @@ export interface StorageLocalState {
   cognitoSessions: string | undefined;
   currentLocale: string;
   currentNetwork: NetworkName;
+  currentBlockchainType: string;
   customCodes: Record<NetworkName, string | null>;
   customMatchers: Record<NetworkName, string | null>;
   customNodes: Record<NetworkName, string | null>;
   data: TrashItem[];
+  hideTestAccounts: boolean;
   identityConfig: typeof DEFAULT_IDENTITY_CONFIG;
   idleOptions: IdleOptions;
   ignoreErrorsConfig: IgnoreErrorsConfig;
@@ -88,6 +96,7 @@ export interface StorageLocalState {
   uiState: UiState;
   usdPrices: Record<string, string>;
   userId: string | undefined;
+  vaultMigrationCompleted: boolean;
   WalletController: {
     vault: string | undefined;
   };

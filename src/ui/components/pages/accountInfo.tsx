@@ -1,10 +1,13 @@
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
+import { getBalanceKey } from 'balances/utils';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { notificationChangeName } from 'store/actions/localState';
 
+import { type MultiWallet } from '../../../services/types';
 import Background from '../../services/Background';
 import { getAccountLink } from '../../urls';
 import {
@@ -28,7 +31,9 @@ export function AccountInfo() {
   const assets = usePopupSelector(state => state.assets);
   const balances = usePopupSelector(state => state.balances);
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
-
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType,
+  );
   const showChangeNameNotification = usePopupSelector(
     state => state.localState.notifications.changeName,
   );
@@ -56,21 +61,33 @@ export function AccountInfo() {
   const [showPassword, setShowPassword] = useState(false);
 
   const wavesAsset = assets.WAVES;
+  const unit0Asset = assets.unit0; // Unit0 native token
 
   let balance: Money | undefined;
   let leaseBalance: Money | undefined;
 
-  if (wavesAsset && account) {
-    const balanceItem = balances[account.address];
+  if (account) {
+    const balanceKey = getBalanceKey(
+      currentBlockchainType || 'waves',
+      currentNetwork,
+      account.address,
+    );
 
+    const balanceItem = balances[balanceKey] ?? balances[account.address];
     if (balanceItem) {
-      const assetInstance = new Asset(wavesAsset);
+      // Check if this balance has unit0 asset to determine blockchain type
+      const hasUnit0Asset = balanceItem.assets?.unit0 !== undefined;
+      const assetToUse = hasUnit0Asset && unit0Asset ? unit0Asset : wavesAsset;
 
-      if (typeof balanceItem.available !== 'undefined')
+      if (assetToUse && typeof balanceItem.available !== 'undefined') {
+        const assetInstance = new Asset(assetToUse as IAssetInfo);
         balance = new Money(balanceItem.available, assetInstance);
 
-      if (typeof balanceItem.leasedOut !== 'undefined')
-        leaseBalance = new Money(balanceItem.leasedOut, assetInstance);
+        // Lease balance only exists for Waves
+        if (!hasUnit0Asset && typeof balanceItem.leasedOut !== 'undefined') {
+          leaseBalance = new Money(balanceItem.leasedOut, assetInstance);
+        }
+      }
     }
   }
 
@@ -133,7 +150,11 @@ export function AccountInfo() {
       copyCallback,
       // eslint-disable-next-line @typescript-eslint/no-shadow
       request: password =>
-        Background.getAccountSeed(account.address, currentNetwork, password),
+        Background.getAccountSeed(
+          account.address,
+          currentBlockchainType,
+          password,
+        ),
       retry: () => getSeed(copyCallback),
     });
   };
@@ -159,13 +180,68 @@ export function AccountInfo() {
       request: password =>
         Background.getAccountPrivateKey(
           account.address,
-          currentNetwork,
+          currentBlockchainType,
           password,
-        ),
+        ) as Promise<string>,
       retry: () => getPrivateKey(copyCallback),
     });
   };
 
+  const getUnit0PrivateKey = (copyCallback: (text: string) => void) => {
+    // Get Unit0 address for the current network
+    const unit0NetworkKey = networkKey === 'stagenet' ? 'testnet' : networkKey;
+    const unit0Address = (account as unknown as MultiWallet).coins?.unit0
+      ?.networks?.[unit0NetworkKey]?.address;
+
+    if (!unit0Address) {
+      return;
+    }
+
+    requestPrivateData({
+      copyCallback,
+      request: async passwordForSeed => {
+        try {
+          // Use the Unit0 address for seed lookup
+          const seed = await Background.getAccountSeed(
+            unit0Address, // Use Unit0 address instead of Waves address
+            'unit0',
+            passwordForSeed,
+          );
+
+          if (!seed) {
+            return t('accountInfo.errorUnableToRetrievePrivateKey');
+          }
+
+          const ethers = await import('ethers');
+          // Use default path to match MetaMask and Trust Wallet
+          const derivedWallet = ethers.Wallet.fromPhrase(seed);
+          return derivedWallet.privateKey;
+        } catch (error) {
+          return t('accountInfo.errorRetrievingPrivateKey');
+        }
+      },
+      retry: () => getUnit0PrivateKey(copyCallback),
+    });
+  };
+
+  const isMultiChainWallet = account.type === 'multichain';
+
+  const getNetworkKeyForCurrentNetwork = () => {
+    switch (currentNetwork) {
+      case 'mainnet':
+        return 'mainnet';
+      case 'testnet':
+        return 'testnet';
+      case 'stagenet':
+        return 'stagenet';
+      default:
+        return 'mainnet'; // Default to mainnet if unknown
+    }
+  };
+
+  const networkKey = getNetworkKeyForCurrentNetwork();
+
+  const multiAccount = account as unknown as MultiWallet;
   return (
     <div className={styles.content}>
       <div className={styles.header}>
@@ -222,21 +298,164 @@ export function AccountInfo() {
         </div>
       </div>
 
-      <div id="accountInfoAddress" className="margin-main-big">
-        <div className="input-title basic500 tag1">
-          {t('accountInfo.address')}
+      {!isMultiChainWallet && (
+        <div id="accountInfoAddress" className="margin-main-big">
+          <div className="input-title basic500 tag1">
+            {t('accountInfo.address')}
+          </div>
+          <div className="input-like tag1">
+            <CopyText
+              showCopy
+              showText
+              text={account.address}
+              onCopy={onCopyHandler}
+            />
+          </div>
         </div>
-        <div className="input-like tag1">
-          <CopyText
-            showCopy
-            showText
-            text={account.address}
-            onCopy={onCopyHandler}
-          />
-        </div>
-      </div>
+      )}
 
-      {account.type !== 'debug' && (
+      {isMultiChainWallet && multiAccount.coins && (
+        <>
+          {/* Public info section */}
+          <div className="margin-main-big">
+            <h2>{t('accountInfo.publicInfo')}</h2>
+
+            <div className="input-title basic500 tag1">
+              {t('accountInfo.wavesAddress')}
+            </div>
+            {multiAccount.coins.waves &&
+              multiAccount.coins.waves.networks &&
+              multiAccount.coins.waves.networks[networkKey] && (
+                <div className="margin-main-big">
+                  <div className="input-like tag1">
+                    <CopyText
+                      showCopy
+                      showText
+                      text={
+                        multiAccount.coins.waves.networks[networkKey]?.address
+                      }
+                      onCopy={onCopyHandler}
+                    />
+                  </div>
+                </div>
+              )}
+
+            <div className="input-title basic500 tag1">
+              {t('accountInfo.unit0Address')}
+            </div>
+            {multiAccount.coins.unit0 &&
+              multiAccount.coins.unit0.networks &&
+              multiAccount.coins.unit0.networks[
+                networkKey === 'stagenet' ? 'testnet' : networkKey
+              ] && (
+                <div className="margin-main-big">
+                  <div className="input-like tag1">
+                    <CopyText
+                      showCopy
+                      showText
+                      text={
+                        multiAccount.coins.unit0.networks[
+                          networkKey === 'stagenet' ? 'testnet' : networkKey
+                        ].address
+                      }
+                      onCopy={onCopyHandler}
+                    />
+                  </div>
+                </div>
+              )}
+
+            <div className="input-title basic500 tag1">
+              {t('accountInfo.wavesPublicKey')}
+            </div>
+            {multiAccount.coins.waves && (
+              <div className="margin-main-big">
+                <div className={`input-like tag1 ${styles.ellipsis}`}>
+                  <CopyText
+                    showCopy
+                    showText
+                    text={multiAccount.coins.waves.publicKey}
+                    onCopy={onCopyHandler}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="input-title basic500 tag1">
+              {t('accountInfo.unit0PublicKey')}
+            </div>
+            {multiAccount.coins.unit0 && (
+              <div className="margin-main-big">
+                <div className={`input-like tag1 ${styles.ellipsis}`}>
+                  <CopyText
+                    showCopy
+                    showText
+                    text={multiAccount.coins.unit0.publicKey}
+                    onCopy={onCopyHandler}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Private info section */}
+          <div className="margin-main-big">
+            <h2>{t('accountInfo.privateInfo')}</h2>
+
+            <div className="input-title basic500 tag1">
+              {t('accountInfo.wavesPrivateKey')}
+            </div>
+            {multiAccount.coins.waves &&
+              multiAccount.coins.waves.networks &&
+              multiAccount.coins.waves.networks[networkKey] && (
+                <div className="margin-main-big">
+                  <div className="input-like password-input tag1">
+                    <CopyText
+                      getText={getPrivateKey}
+                      showCopy
+                      type="key"
+                      onCopy={onCopyHandler}
+                    />
+                  </div>
+                </div>
+              )}
+
+            <div className="input-title basic500 tag1">
+              {t('accountInfo.unit0PrivateKey')}
+            </div>
+            {multiAccount.coins.unit0 &&
+              multiAccount.coins.unit0.networks &&
+              multiAccount.coins.unit0.networks[
+                networkKey === 'stagenet' ? 'testnet' : networkKey
+              ] && (
+                <div className="margin-main-big">
+                  <div className="input-like password-input tag1">
+                    <CopyText
+                      getText={getUnit0PrivateKey}
+                      showCopy
+                      type="key"
+                      onCopy={onCopyHandler}
+                    />
+                  </div>
+                </div>
+              )}
+
+            <div className="input-title basic500 tag1">
+              {t('accountInfo.backUp')}
+            </div>
+            <div className="margin-main-big">
+              <div className="input-like password-input tag1">
+                <CopyText
+                  getText={getSeed}
+                  showCopy
+                  type="key"
+                  onCopy={onCopyHandler}
+                />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+      {account.type !== 'debug' && multiAccount.type !== 'multichain' && (
         <div id="accountInfoPublicKey" className="margin-main-big">
           <div className="input-title basic500 tag1">
             {t('accountInfo.pubKey')}
@@ -251,7 +470,6 @@ export function AccountInfo() {
           </div>
         </div>
       )}
-
       {['seed', 'encodedSeed', 'privateKey'].includes(account.type) && (
         <div id="accountInfoPrivateKey" className="margin-main-big">
           <div className="input-title basic500 tag1">

@@ -1,4 +1,5 @@
 import { Asset, Money } from '@waves/data-entities';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import clsx from 'clsx';
 import { TxDetailTabs } from 'messages/_common/detailTabs';
 import { MessageFooter } from 'messages/_common/footer';
@@ -118,7 +119,9 @@ export function UpdateAssetInfoScreen({
 
               <div className={transactionsStyles.txValue}>
                 <Balance
-                  balance={new Money(tx.fee, new Asset(assets.WAVES))}
+                  balance={
+                    new Money(tx.fee, new Asset(assets.WAVES as IAssetInfo))
+                  }
                   data-testid="updateAssetInfoFee"
                   isShortFormat
                   showAsset

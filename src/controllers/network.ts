@@ -9,6 +9,11 @@ import ObservableStore from 'obs-store';
 import { NETWORK_CONFIG } from '../constants';
 import { type ExtensionStorage } from '../storage/storage';
 
+// Define types for the custom fields
+type CustomNetworkConfig = {
+  [key in NetworkName]?: string | null;
+};
+
 export class NetworkController {
   store;
 
@@ -16,24 +21,26 @@ export class NetworkController {
     this.store = new ObservableStore(
       extensionStorage.getInitState({
         currentNetwork: NetworkName.Mainnet,
+        currentBlockchainType: 'waves',
+        hideTestAccounts: true,
         customNodes: {
           mainnet: null,
           stagenet: null,
           testnet: null,
           custom: null,
-        },
+        } as CustomNetworkConfig,
         customMatchers: {
           mainnet: null,
           testnet: null,
           stagenet: null,
           custom: null,
-        },
+        } as CustomNetworkConfig,
         customCodes: {
           mainnet: null,
           testnet: null,
           stagenet: null,
           custom: null,
-        },
+        } as CustomNetworkConfig,
       }),
     );
 
@@ -53,6 +60,35 @@ export class NetworkController {
     });
 
     this.store.updateState({ currentNetwork: network });
+  }
+
+  setCurrentBlockchainType(blockchainType: string) {
+    addBreadcrumb({
+      type: 'user',
+      category: 'blockchain-type-change',
+      level: 'info',
+      message: `Change blockchain type to ${blockchainType}`,
+    });
+
+    this.store.updateState({ currentBlockchainType: blockchainType });
+  }
+
+  getCurrentBlockchainType() {
+    return this.store.getState().currentBlockchainType || 'waves';
+  }
+
+  setHideTestAccounts(hideTestAccounts: boolean) {
+    addBreadcrumb({
+      type: 'user',
+      category: 'hide-test-accounts',
+      level: 'info',
+      message: `Hide test accounts to ${hideTestAccounts}`,
+    });
+
+    this.store.updateState({ hideTestAccounts });
+  }
+  getHideTestAccounts() {
+    return this.store.getState().hideTestAccounts;
   }
 
   getNetwork() {

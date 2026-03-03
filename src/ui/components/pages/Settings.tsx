@@ -129,7 +129,9 @@ export function Settings() {
             data-teston={autoClickProtection}
           />
           <div className={`${styles.powerBtnState} left`}>
-            <div>{t('settings.autoClick')}</div>
+            <div className={styles.powerBtnLabel}>
+              {t('settings.autoClick')}
+            </div>
             <div data-testid="clickProtectionStatus">
               {!autoClickProtection ? (
                 <span className="basic500">
@@ -174,7 +176,9 @@ export function Settings() {
             data-teston={!showSuspiciousAssets}
           />
           <div className={`${styles.powerBtnState} left`}>
-            <div>{t('settings.suspiciousAssetsProtection')}</div>
+            <div className={styles.powerBtnLabel}>
+              {t('settings.suspiciousAssetsProtection')}
+            </div>
             <div data-testid="showSuspiciousAssetsStatus">
               {showSuspiciousAssets ? (
                 <span className="basic500">

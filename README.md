@@ -18,6 +18,32 @@ Keeper Wallet is designed for convenience, so users can sign transactions with j
 
 [Waves protocol documentation](https://docs.waves.tech/en/)
 
+## Development and environment variables
+
+Keeper Wallet uses environment variables loaded via [`dotenv-flow`](https://github.com/kerimdzhanov/dotenv-flow) when running webpack.
+
+### DATA_SERVICE_ENV
+
+Controls which data service URL is used by the extension:
+
+- `prod` (default) - `https://api.keeper-wallet.app`
+- `local` - `http://127.0.0.1:8000`
+
+Examples:
+
+```bash
+npm run dev
+# uses value from .env (default: DATA_SERVICE_ENV=prod)
+
+DATA_SERVICE_ENV=local npm run dev
+# uses local data service at http://127.0.0.1:8000
+```
+
+```bash
+npm run build
+# production build, uses DATA_SERVICE_ENV from environment / .env / .env.prod
+```
+
 ## Keeper Wallet API
 
 On browser pages that operate under `http/https` (not local pages with `file://` protocol) with Keeper Wallet extension installed, `KeeperWallet` global object becomes available.
@@ -26,8 +52,6 @@ In `KeeperWallet` you will find the following methods:
 
 - [publicState](#publicstate)
 - [notification](#notification)
-- [encryptMessage](#encryptmessage)
-- [decryptMessage](#decryptmessage)
 - [on](#on)
 - [auth](#auth)
 - [signTransaction](#signtransaction)
@@ -160,58 +184,6 @@ Possible errors:
 - `{message: 'User denied message', data: 'rejected', code: '10'}` — the user rejected the request.
 - `{message: 'User denied message', data: 'rejected_forever', code: '10'}` — the user rejected the request and blocked the website.
 - `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user or sending messages is not allowed.
-
-#### encryptMessage
-
-You can encrypt string messages to account in Waves network.
-You need have recipient publicKey.
-
-KeeperWallet.encryptMessage(`*string to encrypt*`, `*public key in base58 string*`, `*prefix: a secret app string for encoding*`)
-
-Example:
-
-```js
-KeeperWallet.encryptMessage(
-  'My message',
-  '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc',
-  'my app',
-).then(encryptedMessage => {
-  console.log(encryptedMessage);
-});
-```
-
-Possible errors:
-
-- `{ message: "Init Keeper Wallet and add account" }` – Keeper Wallet is not initialized.
-- `{ message: "App is locked" }` – Keeper Wallet is locked (password required).
-- `{ message: "Add Keeper Wallet account" }` – Keeper Wallet accessed, but there are no accounts.
-- `{ message: "User denied message" }` – the user denied the website operation with Keeper Wallet.
-
-#### decryptMessage
-
-You can decrypt string messages from account in Waves network to you.
-You need to have user's public key and the encrypted message.
-
-KeeperWallet.decryptMessage(`*string to decrypt*`, `*public key in base58 string*`, `*prefix: a secret app string for encoding*`)
-
-Example:
-
-```js
-KeeperWallet.decryptMessage(
-  '**encrypted msg**',
-  '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc',
-  'my app',
-).then(message => {
-  console.log(message);
-});
-```
-
-Possible errors:
-
-- `{ message: "Init Keeper Wallet and add account" }` – Keeper Wallet is not initialized.
-- `{ message: "App is locked" }` – Keeper Wallet is locked (password required).
-- `{ message: "Add Keeper Wallet account" }` – Keeper Wallet accessed, but there are no accounts.
-- `{ message: "User denied message" }` – the user denied the website operation with Keeper Wallet.
 
 #### on
 

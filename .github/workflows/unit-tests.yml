@@ -1,0 +1,18 @@
+name: Unit Tests
+on:
+  push:
+    branches-ignore:
+      - master
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: styfle/cancel-workflow-action@0.11.0
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          cache: yarn
+          node-version-file: .nvmrc
+      - run: yarn install --frozen-lockfile
+      - run: yarn run build
+      - run: yarn test:unit

@@ -1,14 +1,19 @@
 import { isAddressString } from 'messages/utils';
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { createAccount } from 'store/actions/user';
 import * as styles from 'ui/components/pages/importDebug.module.css';
 import { Button, ErrorMessage, Input } from 'ui/components/ui';
-import { WalletTypes } from 'ui/services/Background';
+import Background, { WalletTypes } from 'ui/services/Background';
 
 import { NETWORK_CONFIG } from '../../../constants';
+import { type MultiWallet } from '../../../services/types';
+
+function isValidUnit0Address(address: string): boolean {
+  return /^0x[a-fA-F0-9]{40}$/.test(address);
+}
 
 export function ImportDebug() {
   const navigate = useNavigate();
@@ -18,11 +23,19 @@ export function ImportDebug() {
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const customCodes = usePopupSelector(state => state.customCodes);
 
+  // Get all wallets to check for duplicate addresses across all networks
+  const [allWallets, setAllWallets] = useState<MultiWallet[]>([]);
+
+  useEffect(() => {
+    Background.getMultiWallets().then(setAllWallets);
+  }, []);
+
   const networkCode =
     customCodes[currentNetwork] || NETWORK_CONFIG[currentNetwork].networkCode;
 
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
+  const [unit0Address, setUnit0Address] = useState('');
 
   const nameError = useMemo(() => {
     if (!name) {
@@ -47,12 +60,59 @@ export function ImportDebug() {
       });
     }
 
-    if (accounts.some(account => account.address === address)) {
+    // Check if address already exists in any wallet (across all networks)
+    const addressExistsInWallet = allWallets.some(wallet => {
+      // Check waves networks
+      const wavesNetworks = wallet.coins?.waves?.networks;
+      if (wavesNetworks) {
+        if (
+          wavesNetworks.mainnet?.address === address ||
+          wavesNetworks.testnet?.address === address ||
+          wavesNetworks.stagenet?.address === address ||
+          wavesNetworks.custom?.address === address
+        ) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    if (addressExistsInWallet) {
       return t('importDebug.alreadyExists');
     }
 
     return null;
-  }, [address, accounts, currentNetwork, networkCode, t]);
+  }, [address, allWallets, currentNetwork, networkCode, t]);
+
+  const unit0AddressError = useMemo(() => {
+    if (!unit0Address) {
+      return null;
+    }
+
+    if (!isValidUnit0Address(unit0Address)) {
+      return t('importDebug.invalidUnit0AddressError');
+    }
+
+    // Check if unit0 address already exists in any wallet
+    const addressExistsInWallet = allWallets.some(wallet => {
+      const unit0Networks = wallet.coins?.unit0?.networks;
+      if (unit0Networks) {
+        if (
+          unit0Networks.mainnet?.address === unit0Address ||
+          unit0Networks.testnet?.address === unit0Address
+        ) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    if (addressExistsInWallet) {
+      return t('importDebug.alreadyExists');
+    }
+
+    return null;
+  }, [unit0Address, allWallets, t]);
 
   const [showErrors, setShowErrors] = useState<boolean>(false);
 
@@ -66,7 +126,7 @@ export function ImportDebug() {
 
           setShowErrors(true);
 
-          if (nameError || addressError) {
+          if (nameError || addressError || unit0AddressError) {
             return;
           }
 
@@ -76,6 +136,7 @@ export function ImportDebug() {
                 type: 'debug',
                 address,
                 name,
+                ...(unit0Address && { unit0Address }),
               },
               WalletTypes.Debug,
             ),
@@ -116,6 +177,25 @@ export function ImportDebug() {
           />
           <ErrorMessage show={showErrors && !!addressError}>
             {addressError}
+          </ErrorMessage>
+        </div>
+
+        <div className="margin4">
+          <label className="input-title basic500 tag1" htmlFor="unit0Address">
+            {t('importDebug.unit0AddressInput')}{' '}
+            <span className="basic500">({t('importDebug.optional')})</span>
+          </label>
+          <Input
+            id="unit0Address"
+            className="margin1"
+            onChange={e => setUnit0Address(e.target.value)}
+            value={unit0Address}
+            maxLength={42}
+            placeholder="0x..."
+            error={showErrors && !!unit0AddressError}
+          />
+          <ErrorMessage show={showErrors && !!unit0AddressError}>
+            {unit0AddressError}
           </ErrorMessage>
         </div>
 

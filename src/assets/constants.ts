@@ -1,8 +1,52 @@
 import { type NetworkName } from 'networks/types';
 
+// Define blockchain and network type constants to match MultiWallet structure
+export const BLOCKCHAIN_TYPES = {
+  WAVES: 'waves',
+  UNIT0: 'unit0',
+};
+
+export const NETWORK_TYPES = {
+  MAINNET: 'mainnet',
+  TESTNET: 'testnet',
+  STAGENET: 'stagenet',
+  CUSTOM: 'custom',
+};
+
+// For UI convenience - Network options that will be displayed
+export const NETWORK_OPTIONS = [
+  {
+    blockchain: BLOCKCHAIN_TYPES.WAVES,
+    network: NETWORK_TYPES.MAINNET,
+    isTestnet: false,
+  },
+  {
+    blockchain: BLOCKCHAIN_TYPES.UNIT0,
+    network: NETWORK_TYPES.MAINNET,
+    isTestnet: false,
+  },
+  {
+    blockchain: BLOCKCHAIN_TYPES.WAVES,
+    network: NETWORK_TYPES.TESTNET,
+    isTestnet: true,
+  },
+  {
+    blockchain: BLOCKCHAIN_TYPES.UNIT0,
+    network: NETWORK_TYPES.TESTNET,
+    isTestnet: true,
+  },
+  {
+    blockchain: BLOCKCHAIN_TYPES.WAVES,
+    network: NETWORK_TYPES.STAGENET,
+    isTestnet: true,
+  },
+  { network: NETWORK_TYPES.CUSTOM, isTestnet: true, isCustom: true },
+];
+
 export const assetIds: Record<NetworkName, Record<string, string>> = {
   mainnet: {
     WAVES: 'WAVES',
+    UNIT0: 'unit0',
     BAG: 'Euz5HtYcj3nVTZxppA7wdabwTe5BzHFiu4QG1EJtzeUx',
     BCH: 'zMFqXuoyrn5w17PFurTqxB7GsS71fp9dfk6XFwxbPCy',
     BNB: '5UYBPpq4WoU5n4MwpFkgJnW3Fq4B1u3ukpK33ik4QerR',
@@ -76,6 +120,7 @@ export const assetIds: Record<NetworkName, Record<string, string>> = {
   },
   testnet: {
     WAVES: 'WAVES',
+    UNIT0: 'unit0',
     BTC: 'iHTVbu8ArLhtdtJ8BQhyaomgVogSfXT45RtwNFiK4We',
     DASH: '13mWHq1h58WRTiRNBqDRD63gsV8Hq4joxYQzH3iRdHiR',
     EGG: 'Gp75gygbc1woJMheDomSY1ULyaRVGVEWS64wNWfvncyg',
@@ -246,6 +291,7 @@ const logosByName: Record<string, string> = {
   FTM: new URL('./logos/FTM.svg', import.meta.url).toString(),
   FOMO: new URL('./logos/FOMO.webp', import.meta.url).toString(),
   FORKLOG: new URL('./logos/FORKLOG.webp', import.meta.url).toString(),
+  unit0: new URL('./logos/unit0.svg', import.meta.url).toString(),
   KOLKHOZ: new URL('./logos/KOLKHOZ.webp', import.meta.url).toString(),
   LINK: new URL('./logos/LINK.svg', import.meta.url).toString(),
   LTC: new URL('./logos/LTC.svg', import.meta.url).toString(),
@@ -273,6 +319,7 @@ const logosByName: Record<string, string> = {
   TURTLE: new URL('./logos/TURTLE.webp', import.meta.url).toString(),
   UNI: new URL('./logos/UNI.svg', import.meta.url).toString(),
   USDAP: new URL('./logos/USDAP.svg', import.meta.url).toString(),
+  UNIT0: new URL('./logos/unit0.svg', import.meta.url).toString(),
   USDC: new URL('./logos/USDC.svg', import.meta.url).toString(),
   USDCLP: new URL('./logos/USDCLP.svg', import.meta.url).toString(),
   USDTLP: new URL('./logos/USDTLP.svg', import.meta.url).toString(),
@@ -290,6 +337,110 @@ const logosByName: Record<string, string> = {
   YFI: new URL('./logos/YFI.svg', import.meta.url).toString(),
   ZEC: new URL('./logos/ZEC.svg', import.meta.url).toString(),
 };
+
+export const unit0LogosById: Record<string, string> = {
+  '0x0000000000000000000000000000000000000000': new URL(
+    './unit0_tokens/0x0000000000000000000000000000000000000000.webp',
+    import.meta.url,
+  ).toString(),
+  '0x1b100de3f13e3f8bb2f66fe58c1949c32e71248b': new URL(
+    './unit0_tokens/0x1b100de3f13e3f8bb2f66fe58c1949c32e71248b.webp',
+    import.meta.url,
+  ).toString(),
+  '0x2c8b6bbe3e110282508036dd5782776de98a84ab': new URL(
+    './unit0_tokens/0x2c8b6bbe3e110282508036dd5782776de98a84ab.png',
+    import.meta.url,
+  ).toString(),
+  '0x3358ce5ba12130c5c03063f13d7fce20df2208fa': new URL(
+    './unit0_tokens/0x3358ce5ba12130c5c03063f13d7fce20df2208fa.png',
+    import.meta.url,
+  ).toString(),
+  '0x638d31499d846be9ffea703b6cdbc54208584cb9': new URL(
+    './unit0_tokens/0x638d31499d846be9ffea703b6cdbc54208584cb9.webp',
+    import.meta.url,
+  ).toString(),
+  '0x7900c01eed60868beea1de79730ca5633a4b6a45': new URL(
+    './unit0_tokens/0x7900c01eed60868beea1de79730ca5633a4b6a45.webp',
+    import.meta.url,
+  ).toString(),
+  '0x9ce808657ba90c65a2700b1ca5d943ec72834b52': new URL(
+    './unit0_tokens/0x9ce808657ba90c65a2700b1ca5d943ec72834b52.webp',
+    import.meta.url,
+  ).toString(),
+  '0xb303d80db8415fd1d3c9fed68a52eeac9a052671': new URL(
+    './unit0_tokens/0xb303d80db8415fd1d3c9fed68a52eeac9a052671.webp',
+    import.meta.url,
+  ).toString(),
+  '0xb7561959b9464d95375cf6ee0c6227fc50db04ee': new URL(
+    './unit0_tokens/0xb7561959b9464d95375cf6ee0c6227fc50db04ee.webp',
+    import.meta.url,
+  ).toString(),
+  '0xcf43f7703d9b4e8835f977ef364b4014fa7e856e': new URL(
+    './unit0_tokens/0xcf43f7703d9b4e8835f977ef364b4014fa7e856e.webp',
+    import.meta.url,
+  ).toString(),
+  '0xe7e2ebe9f2587697ca0be7dcf467a2d05bcb138f': new URL(
+    './unit0_tokens/0xe7e2ebe9f2587697ca0be7dcf467a2d05bcb138f.png',
+    import.meta.url,
+  ).toString(),
+  '0xeb19000d90f17ffbd3ad9cdb8915d928f4980fd1': new URL(
+    './unit0_tokens/0xeb19000d90f17ffbd3ad9cdb8915d928f4980fd1.webp',
+    import.meta.url,
+  ).toString(),
+};
+
+const unit0MainnetAssetIds: Record<string, string> = {
+  UNIT0: 'UNIT0',
+  wuUSDT: '0xb7561959b9464d95375cf6ee0c6227fc50db04ee',
+  wuWBTC: '0x638d31499d846be9ffea703b6cdbc54208584cb9',
+  WUNIT0: '0xcf43f7703d9b4e8835f977ef364b4014fa7e856e',
+  WBTC: '0x9ce808657ba90c65a2700b1ca5d943ec72834b52',
+  USDC: '0xeb19000d90f17ffbd3ad9cdb8915d928f4980fd1',
+  USDT: '0xb303d80db8415fd1d3c9fed68a52eeac9a052671',
+  WETH: '0x1b100de3f13e3f8bb2f66fe58c1949c32e71248b',
+  WAVES: '0x2c8b6bbe3e110282508036dd5782776de98a84ab',
+  Sancho: '0x7900c01eed60868beea1de79730ca5633a4b6a45',
+  GORC: '0x3358ce5ba12130c5c03063f13d7fce20df2208fa',
+  SWOP: '0xe7e2ebe9f2587697ca0be7dcf467a2d05bcb138f',
+};
+
+export const unit0AssetIds: Record<NetworkName, Record<string, string>> = {
+  mainnet: unit0MainnetAssetIds,
+  testnet: unit0MainnetAssetIds,
+  stagenet: {},
+  custom: {},
+};
+
+export const unit0LogosByName: Record<string, string> = {
+  UNIT0: unit0LogosById['0x0000000000000000000000000000000000000000'],
+  wuUSDT: unit0LogosById['0xb7561959b9464d95375cf6ee0c6227fc50db04ee'],
+  wuWBTC: unit0LogosById['0x638d31499d846be9ffea703b6cdbc54208584cb9'],
+  WUNIT0: unit0LogosById['0xcf43f7703d9b4e8835f977ef364b4014fa7e856e'],
+  WBTC: unit0LogosById['0x9ce808657ba90c65a2700b1ca5d943ec72834b52'],
+  USDC: unit0LogosById['0xeb19000d90f17ffbd3ad9cdb8915d928f4980fd1'],
+  USDT: unit0LogosById['0xb303d80db8415fd1d3c9fed68a52eeac9a052671'],
+  WETH: unit0LogosById['0x1b100de3f13e3f8bb2f66fe58c1949c32e71248b'],
+  WAVES: unit0LogosById['0x2c8b6bbe3e110282508036dd5782776de98a84ab'],
+  Sancho: unit0LogosById['0x7900c01eed60868beea1de79730ca5633a4b6a45'],
+  GORC: unit0LogosById['0x3358ce5ba12130c5c03063f13d7fce20df2208fa'],
+  SWOP: unit0LogosById['0xe7e2ebe9f2587697ca0be7dcf467a2d05bcb138f'],
+};
+
+export const unit0AssetLogosByNetwork: Partial<{
+  [network: string]: Partial<{
+    [assetId: string]: string;
+  }>;
+}> = Object.fromEntries(
+  Object.entries(unit0AssetIds).map(([network, nameToIdMap]) => [
+    network,
+    Object.fromEntries(
+      Object.entries(nameToIdMap).map(([name, id]) => [
+        id,
+        unit0LogosByName[name],
+      ]),
+    ),
+  ]),
+);
 
 export const assetLogosByNetwork: Partial<{
   [network: string]: Partial<{

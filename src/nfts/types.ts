@@ -16,6 +16,7 @@ export interface NftAssetDetail {
   quantity: '1';
   reissuable: false;
   scripted: boolean;
+  tokenId?: string;
 }
 
 export enum NftVendorId {
@@ -25,6 +26,7 @@ export enum NftVendorId {
   SignArt = 'sign-art',
   WavesDomains = 'waves-domains',
   Puzzle = 'puzzle',
+  Unit0 = 'unit0',
   Unknown = 'unknown',
 }
 
@@ -39,7 +41,10 @@ export interface Nft {
   id: string;
   marketplaceUrl?: string;
   name: string;
+  tokenType?: string;
   vendor: NftVendorId;
+  tokenId?: string;
+  assetId?: string;
 }
 
 export interface FetchInfoParams {
@@ -51,12 +56,13 @@ export interface CreateParams<T extends { vendor: NftVendorId }> {
   asset: AssetDetail;
   config: NftConfig;
   info: T;
+  networkCode?: string;
 }
 
 export interface NftVendor<T extends { vendor: NftVendorId }> {
   id: T['vendor'];
   is(nft: NftAssetDetail): boolean;
-  fetchInfo(params: FetchInfoParams): T[] | Promise<T[]>;
+  fetchInfo?(params: FetchInfoParams): T[] | Promise<T[]>;
   create(params: CreateParams<T>): Nft;
 }
 

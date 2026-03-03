@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import ColorHash from 'color-hash';
+import { useState } from 'react';
 
 import { useAssetLogo } from '../../../../assets/utils';
 import { usePopupSelector } from '../../../../popup/store/react';
@@ -20,6 +21,8 @@ export function AssetLogo({
   hasSponsorship,
   hasScript,
 }: Props) {
+  const [imageError, setImageError] = useState(false);
+
   const style = {
     backgroundColor: new ColorHash().hex(assetId),
   };
@@ -27,7 +30,7 @@ export function AssetLogo({
   const network = usePopupSelector(state => state.currentNetwork);
   const logoSrc = useAssetLogo(network, assetId);
 
-  if (!logoSrc) {
+  if (!logoSrc || imageError) {
     return (
       <div className={clsx(styles.assetLogo, className)} style={style}>
         <div>{name && name[0].toUpperCase()}</div>
@@ -58,6 +61,11 @@ export function AssetLogo({
   }
 
   return (
-    <img className={clsx(styles.assetLogo, className)} src={logoSrc} alt="" />
+    <img
+      className={clsx(styles.assetLogo, className)}
+      src={logoSrc}
+      alt=""
+      onError={() => setImageError(true)}
+    />
   );
 }

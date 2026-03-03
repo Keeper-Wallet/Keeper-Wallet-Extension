@@ -1,7 +1,7 @@
 .card {
   position: relative;
   z-index: 1;
-  margin-bottom: 8px;
+  margin-bottom: 14px;
   display: flex;
   flex-direction: column;
   width: 162px;
@@ -60,4 +60,18 @@
 .title {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.tokenTypeBadge {
+  position: absolute;
+  z-index: 2;
+  top: 4px;
+  right: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
 }

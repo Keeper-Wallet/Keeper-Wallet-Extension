@@ -27,7 +27,7 @@
 
 .empty {
   position: relative;
-  padding: 220px 24px 0;
+  padding: 232px 24px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -36,7 +36,7 @@
 .empty::before {
   content: '';
   position: absolute;
-  top: 124px;
+  top: 134px;
   width: 80px;
   height: 80px;
   background-image: url(../../assets/img/users.svg);
@@ -54,7 +54,7 @@
 }
 
 .addButton {
-  padding: 0 40px;
+  padding: 0 60px;
   width: auto;
 }
 
@@ -67,6 +67,7 @@
 .searchInput {
   flex-grow: 0;
   margin: 0 14px 10px;
+  max-height: 15px;
 }
 
 .notFound {
@@ -101,6 +102,9 @@
 
 .cardAvatar {
   margin-right: 14px;
+  img {
+    border-radius: 0;
+  }
 }
 
 .cardName {
@@ -114,6 +118,23 @@
   white-space: nowrap;
 }
 
+.cardNameRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.badge {
+  margin-left: 0;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background-color: #f0f2f5;
+  color: #5e6c84;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
 .cardAddress {
   color: var(--color-basic500);
   font-size: 12px;
@@ -122,7 +143,7 @@
 .copyButton,
 .editButton,
 .deleteButton {
-  margin: 0 8px;
+  margin: 0 9px;
   background: none;
   cursor: pointer;
 }

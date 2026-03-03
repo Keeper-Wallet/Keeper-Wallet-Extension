@@ -139,6 +139,7 @@ export class WalletController extends EventEmitter {
           network,
           networkCode,
           seed: input.seed,
+          ethereumAddress: input.ethereumAddress,
         });
       case 'wx':
         return new WxWallet(
@@ -229,6 +230,7 @@ export class WalletController extends EventEmitter {
     }
 
     this.#wallets.push(wallet);
+
     await this.#saveWallets();
 
     this.emit('addWallet', wallet);
@@ -369,7 +371,6 @@ export class WalletController extends EventEmitter {
     const wallet = this.#getWalletsByNetwork(network).find(
       w => w.data.address === address,
     );
-
     if (!wallet) throw new Error(`Wallet not found for address ${address}`);
 
     return wallet;

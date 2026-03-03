@@ -16,9 +16,14 @@ describe('Network management', function () {
 
   before(async () => {
     await App.initVault();
+    await browser.openKeeperPopup();
+    await Network.enableTestNetworks();
+    // enableTestNetworks closes the popup, so reopen it for subsequent tests
+    await browser.openKeeperPopup();
   });
 
   after(async function () {
+    await browser.openKeeperPopup();
     await Network.switchToAndCheck('Mainnet');
     await App.closeBgTabs(tabKeeper);
     await App.resetVault();
@@ -26,15 +31,18 @@ describe('Network management', function () {
 
   describe('Switching networks', function () {
     it('Stagenet', async () => {
+      await browser.openKeeperPopup();
       await Network.switchToAndCheck('Stagenet');
     });
 
     it('Mainnet', async () => {
+      await browser.openKeeperPopup();
       await Network.switchToAndCheck('Mainnet');
     });
 
     describe('Testnet', function () {
       it('Successfully switched', async () => {
+        await browser.openKeeperPopup();
         await Network.switchToAndCheck('Testnet');
       });
 
@@ -53,6 +61,10 @@ describe('Network management', function () {
           'waves private node seed with waves tokens',
         );
         await browser.switchToWindow(tabKeeper);
+        await browser.openKeeperPopup();
+
+        // After importing, app switches to Mainnet, so switch back to Testnet
+        await Network.switchToAndCheck('Testnet');
 
         await HomeScreen.activeAccountCard.click();
         expect(await AccountInfoScreen.address.getText()).toMatch(/^3[MN]/i);
@@ -65,9 +77,10 @@ describe('Network management', function () {
 
     describe('Custom', function () {
       const invalidNodeUrl = 'https://nodes.invalid.com';
-      const customNetwork = 'Custom';
+      const customNetwork = 'Waves Custom';
 
       it('Successfully switched', async function () {
+        await browser.openKeeperPopup();
         await Network.switchTo(customNetwork);
 
         await CustomNetworkModal.addressInput.setValue(this.nodeUrl);

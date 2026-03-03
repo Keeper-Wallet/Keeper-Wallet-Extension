@@ -3,17 +3,20 @@ import { ErrorPage } from 'ui/components/pages/errorPage';
 import { RootAccounts } from 'ui/components/RootAccounts';
 
 import { BottomPanel } from '../layout/bottomPanel';
-import { Menu } from '../ui/components/menu/Menu';
+import { Menu } from '../ui/components/menu';
+import { AccountsHome } from '../ui/components/pages/accountHome';
+import { AccountOnboarding } from '../ui/components/pages/AccountOnboarding';
 import { BackUpSeed } from '../ui/components/pages/BackupSeed';
 import { ConfirmBackup } from '../ui/components/pages/ConfirmBackup';
 import { DeleteAllAccounts } from '../ui/components/pages/deleteAllAccounts/deleteAllAccounts';
-import { AccountsHome } from '../ui/components/pages/Import';
+import { ImportChoose } from '../ui/components/pages/import/importChoose';
+import { ImportSeed } from '../ui/components/pages/import/importSeed';
+import { ImportSeedMultichain } from '../ui/components/pages/import/ImportSeedMultichain';
 import { ImportDebug } from '../ui/components/pages/importDebug';
 import { ImportEmail } from '../ui/components/pages/importEmail/importEmail';
 import { ImportAddressBook } from '../ui/components/pages/importKeystore/importAddressBook';
 import { ImportKeystore } from '../ui/components/pages/importKeystore/importKeystore';
 import { ImportLedger } from '../ui/components/pages/importLedger/importLedger';
-import { ImportSeed } from '../ui/components/pages/importSeed';
 import {
   ImportSuccess,
   ImportSuccessAddressBook,
@@ -33,7 +36,17 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasLogo />
             <AccountsHome />
-            <BottomPanel allowChangingNetwork />
+            <BottomPanel hideNetwork />
+          </>
+        ),
+      },
+      {
+        path: '/account-onboarding',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <AccountOnboarding />
+            <BottomPanel hideNetwork />
           </>
         ),
       },
@@ -43,7 +56,7 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <NewWallet />
-            <BottomPanel />
+            <BottomPanel hideNetwork />
           </>
         ),
       },
@@ -53,7 +66,7 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <BackUpSeed />
-            <BottomPanel />
+            <BottomPanel hideNetwork />
           </>
         ),
       },
@@ -63,7 +76,7 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <ConfirmBackup />
-            <BottomPanel />
+            <BottomPanel hideNetwork />
           </>
         ),
       },
@@ -73,17 +86,36 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <ImportDebug />
-            <BottomPanel />
           </>
         ),
       },
       {
-        path: '/import-seed',
+        path: '/import-choose',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <ImportChoose />
+            <BottomPanel hideNetwork />
+          </>
+        ),
+      },
+      {
+        path: '/import-wave-seed',
         element: (
           <>
             <Menu hasBack hasLogo />
             <ImportSeed />
-            <BottomPanel />
+            <BottomPanel hideNetwork />
+          </>
+        ),
+      },
+      {
+        path: '/import-multi-seed',
+        element: (
+          <>
+            <Menu hasBack hasLogo />
+            <ImportSeedMultichain />
+            <BottomPanel hideNetwork />
           </>
         ),
       },
@@ -111,7 +143,6 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <ImportEmail />
-            <BottomPanel />
           </>
         ),
       },
@@ -121,7 +152,7 @@ export const routes: RouteObject[] = [
           <>
             <Menu hasBack hasLogo />
             <NewWalletName />
-            <BottomPanel />
+            <BottomPanel hideNetwork />
           </>
         ),
       },

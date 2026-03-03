@@ -1,7 +1,9 @@
-import { BigNumber } from '@waves/bignumber';
+import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
-import { type AssetsRecord } from 'assets/types';
+import { type IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
+import { type AssetDetail, type AssetsRecord } from 'assets/types';
 import { type BalanceAssets } from 'balances/types';
+import { getBalanceKey } from 'balances/utils';
 import clsx from 'clsx';
 import { usePopupSelector } from 'popup/store/react';
 import { useMemo } from 'react';
@@ -9,12 +11,14 @@ import { useTranslation } from 'react-i18next';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList as List } from 'react-window';
 import invariant from 'tiny-invariant';
-import { AssetItem } from 'ui/components/pages/assets//assetItem';
+import { AssetItem } from 'ui/components/pages/assets/assetItem';
 import { icontains } from 'ui/components/pages/assets/helpers';
 import * as styles from 'ui/components/pages/styles/assets.styl';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import { Tooltip } from 'ui/components/ui/tooltip';
 
+import { BLOCKCHAIN_TYPES } from '../../../../../assets/constants';
+import { type MultiWallet } from '../../../../../services/types';
 import { CARD_FULL_HEIGHT, sortAssetEntries, useUiState } from './helpers';
 
 const Row = ({
@@ -43,13 +47,21 @@ const Row = ({
     onSendClick,
     onSwapClick,
   } = data;
-  const [assetId, { balance = 0 } = {}] = assetEntries[index];
+  const [assetId, assetBalance] = assetEntries[index];
+  const balance = assetBalance?.balance || 0;
   const asset = assets[assetId];
 
   return (
     <div style={style}>
       <AssetItem
-        balance={asset && new Money(new BigNumber(balance), new Asset(asset))}
+        balance={
+          asset && balance !== undefined
+            ? Money.fromCoins(
+                new BigNumber(balance),
+                new Asset(asset as IAssetInfo),
+              )
+            : undefined
+        }
         assetId={assetId}
         isSwappable={swappableAssetIdsSet.has(assetId)}
         onInfoClick={onInfoClick}
@@ -79,13 +91,137 @@ interface Props {
 
 export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
   const { t } = useTranslation();
-  const assets = usePopupSelector(state => state.assets);
+  const allAssets = usePopupSelector(state => state.assets);
+  const currentNetwork = usePopupSelector(state => state.currentNetwork);
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
+  );
+
+  // Create address-to-asset lookup for Unit0 assets
+  const assetsByAddress = useMemo(() => {
+    const lookup: Record<string, AssetDetail> = {};
+    Object.values(allAssets).forEach(asset => {
+      if (!asset) return;
+
+      // Ensure precision is always a number to prevent BigNumber errors
+      const safeAsset = {
+        ...asset,
+        precision: Number(asset.precision) || 8, // Default to 8 for safety
+      };
+
+      if (asset.id && asset.id !== asset.name) {
+        // Contract addresses have different id and name
+        lookup[asset.id] = safeAsset;
+      } else {
+        lookup[asset.id || asset.name] = safeAsset; // For WAVES/native tokens
+      }
+    });
+    return lookup;
+  }, [allAssets]);
+
+  // Assets are stored flat at root level for both WAVES and Unit0
+  const assets =
+    currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+      ? Object.fromEntries(
+          Object.entries(assetsByAddress).filter(
+            ([, asset]) => asset?.type === 'ERC-20' || asset?.id === 'unit0',
+          ),
+        )
+      : allAssets;
+
   const showSuspiciousAssets = usePopupSelector(
     state => state.uiState?.showSuspiciousAssets,
   );
-  const address = usePopupSelector(state => state.selectedAccount?.address);
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const myAssets = usePopupSelector(state => state.balances[address!]?.assets);
+  const activeAccount = usePopupSelector(state => state.selectedAccount);
+  const balances = usePopupSelector(state => state.balances);
+
+  const myAssets = useMemo(() => {
+    if (!activeAccount) {
+      return undefined;
+    }
+    // New architecture: selectedAccount IS the current blockchain selection
+    // Use currentBlockchainType to determine behavior, but selectedAccount already has the right address
+
+    const address = activeAccount.address;
+    if (!address) {
+      return undefined;
+    }
+
+    const balanceKey = getBalanceKey(
+      currentBlockchainType,
+      currentNetwork,
+      address,
+    );
+
+    const balanceItem = balances[balanceKey] ?? balances[address];
+
+    // Do not reuse balances from a different network
+    if (!balanceItem || balanceItem.network !== currentNetwork) {
+      return undefined;
+    }
+
+    if (currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0) {
+      // For Unit0, use only ERC-20 tokens and native Unit0 from the current-network balance
+      const balanceData = balanceItem.assets;
+
+      if (balanceData) {
+        const filteredAssets: Record<string, BalanceAssets[string]> = {};
+        Object.entries(balanceData).forEach(([assetId, balance]) => {
+          const asset = (assets as Record<string, AssetDetail>)[assetId];
+          if ((asset?.type === 'ERC-20' || assetId === 'unit0') && balance) {
+            filteredAssets[assetId] = balance;
+          }
+        });
+        return filteredAssets;
+      }
+      return balanceData;
+    }
+
+    // For Waves, return the full balance item for the current network
+    return balanceItem;
+  }, [activeAccount, currentBlockchainType, balances, currentNetwork, assets]);
+
+  const issuerAddress = useMemo(() => {
+    if (!activeAccount) return null;
+
+    const multiAccount = activeAccount as unknown as MultiWallet;
+
+    if (currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0) {
+      // For multichain accounts, use Unit0/Ethereum address
+      if (activeAccount.type === 'multichain' && multiAccount.coins?.unit0) {
+        const network = currentNetwork?.toLowerCase() || 'mainnet';
+        const unit0NetworkKey = network === 'stagenet' ? 'testnet' : network;
+        const networks = multiAccount.coins.unit0.networks;
+        if (unit0NetworkKey === 'mainnet') {
+          return networks.mainnet?.address || null;
+        } else if (unit0NetworkKey === 'testnet') {
+          return networks.testnet?.address || null;
+        }
+        return null;
+      } else {
+        return activeAccount.address || null;
+      }
+    }
+
+    // Waves blockchain type
+    if (activeAccount.type === 'multichain' && multiAccount.coins?.waves) {
+      const network = currentNetwork?.toLowerCase() || 'mainnet';
+      const networks = multiAccount.coins.waves.networks;
+      if (network === 'mainnet') {
+        return networks.mainnet?.address || null;
+      } else if (network === 'testnet') {
+        return networks.testnet?.address || null;
+      } else if (network === 'stagenet') {
+        return networks.stagenet?.address || null;
+      } else if (network === 'custom') {
+        return networks.custom?.address || null;
+      }
+      return null;
+    } else {
+      return activeAccount.address || null;
+    }
+  }, [activeAccount, currentBlockchainType, currentNetwork]);
+
   const swappableAssetIdsByVendor = usePopupSelector(
     state => state.swappableAssetIdsByVendor,
   );
@@ -110,16 +246,41 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
 
   const assetEntries = myAssets
     ? sortAssetEntries(
-        Object.entries(myAssets).filter(
-          ([assetId]) =>
-            (!onlyFav || assets[assetId]?.isFavorite === onlyFav) &&
-            (!onlyMy || assets[assetId]?.issuer === address) &&
+        Object.entries(
+          currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+            ? myAssets
+            : myAssets.assets || {},
+        ).filter(([assetId, assetBalance]) => {
+          // Always show native token even with 0 balance
+          const nativeTokenId =
+            currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
+              ? 'unit0'
+              : 'WAVES';
+          if (assetId === nativeTokenId) return true;
+
+          // For other assets, check balance > 0 and other filters
+          const hasBalance = assetBalance && Number(assetBalance.balance) > 0;
+          if (!hasBalance) return false;
+
+          // Apply other filters
+          return (
+            (!onlyFav ||
+              (assets as Record<string, AssetDetail>)[assetId]?.isFavorite ===
+                onlyFav) &&
+            (!onlyMy ||
+              (assets as Record<string, AssetDetail>)[assetId]?.issuer ===
+                issuerAddress) &&
             (!term ||
               assetId === term ||
-              icontains(assets[assetId]?.displayName, term)),
-        ),
+              icontains(
+                (assets as Record<string, AssetDetail>)[assetId]?.displayName,
+                term,
+              ))
+          );
+        }),
         assets,
         showSuspiciousAssets,
+        currentBlockchainType,
       )
     : PLACEHOLDERS;
 
@@ -215,7 +376,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
                   itemSize={CARD_FULL_HEIGHT}
                   itemData={{
                     assetEntries,
-                    assets,
+                    assets: assets as AssetsRecord,
                     swappableAssetIdsSet,
                     onInfoClick,
                     onSendClick,

@@ -1,38 +1,14 @@
 import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
-import { type PreferencesAccount } from 'preferences/types';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { notificationChangeName } from 'store/actions/localState';
 import Background from 'ui/services/Background';
 
 import { CONFIG } from '../../appConfig';
+import { useWalletValidation } from '../../hooks/useWalletValidation';
 import { Button, ErrorMessage, Input } from '../ui';
 import * as styles from './styles/changeName.styl';
-
-function validateName(name: string, accounts: PreferencesAccount[]) {
-  const errors: Array<{ code: number; key: string; msg: string }> = [];
-  // eslint-disable-next-line @typescript-eslint/no-shadow
-  const names = accounts.map(({ name }) => name);
-
-  if (name.length < CONFIG.NAME_MIN_LENGTH) {
-    errors.push({
-      code: 1,
-      key: 'changeName.errorRequired',
-      msg: 'Required name',
-    });
-  }
-
-  if (names.includes(name)) {
-    errors.push({
-      code: 2,
-      key: 'changeName.errorInUse',
-      msg: 'Name already exist',
-    });
-  }
-
-  return errors;
-}
 
 export function ChangeAccountName() {
   const { t } = useTranslation();
@@ -42,17 +18,56 @@ export function ChangeAccountName() {
 
   const dispatch = usePopupDispatch();
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
-  const accounts = usePopupSelector(state => state.accounts);
 
   const account = usePopupSelector(state =>
     state.accounts.find(x => x.address === params.address),
   );
 
-  const [error, setError] = useState(false);
-
-  const [errors, setErrors] = useState<ReturnType<typeof validateName>>([]);
-
   const [newName, setNewName] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isValidating, setIsValidating] = useState(false);
+
+  const { validateWalletName } = useWalletValidation();
+
+  const validateName = useCallback(
+    async (name: string) => {
+      if (!name || name.trim().length === 0) {
+        setError(t('changeName.errorRequired'));
+        return false;
+      }
+
+      if (name.length < CONFIG.NAME_MIN_LENGTH) {
+        setError(t('changeName.errorRequired'));
+        return false;
+      }
+
+      setIsValidating(true);
+      try {
+        const validation = await validateWalletName(name);
+        if (!validation.isValid) {
+          setError(validation.error || t('changeName.errorInUse'));
+          return false;
+        }
+
+        setError(null);
+        return true;
+      } catch (validationError) {
+        setError(t('newAccountName.errorValidationFailed'));
+        return false;
+      } finally {
+        setIsValidating(false);
+      }
+    },
+    [validateWalletName, t],
+  );
+
+  useEffect(() => {
+    if (newName) {
+      validateName(newName);
+    } else {
+      setError(null);
+    }
+  }, [newName, validateName]);
 
   return (
     <div className={styles.content}>
@@ -94,39 +109,26 @@ export function ChangeAccountName() {
         <div className="margin-main-big relative">
           <Input
             autoFocus
-            error={error}
+            error={!!error}
             id="newAccountName"
             maxLength={26}
             value={newName}
-            onBlur={() => {
-              // eslint-disable-next-line @typescript-eslint/no-shadow
-              const errors = validateName(newName, accounts);
-
-              setErrors(errors);
-              setError(errors.length !== 0);
-            }}
             onChange={event => {
-              // eslint-disable-next-line @typescript-eslint/no-shadow
-              const newName = event.currentTarget.value;
-
-              setNewName(newName);
-              setError(false);
-              setErrors(validateName(newName, accounts));
+              const value = event.currentTarget.value;
+              setNewName(value);
             }}
           />
 
-          <ErrorMessage
-            show={error}
-            errors={errors}
-            data-testid="newAccountNameError"
-          />
+          <ErrorMessage data-testid="newAccountNameError" show={!!error}>
+            {error}
+          </ErrorMessage>
         </div>
 
         <Button
           id="save"
           type="submit"
           view="submit"
-          disabled={errors.length !== 0 || !newName}
+          disabled={!!error || !newName || isValidating}
         >
           {t('changeName.save')}
         </Button>

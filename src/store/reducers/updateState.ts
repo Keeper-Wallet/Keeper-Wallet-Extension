@@ -1,3 +1,4 @@
+import { BLOCKCHAIN_TYPES } from '../../assets/constants';
 import { type AssetsRecord } from '../../assets/types';
 import { type Message } from '../../messages/types';
 import { NetworkName } from '../../networks/types';
@@ -76,6 +77,11 @@ export function selectedAccount(
 export const currentNetwork = createSimpleReducer(
   NetworkName.Mainnet,
   ACTION.UPDATE_CURRENT_NETWORK,
+);
+
+export const currentBlockchainType = createSimpleReducer(
+  BLOCKCHAIN_TYPES.WAVES, // Default value
+  ACTION.UPDATE_CURRENT_BLOCKCHAIN_TYPE,
 );
 
 export const balances = createSimpleReducer({}, ACTION.UPDATE_BALANCES);

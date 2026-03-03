@@ -3,6 +3,7 @@ import { usePopupDispatch, usePopupSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setAddress } from 'store/actions/addresses';
+import { isValidEthereumAddress } from 'ui/utils/ethereum';
 
 import { Button, ErrorMessage, Input, Modal } from '../';
 import * as styles from './AddModal.module.css';
@@ -104,7 +105,12 @@ export function AddModal({ showModal, setShowModal, address }: Props) {
                   return;
                 }
 
-                if (!isAddressString(addressValue)) {
+                if (
+                  !(
+                    isAddressString(addressValue) ||
+                    isValidEthereumAddress(addressValue)
+                  )
+                ) {
                   setAddressError(t('address.addressInvalidError'));
                   return;
                 }
@@ -142,7 +148,6 @@ export function AddModal({ showModal, setShowModal, address }: Props) {
                 value={address || addressValue}
                 disabled={!!address}
                 addressError={addressError}
-                showMirrorAddress
               />
               <Button
                 type="submit"

@@ -15,7 +15,10 @@ import { useNavigate } from 'react-router-dom';
 import { newAccountSelect, selectAccount } from 'store/actions/localState';
 import invariant from 'tiny-invariant';
 
-import { NETWORK_CONFIG } from '../../../constants';
+import { NETWORK_CONFIG } from '../../../../constants';
+import { NetworkName } from '../../../../networks/types';
+import { type PreferencesAccount } from '../../../../preferences/types';
+import Background from '../../../services/Background';
 import {
   Button,
   ErrorMessage,
@@ -25,9 +28,9 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-} from '../ui';
-import { InlineButton } from '../ui/buttons/inlineButton';
-import * as styles from './importSeed.module.css';
+} from '../../ui';
+import { InlineButton } from '../../ui/buttons/inlineButton';
+import * as styles from './import.module.css';
 
 const SEED_MIN_LENGTH = 24;
 const ENCODED_SEED_MIN_LENGTH = 16;
@@ -44,8 +47,6 @@ export function ImportSeed() {
   const navigate = useNavigate();
   const dispatch = usePopupDispatch();
   const { t } = useTranslation();
-  const accounts = usePopupSelector(state => state.accounts);
-  const currentNetwork = usePopupSelector(state => state.currentNetwork);
   const customCodes = usePopupSelector(state => state.customCodes);
 
   const [activeTab, setActiveTab] = useState(SEED_TAB_INDEX);
@@ -56,19 +57,65 @@ export function ImportSeed() {
   const [encodedSeedValue, setEncodedSeedValue] = useState<string>('');
   const [privateKeyValue, setPrivateKeyValue] = useState<string>('');
 
+  // Always use Waves mainnet for seed import
+  const targetNetwork = NetworkName.Mainnet;
   const networkCode =
-    customCodes[currentNetwork] || NETWORK_CONFIG[currentNetwork].networkCode;
+    customCodes[targetNetwork] || NETWORK_CONFIG[targetNetwork].networkCode;
 
   const [address, setAddress] = useState<string>();
+  const [wavesAccounts, setWavesAccounts] = useState<
+    Array<{
+      address: string;
+      name: string;
+      network: string;
+    }>
+  >([]);
 
   const [validationError, setValidationError] = useState<
     React.ReactElement | string
   >();
 
+  // Fetch ALL Waves accounts (mainnet, testnet, stagenet, custom) on mount
+  useEffect(() => {
+    Background.getMultiWallets().then(multiWallets => {
+      const accounts: Array<{
+        address: string;
+        name: string;
+        network: string;
+      }> = [];
+
+      multiWallets.forEach(wallet => {
+        const waves = wallet.coins?.waves;
+        if (!waves) {
+          return;
+        }
+
+        const { networks } = waves;
+
+        (['mainnet', 'testnet', 'stagenet', 'custom'] as const).forEach(
+          networkName => {
+            const networkData = networks[networkName];
+
+            if (networkData?.address) {
+              accounts.push({
+                address: networkData.address,
+                name: wallet.name,
+                network: networkName,
+              });
+            }
+          },
+        );
+      });
+
+      setWavesAccounts(accounts);
+    });
+  }, []);
+
   const findExistingAccount = useCallback(
-    (addr: string | undefined) =>
-      addr && accounts.find(acc => acc.address === addr),
-    [accounts],
+    (addr: string | undefined) => {
+      return addr && wavesAccounts.find(acc => acc.address === addr);
+    },
+    [wavesAccounts],
   );
 
   const [isAddressInProgress, setIsAddressInProgress] = useState(false);
@@ -164,7 +211,6 @@ export function ImportSeed() {
             const newAddress = base58Encode(
               createAddress(publicKey, networkCode.charCodeAt(0)),
             );
-
             validateAddress(newAddress);
             setAddress(newAddress);
           })
@@ -258,21 +304,32 @@ export function ImportSeed() {
   const existingAccount = findExistingAccount(address);
 
   return (
-    <div className={styles.content}>
+    <div className={styles.root}>
       <div>
-        <h2 className="title1 margin3 left">{t('importSeed.title')}</h2>
+        <h2 className={styles.chooseTypeTitle}>{t('importSeed.title')}</h2>
       </div>
+      {activeTab === SEED_TAB_INDEX && (
+        <div className={styles.seedPhaseHint}>{t('importSeed.hint')}</div>
+      )}
 
       <form
-        onSubmit={event => {
+        className={clsx(styles.formContainer, styles.paddingTop24)}
+        onSubmit={async event => {
           event.preventDefault();
 
           if (isAddressInProgress) {
             return;
           }
 
+          // For private key imports, ensure we're on Waves network
+
           if (showValidationError && existingAccount) {
-            dispatch(selectAccount(existingAccount));
+            // Switch to account's network FIRST
+            await Background.setNetwork(existingAccount.network as NetworkName);
+            await Background.setCurrentBlockchainType('waves');
+            await new Promise(resolve => setTimeout(resolve, 100)); // Redux propagation
+
+            dispatch(selectAccount(existingAccount as PreferencesAccount));
             navigate('/import-success');
             return;
           }
@@ -391,18 +448,12 @@ export function ImportSeed() {
           {validationError}
         </ErrorMessage>
 
-        <div className="tag1 basic500 input-title">
-          {t('importSeed.address')}
-        </div>
-
-        <div
-          className={clsx(styles.greyLine, 'grey-line')}
-          data-testid="address"
+        <Button
+          className={styles.importButton}
+          data-testid="continueBtn"
+          type="submit"
+          view="submit"
         >
-          {address}
-        </div>
-
-        <Button data-testid="continueBtn" type="submit" view="submit">
           {t(
             existingAccount && showValidationError
               ? 'importSeed.switchAccount'

@@ -1,8 +1,8 @@
 .content {
   position: relative;
-  margin: 84px 60px 0;
+  margin: 84px 48px 0;
   display: block;
-  height: calc(100% - 180px);
+  height: 100%;
 }
 
 .greyLine {
@@ -11,4 +11,9 @@
 
 .footer {
   margin-top: auto;
+}
+
+.continueBtn {
+  position: absolute;
+  bottom: 200px;
 }

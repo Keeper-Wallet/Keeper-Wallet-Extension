@@ -11,7 +11,8 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     | 'submit'
     | 'submitTiny'
     | 'transparent'
-    | 'warning';
+    | 'warning'
+    | 'simple';
 }
 
 export function Button({
@@ -33,6 +34,7 @@ export function Button({
         [styles.submit]: view === 'submit',
         [styles.transparent]: view === 'transparent',
         [styles.warning]: view === 'warning',
+        [styles.simple]: view === 'simple',
       })}
       type={type}
       {...otherProps}

@@ -27,6 +27,7 @@
 .subtitle {
   margin-bottom: 8px;
   font-size: 11px;
+  font-weight: 400;
 }
 
 .name {
@@ -41,7 +42,7 @@
 }
 
 .button {
-  margin: 60px auto 0;
-  padding: 0 36px;
+  margin: 40px auto 0;
+  padding: 0 33px;
   width: auto;
 }

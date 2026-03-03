@@ -1,268 +1,412 @@
+import { BLOCKCHAIN_TYPES } from 'assets/constants';
 import clsx from 'clsx';
+import {
+  getAvailableNetworkOptions,
+  getNetworkDisplayName,
+} from 'networks/networkOptions';
+import { NetworkName } from 'networks/types';
+import { usePopupSelector } from 'popup/store/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { ACTION } from 'store/actions/constants';
+import background from 'ui/services/Background';
 
+import { useAccountsSelector } from '../../../accounts/store/react';
 import { NETWORK_CONFIG } from '../../../constants';
-import { NetworkName } from '../../../networks/types';
-import { usePopupDispatch, usePopupSelector } from '../../../popup/store/react';
+import { CustomNetworkModal } from '../../../layout/customNetworkModal';
+import { type PreferencesAccount } from '../../../preferences/types';
 import {
   setCustomCode,
   setCustomMatcher,
   setCustomNode,
 } from '../../../store/actions/network';
-import { getMatcherPublicKey, getNetworkCode } from '../../utils/waves';
-import { Button, Copy, ErrorMessage, Input, Modal } from '../ui';
-import * as styles from './styles/settings.styl';
+import { Button, Modal } from '../ui';
+import * as styles from './networkSettings.module.css';
+
+// Right arrow icon for the UI
+const RightArrowIcon = () => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M9 6L15 12L9 18"
+      stroke="#9E9E9E"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// Toggle Switch component
+const ToggleSwitch = ({
+  label,
+  description,
+  checked,
+  onChange,
+}: {
+  label: string;
+  description?: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) => {
+  return (
+    <div className={styles.toggleContainer}>
+      <div className={styles.toggleLabelContainer}>
+        <div className={styles.toggleLabel}>{label}</div>
+        {description && (
+          <div className={styles.toggleDescription}>{description}</div>
+        )}
+      </div>
+      <label className={styles.toggleSwitch}>
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={e => onChange(e.target.checked)}
+        />
+        <span className={styles.toggleSlider}></span>
+      </label>
+    </div>
+  );
+};
+
+// Network option component
+const NetworkOptionItem = ({
+  name,
+  isSelected,
+  hasRightArrow = false,
+  onClick,
+}: {
+  name: string;
+  isSelected?: boolean;
+  hasRightArrow?: boolean;
+  onClick: () => void;
+}) => {
+  const optionClassName = clsx(styles.networkOption, {
+    [styles.selected]: isSelected,
+  });
+
+  const iconClassName = clsx(styles.selectionIndicator, {
+    'selected-network': isSelected,
+  });
+
+  return (
+    <div className={optionClassName} onClick={onClick}>
+      <div className={styles.networkName}>{name}</div>
+      <div className={iconClassName}>
+        {hasRightArrow && (
+          <div className={styles.rightArrow}>
+            <RightArrowIcon />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export function NetworkSettings() {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const accounts = useAccountsSelector(state => state.accounts);
 
-  const dispatch = usePopupDispatch();
-
+  // Get current blockchain type and network from Redux
   const currentNetwork = usePopupSelector(state => state.currentNetwork);
-
-  const customMatcher = usePopupSelector(
-    state => state.customMatcher[state.currentNetwork],
+  const currentBlockchainType = usePopupSelector(
+    state => state.currentBlockchainType || BLOCKCHAIN_TYPES.WAVES,
   );
+  // Get the selected account to check if it's Waves-only
+  const selectedAccount = usePopupSelector(state => state.selectedAccount);
+  const customMatcher = usePopupSelector(state => state.customMatcher);
+  const customNodes = usePopupSelector(state => state.customNodes);
 
-  const customNode = usePopupSelector(
-    state => state.customNodes[state.currentNetwork],
-  );
+  // State to track if the current account is Waves-only
+  const [isWavesOnlyAccount, setIsWavesOnlyAccount] = useState(false);
 
-  const defaultNetworkConfig = NETWORK_CONFIG[currentNetwork];
+  // State to track if the current account is Waves-only
+  const [isCustomNetworkModalShown, setIsCustomNetworkModalShown] =
+    useState(false);
 
-  const initialNodeValue = customNode || defaultNetworkConfig.nodeBaseUrl;
-  const [nodeValue, setNodeValue] = useState(initialNodeValue);
-  const [nodeError, setNodeError] = useState(false);
+  // Track if preferences have been loaded
+  const [isPreferencesLoaded, setIsPreferencesLoaded] = useState(false);
 
-  const initialMatcherValue =
-    customMatcher || defaultNetworkConfig.matcherBaseUrl;
-  const [matcherValue, setMatcherValue] = useState(initialMatcherValue);
-  const [matcherError, setMatcherError] = useState(false);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [showCopied, setShowCopied] = useState(false);
+  // Check if the account is Waves-only when component mounts or selected account changes
   useEffect(() => {
-    if (!showCopied) return;
-
-    const timeout = setTimeout(() => {
-      setShowCopied(false);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [showCopied]);
-
-  const [showSaved, setShowSaved] = useState(false);
-  useEffect(() => {
-    if (!showSaved) return;
-
-    const timeout = setTimeout(() => {
-      setShowSaved(false);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [showSaved]);
-
-  const [showSetDefault, setShowSetDefault] = useState(false);
-  useEffect(() => {
-    if (!showSetDefault) return;
-
-    const timeout = setTimeout(() => {
-      setShowSetDefault(false);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [showSetDefault]);
-
-  return (
-    <form
-      className={styles.networkTab}
-      onSubmit={async event => {
-        event.preventDefault();
-        setIsSubmitting(true);
-
-        const [nodeIsValid, matcherIsValid] = await Promise.all([
-          getNetworkCode(nodeValue).then(
-            networkCode => {
-              if (currentNetwork === NetworkName.Custom) {
-                dispatch(
-                  setCustomCode({ code: networkCode, network: currentNetwork }),
-                );
-              } else if (networkCode !== defaultNetworkConfig.networkCode) {
-                return false;
-              }
-
-              dispatch(
-                setCustomNode({
-                  network: currentNetwork,
-                  node:
-                    nodeValue === defaultNetworkConfig.nodeBaseUrl
-                      ? null
-                      : nodeValue,
-                }),
-              );
-
-              return true;
-            },
-            () => false,
-          ),
-
-          getMatcherPublicKey(matcherValue).then(
-            () => {
-              dispatch(
-                setCustomMatcher({
-                  matcher:
-                    matcherValue === defaultNetworkConfig.matcherBaseUrl
-                      ? null
-                      : matcherValue,
-                  network: currentNetwork,
-                }),
-              );
-
-              return true;
-            },
-            () => false,
-          ),
-        ]);
-
-        setNodeError(!nodeIsValid);
-        setMatcherError(!matcherIsValid);
-
-        if (nodeIsValid && matcherIsValid) {
-          setShowSaved(true);
+    const checkIfWavesOnly = async () => {
+      try {
+        // Legacy accounts are Waves-only by default
+        if (!selectedAccount?.walletId) {
+          setIsWavesOnlyAccount(true);
+          return;
         }
 
-        setIsSubmitting(false);
-      }}
-    >
+        // For MultiWallet accounts, get the full wallet data from background
+        // Find the wallet that matches the selected account's walletId
+        const matchedWallet = accounts.find(
+          w =>
+            (w as PreferencesAccount & { id: string }).id ===
+            selectedAccount.walletId,
+        );
+        setIsWavesOnlyAccount(!!matchedWallet?.isWavesOnly);
+      } catch {
+        setIsWavesOnlyAccount(false);
+      }
+    };
+
+    checkIfWavesOnly();
+  }, [accounts, selectedAccount?.walletId]);
+
+  // Initialize selectedNetwork properly based on currentNetwork format
+  const [selectedNetwork, setSelectedNetwork] = useState(() => {
+    // If currentNetwork is empty, use waves-mainnet
+    if (!currentNetwork) {
+      return 'waves-mainnet';
+    }
+
+    // If currentNetwork already has a blockchain prefix (contains a dash)
+    if (currentNetwork.includes('-')) {
+      return currentNetwork;
+    }
+
+    // If currentNetwork is just the network type (e.g., "mainnet")
+    // Use the currentBlockchainType to create the combined format
+    return `${currentBlockchainType}-${currentNetwork}`;
+  });
+
+  const [showTestAccounts, setShowTestAccounts] = useState(false);
+
+  useEffect(() => {
+    // Load the hideTestAccounts preference when component mounts
+    (async () => {
+      const hideTestAccountsPref = await background.getHideTestAccounts();
+      setShowTestAccounts(!hideTestAccountsPref);
+      setIsPreferencesLoaded(true);
+      // If test networks are hidden, ensure we're using mainnet
+      if (hideTestAccountsPref) {
+        if (
+          selectedNetwork.includes('testnet') ||
+          selectedNetwork.includes('stagenet')
+        ) {
+          // Extract the blockchain type from the current selection
+          const blockchain = selectedNetwork.split('-')[0];
+          setSelectedNetwork(`${blockchain}-mainnet`);
+        }
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
+
+  // Handle hide test accounts toggle change
+  const handleHideTestAccountsChange = async (checked: boolean) => {
+    setShowTestAccounts(checked);
+
+    // If turning off test networks, switch to mainnet if a test network is selected
+    if (
+      !checked &&
+      (selectedNetwork.includes('testnet') ||
+        selectedNetwork.includes('stagenet'))
+    ) {
+      // Extract the blockchain type from the current selection
+      const blockchain = selectedNetwork.split('-')[0];
+      setSelectedNetwork(`${blockchain}-mainnet`);
+    }
+  };
+
+  // Function to handle network selection
+  const handleNetworkSelect = (blockchainType: string, networkType: string) => {
+    setSelectedNetwork(`${blockchainType}-${networkType}`);
+  };
+
+  // Get all available network options using the shared utility and filter as needed
+  const networkOptions = getAvailableNetworkOptions(
+    currentBlockchainType,
+    currentNetwork,
+    showTestAccounts,
+    t,
+  ).filter(option => {
+    // If it's a Waves-only account, filter out Unit0 options
+    if (isWavesOnlyAccount && option.blockchain === BLOCKCHAIN_TYPES.UNIT0) {
+      return false;
+    }
+    return true;
+  });
+
+  // Parse the selected network value
+  const parseSelectedNetwork = () => {
+    const [blockchain, networkType] = selectedNetwork.split('-');
+    return { blockchain, networkType };
+  };
+
+  // When confirming, update both Redux values
+  const handleConfirm = async () => {
+    // Parse the selected network into blockchain and network type
+    const { blockchain, networkType } = parseSelectedNetwork();
+
+    // Update network in Redux - just the network type
+    dispatch({
+      type: ACTION.UPDATE_CURRENT_NETWORK,
+      payload: networkType,
+    });
+
+    // Update blockchain type in Redux
+    dispatch({
+      type: ACTION.UPDATE_CURRENT_BLOCKCHAIN_TYPE,
+      payload: blockchain,
+    });
+
+    // Update background settings - separately set blockchain and network type
+    await background.setNetwork(networkType as NetworkName);
+    await background.setCurrentBlockchainType(blockchain);
+    await background.setHideTestAccounts(!showTestAccounts);
+
+    // Navigate back to previous page
+    navigate(-1);
+  };
+
+  return (
+    <div className={styles.networkTab} data-testid="networkSettings">
       <h2 className="title1 margin-main-big">
         {t('networksSettings.network')}
       </h2>
 
-      <div className="margin-main-big relative">
-        <label className="input-title basic500 tag1" htmlFor="node_address">
-          <Copy
-            text={nodeValue}
-            onCopy={() => {
-              setShowCopied(true);
-            }}
-          >
-            <i className={clsx(styles.copyIcon, 'copy-icon')}> </i>
-          </Copy>
-
-          {t('networksSettings.node')}
-        </label>
-
-        <Input
-          disabled={isSubmitting}
-          id="node_address"
-          type="url"
-          value={nodeValue}
-          onChange={event => {
-            setNodeValue(event.currentTarget.value);
-            setNodeError(false);
-          }}
+      {/* Display Options Section */}
+      <div className={styles.displayOptionsSection}>
+        <ToggleSwitch
+          label={t('networksSettings.toggleLabel')}
+          checked={showTestAccounts}
+          onChange={handleHideTestAccountsChange}
         />
-
-        <ErrorMessage show={nodeError} data-testid="nodeAddressError">
-          {t('networkSettings.nodeError')}
-        </ErrorMessage>
       </div>
 
-      <div className="margin-main-big relative">
-        <label className="input-title basic500 tag1" htmlFor="matcher_address">
-          <Copy
-            text={matcherValue}
-            onCopy={() => {
-              setShowCopied(true);
-            }}
-          >
-            <i className={clsx(styles.copyIcon, 'copy-icon')}> </i>
-          </Copy>
+      {/* Divider */}
+      <div className={styles.divider} />
 
-          {t('networksSettings.matcher')}
-        </label>
+      <div className="margin-main-big">
+        {/* Network options */}
+        {networkOptions.map((option, index) => {
+          // Skip test networks if hidden
+          if (option.isTestnet && !showTestAccounts) {
+            return null;
+          }
 
-        <Input
-          disabled={isSubmitting}
-          id="matcher_address"
-          type="url"
-          value={matcherValue}
-          onChange={event => {
-            setMatcherValue(event.currentTarget.value);
-            setMatcherError(false);
-          }}
-        />
+          // Add divider before first testnet option
+          const showDivider =
+            index > 0 &&
+            option.isTestnet &&
+            !networkOptions[index - 1].isTestnet;
 
-        <ErrorMessage show={matcherError}>
-          {t('networkSettings.matcherError')}
-        </ErrorMessage>
+          // Parse the currently selected network
+          const {
+            blockchain: selectedBlockchain,
+            networkType: selectedNetworkType,
+          } = parseSelectedNetwork();
+
+          // Check if this option is selected
+          const isOptionSelected =
+            option.blockchain === selectedBlockchain &&
+            option.network === selectedNetworkType;
+
+          return (
+            <div key={option.value}>
+              {showDivider && <div className={styles.divider} />}
+              <NetworkOptionItem
+                name={getNetworkDisplayName(
+                  option.blockchain,
+                  option.network,
+                  t,
+                )}
+                isSelected={isOptionSelected}
+                hasRightArrow={option.isCustom}
+                onClick={() => {
+                  if (option.isCustom) {
+                    setIsCustomNetworkModalShown(true);
+                  } else if (option.blockchain) {
+                    handleNetworkSelect(option.blockchain, option.network);
+                  }
+                }}
+              />
+            </div>
+          );
+        })}
       </div>
 
       <Button
-        className="margin-main-big"
-        disabled={
-          isSubmitting ||
-          (nodeValue === initialNodeValue &&
-            matcherValue === initialMatcherValue)
-        }
-        loading={isSubmitting}
+        className={styles.confirmButton}
+        onClick={handleConfirm}
         type="submit"
         view="submit"
       >
-        {t('networksSettings.save')}
+        {t('networkSettings.confirm')}
       </Button>
 
-      {currentNetwork !== NetworkName.Custom && (
-        <Button
-          disabled={
-            isSubmitting ||
-            (nodeValue === defaultNetworkConfig.nodeBaseUrl &&
-              matcherValue === defaultNetworkConfig.matcherBaseUrl)
+      <Modal
+        showModal={isCustomNetworkModalShown}
+        animation={Modal.ANIMATION.FLASH}
+      >
+        <CustomNetworkModal
+          initialMatcher={
+            customMatcher[NetworkName.Custom] ||
+            NETWORK_CONFIG[NetworkName.Custom].matcherBaseUrl
           }
-          id="setDefault"
-          onClick={() => {
-            dispatch(setCustomNode({ network: currentNetwork, node: null }));
-
+          initialNode={
+            customNodes[NetworkName.Custom] ||
+            NETWORK_CONFIG[NetworkName.Custom].nodeBaseUrl
+          }
+          onClose={() => {
+            setIsCustomNetworkModalShown(false);
+          }}
+          onSave={async ({ matcher, networkCode, node }) => {
             dispatch(
-              setCustomMatcher({ matcher: null, network: currentNetwork }),
+              setCustomCode({
+                code: networkCode,
+                network: NetworkName.Custom,
+              }),
             );
 
-            setNodeValue(defaultNetworkConfig.nodeBaseUrl);
-            setNodeError(false);
+            dispatch(
+              setCustomNode({
+                network: NetworkName.Custom,
+                node,
+              }),
+            );
 
-            setMatcherValue(defaultNetworkConfig.matcherBaseUrl);
-            setMatcherError(false);
+            if (matcher) {
+              dispatch(
+                setCustomMatcher({
+                  matcher,
+                  network: NetworkName.Custom,
+                }),
+              );
+            }
 
-            setShowSetDefault(true);
+            setIsCustomNetworkModalShown(false);
+
+            // Update the selected network to Custom
+            setSelectedNetwork(
+              `${currentBlockchainType}-${NetworkName.Custom}`,
+            );
+
+            // Actually switch to the custom network immediately
+            dispatch({
+              type: ACTION.UPDATE_CURRENT_NETWORK,
+              payload: NetworkName.Custom,
+            });
+
+            await background.setNetwork(NetworkName.Custom);
+
+            // Preserve the "Show test networks" setting only if preferences have been loaded
+            if (isPreferencesLoaded) {
+              await background.setHideTestAccounts(!showTestAccounts);
+            }
           }}
-        >
-          {t('networksSettings.setDefault')}
-        </Button>
-      )}
-
-      <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showCopied}>
-        <div className="modal notification">{t('networksSettings.copied')}</div>
+        />
       </Modal>
-
-      <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showSaved}>
-        <div className="modal notification">
-          {t('networksSettings.savedModal')}
-        </div>
-      </Modal>
-
-      <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showSetDefault}>
-        <div className="modal notification">
-          {t('networksSettings.setDefaultModal')}
-        </div>
-      </Modal>
-    </form>
+    </div>
   );
 }

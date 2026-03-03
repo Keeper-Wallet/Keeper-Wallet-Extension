@@ -44,6 +44,7 @@ export function isAddressString(input: string, chainId?: number) {
 }
 
 export function isAlias(input: string) {
+  if (typeof input !== 'string') return false;
   const parts = input.split(':');
 
   return (
@@ -63,6 +64,7 @@ export function isBase58(input: string) {
 }
 
 export function processAliasOrAddress(recipient: string, chainId: number) {
+  if (typeof recipient !== 'string' || recipient.length === 0) return '';
   return isAddressString(recipient) || isAlias(recipient)
     ? recipient
     : `alias:${String.fromCharCode(chainId)}:${recipient}`;
