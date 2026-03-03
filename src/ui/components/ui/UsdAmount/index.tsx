@@ -16,7 +16,7 @@ export function UsdAmount({ id, tokens, className }: Props) {
   const isMainnet = currentNetwork === 'mainnet';
 
   // Determine token type
-  const isUnit0Token = id === 'unit0' || id.startsWith('0x');
+  const isUnit0Token = id === 'UNIT0' || id.startsWith('0x');
 
   // Fetch prices from appropriate provider
   const wavesUsdPrices = useUsdPrices(

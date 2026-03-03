@@ -273,7 +273,7 @@ export class WavesBalanceStrategy implements IBalanceStrategy {
         precision: nft.decimals,
         description: nft.description,
         height: nft.issueHeight,
-        timestamp: new Date(nft.issueTimestamp).toJSON() as unknown as Date,
+        timestamp: new Date(nft.issueTimestamp).toJSON(),
         sender: nft.issuer,
         quantity: nft.quantity,
         reissuable: nft.reissuable,

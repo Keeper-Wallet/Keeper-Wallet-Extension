@@ -151,11 +151,18 @@ export class WavesPrivateKeyStrategy implements IMultiWalletCreationStrategy {
       const isHex = /^(0x)?[0-9a-fA-F]{64}$/.test(privateKey);
 
       if (!isBase58 && !isHex) {
-        errors.push('Private key must be in base58 format (Waves)');
+        errors.push('Private key must be in base58 (Waves) or hex format');
       }
 
-      if (privateKey.length < 32) {
-        errors.push('Private key is too short');
+      if (isBase58) {
+        try {
+          const decoded = base58Decode(privateKey);
+          if (decoded.length !== 32) {
+            errors.push('Private key must be 32 bytes');
+          }
+        } catch {
+          errors.push('Private key is not valid base58');
+        }
       }
     }
 

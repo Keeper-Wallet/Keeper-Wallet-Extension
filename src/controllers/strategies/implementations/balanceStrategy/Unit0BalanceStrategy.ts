@@ -208,7 +208,7 @@ export class Unit0BalanceStrategy implements IBalanceStrategy {
     };
 
     const assets: Record<string, AssetBalance> = {
-      unit0: unit0AssetBalance,
+      UNIT0: unit0AssetBalance,
     };
 
     // Process ERC-20 tokens using token strategy

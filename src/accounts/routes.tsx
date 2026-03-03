@@ -100,7 +100,7 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: '/import-wave-seed',
+        path: '/import-waves-seed',
         element: (
           <>
             <Menu hasBack hasLogo />

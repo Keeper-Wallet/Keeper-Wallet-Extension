@@ -13,7 +13,7 @@ export function ImportChoose() {
   };
 
   const handleWavesAccount = async () => {
-    navigate('/import-wave-seed');
+    navigate('/import-waves-seed');
   };
 
   return (

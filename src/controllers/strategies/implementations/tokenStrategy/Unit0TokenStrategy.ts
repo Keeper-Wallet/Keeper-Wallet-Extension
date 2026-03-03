@@ -38,7 +38,9 @@ export class Unit0TokenStrategy implements ITokenStrategy {
     // Process tokens - use metadata from token object directly (already available from API)
     const processedTokens: ProcessedToken[] = erc20Tokens
       .map(token => {
-        const address = token.token?.address_hash ?? token.token?.address;
+        const address = (
+          token.token?.address_hash ?? token.token?.address
+        )?.toLowerCase();
         const tokenBalance = token.value || '0';
 
         if (!address) return null;

@@ -127,14 +127,16 @@ describe('balances/utils', () => {
         expect(result).toBe('waves_mainnet_');
       });
 
-      it('should handle special characters in address', () => {
+      it('should handle real Waves mainnet address', () => {
         const result = getBalanceKey(
           BLOCKCHAIN_TYPES.WAVES,
           'mainnet',
-          '3P_Special-Address.123',
+          '3PNCPLehr6Vprr66LqoHidqqwYWhHpPPUmR',
         );
 
-        expect(result).toBe('waves_mainnet_3P_Special-Address.123');
+        expect(result).toBe(
+          'waves_mainnet_3PNCPLehr6Vprr66LqoHidqqwYWhHpPPUmR',
+        );
       });
     });
   });

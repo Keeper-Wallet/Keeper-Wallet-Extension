@@ -18,7 +18,11 @@ import {
 } from '../interfaces/types';
 
 /**
- * Wx (Waves Exchange) MultiWallet Creation Strategy
+ * Wx (Waves Exchange) Wallet Creation Strategy
+ * Implements IMultiWalletCreationStrategy for architectural consistency,
+ * but unlike seed wallets, Wx provides a single pre-existing address
+ * from Waves Exchange — not derived across multiple networks from a key.
+ * Supports Waves blockchain only.
  */
 export class WavesWxWalletStrategy implements IMultiWalletCreationStrategy {
   constructor(

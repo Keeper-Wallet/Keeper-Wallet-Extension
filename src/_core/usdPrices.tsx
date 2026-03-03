@@ -75,7 +75,7 @@ export function UsdPricesProvider({ children }: { children: React.ReactNode }) {
     }
 
     if (currentBlockchainType === 'unit0') {
-      return ['unit0'];
+      return ['UNIT0'];
     }
 
     return [] as string[];
@@ -212,7 +212,7 @@ export function useUnit0UsdPrices(addresses: string[]) {
   return useMemo(() => {
     // Convert addresses to normalized format used in the store
     const normalizedAddresses = addresses.map(address =>
-      address === 'unit0' ? 'UNIT0' : address.toLowerCase(),
+      address === 'UNIT0' ? 'UNIT0' : address.toLowerCase(),
     );
     const addressSet = new Set(normalizedAddresses);
 
