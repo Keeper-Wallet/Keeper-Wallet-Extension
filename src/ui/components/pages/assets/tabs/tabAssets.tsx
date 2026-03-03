@@ -124,7 +124,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
     currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
       ? Object.fromEntries(
           Object.entries(assetsByAddress).filter(
-            ([, asset]) => asset?.type === 'ERC-20' || asset?.id === 'unit0',
+            ([, asset]) => asset?.type === 'ERC-20' || asset?.id === 'UNIT0',
           ),
         )
       : allAssets;
@@ -168,7 +168,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
         const filteredAssets: Record<string, BalanceAssets[string]> = {};
         Object.entries(balanceData).forEach(([assetId, balance]) => {
           const asset = (assets as Record<string, AssetDetail>)[assetId];
-          if ((asset?.type === 'ERC-20' || assetId === 'unit0') && balance) {
+          if ((asset?.type === 'ERC-20' || assetId === 'UNIT0') && balance) {
             filteredAssets[assetId] = balance;
           }
         });
@@ -254,7 +254,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
           // Always show native token even with 0 balance
           const nativeTokenId =
             currentBlockchainType === BLOCKCHAIN_TYPES.UNIT0
-              ? 'unit0'
+              ? 'UNIT0'
               : 'WAVES';
           if (assetId === nativeTokenId) return true;
 

@@ -257,7 +257,7 @@ export function Send() {
                 }
               } else {
                 // Check if this is an ERC-20 token or native UNIT0
-                const isERC20Token = asset && asset.id !== 'unit0';
+                const isERC20Token = asset && asset.id !== 'UNIT0';
                 const tokenDecimals = asset?.precision ?? 18;
 
                 // Convert amount from tokens to smallest unit (wei for native, token units for ERC-20)
@@ -336,7 +336,7 @@ export function Send() {
                     );
 
               // Get current UNIT0 balance (already in wei from assetBalances)
-              const unit0Balance = assetBalances?.unit0?.balance ?? '0';
+              const unit0Balance = assetBalances?.UNIT0?.balance ?? '0';
               const balanceInWei = new BigNumber(unit0Balance);
 
               // Check if balance is sufficient
@@ -478,7 +478,7 @@ export function Send() {
                         onBalanceClick={async () => {
                           // For native currencies (Unit0 and WAVES), subtract estimated gas
                           // For tokens, use full balance
-                          const isUnit0Native = isUnit0 && asset.id === 'unit0';
+                          const isUnit0Native = isUnit0 && asset.id === 'UNIT0';
                           const isWavesNative =
                             !isUnit0 && asset.id === 'WAVES';
 

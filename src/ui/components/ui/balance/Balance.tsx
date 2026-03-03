@@ -12,7 +12,7 @@ import * as styles from './Balance.module.css';
  */
 function formatBalanceDisplay(balance: Money, isShortFormat?: boolean): string {
   // For Unit0 tokens, limit display to 8 decimals like Waves
-  if (balance.asset.id === 'unit0' || balance.asset.id.startsWith('0x')) {
+  if (balance.asset.id === 'UNIT0' || balance.asset.id.startsWith('0x')) {
     const maxDisplayDecimals = 8;
     const tokens = balance.getTokens();
     return tokens.toFormat(maxDisplayDecimals, BigNumber.ROUND_MODE.ROUND_DOWN);

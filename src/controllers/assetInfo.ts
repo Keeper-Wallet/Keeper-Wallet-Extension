@@ -45,13 +45,13 @@ export const WAVES: AssetDetail = {
 const UNIT0: AssetDetail = {
   quantity: '10000000000000000',
   ticker: 'UNIT0',
-  id: 'unit0',
+  id: 'UNIT0',
   name: 'Unit0',
   precision: 18,
   description: 'Unit0 native token',
   height: 0,
   issuer: '',
-  timestamp: new Date('2024-01-01T00:00:00.000Z').toJSON(),
+  timestamp: new Date('2024-10-29T14:00:04.000000Z').toJSON(),
   sender: '',
   reissuable: false,
   displayName: 'UNIT0',
@@ -161,14 +161,14 @@ export class AssetInfoController {
       assets: {
         [NetworkName.Mainnet]: {
           WAVES,
-          unit0: UNIT0,
+          UNIT0,
         },
         [NetworkName.Stagenet]: {
           WAVES,
         },
         [NetworkName.Testnet]: {
           WAVES,
-          unit0: UNIT0,
+          UNIT0,
         },
         [NetworkName.Custom]: {
           WAVES,
@@ -226,7 +226,7 @@ export class AssetInfoController {
   }
 
   private seedDefaultLogosFromConstants(network: NetworkName) {
-    const { assetLogos, assets } = this.store.getState();
+    const { assetLogos } = this.store.getState();
 
     const networkAssetLogos =
       (assetLogosByNetwork[network] as Record<string, string> | undefined) ||
@@ -245,29 +245,7 @@ export class AssetInfoController {
       ...assetLogos,
     };
 
-    // 1. Ensure existing user assets have logos (handling case sensitivity for Unit0)
-    const networkAssets = assets[network] || {};
-    Object.keys(networkAssets).forEach(assetId => {
-      if (updatedAssetLogos[assetId]) {
-        return;
-      }
-
-      // Try direct lookup
-      if (allDefaultLogos[assetId]) {
-        updatedAssetLogos[assetId] = allDefaultLogos[assetId];
-        return;
-      }
-
-      // Try case-insensitive lookup for Unit0 (0x...)
-      if (assetId.startsWith('0x')) {
-        const lowercasedId = assetId.toLowerCase();
-        if (allDefaultLogos[lowercasedId]) {
-          updatedAssetLogos[assetId] = allDefaultLogos[lowercasedId];
-        }
-      }
-    });
-
-    // 2. Populate all other default logos (mostly lowercase keys from constants)
+    // Populate all default logos
     Object.entries(allDefaultLogos).forEach(([assetId, logoUrl]) => {
       if (!updatedAssetLogos[assetId]) {
         updatedAssetLogos[assetId] = logoUrl;
@@ -290,14 +268,14 @@ export class AssetInfoController {
 
     // Only ensure Unit0 native token exists - ERC-20 tokens will be handled dynamically
     // Check if Unit0 native token exists in mainnet
-    if (!assets[NetworkName.Mainnet].unit0) {
-      assets[NetworkName.Mainnet].unit0 = UNIT0;
+    if (!assets[NetworkName.Mainnet].UNIT0) {
+      assets[NetworkName.Mainnet].UNIT0 = UNIT0;
       needsUpdate = true;
     }
 
     // Check if Unit0 native token exists in testnet
-    if (!assets[NetworkName.Testnet].unit0) {
-      assets[NetworkName.Testnet].unit0 = UNIT0;
+    if (!assets[NetworkName.Testnet].UNIT0) {
+      assets[NetworkName.Testnet].UNIT0 = UNIT0;
       needsUpdate = true;
     }
 
@@ -506,29 +484,7 @@ export class AssetInfoController {
 
         this.store.updateState({ assets });
       } catch (error) {
-        // Add placeholder data for failed assets to prevent infinite loading
-        batchIds.forEach(assetId => {
-          if (!assets[network][assetId]) {
-            assets[network][assetId] = {
-              id: assetId,
-              name: `${assetId.slice(0, 8)}...`,
-              displayName: `${assetId.slice(0, 8)}...`,
-              ticker: assetId.slice(0, 4),
-              precision: 8,
-              description: 'Failed to load asset details',
-              height: 0,
-              timestamp: new Date().toJSON(),
-              sender: '',
-              issuer: '',
-              quantity: '0',
-              reissuable: false,
-              lastUpdated: new Date().getTime(),
-              isSuspicious: false,
-            };
-          }
-        });
-
-        this.store.updateState({ assets });
+        // Ignore batch errors — assets will be retried on next update
       }
     }
   }
@@ -608,8 +564,7 @@ export class AssetInfoController {
 
     // Set default "0" for all requested IDs
     for (const id of ids) {
-      const normalizedId =
-        id === 'UNIT0' || id === 'unit0' ? 'UNIT0' : id.toLowerCase();
+      const normalizedId = id === 'UNIT0' ? 'UNIT0' : id.toLowerCase();
       updatedUsdPrices[normalizedId] = '0';
     }
 
@@ -697,11 +652,13 @@ export class AssetInfoController {
           };
 
           processedAssets.forEach(({ id, ticker, dataUrl }) => {
+            const normalizedId = id.toLowerCase();
+
             if (dataUrl) {
-              updatedAssetLogos[id] = dataUrl;
+              updatedAssetLogos[normalizedId] = dataUrl;
             }
 
-            updatedAssetTickers[id] = ticker;
+            updatedAssetTickers[normalizedId] = ticker;
           });
 
           this.store.updateState({

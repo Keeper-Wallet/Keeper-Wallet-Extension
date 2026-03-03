@@ -26,7 +26,7 @@ export interface ITransactionStrategy {
     filter?: TransactionFilter,
   ): Promise<TransactionFetchResult>;
 
-  fetchTransactionById(
+  fetchTransactionById?(
     txId: string,
     network: NetworkName,
   ): Promise<TransactionFromNode | Unit0Transfer | null>;

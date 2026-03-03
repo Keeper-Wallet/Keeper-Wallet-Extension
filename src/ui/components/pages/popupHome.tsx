@@ -88,7 +88,7 @@ export function PopupHome() {
   const notifications = usePopupSelector(
     state => state.localState.notifications,
   );
-  const unit0Asset = assets.unit0;
+  const unit0Asset = assets.UNIT0;
 
   const [activeTab, setActiveTab] = useUiState('assetsTab');
 
@@ -177,9 +177,9 @@ export function PopupHome() {
 
           // Check both Waves and Unit0 prices
           let usdPrice = usdPrices[id]; // Waves prices
-          if (!usdPrice && (id === 'unit0' || id.startsWith('0x'))) {
+          if (!usdPrice && (id === 'UNIT0' || id.startsWith('0x'))) {
             // For Unit0 tokens, check with proper normalization
-            const normalizedId = id === 'unit0' ? 'UNIT0' : id.toLowerCase();
+            const normalizedId = id === 'UNIT0' ? 'UNIT0' : id.toLowerCase();
             usdPrice = usdPrices[normalizedId]; // Unit0 prices
           }
 

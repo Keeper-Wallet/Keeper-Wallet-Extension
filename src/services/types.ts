@@ -19,12 +19,12 @@ export interface MultiWallet {
   id: string; // Unique identifier for the MultiWallet
   name: string; // User-friendly name
   type: string; // 'seed', 'privateKey', 'ledger', etc.
-  createdAt: number; // Timestamp for sorting and tracking
+  createdAt: number; // Timestamp for sorting
   lastUsed?: number;
   // Authentication data - stored securely
   seed?: string; // Optional seed phrase (for seed wallets)
   privateKey?: string; // Optional private key (for privateKey wallets)
-  encodedSeed?: string; // Optional encoded seed (base58-encoded seed phrase)
+  encodedSeed?: string; // Optional base58-encoded seed
   wxUuid?: string; // Optional WX wallet UUID
   wxUsername?: string; // Optional WX wallet username
   ledgerId?: number; // Optional Ledger device account ID

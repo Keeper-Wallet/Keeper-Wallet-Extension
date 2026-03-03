@@ -37,7 +37,7 @@ export function sortAssetEntries<T>(
   currentBlockchainType?: string,
 ): Array<[string, T]> {
   // Determine native token based on blockchain type
-  const nativeTokenId = currentBlockchainType === 'unit0' ? 'unit0' : 'WAVES';
+  const nativeTokenId = currentBlockchainType === 'unit0' ? 'UNIT0' : 'WAVES';
 
   return assetEntries
     .filter(

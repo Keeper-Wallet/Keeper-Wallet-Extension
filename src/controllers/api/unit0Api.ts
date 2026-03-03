@@ -106,7 +106,6 @@ export interface Unit0PriceData {
  */
 export type Unit0PricesMap = Record<string, Unit0PriceData>;
 
-// const DATA_SERVICE_URL = 'https://api.keeper-wallet.app';
 const DATA_SERVICE_URL = getDataServiceUrl();
 
 export class Unit0Api {

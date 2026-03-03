@@ -199,8 +199,6 @@ export class SeedWalletStrategy implements IMultiWalletCreationStrategy {
     if (!('seed' in input) || !input.seed) {
       errors.push('Seed phrase is required');
     }
-    // Note: We don't validate seed format here to allow test seeds
-    // The UI already validates seed length (24 characters minimum)
 
     if (!input.name || input.name.trim().length === 0) {
       errors.push('Wallet name is required');

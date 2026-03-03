@@ -73,7 +73,7 @@ export interface INftInventory {
       is_unique: boolean | null;
       media_type: string | null;
       media_url: string | null;
-      metadata: string | null; // TODO: need to check with real data
+      metadata: string | null;
       owner: string | null;
       thumbnails: string[] | null;
       token: string;

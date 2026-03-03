@@ -67,9 +67,7 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
 
     // Convert both types to internal format
     const nativeTransactions = unit0Txs
-      .map((tx: Unit0Transaction) =>
-        this.convertUnit0ToTransaction(tx, address),
-      )
+      .map((tx: Unit0Transaction) => this.convertToUnit0Transfer(tx, address))
       .filter(tx => {
         if (tx.type !== TRANSACTION_TYPE.ETHEREUM) return true;
         const p = (tx as Unit0Transfer).payload as Unit0PayloadUnion;
@@ -122,13 +120,7 @@ export class Unit0TransactionStrategy implements ITransactionStrategy {
     };
   }
 
-  async fetchTransactionById(): Promise<Unit0Transfer | null> {
-    // Unit0 API doesn't have single transaction endpoint in current implementation
-    // This would need to be implemented based on Unit0 API capabilities
-    return null;
-  }
-
-  private convertUnit0ToTransaction(
+  private convertToUnit0Transfer(
     unit0Tx: Unit0Transaction,
     address: string,
   ): Unit0Transfer {
